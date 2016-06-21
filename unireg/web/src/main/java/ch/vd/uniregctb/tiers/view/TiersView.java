@@ -35,7 +35,9 @@ import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 /**
  * Structure model commun a l'ecran de visualisation et
@@ -389,6 +391,18 @@ public class TiersView {
 
 	public List<FlagEntrepriseView> getFlags() {
 		return flags;
+	}
+
+	@SuppressWarnings("unused")
+	public List<FlagEntrepriseView> getFlags(GroupeFlagsEntreprise groupe) {
+		final List<FlagEntrepriseView> filtered = new ArrayList<>(flags.size());
+		final Set<TypeFlagEntreprise> types = TypeFlagEntreprise.ofGroupe(groupe);
+		for (FlagEntrepriseView flag : flags) {
+			if (types.contains(flag.getType())) {
+				filtered.add(flag);
+			}
+		}
+		return filtered;
 	}
 
 	public void setFlags(List<FlagEntrepriseView> flags) {

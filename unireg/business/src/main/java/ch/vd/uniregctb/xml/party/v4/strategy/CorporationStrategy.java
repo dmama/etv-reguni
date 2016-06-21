@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v4.Capital;
 import ch.vd.unireg.xml.party.corporation.v4.Corporation;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationFlag;
 import ch.vd.unireg.xml.party.corporation.v4.CorporationStatus;
 import ch.vd.unireg.xml.party.corporation.v4.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v4.LegalSeat;
@@ -202,7 +203,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private static void initFlags(Corporation corporation, Entreprise entreprise) {
 		final List<FlagEntreprise> flags = entreprise.getFlagsNonAnnulesTries();
 		for (FlagEntreprise flag : flags) {
-			corporation.getCorporationFlags().add(CorporationFlagBuilder.newFlag(flag));
+			final CorporationFlag cf = CorporationFlagBuilder.newFlag(flag);
+			if (cf != null) {
+				corporation.getCorporationFlags().add(cf);
+			}
 		}
 	}
 

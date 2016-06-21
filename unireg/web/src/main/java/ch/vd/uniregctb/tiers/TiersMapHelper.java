@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -799,11 +801,15 @@ public class TiersMapHelper extends CommonMapHelper {
 	/**
 	 * @return la map des types disponibles pour les flags d'entreprise
 	 */
-	public Map<TypeFlagEntreprise, String> getTypesFlagEntreprise() {
+	public Map<TypeFlagEntreprise, String> getTypesFlagEntreprise(GroupeFlagsEntreprise groupe) {
 		if (mapTypesFlagEntreprise == null) {
 			mapTypesFlagEntreprise = initMapEnum(ApplicationConfig.masterKeyTypeFlagEntreprise, TypeFlagEntreprise.class);
 		}
-		return mapTypesFlagEntreprise;
+
+		// il reste un petit filtre à faire, selon le groupe
+		final Map<TypeFlagEntreprise, String> typesDuGroupe = new LinkedHashMap<>(mapTypesFlagEntreprise);
+		typesDuGroupe.keySet().retainAll(TypeFlagEntreprise.ofGroupe(groupe));
+		return typesDuGroupe;
 	}
 
 	/**

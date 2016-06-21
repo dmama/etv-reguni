@@ -10,11 +10,11 @@
 		<unireg:bandeauTiers numero="${pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
 
 		<fieldset>
-			<legend><span><fmt:message key="label.specificites"/></span></legend>
+			<legend><span><fmt:message key="label.specificites.${group}"/></span></legend>
 
 			<table border="0">
 				<tr><td>
-					<unireg:linkTo name="Ajouter" action="/flag-entreprise/add.do" method="get" params="{pmId:${pmId}}" title="Ajouter une spécificité" link_class="add noprint"/>
+					<unireg:linkTo name="Ajouter" action="/flag-entreprise/add.do" method="get" params="{pmId:${pmId},group:'${group}'}" title="Ajouter une spécificité" link_class="add noprint"/>
 				</td></tr>
 			</table>
 

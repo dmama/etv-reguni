@@ -3,25 +3,26 @@
 
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
-	<legend><span><fmt:message key="label.specificites"/></span></legend>
+	<legend><span><fmt:message key="label.specificites.${param.group}"/></span></legend>
 
 	<unireg:setAuth var="auth" tiersId="${command.tiers.numero}"/>
 	<c:if test="${!command.tiers.annule && auth.flagsPM}">
 		<table border="0">
 			<tr><td>
 				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:raccourciModifier link="../flag-entreprise/edit-list.do?pmId=${command.tiers.numero}" tooltip="Modifier les spécificités" display="label.bouton.modifier"/>
+					<unireg:raccourciModifier link="../flag-entreprise/edit-list.do?pmId=${command.tiers.numero}&group=${param.group}" tooltip="Modifier les spécificités" display="label.bouton.modifier"/>
 				</c:if>
 			</td></tr>
 		</table>
 	</c:if>
 
-	<c:if test="${not empty command.flags}">
+	<c:set var="flags" value="${command.getFlags(param.group)}"/>
+	<c:if test="${not empty flags}">
 
-		<input class="noprint" name="flag_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('flag','flag_histo', 'histo-only');" id="flag_histo" />
-		<label class="noprint" for="flag_histo"><fmt:message key="label.historique" /></label>
+		<input class="noprint" name="flag_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('flag-${param.group}','flag_histo-${param.group}', 'histo-only');" id="flag_histo-${param.group}" />
+		<label class="noprint" for="flag_histo-${param.group}"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.flags}" id="flag" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
 			<display:column titleKey="label.date.debut" style="width: 20%;" sortable="true" sortProperty="dateDebut">
 				<unireg:regdate regdate="${flag.dateDebut}"/>
 			</display:column>
@@ -43,7 +44,7 @@
 		    $(function() {
 
 			    // premièr calcul des lignes à cacher par défaut
-			    Histo.toggleRowsIsHistoFromClass('flag','flag_histo', 'histo-only');
+			    Histo.toggleRowsIsHistoFromClass('flag-${param.group}','flag_histo-${param.group}', 'histo-only');
 
 		    });
 

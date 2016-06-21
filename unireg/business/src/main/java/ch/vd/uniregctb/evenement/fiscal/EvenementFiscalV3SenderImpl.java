@@ -80,7 +80,7 @@ public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, Initi
 	private static final Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>> FACTORIES = buildOutputDataFactories();
 
 	/**
-	 * Exception lancée par les factories qui indique que l'événement fiscal n'est pas supporté pour le canal v2
+	 * Exception lancée par les factories qui indique que l'événement fiscal n'est pas supporté pour le canal v3
 	 */
 	private static class NotSupportedInHereException extends Exception {
 	}
@@ -217,8 +217,8 @@ public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, Initi
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
 			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
 			final AllegementFiscal allegementFiscal = evenementFiscal.getAllegementFiscal();
-			instance.setGenreImpot(EnumHelper.coreToXMLv4(allegementFiscal.getTypeImpot()));
-			instance.setTypeCollectivite(EnumHelper.coreToXMLv4(allegementFiscal.getTypeCollectivite(),
+			instance.setGenreImpot(EnumHelper.coreToXMLv5(allegementFiscal.getTypeImpot()));
+			instance.setTypeCollectivite(EnumHelper.coreToXMLv5(allegementFiscal.getTypeCollectivite(),
 			                                                    allegementFiscal instanceof AllegementFiscalCommune ? ((AllegementFiscalCommune) allegementFiscal).getNoOfsCommune() : null));
 			return instance;
 		}
@@ -484,7 +484,7 @@ public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, Initi
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
 			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
-			instance.setScope(EnumHelper.coreToXMLv4(evenementFiscal.getRegimeFiscal().getPortee()));
+			instance.setScope(EnumHelper.coreToXMLv5(evenementFiscal.getRegimeFiscal().getPortee()));
 			return instance;
 		}
 	}
@@ -524,7 +524,7 @@ public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, Initi
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
 			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
-			instance.setTypeFlag(EnumHelper.coreToXMLv4(evenementFiscal.getFlag().getType()));
+			instance.setTypeFlag(EnumHelper.coreToXMLv5(evenementFiscal.getFlag().getType()));
 			return instance;
 		}
 	}

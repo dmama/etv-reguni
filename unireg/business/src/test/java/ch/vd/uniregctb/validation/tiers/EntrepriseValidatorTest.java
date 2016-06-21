@@ -14,11 +14,14 @@ import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
 import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
@@ -59,8 +62,8 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 			Assert.assertEquals(2, vr.errorsCount());
 
 			final List<String> errors = vr.getErrors();
-			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs régimes fiscaux VD", errors.get(0));
-			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs régimes fiscaux VD", errors.get(1));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs régimes fiscaux de portée VD", errors.get(0));
+			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs régimes fiscaux de portée VD", errors.get(1));
 		}
 	}
 
@@ -281,5 +284,117 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 
 		final List<String> errors = vr.getErrors();
 		Assert.assertEquals("Le capital d'une entreprise ne peut être négatif (-42).", errors.get(0));
+	}
+
+	@Test
+	public void testChevauchementFlagsExclusifs() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.UTILITE_PUBLIQUE, date(2000, 1, 1), date(2000, 12, 31)));
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.SOC_IMM_ACTIONNAIRES_LOCATAIRES, date(2005, 1, 1), date(2010, 6, 30)));
+
+		// aucun chevauchement
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.SOC_IMM_CARACTERE_SOCIAL, date(2000, 12, 1), date(2006, 9, 12)));
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertTrue(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(2, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+
+			final List<String> errors = vr.getErrors();
+			Assert.assertEquals("La période [01.12.2000 ; 31.12.2000] est couverte par plusieurs spécificités fiscales du groupe " + GroupeFlagsEntreprise.SI_SERVICE_UTILITE_PUBLIQUE, errors.get(0));
+			Assert.assertEquals("La période [01.01.2005 ; 12.09.2006] est couverte par plusieurs spécificités fiscales du groupe " + GroupeFlagsEntreprise.SI_SERVICE_UTILITE_PUBLIQUE, errors.get(1));
+		}
+	}
+
+	@Test
+	public void testChevauchementFlagsNonExclusifsDifferents() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.AUDIT, date(2000, 1, 1), date(2000, 12, 31)));
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.EXPERTISE, date(2005, 1, 1), date(2010, 6, 30)));
+
+		// aucun chevauchement
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.IMIN, date(2000, 12, 1), date(2006, 9, 12)));
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+	}
+
+	@Test
+	public void testChevauchementFlagsNonExclusifsIdentiques() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.AUDIT, date(2000, 1, 1), date(2000, 12, 31)));
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.AUDIT, date(2005, 1, 1), date(2010, 6, 30)));
+
+		// aucun chevauchement
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.AUDIT, date(2000, 12, 1), date(2006, 9, 12)));
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertTrue(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(2, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+
+			final List<String> errors = vr.getErrors();
+			Assert.assertEquals("La période [01.12.2000 ; 31.12.2000] est couverte par plusieurs spécificités fiscales de type " + TypeFlagEntreprise.AUDIT, errors.get(0));
+			Assert.assertEquals("La période [01.01.2005 ; 12.09.2006] est couverte par plusieurs spécificités fiscales de type " + TypeFlagEntreprise.AUDIT, errors.get(1));
+		}
+	}
+
+	@Test
+	public void testChevauchementFlagsGroupesDifferents() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.SOC_IMM_ACTIONNAIRES_LOCATAIRES, date(2000, 1, 1), date(2000, 12, 31)));
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.SOC_IMM_ORDINAIRE, date(2005, 1, 1), date(2010, 6, 30)));
+
+		// aucun chevauchement
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+
+		entreprise.addFlag(new FlagEntreprise(TypeFlagEntreprise.AUDIT, date(2000, 12, 1), date(2006, 9, 12)));
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.hasErrors());
+			Assert.assertFalse(vr.hasWarnings());
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
 	}
 }

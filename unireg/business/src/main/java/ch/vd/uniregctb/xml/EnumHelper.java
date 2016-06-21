@@ -10,7 +10,6 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -2865,19 +2864,50 @@ public abstract class EnumHelper {
 
 		switch (type) {
 		case UTILITE_PUBLIQUE:
-			return CorporationFlagType.PUBLIC_INTEREST;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.PUBLIC_INTEREST;
 		case APM_SOC_IMM_SUBVENTIONNEE:
-			return CorporationFlagType.ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY;
 		case SOC_IMM_ACTIONNAIRES_LOCATAIRES:
-			return CorporationFlagType.TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY;
 		case SOC_IMM_CARACTERE_SOCIAL:
-			return CorporationFlagType.SOCIAL_REAL_ESTATE_COMPANY;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.SOCIAL_REAL_ESTATE_COMPANY;
 		case SOC_IMM_ORDINAIRE:
-			return CorporationFlagType.REAL_ESTATE_COMPANY;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.REAL_ESTATE_COMPANY;
 		case SOC_IMM_SUBVENTIONNEE:
-			return CorporationFlagType.SUBSIDIZED_REAL_ESTATE_COMPANY;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.SUBSIDIZED_REAL_ESTATE_COMPANY;
 		case SOC_SERVICE:
-			return CorporationFlagType.SERVICE_COMPANY;
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.SERVICE_COMPANY;
+		default:
+			throw new IllegalArgumentException("Type de flag inconnu : " + type);
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType coreToXMLv5(TypeFlagEntreprise type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case UTILITE_PUBLIQUE:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.PUBLIC_INTEREST;
+		case APM_SOC_IMM_SUBVENTIONNEE:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY;
+		case SOC_IMM_ACTIONNAIRES_LOCATAIRES:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY;
+		case SOC_IMM_CARACTERE_SOCIAL:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.SOCIAL_REAL_ESTATE_COMPANY;
+		case SOC_IMM_ORDINAIRE:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.REAL_ESTATE_COMPANY;
+		case SOC_IMM_SUBVENTIONNEE:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.SUBSIDIZED_REAL_ESTATE_COMPANY;
+		case SOC_SERVICE:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.SERVICE_COMPANY;
+		case AUDIT:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.AUDIT;
+		case EXPERTISE:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.EXPERTISE;
+		case IMIN:
+			return ch.vd.unireg.xml.party.corporation.v5.CorporationFlagType.MINIMAL_TAX;
 		default:
 			throw new IllegalArgumentException("Type de flag inconnu : " + type);
 		}
@@ -3122,6 +3152,21 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.corporation.v5.TaxSystemScope coreToXMLv5(RegimeFiscal.Portee portee) {
+		if (portee == null) {
+			return null;
+		}
+
+		switch (portee) {
+		case CH:
+			return ch.vd.unireg.xml.party.corporation.v5.TaxSystemScope.CH;
+		case VD:
+			return ch.vd.unireg.xml.party.corporation.v5.TaxSystemScope.VD;
+		default:
+			throw new IllegalArgumentException("Portée de régime fiscal inconnue : " + portee);
+		}
+	}
+
 	@Nullable
 	public static ch.vd.unireg.xml.party.corporation.v1.LegalSeatType coreToXMLLegalSeatv1(TypeAutoriteFiscale taf) {
 		if (taf == null) {
@@ -3292,6 +3337,23 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.corporation.v5.LighteningTarget coreToXMLv5(AllegementFiscal.TypeCollectivite type, Integer noOfsCommune) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case CONFEDERATION:
+			return new ch.vd.unireg.xml.party.corporation.v5.LighteningTarget(new ch.vd.unireg.xml.party.corporation.v5.LighteningTarget.SwissConfederation(), null, null);
+		case CANTON:
+			return new ch.vd.unireg.xml.party.corporation.v5.LighteningTarget(null, new ch.vd.unireg.xml.party.corporation.v5.LighteningTarget.Canton(), null);
+		case COMMUNE:
+			return new ch.vd.unireg.xml.party.corporation.v5.LighteningTarget(null, null, new ch.vd.unireg.xml.party.corporation.v5.MunicipalityLighteningTarget(noOfsCommune));
+		default:
+			throw new IllegalArgumentException("Type de collectivité concernée par un allègement fiscal inconnu = [" + type + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.corporation.v4.TaxType coreToXMLv4(AllegementFiscal.TypeImpot type) {
 		if (type == null) {
 			return null;
@@ -3302,6 +3364,21 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.corporation.v4.TaxType.PROFIT;
 		case CAPITAL:
 			return ch.vd.unireg.xml.party.corporation.v4.TaxType.CAPITAL;
+		default:
+			throw new IllegalArgumentException("Type d'impôt concernée par un allègement fiscal inconnu = [" + type + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.corporation.v5.TaxType coreToXMLv5(AllegementFiscal.TypeImpot type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case BENEFICE:
+			return ch.vd.unireg.xml.party.corporation.v5.TaxType.PROFIT;
+		case CAPITAL:
+			return ch.vd.unireg.xml.party.corporation.v5.TaxType.CAPITAL;
 		default:
 			throw new IllegalArgumentException("Type d'impôt concernée par un allègement fiscal inconnu = [" + type + ']');
 		}

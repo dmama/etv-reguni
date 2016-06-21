@@ -13,7 +13,7 @@
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${command.pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
 
-		<form:form id="addFlagForm" commandName="command" action="add.do">
+		<form:form id="addFlagForm" commandName="command" action="add.do?group=${group}">
 
 			<fieldset>
 				<legend><span><fmt:message key="label.specificite"/></span></legend>
@@ -58,7 +58,7 @@
 				<tr>
 					<td width="25%">&nbsp;</td>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.ajouter" />"></td>
-					<td width="25%"><unireg:buttonTo name="Retour" action="/flag-entreprise/edit-list.do" params="{pmId:${command.pmId}}" method="GET"/></td>
+					<td width="25%"><unireg:buttonTo name="Retour" action="/flag-entreprise/edit-list.do" params="{pmId:${command.pmId},group:'${group}'}" method="GET"/></td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>

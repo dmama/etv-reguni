@@ -4,8 +4,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +58,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.utils.LogLevel;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -475,9 +478,21 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 	}
 
 	private static class FlagEntrepriseFactory implements OutputDataFactory<EvenementFiscalFlagEntreprise, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise> {
+
+		private static final Set<TypeFlagEntreprise> TYPES_EXPOSES = EnumSet.of(TypeFlagEntreprise.APM_SOC_IMM_SUBVENTIONNEE,
+		                                                                        TypeFlagEntreprise.SOC_IMM_ACTIONNAIRES_LOCATAIRES,
+		                                                                        TypeFlagEntreprise.SOC_IMM_CARACTERE_SOCIAL,
+		                                                                        TypeFlagEntreprise.SOC_IMM_ORDINAIRE,
+		                                                                        TypeFlagEntreprise.SOC_IMM_SUBVENTIONNEE,
+		                                                                        TypeFlagEntreprise.SOC_SERVICE,
+		                                                                        TypeFlagEntreprise.UTILITE_PUBLIQUE);
+
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise build(@NotNull EvenementFiscalFlagEntreprise evenementFiscal) {
+		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise build(@NotNull EvenementFiscalFlagEntreprise evenementFiscal) throws NotSupportedInHereException {
+			if (!TYPES_EXPOSES.contains(evenementFiscal.getFlag().getType())) {
+				throw new NotSupportedInHereException();
+			}
 			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise instance = instanciate(evenementFiscal.getType());
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));

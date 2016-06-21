@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -52,6 +54,7 @@ public class EnumHelperTest {
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv1", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv2", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv3", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv4", TypeFlagEntreprise.class), EnumSet.of(TypeFlagEntreprise.AUDIT, TypeFlagEntreprise.EXPERTISE, TypeFlagEntreprise.IMIN));
 
 		// boucle sur toutes les méthodes statiques publiques coreToXML... qui prennent un type énuméré en paramètre
 		final Method[] methods = EnumHelper.class.getDeclaredMethods();
@@ -69,22 +72,23 @@ public class EnumHelperTest {
 
 					// on va tester toutes les valeurs de l'enum en entrée et vérifier que cela n'explose pas
 					// (peu importe ici que la réponse de la méthode soit parfois nulle...)
-					for (Object modalite : enumType.getEnumConstants()) {
+					for (Enum modalite : enumType.getEnumConstants()) {
 						try {
 							method.invoke(null, modalite);
 							LOGGER.info(String.format("Test de l'appel à %s(%s.%s) OK", method.getName(), enumType.getName(), modalite));
 
 							if (expectedCrashingModalities != null && expectedCrashingModalities.contains(modalite)) {
-								// ben ça n'explose plus plus ?
+								// ben ça n'explose plus ?
 								Assert.fail(String.format("Prière de mettre à jour le test, apparemment, l'appel à %s(%s.%s) n'explose plus...",
 								                          method.getName(), enumType.getName(), modalite));
 							}
 						}
-						catch (Exception e) {
+						catch (InvocationTargetException e) {
+							final Throwable cause = e.getCause();
 							if (expectedCrashingModalities == null || !expectedCrashingModalities.contains(modalite)) {
-								LOGGER.error(String.format("Test de l'appel à %s(%s) KO", method.getName(), modalite), e);
+								LOGGER.error(String.format("Test de l'appel à %s(%s) KO", method.getName(), modalite), cause);
 								Assert.fail(String.format("Méthode %s(%s.%s) a explosé avec une exception %s (%s)",
-								                          method.getName(), enumType.getName(), modalite, e.getClass().getName(), e.getMessage()));
+								                          method.getName(), enumType.getName(), modalite, cause.getClass().getName(), cause.getMessage()));
 							}
 
 							LOGGER.warn(String.format("L'appel à %s(%s.%s) explose, mais c'est connu...", method.getName(), enumType.getName(), modalite));

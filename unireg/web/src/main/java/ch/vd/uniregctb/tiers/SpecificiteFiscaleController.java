@@ -50,6 +50,7 @@ import ch.vd.uniregctb.tiers.view.EditRegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.RegimeFiscalListEditView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -538,18 +539,19 @@ public class SpecificiteFiscaleController {
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/flag-entreprise/edit-list.do", method = RequestMethod.GET)
-	public String showListEditFlags(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+	public String showListEditFlags(@RequestParam("pmId") long pmId, @RequestParam("group") GroupeFlagsEntreprise groupe, Model model) throws AccessDeniedException, ObjectNotFoundException {
 
 		checkDroitModificationFlags();
 		final Entreprise entreprise = checkDroitEcritureTiers(pmId);
 
 		model.addAttribute("pmId", pmId);
-		model.addAttribute("flags", getFlagListEditViews(entreprise));
+		model.addAttribute("group", groupe);
+		model.addAttribute("flags", getFlagListEditViews(entreprise, groupe));
 
 		return "tiers/edition/pm/specificites/list-flags";
 	}
 
-	private static List<FlagEntrepriseView> getFlagListEditViews(Entreprise entreprise) {
+	private static List<FlagEntrepriseView> getFlagListEditViews(Entreprise entreprise, GroupeFlagsEntreprise groupe) {
 		final Set<FlagEntreprise> flags = entreprise.getFlags();
 		if (flags == null || flags.isEmpty()) {
 			return Collections.emptyList();
@@ -557,7 +559,9 @@ public class SpecificiteFiscaleController {
 
 		final List<FlagEntrepriseView> views = new ArrayList<>(flags.size());
 		for (FlagEntreprise flag : flags) {
-			views.add(new FlagEntrepriseView(flag));
+			if (flag.getGroupe() == groupe) {
+				views.add(new FlagEntrepriseView(flag));
+			}
 		}
 		Collections.sort(views, new AnnulableHelper.AnnulableDateRangeComparator<>(true));
 		return views;
@@ -575,36 +579,39 @@ public class SpecificiteFiscaleController {
 		checkDroitEcritureTiers(flag.getEntreprise());
 
 		tiersService.annuleFlagEntreprise(flag);
-		return "redirect:/flag-entreprise/edit-list.do?pmId=" + flag.getEntreprise().getNumero();
+		return "redirect:/flag-entreprise/edit-list.do?pmId=" + flag.getEntreprise().getNumero() + "&group=" + flag.getGroupe();
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/flag-entreprise/add.do", method = RequestMethod.GET)
-	public String showAddFlag(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+	public String showAddFlag(@RequestParam("pmId") long pmId, @RequestParam("group") GroupeFlagsEntreprise groupe, Model model) throws AccessDeniedException, ObjectNotFoundException {
 		checkDroitModificationFlags();
 		checkDroitEcritureTiers(pmId);
-		return showAddFlag(new AddFlagEntrepriseView(pmId), model);
+		return showAddFlag(new AddFlagEntrepriseView(pmId), groupe, model);
 	}
 
-	private String showAddFlag(AddFlagEntrepriseView view, Model model) {
+	private String showAddFlag(AddFlagEntrepriseView view, GroupeFlagsEntreprise groupe, Model model) {
 		model.addAttribute("command", view);
-		model.addAttribute("flagTypes", tiersMapHelper.getTypesFlagEntreprise());
+		model.addAttribute("group", groupe);
+		model.addAttribute("flagTypes", tiersMapHelper.getTypesFlagEntreprise(groupe));
 		return "tiers/edition/pm/specificites/add-flag";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/flag-entreprise/add.do", method = RequestMethod.POST)
-	public String addFlag(@Valid @ModelAttribute("command") AddFlagEntrepriseView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
+	public String addFlag(@Valid @ModelAttribute("command") AddFlagEntrepriseView view, BindingResult bindingResult,
+	                      @RequestParam("group") GroupeFlagsEntreprise groupe,
+	                      Model model) throws AccessDeniedException, ObjectNotFoundException {
 		checkDroitModificationFlags();
 
 		// vérification des erreurs avant d'aller plus loin
 		if (bindingResult.hasErrors()) {
-			return showAddFlag(view, model);
+			return showAddFlag(view, groupe, model);
 		}
 
 		final Entreprise entreprise = checkDroitEcritureTiers(view.getPmId());
 		tiersService.addFlagEntreprise(entreprise, view.getValue(), view.getDateDebut(), view.getDateFin());
-		return "redirect:/flag-entreprise/edit-list.do?pmId=" + view.getPmId();
+		return "redirect:/flag-entreprise/edit-list.do?pmId=" + view.getPmId() + "&group=" + view.getValue().getGroupe();
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -652,6 +659,6 @@ public class SpecificiteFiscaleController {
 		else {
 			tiersService.closeFlagEntreprise(flag, view.getDateFin());
 		}
-		return "redirect:/flag-entreprise/edit-list.do?pmId=" + flag.getEntreprise().getNumero();
+		return "redirect:/flag-entreprise/edit-list.do?pmId=" + flag.getEntreprise().getNumero() + "&group=" + flag.getGroupe();
 	}
 }

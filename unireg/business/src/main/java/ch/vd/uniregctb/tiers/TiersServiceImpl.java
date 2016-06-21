@@ -137,6 +137,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -6009,15 +6010,15 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Nullable
-	private static FlagEntreprise getDernierFlagEntreprise(Entreprise e) {
-		final List<FlagEntreprise> all = e.getFlagsNonAnnulesTries();
+	private static FlagEntreprise getDernierFlagEntreprise(Entreprise e, GroupeFlagsEntreprise groupe) {
+		final List<FlagEntreprise> all = e.getFlagsNonAnnulesTries(groupe);
 		return all.isEmpty() ? null : all.get(all.size() - 1);
 	}
 
 	@Override
 	public FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, @Nullable RegDate dateFin) {
-		final FlagEntreprise existing = getDernierFlagEntreprise(e);
-		if (existing != null && existing.getDateFin() == null) {
+		final FlagEntreprise existing = getDernierFlagEntreprise(e, type.getGroupe());
+		if (existing != null && existing.getDateFin() == null && type.getGroupe().isFlagsMutuellementExclusifs()) {
 			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
 				closeFlagEntreprise(existing, dateDebut.getOneDayBefore());
 			}

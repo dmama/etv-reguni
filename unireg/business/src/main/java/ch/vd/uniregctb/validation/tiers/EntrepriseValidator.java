@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalHelper;
@@ -32,8 +30,56 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
+
+	private interface KeyExtractor<T, U> {
+		U extractKey(T value);
+	}
+
+	private static final KeyExtractor<FlagEntreprise, GroupeFlagsEntreprise> FLAG_GROUP_EXTRACTOR = new KeyExtractor<FlagEntreprise, GroupeFlagsEntreprise>() {
+		@Override
+		public GroupeFlagsEntreprise extractKey(FlagEntreprise value) {
+			return value.getGroupe();
+		}
+	};
+
+	private static final KeyExtractor<FlagEntreprise, TypeFlagEntreprise> FLAG_TYPE_EXTRACTOR = new KeyExtractor<FlagEntreprise, TypeFlagEntreprise>() {
+		@Override
+		public TypeFlagEntreprise extractKey(FlagEntreprise value) {
+			return value.getType();
+		}
+	};
+
+	private static final KeyExtractor<AllegementFiscal, AllegementFiscalHelper.OverlappingKey> ALLEGEMENT_KEY_EXTRACTOR = new KeyExtractor<AllegementFiscal, AllegementFiscalHelper.OverlappingKey>() {
+		@Override
+		public AllegementFiscalHelper.OverlappingKey extractKey(AllegementFiscal value) {
+			return AllegementFiscalHelper.OverlappingKey.valueOf(value);
+		}
+	};
+
+	private static final KeyExtractor<RegimeFiscal, RegimeFiscal.Portee> REGIME_FISCAL_PORTEE_EXTRACTOR = new KeyExtractor<RegimeFiscal, RegimeFiscal.Portee>() {
+		@Override
+		public RegimeFiscal.Portee extractKey(RegimeFiscal value) {
+			return value.getPortee();
+		}
+	};
+
+	private static <K, V> Map<K, List<V>> byKey(Collection<? extends V> source, KeyExtractor<? super V, ? extends K> keyExtractor) {
+		final Map<K, List<V>> map = new HashMap<>(source.size());
+		for (V data : source) {
+			final K key = keyExtractor.extractKey(data);
+			List<V> forKey = map.get(key);
+			if (forKey == null) {
+				forKey = new ArrayList<>(source.size());
+				map.put(key, forKey);
+			}
+			forKey.add(data);
+		}
+		return map;
+	}
 
 	@Override
 	public ValidationResults validate(Entreprise entreprise) {
@@ -114,12 +160,49 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(getValidationService().validate(flag));
 		}
 
-		// ... puis entre eux (les flags ne peuvent se chevaucher)
+		// ... puis entre eux (en prenant en compte les spécificités de chaque groupe par rapport aux chevauchements)
 		if (flags.size() > 1) {
-			final List<DateRange> overlaps = DateRangeHelper.overlaps(flags);
-			if (overlaps != null && !overlaps.isEmpty()) {
-				for (DateRange overlap : overlaps) {
-					vr.addError(String.format("La période %s est couverte par plusieurs spécificités fiscales", DateRangeHelper.toDisplayString(overlap)));
+			// répartition en groupes
+			final Map<GroupeFlagsEntreprise, List<FlagEntreprise>> flagsParGroupe = byKey(flags, FLAG_GROUP_EXTRACTOR);
+
+			// boucle sur les groupes et, pour ceux qui n'acceptent pas les chevauchement, vérification en conséquence
+			for (Map.Entry<GroupeFlagsEntreprise, List<FlagEntreprise>> groupEntry : flagsParGroupe.entrySet()) {
+				final List<FlagEntreprise> flagsDansGroupe = groupEntry.getValue();
+				if (flagsDansGroupe.size() > 1) {
+					// dans un groupe où les éléments doivent être mutuellement exclusifs, il ne doit
+					// y avoir aucun chevauchement
+					final GroupeFlagsEntreprise groupe = groupEntry.getKey();
+					if (groupe.isFlagsMutuellementExclusifs()) {
+						final List<DateRange> overlaps = DateRangeHelper.overlaps(flagsDansGroupe);
+						if (overlaps != null && !overlaps.isEmpty()) {
+							for (DateRange overlap : overlaps) {
+								vr.addError(String.format("La période %s est couverte par plusieurs spécificités fiscales du groupe %s",
+								                          DateRangeHelper.toDisplayString(overlap),
+								                          groupe));
+							}
+						}
+					}
+
+					// dans un groupe où les éléments ne sont pas mutuellement exclusifs, il peut y avoir des chevauchements
+					// entre types différents, mais pas sur des entités de même type
+					else {
+						// il faut dont les regrouper par type
+						final Map<TypeFlagEntreprise, List<FlagEntreprise>> flagsParType = byKey(flagsDansGroupe, FLAG_TYPE_EXTRACTOR);
+						for (Map.Entry<TypeFlagEntreprise, List<FlagEntreprise>> typeEntry : flagsParType.entrySet()) {
+							final List<FlagEntreprise> flagsDeType = typeEntry.getValue();
+							if (flagsDeType.size() > 1) {
+								final List<DateRange> overlaps = DateRangeHelper.overlaps(flagsDeType);
+								if (overlaps != null && !overlaps.isEmpty()) {
+									final TypeFlagEntreprise type = typeEntry.getKey();
+									for (DateRange overlap : overlaps) {
+										vr.addError(String.format("La période %s est couverte par plusieurs spécificités fiscales de type %s",
+										                          DateRangeHelper.toDisplayString(overlap),
+										                          type));
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -159,26 +242,6 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		}
 	}
 
-	private static <T extends DonneeCivileEntreprise> void checkContinuous(List<T> nonAnnulesTries, String libelle, ValidationResults vr) {
-
-		if (nonAnnulesTries.size() > 1) {
-			final List<DateRange> completeRange = Arrays.<DateRange>asList(
-					new DateRangeHelper.Range(nonAnnulesTries.get(0).getDateDebut(), CollectionsUtils.getLastElement(nonAnnulesTries).getDateFin()));
-
-			final List<DateRange> resultingRange = DateRangeHelper.subtract(completeRange, nonAnnulesTries, new DateRangeHelper.AdapterCallback<DateRange>() {
-				@Override
-				public DateRange adapt(DateRange range, RegDate debut, RegDate fin) {
-					return new DateRangeHelper.Range(debut, fin);
-				}
-			});
-			if (resultingRange.size() > 0) {
-				for (DateRange holeRange : resultingRange) {
-					vr.addError(String.format("Rupture de continuité: période vide %s dans la valeur de %s", DateRangeHelper.toDisplayString(holeRange), libelle));
-				}
-			}
-		}
-	}
-
 	protected ValidationResults validateRegimesFiscaux(Entreprise entreprise) {
 		final ValidationResults vr = new ValidationResults();
 
@@ -194,30 +257,14 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		if (size > 1) {
 
 			// 1. on sépare les régimes fiscaux selon leur portée (les listes résultantes restent triées puisque la liste en entrée l'est)
-			final Map<RegimeFiscal.Portee, List<RegimeFiscal>> parPortee = new EnumMap<>(RegimeFiscal.Portee.class);
-			for (RegimeFiscal regimeFiscal : regimesFiscaux) {
-				final RegimeFiscal.Portee portee = regimeFiscal.getPortee();
-
-				// [SIFISC-17375] dans les écrans super-gra, on peut être dans des cas où la portée n'a pas encore été assignée (-> NPE à l'insertion dans la map)
-				if (portee != null) {
-					final List<RegimeFiscal> liste;
-					if (parPortee.containsKey(portee)) {
-						liste = parPortee.get(portee);
-					}
-					else {
-						liste = new ArrayList<>(size);
-						parPortee.put(portee, liste);
-					}
-					liste.add(regimeFiscal);
-				}
-			}
+			final Map<RegimeFiscal.Portee, List<RegimeFiscal>> parPortee = byKey(regimesFiscaux, REGIME_FISCAL_PORTEE_EXTRACTOR);
 
 			// 2. pour chacune des portées, on valide qu'il n'y a pas de chevauchements
 			for (Map.Entry<RegimeFiscal.Portee, List<RegimeFiscal>> entry : parPortee.entrySet()) {
 				final List<DateRange> overlaps = DateRangeHelper.overlaps(entry.getValue());
 				if (overlaps != null && !overlaps.isEmpty()) {
 					for (DateRange overlap : overlaps) {
-						vr.addError(String.format("La période %s est couverte par plusieurs régimes fiscaux %s", DateRangeHelper.toDisplayString(overlap), entry.getKey()));
+						vr.addError(String.format("La période %s est couverte par plusieurs régimes fiscaux de portée %s", DateRangeHelper.toDisplayString(overlap), entry.getKey()));
 					}
 				}
 			}
@@ -239,20 +286,11 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		// puis on valide que deux allègements fiscaux sur le même sujet ne se chevauchent pas...
 		if (!allegementsFiscaux.isEmpty()) {
 			// "même sujet" est défini par la clé AllegementFiscalKey
-			final Map<AllegementFiscalHelper.OverlappingKey, List<DateRange>> map = new HashMap<>(allegementsFiscaux.size());
-			for (AllegementFiscal af : allegementsFiscaux) {
-				final AllegementFiscalHelper.OverlappingKey key = AllegementFiscalHelper.OverlappingKey.valueOf(af);
-				List<DateRange> liste = map.get(key);
-				if (liste == null) {
-					liste = new ArrayList<>();
-					map.put(key, liste);
-				}
-				liste.add(af);
-			}
+			final Map<AllegementFiscalHelper.OverlappingKey, List<AllegementFiscal>> map = byKey(allegementsFiscaux, ALLEGEMENT_KEY_EXTRACTOR);
 
 			// vérification des chevauchements
-			for (Map.Entry<AllegementFiscalHelper.OverlappingKey, List<DateRange>> entry : map.entrySet()) {
-				final List<DateRange> liste = entry.getValue();
+			for (Map.Entry<AllegementFiscalHelper.OverlappingKey, List<AllegementFiscal>> entry : map.entrySet()) {
+				final List<AllegementFiscal> liste = entry.getValue();
 				if (liste.size() > 1) {
 					final List<DateRange> overlaps = DateRangeHelper.overlaps(liste);
 					if (overlaps != null && !overlaps.isEmpty()) {

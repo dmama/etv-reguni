@@ -27,6 +27,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -323,6 +324,18 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		final List<FlagEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(flags);
 		Collections.sort(nonAnnules, new DateRangeComparator<>());
 		return nonAnnules;
+	}
+
+	@Transient
+	public List<FlagEntreprise> getFlagsNonAnnulesTries(GroupeFlagsEntreprise groupe) {
+		final List<FlagEntreprise> tous = getFlagsNonAnnulesTries();
+		final List<FlagEntreprise> filtres = new ArrayList<>(tous.size());
+		for (FlagEntreprise flag : tous) {
+			if (flag.getGroupe() == groupe) {
+				filtres.add(flag);
+			}
+		}
+		return filtres;
 	}
 
 	public void setFlags(Set<FlagEntreprise> flags) {
