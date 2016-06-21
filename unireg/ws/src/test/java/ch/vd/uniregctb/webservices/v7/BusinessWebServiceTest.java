@@ -82,8 +82,11 @@ import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType;
 import ch.vd.unireg.xml.party.person.v5.Origin;
 import ch.vd.unireg.xml.party.person.v5.Sex;
-import ch.vd.unireg.xml.party.relation.v3.RelationBetweenParties;
-import ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType;
+import ch.vd.unireg.xml.party.relation.v4.Child;
+import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
+import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
+import ch.vd.unireg.xml.party.relation.v4.TaxableRevenue;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
@@ -2260,22 +2263,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(rel);
 			Assert.assertEquals(dateMariage, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 			Assert.assertNull(rel.getDateTo());
-			Assert.assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, rel.getType());
+			Assert.assertTrue(rel instanceof HouseholdMember);
 			Assert.assertEquals(ids.mc, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getEndDateOfLastTaxableItem());
 			Assert.assertNull(rel.getCancellationDate());
-			Assert.assertNull(rel.isExtensionToForcedExecution());
 		}
 		{
 			final RelationBetweenParties rel = sortedRelations.get(1);
 			Assert.assertNotNull(rel);
 			Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 			Assert.assertEquals(dateDeces, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
-			Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+			Assert.assertTrue(rel instanceof TaxableRevenue);
 			Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getEndDateOfLastTaxableItem());
 			Assert.assertNotNull(rel.getCancellationDate());
-			Assert.assertNull(rel.isExtensionToForcedExecution());
+			Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 		}
 	}
 
@@ -2679,11 +2679,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(rel);
 			Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 			Assert.assertEquals(dateDecesPapa, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
-			Assert.assertEquals(RelationBetweenPartiesType.PARENT, rel.getType());
+			Assert.assertTrue(rel instanceof Parent);
 			Assert.assertEquals(ids.papa, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getEndDateOfLastTaxableItem());
 			Assert.assertNull(rel.getCancellationDate());
-			Assert.assertNull(rel.isExtensionToForcedExecution());
 		}
 		{
 			final Party partyAvec = service.getParty(userLogin, ids.moi, EnumSet.of(PartyPart.CHILDREN));
@@ -2696,11 +2694,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(rel);
 			Assert.assertEquals(dateNaissanceFiston, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 			Assert.assertNull(rel.getDateTo());
-			Assert.assertEquals(RelationBetweenPartiesType.CHILD, rel.getType());
+			Assert.assertTrue(rel instanceof Child);
 			Assert.assertEquals(ids.fiston, rel.getOtherPartyNumber());
-			Assert.assertNull(rel.getEndDateOfLastTaxableItem());
 			Assert.assertNull(rel.getCancellationDate());
-			Assert.assertNull(rel.isExtensionToForcedExecution());
 		}
 		{
 			final Party partyAvec = service.getParty(userLogin, ids.moi, EnumSet.of(PartyPart.CHILDREN, PartyPart.PARENTS));
@@ -2724,22 +2720,18 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(rel);
 				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 				Assert.assertEquals(dateDecesPapa, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
-				Assert.assertEquals(RelationBetweenPartiesType.PARENT, rel.getType());
+				Assert.assertTrue(rel instanceof Parent);
 				Assert.assertEquals(ids.papa, rel.getOtherPartyNumber());
-				Assert.assertNull(rel.getEndDateOfLastTaxableItem());
 				Assert.assertNull(rel.getCancellationDate());
-				Assert.assertNull(rel.isExtensionToForcedExecution());
 			}
 			{
 				final RelationBetweenParties rel = sortedRelations.get(1);
 				Assert.assertNotNull(rel);
 				Assert.assertEquals(dateNaissanceFiston, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 				Assert.assertNull(rel.getDateTo());
-				Assert.assertEquals(RelationBetweenPartiesType.CHILD, rel.getType());
+				Assert.assertTrue(rel instanceof Child);
 				Assert.assertEquals(ids.fiston, rel.getOtherPartyNumber());
-				Assert.assertNull(rel.getEndDateOfLastTaxableItem());
 				Assert.assertNull(rel.getCancellationDate());
-				Assert.assertNull(rel.isExtensionToForcedExecution());
 			}
 		}
 	}
@@ -2977,7 +2969,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
 				Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
-				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+				Assert.assertTrue(rel instanceof TaxableRevenue);
+				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 
 			final List<TaxLiability> tls = np.getTaxLiabilities();
@@ -3216,7 +3209,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
 				Assert.assertEquals(ids.pp, rel.getOtherPartyNumber());
-				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+				Assert.assertTrue(rel instanceof TaxableRevenue);
+				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 		}
 	}
@@ -3772,7 +3766,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
 				Assert.assertEquals(ids.pp, rel.getOtherPartyNumber());
-				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+				Assert.assertTrue(rel instanceof TaxableRevenue);
+				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 		}
 		{
@@ -3907,7 +3902,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(dateDebutRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateFrom()));
 				Assert.assertEquals(dateFinRT, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rel.getDateTo()));
 				Assert.assertEquals(ids.dpi, rel.getOtherPartyNumber());
-				Assert.assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, rel.getType());
+				Assert.assertTrue(rel instanceof TaxableRevenue);
+				Assert.assertNull(((TaxableRevenue) rel).getEndDateOfLastTaxableItem());
 			}
 
 			final List<TaxLiability> tls = np.getTaxLiabilities();

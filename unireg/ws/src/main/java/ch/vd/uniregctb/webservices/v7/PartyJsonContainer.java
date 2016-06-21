@@ -15,6 +15,7 @@ import ch.vd.unireg.xml.party.establishment.v2.Establishment;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
+import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v3.TaxLiability;
@@ -169,6 +170,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(NaturalPerson naturalPerson) {
 			replacePolymorphicTaxLiabilites(naturalPerson);
 			replacePolymorphicTaxDeclarations(naturalPerson);
+			replacePolymorphicRelationsBetweenParties(naturalPerson);
 			return new PartyJsonContainer(naturalPerson);
 		}
 	}
@@ -178,6 +180,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(CommonHousehold household) {
 			replacePolymorphicTaxLiabilites(household);
 			replacePolymorphicTaxDeclarations(household);
+			replacePolymorphicRelationsBetweenParties(household);
 			return new PartyJsonContainer(household);
 		}
 	}
@@ -185,6 +188,8 @@ public class PartyJsonContainer {
 	private static final class DebtorContainerBuilder implements ContainerBuilder<Debtor> {
 		@Override
 		public PartyJsonContainer build(Debtor debtor) {
+			replacePolymorphicTaxDeclarations(debtor);
+			replacePolymorphicRelationsBetweenParties(debtor);
 			return new PartyJsonContainer(debtor);
 		}
 	}
@@ -194,6 +199,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(Corporation corporation) {
 			replacePolymorphicTaxLiabilites(corporation);
 			replacePolymorphicTaxDeclarations(corporation);
+			replacePolymorphicRelationsBetweenParties(corporation);
 			return new PartyJsonContainer(corporation);
 		}
 	}
@@ -203,6 +209,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(AdministrativeAuthority admAuth) {
 			replacePolymorphicTaxLiabilites(admAuth);
 			replacePolymorphicTaxDeclarations(admAuth);
+			replacePolymorphicRelationsBetweenParties(admAuth);
 			return new PartyJsonContainer(admAuth);
 		}
 	}
@@ -212,6 +219,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(OtherCommunity otherCommunity) {
 			replacePolymorphicTaxLiabilites(otherCommunity);
 			replacePolymorphicTaxDeclarations(otherCommunity);
+			replacePolymorphicRelationsBetweenParties(otherCommunity);
 			return new PartyJsonContainer(otherCommunity);
 		}
 	}
@@ -221,6 +229,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(Establishment establishment) {
 			replacePolymorphicTaxLiabilites(establishment);
 			replacePolymorphicTaxDeclarations(establishment);
+			replacePolymorphicRelationsBetweenParties(establishment);
 			return new PartyJsonContainer(establishment);
 		}
 	}
@@ -246,6 +255,15 @@ public class PartyJsonContainer {
 		if (tds != null) {
 			for (int i = 0 ; i < tds.size() ; ++ i) {
 				tds.set(i, JsonTaxDeclarationHelper.jsonEquivalentOf(tds.get(i)));
+			}
+		}
+	}
+
+	private static void replacePolymorphicRelationsBetweenParties(Party party) {
+		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
+		if (relations != null) {
+			for (int i = 0 ; i < relations.size() ; ++ i) {
+				relations.set(i, JsonRelationBetweenPartiesHelper.jsonEquivalentOf(relations.get(i)));
 			}
 		}
 	}

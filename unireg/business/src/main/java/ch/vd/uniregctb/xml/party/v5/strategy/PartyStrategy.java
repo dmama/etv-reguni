@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.xml.party.v5.strategy;
 
 import java.util.Collections;
-import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +18,32 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.address.v2.Address;
 import ch.vd.unireg.xml.party.address.v2.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v2.AddressType;
-import ch.vd.unireg.xml.party.relation.v3.RelationBetweenParties;
+import ch.vd.unireg.xml.party.relation.v4.Child;
+import ch.vd.unireg.xml.party.relation.v4.Parent;
+import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v3.TaxResidence;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.AdministrationEntreprise;
+import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.ConseilLegal;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.ScissionEntreprise;
+import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TransfertPatrimoine;
+import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.xml.Context;
@@ -241,51 +260,364 @@ public abstract class PartyStrategy<T extends Party> {
 		copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
 	}
 
-	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE,
-	                                                                                                                    TypeRapportEntreTiers.PARENTE,
-	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
-	                                                                                                                    TypeRapportEntreTiers.MANDAT,
-	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES,
-	                                                                                                                    TypeRapportEntreTiers.SCISSION_ENTREPRISE,
-	                                                                                                                    TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
-	                                                                                                                    TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
-	                                                                                                                    TypeRapportEntreTiers.SOCIETE_DIRECTION));
+	private interface RelationFactory<T extends RapportEntreTiers> {
+		RelationBetweenParties build(T rapport, @NotNull Long otherId);
+	}
+
+	private interface PartRelatedRelationFactory<T extends RapportEntreTiers> extends RelationFactory<T> {
+		boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts);
+	}
+
+	/**
+	 * Factory qui construit une relation de filiation d'un parent vers son enfant
+	 */
+	private static final RelationFactory<Parente> CHILD_FACTORY = new PartRelatedRelationFactory<Parente>() {
+		@Override
+		public boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts) {
+			return parts != null && parts.contains(PartyPart.CHILDREN) && source instanceof PersonnePhysique;
+		}
+
+		@Override
+		public RelationBetweenParties build(Parente rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newChild(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de filiation d'un enfant vers son parent
+	 */
+	private static final RelationFactory<Parente> PARENT_FACTORY = new PartRelatedRelationFactory<Parente>() {
+		@Override
+		public boolean isExposed(Tiers source, @Nullable Set<PartyPart> parts) {
+			return parts != null && parts.contains(PartyPart.PARENTS) && source instanceof PersonnePhysique;
+		}
+
+		@Override
+		public RelationBetweenParties build(Parente rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newParent(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de fusion d'entreprise vers l'entreprise absorbée
+	 */
+	private static final RelationFactory<FusionEntreprises> ABSORBED_FACTORY = new RelationFactory<FusionEntreprises>() {
+		@Override
+		public RelationBetweenParties build(FusionEntreprises rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newAbsorbed(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de fusion d'entreprise vers l'entreprise absorbante
+	 */
+	private static final RelationFactory<FusionEntreprises> ABSORBING_FACTORY = new RelationFactory<FusionEntreprises>() {
+		@Override
+		public RelationBetweenParties build(FusionEntreprises rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newAbsorbing(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation entre un contribuable et un établissement
+	 */
+	private static final RelationFactory<ActiviteEconomique> ECONOMIC_ACTIVITY_FACTORY = new RelationFactory<ActiviteEconomique>() {
+		@Override
+		public RelationBetweenParties build(ActiviteEconomique rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newEconomicActivite(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "annule et remplace" vers le remplacé
+	 */
+	private static final RelationFactory<AnnuleEtRemplace> REPLACED_FACTORY = new RelationFactory<AnnuleEtRemplace>() {
+		@Override
+		public RelationBetweenParties build(AnnuleEtRemplace rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newReplaced(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "annule et remplace" vers le remplaçant
+	 */
+	private static final RelationFactory<AnnuleEtRemplace> REPLACED_BY_FACTORY = new RelationFactory<AnnuleEtRemplace>() {
+		@Override
+		public RelationBetweenParties build(AnnuleEtRemplace rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newReplacedBy(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "appartenance ménage"
+	 */
+	private static final RelationFactory<AppartenanceMenage> HOUSEHOLD_MEMBER_FACTORY = new RelationFactory<AppartenanceMenage>() {
+		@Override
+		public RelationBetweenParties build(AppartenanceMenage rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newHouseholdMember(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "conseil légal"
+	 */
+	private static final RelationFactory<ConseilLegal> LEGAL_ADVISER_FACTORY = new RelationFactory<ConseilLegal>() {
+		@Override
+		public RelationBetweenParties build(ConseilLegal rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newLegalAdviser(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "curatelle"
+	 */
+	private static final RelationFactory<Curatelle> WELFARE_ADVOCATE_FACTORY = new RelationFactory<Curatelle>() {
+		@Override
+		public RelationBetweenParties build(Curatelle rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newWelfareAdvocate(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "prestation imposable"
+	 */
+	private static final RelationFactory<RapportPrestationImposable> TAXABLE_REVENUE_FACTORY = new RelationFactory<RapportPrestationImposable>() {
+		@Override
+		public RelationBetweenParties build(RapportPrestationImposable rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newTaxableRevenue(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "représentation conventionnelle"
+	 */
+	private static final RelationFactory<RepresentationConventionnelle> REPRESENTATIVE_FACTORY = new RelationFactory<RepresentationConventionnelle>() {
+		@Override
+		public RelationBetweenParties build(RepresentationConventionnelle rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newRepresentative(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de type "tutelle"
+	 */
+	private static final RelationFactory<Tutelle> GUARDIAN_FACTORY = new RelationFactory<Tutelle>() {
+		@Override
+		public RelationBetweenParties build(Tutelle rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newGuardian(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de scission d'entreprise vers l'entreprise avant scission
+	 */
+	private static final RelationFactory<ScissionEntreprise> BEFORE_SPLIT_FACTORY = new RelationFactory<ScissionEntreprise>() {
+		@Override
+		public RelationBetweenParties build(ScissionEntreprise rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newBeforeSplit(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de scission d'entreprise vers l'entreprise après scission
+	 */
+	private static final RelationFactory<ScissionEntreprise> AFTER_SPLIT_FACTORY = new RelationFactory<ScissionEntreprise>() {
+		@Override
+		public RelationBetweenParties build(ScissionEntreprise rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newAfterSplit(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de transfert de patrimoine vers l'entreprise émettrice
+	 */
+	private static final RelationFactory<TransfertPatrimoine> WEALTH_TRANSFER_ORIGINATOR_FACTORY = new RelationFactory<TransfertPatrimoine>() {
+		@Override
+		public RelationBetweenParties build(TransfertPatrimoine rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newWealthTransferOriginator(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de transfert de patrimoine vers l'entreprise réceptrice
+	 */
+	private static final RelationFactory<TransfertPatrimoine> WEALTH_TRANSFER_RECIPIENT_FACTORY = new RelationFactory<TransfertPatrimoine>() {
+		@Override
+		public RelationBetweenParties build(TransfertPatrimoine rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newWealthTransferRecipient(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de contact impôt source (entre un débiteur IS et son contribuable)
+	 */
+	private static final RelationFactory<ContactImpotSource> WITHHOLDING_TAX_CONTACT_FACTORY = new RelationFactory<ContactImpotSource>() {
+		@Override
+		public RelationBetweenParties build(ContactImpotSource rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newWithholdingTaxContact(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation d'administration d'entreprise (entre une entreprise - société immobilière seulement ? - et son/ses
+	 * administrateurs (= personnes physiques)
+	 */
+	private static final RelationFactory<AdministrationEntreprise> ADMINISTRATION_FACTORY = new RelationFactory<AdministrationEntreprise>() {
+		@Override
+		public RelationBetweenParties build(AdministrationEntreprise rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newAdministration(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de société de direction (vers la société de direction)
+	 */
+	private static final RelationFactory<SocieteDirection> MANAGEMENT_COMPANY_FACTORY = new RelationFactory<SocieteDirection>() {
+		@Override
+		public RelationBetweenParties build(SocieteDirection rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newManagementCompany(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation de société de direction (vers le fonds de placement)
+	 */
+	private static final RelationFactory<SocieteDirection> MANAGED_INVESTMENT_FUND_FACTORY = new RelationFactory<SocieteDirection>() {
+		@Override
+		public RelationBetweenParties build(SocieteDirection rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newManagedInvestmentFund(rapport, otherId.intValue());
+		}
+	};
+
+	private static final Map<RelationFactoryKey, RelationFactory<?>> RELATION_FACTORIES = buildRelationFactories();
+
+	private static Map<RelationFactoryKey, RelationFactory<?>> buildRelationFactories() {
+		final Map<RelationFactoryKey, RelationFactory<?>> map = new HashMap<>(SourceRapportEntreTiers.values().length * TypeRapportEntreTiers.values().length);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, SourceRapportEntreTiers.OBJET), ECONOMIC_ACTIVITY_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, SourceRapportEntreTiers.SUJET), ECONOMIC_ACTIVITY_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.OBJET), ADMINISTRATION_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.SUJET), ADMINISTRATION_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, SourceRapportEntreTiers.OBJET), REPLACED_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, SourceRapportEntreTiers.SUJET), REPLACED_BY_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, SourceRapportEntreTiers.OBJET), HOUSEHOLD_MEMBER_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, SourceRapportEntreTiers.SUJET), HOUSEHOLD_MEMBER_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.OBJET), null);   // pas exposé par le passé (???)
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.SUJET), null);   // pas exposé par le passé (???)
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceRapportEntreTiers.OBJET), null);          // on n'expose que le lien pupille -> conseiller
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceRapportEntreTiers.SUJET), LEGAL_ADVISER_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, SourceRapportEntreTiers.OBJET), WITHHOLDING_TAX_CONTACT_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, SourceRapportEntreTiers.SUJET), WITHHOLDING_TAX_CONTACT_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CURATELLE, SourceRapportEntreTiers.OBJET), null);              // on n'expose que le lien pupille -> curateur
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CURATELLE, SourceRapportEntreTiers.SUJET), WELFARE_ADVOCATE_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.FUSION_ENTREPRISES, SourceRapportEntreTiers.OBJET), ABSORBED_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.FUSION_ENTREPRISES, SourceRapportEntreTiers.SUJET), ABSORBING_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.MANDAT, SourceRapportEntreTiers.OBJET), null);     // on n'expose que le lien mandant -> mandataire
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.MANDAT, SourceRapportEntreTiers.SUJET), null);     // sera exposé sous une forme plus complète (avec adresse...)
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PARENTE, SourceRapportEntreTiers.OBJET), CHILD_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PARENTE, SourceRapportEntreTiers.SUJET), PARENT_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PRESTATION_IMPOSABLE, SourceRapportEntreTiers.OBJET), TAXABLE_REVENUE_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PRESTATION_IMPOSABLE, SourceRapportEntreTiers.SUJET), TAXABLE_REVENUE_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.REPRESENTATION, SourceRapportEntreTiers.OBJET), null);         // on n'expose que le lien représenté -> représentant
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.REPRESENTATION, SourceRapportEntreTiers.SUJET), REPRESENTATIVE_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, SourceRapportEntreTiers.OBJET), BEFORE_SPLIT_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, SourceRapportEntreTiers.SUJET), AFTER_SPLIT_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.OBJET), MANAGEMENT_COMPANY_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.SUJET), MANAGED_INVESTMENT_FUND_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, SourceRapportEntreTiers.OBJET), WEALTH_TRANSFER_ORIGINATOR_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, SourceRapportEntreTiers.SUJET), WEALTH_TRANSFER_RECIPIENT_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TUTELLE, SourceRapportEntreTiers.OBJET), null);                // on n'expose que le lien pupille -> tuteur
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TUTELLE, SourceRapportEntreTiers.SUJET), GUARDIAN_FACTORY);
+		return map;
+	}
+
+	private enum SourceRapportEntreTiers {
+		SUJET,
+		OBJET
+	}
+
+	private static class RelationFactoryKey {
+		private final TypeRapportEntreTiers type;
+		private final SourceRapportEntreTiers source;
+
+		public RelationFactoryKey(@NotNull TypeRapportEntreTiers type, @NotNull SourceRapportEntreTiers source) {
+			this.type = type;
+			this.source = source;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final RelationFactoryKey that = (RelationFactoryKey) o;
+			return type == that.type && source == that.source;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = type.hashCode();
+			result = 31 * result + source.hashCode();
+			return result;
+		}
+	}
+
+	/**
+	 * <strong>Attention : ne doit être appelé que pour une clé dont on sait (par construction, par exemple) qu'elle pointe vers une factory non-nulle</strong>
+	 * @param key la clé en question
+	 * @param rapport le rapport entre tiers à convertir
+	 * @param otherId l'identifiant du tiers à l'autre bout du lien
+	 * @param <T> le type de rapport entre tiers à convertir
+	 * @return une instance de {@link RelationBetweenParties} correspondant au lien à convertir
+	 * @throws NullPointerException si la clé n'a pas de factory non-nulle associée
+	 */
+	private static <T extends RapportEntreTiers> RelationBetweenParties buildRelation(RelationFactoryKey key, T rapport, Long otherId) {
+		//noinspection unchecked
+		final RelationFactory<? super T> factory = (RelationFactory<? super T>) RELATION_FACTORIES.get(key);
+		return factory.build(rapport, otherId);
+	}
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
-		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
+
+		final boolean all = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
+
+		// on passe d'abord en revue toutes les factories pour savoir si une au moins aurait quelque chose à sortir
+		final Set<RelationFactoryKey> activeKeys = new HashSet<>(RELATION_FACTORIES.size());
+		for (Map.Entry<RelationFactoryKey, RelationFactory<?>> entry : RELATION_FACTORIES.entrySet()) {
+			final RelationFactory<?> factory = entry.getValue();
+			if (factory != null) {
+				final boolean exposed;
+				if (factory instanceof PartRelatedRelationFactory) {
+					exposed = ((PartRelatedRelationFactory<?>) factory).isExposed(right, parts);
+				}
+				else {
+					exposed = all;
+				}
+
+				// on conserve les clés de toutes les factories qui pensent avoir quelque chose à dire
+				if (exposed) {
+					activeKeys.add(entry.getKey());
+				}
+			}
+		}
+
+		// les parts et le tiers sont cohérents avec une donnée exposée -> on regarde de plus près
+		if (!activeKeys.isEmpty()) {
+
 			// Ajoute les rapports dont le tiers est le sujet
 			for (RapportEntreTiers rapport : right.getRapportsSujet()) {
-				if (EXPOSED_RELATIONS_BETWEEN_PARTIES.contains(rapport.getType())) {
-					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getObjetId()));
+				final RelationFactoryKey factoryKey = new RelationFactoryKey(rapport.getType(), SourceRapportEntreTiers.SUJET);
+				if (activeKeys.contains(factoryKey)) {
+					final RelationBetweenParties relation = buildRelation(factoryKey, rapport, rapport.getObjetId());
+					tiers.getRelationsBetweenParties().add(relation);
 				}
 			}
 
 			// Ajoute les rapports dont le tiers est l'objet
 			for (RapportEntreTiers rapport : right.getRapportsObjet()) {
-				if (EXPOSED_RELATIONS_BETWEEN_PARTIES.contains(rapport.getType())) {
-					tiers.getRelationsBetweenParties().add(RelationBetweenPartiesBuilder.newRelationBetweenParties(rapport, rapport.getSujetId()));
-				}
-			}
-		}
-
-		if (parts.contains(PartyPart.CHILDREN) && right instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) right;
-			final List<Parente> enfants = context.tiersService.getEnfants(pp, false);
-			for (Parente enfant : enfants) {
-				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsChild(enfant);
-				if (rbp != null) {
-					tiers.getRelationsBetweenParties().add(rbp);
-				}
-			}
-		}
-
-		if (parts.contains(PartyPart.PARENTS) && right instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) right;
-			final List<Parente> parents = context.tiersService.getParents(pp, false);
-			for (Parente parent : parents) {
-				final RelationBetweenParties rbp = RelationBetweenPartiesBuilder.newFiliationTowardsParent(parent);
-				if (rbp != null) {
-					tiers.getRelationsBetweenParties().add(rbp);
+				final RelationFactoryKey factoryKey = new RelationFactoryKey(rapport.getType(), SourceRapportEntreTiers.OBJET);
+				if (activeKeys.contains(factoryKey)) {
+					final RelationBetweenParties relation = buildRelation(factoryKey, rapport, rapport.getSujetId());
+					tiers.getRelationsBetweenParties().add(relation);
 				}
 			}
 		}
@@ -306,21 +638,18 @@ public abstract class PartyStrategy<T extends Party> {
 			else {
 				// autrement, on ajoute exclusivement ce qui a été demandé
 				for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
-					switch (relation.getType()) {
-					case CHILD:
+					if (relation instanceof Child) {
 						if (wantChildren) {
 							to.getRelationsBetweenParties().add(relation);
 						}
-						break;
-					case PARENT:
+					}
+					else if (relation instanceof Parent) {
 						if (wantParents) {
 							to.getRelationsBetweenParties().add(relation);
 						}
-						break;
-					default:
-						if (wantRelations) {
-							to.getRelationsBetweenParties().add(relation);
-						}
+					}
+					else if (wantRelations) {
+						to.getRelationsBetweenParties().add(relation);
 					}
 				}
 			}
@@ -334,21 +663,18 @@ public abstract class PartyStrategy<T extends Party> {
 				// la source contient tout (par définition) et on demande une partie seulement => on copie ce qui a été demandé
 				to.getRelationsBetweenParties().clear();
 				for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
-					switch (relation.getType()) {
-					case CHILD:
+					if (relation instanceof Child) {
 						if (wantChildren) {
 							to.getRelationsBetweenParties().add(relation);
 						}
-						break;
-					case PARENT:
+					}
+					else if (relation instanceof Parent) {
 						if (wantParents) {
 							to.getRelationsBetweenParties().add(relation);
 						}
-						break;
-					default:
-						if (wantRelations) {
-							to.getRelationsBetweenParties().add(relation);
-						}
+					}
+					else if (wantRelations) {
+						to.getRelationsBetweenParties().add(relation);
 					}
 				}
 			}
