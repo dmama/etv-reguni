@@ -32,10 +32,12 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-2.xsd" uri="event/party/party-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-3.xsd" uri="event/party/party-request-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-4.xsd" uri="event/party/party-request-4.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-5.xsd" uri="event/party/party-request-5.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd" uri="event/party/party-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-2.xsd" uri="event/party/party-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-3.xsd" uri="event/party/party-response-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-4.xsd" uri="event/party/party-response-4.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-5.xsd" uri="event/party/party-response-5.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd" uri="event/party/create-nonresident-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-2.xsd" uri="event/party/create-nonresident-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd" uri="event/party/create-nonresident-response-1.xsd"/>
