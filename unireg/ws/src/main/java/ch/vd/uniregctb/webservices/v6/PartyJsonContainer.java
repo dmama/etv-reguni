@@ -185,6 +185,7 @@ public class PartyJsonContainer {
 	private static final class DebtorContainerBuilder implements ContainerBuilder<Debtor> {
 		@Override
 		public PartyJsonContainer build(Debtor debtor) {
+			replacePolymorphicTaxDeclarations(debtor);
 			return new PartyJsonContainer(debtor);
 		}
 	}

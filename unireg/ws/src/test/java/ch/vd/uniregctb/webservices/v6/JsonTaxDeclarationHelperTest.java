@@ -96,7 +96,7 @@ public class JsonTaxDeclarationHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testMutationWithNulls() throws Exception {
-		assertNull(JsonTaxLiabilityHelper.jsonEquivalentOf(null));
+		assertNull(JsonTaxDeclarationHelper.jsonEquivalentOf(null));
 		doTest(buildOrdinaryTaxDeclaration(0, null, null, null, null, null, null, 0, null, 0, null), TaxDeclarationType.ORDINARY_TAX_DECLARATION);
 		doTest(buildWithholdingTaxDeclaration(0, null, null, null, null, null, null, null, null), TaxDeclarationType.WITHHOLDING_TAX_DECLARATION);
 		doTest(buildPartnershipForm(0, null, null, null, null, null, null), TaxDeclarationType.PARTNERSHIP_FORM);
