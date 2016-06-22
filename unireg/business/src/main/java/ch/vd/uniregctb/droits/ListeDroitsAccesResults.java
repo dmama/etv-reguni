@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;

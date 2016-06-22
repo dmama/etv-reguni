@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Contrôleur qui expose des données du service sécurité dans un format Json (utilisé ensuite dans le mécanisme d'autocompletion).
@@ -100,8 +100,8 @@ public class AutoCompleteSecurityController {
 		final List<Item> list = new ArrayList<>();
 
 		if (categories.contains(Category.USER)) {
-			final List<EnumTypeCollectivite> colls = Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD,
-					EnumTypeCollectivite.SIGLE_ACIPP, EnumTypeCollectivite.SIGLE_CIR, EnumTypeCollectivite.SIGLE_S_ACI);
+			final List<TypeCollectivite> colls = Arrays.asList(TypeCollectivite.SIGLE_ACI, TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD,
+					TypeCollectivite.SIGLE_ACIPP, TypeCollectivite.SIGLE_CIR,TypeCollectivite.SIGLE_S_ACI);
 			final List<Operateur> operateurs = serviceSecuriteService.getUtilisateurs(colls);
 			if (operateurs != null) {
 				for (Operateur operateur : operateurs) {

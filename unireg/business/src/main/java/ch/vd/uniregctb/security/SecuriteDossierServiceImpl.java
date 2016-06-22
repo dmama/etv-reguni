@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -24,6 +23,7 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;

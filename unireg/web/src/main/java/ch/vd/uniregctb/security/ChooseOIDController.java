@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.UrlEncodedQueryString;
@@ -71,8 +71,8 @@ public class ChooseOIDController {
 				@Override
 				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
 					// [SIFISC-4003] Les collectivités actives sont affichées en premier
-					final boolean active1 = IS_ACTIVE.equals(o1.getCodeActivite());
-					final boolean active2 = IS_ACTIVE.equals(o2.getCodeActivite());
+					final boolean active1 = o1.isValide();
+					final boolean active2 = o2.isValide();
 					if (active1 && !active2) {
 						return -1;
 					}

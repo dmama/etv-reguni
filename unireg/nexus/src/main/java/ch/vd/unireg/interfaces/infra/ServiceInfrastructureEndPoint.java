@@ -5,7 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
@@ -24,6 +23,7 @@ import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.load.MethodCallDescriptor;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, DetailedLoadMonitorable {
 
@@ -245,7 +245,7 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getCollectivitesAdministratives", "typesCollectivites", typesCollectivite));
 		try {
 			return target.getCollectivitesAdministratives(typesCollectivite);

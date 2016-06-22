@@ -3,11 +3,11 @@ package ch.vd.uniregctb.interfaces.service;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.securite.model.Operateur;
 import ch.vd.securite.service.SecuriteException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 public interface ServiceSecuriteService {
 
@@ -48,7 +48,7 @@ public interface ServiceSecuriteService {
 	 * @param typesCollectivite
 	 * @return la liste des utilisateurs
 	 */
-	List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) ;
+	List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) ;
 
     /**
 	 * Retourne l'operateur pour l'indivu passé en paramètre.

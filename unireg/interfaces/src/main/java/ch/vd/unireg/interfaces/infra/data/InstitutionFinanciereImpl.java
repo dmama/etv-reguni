@@ -26,6 +26,17 @@ public class InstitutionFinanciereImpl implements InstitutionFinanciere, Seriali
 		this.nomInstitutionFinanciere = target.getNomInstitutionFinanciere();
 	}
 
+	public InstitutionFinanciereImpl(ch.vd.infrastructure.registre.common.model.rest.InstitutionFinanciere target) {
+		this.adresse1 = target.getAdresse1();
+		this.adresse2 = target.getAdresse2();
+		this.adresse3 = target.getAdresse3();
+		this.code = target.getCode();
+		this.noClearing = target.getNoClearing();
+		this.noCompte = target.getNoCompte();
+		this.noIdentificationDTA = target.getNoIdentificationDTA();
+		this.nomInstitutionFinanciere = target.getNomInstitutionFinanciere();
+	}
+
 	public static InstitutionFinanciere get(ch.vd.registre.common.model.InstitutionFinanciere institutionFinanciere) {
 		if (institutionFinanciere == null) {
 			return null;
@@ -76,5 +87,12 @@ public class InstitutionFinanciereImpl implements InstitutionFinanciere, Seriali
 	@Override
 	public String toString() {
 		return String.format("InstitutionFinanciereImpl{code=%d, nom='%s'}", code, nomInstitutionFinanciere);
+	}
+
+	public static InstitutionFinanciere get(ch.vd.infrastructure.registre.common.model.rest.InstitutionFinanciere institutionFinanciere) {
+		if (institutionFinanciere == null) {
+			return null;
+		}
+		return new InstitutionFinanciereImpl(institutionFinanciere);
 	}
 }

@@ -3,10 +3,10 @@ package ch.vd.uniregctb.general.manager;
 import java.util.Iterator;
 import java.util.List;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
-import ch.vd.securite.model.Operateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 
 public class UtilisateurManagerImpl implements UtilisateurManager {
 

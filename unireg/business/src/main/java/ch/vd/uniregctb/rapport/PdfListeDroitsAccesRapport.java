@@ -9,11 +9,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.securite.model.Operateur;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de listing des droits d'accès

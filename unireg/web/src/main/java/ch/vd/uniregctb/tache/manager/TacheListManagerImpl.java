@@ -218,7 +218,7 @@ public class TacheListManagerImpl implements TacheListManager {
 
 			if (!SecurityDebugConfig.isIamDebug()) {
 
-				List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivites = null;
+				List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative> collectivites = null;
 				try {
 					collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 				}
@@ -229,7 +229,7 @@ public class TacheListManagerImpl implements TacheListManager {
 
 				List<Integer> oids = new ArrayList<>(collectivites.size());
 
-				for (ch.vd.infrastructure.model.CollectiviteAdministrative c:collectivites) {
+				for (ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c:collectivites) {
 					if (c.isACI()) {
 						// les personnes de l'ACI voient toutes les tâches sans restriction
 						oids = null;

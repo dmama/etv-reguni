@@ -21,7 +21,6 @@ import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -53,6 +52,7 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.type.TypeCollectivite;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientException;
 
@@ -420,7 +420,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");
 	}
 

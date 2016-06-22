@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
@@ -24,6 +23,7 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
@@ -117,7 +117,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();

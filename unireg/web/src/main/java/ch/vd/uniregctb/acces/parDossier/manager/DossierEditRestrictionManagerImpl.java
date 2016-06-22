@@ -8,14 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.securite.model.Operateur;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
 import ch.vd.uniregctb.tiers.DroitAcces;
@@ -93,8 +94,8 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 
 				String officeImpot = null;
 				try {
-					final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
-					for (ch.vd.infrastructure.model.CollectiviteAdministrative collectiviteAdministrative : collectivitesAdministrative) {
+					final List<CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
+					for (CollectiviteAdministrative collectiviteAdministrative : collectivitesAdministrative) {
 						if (officeImpot != null) {
 							officeImpot = officeImpot + ", " + collectiviteAdministrative.getNomCourt();
 						}

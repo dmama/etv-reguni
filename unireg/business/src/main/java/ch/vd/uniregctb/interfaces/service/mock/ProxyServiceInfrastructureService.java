@@ -6,7 +6,6 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -28,6 +27,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Proxy du service host-infrastructure à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier
@@ -293,7 +293,7 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
 		return target.getCollectivitesAdministratives();
 	}

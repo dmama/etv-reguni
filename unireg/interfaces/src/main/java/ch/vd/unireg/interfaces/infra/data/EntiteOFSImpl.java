@@ -27,6 +27,13 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 		this.sigleOFS = target.getSigleOFS();
 	}
 
+	public EntiteOFSImpl(ch.vd.infrastructure.model.rest.EntiteOFS target) {
+		this.noOFS = target.getNoOFS();
+		this.nomCourt = target.getNomMinuscule();
+		this.nomOfficiel = target.getNomMinuscule();
+		this.sigleOFS = target.getSigleOFS();
+	}
+
 	@Override
 	public int getNoOFS() {
 		return noOFS;

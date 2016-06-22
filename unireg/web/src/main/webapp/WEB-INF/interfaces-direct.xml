@@ -113,9 +113,19 @@
 
 	<!-- Service infra -->
 
-	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
+	<bean id="serviceInfrastructureServiceHostEjb" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
 		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
 		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
+	</bean>
+
+	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
+		<property name="client" ref="serviceInfrastructureClient" />
+	</bean>
+	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
+
+		<property name="ejbClient" ref="serviceInfrastructureServiceHostEjb"/>
+		<property name="restClient" ref="serviceInfrastructureServiceHostRest"/>
+		<property name="modeRest" value="${extprop.host-interfaces.webservice.mode.rest}"/>
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
@@ -124,7 +134,7 @@
 	</bean>
 
 	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
-		<property name="hostService" ref="serviceInfrastructureServiceHost" />
+		<property name="hostService" ref="serviceInfrastructureHostMarshaller" />
 		<property name="fidorService" ref="serviceInfrastructureFidor" />
 	</bean>
 
@@ -143,5 +153,19 @@
 		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
+
+	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
+		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
+		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+
+	</bean>
+
+	<bean id="serviceInfrastructureClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceInfrastructureClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="serviceInfrastructureClientRaw"/>
+	</bean>
+
+	<alias name="serviceInfrastructureClientTracing" alias="serviceInfrastructureClient"/>
 
 </beans>

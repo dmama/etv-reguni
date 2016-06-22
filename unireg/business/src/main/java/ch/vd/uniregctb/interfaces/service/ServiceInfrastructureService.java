@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -23,6 +22,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 public interface ServiceInfrastructureService {
 
@@ -183,7 +183,7 @@ public interface ServiceInfrastructureService {
 	 * @return la liste des collectivites administratives du canton de Vaud du type spécifié
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException;
+	List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException;
 
 	/**
 	 * Permet de retourner une localite a partir d'un npa

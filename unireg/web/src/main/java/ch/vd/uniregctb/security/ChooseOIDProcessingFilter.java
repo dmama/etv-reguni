@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.URLHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;

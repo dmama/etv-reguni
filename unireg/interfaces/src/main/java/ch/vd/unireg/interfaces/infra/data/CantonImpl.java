@@ -21,8 +21,18 @@ public class CantonImpl extends EntiteOFSImpl implements Canton, Serializable {
 		}
 		return new CantonImpl(target);
 	}
+	public static CantonImpl get(ch.vd.infrastructure.model.rest.Canton target) {
+		if (target == null) {
+			return null;
+		}
+		return new CantonImpl(target);
+	}
 
 	private CantonImpl(ch.vd.infrastructure.model.Canton target) {
+		super(target);
+	}
+
+	private CantonImpl(ch.vd.infrastructure.model.rest.Canton target) {
 		super(target);
 	}
 

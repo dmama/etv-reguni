@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,11 +11,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -25,9 +21,11 @@ import ch.vd.uniregctb.cache.KeyValueDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.type.TypeCollectivite;
 import ch.vd.uniregctb.utils.LogLevel;
 
 public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, ServiceSecuriteService, InitializingBean, DisposableBean {
@@ -42,13 +40,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 				return String.format("CollAdm{no=%d}", coladm.getNoColAdm());
 			}
 		});
-		factory.addSpecificRenderer(ProfilOperateur.class, new StringRenderer<ProfilOperateur>() {
-			@Override
-			public String toString(ProfilOperateur profil) {
-				final String procedures = Arrays.toString(profil.getProcedures().toArray());
-				return String.format("{%s (%s %s), coladm=%d, procs=%s}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom(), profil.getCollectivite().getNoColAdm(), procedures);
-			}
-		});
+
 		factory.addSpecificRenderer(IfoSecProfil.class, new StringRenderer<IfoSecProfil>() {
 			@Override
 			public String toString(IfoSecProfil profil) {
@@ -255,9 +247,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	private static class KeyGetUtilisateursTypesCollectivite {
 
-		private final Set<EnumTypeCollectivite> typesCollectivite;
+		private final Set<TypeCollectivite> typesCollectivite;
 
-		public KeyGetUtilisateursTypesCollectivite(List<EnumTypeCollectivite> typesCollectivite) {
+		public KeyGetUtilisateursTypesCollectivite(List<TypeCollectivite> typesCollectivite) {
 			this.typesCollectivite = new HashSet<>(typesCollectivite);
 		}
 
@@ -297,7 +289,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
 
 		final  List<Operateur>  resultat;
 		final KeyGetUtilisateursTypesCollectivite key = new KeyGetUtilisateursTypesCollectivite(typesCollectivite);

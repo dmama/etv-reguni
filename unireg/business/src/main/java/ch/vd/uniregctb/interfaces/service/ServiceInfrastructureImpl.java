@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -38,6 +37,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
@@ -721,7 +721,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		return rawService.getCollectivitesAdministratives(typesCollectivite);
 	}
 

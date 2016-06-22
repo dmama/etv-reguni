@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.securite.model.Operateur;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -310,9 +310,9 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			final NomPrenom nomPrenomOperateur = new NomPrenom(operateur.getNom(), operateur.getPrenom());
 			nomUtilisateur = nomPrenomOperateur.getNomPrenom();
 			visaOperateur = operateur.getCode();
-			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
+			final List<CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
 			if (collectivites != null && collectivites.size() > 0) {
-				final ch.vd.infrastructure.model.CollectiviteAdministrative collectivite = collectivites.get(0);
+				final CollectiviteAdministrative collectivite = collectivites.get(0);
 				final IfoSecProfil profileUtilisateur = serviceSecuriteService.getProfileUtilisateur(visaOperateur, collectivite.getNoColAdm());
 				if (profileUtilisateur != null && !StringUtils.isBlank(profileUtilisateur.getNoTelephone())) {
 					noTelephone = String.format("%s (%s)", profileUtilisateur.getNoTelephone().trim(), collectivite.getNomCourt());

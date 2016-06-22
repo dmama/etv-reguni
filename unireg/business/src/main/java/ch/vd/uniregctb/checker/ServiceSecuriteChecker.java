@@ -2,8 +2,8 @@ package ch.vd.uniregctb.checker;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 
 public class ServiceSecuriteChecker implements ServiceChecker {
 

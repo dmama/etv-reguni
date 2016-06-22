@@ -44,6 +44,7 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.JvmVersionHelper;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * @author Jean-Eric CUENDET
@@ -409,12 +410,18 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
+		final EnumTypeCollectivite[] tabTypesCollectivite = new EnumTypeCollectivite[typesCollectivite.size()];
 		try {
-			final EnumTypeCollectivite[] tabTypesCollectivite = typesCollectivite.toArray(new EnumTypeCollectivite[typesCollectivite.size()]);
+			int i = 0;
+			for (TypeCollectivite typeCollectivite : typesCollectivite) {
+				tabTypesCollectivite[i] = EnumTypeCollectivite.getEnum(typeCollectivite.getCode());
+				i++;
+			}
+
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(tabTypesCollectivite);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
 				if (isValid(c.getDateFinValidite())) {

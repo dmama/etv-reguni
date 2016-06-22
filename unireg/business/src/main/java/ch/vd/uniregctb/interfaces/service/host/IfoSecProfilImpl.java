@@ -44,6 +44,27 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 		this.visaOperateur = profile.getVisaOperateur();
 	}
 
+	public IfoSecProfilImpl(ch.vd.securite.model.rest.ProfilOperateur profile) {
+		this.imprimante = profile.getImprimante();
+		this.nom = profile.getNom();
+		this.noTelephone = profile.getNoTelephone();
+		this.prenom = profile.getPrenom();
+		this.procedures = initProcedures(profile.getProcedures());
+		this.titre = profile.getTitre();
+		this.visaOperateur = profile.getVisaOperateur();
+	}
+
+	private List<IfoSecProcedure> initProcedures(ch.vd.securite.model.rest.ProfilOperateur.Procedures procedures) {
+		if (procedures == null) {
+			return null;
+		}
+		final List<IfoSecProcedure> list = new ArrayList<>();
+		for (ch.vd.securite.model.rest.Procedure p : procedures.getProcedure()) {
+			list.add(IfoSecProcedureImpl.get(p));
+		}
+		return list;
+	}
+
 	private static List<IfoSecProcedure> initProcedures(List<?> procedures) {
 		if (procedures == null) {
 			return null;
@@ -121,6 +142,14 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 	public static IfoSecProfil get(ProfilOperateur profile) {
 		if (profile == null) {
 		return null;
+		}
+
+		return new IfoSecProfilImpl(profile);
+	}
+
+	public static IfoSecProfil get(ch.vd.securite.model.rest.ProfilOperateur profile) {
+		if (profile == null) {
+			return null;
 		}
 
 		return new IfoSecProfilImpl(profile);

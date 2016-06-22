@@ -7,10 +7,10 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.securite.model.Operateur;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;

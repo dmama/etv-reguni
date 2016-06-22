@@ -12,7 +12,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -29,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Mock du Host Infrastructure Service.
@@ -425,11 +425,11 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 
 		final Set<String> sigles = new HashSet<>();
-		for (EnumTypeCollectivite e : typesCollectivite) {
-			sigles.add(e.getName());
+		for (TypeCollectivite e : typesCollectivite) {
+			sigles.add(e.getCode());
 		}
 
 		final List<CollectiviteAdministrative> list = new ArrayList<>();

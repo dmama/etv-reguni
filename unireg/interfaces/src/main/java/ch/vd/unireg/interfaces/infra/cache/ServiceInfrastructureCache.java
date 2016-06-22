@@ -42,6 +42,7 @@ import ch.vd.uniregctb.cache.KeyValueDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.type.TypeCollectivite;
 import ch.vd.uniregctb.utils.LogLevel;
 
 @SuppressWarnings({"SimplifiableIfStatement"})
@@ -248,9 +249,9 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetCollectivitesAdministrativesByTypes {
 
-		final Set<EnumTypeCollectivite> types;
+		final Set<TypeCollectivite> types;
 
-		public KeyGetCollectivitesAdministrativesByTypes(List<EnumTypeCollectivite> types) {
+		public KeyGetCollectivitesAdministrativesByTypes(List<TypeCollectivite> types) {
 			this.types = new HashSet<>(types);
 		}
 
@@ -290,7 +291,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		final List<CollectiviteAdministrative> resultat;
 
 		final KeyGetCollectivitesAdministrativesByTypes key = new KeyGetCollectivitesAdministrativesByTypes(typesCollectivite);

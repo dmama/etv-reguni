@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -27,6 +26,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Contrôleur qui expose des données d'infrastructure dans un format Json (utilisé ensuite dans le mécanisme d'autocompletion).
@@ -211,8 +211,8 @@ public class AutoCompleteInfraController {
 
 		if (categories.contains(InfraCategory.COLLECTIVITE_ADMINISTRATIVE)) {
 			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(
-					Arrays.asList(EnumTypeCollectivite.SIGLE_ACI, EnumTypeCollectivite.SIGLE_ACIA, EnumTypeCollectivite.SIGLE_ACIFD, EnumTypeCollectivite.SIGLE_ACIPP, EnumTypeCollectivite.SIGLE_CIR,
-							EnumTypeCollectivite.SIGLE_S_ACI));
+					Arrays.asList(TypeCollectivite.SIGLE_ACI,TypeCollectivite.SIGLE_ACIA, TypeCollectivite.SIGLE_ACIFD,TypeCollectivite.SIGLE_ACIPP,TypeCollectivite.SIGLE_CIR,
+							TypeCollectivite.SIGLE_S_ACI));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
 					if (StringComparator.toLowerCaseWithoutAccent(c.getNomCourt()).startsWith(term)) {
@@ -223,7 +223,7 @@ public class AutoCompleteInfraController {
 		}
 
 		if (categories.contains(InfraCategory.JUSTICES_DE_PAIX)) {
-			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Arrays.asList(EnumTypeCollectivite.SIGLE_JPAIX));
+			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Arrays.asList(TypeCollectivite.SIGLE_JPAIX));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
 					final String nomComplet = String.format("%s %s", c.getNomComplet1(), c.getNomComplet2());

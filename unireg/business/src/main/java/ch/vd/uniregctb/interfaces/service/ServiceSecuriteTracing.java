@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.securite.model.Operateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * Implémentation qui permet de comptabiliser le temps passé dans les appels du service.
@@ -126,7 +126,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public List<Operateur> getUtilisateurs(final List<EnumTypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(final List<TypeCollectivite> typesCollectivite) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();

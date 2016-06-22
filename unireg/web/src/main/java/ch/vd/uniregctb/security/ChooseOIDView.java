@@ -2,7 +2,8 @@ package ch.vd.uniregctb.security;
 
 import java.util.List;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class ChooseOIDView {

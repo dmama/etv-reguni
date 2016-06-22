@@ -35,5 +35,19 @@
 		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
+
+	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
+		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
+		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+
+	</bean>
+
+	<bean id="serviceInfrastructureClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceInfrastructureClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="serviceInfrastructureClientRaw"/>
+	</bean>
+
+	<alias name="serviceInfrastructureClientTracing" alias="serviceInfrastructureClient"/>
 	
 </beans>

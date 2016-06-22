@@ -37,6 +37,13 @@
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
 
+	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
+		<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}" />
+		<property name="username" value="${testprop.host-interfaces.webservice.username}" />
+		<property name="password" value="${testprop.host-interfaces.webservice.password}" />
+
+	</bean>
+
 	<!-- Bean client serviceSecurite -->
 	<bean name="_serviceSecurite" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
 		<property name="jndiName" value="ejb/ch.vd.securite.service.ServiceSecurite-${host-interfaces.version-short}"/>

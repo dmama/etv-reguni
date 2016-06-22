@@ -16,6 +16,21 @@
 		</property>
 	</bean>
 
+
+	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
+		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
+		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+
+	</bean>
+
+	<bean id="serviceSecuriteClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceSecuriteClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="serviceSecuriteClientRaw"/>
+	</bean>
+
+	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
+
 	<!-- Bean client serviceSecurite -->
 	<bean name="_serviceSecurite" class="${host-interfaces.ejb-proxy-class}">
 		<property name="jndiName" value="ejb/ch.vd.securite.service.ServiceSecurite-${host-interfaces.version-short}"/>

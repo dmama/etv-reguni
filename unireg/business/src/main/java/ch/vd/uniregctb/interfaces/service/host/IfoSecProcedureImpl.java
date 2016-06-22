@@ -24,6 +24,13 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 		this.numero = p.getNumero();
 	}
 
+	public IfoSecProcedureImpl(ch.vd.securite.model.rest.Procedure p) {
+		this.code = p.getCode();
+		this.codeActivite = p.getCodeActivite();
+		this.designation = p.getDesignation();
+		this.numero = p.getNumero();
+	}
+
 	@Override
 	public String getCode() {
 		return code;
@@ -61,6 +68,13 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 	}
 
 	public static IfoSecProcedure get(Procedure p) {
+		if (p==null) {
+			return null;
+		}
+		return new IfoSecProcedureImpl(p);
+	}
+
+	public static IfoSecProcedure get(ch.vd.securite.model.rest.Procedure p) {
 		if (p==null) {
 			return null;
 		}

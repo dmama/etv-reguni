@@ -8,7 +8,6 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -27,6 +26,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw {
 
@@ -440,7 +440,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		return target.getCollectivitesAdministratives(typesCollectivite);
 	}
 

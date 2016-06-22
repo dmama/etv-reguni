@@ -5,16 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.infrastructure.model.CollectiviteAdministrative;
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.securite.model.Operateur;
-import ch.vd.uniregctb.interfaces.model.mock.MockOperateur;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.type.TypeCollectivite;
 
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 
@@ -39,7 +38,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	@Override
-	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) {
+	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
 		return null;
 	}
 
@@ -54,7 +53,9 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	protected void addOperateur(String visa, long noIndividuOperateur, Role... roles) {
-		final MockOperateur o = new MockOperateur(visa, noIndividuOperateur);
+		final Operateur o = new Operateur();
+		o.setCode(visa);
+		o.setIndividuNoTechnique(noIndividuOperateur);
 		operatorsByIndividu.put(noIndividuOperateur, o);
 		operatorsByVisa.put(visa, o);
 

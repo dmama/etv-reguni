@@ -34,7 +34,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.securite.model.Operateur;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Canton;
@@ -75,6 +74,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
