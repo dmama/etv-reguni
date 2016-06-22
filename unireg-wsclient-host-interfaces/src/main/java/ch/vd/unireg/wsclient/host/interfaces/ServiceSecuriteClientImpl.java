@@ -2,7 +2,6 @@ package ch.vd.unireg.wsclient.host.interfaces;
 
 
 import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
@@ -18,6 +17,7 @@ import ch.vd.securite.model.rest.ProfilOperateur;
 
 public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, InitializingBean {
 	private WebClientPool wcPool = new WebClientPool();
+	private String securitePath = "securite";
 	private String collectiviteUtilisateurPath = "collectiviteUtilisateur";
 	private String collectiviteUtilisateurCommunicationTierPath = "collectiviteUtilisateurCommunicationTier";
 	private String profilUtilisateurPath = "profilUtilisateur";
@@ -30,7 +30,9 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 	}
 
 	public void setBaseUrl(String baseUrl) {
-		this.wcPool.setBaseUrl(baseUrl);
+		StringBuilder s = new StringBuilder();
+		s.append(baseUrl).append("/").append(securitePath);
+		this.wcPool.setBaseUrl(s.toString());
 	}
 
 	public void setUsername(String username) {
@@ -56,7 +58,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
 			} catch (ServerWebApplicationException var7) {
-				throw new SecuriteException(var7);
+				throw new ServiceSecuriteClientException(var7);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
@@ -65,7 +67,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 		return e;
 	}
 
-	public ListeCollectiviteAdministrative getCollectivitesUtilisateurCommunicationTier(String visaOperateur) throws SecuriteException {
+	public ListeCollectiviteAdministrative getCollectivitesUtilisateurCommunicationTier(String visaOperateur) throws ServiceSecuriteClientException {
 		WebClient wc = this.wcPool.borrowClient(600000);
 
 		ListeCollectiviteAdministrative e;
@@ -76,7 +78,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
 			} catch (ServerWebApplicationException var7) {
-				throw new SecuriteException(var7);
+				throw new ServiceSecuriteClientException(var7);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
@@ -85,7 +87,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 		return e;
 	}
 
-	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws SecuriteException {
+	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) throws ServiceSecuriteClientException {
 		WebClient wc = this.wcPool.borrowClient(600000);
 
 		ProfilOperateur e;
@@ -97,7 +99,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 			try {
 				e = (ProfilOperateur)wc.get(ProfilOperateur.class);
 			} catch (ServerWebApplicationException var8) {
-				throw new SecuriteException(var8);
+				throw new ServiceSecuriteClientException(var8);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
@@ -106,21 +108,21 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 		return e;
 	}
 
-	public ListeOperateurs getOperateurs(TypeCollectivite[] types) throws SecuriteException {
+	public ListeOperateurs getOperateurs(TypeCollectivite[] types) throws ServiceSecuriteClientException {
 		WebClient wc = this.wcPool.borrowClient(600000);
-		String collectivites = Arrays.toString(types);
+		String collectivites  = ServiceHelper.extractCodeTypeCollectivite(types);;
 
 		ListeOperateurs e;
 		try {
 			wc.path(this.operateursPath);
 			if(StringUtils.isNotEmpty(collectivites)) {
-				wc.query("collectivites", new Object[]{collectivites});
+				wc.query("collectivites", collectivites);
 			}
 
 			try {
 				e = (ListeOperateurs)wc.get(ListeOperateurs.class);
 			} catch (ServerWebApplicationException var8) {
-				throw new ServiceInfrastructureClientException(var8);
+				throw new ServiceSecuriteClientException(var8);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
@@ -129,15 +131,15 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 		return e;
 	}
 
-	public Operateur getOperateur(long individuNoTechnique) throws SecuriteException {
+	public Operateur getOperateur(long individuNoTechnique) throws ServiceSecuriteClientException {
 		return this.getOperateur(individuNoTechnique, true);
 	}
 
-	public Operateur getOperateurTous(long individuNoTechnique) throws SecuriteException {
+	public Operateur getOperateurTous(long individuNoTechnique) throws ServiceSecuriteClientException {
 		return this.getOperateur(individuNoTechnique, false);
 	}
 
-	private Operateur getOperateur(long individuNoTechnique, boolean seulementActif) throws SecuriteException {
+	private Operateur getOperateur(long individuNoTechnique, boolean seulementActif) throws ServiceSecuriteClientException {
 		WebClient wc = this.wcPool.borrowClient(600000);
 
 		Operateur e;
@@ -149,7 +151,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 			try {
 				e = (Operateur)wc.get(Operateur.class);
 			} catch (ServerWebApplicationException var9) {
-				throw new ServiceInfrastructureClientException(var9);
+				throw new ServiceSecuriteClientException(var9);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
@@ -158,15 +160,15 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 		return e;
 	}
 
-	public Operateur getOperateur(String visa) throws SecuriteException {
+	public Operateur getOperateur(String visa) throws ServiceSecuriteClientException {
 		return this.getOperateur(visa, true);
 	}
 
-	public Operateur getOperateurTous(String visa) throws SecuriteException {
+	public Operateur getOperateurTous(String visa) throws ServiceSecuriteClientException {
 		return this.getOperateur(visa, false);
 	}
 
-	private Operateur getOperateur(String visa, boolean seulementActif) throws SecuriteException {
+	private Operateur getOperateur(String visa, boolean seulementActif) throws ServiceSecuriteClientException {
 		WebClient wc = this.wcPool.borrowClient(600000);
 
 		Operateur e;
@@ -178,7 +180,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 			try {
 				e = (Operateur)wc.get(Operateur.class);
 			} catch (ServerWebApplicationException var8) {
-				throw new ServiceInfrastructureClientException(var8);
+				throw new ServiceSecuriteClientException(var8);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
@@ -187,7 +189,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 		return e;
 	}
 
-	public String ping() throws SecuriteException {
+	public String ping() throws ServiceSecuriteClientException {
 		WebClient wc = this.wcPool.borrowClient('\uea60');
 
 		String var3;
@@ -203,7 +205,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 				var3 = e;
 			} catch (ServerWebApplicationException var7) {
-				throw new ServiceInfrastructureClientException(var7);
+				throw new ServiceSecuriteClientException(var7);
 			}
 		} finally {
 			this.wcPool.returnClient(wc);
