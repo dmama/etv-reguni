@@ -9,5 +9,6 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/host-interfaces/infrastructure-v1" schemaLocation="host-interfaces-infrastructure-v1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/host-interfaces/infrastructure-fiscal-v1" schemaLocation="host-interfaces-infrastructure-fiscal-v1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/host-interfaces/securite-v1" schemaLocation="host-interfaces-securite-v1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/host-interfaces/registre-common-v1" schemaLocation="host-interfaces-registre-common-v1.xsd"/>
 
 </xs:schema>

@@ -16,6 +16,14 @@
 			<namespace:prefix name="host-interfaces-common" />
 		</jxb:bindings>
 	</jxb:bindings>
+	<jxb:bindings schemaLocation="host-interfaces-registre-common-v1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.infrastructure.registre.common.model.rest" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="host-interfaces-registre-common" />
+		</jxb:bindings>
+	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="host-interfaces-infrastructure-v1.xsd">
 		<jxb:schemaBindings>

@@ -24,6 +24,7 @@
 		<module>../cyber</module>
 		<module>../rcent</module>
 		<module>../editique</module>
+		<module>../host-interfaces</module>
 	</modules>
 
 	<dependencies>
