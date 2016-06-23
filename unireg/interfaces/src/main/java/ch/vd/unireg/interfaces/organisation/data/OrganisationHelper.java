@@ -315,7 +315,7 @@ public abstract class OrganisationHelper {
 
 	@NotNull
 	public static List<EntreeJournalRC> getEntreesJournal(List<EntreeJournalRC> entrees, RegDate date) {
-		if (entrees.isEmpty()) {
+		if (entrees == null || entrees.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<EntreeJournalRC> entreesPourDate = new ArrayList<>();
