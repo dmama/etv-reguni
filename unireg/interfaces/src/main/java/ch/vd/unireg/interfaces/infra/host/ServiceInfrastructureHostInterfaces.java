@@ -12,7 +12,6 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal;
 import ch.vd.infrastructure.model.EnumPays;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -55,7 +54,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureHostInterfaces.class);
 
 	private ServiceInfrastructure serviceInfrastructure;
-	private ServiceInfrastructureFiscal serviceInfrastructureFiscal;
+
 
 	/**
 	 * Type de collectivite administrative OID
@@ -69,10 +68,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		this.serviceInfrastructure = serviceInfrastructure;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfrastructureFiscal(ServiceInfrastructureFiscal serviceInfrastructureFiscal) {
-		this.serviceInfrastructureFiscal = serviceInfrastructureFiscal;
-	}
+
 
 	public ServiceInfrastructureHostInterfaces() {
 		JvmVersionHelper.checkJvmWrtHostInterfaces();

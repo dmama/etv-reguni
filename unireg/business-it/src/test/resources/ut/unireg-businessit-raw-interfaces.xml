@@ -70,9 +70,28 @@
 
 	<!-- Service infra -->
 
-	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
-		<property name="client" ref="_serviceInfrastructure" />
-		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
+	<!-- Service infra -->
+
+	<bean id="serviceInfrastructureServiceHostEjb" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+
+	</bean>
+
+	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
+		<property name="client" ref="serviceInfrastructureClient" />
+	</bean>
+	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
+
+		<property name="ejbClient" ref="serviceInfrastructureServiceHostEjb"/>
+		<property name="restClient" ref="serviceInfrastructureServiceHostRest"/>
+		<property name="modeRest" value="${testprop.host-interfaces.webservice.mode.rest}"/>
+	</bean>
+
+
+	<bean id="serviceSecuriteMarshaller" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteMarshaller">
+		<property name="ejbClient" ref="serviceSecuriteServiceHost" />
+		<property name="restClient" ref="serviceSecuriteServiceHostRest" />
+		<property name="modeRest" value="${testprop.host-interfaces.webservice.mode.rest}" />
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
@@ -81,7 +100,7 @@
 	</bean>
 
 	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
-		<property name="hostService" ref="serviceInfrastructureServiceHost" />
+		<property name="hostService" ref="serviceInfrastructureHostMarshaller" />
 		<property name="fidorService" ref="serviceInfrastructureFidor" />
 	</bean>
 

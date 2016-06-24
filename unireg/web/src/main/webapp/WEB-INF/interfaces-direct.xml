@@ -115,7 +115,6 @@
 
 	<bean id="serviceInfrastructureServiceHostEjb" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
 		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
-		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
 	</bean>
 
 	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">

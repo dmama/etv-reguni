@@ -109,4 +109,16 @@
 		<constructor-arg ref="organisationHistorizer"/>
 	</bean>
 
+	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
+		<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}" />
+		<property name="username" value="${testprop.host-interfaces.webservice.username}" />
+		<property name="password" value="${testprop.host-interfaces.webservice.password}" />
+
+	</bean>
+
+	<alias name="serviceInfrastructureClientRaw" alias="serviceInfrastructureClient"/>
+
+
+	<alias name="serviceSecuriteClientRaw" alias="serviceSecuriteClient"/>
+
 </beans>
