@@ -49,7 +49,7 @@ public class BatchClientTest extends WebitTest {
 
 		final List<String> list = client.getBatchNames();
 		assertNotNull(list);
-		assertEquals(77, list.size());
+		assertEquals(78, list.size());
 		int i = 0;
 		assertEquals("IT-BatchClientJob", list.get(i++));
 		assertEquals("IT-InContainerTestingJob", list.get(i++));
@@ -128,6 +128,7 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("CalculParentesJob", list.get(i++));
 		assertEquals("RecuperationDonneesAnciensHabitantsJob", list.get(i++));
 		assertEquals("RecuperationOriginesNonHabitantsJob", list.get(i++));
+		assertEquals("AppariementEtablissementsSecondairesJob", list.get(i++));
 		assertEquals("CacheResetJob", list.get(i++));
 	}
 

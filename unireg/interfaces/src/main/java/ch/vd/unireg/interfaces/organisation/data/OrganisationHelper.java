@@ -72,7 +72,7 @@ public abstract class OrganisationHelper {
 		if (list == null) {
 			return null;
 		}
-		DateRanged<V> item = DateRangeHelper.rangeAt(list, defaultDate(date));
+		final DateRanged<V> item = DateRangeHelper.rangeAt(list, defaultDate(date));
 		return item != null ? item.getPayload() : null;
 	}
 
@@ -540,7 +540,7 @@ public abstract class OrganisationHelper {
 		final RegDate debutActivite = activite.get(0).getDateDebut();
 		final Domicile[] domicilesDebutCorrige = domiciles.toArray(new Domicile[domiciles.size()]);
 		if (debutActivite.isBefore(debutDomiciles) && !debutActivite.isBefore(debutDomiciles.addDays( - NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
-			domicilesDebutCorrige[0] = new Domicile(debutActivite, premierDomicile.getDateFin(), premierDomicile.getTypeAutoriteFiscale(), premierDomicile.getNoOfs());
+			domicilesDebutCorrige[0] = new Domicile(debutActivite, premierDomicile.getDateFin(), premierDomicile.getTypeAutoriteFiscale(), premierDomicile.getNumeroOfsAutoriteFiscale());
 		}
 
 		final List<Domicile> domicilesResult = DateRangeHelper.extract(Arrays.asList(domicilesDebutCorrige), activite, new DateRangeHelper.AdapterCallback<Domicile>() {
@@ -549,7 +549,7 @@ public abstract class OrganisationHelper {
 				return new Domicile(debut != null ? debut : range.getDateDebut(),
 				                    fin != null ? fin : range.getDateFin(),
 				                    range.getTypeAutoriteFiscale(),
-				                    range.getNoOfs());
+				                    range.getNumeroOfsAutoriteFiscale());
 			}
 		});
 		return DateRangeHelper.collate(domicilesResult);

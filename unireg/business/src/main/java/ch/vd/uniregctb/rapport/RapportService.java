@@ -27,6 +27,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
 import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
@@ -115,6 +116,7 @@ import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
+import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementEtablissementsSecondairesResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
@@ -586,4 +588,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	EnvoiRappelsQuestionnairesSNCRapport generateRapport(EnvoiRappelsQuestionnairesSNCResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui tente des appariements sur les établissements secondaires
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	AppariementEtablissementsSecondairesRapport generateRapport(AppariementEtablissementsSecondairesResults results, StatusManager status);
 }

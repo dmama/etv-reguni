@@ -175,7 +175,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 	private Commune getCommuneDomicile(SiteOrganisation site, RegDate dateEvenement, EvenementOrganisationContext context) {
 		final Domicile domicile = site.getDomicile(dateEvenement);
 		if (domicile != null) {
-			return context.getServiceInfra().getCommuneByNumeroOfs(domicile.getNoOfs(), dateEvenement);
+			return context.getServiceInfra().getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), dateEvenement);
 		}
 		return null;
 	}

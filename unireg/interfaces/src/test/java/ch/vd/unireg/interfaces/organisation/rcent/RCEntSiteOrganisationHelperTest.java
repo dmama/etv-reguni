@@ -93,7 +93,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		assertEquals(4567, site.getNumeroSite());
 		assertEquals("Ma boîte", site.getNom().get(0).getPayload());
 		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
-		assertEquals(MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNoOfs());
+		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
 		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusInscription().get(0).getPayload());
 		assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
 
@@ -141,7 +141,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		assertEquals(4567, site.getNumeroSite());
 		assertEquals("Ma boîte", site.getNom().get(0).getPayload());
 		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
-		assertEquals(MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNoOfs());
+		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
 		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusInscription().get(0).getPayload());
 		assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
 

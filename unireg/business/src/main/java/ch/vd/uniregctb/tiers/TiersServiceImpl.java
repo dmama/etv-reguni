@@ -6631,7 +6631,7 @@ public class TiersServiceImpl implements TiersService {
 			tiersDAO.addAndSave(etablissementPrincipal, domicile);
 		}
 		if (domicileCivil != null) {
-			tiersDAO.addAndSave(etablissementPrincipal, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNoOfs(), etablissementPrincipal));
+			tiersDAO.addAndSave(etablissementPrincipal, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissementPrincipal));
 		}
 
 		final String raisonSocialeCivile = organisation.getNom(dateValeur);
@@ -6686,6 +6686,6 @@ public class TiersServiceImpl implements TiersService {
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
 			tiersDAO.addAndSave(etablissement, domicile);
 		}
-		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNoOfs(), etablissement));
+		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissement));
 	}
 }

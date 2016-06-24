@@ -26,7 +26,7 @@ public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Dupl
 	private final Source source;
 
 	public DomicileHisto(Domicile source) {
-		this(null, false, source.getDateDebut(), source.getDateFin(), source.getTypeAutoriteFiscale(), source.getNoOfs(), Source.CIVILE);
+		this(null, false, source.getDateDebut(), source.getDateFin(), source.getTypeAutoriteFiscale(), source.getNumeroOfsAutoriteFiscale(), Source.CIVILE);
 	}
 
 	public DomicileHisto(DomicileEtablissement source) {

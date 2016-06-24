@@ -36,6 +36,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
 import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
@@ -126,6 +127,7 @@ import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
+import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementEtablissementsSecondairesResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
@@ -1439,6 +1441,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(EnvoiRappelsQuestionnairesSNCRapport doc, OutputStream os) throws Exception {
 					final PdfEnvoiRappelsQuestionnairesSNCRapport document = new PdfEnvoiRappelsQuestionnairesSNCRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public AppariementEtablissementsSecondairesRapport generateRapport(final AppariementEtablissementsSecondairesResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportAppariementEtbsSecondaires";
+		final String description = "Rapport d'exécution du job d'appariement des établissements secondaires.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(AppariementEtablissementsSecondairesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AppariementEtablissementsSecondairesRapport>() {
+				@Override
+				public void writeDoc(AppariementEtablissementsSecondairesRapport doc, OutputStream os) throws Exception {
+					final PdfAppariementEtablissementsSecondairesRapport document = new PdfAppariementEtablissementsSecondairesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

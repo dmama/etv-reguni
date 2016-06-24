@@ -108,7 +108,7 @@ public class Etablissement extends Contribuable {
 		Collections.sort(liste, new DateRangeComparator<DomicileEtablissement>() {
 			@Override
 			public int compare(DomicileEtablissement o1, DomicileEtablissement o2) {
-				int comparison = - Boolean.compare(o1.isAnnule(), o2.isAnnule());
+				int comparison = Boolean.compare(o1.isAnnule(), o2.isAnnule());
 				if (comparison == 0) {
 					comparison = super.compare(o1, o2);
 				}

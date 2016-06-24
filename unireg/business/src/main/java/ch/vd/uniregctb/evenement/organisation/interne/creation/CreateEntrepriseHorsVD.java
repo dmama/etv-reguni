@@ -192,7 +192,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	private Commune getCommuneDomicile(SiteOrganisation site) {
 		final Domicile domicile = site.getDomicile(getDateEvt());
 		if (domicile != null) {
-			return getContext().getServiceInfra().getCommuneByNumeroOfs(domicile.getNoOfs(), getDateEvt());
+			return getContext().getServiceInfra().getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), getDateEvt());
 		}
 		return null;
 	}

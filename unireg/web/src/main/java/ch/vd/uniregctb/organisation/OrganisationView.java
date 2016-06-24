@@ -32,7 +32,7 @@ public class OrganisationView implements Serializable {
 		this.setNumeroOrganisation(organisation.getNumeroOrganisation());
 		nom = organisation.getNom(date);
 		final Domicile siegePrincipal = organisation.getSiegePrincipal(date);
-		noOFSSiege = siegePrincipal.getNoOfs();
+		noOFSSiege = siegePrincipal.getNumeroOfsAutoriteFiscale();
 		typeSiege = siegePrincipal.getTypeAutoriteFiscale();
 		formeJuridique = organisation.getFormeLegale(date).toString();
 		numeroIDE = organisation.getNumeroIDE().isEmpty() ? null : organisation.getNumeroIDE().get(0).getPayload();

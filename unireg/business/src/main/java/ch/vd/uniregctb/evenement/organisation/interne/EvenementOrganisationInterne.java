@@ -610,14 +610,14 @@ public abstract class EvenementOrganisationInterne {
 		// L'activité économique
 		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
-		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
+		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNumeroOfsAutoriteFiscale()), dateDebut).getNomOfficielAvecCanton();
 
 		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour le site %d, domicile %s (ofs: %d), à partir du %s",
 		                              principal ? "principal" : "secondaire",
 		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              numeroSite,
 		                              commune,
-		                              autoriteFiscale.getNoOfs(),
+		                              autoriteFiscale.getNumeroOfsAutoriteFiscale(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
 		raiseStatusTo(HandleStatus.TRAITE);
 		return etablissement;
@@ -633,14 +633,14 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis
 	 */
 	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
-		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNoOfs()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
-		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
+		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNumeroOfsAutoriteFiscale()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
+		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNumeroOfsAutoriteFiscale()), dateDebut).getNomOfficielAvecCanton();
 		suivis.addSuivi(String.format("L'établissement n°%s a déménagé de %s (ofs: %d) à %s (ofs: %d), le %s.",
 		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              ancienneCommune,
-		                              ancienDomicile.getNoOfs(),
+		                              ancienDomicile.getNumeroOfsAutoriteFiscale(),
 		                              nouvelleCommune,
-		                              nouveauDomicile.getNoOfs(),
+		                              nouveauDomicile.getNumeroOfsAutoriteFiscale(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
 	}
 
@@ -659,7 +659,7 @@ public abstract class EvenementOrganisationInterne {
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, GenreImpot genreImpot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
+		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal à %s à partir du %s, motif ouverture %s, rattachement %s, pour l'entreprise n°%s (civil: %d).",
 			                              commune.getNomOfficielAvecCanton(),
@@ -667,7 +667,7 @@ public abstract class EvenementOrganisationInterne {
 			                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise())
 			);
 			raiseStatusTo(HandleStatus.TRAITE);
-			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, genreImpot);
+			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNumeroOfsAutoriteFiscale(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, genreImpot);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal principal sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal principal manuellement.",

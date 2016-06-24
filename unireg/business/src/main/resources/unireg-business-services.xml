@@ -336,4 +336,8 @@
 		<property name="assujettissementService" ref="assujettissementService"/>
 	</bean>
 
+	<bean id="appariementService" class="ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
 </beans>

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -183,24 +184,24 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		// Passé ce point on a forcément un déménagement
 
 		EvenementOrganisationInterne aRenvoyer = null;
-		if (communeDeSiegeAvant.getNoOfs() == communeDeSiegeApres.getNoOfs()) { // Pas un changement, pas de traitement
-			LOGGER.info("Pas de changement d'autorité politique. La commune d'autorité fiscale reste no {}", communeDeSiegeAvant.getNoOfs());
+		if (Objects.equals(communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale())) { // Pas un changement, pas de traitement
+			LOGGER.info("Pas de changement d'autorité fiscale. La commune d'autorité fiscale reste no {}", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale());
 			return null;
 		}
 		else if (isDemenagementVD(communeDeSiegeAvant, communeDeSiegeApres)) {
-			LOGGER.info("Déménagement VD -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
+			LOGGER.info("Déménagement VD -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale());
 			aRenvoyer = new DemenagementVD(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isDemenagementHC(communeDeSiegeAvant, communeDeSiegeApres)) {
-			LOGGER.info("Déménagement HC -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
+			LOGGER.info("Déménagement HC -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale());
 			aRenvoyer = new DemenagementHC(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isDepart(communeDeSiegeAvant, communeDeSiegeApres)) {
-			LOGGER.info("Départ VD -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
+			LOGGER.info("Départ VD -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale());
 			aRenvoyer = new DemenagementDepart(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isArrivee(communeDeSiegeAvant, communeDeSiegeApres)) {
-			LOGGER.info("Arrivée HC -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
+			LOGGER.info("Arrivée HC -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNumeroOfsAutoriteFiscale(), communeDeSiegeApres.getNumeroOfsAutoriteFiscale());
 			aRenvoyer = new DemenagementArrivee(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else {

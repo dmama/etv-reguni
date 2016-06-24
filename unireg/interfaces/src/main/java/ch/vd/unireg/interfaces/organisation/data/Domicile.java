@@ -12,22 +12,23 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class Domicile implements Serializable, CollatableDateRange, DateRangeLimitable<Domicile> {
+public class Domicile implements Serializable, CollatableDateRange, DateRangeLimitable<Domicile>, LocalizedDateRange {
 
-	private static final long serialVersionUID = -3128523884534860892L;
+	private static final long serialVersionUID = -1655521082019660148L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
-	private final int noOfs;
+	private final int numeroOfsAutoriteFiscale;
 
-	public Domicile(RegDate dateDebut, @Nullable RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int noOfs) {
+	public Domicile(RegDate dateDebut, @Nullable RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
-		this.noOfs = noOfs;
+		this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
 	}
 
 	public Domicile(RegDate dateDebut, @Nullable RegDate dateFin, Commune commune) {
@@ -38,7 +39,7 @@ public class Domicile implements Serializable, CollatableDateRange, DateRangeLim
 		return new Domicile(dateDebut == null ? this.dateDebut : dateDebut,
 		                    dateFin == null ? this.dateFin : dateFin,
 		                    this.typeAutoriteFiscale,
-		                    this.noOfs);
+		                    this.numeroOfsAutoriteFiscale);
 	}
 
 	@Override
@@ -61,20 +62,22 @@ public class Domicile implements Serializable, CollatableDateRange, DateRangeLim
 		return DateRangeHelper.isCollatable(this, next)
 				&& next instanceof Domicile
 				&& ((Domicile) next).typeAutoriteFiscale == this.typeAutoriteFiscale
-				&& ((Domicile) next).noOfs == this.noOfs;
+				&& ((Domicile) next).numeroOfsAutoriteFiscale == this.numeroOfsAutoriteFiscale;
 	}
 
 	@Override
 	public Domicile collate(DateRange next) {
 		Assert.isTrue(isCollatable(next));
-		return new Domicile(this.dateDebut, next.getDateFin(), this.typeAutoriteFiscale, this.noOfs);
+		return new Domicile(this.dateDebut, next.getDateFin(), this.typeAutoriteFiscale, this.numeroOfsAutoriteFiscale);
 	}
 
+	@Override
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
 		return typeAutoriteFiscale;
 	}
 
-	public int getNoOfs() {
-		return noOfs;
+	@Override
+	public Integer getNumeroOfsAutoriteFiscale() {
+		return numeroOfsAutoriteFiscale;
 	}
 }

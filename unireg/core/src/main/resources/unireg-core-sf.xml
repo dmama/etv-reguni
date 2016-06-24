@@ -197,6 +197,7 @@
 		<value>ch.vd.uniregctb.document.AssujettiParSubstitutionRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport</value>
 		<value>ch.vd.uniregctb.document.RappelLettresBienvenueRapport</value>
+		<value>ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.reqdes.ErreurTraitement</value>

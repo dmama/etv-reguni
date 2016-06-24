@@ -111,12 +111,12 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		final Domicile siege = organisation.getSiegePrincipal(date);
 		final String nomCommune;
 		if (siege != null) {
-			final Commune commune = serviceInfra.getCommuneByNumeroOfs(siege.getNoOfs(), date);
+			final Commune commune = serviceInfra.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date);
 			if (commune != null) {
 				nomCommune = commune.getNomOfficielAvecCanton();
 			}
 			else {
-				final Commune communeActuelle = serviceInfra.getCommuneByNumeroOfs(siege.getNoOfs(), RegDate.get());
+				final Commune communeActuelle = serviceInfra.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), RegDate.get());
 				if (communeActuelle != null) {
 					nomCommune = communeActuelle.getNomOfficielAvecCanton() + " [actuelle]";
 				}
@@ -136,7 +136,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		                     nom != null ? nom : "[inconnu]",
 		                     organisation.getNumeroOrganisation(),
 		                     nomCommune,
-		                     siege != null ? "(ofs: " + siege.getNoOfs() + ")" : "[inconnue]",
+		                     siege != null ? "(ofs: " + siege.getNumeroOfsAutoriteFiscale() + ")" : "[inconnue]",
 		                     StringUtils.defaultIfBlank(FormatNumeroHelper.formatNumIDE(ide), "[inconnu]"),
 		                     formeLegale != null ? formeLegale : "[inconnue]");
 	}

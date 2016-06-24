@@ -138,7 +138,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						String message = String.format("Refus de créer dans Unireg l'établissement %s actuellement à %s (n°%d civil) dont la fondation / déménagement remonte à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
 								                               "Il y a probablement une erreur d'identification ou un problème de date.",
 						                               aCreer.getNom(getDateEvt()),
-						                               getContext().getServiceInfra().getCommuneByNumeroOfs(aCreer.getDomicile(getDateEvt()).getNoOfs(), getDateEvt()).getNomOfficielAvecCanton(),
+						                               getContext().getServiceInfra().getCommuneByNumeroOfs(aCreer.getDomicile(getDateEvt()).getNumeroOfsAutoriteFiscale(), getDateEvt()).getNomOfficielAvecCanton(),
 						                               aCreer.getNumeroSite(),
 						                               RegDateHelper.dateToDisplayString(dateCreation),
 						                               surchargeCorrectiveRange.getEtendue(),
@@ -249,7 +249,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					String message = String.format("Refus de créer une surcharge corrective pour un établissement %s à %s (civil: %s) dont la date déménagement prétend remonter à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
 							                               "Il y a probablement une erreur d'identification ou un problème de date.",
 					                               site.getNom(getDateEvt()),
-					                               getContext().getServiceInfra().getCommuneByNumeroOfs(site.getDomicile(getDateEvt()).getNoOfs(), getDateEvt()).getNomOfficielAvecCanton(),
+					                               getContext().getServiceInfra().getCommuneByNumeroOfs(site.getDomicile(getDateEvt()).getNumeroOfsAutoriteFiscale(), getDateEvt()).getNomOfficielAvecCanton(),
 					                               site.getNumeroSite(),
 					                               RegDateHelper.dateToDisplayString(dateDemenagement),
 					                               surchargeCorrectiveRange.getEtendue(),

@@ -343,7 +343,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	@Nullable
 	private DomicileStatutKey createSiteKey(RegDate date, SiteOrganisation site) {
 		final Domicile domicile = site.getDomicile(date);
-		return domicile == null ? null : new DomicileStatutKey(domicile.getNoOfs(), domicile.getTypeAutoriteFiscale(), site.isActif(date));
+		return domicile == null ? null : new DomicileStatutKey(domicile.getNumeroOfsAutoriteFiscale(), domicile.getTypeAutoriteFiscale(), site.isActif(date));
 	}
 
 	private DomicileStatutKey createEtablissementKey(RegDate date, Etablissement etablissement) throws MetierServiceException {

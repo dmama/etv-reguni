@@ -224,17 +224,17 @@ public class OrganisationRCEntTest {
 
 	@Test
 	public void testGetSiegesPrincipaux() throws Exception {
-		Assert.assertEquals(MockCommune.Leysin.getNoOFS(), organisation.getSiegesPrincipaux().get(0).getNoOfs());
+		Assert.assertEquals((Integer) MockCommune.Leysin.getNoOFS(), organisation.getSiegesPrincipaux().get(0).getNumeroOfsAutoriteFiscale());
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, organisation.getSiegesPrincipaux().get(0).getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Zurich.getNoOFS(), organisation.getSiegesPrincipaux().get(1).getNoOfs());
+		Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), organisation.getSiegesPrincipaux().get(1).getNumeroOfsAutoriteFiscale());
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, organisation.getSiegesPrincipaux().get(1).getTypeAutoriteFiscale());
 	}
 
 	@Test
 	public void testGetSiegePrincipal() throws Exception {
-		Assert.assertEquals(MockCommune.Leysin.getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 5, 1)).getNoOfs());
+		Assert.assertEquals((Integer) MockCommune.Leysin.getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 5, 1)).getNumeroOfsAutoriteFiscale());
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, organisation.getSiegePrincipal(RegDate.get(2015, 5, 1)).getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Zurich.getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 6, 10)).getNoOfs());
+		Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 6, 10)).getNumeroOfsAutoriteFiscale());
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, organisation.getSiegePrincipal(RegDate.get(2015, 6, 10)).getTypeAutoriteFiscale());
 	}
 
