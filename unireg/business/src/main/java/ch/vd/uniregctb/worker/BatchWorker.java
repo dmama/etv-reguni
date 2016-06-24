@@ -2,7 +2,7 @@ package ch.vd.uniregctb.worker;
 
 import java.util.List;
 
-public interface BatchWorker<T> extends Worker<T> {
+public interface BatchWorker<T> extends Worker {
 
 	int maxBatchSize();
 
