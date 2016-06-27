@@ -17,7 +17,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -67,20 +66,17 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
 			final DonneesRC donneesRC = sitePrincipalAvant.getDonneesRC();
-			final RegDate dateRadiationRCAvant = donneesRC.getDateRadiation(dateAvant);
 			final RegDate dateRadiationRCApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
 			final StatusInscriptionRC statusInscriptionAvant = donneesRC.getStatusInscription(dateAvant);
 			final StatusInscriptionRC statusInscriptionApres = donneesRC.getStatusInscription(dateApres);
 
 			if (statusInscriptionAvant == StatusInscriptionRC.RADIE && (statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION)) {
-				if (dateRadiationRCAvant != null && dateRadiationRCApres == null) {
-					LOGGER.info(String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation()));
-					return new Reinscription(event, organisation, entreprise, context, options);
-				}
-				else if (dateRadiationRCApres != null) {
-					return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
-					                                    String.format("L'organisation n°%d n'est plus radiée du RC mais a toujours une date de radiation!", organisation.getNumeroOrganisation()));
-				}
+				LOGGER.info(String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).%s",
+				                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+				                          organisation.getNumeroOrganisation(),
+				                          dateRadiationRCApres != null ? " Cependant, l'ancienne date de radiation persiste dans RCEnt: " + RegDateHelper.dateToDisplayString(dateRadiationRCApres) + "." : ""
+				));
+				return new Reinscription(event, organisation, entreprise, context, options);
 			}
 		}
 		LOGGER.info("Pas de réinscription au RC de l'entreprise.");

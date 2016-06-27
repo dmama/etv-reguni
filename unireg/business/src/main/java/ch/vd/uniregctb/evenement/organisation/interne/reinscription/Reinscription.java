@@ -5,11 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -18,10 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
  * @author Raphaël Marmier, 2015-11-11
@@ -67,22 +62,7 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-
-		ForFiscalPrincipalPM dernierForPrincipal = getEntreprise().getDernierForFiscalPrincipal();
-		if (dernierForPrincipal != null) {
-			if (dernierForPrincipal.isValidAt(dateApres)) {
-				LOGGER.info(String.format("Réinscription RC de l'entreprise n°%s: un for actif est déjà présent en date du %s",
-				                          FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero()), RegDateHelper.dateToDisplayString(dateApres)));
-			} else {
-				reopenForFiscalPrincipal(dernierForPrincipal, suivis);
-			}
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
-			warnings.addWarning("Une vérification manuelle est requise pour la réinscription au RC d’une entreprise radiée.");
-		} else {
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
-			LOGGER.info(String.format("Réinscription RC de l'entreprise n°%s: aucun for trouvé. Pas de changement.", FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero())));
-			raiseStatusTo(HandleStatus.TRAITE);
-		}
+		warnings.addWarning("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de réinscription de l’entreprise au RC.");
 	}
 
 	@Override
