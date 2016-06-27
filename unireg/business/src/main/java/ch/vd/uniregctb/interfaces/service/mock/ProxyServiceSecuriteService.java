@@ -3,10 +3,10 @@ package ch.vd.uniregctb.interfaces.service.mock;
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.type.TypeCollectivite;
 
 public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 

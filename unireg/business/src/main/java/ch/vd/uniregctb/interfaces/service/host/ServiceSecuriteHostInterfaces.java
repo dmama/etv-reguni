@@ -12,11 +12,11 @@ import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.securite.service.SecuriteException;
 import ch.vd.securite.service.ServiceSecurite;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.type.TypeCollectivite;
 import ch.vd.utils.proxy.ProxyBuisnessException;
 
 public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {

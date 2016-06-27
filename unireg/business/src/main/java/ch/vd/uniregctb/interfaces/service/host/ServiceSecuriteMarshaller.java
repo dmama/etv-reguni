@@ -3,9 +3,9 @@ package ch.vd.uniregctb.interfaces.service.host;
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.type.TypeCollectivite;
 
 public class ServiceSecuriteMarshaller implements ServiceSecuriteService {
 	private ServiceSecuriteService ejbClient;

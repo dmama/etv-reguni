@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.interfaces.infra.data;
 
 public enum TypeCollectivite {
 	SIGLE_A_COM("A.COM")

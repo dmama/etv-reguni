@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
@@ -13,7 +14,6 @@ import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.type.TypeCollectivite;
 
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 

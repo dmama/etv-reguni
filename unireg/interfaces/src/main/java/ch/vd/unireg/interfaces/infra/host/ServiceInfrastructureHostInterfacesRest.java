@@ -265,7 +265,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<ch.vd.uniregctb.type.TypeCollectivite> typesCollectivite)
+	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<ch.vd.unireg.interfaces.infra.data.TypeCollectivite> typesCollectivite)
 			throws ServiceInfrastructureException {
 
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<>();
@@ -274,7 +274,7 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 			TypeCollectivite[] tabTypesCollectivite = new TypeCollectivite[typesCollectivite.size()];
 			int i=0;
 
-			for (ch.vd.uniregctb.type.TypeCollectivite typeCollectivite : typesCollectivite) {
+			for (ch.vd.unireg.interfaces.infra.data.TypeCollectivite typeCollectivite : typesCollectivite) {
 				tabTypesCollectivite[i]= new ch.vd.infrastructure.model.rest.TypeCollectivite(typeCollectivite.getCode(),null,null,0);
 				i++;
 			}

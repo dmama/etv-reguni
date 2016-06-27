@@ -120,8 +120,8 @@
 	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
 		<property name="client" ref="serviceInfrastructureClient" />
 	</bean>
-	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
 
+	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
 		<property name="ejbClient" ref="serviceInfrastructureServiceHostEjb"/>
 		<property name="restClient" ref="serviceInfrastructureServiceHostRest"/>
 		<property name="modeRest" value="${extprop.host-interfaces.webservice.mode.rest}"/>

@@ -117,4 +117,5 @@ public interface CollectiviteAdministrative {
      * @return <code>true</code> si la date de fin de validité de la collectivité est absente ou si celle-ci est égale
      *         ou postérieure à la date du jour.
      */
-    boolean isValide();}
+    boolean isValide();
+}

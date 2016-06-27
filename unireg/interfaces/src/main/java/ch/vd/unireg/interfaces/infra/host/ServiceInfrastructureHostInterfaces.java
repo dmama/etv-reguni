@@ -41,9 +41,9 @@ import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.JvmVersionHelper;
-import ch.vd.uniregctb.type.TypeCollectivite;
 
 /**
  * @author Jean-Eric CUENDET

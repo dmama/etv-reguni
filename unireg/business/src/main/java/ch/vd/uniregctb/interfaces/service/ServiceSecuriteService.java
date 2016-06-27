@@ -5,9 +5,9 @@ import java.util.List;
 
 import ch.vd.securite.service.SecuriteException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.type.TypeCollectivite;
 
 public interface ServiceSecuriteService {
 

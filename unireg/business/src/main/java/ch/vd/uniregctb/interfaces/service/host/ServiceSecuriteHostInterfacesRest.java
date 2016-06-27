@@ -10,12 +10,12 @@ import ch.vd.securite.model.rest.ListeOperateurs;
 import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
+import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClient;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.uniregctb.type.TypeCollectivite;
 import ch.vd.utils.proxy.ProxyBuisnessException;
 
 public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService {
