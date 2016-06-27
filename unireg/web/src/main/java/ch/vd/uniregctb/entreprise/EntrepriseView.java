@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 public class EntrepriseView {
 
 	private Long id;
-	private boolean connueAuCivil = false;
+	private Long noCantonal;
 
 	private List<ShowRaisonSocialeView> raisonsSociales;
 	private List<DateRanged<String>> nomsAdditionnels;
@@ -42,11 +42,15 @@ public class EntrepriseView {
 	}
 
 	public boolean isConnueAuCivil() {
-		return connueAuCivil;
+		return noCantonal != null;
 	}
 
-	public void setConnueAuCivil(boolean connueAuCivil) {
-		this.connueAuCivil = connueAuCivil;
+	public Long getNoCantonal() {
+		return noCantonal;
+	}
+
+	public void setNoCantonal(Long noCantonal) {
+		this.noCantonal = noCantonal;
 	}
 
 	public List<ShowRaisonSocialeView> getRaisonsSociales() {

@@ -27,21 +27,18 @@
 	</c:if>
 	<unireg:nextRowClass reset="1"/>
 	<table>
+		<tr class="<unireg:nextRowClass/>">
+			<td width="20%"><fmt:message key="label.numero.registre.entreprises"/>&nbsp;:</td>
+			<td>
+				<c:if test="${entreprise.noCantonal != null}">
+					<c:out value="${entreprise.noCantonal}"/>
+				</c:if>
+			</td>
+		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 			<td>
-				<unireg:numIDE numeroIDE="${entreprise.numerosIDE}"/><br/>
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>">
-			<td width="20%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
-			<td>
-				<c:if test="${entreprise.connueAuCivil}">
-					<fmt:message key="label.connue.civil.rcent"/>
-				</c:if>
-				<c:if test="${! entreprise.connueAuCivil}">
-					<fmt:message key="label.inconnue.civil.rcent"/>
-				</c:if>
+				<unireg:numIDE numeroIDE="${entreprise.numerosIDE}"/>
 			</td>
 		</tr>
 	</table>
@@ -97,41 +94,29 @@
 	</display:table>
 </fieldset>
 
-<fieldset>
-	<legend><span><fmt:message key="label.noms.additionnels"/></span></legend>
+<c:if test="${not empty entreprise.nomsAdditionnels}">
+	<fieldset>
+		<legend><span><fmt:message key="label.noms.additionnels"/></span></legend>
+		<c:if test="${page == 'visu' }">
+			<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
+			<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
+		</c:if>
 
-	<c:choose>
-		<c:when test="${not empty entreprise.nomsAdditionnels}">
-			<c:if test="${page == 'visu' }">
-				<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
-				<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
-			</c:if>
-
-			<display:table name="${entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
-					<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
-				</display:column>
-				<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
-					<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
-				</display:column>
-				<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
-				<display:column style="width:10%" titleKey="label.source">
-					<fmt:message key="option.entreprise.source.CIVILE"/>
-				</display:column>
-				<display:column style="width:10%">&nbsp;</display:column>
-			</display:table>
-		</c:when>
-		<c:otherwise>
-			<unireg:nextRowClass reset="1"/>
-			<table>
-				<tr class="<unireg:nextRowClass/>" >
-					<td width="20%">&nbsp;</td>
-					<td></td>
-				</tr>
-			</table>
-		</c:otherwise>
-	</c:choose>
-</fieldset>
+		<display:table name="${entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+				<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
+			</display:column>
+			<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+				<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
+			</display:column>
+			<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
+			<display:column style="width:10%" titleKey="label.source">
+				<fmt:message key="option.entreprise.source.CIVILE"/>
+			</display:column>
+			<display:column style="width:10%">&nbsp;</display:column>
+		</display:table>
+	</fieldset>
+</c:if>
 
 <fieldset>
 	<legend><span><fmt:message key="label.sieges"/></span></legend>

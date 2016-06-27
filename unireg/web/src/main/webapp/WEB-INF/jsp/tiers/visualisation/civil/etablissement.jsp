@@ -29,25 +29,20 @@
 	</c:if>
 	<unireg:nextRowClass reset="1"/>
 	<table>
+		<tr class="<unireg:nextRowClass/>">
+			<td width="20%"><fmt:message key="label.numero.registre.entreprises"/>&nbsp;:</td>
+			<td>
+				<c:if test="${etablissement.noCantonal != null}">
+					<c:out value="${etablissement.noCantonal}"/>
+				</c:if>
+			</td>
+		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 			<td>
 				<c:forEach var="noIde" items="${etablissement.numerosIDE}">
 					<unireg:numIDE numeroIDE="${noIde}"/><br/>
 				</c:forEach>
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>">
-			<td width="20%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
-			<td>
-				<c:choose>
-					<c:when test="${etablissement.connueAuCivil}">
-						<fmt:message key="label.connue.civil.rcent"/>
-					</c:when>
-					<c:otherwise>
-						<fmt:message key="label.inconnue.civil.rcent"/>
-					</c:otherwise>
-				</c:choose>
 			</td>
 		</tr>
 	</table>

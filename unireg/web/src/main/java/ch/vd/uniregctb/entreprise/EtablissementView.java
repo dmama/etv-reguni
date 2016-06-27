@@ -7,7 +7,7 @@ import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
 public class EtablissementView {
 
 	private Long id;
-	private boolean connueAuCivil = false;
+	private Long noCantonal;
 
 	private String raisonSociale;
 	private String enseigne;
@@ -25,11 +25,15 @@ public class EtablissementView {
 	}
 
 	public boolean isConnueAuCivil() {
-		return connueAuCivil;
+		return noCantonal != null;
 	}
 
-	public void setConnueAuCivil(boolean connueAuCivil) {
-		this.connueAuCivil = connueAuCivil;
+	public Long getNoCantonal() {
+		return noCantonal;
+	}
+
+	public void setNoCantonal(Long noCantonal) {
+		this.noCantonal = noCantonal;
 	}
 
 	public String getRaisonSociale() {

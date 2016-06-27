@@ -88,7 +88,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		entrepriseView.setNumerosIDE(tiersService.getNumeroIDE(entreprise));
 
-		entrepriseView.setConnueAuCivil(entreprise.isConnueAuCivil());
+		entrepriseView.setNoCantonal(entreprise.getNumeroEntreprise());
 		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise, true)));
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(entreprise, true);
@@ -144,7 +144,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		etablissementView.setEnseigne(etablissement.getEnseigne());
 		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement, true)));
-		etablissementView.setConnueAuCivil(etablissement.isConnuAuCivil());
+		etablissementView.setNoCantonal(etablissement.getNumeroEtablissement());
 		return etablissementView;
 	}
 
