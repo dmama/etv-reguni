@@ -18,38 +18,6 @@
 		<unireg:setAuth var="autorisations" tiersId=""/>
 		<form:form method="post" id="creationForm" name="createEntrepriseForm" commandName="data" action="create.do">
 
-			<script type="text/javascript">
-
-				function selectAutoriteFiscale(name, firstLoad) {
-					if (name == 'COMMUNE_HC') {
-						$('#for_commune_hc_label').show();
-						$('#for_pays_label').hide();
-						if (!firstLoad) {
-							$('#siege').val(null);
-							$('#nomSiege').val(null);
-							$('#numeroOfsSiege').val(null);
-						}
-						Autocomplete.infra('communeHC', '#siege', true, function(item) {
-							$('#numeroOfsSiege').val(item ? item.id1 : null);
-							$('#nomSiege').val(item ? item.label : null);
-						});
-					}
-					else if (name == 'PAYS_HS') {
-						$('#for_commune_hc_label').hide();
-						$('#for_pays_label').show();
-						if (!firstLoad) {
-							$('#siege').val(null);
-							$('#nomSiege').val(null);
-							$('#numeroOfsSiege').val(null);
-						}
-						Autocomplete.infra('etat', '#siege', true, function(item) {
-							$('#numeroOfsSiege').val(item ? item.id1 : null);
-							$('#nomSiege').val(item ? item.label : null);
-						});
-					}
-				}
-			</script>
-
 			<!--onglets-->
 			<div id="tiersCreationTabs">
 				<ul>
@@ -66,14 +34,14 @@
 						<table border="0">
 
 							<tr class="<unireg:nextRowClass/>">
-								<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
+								<td style="width: 20%;"><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 								<td colspan="3">
 									<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 										<jsp:param name="path" value="civil.dateOuverture" />
 										<jsp:param name="id" value="dateOuverture"  />
 										<jsp:param name="tabindex" value="1"/>
 									</jsp:include>
-									<font COLOR="#FF0000">*</font>
+									<span style="color: red;">*</span>
 								</td>
 							</tr>
 
@@ -84,49 +52,49 @@
 									<form:input path="civil.raisonSociale" tabindex="2" id="raisonSociale"
 									            size="80" maxlength="${lengthRaisonSociale}" />
 									<form:errors path="civil.raisonSociale" cssClass="error" />
-									<font COLOR="#FF0000">*</font>
-								</td>
-							</tr>
-
-							<tr class="<unireg:nextRowClass/>" >
-								<td><fmt:message key="label.type.autorite.fiscale"/>&nbsp;:</td>
-								<td>
-									<div id="select_type_for">
-										<form:select path="civil.typeAutoriteFiscale" items="${typesAutoritesFiscales}" id="optionTypeAutoriteFiscale" tabindex="3"
-										             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value, false);" />
-									</div>
-									<div id="mandatory_type_for" style="display: none;"></div>
-								</td>
-
-								<td>
-									<label for="nomSiege">
-										<span id="for_commune_hc_label"><fmt:message key="label.commune"/></span>
-										<span id="for_pays_label"><fmt:message key="label.pays"/></span>
-										&nbsp;:
-									</label>
-								</td>
-								<td>
-									<input tabindex="4" id="siege" size="25" value="${data.civil.nomSiege}" />
-									<form:errors path="civil.numeroOfsSiege" cssClass="error" />
-									<font COLOR="#FF0000">*</font>
-									<form:hidden path="civil.numeroOfsSiege" id="numeroOfsSiege" />
-									<form:hidden path="civil.nomSiege" id="nomSiege" />
+									<span style="color: red;">*</span>
 								</td>
 							</tr>
 
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
 								<td colspan="3">
-									<form:select path="civil.formeJuridique" tabindex="5">
+									<form:select path="civil.formeJuridique" id="selectFormeJuridique" tabindex="3" onchange="CreateEntreprise.onChangeFormeJuridique(this.options[this.selectedIndex].value);">
 										<form:option value=""/>
 										<form:options items="${formesJuridiquesEntreprise}"/>
 									</form:select>
 									<form:errors path="civil.formeJuridique" cssClass="error"/>
-									<font COLOR="#FF0000">*</font>
+									<span style="color: red;">*</span>
 								</td>
 							</tr>
 
-							<tr class="<unireg:nextRowClass/>">
+							<tr class="<unireg:nextRowClass/> apresFJ">
+								<td><fmt:message key="label.type.autorite.fiscale"/>&nbsp;:</td>
+								<td>
+									<div id="select_type_for">
+										<form:select path="civil.typeAutoriteFiscale" id="optionTypeAutoriteFiscale" tabindex="4" cssStyle="width: 20ex;"
+										             onchange="CreateEntreprise.selectAutoriteFiscale(this.options[this.selectedIndex].value, false);" />
+									</div>
+									<div id="mandatory_type_for" style="display: none;"></div>
+								</td>
+
+								<td>
+									<label for="nomSiege">
+										<span id="for_commune_label"><fmt:message key="label.commune"/></span>
+										<span id="for_pays_label"><fmt:message key="label.pays"/></span>
+										&nbsp;:
+									</label>
+								</td>
+								<td>
+									<input tabindex="5" id="siege" size="25" value="${data.civil.nomSiege}" />
+									<form:errors path="civil.numeroOfsSiege" cssClass="error" />
+									<span style="color: red;">*</span>
+									<form:hidden path="civil.numeroOfsSiege" id="numeroOfsSiege" />
+									<form:hidden path="civil.nomSiege" id="nomSiege" />
+								</td>
+							</tr>
+
+							<tr class="<unireg:nextRowClass/> apresFJ">
 								<td><fmt:message key="label.date.debut.exercice.commercial"/></td>
 								<td colspan="3">
 									<div style="float: left; margin-right: 2em; width: 30%;">
@@ -139,12 +107,12 @@
 											<jsp:param name="id" value="dateDebutExerciceCommercial"  />
 											<jsp:param name="tabindex" value="8"/>
 										</jsp:include>
-										<font COLOR="#FF0000">*</font>
+										<span style="color: red;">*</span>
 									</div>
 								</td>
 							</tr>
 
-							<tr class="<unireg:nextRowClass/>">
+							<tr class="<unireg:nextRowClass/> apresFJ">
 								<td><fmt:message key="label.date.fondation"/></td>
 								<td colspan="3">
 									<div style="float: left; margin-right: 2em; width: 30%;">
@@ -157,13 +125,13 @@
 											<jsp:param name="id" value="dateFondation"  />
 											<jsp:param name="tabindex" value="11"/>
 										</jsp:include>
-										<font COLOR="#FF0000">*</font>
+										<span style="color: red;">*</span>
 									</div>
 								</td>
 							</tr>
 
 							<c:set var="lengthmonnaie" value="<%=LengthConstants.MONNAIE_ISO%>" scope="request" />
-							<tr class="<unireg:nextRowClass/>">
+							<tr class="<unireg:nextRowClass/> apresFJ">
 								<td><fmt:message key="label.capital.libere" />&nbsp;:</td>
 								<td>
 									<form:input path="civil.capitalLibere" tabindex="12" id="capitalLibere"
@@ -178,7 +146,7 @@
 							</tr>
 
 							<c:set var="length_numeroIDE" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE + 3%>" scope="request" />
-							<tr class="<unireg:nextRowClass/>">
+							<tr class="<unireg:nextRowClass/> apresFJ">
 								<td>
 									<fmt:message key="label.numero.ide"/>&nbsp;:
 								</td>
@@ -190,7 +158,7 @@
 								</td>
 							</tr>
 
-							<tr class="<unireg:nextRowClass/>">
+							<tr class="<unireg:nextRowClass/>" id="trInscriptionRC">
 								<td>
 									<label for="inscriteRC"><fmt:message key="label.inscrite.rc" /></label>&nbsp;:
 								</td>
@@ -350,6 +318,82 @@
 						else {
 							$('#specificDateDebutExercice').show();
 						}
+					},
+					onChangeFormeJuridique: function(newFormeJuridique) {
+						if (newFormeJuridique) {
+							$('tr.apresFJ').show();
+
+							const select = $('#optionTypeAutoriteFiscale');
+							var oldtaf = select.find('option:selected').val();
+							var url = App.curl('/tiers/entreprise/types-autorite-fiscale.do?fj=') + newFormeJuridique;
+							$.get(url + '&' + new Date().getTime(), function(tafs) {
+								var list = '';
+								$.each(tafs, function (key, val) {
+									list += '<option value="' + key + '"' + (oldtaf == key ? ' selected' : '') + '>' + StringUtils.escapeHTML(val) + '</option>';
+								});
+								select.html(list);
+
+								var newtaf = select.find('option:selected').val();
+								if (newtaf != oldtaf) {
+									newtaf = newtaf || select.find("option:first").val();
+									CreateEntreprise.selectAutoriteFiscale(newtaf, false);
+								}
+
+								const trInscriptionRC = $('#trInscriptionRC');
+								if ('COMMUNE_OU_FRACTION_VD' in tafs) {
+									trInscriptionRC.hide();
+								}
+								else {
+									trInscriptionRC.show();
+								}
+							}, 'json')
+							.error(Ajax.popupErrorHandler);
+						}
+						else {
+							$('tr.apresFJ').hide();
+							$('#trInscriptionRC').hide();
+						}
+					},
+					selectAutoriteFiscale: function(name, firstLoad) {
+						if (name == 'COMMUNE_OU_FRACTION_VD') {
+							$('#for_commune_label').show();
+							$('#for_pays_label').hide();
+							if (!firstLoad) {
+								$('#siege').val(null);
+								$('#nomSiege').val(null);
+								$('#numeroOfsSiege').val(null);
+							}
+							Autocomplete.infra('communeVD', '#siege', true, function(item) {
+								$('#numeroOfsSiege').val(item ? item.id1 : null);
+								$('#nomSiege').val(item ? item.label : null);
+							});
+						}
+						else if (name == 'COMMUNE_HC') {
+							$('#for_commune_label').show();
+							$('#for_pays_label').hide();
+							if (!firstLoad) {
+								$('#siege').val(null);
+								$('#nomSiege').val(null);
+								$('#numeroOfsSiege').val(null);
+							}
+							Autocomplete.infra('communeHC', '#siege', true, function(item) {
+								$('#numeroOfsSiege').val(item ? item.id1 : null);
+								$('#nomSiege').val(item ? item.label : null);
+							});
+						}
+						else if (name == 'PAYS_HS') {
+							$('#for_commune_label').hide();
+							$('#for_pays_label').show();
+							if (!firstLoad) {
+								$('#siege').val(null);
+								$('#nomSiege').val(null);
+								$('#numeroOfsSiege').val(null);
+							}
+							Autocomplete.infra('etat', '#siege', true, function(item) {
+								$('#numeroOfsSiege').val(item ? item.id1 : null);
+								$('#nomSiege').val(item ? item.label : null);
+							});
+						}
 					}
 				}
 			</script>
@@ -363,12 +407,15 @@
 				$("#tiersCreationTabs").tabs();
 
 				// on initialise l'auto-completion de l'autorité fiscale
-				selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}', true);
+				CreateEntreprise.selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}', true);
 
 				$('#typeDateFondation_${data.civil.typeDateDebutExerciceCommercial}').prop('checked', true);
 				$('#debutExComm_${data.civil.typeDateDebutExerciceCommercial}').prop('checked', true);
 				CreateEntreprise.onDateFondationDefautChange(${data.civil.typeDateFondation == 'DEFAULT'});
 				CreateEntreprise.onDateDebutExerciceDefautChange(${data.civil.typeDateDebutExerciceCommercial == 'DEFAULT'});
+
+				const value = $('#selectFormeJuridique').get(0);
+				CreateEntreprise.onChangeFormeJuridique(value.options[value.selectedIndex].value);
 			});
 		</script>
 

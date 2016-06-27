@@ -2,8 +2,10 @@ package ch.vd.uniregctb.tiers;
 
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -55,6 +58,7 @@ import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -205,8 +209,12 @@ public class TiersCreateController {
 
 	private String showCreateEntreprise(Model model, CreateEntrepriseView view) {
 		model.addAttribute(DATA, view);
-		model.addAttribute(TYPES_AUTORITES_FISCALES, tiersMapHelper.getMapTypeAutoriteFiscaleEntreprise());
-		model.addAttribute(FORME_JURIDIQUE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapFormeJuridiqueEntrepriseEditableFiscalement());
+
+		final Set<FormeJuridiqueEntreprise> all = EnumSet.noneOf(FormeJuridiqueEntreprise.class);
+		all.addAll(ALLOWED_EVERYWHERE);
+		all.addAll(ONLY_HC_HS_ALLOWED);
+		model.addAttribute(FORME_JURIDIQUE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapFormesJuridiquesEntrepriseChoisies(all));
+
 		return "tiers/edition/creation-entreprise";
 	}
 
@@ -270,10 +278,13 @@ public class TiersCreateController {
 		final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.map(civilView.getFormeJuridique());
 		final Set<CategorieEntreprise> pmApm = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.DPPM, CategorieEntreprise.APM, CategorieEntreprise.DPAPM);
 		if (pmApm.contains(categorieEntreprise)) {
+			final boolean vd = civilView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+			final RegDate dateOuvertureFiscale = vd ? dateOuverture.getOneDayAfter() : dateOuverture;
+
 			// Récupération du type de régime fiscal
 			final TypeRegimeFiscal trf = tiersService.getTypeRegimeFiscalParDefault(categorieEntreprise);
-			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, trf, dateOuverture, null);
-			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, trf, dateOuverture, null);
+			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, trf, dateOuvertureFiscale, null);
+			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, trf, dateOuvertureFiscale, null);
 
 			// Bouclement et premier exercice commercial
 			entreprise.setDateDebutPremierExerciceCommercial(dateDebutExerciceCommercial);
@@ -285,7 +296,8 @@ public class TiersCreateController {
 			entreprise.addBouclement(bouclement);
 
 			// For principal
-			tiersService.addForPrincipal(entreprise, dateOuverture, null, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.BENEFICE_CAPITAL);
+			final MotifFor motifOuverture = vd ? MotifFor.DEBUT_EXPLOITATION : null;
+			tiersService.addForPrincipal(entreprise, dateOuvertureFiscale, motifOuverture, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.BENEFICE_CAPITAL);
 		}
 		else if (categorieEntreprise == CategorieEntreprise.SP) {
 			// Pas de régime fiscal (et donc pas de bouclement)
@@ -298,6 +310,58 @@ public class TiersCreateController {
 		tiersService.changeEtatEntreprise(typeEtatEntreprise, entreprise, dateFondation, TypeGenerationEtatEntreprise.MANUELLE);
 
 		return "redirect:/tiers/visu.do?id=" + entreprise.getNumero();
+	}
+
+	private static final Set<FormeJuridiqueEntreprise> ALLOWED_EVERYWHERE = EnumSet.of(
+//			FormeJuridiqueEntreprise.EI,            // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (PP) -> éliminée pour le moment
+			FormeJuridiqueEntreprise.ASSOCIATION,
+			FormeJuridiqueEntreprise.FONDATION,
+			FormeJuridiqueEntreprise.ADM_CH,
+			FormeJuridiqueEntreprise.ADM_CO,
+			FormeJuridiqueEntreprise.ADM_CT,
+			FormeJuridiqueEntreprise.ADM_DI,
+			FormeJuridiqueEntreprise.CORP_DP_ADM,
+//			FormeJuridiqueEntreprise.ENT_CH,        // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.ENT_CO,        // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.ENT_CT,        // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.ENT_DI,        // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+			FormeJuridiqueEntreprise.CORP_DP_ENT);
+//			FormeJuridiqueEntreprise.SS,            // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.FILIALE_HS_NIRC);  // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+
+	private static final Set<FormeJuridiqueEntreprise> ONLY_HC_HS_ALLOWED = EnumSet.of(
+			FormeJuridiqueEntreprise.SNC,
+			FormeJuridiqueEntreprise.SC,
+			FormeJuridiqueEntreprise.SCA,
+			FormeJuridiqueEntreprise.SA,
+			FormeJuridiqueEntreprise.SARL,
+			FormeJuridiqueEntreprise.SCOOP,
+//			FormeJuridiqueEntreprise.FILIALE_HS_RC, // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.PARTICULIER,   // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+			FormeJuridiqueEntreprise.SCPC,
+			FormeJuridiqueEntreprise.SICAV,
+			FormeJuridiqueEntreprise.SICAF,
+			FormeJuridiqueEntreprise.IDP);
+//			FormeJuridiqueEntreprise.PNC,           // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.INDIVISION,    // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.FILIALE_CH_RC, // autorisées dans SITI, apparemment, mais sans catégorie d'entreprise intéressante pour nous (AUTRE) -> éliminée pour le moment
+//			FormeJuridiqueEntreprise.ENT_PUBLIQUE_HS,
+//			FormeJuridiqueEntreprise.ADM_PUBLIQUE_HS,
+//			FormeJuridiqueEntreprise.ORG_INTERNAT,
+//			FormeJuridiqueEntreprise.ENT_HS);
+
+	@ResponseBody
+	@RequestMapping(value = "/entreprise/types-autorite-fiscale.do", method = RequestMethod.GET)
+	public Map<TypeAutoriteFiscale, String> getTypesAutoriteFiscaleAutorises(@RequestParam("fj") FormeJuridiqueEntreprise fj) {
+		if (ALLOWED_EVERYWHERE.contains(fj)) {
+			return tiersMapHelper.getMapTypeAutoriteFiscale();
+		}
+		else if (ONLY_HC_HS_ALLOWED.contains(fj)) {
+			return tiersMapHelper.getMapTypeAutoriteFiscaleEntreprise();
+		}
+		else {
+			return Collections.emptyMap();
+		}
 	}
 
 	@RequestMapping(value = "/autrecommunaute/create.do", method = RequestMethod.GET)

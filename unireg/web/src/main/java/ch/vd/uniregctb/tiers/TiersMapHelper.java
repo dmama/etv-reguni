@@ -66,8 +66,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersMapHelper.class);
 
 	private Map<FormeJuridique, String> mapFormeJuridique;
-	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntreprise;
-	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntrepriseEditableFiscalement;
+	private Map<FormeJuridiqueEntreprise, String> mapFormesJuridiquesEntreprise;
 	private Map<CategorieEntreprise, String> mapCategorieEntreprise;
 	private Map<NatureJuridique, String> mapNatureJuridique;
 	private Map<TypeRecherche, String> mapTypeRechercheNom;
@@ -715,26 +714,20 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntreprise() {
-		if (mapFormeJuridiqueEntreprise == null) {
-			mapFormeJuridiqueEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class);
+	public Map<FormeJuridiqueEntreprise, String> getMapFormesJuridiquesEntreprise() {
+		if (mapFormesJuridiquesEntreprise == null) {
+			mapFormesJuridiquesEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class);
 		}
-		return mapFormeJuridiqueEntreprise;
+		return mapFormesJuridiquesEntreprise;
 	}
 
 	/**
-	 * Initialise la map des formes juridiques
+	 * Initialise la map des formes juridiques qui correpondent aux modalités données
 	 *
 	 * @return une map
 	 */
-	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntrepriseEditableFiscalement() {
-		if (mapFormeJuridiqueEntrepriseEditableFiscalement == null) {
-			// On exclue les formes juridiques liées à certaines catégories d'entreprise
-			final Set<CategorieEntreprise> categoriesAExclure = EnumSet.of(CategorieEntreprise.PP, CategorieEntreprise.AUTRE);
-			final Set<FormeJuridiqueEntreprise> formesAExclure = FormeJuridiqueEntrepriseHelper.getFormesJuridiquesFromCategoriesEntreprise(categoriesAExclure);
-			mapFormeJuridiqueEntrepriseEditableFiscalement = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class, formesAExclure.toArray(new FormeJuridiqueEntreprise[formesAExclure.size()]));
-		}
-		return mapFormeJuridiqueEntrepriseEditableFiscalement;
+	public Map<FormeJuridiqueEntreprise, String> getMapFormesJuridiquesEntrepriseChoisies(Set<FormeJuridiqueEntreprise> formesJuridiques) {
+		return getSpecificMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, formesJuridiques);
 	}
 
 	/**

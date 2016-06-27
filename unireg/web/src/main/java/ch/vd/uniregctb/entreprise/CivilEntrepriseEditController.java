@@ -289,7 +289,7 @@ public class CivilEntrepriseEditController {
 
 	private String showAddFormeJuridique(Model model, FormeJuridiqueView.Add view) {
 		model.addAttribute("command", view);
-		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormesJuridiquesEntreprise());
 		return "donnees-civiles/add-forme-juridique";
 	}
 
@@ -337,7 +337,7 @@ public class CivilEntrepriseEditController {
 
 	private String showEditFormeJuridique(Model model, FormeJuridiqueView.Edit view) {
 		model.addAttribute("command", view);
-		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormesJuridiquesEntreprise());
 		return "donnees-civiles/edit-forme-juridique";
 	}
 

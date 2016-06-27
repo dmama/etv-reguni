@@ -127,7 +127,7 @@ public class TiersSearchHelper {
 		model.addAttribute(TYPES_RECHERCHE_NOM_NAME, tiersMapHelper.getMapTypeRechercheNom());
 		model.addAttribute(CATEGORIES_IMPOT_SOURCE_NAME, tiersMapHelper.getMapCategorieImpotSource());
 		model.addAttribute(MODES_IMPOSITION_NAME, tiersMapHelper.getMapModeImposition());
-		model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+		model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormesJuridiquesEntreprise());
 		model.addAttribute(CATEGORIES_ENTREPRISES_NAME, tiersMapHelper.getMapCategoriesEntreprise());
 		model.addAttribute(criteriaAttributeName, criteria);
 	}
