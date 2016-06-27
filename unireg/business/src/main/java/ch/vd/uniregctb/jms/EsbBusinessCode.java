@@ -10,7 +10,6 @@ public enum EsbBusinessCode {
 	IDENTIFICATION_DONNEES_INVALIDES(ErrorType.BUSINESS, "0160", "Données invalides dans la demande d'identification de contribuable"),
 	REPONSE_IMPOSSIBLE(ErrorType.BUSINESS, "1051", "Impossible de répondre au message entrant"),
 	DROITS_INSUFFISANTS(ErrorType.BUSINESS, "1052", "Droits d'accès insuffisants pour accéder à la requête"),
-	TIERS_INVALIDE(ErrorType.BUSINESS, "8600", "Les données du tiers sont incohérentes"),
 	CTB_DEBITEUR_INACTIF(ErrorType.BUSINESS, "1061", "Le contribuable est un débiteur inactif et n'est plus accessible en modification"),
 	CTB_INEXISTANT(ErrorType.BUSINESS, "1070", "Le contribuable n'existe pas"),
 	DPI_INEXISTANT(ErrorType.BUSINESS, "1071", "Le débiteur IS n'existe pas"),
@@ -19,7 +18,8 @@ public enum EsbBusinessCode {
 	EVT_CIVIL(ErrorType.BUSINESS, "1350", "Données invalides dans l'événement civil entrant"),
 	EVT_ORGANISATION(ErrorType.BUSINESS, "1351", "Données invalides dans l'événement civil entreprise entrant"),
 	IAM_INCOMPLET(ErrorType.BUSINESS, "1550", "Données invalides/manquantes dans l'événement IAM entrant"),
-	EVT_EXTERNE(ErrorType.BUSINESS, "8451", "Données invalides/manquantes dans l'événement externe entrant");
+	EVT_EXTERNE(ErrorType.BUSINESS, "8451", "Données invalides/manquantes dans l'événement externe entrant"),
+	TIERS_INVALIDE(ErrorType.BUSINESS, "8600", "Les données du tiers sont incohérentes");
 
 	private final ErrorType type;
 	private final String code;

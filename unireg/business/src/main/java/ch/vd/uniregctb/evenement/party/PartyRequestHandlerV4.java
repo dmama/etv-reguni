@@ -13,6 +13,7 @@ import ch.vd.unireg.xml.event.party.party.v4.PartyResponse;
 import ch.vd.unireg.xml.party.v4.Party;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.efacture.EFactureService;
@@ -187,7 +188,7 @@ public class PartyRequestHandlerV4 implements RequestHandlerV1<PartyRequest> {
 
 			response.setParty(data);
 		}
-		catch (ServiceException e) {
+		catch (ServiceException | ObjectNotFoundException e) {
 			throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, e.getMessage(), e);
 		}
 

@@ -34,6 +34,7 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -112,12 +113,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITES, AttributeIndividu.ORIGINE);
-
 			if (individu == null) {
-				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne
-						.getNumeroIndividu(), personne.getNumero());
-				LOGGER.error(message);
-				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.UNKNOWN_INDIVIDUAL);
+				throw new IndividuNotFoundException(personne);
 			}
 
 			to.setOfficialName(individu.getNom());
