@@ -139,6 +139,7 @@ import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -159,7 +160,6 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.xml.ServiceException;
 
 public class BusinessWebServiceTest extends WebserviceTest {
 
@@ -4051,7 +4051,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final Error error = entry.getError();
 			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ids.ppInconnu, error.getErrorMessage());
-			Assert.assertEquals(ErrorType.BUSINESS, error.getType());
+			Assert.assertEquals(ErrorType.TECHNICAL, error.getType());
 		}
 	}
 
@@ -4085,8 +4085,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final Party party = service.getParty(user, ppId, null);
 			Assert.fail("Aurait dû partir en erreur...");
 		}
-		catch (ServiceException e) {
-			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ppId, e.getInfo().getMessage());
+		catch (IndividuNotFoundException e) {
+			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ppId, e.getMessage());
 		}
 	}
 
