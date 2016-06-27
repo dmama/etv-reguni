@@ -4051,7 +4051,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final Error error = entry.getError();
 			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ids.ppInconnu, error.getErrorMessage());
-			Assert.assertEquals(ErrorType.TECHNICAL, error.getType());
+			Assert.assertEquals(ErrorType.BUSINESS, error.getType());
 		}
 	}
 

@@ -863,19 +863,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 							entries.add(new Entry(t.getNumero().intValue(), party, null));
 						}
 					}
-					catch (Exception e) {
+					catch (ServiceException e) {
 						final ErrorType errorType;
-						if (e instanceof ServiceException) {
-							final ServiceException se = (ServiceException) e;
-							if (se.getInfo() instanceof BusinessExceptionInfo) {
-								errorType = ErrorType.BUSINESS;
-							}
-							else if (se.getInfo() instanceof AccessDeniedExceptionInfo) {
-								errorType = ErrorType.ACCESS;
-							}
-							else {
-								errorType = ErrorType.TECHNICAL;
-							}
+						if (e.getInfo() instanceof BusinessExceptionInfo) {
+							errorType = ErrorType.BUSINESS;
+						}
+						else if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
+							errorType = ErrorType.ACCESS;
 						}
 						else {
 							errorType = ErrorType.TECHNICAL;
@@ -883,6 +877,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
 						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(errorType, e.getMessage())));
+					}
+					catch (ObjectNotFoundException e) {
+						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
+						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, e.getMessage())));
+					}
+					catch (Exception e) {
+						LOGGER.error("Exception au mapping xml du tiers " + t.getNumero(), e);
+						entries.add(new Entry(t.getNumero().intValue(), null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage())));
 					}
 					idLongSet.remove(t.getNumero());
 				}
