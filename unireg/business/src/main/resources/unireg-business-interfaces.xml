@@ -29,25 +29,6 @@
 
 	<!-- Service Securité -->
 
-	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">
-		<property name="serviceSecurite" ref="_serviceSecurite" />
-	</bean>
-
-	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
-		<property name="client" ref="serviceSecuriteClient" />
-	</bean>
-
-	<bean id="serviceSecuriteMarshaller" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteMarshaller">
-		<property name="ejbClient" ref="serviceSecuriteServiceHost" />
-		<property name="restClient" ref="serviceSecuriteServiceHostRest" />
-		<property name="modeRest" value="${extprop.host-interfaces.webservice.mode.rest}" />
-	</bean>
-
-	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteMarshaller" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
 	<bean id="serviceSecuriteCache" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteCache">
 		<property name="target" ref="serviceSecuriteServiceTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
