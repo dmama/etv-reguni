@@ -15,7 +15,6 @@ import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
 import ch.vd.unireg.xml.party.relation.v4.Guardian;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
-import ch.vd.unireg.xml.party.relation.v4.ManagedInvestmentFund;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
@@ -23,6 +22,8 @@ import ch.vd.unireg.xml.party.relation.v4.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
 import ch.vd.unireg.xml.party.relation.v4.ReplacedBy;
 import ch.vd.unireg.xml.party.relation.v4.Representative;
+import ch.vd.unireg.xml.party.relation.v4.TaxLiabilitySubstitute;
+import ch.vd.unireg.xml.party.relation.v4.TaxLiabilitySubstituteFor;
 import ch.vd.unireg.xml.party.relation.v4.TaxableRevenue;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferOriginator;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferRecipient;
@@ -492,23 +493,45 @@ public abstract class JsonRelationBetweenPartiesHelper {
 	}
 
 	/**
-	 * Société de direction (société de direction -> fonds de placement)
+	 * Assujettissement par substitution (substitué -> substituant)
 	 */
-	public static class JsonManagedInvestmentFund extends ManagedInvestmentFund implements JsonRelationBetweenParties {
+	public static class JsonTaxLiabilitySubstitute extends TaxLiabilitySubstitute implements JsonRelationBetweenParties {
 
-		private JsonManagedInvestmentFund(ManagedInvestmentFund src) {
+		private JsonTaxLiabilitySubstitute(TaxLiabilitySubstitute src) {
 			super(src.getDateFrom(), src.getDateTo(), src.getCancellationDate(), src.getOtherPartyNumber(), src.getAny());
 		}
 
 		@Override
 		public RelationBetweenPartiesType getType() {
-			return RelationBetweenPartiesType.MANAGED_INVESTMENT_FUND;
+			return RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE;
 		}
 
-		public static final class Builder implements JsonRelationBetweenPartiesBuilder<ManagedInvestmentFund> {
+		public static final class Builder implements JsonRelationBetweenPartiesBuilder<TaxLiabilitySubstitute> {
 			@Override
-			public RelationBetweenParties buildJsonEquivalent(ManagedInvestmentFund src) {
-				return new JsonManagedInvestmentFund(src);
+			public RelationBetweenParties buildJsonEquivalent(TaxLiabilitySubstitute src) {
+				return new JsonTaxLiabilitySubstitute(src);
+			}
+		}
+	}
+
+	/**
+	 * Assujettissement par substitution (substituant -> substitué)
+	 */
+	public static class JsonTaxLiabilitySubstituteFor extends TaxLiabilitySubstituteFor implements JsonRelationBetweenParties {
+
+		private JsonTaxLiabilitySubstituteFor(TaxLiabilitySubstituteFor src) {
+			super(src.getDateFrom(), src.getDateTo(), src.getCancellationDate(), src.getOtherPartyNumber(), src.getAny());
+		}
+
+		@Override
+		public RelationBetweenPartiesType getType() {
+			return RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR;
+		}
+
+		public static final class Builder implements JsonRelationBetweenPartiesBuilder<TaxLiabilitySubstituteFor> {
+			@Override
+			public RelationBetweenParties buildJsonEquivalent(TaxLiabilitySubstituteFor src) {
+				return new JsonTaxLiabilitySubstituteFor(src);
 			}
 		}
 	}
@@ -542,7 +565,8 @@ public abstract class JsonRelationBetweenPartiesHelper {
 		registerBuilder(map, WithholdingTaxContact.class, new JsonWithholdingTaxContact.Builder());
 		registerBuilder(map, Administration.class, new JsonAdministration.Builder());
 		registerBuilder(map, ManagementCompany.class, new JsonManagementCompany.Builder());
-		registerBuilder(map, ManagedInvestmentFund.class, new JsonManagedInvestmentFund.Builder());
+		registerBuilder(map, TaxLiabilitySubstitute.class, new JsonTaxLiabilitySubstitute.Builder());
+		registerBuilder(map, TaxLiabilitySubstituteFor.class, new JsonTaxLiabilitySubstituteFor.Builder());
 		return map;
 	}
 

@@ -16,7 +16,6 @@ import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
 import ch.vd.unireg.xml.party.relation.v4.Guardian;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
-import ch.vd.unireg.xml.party.relation.v4.ManagedInvestmentFund;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
@@ -24,6 +23,8 @@ import ch.vd.unireg.xml.party.relation.v4.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
 import ch.vd.unireg.xml.party.relation.v4.ReplacedBy;
 import ch.vd.unireg.xml.party.relation.v4.Representative;
+import ch.vd.unireg.xml.party.relation.v4.TaxLiabilitySubstitute;
+import ch.vd.unireg.xml.party.relation.v4.TaxLiabilitySubstituteFor;
 import ch.vd.unireg.xml.party.relation.v4.TaxableRevenue;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferOriginator;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferRecipient;
@@ -123,8 +124,12 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		return new ManagementCompany(dateFrom, dateTo, cancellationDate, otherPartyId, null);
 	}
 
-	private static ManagedInvestmentFund buildManagedInvestmentFund(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId) {
-		return new ManagedInvestmentFund(dateFrom, dateTo, cancellationDate, otherPartyId, null);
+	private static TaxLiabilitySubstitute buildTaxLiabilitySubstitute(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId) {
+		return new TaxLiabilitySubstitute(dateFrom, dateTo, cancellationDate, otherPartyId, null);
+	}
+
+	private static TaxLiabilitySubstituteFor buildTaxLiabilitySubstituteFor(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId) {
+		return new TaxLiabilitySubstituteFor(dateFrom, dateTo, cancellationDate, otherPartyId, null);
 	}
 
 	private static RelationBetweenParties doTest(RelationBetweenParties src, RelationBetweenPartiesType expectedType) {
@@ -250,9 +255,14 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		assertTrue(json instanceof ManagementCompany);
 	}
 
-	private static void doTest(ManagedInvestmentFund src, RelationBetweenPartiesType expectedType) {
+	private static void doTest(TaxLiabilitySubstitute src, RelationBetweenPartiesType expectedType) {
 		final RelationBetweenParties json = doTest((RelationBetweenParties) src, expectedType);
-		assertTrue(json instanceof ManagedInvestmentFund);
+		assertTrue(json instanceof TaxLiabilitySubstitute);
+	}
+
+	private static void doTest(TaxLiabilitySubstituteFor src, RelationBetweenPartiesType expectedType) {
+		final RelationBetweenParties json = doTest((RelationBetweenParties) src, expectedType);
+		assertTrue(json instanceof TaxLiabilitySubstituteFor);
 	}
 
 	private static Date generateRandomDate() {
@@ -296,7 +306,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTest(buildWithholdingTaxContact(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.WITHHOLDING_TAX_CONTACT);
 		doTest(buildAdministration(null, null, null, generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.ADMINISTRATION);
 		doTest(buildManagementCompany(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.MANAGEMENT_COMPANY);
-		doTest(buildManagedInvestmentFund(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.MANAGED_INVESTMENT_FUND);
+		doTest(buildTaxLiabilitySubstitute(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE);
+		doTest(buildTaxLiabilitySubstituteFor(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR);
 	}
 
 	@Test
@@ -321,7 +332,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTest(buildWithholdingTaxContact(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.WITHHOLDING_TAX_CONTACT);
 		doTest(buildAdministration(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.ADMINISTRATION);
 		doTest(buildManagementCompany(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.MANAGEMENT_COMPANY);
-		doTest(buildManagedInvestmentFund(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.MANAGED_INVESTMENT_FUND);
+		doTest(buildTaxLiabilitySubstitute(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE);
+		doTest(buildTaxLiabilitySubstituteFor(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR);
 	}
 
 	@Test
@@ -346,7 +358,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTestAlreadyJson(buildWithholdingTaxContact(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
 		doTestAlreadyJson(buildAdministration(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()));
 		doTestAlreadyJson(buildManagementCompany(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
-		doTestAlreadyJson(buildManagedInvestmentFund(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
+		doTestAlreadyJson(buildTaxLiabilitySubstitute(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
+		doTestAlreadyJson(buildTaxLiabilitySubstituteFor(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
 	}
 
 	private static void doTestAlreadyJson(RelationBetweenParties nonJson) {

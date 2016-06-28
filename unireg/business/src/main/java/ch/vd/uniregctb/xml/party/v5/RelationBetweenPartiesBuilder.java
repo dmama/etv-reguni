@@ -10,13 +10,14 @@ import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
 import ch.vd.unireg.xml.party.relation.v4.Guardian;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
-import ch.vd.unireg.xml.party.relation.v4.ManagedInvestmentFund;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v4.Replaced;
 import ch.vd.unireg.xml.party.relation.v4.ReplacedBy;
 import ch.vd.unireg.xml.party.relation.v4.Representative;
+import ch.vd.unireg.xml.party.relation.v4.TaxLiabilitySubstitute;
+import ch.vd.unireg.xml.party.relation.v4.TaxLiabilitySubstituteFor;
 import ch.vd.unireg.xml.party.relation.v4.TaxableRevenue;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferOriginator;
 import ch.vd.unireg.xml.party.relation.v4.WealthTransferRecipient;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AdministrationEntreprise;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
@@ -173,9 +175,15 @@ public class RelationBetweenPartiesBuilder {
 		return mc;
 	}
 
-	public static ManagedInvestmentFund newManagedInvestmentFund(SocieteDirection sd, int numeroAutreTiers) {
-		final ManagedInvestmentFund mif = new ManagedInvestmentFund();
-		fillBaseData(mif, sd, numeroAutreTiers);
-		return mif;
+	public static TaxLiabilitySubstitute newTaxLiabilitySubstitute(AssujettissementParSubstitution aps, int numeroAutreTiers) {
+		final TaxLiabilitySubstitute tls = new TaxLiabilitySubstitute();
+		fillBaseData(tls, aps, numeroAutreTiers);
+		return tls;
+	}
+
+	public static TaxLiabilitySubstituteFor newTaxLiabilitySubstituteFor(AssujettissementParSubstitution aps, int numeroAutreTiers) {
+		final TaxLiabilitySubstituteFor tlsf = new TaxLiabilitySubstituteFor();
+		fillBaseData(tlsf, aps, numeroAutreTiers);
+		return tlsf;
 	}
 }

@@ -29,6 +29,7 @@ import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AdministrationEntreprise;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
@@ -480,12 +481,22 @@ public abstract class PartyStrategy<T extends Party> {
 	};
 
 	/**
-	 * Factory qui construit une relation de société de direction (vers le fonds de placement)
+	 * Factory qui construit une relation d'assujettissement par substitution (vers le remplaçant, i.e. celui qui est effectivement assujetti)
 	 */
-	private static final RelationFactory<SocieteDirection> MANAGED_INVESTMENT_FUND_FACTORY = new RelationFactory<SocieteDirection>() {
+	private static final RelationFactory<AssujettissementParSubstitution> TAX_LIABILITY_SUBSTITUTE_FACTORY = new RelationFactory<AssujettissementParSubstitution>() {
 		@Override
-		public RelationBetweenParties build(SocieteDirection rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newManagedInvestmentFund(rapport, otherId.intValue());
+		public RelationBetweenParties build(AssujettissementParSubstitution rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newTaxLiabilitySubstitute(rapport, otherId.intValue());
+		}
+	};
+
+	/**
+	 * Factory qui construit une relation d'assujettissement par substitution (vers le substitué, i.e. celui pour le compte duquel le tiers courant est assujetti)
+	 */
+	private static final RelationFactory<AssujettissementParSubstitution> TAX_LIABILITY_SUBSTITUTE_FOR_FACTORY = new RelationFactory<AssujettissementParSubstitution>() {
+		@Override
+		public RelationBetweenParties build(AssujettissementParSubstitution rapport, @NotNull Long otherId) {
+			return RelationBetweenPartiesBuilder.newTaxLiabilitySubstituteFor(rapport, otherId.intValue());
 		}
 	};
 
@@ -495,14 +506,14 @@ public abstract class PartyStrategy<T extends Party> {
 		final Map<RelationFactoryKey, RelationFactory<?>> map = new HashMap<>(SourceRapportEntreTiers.values().length * TypeRapportEntreTiers.values().length);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, SourceRapportEntreTiers.OBJET), ECONOMIC_ACTIVITY_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, SourceRapportEntreTiers.SUJET), ECONOMIC_ACTIVITY_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.OBJET), ADMINISTRATION_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.OBJET), null);          // on n'expose que le lien entreprise -> administrateur
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.SUJET), ADMINISTRATION_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, SourceRapportEntreTiers.OBJET), REPLACED_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, SourceRapportEntreTiers.SUJET), REPLACED_BY_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, SourceRapportEntreTiers.OBJET), HOUSEHOLD_MEMBER_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, SourceRapportEntreTiers.SUJET), HOUSEHOLD_MEMBER_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.OBJET), null);   // pas exposé par le passé (???)
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.SUJET), null);   // pas exposé par le passé (???)
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.OBJET), TAX_LIABILITY_SUBSTITUTE_FOR_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.SUJET), TAX_LIABILITY_SUBSTITUTE_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceRapportEntreTiers.OBJET), null);          // on n'expose que le lien pupille -> conseiller
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceRapportEntreTiers.SUJET), LEGAL_ADVISER_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, SourceRapportEntreTiers.OBJET), WITHHOLDING_TAX_CONTACT_FACTORY);
@@ -522,7 +533,7 @@ public abstract class PartyStrategy<T extends Party> {
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, SourceRapportEntreTiers.OBJET), BEFORE_SPLIT_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, SourceRapportEntreTiers.SUJET), AFTER_SPLIT_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.OBJET), MANAGEMENT_COMPANY_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.SUJET), MANAGED_INVESTMENT_FUND_FACTORY);
+		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.SUJET), null);      // on n'expose que le lien fonds -> propriétaire
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, SourceRapportEntreTiers.OBJET), WEALTH_TRANSFER_ORIGINATOR_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, SourceRapportEntreTiers.SUJET), WEALTH_TRANSFER_RECIPIENT_FACTORY);
 		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TUTELLE, SourceRapportEntreTiers.OBJET), null);                // on n'expose que le lien pupille -> tuteur

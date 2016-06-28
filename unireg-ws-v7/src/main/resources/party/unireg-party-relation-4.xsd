@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 5.0 : version initiale -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/relation/4" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/4"
-		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/4"
+           xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 
@@ -460,11 +460,28 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="managedInvestmentFundType">
+	<xs:complexType name="taxLiabilitySubstitute">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:property>
-					<jxb:javadoc>Rapport de société de direction (depuis la société de direction vers son fonds de placement).</jxb:javadoc>
+					<jxb:javadoc>Rapport de substitution d'assujettissement (depuis le substitué vers le substituant).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="taxLiabilitySubstituteFor">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de substitution d'assujettissement (depuis le substituant vers le substitué).</jxb:javadoc>
 				</jxb:property>
 			</xs:appinfo>
 		</xs:annotation>
@@ -586,9 +603,14 @@
 					<xs:documentation>Lien où l'autre tiers est la société de direction du tiers courant (= qui est un fonds de placement).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="MANAGED_INVESTMENT_FUND">
+			<xs:enumeration value="TAX_LIABILITY_SUBSTITUTE">
 				<xs:annotation>
-					<xs:documentation>Lien où l'autre tiers est un fonds de placement dont l'entreprise courante est la société de direction.</xs:documentation>
+					<xs:documentation>Lien où l'autre tiers est celui qui se substitue au tiers courant pour son assujettissement.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_LIABILITY_SUBSTITUTE_FOR">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est celui pour lequel le tiers courant assume un assujettissement.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
