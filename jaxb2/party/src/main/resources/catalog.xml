@@ -7,11 +7,13 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-5.xsd" uri="party/unireg-party-5.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd" uri="party/unireg-party-address-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-2.xsd" uri="party/unireg-party-address-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-3.xsd" uri="party/unireg-party-address-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd" uri="party/unireg-party-administrativeauthority-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-2.xsd" uri="party/unireg-party-administrativeauthority-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-3.xsd" uri="party/unireg-party-administrativeauthority-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-4.xsd" uri="party/unireg-party-administrativeauthority-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-5.xsd" uri="party/unireg-party-administrativeauthority-5.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-agent-1.xsd" uri="party/unireg-party-agent-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-1.xsd" uri="party/unireg-party-corporation-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-2.xsd" uri="party/unireg-party-corporation-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-3.xsd" uri="party/unireg-party-corporation-3.xsd"/>
