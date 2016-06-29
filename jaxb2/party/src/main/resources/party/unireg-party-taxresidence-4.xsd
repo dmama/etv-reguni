@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v4.5 : Nouveaux motifs de fors autour des PM -->
-<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3"
+<!-- v5.0 : Disparition du motif CESSATION_ACTIVITE -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/4" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/4"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 
 	<xs:complexType name="taxResidenceType">
 		<xs:annotation>
@@ -480,11 +480,6 @@
 			<xs:enumeration value="MOVE_HEADQUARTERS">
 				<xs:annotation>
 					<xs:documentation>Déménagement de siège.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="END_ACTIVITY">
-				<xs:annotation>
-					<xs:documentation>Cessation d'activité d'une entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="CORPORATION_MERGER">
