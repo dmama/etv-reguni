@@ -299,6 +299,11 @@ public abstract class EnumHelper {
 	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS,
 	                                                                                                         CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
 
+	public static final Set<CategorieImpotSource> CIS_SUPPORTEES_V5 = Collections.unmodifiableSet(EnumSet.of(CategorieImpotSource.ADMINISTRATEURS, CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS,
+	                                                                                                         CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, CategorieImpotSource.LOI_TRAVAIL_AU_NOIR,
+	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS,
+	                                                                                                         CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
+
 	public static final Set<TypeAvatar> TA_IGNORES_V1 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
 
 	public static final Set<TypeAvatar> TA_IGNORES_V2 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
@@ -306,6 +311,8 @@ public abstract class EnumHelper {
 	public static final Set<TypeAvatar> TA_IGNORES_V3 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
 
 	public static final Set<TypeAvatar> TA_IGNORES_V4 = Collections.unmodifiableSet(EnumSet.noneOf(TypeAvatar.class));
+
+	public static final Set<TypeAvatar> TA_IGNORES_V5 = Collections.unmodifiableSet(EnumSet.noneOf(TypeAvatar.class));
 
 	private static void checkCategorieImpotSourceSupportee(Set<CategorieImpotSource> allowed, CategorieImpotSource candidate) {
 		if (!allowed.contains(candidate)) {

@@ -58,12 +58,14 @@ import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v7.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
-import ch.vd.unireg.xml.party.address.v2.Address;
-import ch.vd.unireg.xml.party.address.v2.AddressInformation;
-import ch.vd.unireg.xml.party.address.v2.AddressType;
-import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
-import ch.vd.unireg.xml.party.address.v2.PersonMailAddressInfo;
-import ch.vd.unireg.xml.party.address.v2.TariffZone;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.AddressInformation;
+import ch.vd.unireg.xml.party.address.v3.AddressType;
+import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v3.PersonMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v3.PostAddress;
+import ch.vd.unireg.xml.party.address.v3.Recipient;
+import ch.vd.unireg.xml.party.address.v3.TariffZone;
 import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v5.BusinessYear;
 import ch.vd.unireg.xml.party.corporation.v5.Capital;
@@ -1453,12 +1455,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(address);
 			Assert.assertEquals(dateArrivee, ch.vd.uniregctb.xml.DataHelper.xmlToCore(address.getDateFrom()));
 			Assert.assertEquals(AddressType.REPRESENTATION, address.getType());
-			Assert.assertNull(address.getCouple());
-			Assert.assertNull(address.getOrganisation());
+			final PostAddress postAddress = address.getPostAddress();
+			Assert.assertNotNull(postAddress);
+			final Recipient recipient = postAddress.getRecipient();
+			Assert.assertNotNull(recipient);
+			Assert.assertNull(recipient.getCouple());
+			Assert.assertNull(recipient.getOrganisation());
 			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(address.isIncomplete());
+			Assert.assertFalse(postAddress.isIncomplete());
 
-			final AddressInformation info = address.getAddressInformation();
+			final AddressInformation info = postAddress.getDestination();
 			Assert.assertNotNull(info);
 			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
 			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
@@ -1473,7 +1479,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
-			final FormattedAddress formatted = address.getFormattedAddress();
+			final FormattedAddress formatted = postAddress.getFormattedAddress();
 			Assert.assertNotNull(formatted);
 			Assert.assertEquals("Monsieur", formatted.getLine1());
 			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
@@ -1482,7 +1488,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(formatted.getLine5());
 			Assert.assertNull(formatted.getLine6());
 
-			final PersonMailAddressInfo person = address.getPerson();
+			final PersonMailAddressInfo person = recipient.getPerson();
 			Assert.assertNotNull(person);
 			Assert.assertEquals("Monsieur", person.getFormalGreeting());
 			Assert.assertEquals("Monsieur", person.getSalutation());
@@ -1495,12 +1501,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(address);
 			Assert.assertEquals(dateArrivee, ch.vd.uniregctb.xml.DataHelper.xmlToCore(address.getDateFrom()));
 			Assert.assertEquals(AddressType.DEBT_PROSECUTION, address.getType());
-			Assert.assertNull(address.getCouple());
-			Assert.assertNull(address.getOrganisation());
+			final PostAddress postAddress = address.getPostAddress();
+			Assert.assertNotNull(postAddress);
+			final Recipient recipient = postAddress.getRecipient();
+			Assert.assertNotNull(recipient);
+			Assert.assertNull(recipient.getCouple());
+			Assert.assertNull(recipient.getOrganisation());
 			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(address.isIncomplete());
+			Assert.assertFalse(postAddress.isIncomplete());
 
-			final AddressInformation info = address.getAddressInformation();
+			final AddressInformation info = postAddress.getDestination();
 			Assert.assertNotNull(info);
 			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
 			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
@@ -1515,7 +1525,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
-			final FormattedAddress formatted = address.getFormattedAddress();
+			final FormattedAddress formatted = postAddress.getFormattedAddress();
 			Assert.assertNotNull(formatted);
 			Assert.assertEquals("Monsieur", formatted.getLine1());
 			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
@@ -1524,7 +1534,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(formatted.getLine5());
 			Assert.assertNull(formatted.getLine6());
 
-			final PersonMailAddressInfo person = address.getPerson();
+			final PersonMailAddressInfo person = recipient.getPerson();
 			Assert.assertNotNull(person);
 			Assert.assertEquals("Monsieur", person.getFormalGreeting());
 			Assert.assertEquals("Monsieur", person.getSalutation());
@@ -1537,12 +1547,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(address);
 			Assert.assertEquals(dateArrivee, ch.vd.uniregctb.xml.DataHelper.xmlToCore(address.getDateFrom()));
 			Assert.assertEquals(AddressType.MAIL, address.getType());
-			Assert.assertNull(address.getCouple());
-			Assert.assertNull(address.getOrganisation());
+			final PostAddress postAddress = address.getPostAddress();
+			Assert.assertNotNull(postAddress);
+			final Recipient recipient = postAddress.getRecipient();
+			Assert.assertNotNull(recipient);
+			Assert.assertNull(recipient.getCouple());
+			Assert.assertNull(recipient.getOrganisation());
 			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(address.isIncomplete());
+			Assert.assertFalse(postAddress.isIncomplete());
 
-			final AddressInformation info = address.getAddressInformation();
+			final AddressInformation info = postAddress.getDestination();
 			Assert.assertNotNull(info);
 			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
 			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
@@ -1557,7 +1571,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
-			final FormattedAddress formatted = address.getFormattedAddress();
+			final FormattedAddress formatted = postAddress.getFormattedAddress();
 			Assert.assertNotNull(formatted);
 			Assert.assertEquals("Monsieur", formatted.getLine1());
 			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
@@ -1566,7 +1580,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(formatted.getLine5());
 			Assert.assertNull(formatted.getLine6());
 
-			final PersonMailAddressInfo person = address.getPerson();
+			final PersonMailAddressInfo person = recipient.getPerson();
 			Assert.assertNotNull(person);
 			Assert.assertEquals("Monsieur", person.getFormalGreeting());
 			Assert.assertEquals("Monsieur", person.getSalutation());
@@ -1579,12 +1593,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(address);
 			Assert.assertEquals(dateArrivee, ch.vd.uniregctb.xml.DataHelper.xmlToCore(address.getDateFrom()));
 			Assert.assertEquals(AddressType.RESIDENCE, address.getType());
-			Assert.assertNull(address.getCouple());
-			Assert.assertNull(address.getOrganisation());
+			final PostAddress postAddress = address.getPostAddress();
+			Assert.assertNotNull(postAddress);
+			final Recipient recipient = postAddress.getRecipient();
+			Assert.assertNotNull(recipient);
+			Assert.assertNull(recipient.getCouple());
+			Assert.assertNull(recipient.getOrganisation());
 			Assert.assertFalse(address.isFake());
-			Assert.assertFalse(address.isIncomplete());
+			Assert.assertFalse(postAddress.isIncomplete());
 
-			final AddressInformation info = address.getAddressInformation();
+			final AddressInformation info = postAddress.getDestination();
 			Assert.assertNotNull(info);
 			Assert.assertEquals((Integer) MockPays.Suisse.getNoOFS(), info.getCountryId());
 			Assert.assertEquals(MockPays.Suisse.getNomOfficiel(), info.getCountryName());
@@ -1599,7 +1617,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
-			final FormattedAddress formatted = address.getFormattedAddress();
+			final FormattedAddress formatted = postAddress.getFormattedAddress();
 			Assert.assertNotNull(formatted);
 			Assert.assertEquals("Monsieur", formatted.getLine1());
 			Assert.assertEquals("Arthur Delagrange", formatted.getLine2());
@@ -1608,7 +1626,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(formatted.getLine5());
 			Assert.assertNull(formatted.getLine6());
 
-			final PersonMailAddressInfo person = address.getPerson();
+			final PersonMailAddressInfo person = recipient.getPerson();
 			Assert.assertNotNull(person);
 			Assert.assertEquals("Monsieur", person.getFormalGreeting());
 			Assert.assertEquals("Monsieur", person.getSalutation());

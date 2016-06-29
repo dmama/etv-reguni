@@ -11,20 +11,26 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.agent.v1.Agent;
 import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v3.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v3.TaxationPeriod;
 import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.v5.AgentBuilder;
 import ch.vd.uniregctb.xml.party.v5.EBillingStatusBuilder;
 import ch.vd.uniregctb.xml.party.v5.FamilyStatusBuilder;
 import ch.vd.uniregctb.xml.party.v5.ImmovablePropertyBuilder;
@@ -60,6 +66,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		if (parts != null && parts.contains(PartyPart.EBILLING_STATUSES)) {
 			initEBillingStatuses(to, ctb, context);
 		}
+
+		if (parts != null && parts.contains(PartyPart.AGENTS)) {
+			initAgents(to, ctb, context);
+		}
 	}
 
 	@Override
@@ -89,6 +99,10 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (parts != null && parts.contains(PartyPart.EBILLING_STATUSES)) {
 			copyColl(to.getEbillingStatuses(), from.getEbillingStatuses());
+		}
+
+		if (parts != null && parts.contains(PartyPart.AGENTS)) {
+			copyColl(to.getAgents(), from.getAgents());
 		}
 	}
 
@@ -168,7 +182,6 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 	// [SIFISC-2588] ajout de la part immeuble
 	private static void initImmovableProperties(Taxpayer left, Contribuable contribuable) throws ServiceException {
-
 		final Set<Immeuble> immeubles = contribuable.getImmeubles();
 		for (Immeuble immeuble : immeubles) {
 			left.getImmovableProperties().add(ImmovablePropertyBuilder.newImmovableProperty(immeuble));
@@ -182,6 +195,35 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			for (EtatDestinataire etat : histo.getHistoriquesEtats()) {
 				left.getEbillingStatuses().add(EBillingStatusBuilder.newEBillingStatus(etat));
 			}
+		}
+	}
+
+	// Ajout des mandataires
+	private static void initAgents(Taxpayer left, Contribuable contribuable, Context context) throws ServiceException {
+
+		try {
+			// les adresses pures
+			final Set<AdresseMandataire> adresses = contribuable.getAdressesMandataires();
+			for (AdresseMandataire adresse : adresses) {
+				if (!adresse.isAnnule()) {
+					final Agent agent = AgentBuilder.newAgent(adresse, context);
+					if (agent != null) {
+						left.getAgents().add(agent);
+					}
+				}
+			}
+
+			// les liens
+			final Set<RapportEntreTiers> rets = contribuable.getRapportsSujet();
+			for (RapportEntreTiers ret : rets) {
+				if (!ret.isAnnule() && ret instanceof Mandat) {
+					left.getAgents().addAll(AgentBuilder.newAgents((Mandat) ret, context));
+				}
+			}
+		}
+		catch (AdresseException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.ADDRESSES);
 		}
 	}
 }

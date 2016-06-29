@@ -660,6 +660,31 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			associate(session, flags, tiers, getter, setter);
 		}
 
+		// les adresses mandataires
+		if (parts != null && parts.contains(Parts.ADRESSES_MANDATAIRES)) {
+			// on charge les adresses mandataires en vrac
+			final List<AdresseMandataire> adresses = queryObjectsByIds("from AdresseMandataire as am where am.mandant.id in (:ids)", ids, session);
+
+			final TiersIdGetter<AdresseMandataire> getter = new TiersIdGetter<AdresseMandataire>() {
+				@Override
+				public Long getTiersId(AdresseMandataire entity) {
+					return entity.getMandant().getId();
+				}
+			};
+
+			final EntitySetSetter<AdresseMandataire> setter = new EntitySetSetter<AdresseMandataire>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<AdresseMandataire> set) {
+					if (tiers instanceof Contribuable) {
+						((Contribuable) tiers).setAdressesMandataires(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, adresses, tiers, getter, setter);
+		}
+
 		return tiers;
 	}
 

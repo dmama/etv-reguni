@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.v7;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
+import ch.vd.unireg.xml.party.agent.v1.Agent;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.debtor.v5.Debtor;
 import ch.vd.unireg.xml.party.establishment.v2.Establishment;
@@ -171,6 +173,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxLiabilites(naturalPerson);
 			replacePolymorphicTaxDeclarations(naturalPerson);
 			replacePolymorphicRelationsBetweenParties(naturalPerson);
+			replacePolymorphicAgents(naturalPerson);
 			return new PartyJsonContainer(naturalPerson);
 		}
 	}
@@ -181,6 +184,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxLiabilites(household);
 			replacePolymorphicTaxDeclarations(household);
 			replacePolymorphicRelationsBetweenParties(household);
+			replacePolymorphicAgents(household);
 			return new PartyJsonContainer(household);
 		}
 	}
@@ -190,6 +194,7 @@ public class PartyJsonContainer {
 		public PartyJsonContainer build(Debtor debtor) {
 			replacePolymorphicTaxDeclarations(debtor);
 			replacePolymorphicRelationsBetweenParties(debtor);
+			replacePolymorphicAgents(debtor);
 			return new PartyJsonContainer(debtor);
 		}
 	}
@@ -200,6 +205,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxLiabilites(corporation);
 			replacePolymorphicTaxDeclarations(corporation);
 			replacePolymorphicRelationsBetweenParties(corporation);
+			replacePolymorphicAgents(corporation);
 			return new PartyJsonContainer(corporation);
 		}
 	}
@@ -210,6 +216,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxLiabilites(admAuth);
 			replacePolymorphicTaxDeclarations(admAuth);
 			replacePolymorphicRelationsBetweenParties(admAuth);
+			replacePolymorphicAgents(admAuth);
 			return new PartyJsonContainer(admAuth);
 		}
 	}
@@ -220,6 +227,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxLiabilites(otherCommunity);
 			replacePolymorphicTaxDeclarations(otherCommunity);
 			replacePolymorphicRelationsBetweenParties(otherCommunity);
+			replacePolymorphicAgents(otherCommunity);
 			return new PartyJsonContainer(otherCommunity);
 		}
 	}
@@ -230,6 +238,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxLiabilites(establishment);
 			replacePolymorphicTaxDeclarations(establishment);
 			replacePolymorphicRelationsBetweenParties(establishment);
+			replacePolymorphicAgents(establishment);
 			return new PartyJsonContainer(establishment);
 		}
 	}
@@ -241,30 +250,60 @@ public class PartyJsonContainer {
 		return builder.build((T) party);
 	}
 
-	private static void replacePolymorphicTaxLiabilites(Taxpayer taxpayer) {
-		final List<TaxLiability> tls = taxpayer.getTaxLiabilities();
-		if (tls != null) {
-			for (int i = 0 ; i < tls.size() ; ++ i) {
-				tls.set(i, JsonTaxLiabilityHelper.jsonEquivalentOf(tls.get(i)));
+	private interface JsonExtractor<T> {
+		T jsonEquivalentOf(T elt);
+	}
+
+	private static <T> void replacePolymorphicData(List<T> list, JsonExtractor<T> mapper) {
+		if (list != null && !list.isEmpty()) {
+			final ListIterator<T> iterator = list.listIterator();
+			while (iterator.hasNext()) {
+				iterator.set(mapper.jsonEquivalentOf(iterator.next()));
 			}
 		}
+	}
+
+	private static final JsonExtractor<TaxLiability> TAX_LIABILITY_JSON_EXTRACTOR = new JsonExtractor<TaxLiability>() {
+		@Override
+		public TaxLiability jsonEquivalentOf(TaxLiability elt) {
+			return JsonTaxLiabilityHelper.jsonEquivalentOf(elt);
+		}
+	};
+
+	private static final JsonExtractor<TaxDeclaration> TAX_DECLARATION_JSON_EXTRACTOR = new JsonExtractor<TaxDeclaration>() {
+		@Override
+		public TaxDeclaration jsonEquivalentOf(TaxDeclaration elt) {
+			return JsonTaxDeclarationHelper.jsonEquivalentOf(elt);
+		}
+	};
+
+	private static final JsonExtractor<RelationBetweenParties> RELATION_BETWEEN_PARTIES_JSON_EXTRACTOR = new JsonExtractor<RelationBetweenParties>() {
+		@Override
+		public RelationBetweenParties jsonEquivalentOf(RelationBetweenParties elt) {
+			return JsonRelationBetweenPartiesHelper.jsonEquivalentOf(elt);
+		}
+	};
+
+	private static final JsonExtractor<Agent> AGENT_JSON_EXTRACTOR = new JsonExtractor<Agent>() {
+		@Override
+		public Agent jsonEquivalentOf(Agent elt) {
+			return JsonAgentHelper.jsonEquivalentOf(elt);
+		}
+	};
+
+	private static void replacePolymorphicTaxLiabilites(Taxpayer taxpayer) {
+		replacePolymorphicData(taxpayer.getTaxLiabilities(), TAX_LIABILITY_JSON_EXTRACTOR);
 	}
 
 	private static void replacePolymorphicTaxDeclarations(Party party) {
-		final List<TaxDeclaration> tds = party.getTaxDeclarations();
-		if (tds != null) {
-			for (int i = 0 ; i < tds.size() ; ++ i) {
-				tds.set(i, JsonTaxDeclarationHelper.jsonEquivalentOf(tds.get(i)));
-			}
-		}
+		replacePolymorphicData(party.getTaxDeclarations(), TAX_DECLARATION_JSON_EXTRACTOR);
 	}
 
 	private static void replacePolymorphicRelationsBetweenParties(Party party) {
-		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
-		if (relations != null) {
-			for (int i = 0 ; i < relations.size() ; ++ i) {
-				relations.set(i, JsonRelationBetweenPartiesHelper.jsonEquivalentOf(relations.get(i)));
-			}
-		}
+		replacePolymorphicData(party.getRelationsBetweenParties(), RELATION_BETWEEN_PARTIES_JSON_EXTRACTOR);
+	}
+
+	private static void replacePolymorphicAgents(Party party) {
+		replacePolymorphicData(party.getAgents(), AGENT_JSON_EXTRACTOR);
 	}
 }

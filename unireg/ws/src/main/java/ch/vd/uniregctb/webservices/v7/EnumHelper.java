@@ -122,11 +122,11 @@ public abstract class EnumHelper {
 	}
 
 	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {
-		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V4;
+		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V5;
 	}
 
 	public static Set<TypeAvatar> getTypesAvatarsIgnores() {
-		return ch.vd.uniregctb.xml.EnumHelper.TA_IGNORES_V4;
+		return ch.vd.uniregctb.xml.EnumHelper.TA_IGNORES_V5;
 	}
 
 	public static CommunicationMode coreToWeb(ModeCommunication mode) {

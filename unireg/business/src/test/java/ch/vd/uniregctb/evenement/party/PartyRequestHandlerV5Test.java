@@ -13,12 +13,14 @@ import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.common.v2.UserLogin;
 import ch.vd.unireg.xml.event.party.party.v5.PartyRequest;
 import ch.vd.unireg.xml.event.party.party.v5.PartyResponse;
-import ch.vd.unireg.xml.party.address.v2.Address;
-import ch.vd.unireg.xml.party.address.v2.AddressInformation;
-import ch.vd.unireg.xml.party.address.v2.AddressType;
-import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
-import ch.vd.unireg.xml.party.address.v2.PersonMailAddressInfo;
-import ch.vd.unireg.xml.party.address.v2.TariffZone;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.AddressInformation;
+import ch.vd.unireg.xml.party.address.v3.AddressType;
+import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v3.PersonMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v3.PostAddress;
+import ch.vd.unireg.xml.party.address.v3.Recipient;
+import ch.vd.unireg.xml.party.address.v3.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v5.Debtor;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -222,7 +224,10 @@ public class PartyRequestHandlerV5Test extends BusinessTest {
 			assertEquals(new Date(1950, 3, 14), address.getDateFrom());
 			assertNull(address.getDateTo());
 
-			final AddressInformation info = address.getAddressInformation();
+			final PostAddress postAddress = address.getPostAddress();
+			assertNotNull(postAddress);
+
+			final AddressInformation info = postAddress.getDestination();
 			assertNotNull(info);
 			assertNull(info.getAddressLine1());
 			assertNull(info.getAddressLine2());
@@ -245,10 +250,12 @@ public class PartyRequestHandlerV5Test extends BusinessTest {
 			assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
 			assertEquals("Chamblon", info.getTown());
 
-			assertNull(address.getCouple());
-			assertNull(address.getOrganisation());
+			final Recipient recipient = postAddress.getRecipient();
+			assertNotNull(recipient);
+			assertNull(recipient.getCouple());
+			assertNull(recipient.getOrganisation());
 
-			final PersonMailAddressInfo person = address.getPerson();
+			final PersonMailAddressInfo person = recipient.getPerson();
 			assertNotNull(person);
 			assertEquals("Monsieur", person.getFormalGreeting());
 			assertEquals("Monsieur", person.getSalutation());
@@ -257,7 +264,7 @@ public class PartyRequestHandlerV5Test extends BusinessTest {
 			assertEquals("2", person.getMrMrs());
 			assertNull(person.getTitle());
 
-			final FormattedAddress formatted = address.getFormattedAddress();
+			final FormattedAddress formatted = postAddress.getFormattedAddress();
 			assertNotNull(formatted);
 			assertEquals("Monsieur", formatted.getLine1());
 			assertEquals("Michel Mabelle", formatted.getLine2());

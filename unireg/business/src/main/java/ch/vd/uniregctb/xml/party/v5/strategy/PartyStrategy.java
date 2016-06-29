@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
-import ch.vd.unireg.xml.party.address.v2.Address;
-import ch.vd.unireg.xml.party.address.v2.AddressOtherParty;
-import ch.vd.unireg.xml.party.address.v2.AddressType;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.AddressOtherParty;
+import ch.vd.unireg.xml.party.address.v3.AddressType;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
@@ -226,27 +226,27 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		if (adresses != null) {
-			final List<Address> adressesCourrier = DataHelper.coreToXMLv2(adresses.courrier, null, AddressType.MAIL);
+			final List<Address> adressesCourrier = DataHelper.coreToXMLv3(adresses.courrier, null, AddressType.MAIL);
 			if (adressesCourrier != null) {
 				tiers.getMailAddresses().addAll(adressesCourrier);
 			}
 
-			final List<Address> adressesRepresentation = DataHelper.coreToXMLv2(adresses.representation, null, AddressType.REPRESENTATION);
+			final List<Address> adressesRepresentation = DataHelper.coreToXMLv3(adresses.representation, null, AddressType.REPRESENTATION);
 			if (adressesRepresentation != null) {
 				tiers.getRepresentationAddresses().addAll(adressesRepresentation);
 			}
 
-			final List<Address> adressesDomicile = DataHelper.coreToXMLv2(adresses.domicile, null, AddressType.RESIDENCE);
+			final List<Address> adressesDomicile = DataHelper.coreToXMLv3(adresses.domicile, null, AddressType.RESIDENCE);
 			if (adressesDomicile != null) {
 				tiers.getResidenceAddresses().addAll(adressesDomicile);
 			}
 
-			final List<Address> adressesPoursuite = DataHelper.coreToXMLv2(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
+			final List<Address> adressesPoursuite = DataHelper.coreToXMLv3(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
 			if (adressesPoursuite != null) {
 				tiers.getDebtProsecutionAddresses().addAll(adressesPoursuite);
 			}
 
-			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLATv2(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
+			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLATv3(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
 			if (adresseAutreTiers != null) {
 				tiers.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 			}

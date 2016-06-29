@@ -36,8 +36,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.xml.common.v2.Date;
-import ch.vd.unireg.xml.party.address.v2.Address;
-import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
@@ -82,6 +82,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.v7.BusinessWebService;
 
@@ -198,6 +199,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 				// un rapport de travail entre eric et le débiteur (pour avoir un calcul de PIIS)
 				addRapportPrestationImposable(debiteur, eric, date(2009, 1, 1), date(2009, 5, 1), false);
+
+				// une adresse mandataire
+				addAdresseMandataireSuisse(eric, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
 
 				return null;
 			}
@@ -486,7 +490,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// On vérifie l'adresse d'envoi
 		final List<Address> mailAddressesAvant = menageAvant.getMailAddresses();
-		final FormattedAddress adressesAvant = mailAddressesAvant.get(mailAddressesAvant.size() - 1).getFormattedAddress();
+		final FormattedAddress adressesAvant = mailAddressesAvant.get(mailAddressesAvant.size() - 1).getPostAddress().getFormattedAddress();
 		assertEquals("Monsieur et Madame", adressesAvant.getLine1());
 		assertEquals("Eric Bolomey", adressesAvant.getLine2());
 		assertEquals("Monique Bolomey", adressesAvant.getLine3());
@@ -529,7 +533,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// On vérifie l'adresse d'envoi
 		final List<Address> mailAddressesApres = menageApres.getMailAddresses();
-		final FormattedAddress adressesApres = mailAddressesApres.get(mailAddressesApres.size() - 1).getFormattedAddress();
+		final FormattedAddress adressesApres = mailAddressesApres.get(mailAddressesApres.size() - 1).getPostAddress().getFormattedAddress();
 		assertEquals("Monsieur et Madame", adressesApres.getLine1());
 		assertEquals("Eric Bolomey", adressesApres.getLine2());
 		assertEquals("Gudrun Bolomey", adressesApres.getLine3());
@@ -1287,10 +1291,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkCorporationStatuses = PartyPart.CORPORATION_STATUSES == p;
 		boolean checkBusinessYears = PartyPart.BUSINESS_YEARS == p;
 		boolean checkCorporationFlags = PartyPart.CORPORATION_FLAGS == p;
+		boolean checkAgents = PartyPart.AGENTS == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
-				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses, "La partie [" + p + "] est inconnue");
+				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -1312,6 +1317,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
 			assertNullOrNotNull(checkImmovableProperties, ctb.getImmovableProperties(), "immovableProperties");
 			assertNullOrNotNull(checkEbillingStatuses, ctb.getEbillingStatuses(), "ebillingStatuses");
+			assertNullOrNotNull(checkAgents, ctb.getAgents(), "agents");
 		}
 
 		if (tiers instanceof CommonHousehold) {

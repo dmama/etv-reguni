@@ -260,6 +260,22 @@ public abstract class DataHelper {
 		return list.isEmpty() ? null : list;
 	}
 
+	public static List<ch.vd.unireg.xml.party.address.v3.Address> coreToXMLv3(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
+	                                                                          ch.vd.unireg.xml.party.address.v3.AddressType type) throws ServiceException {
+		if (adresses == null || adresses.isEmpty()) {
+			return null;
+		}
+
+		final List<ch.vd.unireg.xml.party.address.v3.Address> list = new ArrayList<>();
+		for (AdresseEnvoiDetaillee a : adresses) {
+			if (range == null || DateRangeHelper.intersect(a, range)) {
+				list.add(AddressBuilder.newAddress(a, type));
+			}
+		}
+
+		return list.isEmpty() ? null : list;
+	}
+
 	public static List<ch.vd.unireg.xml.party.address.v1.AddressOtherParty> coreToXMLATv1(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
 	                                                                                      ch.vd.unireg.xml.party.address.v1.AddressType type) throws ServiceException {
 		if (adresses == null || adresses.isEmpty()) {
@@ -283,6 +299,22 @@ public abstract class DataHelper {
 		}
 
 		final List<ch.vd.unireg.xml.party.address.v2.AddressOtherParty> list = new ArrayList<>();
+		for (AdresseEnvoiDetaillee a : adresses) {
+			if (range == null || DateRangeHelper.intersect(a, range)) {
+				list.add(AddressBuilder.newOtherPartyAddress(a, type));
+			}
+		}
+
+		return list.isEmpty() ? null : list;
+	}
+
+	public static List<ch.vd.unireg.xml.party.address.v3.AddressOtherParty> coreToXMLATv3(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
+	                                                                                      ch.vd.unireg.xml.party.address.v3.AddressType type) throws ServiceException {
+		if (adresses == null || adresses.isEmpty()) {
+			return null;
+		}
+
+		final List<ch.vd.unireg.xml.party.address.v3.AddressOtherParty> list = new ArrayList<>();
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(AddressBuilder.newOtherPartyAddress(a, type));
@@ -321,6 +353,23 @@ public abstract class DataHelper {
 			return ch.vd.unireg.xml.party.address.v2.TariffZone.EUROPE;
 		case MONDE:
 			return ch.vd.unireg.xml.party.address.v2.TariffZone.OTHER_COUNTRIES;
+		default:
+			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.address.v3.TariffZone coreToXMLv3(TypeAffranchissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case SUISSE:
+			return ch.vd.unireg.xml.party.address.v3.TariffZone.SWITZERLAND;
+		case EUROPE:
+			return ch.vd.unireg.xml.party.address.v3.TariffZone.EUROPE;
+		case MONDE:
+			return ch.vd.unireg.xml.party.address.v3.TariffZone.OTHER_COUNTRIES;
 		default:
 			throw new IllegalArgumentException("Type d'affranchissement inconnu = [" + t + ']');
 		}
@@ -1095,6 +1144,10 @@ public abstract class DataHelper {
 				break;
 			case CORPORATION_FLAGS:
 			    results.add(TiersDAO.Parts.FLAGS);
+				break;
+			case AGENTS:
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				results.add(TiersDAO.Parts.ADRESSES_MANDATAIRES);
 				break;
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
