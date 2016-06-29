@@ -2,8 +2,8 @@ package ch.vd.uniregctb.xml.party.v5;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.xml.party.taxresidence.v3.SimplifiedTaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v3.SimplifiedTaxLiabilityType;
+import ch.vd.unireg.xml.party.taxresidence.v4.SimplifiedTaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v4.SimplifiedTaxLiabilityType;
 import ch.vd.uniregctb.xml.DataHelper;
 
 public class SimplifiedTaxLiabilityBuilder {

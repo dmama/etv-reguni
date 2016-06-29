@@ -1203,7 +1203,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		private static boolean isDernierForPrincipalFermePourFinActivite(Tiers tiers) {
 			final ForFiscalPrincipal dernierFor = tiers.getDernierForFiscalPrincipal();
-			return dernierFor != null && dernierFor.getDateFin() != null && dernierFor.getMotifFermeture() == MotifFor.CESSATION_ACTIVITE;
+			return dernierFor != null && dernierFor.getDateFin() != null && dernierFor.getMotifFermeture() == MotifFor.FIN_EXPLOITATION;
 		}
 
 		@Override
@@ -1234,7 +1234,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		private static boolean isDernierForPrincipalFermePourFinActivite(Tiers tiers) {
 			final ForFiscalPrincipal dernierFor = tiers.getDernierForFiscalPrincipal();
-			return dernierFor != null && dernierFor.getDateFin() != null && dernierFor.getMotifFermeture() == MotifFor.CESSATION_ACTIVITE;
+			return dernierFor != null && dernierFor.getDateFin() != null && dernierFor.getMotifFermeture() == MotifFor.FIN_EXPLOITATION;
 		}
 
 		@Override

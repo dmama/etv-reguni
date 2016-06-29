@@ -1431,7 +1431,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
 				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
-				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.CESSATION_ACTIVITE, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 
 				final PeriodeFiscale pfAvant = periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
 				addQuestionnaireSNC(e, pfAvant);

@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.webservices.v6;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason;
@@ -15,9 +18,15 @@ public class MotifForTest extends EnumTest {
 		return ch.vd.uniregctb.type.MotifFor.values();
 	}
 
+	private static LiabilityChangeReason[] buildAllowedReasons() {
+		final Set<LiabilityChangeReason> allowed = EnumSet.complementOf(EnumSet.of(LiabilityChangeReason.END_ACTIVITY));
+		return allowed.toArray(new LiabilityChangeReason[allowed.size()]);
+	}
+
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(LiabilityChangeReason.class.getEnumConstants(), buildAllowedCoreMotifsFor());
+		// [SIFISC-19345] le motif END_ACTIVITY n'est plus utilisé car le motif CESSATION_ACTIVITE a disparu (au profit de FIN_EXPLOITATION)
+		assertEnumLengthEquals(buildAllowedReasons(), buildAllowedCoreMotifsFor());
 
 		// vérification que toutes les valeurs sont mappées sur quelque chose
 		for (MotifFor motif : MotifFor.values()) {
@@ -55,7 +64,6 @@ public class MotifForTest extends EnumTest {
 		assertEquals(LiabilityChangeReason.END_WITHHOLDING_ACTIVITY, EnumHelper.coreToWeb(MotifFor.FIN_PRESTATION_IS));
 		assertEquals(LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY, EnumHelper.coreToWeb(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
 		assertEquals(LiabilityChangeReason.MOVE_HEADQUARTERS, EnumHelper.coreToWeb(MotifFor.DEMENAGEMENT_SIEGE));
-		assertEquals(LiabilityChangeReason.END_ACTIVITY, EnumHelper.coreToWeb(MotifFor.CESSATION_ACTIVITE));
 		assertEquals(LiabilityChangeReason.CORPORATION_MERGER, EnumHelper.coreToWeb(MotifFor.FUSION_ENTREPRISES));
 		assertEquals(LiabilityChangeReason.BANKRUPTCY, EnumHelper.coreToWeb(MotifFor.FAILLITE));
 	}

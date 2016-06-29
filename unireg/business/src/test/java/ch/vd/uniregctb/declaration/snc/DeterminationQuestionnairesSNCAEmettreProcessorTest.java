@@ -536,7 +536,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.CESSATION_ACTIVITE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addQuestionnaireSNC(entreprise, pf2013);
 				return entreprise.getNumero();
 			}
@@ -603,7 +603,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.CESSATION_ACTIVITE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 3, 1), RegDate.get(pf, 12, 3), CategorieEntreprise.SP, entreprise, oipm);    // cette tâche est en trop!
 				return entreprise.getNumero();
 			}
@@ -680,7 +680,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.CESSATION_ACTIVITE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addQuestionnaireSNC(entreprise, pf2014);        // celui-ci ne devrait pas exister, en fait...
 				return entreprise.getNumero();
 			}
@@ -758,7 +758,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.CESSATION_ACTIVITE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf2014);        // celui-ci ne devrait pas exister, en fait...
 				addTacheAnnulationQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), questionnaire, entreprise, oipm);       // ça tombe bien, la tâche d'annulation est déjà là

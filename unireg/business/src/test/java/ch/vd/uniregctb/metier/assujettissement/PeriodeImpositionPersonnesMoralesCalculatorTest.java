@@ -1107,7 +1107,7 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.FONDATION);
 		addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 		addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-		addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.CESSATION_ACTIVITE, MockCommune.Leysin);
+		addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Leysin);
 		addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 		addFlagEntreprise(e, date(2015, 12, 1), date(2016, 1, 3), TypeFlagEntreprise.UTILITE_PUBLIQUE);
 

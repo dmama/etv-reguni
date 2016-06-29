@@ -24,9 +24,9 @@ public enum MotifFor {
 
 	VENTE_IMMOBILIER("Vente immobilier"),
 
-	DEBUT_EXPLOITATION("Début d'exploitation"),
+	DEBUT_EXPLOITATION("Début d'activité"),
 
-	FIN_EXPLOITATION("Fin d'exploitation"),
+	FIN_EXPLOITATION("Fin d'activité"),
 
 	DEPART_HS("Départ hors-Suisse"),
 
@@ -81,11 +81,6 @@ public enum MotifFor {
 	 * Déménagement du siège social d'un débiteur IS
 	 */
 	DEMENAGEMENT_SIEGE("Déménagement de siège"),
-
-	/**
-	 * Cessation d'activité d'une entreprise
-	 */
-	CESSATION_ACTIVITE("Cessation d'activité"),
 
 	/**
 	 * Fusion d'entreprises

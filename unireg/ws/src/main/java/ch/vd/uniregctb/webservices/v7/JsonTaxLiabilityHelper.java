@@ -5,17 +5,17 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import ch.vd.unireg.xml.party.taxresidence.v3.ExpenditureBased;
-import ch.vd.unireg.xml.party.taxresidence.v3.ForeignCountry;
-import ch.vd.unireg.xml.party.taxresidence.v3.Indigent;
-import ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType;
-import ch.vd.unireg.xml.party.taxresidence.v3.MixedWithholding137Par1;
-import ch.vd.unireg.xml.party.taxresidence.v3.MixedWithholding137Par2;
-import ch.vd.unireg.xml.party.taxresidence.v3.OrdinaryResident;
-import ch.vd.unireg.xml.party.taxresidence.v3.OtherCanton;
-import ch.vd.unireg.xml.party.taxresidence.v3.PureWithholding;
-import ch.vd.unireg.xml.party.taxresidence.v3.SwissDiplomat;
-import ch.vd.unireg.xml.party.taxresidence.v3.TaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v4.ExpenditureBased;
+import ch.vd.unireg.xml.party.taxresidence.v4.ForeignCountry;
+import ch.vd.unireg.xml.party.taxresidence.v4.Indigent;
+import ch.vd.unireg.xml.party.taxresidence.v4.IndividualTaxLiabilityType;
+import ch.vd.unireg.xml.party.taxresidence.v4.MixedWithholding137Par1;
+import ch.vd.unireg.xml.party.taxresidence.v4.MixedWithholding137Par2;
+import ch.vd.unireg.xml.party.taxresidence.v4.OrdinaryResident;
+import ch.vd.unireg.xml.party.taxresidence.v4.OtherCanton;
+import ch.vd.unireg.xml.party.taxresidence.v4.PureWithholding;
+import ch.vd.unireg.xml.party.taxresidence.v4.SwissDiplomat;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
 
 /**
  * Classes et méthodes utiles pour la manipulation du type polymorphique {@link TaxLiability} avec JSON

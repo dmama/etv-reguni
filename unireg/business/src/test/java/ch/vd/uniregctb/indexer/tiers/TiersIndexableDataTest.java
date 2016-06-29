@@ -686,13 +686,13 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setMotifFermetureDernierForPrincipal(MotifFor.CESSATION_ACTIVITE);
+		data.setMotifFermetureDernierForPrincipal(MotifFor.FIN_EXPLOITATION);
 		globalIndex.indexEntity(data);
 
 		// recherche des données OK
 		{
 			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.CESSATION_ACTIVITE));
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.FIN_EXPLOITATION));
 
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);
@@ -705,7 +705,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		// recherche des données OK
 		{
 			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.CESSATION_ACTIVITE, MotifFor.FAILLITE));
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.FIN_EXPLOITATION, MotifFor.FAILLITE));
 
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);

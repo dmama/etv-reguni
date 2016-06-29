@@ -729,9 +729,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 		boolean hasImmeuble = false;
 		for (ForFiscalSecondaire fs : forsParType.secondaires) {
 			hasImmeuble |= fs.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE;
-			tiersService.closeForFiscalSecondaire(entreprise, fs, dateFinActivite, MotifFor.CESSATION_ACTIVITE);
+			tiersService.closeForFiscalSecondaire(entreprise, fs, dateFinActivite, MotifFor.FIN_EXPLOITATION);
 		}
-		tiersService.closeForFiscalPrincipal(forsParType.principal, dateFinActivite, MotifFor.CESSATION_ACTIVITE);
+		tiersService.closeForFiscalPrincipal(forsParType.principal, dateFinActivite, MotifFor.FIN_EXPLOITATION);
 
 		// 3. si for immeuble fermé, on crée une tâche de contrôle de dossier
 
@@ -752,18 +752,18 @@ public class MetierServicePMImpl implements MetierServicePM {
 	@Override
 	public void annuleFinActivite(Entreprise entreprise, RegDate dateFinActivite, @Nullable String remarqueAssociee, boolean reouvertureComplete) throws MetierServiceException {
 
-		// 1. vérification que le dernier for principal de l'entreprise est bien fermé pour motif CESSATION_ACTIVITE
+		// 1. vérification que le dernier for principal de l'entreprise est bien fermé pour motif FIN_EXPLOITATION
 		final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-		if (ffp == null || ffp.getDateFin() == null || ffp.getDateFin() != dateFinActivite || ffp.getMotifFermeture() != MotifFor.CESSATION_ACTIVITE) {
+		if (ffp == null || ffp.getDateFin() == null || ffp.getDateFin() != dateFinActivite || ffp.getMotifFermeture() != MotifFor.FIN_EXPLOITATION) {
 			throw new MetierServiceException(String.format("Le dernier for principal de l'entreprise n'est pas fermé au %s pour motif de '%s'.",
 			                                               RegDateHelper.dateToDisplayString(dateFinActivite),
-			                                               MotifFor.CESSATION_ACTIVITE.getDescription(false)));
+			                                               MotifFor.FIN_EXPLOITATION.getDescription(false)));
 		}
 
 		// 2. ré-ouverture des fors fiscaux
 		if (reouvertureComplete) {
 			// tous les fors fermés au moment de la fin d'activité
-			tiersService.reopenForsClosedAt(dateFinActivite, MotifFor.CESSATION_ACTIVITE, entreprise);
+			tiersService.reopenForsClosedAt(dateFinActivite, MotifFor.FIN_EXPLOITATION, entreprise);
 		}
 		else {
 			// seulement le for principal
@@ -1136,7 +1136,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		// 4. ré-ouverture du dernier for principal fermé (s'il existe)
 		final ForFiscalPrincipalPM dernierForFiscal = entreprise.getDernierForFiscalPrincipal();
-		final Set<MotifFor> motifsReouverts = EnumSet.of(MotifFor.CESSATION_ACTIVITE, MotifFor.FAILLITE);
+		final Set<MotifFor> motifsReouverts = EnumSet.of(MotifFor.FIN_EXPLOITATION, MotifFor.FAILLITE);
 		if (dernierForFiscal != null && dernierForFiscal.getDateFin() != null && motifsReouverts.contains(dernierForFiscal.getMotifFermeture())) {
 			dernierForFiscal.setAnnule(true);
 			tiersService.reopenFor(dernierForFiscal, entreprise);

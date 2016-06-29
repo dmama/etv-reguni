@@ -1834,7 +1834,7 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
 					Assert.assertEquals(dateCessationActivite, ff.getDateFin());
 					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
-					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+					Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
 				}
 
 				// 2. le rapport entre tiers vers l'établissement secondaire doit être fermé, pas l'autre
@@ -1929,8 +1929,8 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
-				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -1981,7 +1981,7 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
 					Assert.assertEquals(dateFinActivite, ff.getDateFin());
 					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
-					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+					Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
 				}
 				for (ForFiscal ff : fors.get(Boolean.FALSE)) {
 					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
@@ -2093,8 +2093,8 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
-				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.Grandson);
-				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -2145,7 +2145,7 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
 					Assert.assertEquals(dateFinActivite, ff.getDateFin());
 					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
-					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+					Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
 					Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
 				}
 				final Map<Class<? extends ForFiscal>, List<ForFiscal>> forsNonAnnulesParClasse = segmenterParClasse(fors.get(Boolean.FALSE));
@@ -2162,7 +2162,7 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
 					Assert.assertEquals(dateFinActivite, ff.getDateFin());
 					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
-					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+					Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
 				}
 
 				// 2. le rapport entre tiers vers l'établissement secondaire ne doit pas être ré-ouvert

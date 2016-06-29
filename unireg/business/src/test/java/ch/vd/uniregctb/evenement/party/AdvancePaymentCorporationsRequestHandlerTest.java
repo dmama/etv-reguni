@@ -58,7 +58,7 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.CESSATION_ACTIVITE, MockCommune.Renens);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Renens);
 				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
 				return e.getNumero();
 			}
@@ -304,7 +304,7 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRaisonSociale(e, dateDebut, null, "Ma petite entreprise");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
-				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateCessationActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.Renens);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateCessationActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Renens);
 				addBouclement(e, dateDebut.addYears(1), DayMonth.get(6, 30), 12);       // tous les 30.06 depuis 2001
 				return e.getNumero();
 			}

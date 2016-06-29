@@ -27,7 +27,7 @@ import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType;
 import ch.vd.unireg.xml.party.person.v5.Origin;
 import ch.vd.unireg.xml.party.person.v5.ParentFullName;
-import ch.vd.unireg.xml.party.taxresidence.v3.WithholdingTaxationPeriod;
+import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;

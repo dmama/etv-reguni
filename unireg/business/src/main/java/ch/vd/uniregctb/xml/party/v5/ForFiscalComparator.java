@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.xml.party.taxresidence.v3.TaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.uniregctb.xml.DataHelper;
 
 /**

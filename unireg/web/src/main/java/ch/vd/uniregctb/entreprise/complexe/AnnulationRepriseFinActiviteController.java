@@ -50,7 +50,7 @@ public abstract class AnnulationRepriseFinActiviteController extends AbstractPro
 		criteria.setTiersActif(Boolean.FALSE);
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 		criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE));
-		criteria.setMotifFermetureDernierForPrincipal(MotifFor.CESSATION_ACTIVITE);
+		criteria.setMotifFermetureDernierForPrincipal(MotifFor.FIN_EXPLOITATION);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public abstract class AnnulationRepriseFinActiviteController extends AbstractPro
 			public String doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = getTiers(Entreprise.class, idEntreprise);
 				final ForFiscalPrincipalPM dernierFor = entreprise.getDernierForFiscalPrincipal();
-				if (dernierFor == null || dernierFor.getMotifFermeture() != MotifFor.CESSATION_ACTIVITE) {
+				if (dernierFor == null || dernierFor.getMotifFermeture() != MotifFor.FIN_EXPLOITATION) {
 					Flash.error("Le dernier for principal de l'entreprise sélectionnée n'est plus fermé pour motif 'Cessation d'activité'.");
 					return "redirect:list.do";
 				}

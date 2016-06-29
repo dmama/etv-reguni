@@ -520,7 +520,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode - 1, 12, 31), MotifFor.CESSATION_ACTIVITE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);   // il n'y a plus de for sur 2015...
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode - 1, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);   // il n'y a plus de for sur 2015...
 
 				final PeriodeFiscale pf = addPeriodeFiscale(periode);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);

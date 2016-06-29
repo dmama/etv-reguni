@@ -842,7 +842,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 1, 15), MotifFor.CESSATION_ACTIVITE, MockCommune.YverdonLesBains);
+				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 1, 15), MotifFor.FIN_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(1, 31), 12);          // bouclements tous les 31.01
 

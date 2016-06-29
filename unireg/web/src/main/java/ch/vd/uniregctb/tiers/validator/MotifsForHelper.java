@@ -189,7 +189,7 @@ public class MotifsForHelper {
 		final Set<MotifFor> motifs = EnumSet.noneOf(MotifFor.class);
 		switch (type.rattachement) {
 		case DOMICILE:
-			motifs.add(MotifFor.CESSATION_ACTIVITE);
+			motifs.add(MotifFor.FIN_EXPLOITATION);
 			motifs.add(MotifFor.FAILLITE);
 			break;
 		case IMMEUBLE_PRIVE:

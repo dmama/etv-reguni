@@ -179,7 +179,7 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 				                             {
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(7);
 					                             Assert.assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-					                             Assert.assertEquals("Ouverture d'un for fiscal principal à Lausanne (VD) à partir du 25.06.2015, motif ouverture Début d'exploitation, rattachement DOMICILE, pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noOrganisation + ").", erreur.getMessage());
+					                             Assert.assertEquals("Ouverture d'un for fiscal principal à Lausanne (VD) à partir du 25.06.2015, motif ouverture Début d'activité, rattachement DOMICILE, pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noOrganisation + ").", erreur.getMessage());
 				                             }
 				                             {
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(8);

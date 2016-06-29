@@ -22,7 +22,7 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxresidence.v3.TaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;

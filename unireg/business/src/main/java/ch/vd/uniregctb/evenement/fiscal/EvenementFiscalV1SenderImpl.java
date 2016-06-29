@@ -227,7 +227,6 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		case ARRIVEE_HS:
 			return MotifForEnumType.ARRIVEE_HS;
 		case CESSATION_ACTIVITE_FUSION_FAILLITE:
-		case CESSATION_ACTIVITE:
 		case FAILLITE:
 		case FUSION_ENTREPRISES:
 			return MotifForEnumType.INDETERMINE;
