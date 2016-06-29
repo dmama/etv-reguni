@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -13,15 +14,15 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class ToInscriteRCTransitionEtatEntrepriseFactory extends BaseTransitionEtatEntrepriseFactory {
 
-	public ToInscriteRCTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
-		super(tiersDAO);
+	public ToInscriteRCTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, EvenementFiscalService evenementFiscalService) {
+		super(tiersDAO, evenementFiscalService);
 	}
 
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
 		if (actuel == null) {
-			return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+			return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation, getEvenementFiscalService());
 		}
 		if (!checkDateValid(actuel, date)) {
 			return null;
@@ -31,7 +32,7 @@ public class ToInscriteRCTransitionEtatEntrepriseFactory extends BaseTransitionE
 		case EN_LIQUIDATION:
 		case RADIEE_RC:
 		case EN_FAILLITE:
-			return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+			return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation, getEvenementFiscalService());
 		default:
 			return null;
 		}

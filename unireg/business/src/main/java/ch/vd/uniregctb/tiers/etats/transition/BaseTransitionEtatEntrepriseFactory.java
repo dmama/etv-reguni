@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.etats.transition;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -12,13 +13,20 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  */
 public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionEtatEntrepriseFactory {
 	private final TiersDAO tiersDAO;
+	private final EvenementFiscalService evenementFiscalService;
 
-	public BaseTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
+
+
+	public BaseTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, EvenementFiscalService evenementFiscalService) {
 		this.tiersDAO = tiersDAO;
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	protected TiersDAO getTiersDAO() {
 		return tiersDAO;
+	}
+	public EvenementFiscalService getEvenementFiscalService() {
+		return evenementFiscalService;
 	}
 
 	/**

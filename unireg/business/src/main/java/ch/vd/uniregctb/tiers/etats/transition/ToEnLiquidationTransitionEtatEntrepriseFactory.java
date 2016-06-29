@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -13,8 +14,8 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class ToEnLiquidationTransitionEtatEntrepriseFactory extends BaseTransitionEtatEntrepriseFactory {
 
-	public ToEnLiquidationTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
-		super(tiersDAO);
+	public ToEnLiquidationTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, EvenementFiscalService evenementFiscalService) {
+		super(tiersDAO, evenementFiscalService);
 	}
 
 	@Override
@@ -25,7 +26,7 @@ public class ToEnLiquidationTransitionEtatEntrepriseFactory extends BaseTransiti
 		}
 		switch (actuel.getType()) {
 		case INSCRITE_RC:
-			return new ToEnLiquidationTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+			return new ToEnLiquidationTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation, getEvenementFiscalService());
 		default:
 			return null;
 		}

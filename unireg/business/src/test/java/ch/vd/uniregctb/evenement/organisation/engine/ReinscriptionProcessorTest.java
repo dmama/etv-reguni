@@ -88,9 +88,9 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2012, 1, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.RADIEE_RC, entreprise, date(2013, 2, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2012, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2013, 2, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 26), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);

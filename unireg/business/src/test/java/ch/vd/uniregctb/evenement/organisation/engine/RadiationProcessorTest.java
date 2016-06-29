@@ -105,8 +105,8 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2013, 1, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2013, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 				return entreprise;
 			}
 		});
@@ -203,8 +203,8 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
-				tiersService.changeEtatEntreprise(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2013, 1, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2010, 6, 24), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, date(2013, 1, 1), TypeEtatEntreprise.EN_LIQUIDATION, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 				return entreprise.getNumero();
 			}
 		});

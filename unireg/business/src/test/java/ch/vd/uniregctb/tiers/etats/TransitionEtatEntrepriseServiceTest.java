@@ -34,8 +34,10 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 	}
 
 	private TransitionEtatEntrepriseServiceImpl createService(TiersDAO dao) throws Exception {
-		TransitionEtatEntrepriseServiceImpl factory = new TransitionEtatEntrepriseServiceImpl();
+		final TransitionEtatEntrepriseServiceImpl factory = new TransitionEtatEntrepriseServiceImpl();
 		factory.setTiersDAO(dao);
+		final EvenementFiscalMockService evenementFiscalMockService = new EvenementFiscalMockService();
+		factory.setEvenementFiscalService(evenementFiscalMockService);
 		factory.afterPropertiesSet();
 		return factory;
 	}

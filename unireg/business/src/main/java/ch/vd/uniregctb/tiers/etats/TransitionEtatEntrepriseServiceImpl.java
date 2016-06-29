@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.etats.transition.ToAbsorbeeTransitionEtatEntrepriseFactory;
@@ -40,6 +41,7 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 	protected static final Logger LOGGER = LoggerFactory.getLogger(TransitionEtatEntrepriseServiceImpl.class);
 
 	private TiersDAO tiersDAO;
+	private EvenementFiscalService evenementFiscalService;
 
 	/*
 	Liste des transitions disponibles vers l'état visé
@@ -48,13 +50,13 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		transitionFactoryMap.put(TypeEtatEntreprise.EN_LIQUIDATION, new ToEnLiquidationTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.EN_FAILLITE, new ToEnFailliteTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.ABSORBEE, new ToAbsorbeeTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.RADIEE_RC, new ToRadieeRCTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.INSCRITE_RC, new ToInscriteRCTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.FONDEE, new ToFondeeTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.DISSOUTE, new ToDissouteTransitionEtatEntrepriseFactory(tiersDAO));
+		transitionFactoryMap.put(TypeEtatEntreprise.EN_LIQUIDATION, new ToEnLiquidationTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
+		transitionFactoryMap.put(TypeEtatEntreprise.EN_FAILLITE, new ToEnFailliteTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
+		transitionFactoryMap.put(TypeEtatEntreprise.ABSORBEE, new ToAbsorbeeTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
+		transitionFactoryMap.put(TypeEtatEntreprise.RADIEE_RC, new ToRadieeRCTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
+		transitionFactoryMap.put(TypeEtatEntreprise.INSCRITE_RC, new ToInscriteRCTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
+		transitionFactoryMap.put(TypeEtatEntreprise.FONDEE, new ToFondeeTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
+		transitionFactoryMap.put(TypeEtatEntreprise.DISSOUTE, new ToDissouteTransitionEtatEntrepriseFactory(tiersDAO, evenementFiscalService));
 	}
 
 	@Override
@@ -78,5 +80,10 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		Objects.requireNonNull(tiersDAO);
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		Objects.requireNonNull(evenementFiscalService);
+		this.evenementFiscalService = evenementFiscalService;
 	}
 }

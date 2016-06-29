@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.etats.transition.ToEnLiquidationTransitionEtatEntrepriseFactory;
@@ -20,10 +21,12 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 
 	private TransitionEtatMockTiersDao dao;
+	private EvenementFiscalMockService evtFiscService;
 
 	@Before
 	public void setUp() throws Exception {
 		dao = new TransitionEtatMockTiersDao();
+		evtFiscService = new EvenementFiscalMockService();
 	}
 
 	@Test
@@ -36,7 +39,7 @@ public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 		final Entreprise entreprise = new Entreprise(1234);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao);
+		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao, evtFiscService);
 
 		TransitionEtatEntreprise transition = factory.create(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 		Assert.assertNotNull(transition);
@@ -55,6 +58,11 @@ public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 		Assert.assertEquals(date(2015, 12, 31), nouvel.getDateObtention());
 		Assert.assertEquals(entreprise, nouvel.getEntreprise());
 		Assert.assertEquals(TypeGenerationEtatEntreprise.MANUELLE, nouvel.getGeneration());
+
+		Assert.assertTrue(evtFiscService.isCalledOnce());
+		Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.LIQUIDATION, evtFiscService.getType());
+		Assert.assertEquals(date(2015, 12, 31), evtFiscService.getDateEvenement());
+		Assert.assertEquals(entreprise, evtFiscService.getEntreprise());
 	}
 
 	@Test
@@ -67,7 +75,7 @@ public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 		final Entreprise entreprise = new Entreprise(1234);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao);
+		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao, evtFiscService);
 
 		TransitionEtatEntreprise transition = factory.create(entreprise, date(2014, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 		Assert.assertNull(transition);
@@ -75,5 +83,6 @@ public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 		EtatEntreprise dernierEtat = CollectionsUtils.getLastElement(entreprise.getEtatsNonAnnulesTries());
 		Assert.assertEquals(actuel, dernierEtat);
 
+		Assert.assertFalse(evtFiscService.isCalledOnce());
 	}
 }

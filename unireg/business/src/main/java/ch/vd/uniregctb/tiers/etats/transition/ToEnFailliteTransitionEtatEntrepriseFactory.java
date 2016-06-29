@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -13,8 +14,8 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class ToEnFailliteTransitionEtatEntrepriseFactory extends BaseTransitionEtatEntrepriseFactory {
 
-	public ToEnFailliteTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
-		super(tiersDAO);
+	public ToEnFailliteTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, EvenementFiscalService evenementFiscalService) {
+		super(tiersDAO, evenementFiscalService);
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class ToEnFailliteTransitionEtatEntrepriseFactory extends BaseTransitionE
 		case FONDEE:
 		case EN_LIQUIDATION:
 		case RADIEE_RC: // Nécessaire pour les cas de radiation APM sans dissolution
-			return new ToEnFailliteTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+			return new ToEnFailliteTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation, getEvenementFiscalService());
 		default:
 			return null;
 		}

@@ -52,6 +52,7 @@
 
 	<bean id="transitionEtatEntrepriseService" class="ch.vd.uniregctb.tiers.etats.TransitionEtatEntrepriseServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
 	</bean>
 
 	<bean id="tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">

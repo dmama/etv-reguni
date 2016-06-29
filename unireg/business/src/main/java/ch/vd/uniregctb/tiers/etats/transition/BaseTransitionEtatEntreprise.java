@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.etats.transition;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -17,16 +18,18 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 public abstract class BaseTransitionEtatEntreprise implements TransitionEtatEntreprise {
 
 	private final TiersDAO tiersDAO;
+	private final EvenementFiscalService evenementFiscalService;
 
 	private final Entreprise entreprise;
 	private final RegDate date;
 	private final TypeGenerationEtatEntreprise generation;
 
-	public BaseTransitionEtatEntreprise(@NotNull TiersDAO tiersDAO, @NotNull Entreprise entreprise, @NotNull RegDate date, TypeGenerationEtatEntreprise generation) {
+	public BaseTransitionEtatEntreprise(@NotNull TiersDAO tiersDAO, @NotNull Entreprise entreprise, @NotNull RegDate date, TypeGenerationEtatEntreprise generation, @NotNull EvenementFiscalService evenementFiscalService) {
 		this.tiersDAO = tiersDAO;
 		this.entreprise = entreprise;
 		this.date = date;
 		this.generation = generation;
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -55,5 +58,9 @@ public abstract class BaseTransitionEtatEntreprise implements TransitionEtatEntr
 
 	protected TypeGenerationEtatEntreprise getGeneration() {
 		return generation;
+	}
+
+	public EvenementFiscalService getEvenementFiscalService() {
+		return evenementFiscalService;
 	}
 }
