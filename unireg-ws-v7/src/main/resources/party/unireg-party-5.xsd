@@ -2,14 +2,16 @@
 <!-- 5.0 : version initiale -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/party/5" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/5"
-		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/2"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/3"
 		   xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/4" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/5"
 		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" xmlns:withholding="http://www.vd.ch/fiscalite/unireg/party/withholding/1"
+		   xmlns:agent="http://www.vd.ch/fiscalite/unireg/party/agent/1"
 		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/3" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="../eCH-0044-3-0.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/2" schemaLocation="unireg-party-address-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/agent/1" schemaLocation="unireg-party-agent-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/3" schemaLocation="unireg-party-address-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/4" schemaLocation="unireg-party-relation-4.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/5" schemaLocation="unireg-party-taxdeclaration-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" schemaLocation="unireg-party-taxresidence-3.xsd" />
@@ -281,6 +283,17 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="agents" type="agent:agentType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Les adresses des mandataires connus.
+								Attention ! Cette collection n'est renseignée que si la part AGENTS est demandée.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
@@ -342,10 +355,8 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>Le numéro de tiers du titulaire du compte.
-								Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est
-								égal au numéro de la PM lorsqu'il s'agit du compte bancaire de la PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à
-								celui du mandataire.
+							<jxb:javadoc>Le numéro de tiers du titulaire du compte. Ce numéro est toujours égal au numéro du tiers demandé sauf dans le cas des mandataires
+								de perception, auquel cas c'est le numéro du tiers mandataire qui est donné.
 							</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
@@ -758,7 +769,7 @@
 			</xs:enumeration>
 			<xs:enumeration value="BANK_ACCOUNTS">
 				<xs:annotation>
-					<xs:documentation>Les comptes bancaire du tiers.</xs:documentation>
+					<xs:documentation>Les comptes bancaire du tiers (et de ses éventuels mandataires de perception).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="LEGAL_SEATS">
@@ -824,6 +835,11 @@
 			<xs:enumeration value="EBILLING_STATUSES">
 				<xs:annotation>
 					<xs:documentation>Les états d'inscription e-facture.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AGENTS">
+				<xs:annotation>
+					<xs:documentation>Les informations de mandataires.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
