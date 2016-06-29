@@ -91,15 +91,13 @@
 					return false;
 				}
 
+				$('.error').hide();
 				$(button).closest("form").submit();
 
-				if ($('#confirmation').attr('checked')) {
-					// On desactive les boutons
-					$('#ajouter').hide();
-					$('#annuler').hide();
-					$('#retour').show();
-					$('#confirmation').attr("disabled", true);
-				}
+				// On desactive les boutons
+				$('#ajouter, #annuler').hide();
+				$('#retour').show();
+				$('#confirmation').attr("disabled", true);
 
 				return true;
 			}
