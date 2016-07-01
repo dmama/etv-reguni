@@ -28,7 +28,7 @@
 					<input type="checkbox" disabled="disabled" <c:if test="${lien.withCopy}">checked="checked"</c:if>/>
 				</c:if>
 			</display:column>
-			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="tiersLie.numero">
+			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="numero">
 				<unireg:numCTB numero="${lien.numero}" link="true"/>
 			</display:column>
 			<display:column titleKey="label.nom.raison">
