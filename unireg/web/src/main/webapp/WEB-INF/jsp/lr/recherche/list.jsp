@@ -31,12 +31,7 @@
 			</display:column>
 			<display:column titleKey="label.nom.raison">
 				<c:if test="${lr.annule}"><strike></c:if>
-					<c:if test="${lr.nomCourrier1 != null }">
-						${lr.nomCourrier1}
-					</c:if>
-					<c:if test="${lr.nomCourrier2 != null }">
-						<br />${lr.nomCourrier2}
-					</c:if>
+					<unireg:multiline lines="${lr.nomCourrier}"/>
 				<c:if test="${lr.annule}"></strike></c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.debiteur.is" sortName="tiers.categorieImpotSource">

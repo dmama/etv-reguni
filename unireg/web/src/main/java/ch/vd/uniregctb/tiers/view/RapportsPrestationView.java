@@ -15,8 +15,7 @@ public class RapportsPrestationView {
 		public RegDate dateDebut;
 		public RegDate dateFin;
 		public Long noCTB;
-		public String nomCourrier1;
-		public String nomCourrier2;
+		public List<String> nomCourrier;
 		public String noAVS;
 
 		public Long getId() {
@@ -59,20 +58,12 @@ public class RapportsPrestationView {
 			this.noCTB = noCTB;
 		}
 
-		public String getNomCourrier1() {
-			return nomCourrier1;
+		public List<String> getNomCourrier() {
+			return nomCourrier;
 		}
 
-		public void setNomCourrier1(String nomCourrier1) {
-			this.nomCourrier1 = nomCourrier1;
-		}
-
-		public String getNomCourrier2() {
-			return nomCourrier2;
-		}
-
-		public void setNomCourrier2(String nomCourrier2) {
-			this.nomCourrier2 = nomCourrier2;
+		public void setNomCourrier(List<String> nomCourrier) {
+			this.nomCourrier = nomCourrier;
 		}
 
 		public String getNoAVS() {

@@ -190,10 +190,7 @@
 					<unireg:numCTB numero="${tiersAssocie.numero}" />
 				</display:column>
 				<display:column titleKey="label.prenom.nom" >
-					${tiersAssocie.nomCourrier1}
-					<c:if test="${tiersAssocie.nomCourrier2 != null }">
-						<br>${tiersAssocie.nomCourrier2}
-					</c:if>
+					<unireg:multiline lines="${tiersAssocie.nomCourrier}"/>
 				</display:column>
 				<display:column  property="localiteOuPays" titleKey="label.localitePays"  />
 				<display:column  property="forPrincipal" titleKey="label.for.principal"  />

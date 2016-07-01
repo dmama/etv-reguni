@@ -4,15 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.NomCourrierViewPart;
 
 public class TiersAssocieView implements Serializable {
 
-	private static final long serialVersionUID = 860446912422173139L;
+	private static final long serialVersionUID = 2193252255063921163L;
 
 	private Long numero;
 
-	private final NomCourrierViewPart nomCourrier = new NomCourrierViewPart();
+	private List<String> nomCourrier;
 
 	private String localiteOuPays;
 
@@ -31,23 +30,11 @@ public class TiersAssocieView implements Serializable {
 	}
 
 	public void setNomCourrier(List<String> nomCourrier) {
-		this.nomCourrier.setNomCourrier(nomCourrier);
+		this.nomCourrier = nomCourrier;
 	}
 
-	public String getNomCourrier1() {
-		return this.nomCourrier.getNomCourrier1();
-	}
-
-	public void setNomCourrier1(String nomCourrier1) {
-		this.nomCourrier.setNomCourrier1(nomCourrier1);
-	}
-
-	public String getNomCourrier2() {
-		return this.nomCourrier.getNomCourrier2();
-	}
-
-	public void setNomCourrier2(String nomCourrier2) {
-		this.nomCourrier.setNomCourrier2(nomCourrier2);
+	public List<String> getNomCourrier() {
+		return nomCourrier;
 	}
 
 	@SuppressWarnings("unused")

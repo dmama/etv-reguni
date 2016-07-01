@@ -18,12 +18,7 @@
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.nom.raison">
-			<c:if test="${contribuableAssocie.nomCourrier1 != null }">
-				${contribuableAssocie.nomCourrier1}
-			</c:if>
-			<c:if test="${contribuableAssocie.nomCourrier2 != null }">
-				<br />${contribuableAssocie.nomCourrier2}
-			</c:if>
+			<unireg:multiline lines="${contribuableAssocie.nomCourrier}"/>
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">

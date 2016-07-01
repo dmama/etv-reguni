@@ -318,7 +318,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			Assert.notNull(rl);
 
 			for (RapportsPrestationView.Rapport r : rl) {
-				r.nomCourrier1 = getNomPrenom(prenom, nom);
+				r.nomCourrier = Collections.singletonList(getNomPrenom(prenom, nom));
 				r.noAVS = FormatNumeroHelper.formatNumAVS(noAVS);
 			}
 		}
@@ -390,7 +390,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 					final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
 					Assert.notNull(rl);
 					for (RapportsPrestationView.Rapport rapport : rl) {
-						rapport.nomCourrier1 = serviceCivilService.getNomPrenom(ind);
+						rapport.nomCourrier = Collections.singletonList(serviceCivilService.getNomPrenom(ind));
 						rapport.noAVS = getNumeroAvs(ind);
 					}
 				}
@@ -405,7 +405,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 							final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
 							Assert.notNull(rl);
 							for (RapportsPrestationView.Rapport rapport : rl) {
-								rapport.nomCourrier1 = serviceCivilService.getNomPrenom(ind);
+								rapport.nomCourrier = Collections.singletonList(serviceCivilService.getNomPrenom(ind));
 								rapport.noAVS = getNumeroAvs(ind);
 							}
 						}
@@ -416,7 +416,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 						final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(numero);
 						Assert.notNull(rl);
 						for (RapportsPrestationView.Rapport rapport : rl) {
-							rapport.nomCourrier1 = "##erreur## : " + ex.getMessage();
+							rapport.nomCourrier = Collections.singletonList("##erreur## : " + ex.getMessage());
 							rapport.noAVS = "##erreur##";
 						}
 					}

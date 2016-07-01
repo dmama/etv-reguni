@@ -29,12 +29,7 @@
 			</display:column>
 			<display:column titleKey="label.nom.prenom" >
 				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<c:if test="${rapportPrestation.nomCourrier1 != null }">
-						${rapportPrestation.nomCourrier1}
-					</c:if>
-					<c:if test="${rapportPrestation.nomCourrier2 != null }">
-						<br />${rapportPrestation.nomCourrier2}
-					</c:if>
+					<unireg:multiline lines="${rapportPrestation.nomCourrier}"/>
 				<c:if test="${rapportPrestation.annule}"></strike></c:if>
 			</display:column>
 			<display:column titleKey="label.numero.avs" >

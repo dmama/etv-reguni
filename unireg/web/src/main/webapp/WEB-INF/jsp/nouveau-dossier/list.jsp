@@ -46,12 +46,7 @@
 				</c:choose>
 			</display:column>
 			<display:column titleKey="label.nom.raison" >
-				<c:if test="${nouveauDossier.nomCourrier1 != null}">
-					${nouveauDossier.nomCourrier1}
-				</c:if>
-				<c:if test="${nouveauDossier.nomCourrier2 != null}">
-					<br/>${nouveauDossier.nomCourrier2}
-				</c:if>
+				<unireg:multiline lines="${nouveauDossier.nomCourrier}"/>
 			</display:column>
 			<display:column titleKey="label.for.gestion" >
 				<unireg:commune ofs="${nouveauDossier.numeroForGestion}" displayProperty="nomOfficiel"/>

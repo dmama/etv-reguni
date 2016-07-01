@@ -24,11 +24,7 @@
 				<unireg:numCTB numero="${lien.numero}" link="true"/>
 			</display:column>
 			<display:column titleKey="label.nom.raison">
-				${lien.nomCourrier1}
-				<c:if test="${lien.nomCourrier2 != null}">
-					<br/>
-					${lien.nomCourrier2}
-				</c:if>
+				<unireg:multiline lines="${lien.nomCourrier}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.complement.numeroIBAN">
 				${lien.iban}

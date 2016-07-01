@@ -13,17 +13,12 @@
 				requestURI="${url}" class="display">
 	<display:column sortable ="true" titleKey="label.numero.debiteur" href="visu.do" paramId="id" paramProperty="numero" sortProperty="numero" >
 		<c:if test="${debiteur.annule}"><strike></c:if>
-			<a href="../tiers/visu.do?id=${debiteur.numero}"><unireg:numCTB numero="${debiteur.numero}"></unireg:numCTB></a>
+			<a href="../tiers/visu.do?id=${debiteur.numero}"><unireg:numCTB numero="${debiteur.numero}"/></a>
 		<c:if test="${debiteur.annule}"></strike></c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.nom.raison" >
 		<c:if test="${debiteur.annule}"><strike></c:if>
-			<c:if test="${debiteur.nomCourrier1 != null }">
-				${debiteur.nomCourrier1}
-			</c:if>
-			<c:if test="${debiteur.nomCourrier2 != null }">
-				<br />${debiteur.nomCourrier2}
-			</c:if>
+			<unireg:multiline lines="${debiteur.nomCourrier}"/>
 			<c:if test="${debiteur.complementNom != null }">
 				<br />${debiteur.complementNom}
 			</c:if>

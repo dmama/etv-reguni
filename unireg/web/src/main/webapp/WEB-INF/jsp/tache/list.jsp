@@ -84,12 +84,7 @@
 				</c:choose>
 			</display:column>
 			<display:column titleKey="label.nom.raison" >
-				<c:if test="${tache.nomCourrier1 != null }">
-					<c:out value="${tache.nomCourrier1}"/>
-				</c:if>
-				<c:if test="${tache.nomCourrier2 != null }">
-					<br /><c:out value="${tache.nomCourrier2}"/>
-				</c:if>
+				<unireg:multiline lines="${tache.nomCourrier}"/>
 			</display:column>
 			<display:column titleKey="label.for.gestion" >
 				<unireg:commune ofs="${tache.numeroForGestion}" displayProperty="nomOfficiel"/>

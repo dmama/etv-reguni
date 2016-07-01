@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -85,7 +86,7 @@ public class TiersManagerTest extends WebTest {
 					final RapportPrestationView view = rapports.get(0);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
-					Assert.assertEquals("Julien Sorel", view.getNomCourrier1());
+					Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
 					Assert.assertEquals(date(2010, 1, 1), view.getRegDateDebut());
 					Assert.assertEquals(date(2011, 12, 31), view.getRegDateFin());
 				}
@@ -93,7 +94,7 @@ public class TiersManagerTest extends WebTest {
 					final RapportPrestationView view = rapports.get(1);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantNotOk, view.getNumero());
-					Assert.assertNull(view.getNomCourrier1());
+					Assert.assertNull(view.getNomCourrier());
 					Assert.assertEquals(date(2011, 1, 1), view.getRegDateDebut());
 					Assert.assertNull(view.getRegDateFin());
 				}
@@ -101,7 +102,7 @@ public class TiersManagerTest extends WebTest {
 					final RapportPrestationView view = rapports.get(2);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantMine, view.getNumero());
-					Assert.assertNull(view.getNomCourrier1());
+					Assert.assertNull(view.getNomCourrier());
 					Assert.assertEquals(date(2012, 1, 1), view.getRegDateDebut());
 					Assert.assertEquals(date(2012, 6, 30), view.getRegDateFin());
 				}
@@ -109,7 +110,7 @@ public class TiersManagerTest extends WebTest {
 					final RapportPrestationView view = rapports.get(3);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
-					Assert.assertEquals("Julien Sorel", view.getNomCourrier1());
+					Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
 					Assert.assertEquals(date(2013, 1, 1), view.getRegDateDebut());
 					Assert.assertNull(view.getRegDateFin());
 				}

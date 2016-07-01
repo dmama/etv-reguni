@@ -181,11 +181,15 @@
                 html += '<td>' + Tiers.linkTo(rapport.numeroAutreTiers) + '</td>';
 
                 html += '<td>';
-                if (rapport.nomCourrier.nomCourrier1) {
-                    html += DossiersApparentes.escape(rapport.nomCourrier.nomCourrier1);
-                }
-                if (rapport.nomCourrier.nomCourrier2) {
-                    html += '<br/>' + DossiersApparentes.escape(rapport.nomCourrier.nomCourrier2);
+                if (rapport.nomCourrier != null) {
+                    var first = true;
+                    for (var line in rapport.nomCourrier) {
+                        if (!first) {
+                            html += '<br/>';
+                        }
+                        html += DossiersApparentes.escape(rapport.nomCourrier[line]);
+                        first = false;
+                    }
                 }
                 html += '</td>';
 
@@ -273,9 +277,16 @@
                 var debiteur = debiteurs[i];
                 html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') + (debiteur.annule ? ' strike' : '') + '">';
                 html += '<td>' + Tiers.linkTo(debiteur.numero) + '</td>';
-                html += '<td>' + DossiersApparentes.escape(debiteur.nomCourrier1);
-                if (debiteur.nomCourrier2) {
-                    html += '<br/>' + DossiersApparentes.escape(debiteur.nomCourrier2);
+                html += '<td>';
+                if (debiteur.nomCourrier != null) {
+                    var first = true;
+                    for (var line in debiteur.nomCourrier) {
+                        if (!first) {
+                            html += '<br/>';
+                        }
+                        html += DossiersApparentes.escape(debiteur.nomCourrier[line]);
+                        first = false;
+                    }
                 }
                 if (debiteur.complementNom) {
                     html += '<br/>' + DossiersApparentes.escape(debiteur.complementNom);
@@ -385,11 +396,15 @@
                 html += '<td>' + Tiers.linkTo(etablissement.numeroAutreTiers) + '</td>';
 
                 html += '<td>';
-                if (etablissement.nomCourrier.nomCourrier1) {
-                    html += DossiersApparentes.escape(etablissement.nomCourrier.nomCourrier1);
-                }
-                if (etablissement.nomCourrier.nomCourrier2) {
-                    html += '<br/>' + DossiersApparentes.escape(etablissement.nomCourrier.nomCourrier2);
+                if (etablissement.nomCourrier != null) {
+                    var first = true;
+                    for (var line in etablissement.nomCourrier) {
+                        if (!first) {
+                            html += '<br/>';
+                        }
+                        html += DossiersApparentes.escape(etablissement.nomCourrier[line]);
+                        first = false;
+                    }
                 }
                 html += '</td>';
 

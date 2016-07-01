@@ -51,12 +51,7 @@
 	</display:column>
 	
 	<display:column sortable ="true" titleKey="label.nom.raison">
-		<c:if test="${dossierApparente.nomCourrier1 != null }">
-			<c:out value="${dossierApparente.nomCourrier1}"/>
-		</c:if>
-		<c:if test="${dossierApparente.nomCourrier2 != null }">
-			<br/><c:out value="${dossierApparente.nomCourrier2}"/>
-		</c:if>
+		<unireg:multiline lines="${dossierApparente.nomCourrier}"/>
 	</display:column>
 	<c:if test="${hasAutoriteTutelaire}">
 		<display:column sortable ="true" titleKey="label.autorite.tutelaire">

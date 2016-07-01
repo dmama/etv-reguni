@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.rapport.view;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +14,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BaseComparator;
-import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
@@ -75,7 +74,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	 */
 	private String messageNumeroAbsent;
 
-	private final NomCourrierViewPart nomCourrier;
+	private List<String> nomCourrier;
 
 	private String natureRapportEntreTiers;
 
@@ -100,7 +99,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	private String viewRetour;
 
 	public RapportView() {
-		this.nomCourrier = new NomCourrierViewPart();
 	}
 
 	public RapportView(RapportEntreTiers rapport, SensRapportEntreTiers sens, TiersService tiersService, AdresseService adresseService) {
@@ -246,23 +244,11 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	}
 
 	public void setNomCourrier(List<String> nomCourrier) {
-		this.nomCourrier.setNomCourrier(nomCourrier);
+		this.nomCourrier = nomCourrier;
 	}
 
-	public String getNomCourrier1() {
-		return this.nomCourrier.getNomCourrier1();
-	}
-
-	public void setNomCourrier1(String nomCourrier1) {
-		this.nomCourrier.setNomCourrier1(nomCourrier1);
-	}
-
-	public String getNomCourrier2() {
-		return this.nomCourrier.getNomCourrier2();
-	}
-
-	public void setNomCourrier2(String nomCourrier2) {
-		this.nomCourrier.setNomCourrier2(nomCourrier2);
+	public List<String> getNomCourrier() {
+		return nomCourrier;
 	}
 
 	public void setDateDebut(RegDate dateDebut) {
@@ -397,22 +383,15 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		return numeroTiers != null ? tiersService.getTiers(numeroTiers) : null;
 	}
 
-	public static NomCourrierViewPart buildNomCourrier(Tiers tiers, AdresseService adresseService) {
-
+	public static List<String> buildNomCourrier(Tiers tiers, AdresseService adresseService) {
 		if (tiers == null) {
 			return null;
 		}
-
-		List<String> nomSujet;
 		try {
-			nomSujet = adresseService.getNomCourrier(tiers, null, false);
+			return  adresseService.getNomCourrier(tiers, null, false);
 		}
 		catch (Exception e) {
-			nomSujet = new ArrayList<>();
-			nomSujet.add(e.getMessage());
+			return Collections.singletonList(e.getMessage());
 		}
-
-		return new NomCourrierViewPart(nomSujet);
 	}
-
 }

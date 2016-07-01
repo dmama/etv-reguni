@@ -7,7 +7,6 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -30,7 +29,7 @@ public class RapportsPage {
 		private boolean annule;
 		private String type;
 		private Long numeroAutreTiers;
-		private NomCourrierViewPart nomCourrier;
+		private List<String> nomCourrier;
 		private String toolTipMessage;
 
 		// -- uniquement pour RepresentationConventionnelle --
@@ -138,11 +137,11 @@ public class RapportsPage {
 			this.numeroAutreTiers = numeroAutreTiers;
 		}
 
-		public NomCourrierViewPart getNomCourrier() {
+		public List<String> getNomCourrier() {
 			return nomCourrier;
 		}
 
-		public void setNomCourrier(NomCourrierViewPart nomCourrier) {
+		public void setNomCourrier(List<String> nomCourrier) {
 			this.nomCourrier = nomCourrier;
 		}
 

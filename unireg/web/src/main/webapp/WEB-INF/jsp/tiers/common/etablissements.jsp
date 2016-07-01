@@ -45,12 +45,7 @@
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.nom.raison">
-			<c:if test="${rapportEtablissement.nomCourrier1 != null }">
-				<c:out value="${rapportEtablissement.nomCourrier1}"/>
-			</c:if>
-			<c:if test="${rapportEtablissement.nomCourrier2 != null }">
-				<br/><c:out value="${rapportEtablissement.nomCourrier2}"/>
-			</c:if>
+			<unireg:multiline lines="${rapportEtablissement.nomCourrier}"/>
 		</display:column>
 
 		<display:column style="action">

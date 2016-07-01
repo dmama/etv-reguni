@@ -3,6 +3,7 @@ package ch.vd.uniregctb.lr.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,10 +65,12 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 
 		final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
 		lrView.setNomCourrier(nomCourrier);
+		if (StringUtils.isNotBlank(dpi.getComplementNom())) {
+			lrView.addNomCourrier(dpi.getComplementNom());
+		}
 
 		lrView.setNumero(dpi.getNumero());
 		lrView.setCategorie(dpi.getCategorieImpotSource());
-		lrView.setNomCourrier2(dpi.getComplementNom());
 		lrView.setModeCommunication(lr.getModeCommunication());
 		lrView.setDateDebutPeriode(lr.getDateDebut());
 		lrView.setDateFinPeriode(lr.getDateFin());

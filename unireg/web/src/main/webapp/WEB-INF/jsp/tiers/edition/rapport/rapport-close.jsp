@@ -32,12 +32,7 @@
 				</td>
 				<td width="25%"><fmt:message key="label.nom.raison"/>&nbsp;:</td>
 				<td width="25%">
-					<c:if test="${data.nomCourrier1 != null }">
-					${data.nomCourrier1}
-					</c:if>
-					<c:if test="${data.nomCourrier2 != null }">
-						<br />${data.nomCourrier2}
-					</c:if>
+					<unireg:multiline lines="${data.nomCourrier}"/>
 				</td>
 			</tr>
 			<tr class="<unireg:nextRowClass/>" >

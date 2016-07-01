@@ -8,7 +8,6 @@ import org.springframework.context.MessageSource;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -18,7 +17,7 @@ public class DebiteurView implements Annulable {
 
 	private Long numero;
 
-	private final NomCourrierViewPart nomCourrier = new NomCourrierViewPart();
+	private List<String> nomCourrier;
 
 	private String complementNom;
 
@@ -41,7 +40,7 @@ public class DebiteurView implements Annulable {
 		this.categorieImpotSource = dpi.getCategorieImpotSource();
 		this.nomCategorie = messageSource.getMessage("option.categorie.impot.source." + dpi.getCategorieImpotSource().name(), null, WebContextUtils.getDefaultLocale());
 		this.personneContact = dpi.getPersonneContact();
-		this.nomCourrier.setNomCourrier(buildNomCourrier(dpi, adresseService));
+		this.nomCourrier = buildNomCourrier(dpi, adresseService);
 	}
 
 	private static List<String> buildNomCourrier(DebiteurPrestationImposable dpi, AdresseService adresseService) {
@@ -64,24 +63,12 @@ public class DebiteurView implements Annulable {
 		this.numero = numero;
 	}
 
+	public List<String> getNomCourrier() {
+		return nomCourrier;
+	}
+
 	public void setNomCourrier(List<String> nomCourrier) {
-		this.nomCourrier.setNomCourrier(nomCourrier);
-	}
-
-	public String getNomCourrier1() {
-		return this.nomCourrier.getNomCourrier1();
-	}
-
-	public void setNomCourrier1(String nomCourrier1) {
-		this.nomCourrier.setNomCourrier1(nomCourrier1);
-	}
-
-	public String getNomCourrier2() {
-		return this.nomCourrier.getNomCourrier2();
-	}
-
-	public void setNomCourrier2(String nomCourrier2) {
-		this.nomCourrier.setNomCourrier2(nomCourrier2);
+		this.nomCourrier = nomCourrier;
 	}
 
 	public String getPersonneContact() {

@@ -35,12 +35,7 @@
 				</td>
 				<td width="25%"><fmt:message key="label.nom.raison"/>&nbsp;:</td>
 				<td width="25%">
-					<c:if test="${command.nomCourrier1 != null }">
-					${command.nomCourrier1}
-					</c:if>
-					<c:if test="${command.nomCourrier2 != null }">
-						<br />${command.nomCourrier2}
-					</c:if>
+					<unireg:multiline lines="${command.nomCourrier}"/>
 				</td>
 			</tr>
 			<tr class="<unireg:nextRowClass/>" >

@@ -32,12 +32,7 @@
 					<a href="../tiers/visu.do?id=${rapportPrestation.noCTB}"><unireg:numCTB numero="${rapportPrestation.noCTB}"/></a>
 				</display:column>
 				<display:column sortable="true" titleKey="label.nom.prenom" >
-					<c:if test="${rapportPrestation.nomCourrier1 != null }">
-						${rapportPrestation.nomCourrier1}
-					</c:if>
-					<c:if test="${rapportPrestation.nomCourrier2 != null }">
-						<br />${rapportPrestation.nomCourrier2}
-					</c:if>
+					<unireg:multiline lines="${rapportPrestation.nomCourrier}"/>
 				</display:column>
 				<display:column sortable="true" titleKey="label.numero.avs" >
 					${rapportPrestation.noAVS}

@@ -1601,6 +1601,19 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<description>Affiche un nom courrier sur plusieurs lignes séparées par des &lt;br/&gt;</description>
+		<name>multiline</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagMultiline</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Collection de chaînes de caractères</description>
+			<name>lines</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 	<function>
 		<name>startsWith</name>
 		<function-class>ch.vd.uniregctb.taglibs.JstlFunctionUtils</function-class>

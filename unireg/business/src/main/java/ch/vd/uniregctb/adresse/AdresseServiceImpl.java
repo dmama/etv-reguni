@@ -444,6 +444,16 @@ public class AdresseServiceImpl implements AdresseService {
 			if (getFormulePolitesse(ctb) == FormulePolitesse.HERITIERS) {
 				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse);
 			}
+			else if (ctb != null) {
+				final AdresseEnvoiDetaillee sub = new AdresseEnvoiDetaillee(adresse.getDestinataire(), adresse.getSource(), adresse.getDateDebut(), adresse.getDateFin(), adresse.isArtificelle());
+				fillDestinataire(sub, ctb, null, date, fillFormulePolitesse);
+				for (String ligneRaisonSociale : sub.getRaisonsSociales()) {
+					adresse.addRaisonSociale(ligneRaisonSociale);
+				}
+				for (NomPrenom ligneNomPrenom : sub.getNomsPrenoms()) {
+					adresse.addNomPrenom(ligneNomPrenom);
+				}
+			}
 			else {
 				final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
 				for (String ligne : raisonSociale) {

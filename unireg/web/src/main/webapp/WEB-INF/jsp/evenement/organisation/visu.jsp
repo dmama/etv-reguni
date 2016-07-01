@@ -249,10 +249,7 @@
                 <unireg:numCTB numero="${tiersAssocie.numero}"/>
             </display:column>
             <display:column titleKey="label.raison.sociale">
-                <c:out value="${tiersAssocie.nomCourrier1}"/>
-                <c:if test="${tiersAssocie.nomCourrier2 != null }">
-                    <br><c:out value="${tiersAssocie.nomCourrier2}"/>
-                </c:if>
+	            <unireg:multiline lines="${tiersAssocie.nomCourrier}"/>
             </display:column>
             <display:column property="localiteOuPays" titleKey="label.localitePays"/>
             <display:column property="forPrincipal" titleKey="label.for.principal"/>

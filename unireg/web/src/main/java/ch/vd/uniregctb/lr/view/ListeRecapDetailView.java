@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.lr.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -42,7 +43,7 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 
 	private Long numero;
 
-	private final NomCourrierViewPart nomCourrier = new NomCourrierViewPart();
+	private List<String> nomCourrier;
 
 	private RegDate delaiAccorde;
 
@@ -129,7 +130,20 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 	}
 
 	public void setNomCourrier(List<String> nomCourrier) {
-		this.nomCourrier.setNomCourrier(nomCourrier);
+		this.nomCourrier = nomCourrier;
+	}
+
+	public void addNomCourrier(String nomCourrier) {
+		if (this.nomCourrier == null) {
+			this.nomCourrier = new ArrayList<>(Collections.singletonList(nomCourrier));
+		}
+		else {
+			this.nomCourrier.add(nomCourrier);
+		}
+	}
+
+	public List<String> getNomCourrier() {
+		return nomCourrier;
 	}
 
 	public Long getNumero() {
@@ -139,23 +153,6 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 	public void setNumero(Long numero) {
 		this.numero = numero;
 	}
-
-	public String getNomCourrier1() {
-		return this.nomCourrier.getNomCourrier1();
-	}
-
-	public void setNomCourrier1(String nomCourrier1) {
-		this.nomCourrier.setNomCourrier1(nomCourrier1);
-	}
-
-	public String getNomCourrier2() {
-		return this.nomCourrier.getNomCourrier2();
-	}
-
-	public void setNomCourrier2(String nomCourrier2) {
-		this.nomCourrier.setNomCourrier2(nomCourrier2);
-	}
-
 
 	public RegDate getRegDateDebutPeriode() {
 		return dateDebutPeriode;
