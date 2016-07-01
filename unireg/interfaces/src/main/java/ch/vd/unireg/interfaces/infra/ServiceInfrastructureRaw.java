@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -264,6 +265,12 @@ public interface ServiceInfrastructureRaw {
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	List<TypeRegimeFiscal> getTousLesRegimesFiscaux();
+
+	/**
+	 * @return la liste des tous les genres d'impôt utilisables pour les mandats spéciaux
+	 * @throws ServiceInfrastructureException en cas de problème
+	 */
+	List<GenreImpotMandataire> getTousLesGenresImpotMandataires();
 
 	/**
 	 * Méthode qui permet de tester que le service infrastructure répond bien. Cette méthode est insensible aux caches.

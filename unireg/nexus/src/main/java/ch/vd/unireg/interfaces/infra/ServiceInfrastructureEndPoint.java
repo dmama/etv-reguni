@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -348,6 +349,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 		loadMeter.start(new MethodCallDescriptor("getTousLesRegimesFiscaux"));
 		try {
 			return target.getTousLesRegimesFiscaux();
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
+		loadMeter.start(new MethodCallDescriptor("getTousLesGenresImpotMandataires"));
+		try {
+			return target.getTousLesGenresImpotMandataires();
 		}
 		finally {
 			loadMeter.end();

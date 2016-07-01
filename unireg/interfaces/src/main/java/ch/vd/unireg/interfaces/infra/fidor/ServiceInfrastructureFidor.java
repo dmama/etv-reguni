@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.fidor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.CommuneImpl;
 import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.DistrictImpl;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.LocaliteImpl;
@@ -49,6 +51,7 @@ import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalImpl;
+import ch.vd.unireg.interfaces.infra.mock.MockGenreImpotMandataire;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -589,6 +592,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
+		// TODO appeler le client fidor dès que celui-ci sera disponible
+		return Arrays.<GenreImpotMandataire>asList(MockGenreImpotMandataire.ALL);
 	}
 
 	@Override

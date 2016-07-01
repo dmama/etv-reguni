@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -484,4 +485,10 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de souci
 	 */
 	List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException;
+
+	/**
+	 * @return l'ensemble des différents genres d'impôt utilisables dans les mandats spéciaux
+	 * @throws ServiceInfrastructureException en cas de souci
+	 */
+	List<GenreImpotMandataire> getGenresImpotMandataires() throws ServiceInfrastructureException;
 }

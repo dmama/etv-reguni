@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -311,6 +312,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException {
 		return target.getRegimesFiscaux();
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getGenresImpotMandataires() throws ServiceInfrastructureException {
+		return target.getGenresImpotMandataires();
 	}
 
 	@Override

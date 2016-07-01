@@ -27,17 +27,15 @@ import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 public class AgentBuilder {
 
-	// TODO un jour, il faudra aller chercher ces informations dans le modèle...
-	private static final String BIDON = "BIDON";
-	private static final boolean WITH_COPY = true;
-
 	@Nullable
 	public static Agent newAgent(AdresseMandataire adresse, Context contexte) throws AdresseException {
 		final AdresseGenerique generique = new AdresseMandataireAdapter(adresse, contexte.infraService);
 		final AdresseEnvoiDetaillee envoi = contexte.adresseService.buildAdresseEnvoi(generique.getSource().getTiers(), generique, adresse.getDateFin());
 		switch (adresse.getTypeMandat()) {
 		case GENERAL:
-			return buildGeneralAgent(adresse, envoi, WITH_COPY);
+			return buildGeneralAgent(adresse, envoi, adresse.isWithCopy());
+		case SPECIAL:
+			return buildSpecialAgent(adresse, envoi, adresse.isWithCopy(), adresse.getCodeGenreImpot());
 		case TIERS:
 			return null;
 		default:
@@ -60,7 +58,10 @@ public class AgentBuilder {
 				final Agent agent;
 				switch (mandat.getTypeMandat()) {
 				case GENERAL:
-					agent = buildGeneralAgent(intersection, envoi, WITH_COPY);
+					agent = buildGeneralAgent(intersection, envoi, neverNull(mandat.getWithCopy(), true));
+					break;
+				case SPECIAL:
+					agent = buildSpecialAgent(intersection, envoi, neverNull(mandat.getWithCopy(), true), mandat.getCodeGenreImpot());
 					break;
 				case TIERS:
 					agent = null;
@@ -74,6 +75,10 @@ public class AgentBuilder {
 			}
 		}
 		return agents;
+	}
+
+	private static boolean neverNull(@Nullable Boolean bool, boolean defaultValue) {
+		return bool != null ? bool : defaultValue;
 	}
 
 	private static GeneralAgent buildGeneralAgent(DateRange range, AdresseEnvoiDetaillee adresse, boolean withCopy) {

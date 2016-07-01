@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -778,6 +779,26 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 		finally {
 			tracing.end(time, t, "getTousLesRegimesFiscaux", null);
+		}
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getTousLesGenresImpotMandataires();
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getTousLesGenresImpotMandataires", null);
 		}
 	}
 

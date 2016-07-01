@@ -10,6 +10,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeMandat;
@@ -38,23 +41,51 @@ public class Mandat extends RapportEntreTiers {
 	private String nomPersonneContact;
 	private String prenomPersonneContact;
 	private String noTelephoneContact;
+	private Boolean withCopy;
+	private String codeGenreImpot;
 
 	public Mandat() {
 		// empty
 	}
 
-	public Mandat(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, TypeMandat typeMandat) {
-		super(dateDebut, dateFin, mandant, mandataire);
-		this.typeMandat = typeMandat;
+	@NotNull
+	public static Mandat tiers(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, CoordonneesFinancieres coordonneesFinancieres) {
+		if (coordonneesFinancieres == null) {
+			throw new IllegalArgumentException("Un mandat 'tiers' doit avoir une donnée de coordonnées financières");
+		}
+		final Mandat mandat = new Mandat(dateDebut, dateFin, mandant, mandataire, TypeMandat.TIERS, null, null);
+		mandat.setCoordonneesFinancieres(new CoordonneesFinancieres(coordonneesFinancieres));
+		return mandat;
 	}
 
-	protected Mandat(Mandat src) {
+	@NotNull
+	public static Mandat general(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, boolean withCopy) {
+		return new Mandat(dateDebut, dateFin, mandant, mandataire, TypeMandat.GENERAL, withCopy, null);
+	}
+
+	@NotNull
+	public static Mandat special(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, boolean withCopy, String codeGenreImpot) {
+		if (StringUtils.isBlank(codeGenreImpot)) {
+			throw new IllegalArgumentException("Un mandat 'special' doit avoir un code de genre d'impôt");
+		}
+		return new Mandat(dateDebut, dateFin, mandant, mandataire, TypeMandat.SPECIAL, withCopy, codeGenreImpot);
+	}
+
+	private Mandat(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire, TypeMandat typeMandat, Boolean withCopy, String codeGenreImpot) {
+		super(dateDebut, dateFin, mandant, mandataire);
+		this.typeMandat = typeMandat;
+		this.withCopy = withCopy;
+		this.codeGenreImpot = codeGenreImpot;
+	}
+
+	private Mandat(Mandat src) {
 		super(src);
 		this.typeMandat = src.typeMandat;
 		this.coordonneesFinancieres = src.coordonneesFinancieres != null ? new CoordonneesFinancieres(src.getCoordonneesFinancieres()) : null;
 		this.nomPersonneContact = src.nomPersonneContact;
 		this.prenomPersonneContact = src.prenomPersonneContact;
 		this.noTelephoneContact = src.noTelephoneContact;
+		this.withCopy = src.withCopy;
 	}
 
 	@Column(name = "TYPE_MANDAT", length = LengthConstants.MANDAT_TYPE)
@@ -105,6 +136,24 @@ public class Mandat extends RapportEntreTiers {
 
 	public void setNoTelephoneContact(String noTelephoneContact) {
 		this.noTelephoneContact = noTelephoneContact;
+	}
+
+	@Column(name = "WITH_COPY_MANDAT")
+	public Boolean getWithCopy() {
+		return withCopy;
+	}
+
+	public void setWithCopy(Boolean withCopy) {
+		this.withCopy = withCopy;
+	}
+
+	@Column(name = "GENRE_IMPOT_MANDAT", length = LengthConstants.MANDAT_GENRE_IMPOT)
+	public String getCodeGenreImpot() {
+		return codeGenreImpot;
+	}
+
+	public void setCodeGenreImpot(String codeGenreImpot) {
+		this.codeGenreImpot = codeGenreImpot;
 	}
 
 	@Override

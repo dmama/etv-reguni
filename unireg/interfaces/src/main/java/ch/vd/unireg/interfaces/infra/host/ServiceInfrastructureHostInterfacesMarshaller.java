@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -208,6 +209,11 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 	@Override
 	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
 		throw new NotImplementedException("La méthode 'getTousLesRegimesFiscaux' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
+		throw new NotImplementedException("La méthode 'getTousLesGenresImpotMandataires' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override

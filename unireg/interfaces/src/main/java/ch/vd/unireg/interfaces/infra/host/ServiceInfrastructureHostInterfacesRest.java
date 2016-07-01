@@ -25,6 +25,7 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciereImpl;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -347,6 +348,11 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	@Override
 	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
 		throw new NotImplementedException("La méthode 'getTousLesRegimesFiscaux' ne doit pas être appelée sur le service host-interface.");
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
+		throw new NotImplementedException("La méthode 'getTousLesGenresImpotMandataires' ne doit pas être appelée sur le service host-interface.");
 	}
 
 	@Override

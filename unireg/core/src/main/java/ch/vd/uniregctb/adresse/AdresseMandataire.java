@@ -37,6 +37,8 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 
 	private Long id;
 	private TypeMandat typeMandat;
+	private boolean withCopy;
+	private String codeGenreImpot;
 	private Contribuable mandant;
 	private String nomDestinataire;
 	private String complement;
@@ -51,6 +53,8 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 	public AdresseMandataire(AdresseMandataire src) {
 		super(src);
 		this.typeMandat = src.typeMandat;
+		this.withCopy = src.withCopy;
+		this.codeGenreImpot = src.codeGenreImpot;
 		this.nomDestinataire = src.nomDestinataire;
 		this.complement = src.complement;
 		this.rue = src.rue;
@@ -84,6 +88,24 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 
 	public void setTypeMandat(TypeMandat typeMandat) {
 		this.typeMandat = typeMandat;
+	}
+
+	@Column(name = "WITH_COPY", nullable = false)
+	public boolean isWithCopy() {
+		return withCopy;
+	}
+
+	public void setWithCopy(boolean withCopy) {
+		this.withCopy = withCopy;
+	}
+
+	@Column(name = "GENRE_IMPOT", length = LengthConstants.MANDAT_GENRE_IMPOT)
+	public String getCodeGenreImpot() {
+		return codeGenreImpot;
+	}
+
+	public void setCodeGenreImpot(String codeGenreImpot) {
+		this.codeGenreImpot = codeGenreImpot;
 	}
 
 	@ManyToOne

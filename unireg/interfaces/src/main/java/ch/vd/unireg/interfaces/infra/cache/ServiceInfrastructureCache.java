@@ -26,6 +26,7 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -1629,6 +1630,39 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		else {
 			//noinspection unchecked
 			resultat = (List<TypeRegimeFiscal>) element.getValue();
+		}
+		return resultat;
+	}
+
+	private static class KeyGetTousLesGenresImpotMandataires {
+		@Override
+		public int hashCode() {
+			return 784524687;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return this == obj || getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
+		}
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
+		final List<GenreImpotMandataire> resultat;
+		final KeyGetTousLesGenresImpotMandataires key = new KeyGetTousLesGenresImpotMandataires();
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getTousLesGenresImpotMandataires();
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			//noinspection unchecked
+			resultat = (List<GenreImpotMandataire>) element.getValue();
 		}
 		return resultat;
 	}

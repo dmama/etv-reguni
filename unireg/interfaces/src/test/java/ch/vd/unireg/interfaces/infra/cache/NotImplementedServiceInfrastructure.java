@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
@@ -168,6 +169,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 
 	@Override
 	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
 		throw new NotImplementedException();
 	}
 
