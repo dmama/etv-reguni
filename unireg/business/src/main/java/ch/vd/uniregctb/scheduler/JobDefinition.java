@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -103,12 +104,12 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		}
 	}
 
-	protected final void refreshParameterDefinitions(List<JobParam> paramsDef) {
+	protected final void refreshParameterDefinitions(List<Pair<JobParam, ?>> paramsDef) {
 		paramDefinition.clear();
 		defaultParamWebValues.clear();
 		if (paramsDef != null) {
-			for (JobParam paramDef : paramsDef) {
-				addParameterDefinition(paramDef, null);
+			for (Pair<JobParam, ?> paramDef : paramsDef) {
+				addParameterDefinition(paramDef.getFirst(), paramDef.getSecond());
 			}
 		}
 	}

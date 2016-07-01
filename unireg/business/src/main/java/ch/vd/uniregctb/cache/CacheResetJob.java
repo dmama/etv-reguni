@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.scheduler.JobCategory;
@@ -53,17 +54,15 @@ public class CacheResetJob extends JobDefinition {
 			}
 		});
 
-		final List<JobParam> params = new ArrayList<>();
-
+		final List<Pair<JobParam, ?>> params = new ArrayList<>();
 		for (UniregCacheInterface c : caches) {
 			final JobParam param = new JobParam();
 			param.setDescription("Reset du cache " + c.getDescription());
 			param.setName(c.getName());
 			param.setMandatory(true);
 			param.setType(new JobParamBoolean());
-			params.add(param);
+			params.add(new Pair<>(param, Boolean.FALSE));
 		}
-
 		refreshParameterDefinitions(params);
 	}
 
