@@ -38,7 +38,7 @@ echo "Version: $version"
 
 if [ "$ENVIRONMENT" == "INPO" ]; then
 	env=integration-po
-	user=dsi_unireg@ssv0309v
+	user=dsi_unireg@slv2655v
 else
 	env=integration
 	user=dsi_unireg@slv2655v
