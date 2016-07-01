@@ -11,14 +11,22 @@
 
 	<c:if test="${not empty command.liensMandataires}">
 		<display:table name="${command.liensMandataires}" id="lien" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="regDateDebut">
+			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="regDateDebut" style="width: 12ex;">
 				<unireg:regdate regdate="${lien.regDateDebut}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="regDateFin">
+			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="regDateFin" style="width: 12ex;">
 				<unireg:regdate regdate="${lien.regDateFin}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.type">
+			<display:column sortable="true" titleKey="label.type" style="width: 20ex;">
 				<fmt:message key="option.mandat.type.${lien.typeMandat}"/>
+			</display:column>
+			<display:column titleKey="label.genre.impot" style="width: 25ex;">
+				<c:out value="${lien.libelleGenreImpot}"/>
+			</display:column>
+			<display:column titleKey="label.avec.copie.courriers" style="text-align: center; width: 10%;">
+				<c:if test="${lien.withCopy != null}">
+					<input type="checkbox" disabled="disabled" <c:if test="${lien.withCopy}">checked="checked"</c:if>/>
+				</c:if>
 			</display:column>
 			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="tiersLie.numero">
 				<unireg:numCTB numero="${lien.numero}" link="true"/>
@@ -26,10 +34,10 @@
 			<display:column titleKey="label.nom.raison">
 				<unireg:multiline lines="${lien.nomCourrier}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.complement.numeroIBAN">
-				${lien.iban}
+			<display:column sortable="true" titleKey="label.complement.numeroIBAN" style="width: 30ex;">
+				<c:out value="${lien.iban}"/>
 			</display:column>
-			<display:column class="action">
+			<display:column class="action" style="width: 3ex;">
 				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${lien.id}"/>
 			</display:column>
 		</display:table>
@@ -43,14 +51,20 @@
 
 	<c:if test="${not empty command.adressesMandataires}">
 		<display:table name="${command.adressesMandataires}" id="adresseMandataire" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
+			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 12ex;">
 				<unireg:regdate regdate="${adresseMandataire.dateDebut}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
+			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin" style="width: 12ex;">
 				<unireg:regdate regdate="${adresseMandataire.dateFin}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.type">
+			<display:column sortable="true" titleKey="label.type" style="width: 20ex;">
 				<fmt:message key="option.mandat.type.${adresseMandataire.typeMandat}"/>
+			</display:column>
+			<display:column titleKey="label.genre.impot" style="width: 25ex;">
+				<c:out value="${adresseMandataire.libelleGenreImpot}"/>
+			</display:column>
+			<display:column titleKey="label.avec.copie.courriers" style="text-align: center; width: 10%;">
+				<input type="checkbox" disabled="disabled" <c:if test="${adresseMandataire.withCopy}">checked="checked"</c:if>/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.nom.raison">
 				${adresseMandataire.nomDestinataire}
@@ -72,7 +86,7 @@
 					<unireg:pays ofs="${adresseMandataire.paysOFS}" displayProperty="nomCourt" date="${adresseMandataire.dateDebut}"/>
 				</c:if>
 			</display:column>
-			<display:column class="action">
+			<display:column class="action" style="width: 3ex;">
 				<unireg:consulterLog entityNature="AdresseMandataire" entityId="${adresseMandataire.id}"/>
 			</display:column>
 		</display:table>

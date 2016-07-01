@@ -7,6 +7,8 @@ public class AdresseMandataireView extends AdresseView {
 
 	private String nomDestinataire;
 	private TypeMandat typeMandat;
+	private boolean withCopy;
+	private String libelleGenreImpot;
 
 	public String getNomDestinataire() {
 		return nomDestinataire;
@@ -22,5 +24,21 @@ public class AdresseMandataireView extends AdresseView {
 
 	public void setTypeMandat(TypeMandat typeMandat) {
 		this.typeMandat = typeMandat;
+	}
+
+	public boolean isWithCopy() {
+		return withCopy;
+	}
+
+	public void setWithCopy(boolean withCopy) {
+		this.withCopy = withCopy;
+	}
+
+	public String getLibelleGenreImpot() {
+		return libelleGenreImpot;
+	}
+
+	public void setLibelleGenreImpot(String libelleGenreImpot) {
+		this.libelleGenreImpot = libelleGenreImpot;
 	}
 }

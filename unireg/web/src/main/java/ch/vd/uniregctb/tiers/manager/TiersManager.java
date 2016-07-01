@@ -72,6 +72,7 @@ import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.mandataire.AdresseMandataireView;
 import ch.vd.uniregctb.mandataire.LienMandataireView;
+import ch.vd.uniregctb.mandataire.MandataireViewHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
@@ -672,7 +673,7 @@ public class TiersManager implements MessageSourceAware {
 			final List<LienMandataireView> liens = new ArrayList<>(rapportsSujet.size());
 			for (RapportEntreTiers ret : rapportsSujet) {
 				if (ret instanceof Mandat) {
-					liens.add(new LienMandataireView((Mandat) ret, tiersService, adresseService));
+					liens.add(new LienMandataireView((Mandat) ret, tiersService, adresseService, serviceInfrastructureService));
 				}
 			}
 			if (!liens.isEmpty()) {
@@ -1255,6 +1256,8 @@ public class TiersManager implements MessageSourceAware {
 		fillAdresseView(view, adapter, TypeAdresseTiers.COURRIER);
 		view.setNomDestinataire(adresse.getNomDestinataire());
 		view.setTypeMandat(adresse.getTypeMandat());
+		view.setWithCopy(adresse.isWithCopy());
+		view.setLibelleGenreImpot(MandataireViewHelper.extractLibelleGenreImpot(adresse.getCodeGenreImpot(), serviceInfrastructureService));
 		return view;
 	}
 
