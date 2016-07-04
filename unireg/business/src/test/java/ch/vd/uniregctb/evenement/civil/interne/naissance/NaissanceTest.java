@@ -408,63 +408,68 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		cache.setDataEventService(dataEventService);
 		cache.afterPropertiesSet();
 		cache.reset();
-		serviceCivil.setUp(cache);
+		try {
+			serviceCivil.setUp(cache);
 
-		// On s'assure que ni la mère ni le père n'existent à ce stade (et que leurs inexistance est bien enregistrée dans le cache)
-		assertNull(serviceCivil.getIndividu(indMere, dateNaissance));
-		assertNull(serviceCivil.getIndividu(indPere, dateNaissance));
+			// On s'assure que ni la mère ni le père n'existent à ce stade (et que leurs inexistance est bien enregistrée dans le cache)
+			assertNull(serviceCivil.getIndividu(indMere, dateNaissance));
+			assertNull(serviceCivil.getIndividu(indPere, dateNaissance));
 
-		// On créer l'arrivée des parents et la naissance de l'enfant (cas bizarre, mais on a vu des choses semblables en production)
-		realService.step1();
+			// On créer l'arrivée des parents et la naissance de l'enfant (cas bizarre, mais on a vu des choses semblables en production)
+			realService.step1();
 
-		class Ids {
-			Long pere;
-			Long mere;
+			class Ids {
+				Long pere;
+				Long mere;
+			}
+
+			// On crée le père et la mère (sans synchro pour les parentés... c'est l'événement civil de naissance qui doit faire le boulot)
+			final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TxCallback<Ids>() {
+				@Override
+				public Ids execute(TransactionStatus status) throws Exception {
+					final PersonnePhysique pere = addHabitant(indPere);
+					final PersonnePhysique mere = addHabitant(indMere);
+					final Ids ids = new Ids();
+					ids.pere = pere.getId();
+					ids.mere = mere.getId();
+					return ids;
+				}
+			});
+
+			// On envoie l'événement de naissance
+			final Long idFils = doInNewTransactionAndSession(new TxCallback<Long>() {
+				@Override
+				public Long execute(TransactionStatus status) throws Exception {
+					final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
+					final Naissance naissance = createValidNaissance(fils, true);
+
+					final MessageCollector collector = buildMessageCollector();
+					naissance.validate(collector, collector);
+					assertFalse(collector.hasErreurs());
+					assertFalse(collector.hasWarnings());
+
+					final HandleStatus code = naissance.handle(collector);
+					assertEquals(HandleStatus.TRAITE, code);
+					assertFalse(collector.hasErreurs());
+					assertFalse(collector.hasWarnings());
+
+					return tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
+				}
+			});
+
+			// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					assertParent(indPere, ids.pere, idFils, dateNaissance);
+					assertParent(indMere, ids.mere, idFils, dateNaissance);
+					return null;
+				}
+			});
 		}
-
-		// On crée le père et la mère (sans synchro pour les parentés... c'est l'événement civil de naissance qui doit faire le boulot)
-		final Ids ids = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TxCallback<Ids>() {
-			@Override
-			public Ids execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pere = addHabitant(indPere);
-				final PersonnePhysique mere = addHabitant(indMere);
-				final Ids ids = new Ids();
-				ids.pere = pere.getId();
-				ids.mere = mere.getId();
-				return ids;
-			}
-		});
-
-		// On envoie l'événement de naissance
-		final Long idFils = doInNewTransactionAndSession(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
-				final Naissance naissance = createValidNaissance(fils, true);
-
-				final MessageCollector collector = buildMessageCollector();
-				naissance.validate(collector, collector);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-
-				final HandleStatus code = naissance.handle(collector);
-				assertEquals(HandleStatus.TRAITE, code);
-				assertFalse(collector.hasErreurs());
-				assertFalse(collector.hasWarnings());
-
-				return tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
-			}
-		});
-
-		// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				assertParent(indPere, ids.pere, idFils, dateNaissance);
-				assertParent(indMere, ids.mere, idFils, dateNaissance);
-				return null;
-			}
-		});
+		finally {
+			cache.destroy();
+		}
 	}
 
 	private void assertParent(long indParent, Long idParent, Long idFils, RegDate dateNaissance) {

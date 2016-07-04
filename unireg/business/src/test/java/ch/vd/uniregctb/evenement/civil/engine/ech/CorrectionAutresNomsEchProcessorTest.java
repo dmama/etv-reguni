@@ -69,71 +69,76 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 			}
 		});
 		cache.afterPropertiesSet();
-		serviceCivil.setUp(cache);
+		try {
+			serviceCivil.setUp(cache);
 
-		// mise en place fiscale
-		final long noPP = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
-				return pp.getNumero();
-			}
-		});
+			// mise en place fiscale
+			final long noPP = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addHabitant(noIndividu);
+					addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+					return pp.getNumero();
+				}
+			});
 
-		globalTiersIndexer.sync();
+			globalTiersIndexer.sync();
 
-		// Etat de l'indexation avant traitement
-		final TiersIndexedData indexed = globalTiersSearcher.get(noPP);
-		assertNotNull(indexed);
-		assertEquals("Gérard Manfind", indexed.getNom1());
+			// Etat de l'indexation avant traitement
+			final TiersIndexedData indexed = globalTiersSearcher.get(noPP);
+			assertNotNull(indexed);
+			assertEquals("Gérard Manfind", indexed.getNom1());
 
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setNom("Findman");
-			}
-		});
+			doModificationIndividu(noIndividu, new IndividuModification() {
+				@Override
+				public void modifyIndividu(MockIndividu individu) {
+					individu.setNom("Findman");
+				}
+			});
 
-		// événement de Correction d'adresse
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(11824L);
-				evt.setType(TypeEvenementCivilEch.CORR_AUTRES_NOMS);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateEvt);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				return hibernateTemplate.merge(evt).getId();
-			}
-		});
+			// événement de Correction d'adresse
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(11824L);
+					evt.setType(TypeEvenementCivilEch.CORR_AUTRES_NOMS);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateEvt);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
 
-		// traitement de l'événement
-		traiterEvenements(noIndividu);
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
 
-		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				return null;
-			}
-		});
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					return null;
+				}
+			});
 
-		// les données du cache du service civil doivent être correctes
-		final Individu individuAfter = serviceCivil.getIndividu(noIndividu, null);
-		assertNotNull(individuAfter);
-		assertEquals("Findman", individuAfter.getNom());
+			// les données du cache du service civil doivent être correctes
+			final Individu individuAfter = serviceCivil.getIndividu(noIndividu, null);
+			assertNotNull(individuAfter);
+			assertEquals("Findman", individuAfter.getNom());
 
-		globalTiersIndexer.sync();
+			globalTiersIndexer.sync();
 
-		// Etat de l'indexation avant traitement
-		final TiersIndexedData indexedAfter = globalTiersSearcher.get(noPP);
-		assertNotNull(indexedAfter);
-		assertEquals("Gérard Findman", indexedAfter.getNom1());
+			// Etat de l'indexation avant traitement
+			final TiersIndexedData indexedAfter = globalTiersSearcher.get(noPP);
+			assertNotNull(indexedAfter);
+			assertEquals("Gérard Findman", indexedAfter.getNom1());
+		}
+		finally {
+			cache.destroy();
+		}
 	}
 }
