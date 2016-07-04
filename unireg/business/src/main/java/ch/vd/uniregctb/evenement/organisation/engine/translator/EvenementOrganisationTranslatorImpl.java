@@ -236,8 +236,8 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		/* L'entreprise est retrouvé grâce au numéro cantonal. Pas de doute possible. */
 		if (entreprise != null) {
-			final String message = String.format("%s (%s%s) identifiée sur la base du numéro civil %d (numéro cantonal).",
-			                                     entreprise.toString(),
+			final String message = String.format("Entreprise n°%s (%s%s) identifiée sur la base du numéro civil %d (numéro cantonal).",
+			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 			                                     raisonSocialeCivile,
 			                                     noIdeCivil != null ? ", IDE: " + NO_IDE_RENDERER.toString(noIdeCivil) : StringUtils.EMPTY,
 			                                     organisation.getNumeroOrganisation());

@@ -691,7 +691,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
@@ -826,7 +826,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
@@ -986,7 +986,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
@@ -1404,7 +1404,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 					                                  "identifiée sur la base de ses attributs civils [%s]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
 			                                  noOrganisation,
 			                                  FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-			                                  noEntreprise,
+			                                  FormatNumeroHelper.numeroCTBToDisplay(noEntreprise),
 			                                  nom,
 			                                  FormeJuridiqueEntreprise.EI.getLibelle(),
 			                                  nom), message);
