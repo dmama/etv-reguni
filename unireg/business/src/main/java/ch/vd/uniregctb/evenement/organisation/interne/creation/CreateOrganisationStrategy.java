@@ -179,10 +179,10 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		final String message = String.format("L'organisation %s (civil: n°%d), domiciliée à %s, est de catégorie indéterminée (forme juridique inconnue). Traitement manuel.",
 		                                     organisation.getNom(dateEvenement),
 		                                     organisation.getNumeroOrganisation(),
-		                                     getCommuneDomicile(sitePrincipal, dateEvenement, context)
+		                                     getCommuneDomicile(sitePrincipal, dateEvenement, context).getNomOfficielAvecCanton()
 		);
 		LOGGER.info(message);
-		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+		return new TraitementManuel(event, organisation, null, context, options, message);
 	}
 
 	private Commune getCommuneDomicile(SiteOrganisation site, RegDate dateEvenement, EvenementOrganisationContext context) {
