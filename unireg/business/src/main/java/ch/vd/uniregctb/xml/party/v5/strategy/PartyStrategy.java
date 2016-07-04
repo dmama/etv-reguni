@@ -38,6 +38,7 @@ import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
@@ -500,76 +501,45 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	};
 
-	private static final Map<RelationFactoryKey, RelationFactory<?>> RELATION_FACTORIES = buildRelationFactories();
+	private static final Map<RapportEntreTiersKey, RelationFactory<?>> RELATION_FACTORIES = buildRelationFactories();
 
-	private static Map<RelationFactoryKey, RelationFactory<?>> buildRelationFactories() {
-		final Map<RelationFactoryKey, RelationFactory<?>> map = new HashMap<>(SourceRapportEntreTiers.values().length * TypeRapportEntreTiers.values().length);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, SourceRapportEntreTiers.OBJET), ECONOMIC_ACTIVITY_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, SourceRapportEntreTiers.SUJET), ECONOMIC_ACTIVITY_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.OBJET), null);          // on n'expose que le lien entreprise -> administrateur
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, SourceRapportEntreTiers.SUJET), ADMINISTRATION_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, SourceRapportEntreTiers.OBJET), REPLACED_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, SourceRapportEntreTiers.SUJET), REPLACED_BY_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, SourceRapportEntreTiers.OBJET), HOUSEHOLD_MEMBER_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, SourceRapportEntreTiers.SUJET), HOUSEHOLD_MEMBER_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.OBJET), TAX_LIABILITY_SUBSTITUTE_FOR_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, SourceRapportEntreTiers.SUJET), TAX_LIABILITY_SUBSTITUTE_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceRapportEntreTiers.OBJET), null);          // on n'expose que le lien pupille -> conseiller
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONSEIL_LEGAL, SourceRapportEntreTiers.SUJET), LEGAL_ADVISER_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, SourceRapportEntreTiers.OBJET), WITHHOLDING_TAX_CONTACT_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, SourceRapportEntreTiers.SUJET), WITHHOLDING_TAX_CONTACT_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CURATELLE, SourceRapportEntreTiers.OBJET), null);              // on n'expose que le lien pupille -> curateur
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.CURATELLE, SourceRapportEntreTiers.SUJET), WELFARE_ADVOCATE_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.FUSION_ENTREPRISES, SourceRapportEntreTiers.OBJET), ABSORBED_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.FUSION_ENTREPRISES, SourceRapportEntreTiers.SUJET), ABSORBING_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.MANDAT, SourceRapportEntreTiers.OBJET), null);     // on n'expose que le lien mandant -> mandataire
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.MANDAT, SourceRapportEntreTiers.SUJET), null);     // sera exposé sous une forme plus complète (avec adresse...)
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PARENTE, SourceRapportEntreTiers.OBJET), CHILD_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PARENTE, SourceRapportEntreTiers.SUJET), PARENT_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PRESTATION_IMPOSABLE, SourceRapportEntreTiers.OBJET), TAXABLE_REVENUE_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.PRESTATION_IMPOSABLE, SourceRapportEntreTiers.SUJET), TAXABLE_REVENUE_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.REPRESENTATION, SourceRapportEntreTiers.OBJET), null);         // on n'expose que le lien représenté -> représentant
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.REPRESENTATION, SourceRapportEntreTiers.SUJET), REPRESENTATIVE_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, SourceRapportEntreTiers.OBJET), BEFORE_SPLIT_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, SourceRapportEntreTiers.SUJET), AFTER_SPLIT_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.OBJET), MANAGEMENT_COMPANY_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, SourceRapportEntreTiers.SUJET), null);      // on n'expose que le lien fonds -> propriétaire
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, SourceRapportEntreTiers.OBJET), WEALTH_TRANSFER_ORIGINATOR_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, SourceRapportEntreTiers.SUJET), WEALTH_TRANSFER_RECIPIENT_FACTORY);
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TUTELLE, SourceRapportEntreTiers.OBJET), null);                // on n'expose que le lien pupille -> tuteur
-		map.put(new RelationFactoryKey(TypeRapportEntreTiers.TUTELLE, SourceRapportEntreTiers.SUJET), GUARDIAN_FACTORY);
+	private static Map<RapportEntreTiersKey, RelationFactory<?>> buildRelationFactories() {
+		final Map<RapportEntreTiersKey, RelationFactory<?>> map = new HashMap<>(RapportEntreTiersKey.maxCardinality());
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, RapportEntreTiersKey.Source.OBJET), ECONOMIC_ACTIVITY_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, RapportEntreTiersKey.Source.SUJET), ECONOMIC_ACTIVITY_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, RapportEntreTiersKey.Source.OBJET), null);          // on n'expose que le lien entreprise -> administrateur
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE, RapportEntreTiersKey.Source.SUJET), ADMINISTRATION_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, RapportEntreTiersKey.Source.OBJET), REPLACED_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ANNULE_ET_REMPLACE, RapportEntreTiersKey.Source.SUJET), REPLACED_BY_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, RapportEntreTiersKey.Source.OBJET), HOUSEHOLD_MEMBER_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.APPARTENANCE_MENAGE, RapportEntreTiersKey.Source.SUJET), HOUSEHOLD_MEMBER_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, RapportEntreTiersKey.Source.OBJET), TAX_LIABILITY_SUBSTITUTE_FOR_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION, RapportEntreTiersKey.Source.SUJET), TAX_LIABILITY_SUBSTITUTE_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.CONSEIL_LEGAL, RapportEntreTiersKey.Source.OBJET), null);          // on n'expose que le lien pupille -> conseiller
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.CONSEIL_LEGAL, RapportEntreTiersKey.Source.SUJET), LEGAL_ADVISER_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, RapportEntreTiersKey.Source.OBJET), WITHHOLDING_TAX_CONTACT_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE, RapportEntreTiersKey.Source.SUJET), WITHHOLDING_TAX_CONTACT_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.CURATELLE, RapportEntreTiersKey.Source.OBJET), null);              // on n'expose que le lien pupille -> curateur
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.CURATELLE, RapportEntreTiersKey.Source.SUJET), WELFARE_ADVOCATE_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.FUSION_ENTREPRISES, RapportEntreTiersKey.Source.OBJET), ABSORBED_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.FUSION_ENTREPRISES, RapportEntreTiersKey.Source.SUJET), ABSORBING_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.MANDAT, RapportEntreTiersKey.Source.OBJET), null);     // on n'expose que le lien mandant -> mandataire
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.MANDAT, RapportEntreTiersKey.Source.SUJET), null);     // sera exposé sous une forme plus complète (avec adresse...)
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.PARENTE, RapportEntreTiersKey.Source.OBJET), CHILD_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.PARENTE, RapportEntreTiersKey.Source.SUJET), PARENT_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.PRESTATION_IMPOSABLE, RapportEntreTiersKey.Source.OBJET), TAXABLE_REVENUE_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.PRESTATION_IMPOSABLE, RapportEntreTiersKey.Source.SUJET), TAXABLE_REVENUE_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.REPRESENTATION, RapportEntreTiersKey.Source.OBJET), null);         // on n'expose que le lien représenté -> représentant
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.REPRESENTATION, RapportEntreTiersKey.Source.SUJET), REPRESENTATIVE_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, RapportEntreTiersKey.Source.OBJET), BEFORE_SPLIT_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.SCISSION_ENTREPRISE, RapportEntreTiersKey.Source.SUJET), AFTER_SPLIT_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, RapportEntreTiersKey.Source.OBJET), MANAGEMENT_COMPANY_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.SOCIETE_DIRECTION, RapportEntreTiersKey.Source.SUJET), null);      // on n'expose que le lien fonds -> propriétaire
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, RapportEntreTiersKey.Source.OBJET), WEALTH_TRANSFER_ORIGINATOR_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, RapportEntreTiersKey.Source.SUJET), WEALTH_TRANSFER_RECIPIENT_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.OBJET), null);                // on n'expose que le lien pupille -> tuteur
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.SUJET), GUARDIAN_FACTORY);
 		return map;
-	}
-
-	private enum SourceRapportEntreTiers {
-		SUJET,
-		OBJET
-	}
-
-	private static class RelationFactoryKey {
-		private final TypeRapportEntreTiers type;
-		private final SourceRapportEntreTiers source;
-
-		public RelationFactoryKey(@NotNull TypeRapportEntreTiers type, @NotNull SourceRapportEntreTiers source) {
-			this.type = type;
-			this.source = source;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final RelationFactoryKey that = (RelationFactoryKey) o;
-			return type == that.type && source == that.source;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = type.hashCode();
-			result = 31 * result + source.hashCode();
-			return result;
-		}
 	}
 
 	/**
@@ -581,7 +551,7 @@ public abstract class PartyStrategy<T extends Party> {
 	 * @return une instance de {@link RelationBetweenParties} correspondant au lien à convertir
 	 * @throws NullPointerException si la clé n'a pas de factory non-nulle associée
 	 */
-	private static <T extends RapportEntreTiers> RelationBetweenParties buildRelation(RelationFactoryKey key, T rapport, Long otherId) {
+	private static <T extends RapportEntreTiers> RelationBetweenParties buildRelation(RapportEntreTiersKey key, T rapport, Long otherId) {
 		//noinspection unchecked
 		final RelationFactory<? super T> factory = (RelationFactory<? super T>) RELATION_FACTORIES.get(key);
 		return factory.build(rapport, otherId);
@@ -592,8 +562,8 @@ public abstract class PartyStrategy<T extends Party> {
 		final boolean all = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
 
 		// on passe d'abord en revue toutes les factories pour savoir si une au moins aurait quelque chose à sortir
-		final Set<RelationFactoryKey> activeKeys = new HashSet<>(RELATION_FACTORIES.size());
-		for (Map.Entry<RelationFactoryKey, RelationFactory<?>> entry : RELATION_FACTORIES.entrySet()) {
+		final Set<RapportEntreTiersKey> activeKeys = new HashSet<>(RELATION_FACTORIES.size());
+		for (Map.Entry<RapportEntreTiersKey, RelationFactory<?>> entry : RELATION_FACTORIES.entrySet()) {
 			final RelationFactory<?> factory = entry.getValue();
 			if (factory != null) {
 				final boolean exposed;
@@ -616,7 +586,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 			// Ajoute les rapports dont le tiers est le sujet
 			for (RapportEntreTiers rapport : right.getRapportsSujet()) {
-				final RelationFactoryKey factoryKey = new RelationFactoryKey(rapport.getType(), SourceRapportEntreTiers.SUJET);
+				final RapportEntreTiersKey factoryKey = new RapportEntreTiersKey(rapport.getType(), RapportEntreTiersKey.Source.SUJET);
 				if (activeKeys.contains(factoryKey)) {
 					final RelationBetweenParties relation = buildRelation(factoryKey, rapport, rapport.getObjetId());
 					tiers.getRelationsBetweenParties().add(relation);
@@ -625,7 +595,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 			// Ajoute les rapports dont le tiers est l'objet
 			for (RapportEntreTiers rapport : right.getRapportsObjet()) {
-				final RelationFactoryKey factoryKey = new RelationFactoryKey(rapport.getType(), SourceRapportEntreTiers.OBJET);
+				final RapportEntreTiersKey factoryKey = new RapportEntreTiersKey(rapport.getType(), RapportEntreTiersKey.Source.OBJET);
 				if (activeKeys.contains(factoryKey)) {
 					final RelationBetweenParties relation = buildRelation(factoryKey, rapport, rapport.getSujetId());
 					tiers.getRelationsBetweenParties().add(relation);

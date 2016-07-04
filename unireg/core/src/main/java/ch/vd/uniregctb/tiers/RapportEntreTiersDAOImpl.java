@@ -1,10 +1,18 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,6 +23,7 @@ import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -113,63 +122,169 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	}
 
 	@Override
-	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination) {
-		return findBySujetAndObjet(tiersId, showHisto, types, pagination, false);
-	}
-
-	@Override
-	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination, boolean fullList) {
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<RapportEntreTiersKey> types, final ParamPagination pagination, boolean fullList) {
 
 		// aucun type demandé -> aucun rapport trouvé!
 		if (types == null || types.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		final QueryFragment fragment = new QueryFragment("from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))");
-		fragment.add(buildWhereClassFragment(types, "r"));
-		if (!showHisto) {
-			fragment.add("and r.dateFin is null and r.annulationDate is null");
-		}
-		fragment.add(buildOrderClause(pagination, tiersId));
-
-		final Session session = getCurrentSession();
-		final Query queryObject = fragment.createQuery(session);
-		// On définit si on veut tous les résultats ou pas (si false -> filtre Java pour la pagination)
-		if (!fullList) {
-			final int firstResult = pagination.getSqlFirstResult();
-			final int maxResult = pagination.getSqlMaxResults();
-			queryObject.setFirstResult(firstResult);
-			queryObject.setMaxResults(maxResult);
-		}
-
-		//noinspection unchecked
-		return queryObject.list();
-	}
-
-	private static QueryFragment buildOrderClause(ParamPagination pagination, final long srcTiersId) {
-		return pagination.buildOrderClause("r", null, true, new ParamPagination.CustomOrderByGenerator() {
-			@Override
-			public boolean supports(String fieldName) {
-				return "tiersId".equals(fieldName);
+		// d'abord les sujets ...
+		final Set<TypeRapportEntreTiers> sujets = EnumSet.noneOf(TypeRapportEntreTiers.class);
+		for (RapportEntreTiersKey key : types) {
+			if (key.getSource() == RapportEntreTiersKey.Source.SUJET) {
+				sujets.add(key.getType());
 			}
-
-			@Override
-			public QueryFragment generate(String fieldName, ParamPagination pagination) {
-				// [SIFISC-9965] on va trier par le résultat de l'expression "sujetId + objetId - $srcTiersId", i.e. par l'AUTRE numéro de tiers
-				return new QueryFragment("r.sujetId + r.objetId - " + srcTiersId);
+		}
+		final List<RapportEntreTiers> rapportsSujets;
+		if (!sujets.isEmpty()) {
+			final QueryFragment fragment = new QueryFragment("from RapportEntreTiers r where r.sujetId = " + tiersId);
+			fragment.add(buildWhereClassFragment(sujets, "r"));
+			if (!showHisto) {
+				fragment.add("and r.dateFin is null and r.annulationDate is null");
 			}
-		});
+			final Query query = fragment.createQuery(getCurrentSession());
+			//noinspection unchecked
+			rapportsSujets = query.list();
+		}
+		else {
+			rapportsSujets = Collections.emptyList();
+		}
+
+		// ... puis les objets
+		final Set<TypeRapportEntreTiers> objets = EnumSet.noneOf(TypeRapportEntreTiers.class);
+		for (RapportEntreTiersKey key : types) {
+			if (key.getSource() == RapportEntreTiersKey.Source.OBJET) {
+				objets.add(key.getType());
+			}
+		}
+		final List<RapportEntreTiers> rapportsObjets;
+		if (!objets.isEmpty()) {
+			final QueryFragment fragment = new QueryFragment("from RapportEntreTiers r where r.objetId = " + tiersId);
+			fragment.add(buildWhereClassFragment(objets, "r"));
+			if (!showHisto) {
+				fragment.add("and r.dateFin is null and r.annulationDate is null");
+			}
+			final Query query = fragment.createQuery(getCurrentSession());
+			//noinspection unchecked
+			rapportsObjets = query.list();
+		}
+		else {
+			rapportsObjets = Collections.emptyList();
+		}
+
+		final List<RapportEntreTiers> tous = new ArrayList<>(rapportsSujets.size() + rapportsObjets.size());
+		tous.addAll(rapportsSujets);
+		tous.addAll(rapportsObjets);
+
+		final Comparator<RapportEntreTiers> comparateurAsc;
+		final String sortingField = pagination.getSorting().getField();
+		if (sortingField != null && "tiersId".equals(sortingField)) {
+			comparateurAsc = new Comparator<RapportEntreTiers>() {
+				@Override
+				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+					// [SIFISC-9965] on va trier par le résultat de l'expression "sujetId + objetId - $tiersId", i.e. par l'AUTRE numéro de tiers
+					final long key1 = o1.getObjetId() + o1.getSujetId() - tiersId;
+					final long key2 = o2.getObjetId() + o2.getSujetId() - tiersId;
+					int comparison = Long.compare(key1, key2);
+					if (comparison == 0) {
+						comparison = Long.compare(o1.getId(), o2.getId());
+					}
+					return comparison;
+				}
+			};
+		}
+		else {
+			try {
+				final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(RapportEntreTiers.class);
+				final PropertyDescriptor descriptor = descriptors.get(sortingField == null ? "id" : sortingField);
+				comparateurAsc = new Comparator<RapportEntreTiers>() {
+					@Override
+					public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+						try {
+							final Method readMethod = descriptor.getReadMethod();
+							final Object value1 = readMethod.invoke(o1);
+							final Object value2 = readMethod.invoke(o2);
+							if (value1 == null || value2 == null) {
+								if (value1 == null && value2 == null) {
+									return 0;
+								}
+								return value1 == null ? -1 : 1;
+							}
+							else if (value1 instanceof Comparable && value2 instanceof Comparable) {
+								//noinspection unchecked
+								return ((Comparable) value1).compareTo(value2);
+							}
+							else {
+								throw new IllegalArgumentException("Propriété " + descriptor.getDisplayName() + " de type " + descriptor.getPropertyType().getName() + " non comparable...");
+							}
+						}
+						catch (IllegalAccessException | InvocationTargetException e) {
+							throw new IllegalArgumentException("Impossible d'accéder à la propriété " + descriptor.getDisplayName() + " de la classe " + RapportEntreTiers.class.getSimpleName());
+						}
+					}
+				};
+			}
+			catch (IntrospectionException e) {
+				throw new IllegalArgumentException("Impossible d'accéder aux propriétés de la classe " + RapportEntreTiers.class.getSimpleName());
+			}
+		}
+		Collections.sort(tous, comparateurAsc);
+		if (!pagination.getSorting().isAscending()) {
+			Collections.reverse(tous);
+		}
+
+		if (fullList) {
+			return tous;
+		}
+		else {
+			return tous.subList(Math.min(pagination.getSqlFirstResult(), tous.size()),
+			                    Math.min(pagination.getSqlFirstResult() + pagination.getSqlMaxResults(), tous.size()));
+		}
 	}
 
 	@Override
-	public int countBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types) {
-
-		final QueryFragment fragment = new QueryFragment("select count(*) from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))");
-		fragment.add(buildWhereClassFragment(types, "r"));
-		if (!showHisto) {
-			fragment.add("and r.dateFin is null and r.annulationDate is null");
+	public int countBySujetAndObjet(long tiersId, boolean showHisto, Set<RapportEntreTiersKey> types) {
+		// d'abord les sujets
+		final Set<TypeRapportEntreTiers> sujets = EnumSet.noneOf(TypeRapportEntreTiers.class);
+		for (RapportEntreTiersKey key : types) {
+			if (key.getSource() == RapportEntreTiersKey.Source.SUJET) {
+				sujets.add(key.getType());
+			}
 		}
-		return DataAccessUtils.intResult(find(fragment.getQuery(), null));
+		final int nbSujets;
+		if (!sujets.isEmpty()) {
+			final QueryFragment fragment = new QueryFragment("select count(*) from RapportEntreTiers r where r.sujetId = " + tiersId);
+			fragment.add(buildWhereClassFragment(sujets, "r"));
+			if (!showHisto) {
+				fragment.add("and r.dateFin is null and r.annulationDate is null");
+			}
+			nbSujets = DataAccessUtils.intResult(find(fragment.getQuery(), null));
+		}
+		else {
+			nbSujets = 0;
+		}
+
+		// puis les objets
+		final Set<TypeRapportEntreTiers> objets = EnumSet.noneOf(TypeRapportEntreTiers.class);
+		for (RapportEntreTiersKey key : types) {
+			if (key.getSource() == RapportEntreTiersKey.Source.OBJET) {
+				objets.add(key.getType());
+			}
+		}
+		final int nbObjets;
+		if (!objets.isEmpty()) {
+			final QueryFragment fragment = new QueryFragment("select count(*) from RapportEntreTiers r where r.objetId = " + tiersId);
+			fragment.add(buildWhereClassFragment(objets, "r"));
+			if (!showHisto) {
+				fragment.add("and r.dateFin is null and r.annulationDate is null");
+			}
+			nbObjets = DataAccessUtils.intResult(find(fragment.getQuery(), null));
+		}
+		else {
+			nbObjets = 0;
+		}
+		return nbSujets + nbObjets;
 	}
 
 	@Override

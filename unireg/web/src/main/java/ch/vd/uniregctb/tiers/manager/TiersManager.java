@@ -75,6 +75,7 @@ import ch.vd.uniregctb.mandataire.LienMandataireView;
 import ch.vd.uniregctb.mandataire.MandataireViewHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
+import ch.vd.uniregctb.rapport.RapportHelper;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -107,6 +108,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
+import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -303,7 +305,8 @@ public class TiersManager implements MessageSourceAware {
 
 		// Rapport entre tiers Objet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
-			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.PRESTATION_IMPOSABLE && rapportEntreTiers.getType() != TypeRapportEntreTiers.PARENTE) {
+			final RapportEntreTiersKey key = new RapportEntreTiersKey(rapportEntreTiers.getType(), RapportEntreTiersKey.Source.OBJET);
+			if (RapportHelper.ALLOWED_VISU_COMPLETE.contains(key)) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
@@ -337,7 +340,8 @@ public class TiersManager implements MessageSourceAware {
 
 		// Rapport entre tiers Sujet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsSujet()) {
-			if (rapportEntreTiers.getType() != TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE && rapportEntreTiers.getType() != TypeRapportEntreTiers.PARENTE) {
+			final RapportEntreTiersKey key = new RapportEntreTiersKey(rapportEntreTiers.getType(), RapportEntreTiersKey.Source.SUJET);
+			if (RapportHelper.ALLOWED_VISU_COMPLETE.contains(key)) {
 				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());

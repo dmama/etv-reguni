@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -308,12 +308,19 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			}
 		});
 
+		final Set<RapportEntreTiersKey> allKeys = new HashSet<>(RapportEntreTiersKey.maxCardinality());
+		for (TypeRapportEntreTiers type : TypeRapportEntreTiers.values()) {
+			for (RapportEntreTiersKey.Source source : RapportEntreTiersKey.Source.values()) {
+				allKeys.add(new RapportEntreTiersKey(type, source));
+			}
+		}
+
 		// tri des relations par "tiersId"
 		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final ParamPagination paginationAsc = new ParamPagination(1, 25, "tiersId", true);
-				final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, EnumSet.allOf(TypeRapportEntreTiers.class), paginationAsc);
+				final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationAsc, true);
 				Assert.assertEquals(3, asc.size());
 				{
 					final RapportEntreTiers ret = asc.get(0);
@@ -338,7 +345,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 				}
 
 				final ParamPagination paginationDesc = new ParamPagination(1, 25, "tiersId", false);
-				final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, EnumSet.allOf(TypeRapportEntreTiers.class), paginationDesc);
+				final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationDesc, false);
 				Assert.assertEquals(3, desc.size());
 				{
 					final RapportEntreTiers ret = desc.get(2);

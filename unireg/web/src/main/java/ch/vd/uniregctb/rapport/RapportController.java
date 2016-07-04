@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
+import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -96,30 +98,29 @@ public class RapportController {
 		this.securityProvider = securityProvider;
 	}
 
-	private EnumSet<TypeRapportEntreTiers> buildAllowedTypeSet(Tiers tiers) {
-		final EnumSet<TypeRapportEntreTiers> types;
+	private Set<RapportEntreTiersKey> getAllowedTypes() {
+		final Set<RapportEntreTiersKey> types;
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			types = EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			types = RapportHelper.ALLOWED_VISU_LIMITEE;
 		}
 		else {
-			final EnumSet<TypeRapportEntreTiers> excluded = EnumSet.of(TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.MANDAT, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-			if (tiers instanceof Contribuable) {
-				excluded.add(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE);
-			}
-			if (tiers instanceof DebiteurPrestationImposable) {
-				excluded.add(TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
-			}
-			types = EnumSet.complementOf(excluded);
+			types = RapportHelper.ALLOWED_VISU_COMPLETE;
 		}
 		return types;
 	}
 
-	private static Set<TypeRapportEntreTiers> buildTypeSet(@Nullable TypeRapportEntreTiers askedFor, EnumSet<TypeRapportEntreTiers> allowed) {
-		final Set<TypeRapportEntreTiers> types = EnumSet.copyOf(allowed);
-		if (askedFor != null && types.contains(askedFor)) {
-			types.retainAll(EnumSet.of(askedFor));
+	private static Set<RapportEntreTiersKey> buildTypeSet(@Nullable TypeRapportEntreTiers askedFor, Set<RapportEntreTiersKey> allowed) {
+		final Set<RapportEntreTiersKey> types = new HashSet<>(allowed);
+		if (askedFor != null) {
+			final Iterator<RapportEntreTiersKey> iterator = types.iterator();
+			while (iterator.hasNext()) {
+				final RapportEntreTiersKey key = iterator.next();
+				if (key.getType() != askedFor) {
+					iterator.remove();
+				}
+			}
 		}
-		return types;
+		return types.isEmpty() ? allowed : types;
 	}
 
 	/**
@@ -159,18 +160,22 @@ public class RapportController {
 		}
 
 		final TypeRapportEntreTiers typeRapport = parseType(type);
-		final EnumSet<TypeRapportEntreTiers> allowedTypes = buildAllowedTypeSet(tiers);
-		final Set<TypeRapportEntreTiers> types = buildTypeSet(typeRapport, allowedTypes);
-		final int totalCount = getRapportsTotalCount(tiers, showHisto, types);
+		final Set<RapportEntreTiersKey> allowedKeys = getAllowedTypes();
+		final Set<RapportEntreTiersKey> keys = buildTypeSet(typeRapport, allowedKeys);
+		final int totalCount = getRapportsTotalCount(tiers, showHisto, keys);
 
 		page = ParamPagination.adjustPage(page, pageSize, totalCount);
 		final ParamPagination pagination = new ParamPagination(page, pageSize, sortField, "ASC".equalsIgnoreCase(sortOrder));
 
 		final Map<TypeRapportEntreTiers, String> allTypes = tiersMapHelper.getMapTypeRapportEntreTiers();
 		final Map<TypeRapportEntreTiers, String> choosableTypes = new LinkedHashMap<>(allTypes);
+		final Set<TypeRapportEntreTiers> allowedTypes = EnumSet.noneOf(TypeRapportEntreTiers.class);
+		for (RapportEntreTiersKey key : allowedKeys) {
+			allowedTypes.add(key.getType());
+		}
 		choosableTypes.keySet().retainAll(allowedTypes);
 
-		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, types, pagination, false);
+		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, keys, pagination, false);
 		return new RapportsPage(tiersId, views, showHisto, typeRapport, choosableTypes, page, totalCount, sortField, sortOrder);
 	}
 
@@ -198,14 +203,11 @@ public class RapportController {
 			throw new TiersNotFoundException(tiersId);
 		}
 
-		final TypeRapportEntreTiers typeRapport = TypeRapportEntreTiers.PARENTE;
-		final Set<TypeRapportEntreTiers> types = EnumSet.of(typeRapport);
-		final int totalCount = getRapportsTotalCount(tiers, true, types);
+		final int totalCount = getRapportsTotalCount(tiers, true, RapportHelper.ALLOWED_PARENTES);
 
 		final ParamPagination pagination = new ParamPagination(1, Integer.MAX_VALUE, "tiersId", true);
-		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, true, types, pagination, true);
-
-		return new RapportsPage(tiersId, views, true, typeRapport, null, 1, totalCount, null, null);
+		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, true, RapportHelper.ALLOWED_PARENTES, pagination, true);
+		return new RapportsPage(tiersId, views, true, TypeRapportEntreTiers.PARENTE, null, 1, totalCount, null, null);
 	}
 
 	/**
@@ -264,25 +266,24 @@ public class RapportController {
 			throw new TiersNotFoundException(tiersId);
 		}
 
-		final TypeRapportEntreTiers typeRapport = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
-		final Set<TypeRapportEntreTiers> types = EnumSet.of(typeRapport);
-		final int totalCount = getRapportsTotalCount(tiers, showHisto, types);
+		final int totalCount = getRapportsTotalCount(tiers, showHisto, RapportHelper.ALLOWED_ETABLISSEMENTS);
 
 		page = ParamPagination.adjustPage(page, pageSize, totalCount);
 		final ParamPagination pagination = new ParamPagination(page, pageSize, ((StringUtils.isBlank(sortField)) ? null : sortField), "ASC".equalsIgnoreCase(sortOrder));
 
 		// Si pas de tri défini, on met les annulés en queue de liste
-		List<RapportsPage.RapportView> views = null;
+		final List<RapportsPage.RapportView> views;
 		if (StringUtils.isBlank(sortField)) {
-			views = getRapportViews(tiersId, showHisto, types, pagination, true);
-		} else {
-			views = getRapportViews(tiersId, showHisto, types, pagination, false);
+			views = getRapportViews(tiersId, showHisto, RapportHelper.ALLOWED_ETABLISSEMENTS, pagination, true);
+		}
+		else {
+			views = getRapportViews(tiersId, showHisto, RapportHelper.ALLOWED_ETABLISSEMENTS, pagination, false);
 		}
 
 		return new RapportsPage(tiersId, views, showHisto, null, null, page, totalCount, sortField, sortOrder);
 	}
 
-	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination, boolean annulesEnDernier) {
+	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, Set<RapportEntreTiersKey> types, final ParamPagination pagination, boolean annulesEnDernier) {
 		// Récupération de tous les rapports (triés)
 		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, showHisto, types, pagination, true);
 
@@ -360,7 +361,7 @@ public class RapportController {
 		return views;
 	}
 
-	private int getRapportsTotalCount(Tiers tiers, boolean showHisto, Set<TypeRapportEntreTiers> types) {
+	private int getRapportsTotalCount(Tiers tiers, boolean showHisto, Set<RapportEntreTiersKey> types) {
 		return rapportEntreTiersDAO.countBySujetAndObjet(tiers.getNumero(), showHisto, types);
 	}
 

@@ -64,21 +64,10 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @param tiersId                   l'id du tiers
 	 * @param showHisto                 <code>true</code> si les rapports terminés/annulés sont concernés
 	 * @param types                     les types de rapports entre tiers à récupérer
-	 * @param pagination                les paramètres de pagination
-	 * @return la liste des rapports trouvés
-	 */
-	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types, ParamPagination pagination);
-
-	/**
-	 * Recherche les rapports qui pointent vers le tiers spécifié.
-	 *
-	 * @param tiersId                   l'id du tiers
-	 * @param showHisto                 <code>true</code> si les rapports terminés/annulés sont concernés
-	 * @param types                     les types de rapports entre tiers à récupérer
 	 * @param fullList                  boolean qui dfinit si on veut la liste entière ou une liste partielle en fonction de la pagination
 	 * @return la liste des rapports trouvés
 	 */
-	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types, ParamPagination pagination, boolean fullList);
+	List<RapportEntreTiers> findBySujetAndObjet(long tiersId, boolean showHisto, Set<RapportEntreTiersKey> types, ParamPagination pagination, boolean fullList);
 
 	/**
 	 * Compte le nombre de rappors qui pointent vers le tiers spécifié.  Note : les rapports de type 'contact impôt source' et 'prestation imposable' sont comptés en fonction du type de tiers.
@@ -88,7 +77,7 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 	 * @param types                     les types de rapports entre tiers à récupérer
 	 * @return le nombre de rapports qui pointent vers le sujet spécifié.
 	 */
-	int countBySujetAndObjet(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types);
+	int countBySujetAndObjet(long tiersId, boolean showHisto, Set<RapportEntreTiersKey> types);
 
 	/**
 	 * Efface (réellement !) tous les rapports entre tiers d'un type donné
