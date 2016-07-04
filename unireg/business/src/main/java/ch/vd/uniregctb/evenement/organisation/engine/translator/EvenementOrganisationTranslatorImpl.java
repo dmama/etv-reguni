@@ -287,8 +287,8 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					entreprise = (Entreprise) tiers;
 					final String derniereRaisonSocialeFiscale = getDerniereRaisonSocialeFiscale(entreprise);
 
-					final String message = String.format("%s%s identifiée sur la base de ses attributs civils [%s].",
-					                                     entreprise.toString(),
+					final String message = String.format("Entreprise n°%s%s identifiée sur la base de ses attributs civils [%s].",
+					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getNoEvenement(), message);
@@ -309,7 +309,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 								                                          "identifiée sur la base de ses attributs civils [%s]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
 						                                          organisation.getNumeroOrganisation(),
 						                                          formeLegale != null ? " (" + formeLegale + ")" : "",
-						                                          entreprise.getNumero(),
+						                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 						                                          StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
 						                                          formeJuridiqueFiscaleEntreprise != null ? " (" + formeJuridiqueFiscaleEntreprise.getFormeJuridique().getLibelle() + ")" : "",
 						                                          attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil)
