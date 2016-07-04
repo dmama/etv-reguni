@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -66,7 +67,8 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 
 		// On doit connaître la catégorie pour continuer en mode automatique
 		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
-		if (getEntreprise() == null && category != null && category != CategorieEntreprise.PP) {
+		final FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateEvt());
+		if (getEntreprise() == null && category != null && (category != CategorieEntreprise.PP && formeLegale != FormeLegale.N_0302_SOCIETE_SIMPLE)) {
 			// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
 			final RegDate datePasseeTropAncienne = getDateEvt().getOneDayBefore().addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 			// On a besoin du vrai historique pour savoir cela.

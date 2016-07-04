@@ -31,7 +31,6 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 	private static final Set<FormeLegale> FORMES_LEGALES_INVALIDES = EnumSet.of(FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
 	                                                                            FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE,
 	                                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC,
-	                                                                            FormeLegale.N_0302_SOCIETE_SIMPLE,
 	                                                                            FormeLegale.N_0312_FILIALE_ETRANGERE_NON_AU_RC);
 
 	/**

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -122,6 +123,12 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 						return new TraitementManuel(event, organisation, null, context, options,
 						                            "Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.");
 					default:
+						// SIFISC-19863 - Ignorer les sociétés simples
+						if (organisation.getFormeLegale(dateEvenement) == FormeLegale.N_0302_SOCIETE_SIMPLE) {
+							LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+							return new MessageSuiviPreExecution(event, organisation, null, context, options,
+							                                    String.format("L'organisation n°%d est une société simple vaudoise. Pas de création.", organisation.getNumeroOrganisation()));
+						}
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 						return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 					}
@@ -134,6 +141,12 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 						return new MessageSuiviPreExecution(event, organisation, null, context, options,
 						                                    String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
 					default:
+						// SIFISC-19863 - Ignorer les sociétés simples
+						if (organisation.getFormeLegale(dateEvenement) == FormeLegale.N_0302_SOCIETE_SIMPLE) {
+							LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+							return new MessageSuiviPreExecution(event, organisation, null, context, options,
+							                                    String.format("L'organisation n°%d est une société simple hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
+						}
 						final List<SiteOrganisation> succursalesRCVD = organisation.getSuccursalesRCVD(dateEvenement);
 						// On ne crée l'entreprise que si elle a une présence vaudoise concrétisée par une succursale au RC VD active. Ceci pour éviter les établissements REE.
 						if (succursalesRCVD.isEmpty()) {
