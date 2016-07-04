@@ -23,28 +23,28 @@
 
     <dependencies>
         <dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
             <artifactId>uniregctb-business</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
         </dependency>
 	    <dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>
 	    <dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-interfaces</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>
 	    <dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>

@@ -44,11 +44,11 @@ public class UniregWsTomcatRunner {
 		// Propriétés normallement configurées par Maven et qu'on spécifie à la main parce qu'on pointe vers le répertoire sources (et non pas target).
 
 		// BEGIN_LVERSION
-		System.setProperty("pom.version", "6.1.1-SNAPSHOT");
+		System.setProperty("project.version", "6.1.1-SNAPSHOT");
 		// END_LVERSION
 
-		System.setProperty("pom.name", "UniregCTB - Webservices");
-		System.setProperty("pom.description", "UniregCTB, Le registre unifie de l'Etat de Vaud - Web-services");
+		System.setProperty("project.name", "UniregCTB - Webservices");
+		System.setProperty("project.description", "UniregCTB, Le registre unifie de l'Etat de Vaud - Web-services");
 
 		System.setProperty("unireg-ws.appname", "unireg-ws");
 		System.setProperty("unireg.standalone", "false");

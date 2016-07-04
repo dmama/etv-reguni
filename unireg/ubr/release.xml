@@ -9,7 +9,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>unireg-web-batch-ubr-${pom.version}/lib</outputDirectory>
+			<outputDirectory>unireg-web-batch-ubr-${project.version}/lib</outputDirectory>
 			<scope>runtime</scope>
 		</dependencySet>
 	</dependencySets>
@@ -17,7 +17,7 @@
         <!-- Documentation -->
         <fileSet>
             <directory>../base/doc</directory>
-            <outputDirectory>unireg-web-batch-ubr-${pom.version}/doc</outputDirectory>
+            <outputDirectory>unireg-web-batch-ubr-${project.version}/doc</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <includes>
                 <include>ubr.doc</include>
@@ -27,15 +27,15 @@
 	<files>
 		<file>
 			<source>src/main/scripts/unireg_batch.sh</source>
-			<outputDirectory>unireg-web-batch-ubr-${pom.version}/bin</outputDirectory>
+			<outputDirectory>unireg-web-batch-ubr-${project.version}/bin</outputDirectory>
 		</file>
 		<file>
 			<source>src/main/scripts/unireg_extract_roles.sh</source>
-			<outputDirectory>unireg-web-batch-ubr-${pom.version}/bin</outputDirectory>
+			<outputDirectory>unireg-web-batch-ubr-${project.version}/bin</outputDirectory>
 		</file>
 		<file>
 			<source>src/main/scripts/unireg_rapport_csv.sh</source>
-			<outputDirectory>unireg-web-batch-ubr-${pom.version}/bin</outputDirectory>
+			<outputDirectory>unireg-web-batch-ubr-${project.version}/bin</outputDirectory>
 		</file>
 	</files>
 </assembly>

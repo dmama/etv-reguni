@@ -56,9 +56,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
@@ -178,7 +178,7 @@
 			<version>1.0-CR5</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-wlw</artifactId>
 			<version>1.0.0</version>
 		</dependency>
@@ -196,7 +196,7 @@
 						</manifest>
 						<manifestEntries>
 							<Implementation-Build>${buildNumber}</Implementation-Build>
-							<Application-Version>${pom.version}</Application-Version>
+							<Application-Version>${project.version}</Application-Version>
 						</manifestEntries>
 					</archive>
 					<overlays>

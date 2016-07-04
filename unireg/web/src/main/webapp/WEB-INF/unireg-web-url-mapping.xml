@@ -151,7 +151,7 @@
 	<bean id="notifyingExceptionResolver" class="ch.vd.uniregctb.servlet.NotifyingExceptionResolver">
 		<property name="order" value="-1"/> <!-- pour prendre la précédence sur tous les autres exceptions resolvers -->
 		<property name="notificationService" ref="emailNotificationService" />
-		<property name="applicationName" value="Unireg ${pom.version}" />
+		<property name="applicationName" value="Unireg ${project.version}" />
 	</bean>
 
 	<!-- Exception resolver pour activer les annotations @ExceptionHandler sur les controllers -->

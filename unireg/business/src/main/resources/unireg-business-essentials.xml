@@ -4,9 +4,9 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="appInfo" class="ch.vd.uniregctb.common.ApplicationInfo">
-		<property name="name" value="${pom.name}" />
-		<property name="version" value="${pom.version}" />
-		<property name="description" value="${pom.description}" />
+		<property name="name" value="${project.name}" />
+		<property name="version" value="${project.version}" />
+		<property name="description" value="${project.description}" />
 	</bean>
 
 	<bean id="officeImpotIndexer" class="ch.vd.uniregctb.indexer.tiers.OfficeImpotIndexerImpl">

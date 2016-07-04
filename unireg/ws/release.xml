@@ -11,7 +11,7 @@
 		<!-- Documentation -->
 		<fileSet>
 			<directory>../base/doc</directory>
-			<outputDirectory>unireg-ws-${pom.version}/doc</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/doc</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
 				<include>INSTALL.doc</include>
@@ -21,27 +21,27 @@
 		<!-- Fichier properties et ehcache.xml -->
 		<fileSet>
 			<directory>config/integration</directory>
-			<outputDirectory>unireg-ws-${pom.version}/config/integration</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/integration</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/integration-po</directory>
-			<outputDirectory>unireg-ws-${pom.version}/config/integration-po</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/integration-po</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/integration-te</directory>
-			<outputDirectory>unireg-ws-${pom.version}/config/integration-te</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/integration-te</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/sipm</directory>
-			<outputDirectory>unireg-ws-${pom.version}/config/sipm</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/sipm</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
 			<directory>config/validation</directory>
-			<outputDirectory>unireg-ws-${pom.version}/config/validation</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/validation</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<!-- Fichier unireg-log4j.xml -->
@@ -50,41 +50,41 @@
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>unireg-ws-${pom.version}/config/integration</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/integration</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>unireg-ws-${pom.version}/config/integration-po</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/integration-po</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>unireg-ws-${pom.version}/config/integration-te</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/integration-te</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>unireg-ws-${pom.version}/config/sipm</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/sipm</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>unireg-ws-${pom.version}/config/validation</outputDirectory>
+			<outputDirectory>unireg-ws-${project.version}/config/validation</outputDirectory>
 		</fileSet>
 	</fileSets>
 	<files>
 		<file>
-			<source>target/uniregctb-ws-${pom.version}.war</source>
-			<outputDirectory>unireg-ws-${pom.version}/deployment</outputDirectory>
+			<source>target/uniregctb-ws-${project.version}.war</source>
+			<outputDirectory>unireg-ws-${project.version}/deployment</outputDirectory>
 			<destName>unireg-ws.war</destName>
 		</file>
 	</files>

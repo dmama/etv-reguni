@@ -57,14 +57,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-avatars</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
@@ -84,23 +84,23 @@
 			</exclusions>
 		</dependency>
 	    <dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>
 	    <dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-interfaces</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -254,7 +254,7 @@
 		  <version>1.0-CR5</version>
 		</dependency>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-wlw</artifactId>
 			<version>1.0.0</version>
 		</dependency>
@@ -269,7 +269,7 @@
 		<!-- A priori, on met tous le répertoire webapp dans le WAR -->
 		<excluded-from-war/>
 		<!-- On utilise le web.xml standard (mais celui filtré, quand même) -->
-		<webXmlForWar>${pom.basedir}/target/classes/WEB-INF/web.xml</webXmlForWar>
+		<webXmlForWar>${project.basedir}/target/classes/WEB-INF/web.xml</webXmlForWar>
 	</properties>
 
 	<profiles>
@@ -280,7 +280,7 @@
 				<!-- Pas la peine de mettre les JSP dans le WAR si elles sont précompilées -->
 				<excluded-from-war>**/*.jsp</excluded-from-war>
 				<!-- On utilise le web.xml qui contient le mapping des JPS compilées -->
-				<webXmlForWar>${pom.basedir}/target/jspweb.xml</webXmlForWar>
+				<webXmlForWar>${project.basedir}/target/jspweb.xml</webXmlForWar>
 			</properties>
 			<build>
 				<plugins>
@@ -298,17 +298,17 @@
 						</executions>
 						<configuration>
 							<!-- On veut utiliser la version déjà filtrée -->
-							<inputWebXml>${pom.basedir}/target/classes/WEB-INF/web.xml</inputWebXml>
+							<inputWebXml>${project.basedir}/target/classes/WEB-INF/web.xml</inputWebXml>
 							<source>1.7</source>
 							<target>1.7</target>
 							<sources>
-								<directory>${pom.basedir}/src/main/webapp</directory>
+								<directory>${project.basedir}/src/main/webapp</directory>
 								<includes>
 									<include>**/*.jsp</include>
 								</includes>
 							</sources>
 							<trimSpaces>false</trimSpaces>   <!-- Autrement, certains mots se retrouvent collés ensembles -->
-							<outputWebXml>${pom.basedir}/target/jspweb.xml</outputWebXml>
+							<outputWebXml>${project.basedir}/target/jspweb.xml</outputWebXml>
 						</configuration>
 						<dependencies>
 							<dependency>
@@ -487,7 +487,7 @@
 						</manifest>
 						<manifestEntries>
 			             	<Implementation-Build>${buildNumber}</Implementation-Build>
-							<Application-Version>${pom.version}</Application-Version>
+							<Application-Version>${project.version}</Application-Version>
 						</manifestEntries>
 					</archive>
 					<webXml>${webXmlForWar}</webXml>

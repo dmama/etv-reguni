@@ -96,7 +96,7 @@
 	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
 		<property name="to" value="${extprop.exception.notification.email}" />
 		<property name="from" value="unireg-application@vd.ch" />
-		<property name="subject" value="Une exception est survenue sur Unireg ${pom.version}" />
+		<property name="subject" value="Une exception est survenue sur Unireg ${project.version}" />
 	</bean>
 
 	<bean id="emailNotificationService" class="ch.vd.uniregctb.common.EmailNotificationService">

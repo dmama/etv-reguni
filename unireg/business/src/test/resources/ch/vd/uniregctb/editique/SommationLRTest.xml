@@ -500,7 +500,7 @@
     <column>ANNULATION_DATE</column>
     <row>
       <value>2008-01-01</value>
-      <value>31</value>
+      <value>1</value>
       <value>21</value>
       <value>20080101</value>
       <value>20080101</value>
@@ -511,7 +511,7 @@
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>32</value>
+      <value>2</value>
       <value>21</value>
       <value>20080201</value>
       <value>20080201</value>
@@ -522,7 +522,7 @@
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>33</value>
+      <value>3</value>
       <value>22</value>
       <value>20080101</value>
       <value>20080101</value>
@@ -540,14 +540,14 @@
     <column>DECLARATION_ID</column>
     <row>
       <value>2008-01-01</value>
-      <value>41</value>
+      <value>1</value>
       <value>EMISE</value>
       <value>20080101</value>
       <value>21</value>
     </row>
     <row>
       <value>2008-01-01</value>
-      <value>42</value>
+      <value>2</value>
       <value>EMISE</value>
       <value>20080101</value>
       <value>22</value>

@@ -126,7 +126,7 @@
 	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
 		<constructor-arg>
 			<map>
-				<entry key="applicationVersion" value="${pom.version}" />
+				<entry key="applicationVersion" value="${project.version}" />
 				<entry key="encoding" value="${file.encoding}" />
 				<entry key="java_vm_vendor" value="${java.vm.vendor}" />
 				<entry key="java_vm_name" value="${java.vm.name}" />
