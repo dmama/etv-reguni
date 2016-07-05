@@ -832,8 +832,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
-					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: n°%d",
-					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
+					String.format("Organisation civile n°%d rattachée à l'entreprise n°%s. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: n°%d",
+					              noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(4) instanceof InformationComplementaire);
 		Assert.assertTrue(listEvtInterne.get(5) instanceof Indexation);
@@ -992,8 +992,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
-					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s.",
-					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id)), message);
+					String.format("Organisation civile n°%d rattachée à l'entreprise n°%s. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s.",
+					              noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id)), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(4) instanceof InformationComplementaire);
 		Assert.assertTrue(listEvtInterne.get(5) instanceof Indexation);
