@@ -194,7 +194,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
 		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 1, 2),
 		                                                                    StatusInscriptionRC.ACTIF, date(2015, 9, 4), StatusRegistreIDE.DEFINITIF,
-		                                                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+		                                                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999992", "CHE999999993"));
 		tryCreationEventAndCheckResult(101220106L, CreateEntrepriseHorsVD.class);
 	}
 
@@ -207,18 +207,18 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		tryCreationAndExpectNull(222222001L);
 
 		// Avec commune forme juridique inconnue
-		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null, null, null, "CHE999999994"));
 		tryCreationEventAndCheckResult(222222003L, TraitementManuel.class);
 
 		// TODO: A bien vérifier ce qu'on doit faire lorsque le siege n'est pas connu.
 		// Avec commune inconnue (pas de no ofs dans le siege)
-		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME, null, null, null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME, null, null, null, null, null, null, "CHE999999995"));
 		tryCreationEventAndCheckResult(222222002L, TraitementManuel.class);
 
 		// Cas hors Vaud aucun site sur Vaud
 		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
-		                                                                    null, null, null, null, null, null, null, null));
+		                                                                    null, null, null, null, null, null, null, null, "CHE999999996", "CHE999999997"));
 		tryCreationEventAndCheckResult(222222004L, MessageSuiviPreExecution.class);
 
 	}

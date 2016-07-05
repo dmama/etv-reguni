@@ -87,7 +87,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
 				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
@@ -185,7 +185,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
 				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
@@ -319,7 +319,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(date(2015, 7, 5), StatusRegistreIDE.RADIE);
 				addOrganisation(organisation);
@@ -410,7 +410,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association sympa", date(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", null, null);
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
 				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
@@ -540,7 +540,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association sympa", date(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", null, null);
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
 				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
@@ -668,7 +668,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association sympa", date(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", null, null);
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
 				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));

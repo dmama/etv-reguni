@@ -116,7 +116,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 				addOrganisation(
 						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996"));
 			}
 		});
 
@@ -177,7 +177,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy Assoc", RegDate.get(2015, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
-		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION);
+		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {

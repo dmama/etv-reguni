@@ -316,7 +316,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi & Co SA", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
 				                                    BigDecimal.valueOf(50000), MontantMonetaire.CHF);
 			}
 		});
@@ -390,7 +390,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 
@@ -525,7 +525,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 

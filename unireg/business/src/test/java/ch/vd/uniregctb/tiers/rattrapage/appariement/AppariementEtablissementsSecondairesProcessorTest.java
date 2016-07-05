@@ -63,11 +63,11 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999995", null, null);
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire, org, dateDebut, null, "Toto Lausanne", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999996", null, null);
 			}
 		});
 
@@ -155,11 +155,11 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire, org, dateDebut, null, "Toto Lausanne", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999997", null, null);
 			}
 		});
 
@@ -243,18 +243,18 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateDebut, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 
 				final MockSiteOrganisation sec = MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire1, org, dateDebut, null, "Toto Lausanne 1", null,
 				                                                                     false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                     MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
-				                                                                     null, null, null, null);
+				                                                                     null, null, "CHE999999997", null, null);
 				sec.addNumeroIDE(dateDebut, null, ide);
 
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire2, org, dateDebut, null, "Toto Lausanne 2", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999998", null, null);
 			}
 		});
 
@@ -398,17 +398,17 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateDebutCivile, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebutCivile.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire1, org, dateDebutCivile, null, "Toto Lausanne", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999997", null, null);
 
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire2, org, dateDebutCivile, null, "Toto Renens", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Renens.getNoOFS(), StatusInscriptionRC.INCONNU, null,
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999997", null, null);
 			}
 		});
 
@@ -579,17 +579,17 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateDebutCivile, null, "Toto Echallens", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Echallens.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebutCivile.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire1, org, dateDebutCivile, null, "Toto Lausanne", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999997", null, null);
 
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire2, org, dateDebutCivile, null, "Toto Lausanne (new!)", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
-				                                    null, null, null, null);
+				                                    null, null, "CHE999999998", null, null);
 			}
 		});
 

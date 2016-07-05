@@ -54,7 +54,7 @@ public class CreateEntrepriseDPPMProcessorTest extends AbstractEvenementOrganisa
 						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 26), null, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
 						                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 						                                    StatusRegistreIDE.DEFINITIF,
-						                                    TypeOrganisationRegistreIDE.ASSOCIATION, BigDecimal.valueOf(100000), "CHF"));
+						                                    TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", BigDecimal.valueOf(100000), "CHF"));
 			}
 		});
 

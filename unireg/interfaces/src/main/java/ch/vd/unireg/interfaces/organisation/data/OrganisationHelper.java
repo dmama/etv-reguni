@@ -369,6 +369,19 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Une organisation est réputée inscrite à l'IDE à la date fournie si le statut de son site principal n'est ni AUTRE, ni ANNULE.
+	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isInscritIDE(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
+		return sitePrincipal != null && isInscritIDE(sitePrincipal.getPayload(), dateEffective);
+	}
+
+	/**
 	 * Un site est réputé inscrit à l'IDE à la date fournie si son statut n'est ni AUTRE, ni ANNULE.
 	 *
 	 * @param site le site

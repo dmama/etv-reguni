@@ -113,9 +113,9 @@ public class MetierServicePMTest extends BusinessTest {
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 date(2001, 5, 1),
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2003, 10, 5), null, nomSite2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -204,9 +204,9 @@ public class MetierServicePMTest extends BusinessTest {
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 date(2001, 5, 1),
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2003, 10, 5), null, nomSite2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -307,9 +307,9 @@ public class MetierServicePMTest extends BusinessTest {
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateRattachement, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 date(2001, 5, 1),
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2003, 10, 5), null, nomSite2, FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2003, 10, 1), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -1113,7 +1113,7 @@ public class MetierServicePMTest extends BusinessTest {
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateCreation, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Grandson.getNoOFS(), StatusInscriptionRC.NON_INSCRIT, null,
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
 			}
 		});
 

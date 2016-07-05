@@ -59,7 +59,7 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.ENTREPRISE_INDIVIDUELLE, null, null);
+						                                           TypeOrganisationRegistreIDE.ENTREPRISE_INDIVIDUELLE, "CHE999999996" , null, null);
 				addOrganisation(organisation);
 
 			}
@@ -107,7 +107,7 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(2, erreurs.size());
 
 				                             final EvenementOrganisationErreur evtErreur0 = erreurs.get(0);
-				                             Assert.assertEquals(String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme] n'est pas une entreprise (%s) et sera ignoré. " +
+				                             Assert.assertEquals(String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme, IDE: CHE-999.999.996] n'est pas une entreprise (%s) et sera ignoré. " +
 						                                                               "Si nécessaire, un tiers Entreprise sera créé pour l'organisation civile n°%d, en doublon du tiers n°%s (%s).",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
 				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription(),

@@ -78,7 +78,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
@@ -193,7 +193,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(date(2015, 7, 8), null,
@@ -305,7 +305,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
 				donneesRC.addAdresseLegale(date(2015, 7, 8), null,
@@ -416,7 +416,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
@@ -532,7 +532,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
@@ -668,7 +668,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
@@ -783,7 +783,7 @@ public class AdresseProcessorTest extends AbstractEvenementOrganisationProcessor
 				final MockOrganisation org =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
 				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,

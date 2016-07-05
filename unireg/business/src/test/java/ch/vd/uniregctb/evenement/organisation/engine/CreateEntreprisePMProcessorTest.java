@@ -229,7 +229,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
 						                                                             StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995", "CHE999999996");
 				addOrganisation(
 						organisationAvecSiteSecondaire);
 			}
@@ -387,7 +387,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
 						                                                             null, null, null, null,
 						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.ASSOCIATION, TypeOrganisationRegistreIDE.SITE);
+						                                                             TypeOrganisationRegistreIDE.ASSOCIATION, TypeOrganisationRegistreIDE.SITE, "CHE999999996", "CHE999999997");
 				addOrganisation(
 						organisationAvecSiteSecondaire);
 			}
@@ -544,11 +544,11 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 						                                                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 						                                                             StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
-						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", "CHE999999996");
 				MockSiteOrganisation siteSec = MockSiteOrganisationFactory.addSite(noSiteSecondaire2, organisation, RegDate.get(2015, 6, 26), null, "Synergy Plus Plus SA", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				                                    StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, null, null);
+				                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997", null, null);
 				addOrganisation(organisation);
 			}
 		});
@@ -684,7 +684,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
 		rc.changeDateInscriptionVd(date(2015, 6, 26), date(2015, 6, 20));
 
@@ -813,7 +813,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
 		rc.changeDateInscriptionVd(date(2012, 4, 16), date(2012, 4, 12));
 
@@ -934,7 +934,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				addOrganisation(
 						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996"));
 			}
 		});
 

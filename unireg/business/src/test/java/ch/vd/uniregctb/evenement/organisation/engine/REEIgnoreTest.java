@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
-import java.math.BigDecimal;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -17,7 +15,6 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -25,11 +22,11 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
- * @author Raphaël Marmier, 2016-02-22
+ * @author Raphaël Marmier, 2016-07-04
  */
-public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProcessorTest {
+public class REEIgnoreTest extends AbstractEvenementOrganisationProcessorTest {
 
-	public DecisionAciProcessorTest() {
+	public REEIgnoreTest() {
 		setWantIndexationTiers(true);
 	}
 
@@ -43,7 +40,7 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 	}
 
 	@Test(timeout = 10000L)
-	public void testDecisionAciALaDate() throws Exception {
+	public void testREEPureIgnoree() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -53,24 +50,12 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Société de Jeunesse de Ballens", date(2016, 5, 20), null, FormeLegale.N_0109_ASSOCIATION,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
+						                                           null, null, null, null, null);
+
 				addOrganisation(organisation);
 
-			}
-		});
-
-		// Création de l'entreprise
-
-		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addDecisionAci(entreprise, date(2015, 1, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, "Une fake decision ACI pour test.");
-				return entreprise.getNumero();
 			}
 		});
 
@@ -81,7 +66,7 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.REE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 5, 20), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -99,7 +84,7 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
-				                             Assert.assertEquals(String.format("Entreprise n°%d est sous le coup d'une décision ACI. Cet événement doit être traité à la main.", tiersId),
+				                             Assert.assertEquals(String.format("L'organisation Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noOrganisation),
 				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
@@ -108,7 +93,7 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 	}
 
 	@Test(timeout = 10000L)
-	public void testDecisionAciPlusEnVigueur() throws Exception {
+	public void testErreurManqueIDE() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -118,24 +103,13 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Metafun SA", date(2016, 5, 20), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2016, 5, 15),
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
+						                                           null, null, null);
+
 				addOrganisation(organisation);
 
-			}
-		});
-
-		// Création de l'entreprise
-
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addDecisionAci(entreprise, date(2015, 1, 1), date(2015, 5, 1), MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, "Une fake decision ACI pour test.");
-				return entreprise;
 			}
 		});
 
@@ -146,7 +120,7 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.REE_MUTATION, RegDate.get(2016, 5, 20), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -162,11 +136,14 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
+				                             Assert.assertEquals(String.format("Numéro IDE manquant pour l'organisation Metafun SA (civil: n°%d), domiciliée à Lausanne (VD), pourtant inscrite au RC. Impossible de continuer.", noOrganisation),
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
 		);
 	}
+
 }

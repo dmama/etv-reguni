@@ -11,6 +11,8 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -73,6 +75,37 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 		final InformationDeDateEtDeCreation info;
 		try {
+
+			// Entreprises qui n'existent qu'au REE (ou autre registre non utile à la fiscalité)
+			if (organisation.getNumeroIDE(dateEvenement) == null) {
+				final StatusInscriptionRC statusInscriptionRC = sitePrincipal.getDonneesRC().getStatusInscription(dateEvenement);
+				final StatusRegistreIDE statusRegistreIDE = sitePrincipal.getDonneesRegistreIDE().getStatus(dateEvenement);
+				final String message;
+
+				if (organisation.isInscritAuRC(dateEvenement)) {
+					message = String.format("Numéro IDE manquant pour l'organisation %s (civil: n°%d), domiciliée à %s, pourtant inscrite au RC. Impossible de continuer.",
+					                                     organisation.getNom(dateEvenement),
+					                                     organisation.getNumeroOrganisation(),
+					                                     getCommuneDomicile(sitePrincipal, dateEvenement, context).getNomOfficielAvecCanton()
+					);
+				}
+				else if (organisation.isInscritIDE(dateEvenement)) {
+					message = String.format("Numéro IDE manquant pour l'organisation %s (civil: n°%d), domiciliée à %s, pourtant inscrite à l'IDE. Impossible de continuer.",
+					                                     organisation.getNom(dateEvenement),
+					                                     organisation.getNumeroOrganisation(),
+					                                     getCommuneDomicile(sitePrincipal, dateEvenement, context).getNomOfficielAvecCanton()
+					);
+				}
+				else {
+					message = String.format("L'organisation %s (civil: n°%d), domiciliée à %s, n'existe pas à l'IDE ni au RC. Pas de création automatique.",
+					                                     organisation.getNom(dateEvenement),
+					                                     organisation.getNumeroOrganisation(),
+					                                     getCommuneDomicile(sitePrincipal, dateEvenement, context).getNomOfficielAvecCanton()
+					);
+				}
+				LOGGER.info(message);
+				return new TraitementManuel(event, organisation, null, context, options, message);
+			}
 
 			// On doit connaître la catégorie pour continuer en mode automatique
 			CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);

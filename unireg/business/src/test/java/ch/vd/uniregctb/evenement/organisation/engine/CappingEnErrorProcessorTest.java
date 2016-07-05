@@ -130,7 +130,7 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 				                             {
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(0);
 					                             Assert.assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-					                             Assert.assertEquals("Aucune entreprise identifiée pour le numéro civil " + noOrganisation + " ou les attributs civils [Synergy SA].", erreur.getMessage());
+					                             Assert.assertEquals("Aucune entreprise identifiée pour le numéro civil " + noOrganisation + " ou les attributs civils [Synergy SA, IDE: CHE-999.999.996].", erreur.getMessage());
 				                             }
 				                             {
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(1);

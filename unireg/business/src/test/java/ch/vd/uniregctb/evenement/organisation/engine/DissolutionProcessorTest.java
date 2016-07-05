@@ -62,7 +62,7 @@ public class DissolutionProcessorTest extends AbstractEvenementOrganisationProce
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.EN_LIQUIDATION, date(2010, 6, 24),
 						                                           StatusRegistreIDE.RADIE,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeRaisonDeDissolutionVd(date(2015, 6, 26), RaisonDeDissolutionRC.FAILLITE);
 				addOrganisation(organisation);
@@ -127,7 +127,7 @@ public class DissolutionProcessorTest extends AbstractEvenementOrganisationProce
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.EN_LIQUIDATION, date(2010, 6, 24),
 						                                           StatusRegistreIDE.RADIE,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
 				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
 						new PublicationBusiness(date(2015, 7, 5), null, date(2015, 7, 5), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, null, null, null,

@@ -9667,7 +9667,7 @@ debut PF                                                                        
 				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
 				                                    StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
-				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996",
 				                                    BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
 			}
 		});
@@ -9737,7 +9737,7 @@ debut PF                                                                        
 				final MockOrganisation org = addOrganisation(noOrganisation);
 				MockSiteOrganisationFactory.addSite(noSite, org, dateDebutConnueCivil, null, "Tuturlutu SA", FormeLegale.N_0106_SOCIETE_ANONYME, true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusInscriptionRC.ACTIF, dateDebutConnueCivil.addDays(-3), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE);
+				                                    StatusInscriptionRC.ACTIF, dateDebutConnueCivil.addDays(-3), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996");
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
 				site.changeFormeLegale(dateDebutChangementFormeLegale, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE);
 				site.changeNom(dateDebutChangementFormeLegale, "Tuturlutu");

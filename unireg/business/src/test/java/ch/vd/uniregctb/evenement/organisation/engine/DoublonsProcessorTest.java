@@ -63,7 +63,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
 				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noOrganisationRamplacante);
 				addOrganisation(organisation);
@@ -133,7 +133,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
 				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noSiteRemplacant);
 				addOrganisation(organisation);

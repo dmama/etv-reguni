@@ -113,6 +113,11 @@ public interface Organisation {
 	boolean isRadieDuRC(RegDate date);
 
 	/**
+	 * @return true si l'organisation est inscrite à l'IDE à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	boolean isInscritIDE(RegDate date);
+
+	/**
 	 * @return true si l'organisation est radiée de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isRadieIDE(RegDate date);

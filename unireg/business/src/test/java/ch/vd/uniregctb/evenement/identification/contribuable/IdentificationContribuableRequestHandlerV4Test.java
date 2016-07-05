@@ -385,7 +385,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 				MockSiteOrganisation site = MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                                         true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                         MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
-				                                                         TypeOrganisationRegistreIDE.SITE, BigDecimal.valueOf(50000), "CHF");
+				                                                         TypeOrganisationRegistreIDE.SITE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				site.addNumeroIDE(date(1989, 7, 7), null, ide);
 			}
 		});

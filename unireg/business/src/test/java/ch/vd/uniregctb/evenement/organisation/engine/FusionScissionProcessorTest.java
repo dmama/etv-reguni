@@ -61,7 +61,7 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
 				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
 						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, null, null, null,
@@ -129,7 +129,7 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
 				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
 						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, null, null, null,
@@ -195,7 +195,7 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
 				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
 						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, null, null, null,

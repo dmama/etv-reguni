@@ -256,7 +256,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             final List<EvenementOrganisationErreur> messages = evt.getErreurs();
 				                             Assert.assertNotNull(messages);
 				                             Assert.assertEquals(2, messages.size());
-				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
+				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA, IDE: CHE-999.999.996) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
 				                             Assert.assertEquals("Evénement explicitement placé 'à vérifier' par configuration applicative.", messages.get(1).getMessage());
 				                             return null;
 			                             }
@@ -345,7 +345,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             final List<EvenementOrganisationErreur> messages = evt.getErreurs();
 				                             Assert.assertNotNull(messages);
 				                             Assert.assertEquals(2, messages.size());
-				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
+				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA, IDE: CHE-999.999.996) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
 				                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.", messages.get(1).getMessage());
 				                             return null;
 			                             }
@@ -618,7 +618,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996"));
 
 			}
 		});
@@ -691,7 +691,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
@@ -730,10 +730,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 dateRC,
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
 		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
-		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
@@ -826,7 +826,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
@@ -877,10 +877,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
 		                                                                                 dateRC,
-		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
 		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
-		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
@@ -986,7 +986,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
+			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996].", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
@@ -1027,7 +1027,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				                                                           StatusInscriptionRC.ACTIF, dateRC,
-				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996"));
 
 			}
 		});
@@ -1094,7 +1094,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(1, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
 		String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
-		Assert.assertEquals(String.format("Plusieurs entreprises ont été trouvées (numéros [%d, %d]) pour les attributs civils [%s]. Arrêt du traitement.",
+		Assert.assertEquals(String.format("Plusieurs entreprises ont été trouvées (numéros [%d, %d]) pour les attributs civils [%s, IDE: CHE-999.999.996]. Arrêt du traitement.",
 		                                  noEntrerpise1, noEntrerpise2, nom),
 		                    message);
 
@@ -1125,7 +1125,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996"));
 
 			}
 		});
@@ -1192,7 +1192,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(4, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 		String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
-		Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
+		Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s, IDE: CHE-999.999.996].",
 		                                  noOrganisation, nom),
 		                    message);
 
@@ -1230,7 +1230,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996"));
 			}
 		});
 
@@ -1327,7 +1327,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996"));
 
 			}
 		});
@@ -1401,7 +1401,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
 			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Impossible de rattacher l'organisation n°%d (%s) à l'entreprise n°%s (%s) (%s) " +
-					                                  "identifiée sur la base de ses attributs civils [%s]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
+					                                  "identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
 			                                  noOrganisation,
 			                                  FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 			                                  FormatNumeroHelper.numeroCTBToDisplay(noEntreprise),

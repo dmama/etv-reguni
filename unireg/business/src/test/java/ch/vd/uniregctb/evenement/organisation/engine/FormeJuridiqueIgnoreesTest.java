@@ -52,7 +52,7 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementOrganisationPro
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Ultrafun Robert Dupont", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.ENTREPRISE_INDIVIDUELLE, null, null);
+						                                           TypeOrganisationRegistreIDE.ENTREPRISE_INDIVIDUELLE, "CHE999999996", null, null);
 				addOrganisation(organisation);
 
 			}
@@ -105,7 +105,7 @@ public class FormeJuridiqueIgnoreesTest extends AbstractEvenementOrganisationPro
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Notre société simple", date(2010, 6, 26), null, FormeLegale.N_0302_SOCIETE_SIMPLE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.SOCIETE_SIMPLE, null, null);
+						                                           TypeOrganisationRegistreIDE.SOCIETE_SIMPLE, "CHE999999996", null, null);
 				addOrganisation(organisation);
 
 			}

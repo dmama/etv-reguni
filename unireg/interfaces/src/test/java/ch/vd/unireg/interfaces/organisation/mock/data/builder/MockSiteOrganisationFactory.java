@@ -36,8 +36,9 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                           @Nullable RegDate dateInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
-	                                           @Nullable TypeOrganisationRegistreIDE typeIde) {
-		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, null, null);
+	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                           @Nullable String numeroIDE) {
+		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, numeroIDE, null, null);
 	}
 
 	public static MockSiteOrganisation addSite(long cantonalId,
@@ -53,27 +54,29 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable RegDate dateInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                           @Nullable String numeroIDE,
 	                                           @Nullable BigDecimal capitalAmount,
 	                                           @Nullable String capitalCurrency) {
-		MockSiteOrganisation mockSite =  mockSite(cantonalId, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, capitalAmount, capitalCurrency);
+		MockSiteOrganisation mockSite =  mockSite(cantonalId, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, numeroIDE, capitalAmount, capitalCurrency);
 		organisation.addDonneesSite(mockSite);
 		return mockSite;
 	}
 
 	public static MockSiteOrganisation mockSite(long cantonalId,
-	                                           RegDate dateDebut,
-	                                           RegDate dateFin,
-	                                           String nom,
-	                                           FormeLegale formeLegale,
-	                                           @Nullable Boolean principal,
-	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
-	                                           @Nullable Integer noOfsDomicile,
-	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
-	                                           @Nullable RegDate dateInscriptionRC,
-	                                           @Nullable StatusRegistreIDE statusIde,
-	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
-	                                           @Nullable BigDecimal capitalAmount,
-	                                           @Nullable String capitalCurrency) {
+	                                            RegDate dateDebut,
+	                                            RegDate dateFin,
+	                                            String nom,
+	                                            FormeLegale formeLegale,
+	                                            @Nullable Boolean principal,
+	                                            @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
+	                                            @Nullable Integer noOfsDomicile,
+	                                            @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                            @Nullable RegDate dateInscriptionRC,
+	                                            @Nullable StatusRegistreIDE statusIde,
+	                                            @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                            @Nullable String numeroIDE,
+	                                            @Nullable BigDecimal capitalAmount,
+	                                            @Nullable String capitalCurrency) {
 
 		final MockDonneesRC donneesRC = new MockDonneesRC();
 		if (statusInscriptionRC != null) {
@@ -104,6 +107,10 @@ public abstract class MockSiteOrganisationFactory {
 		mock.changeNom(dateDebut, nom);
 		if (dateFin != null) {
 			mock.changeNom(dateFin.getOneDayAfter(), null);
+		}
+
+		if (numeroIDE != null) {
+			mock.changeNumeroIDE(dateDebut, numeroIDE);
 		}
 
 		if (principal != null) {

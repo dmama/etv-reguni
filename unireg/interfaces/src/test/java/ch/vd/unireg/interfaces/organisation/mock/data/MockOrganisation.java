@@ -213,6 +213,14 @@ public class MockOrganisation implements Organisation {
 	}
 
 	/**
+	 * Indique si un l'organisation est inscrite à l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isInscritIDE(RegDate date) {
+		return OrganisationHelper.isInscritIDE(this, date);
+	}
+
+	/**
 	 * Indique si un l'organisation est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override

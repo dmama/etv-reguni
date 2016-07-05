@@ -83,7 +83,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 		                                    StatusInscriptionRC.ACTIF,
 		                                    date(2015, 6, 24),
 		                                    StatusRegistreIDE.DEFINITIF,
-		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -227,7 +227,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 		                                    StatusInscriptionRC.ACTIF,
 		                                    date(2015, 6, 24),
 		                                    StatusRegistreIDE.DEFINITIF,
-		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -380,7 +380,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 			                                    StatusInscriptionRC.ACTIF,
 			                                    date(2015, 6, 24),
 			                                    StatusRegistreIDE.DEFINITIF,
-			                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+			                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
 			serviceOrganisation.setUp(new MockServiceOrganisation() {
 				@Override
