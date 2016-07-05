@@ -61,6 +61,26 @@ public abstract class MockOrganisationFactory {
 	/**
 	 * Crée une entreprise au RC et à l'IDE. La date d'inscription au RC est trois jours avant la date de l'événement.
 	 */
+	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, MockCommune commune, String noIde) {
+		return createOrganisation(cantonalId,
+		                          cantonalIdSitePrincipal,
+		                          nom,
+		                          dateDebut,
+		                          dateFin,
+		                          formeLegale,
+		                          commune != null ? (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC) : null,
+		                          commune != null ? commune.getNoOFS() : null,
+		                          StatusInscriptionRC.ACTIF,
+		                          dateDebut.addDays(-3),
+		                          StatusRegistreIDE.DEFINITIF,
+		                          TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE,
+		                          noIde
+		);
+	}
+
+	/**
+	 * Crée une entreprise au RC et à l'IDE. La date d'inscription au RC est trois jours avant la date de l'événement.
+	 */
 	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, MockPays pays) {
 		return createOrganisation(cantonalId,
 		                          cantonalIdSitePrincipal,

@@ -1245,8 +1245,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay);
-				addNumeroIDE(org, "CHE123456788", pmActivityStartDate, null);
+				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay, "CHE123456788");
 				addOrganisation(org);
 			}
 		});
@@ -3455,8 +3454,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noEntreprise, noEntreprise + 1011, "Au petit coin", pmActivityStartDate, null,
-				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay);
-				addNumeroIDE(org, "CHE123456788", pmActivityStartDate, null);
+				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay, "CHE123456788");
 				addOrganisation(org);
 			}
 		});
