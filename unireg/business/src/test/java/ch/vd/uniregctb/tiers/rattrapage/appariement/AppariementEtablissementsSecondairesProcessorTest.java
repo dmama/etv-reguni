@@ -248,8 +248,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final MockSiteOrganisation sec = MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire1, org, dateDebut, null, "Toto Lausanne 1", null,
 				                                                                     false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                     MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, dateDebut.addDays(-3),
-				                                                                     null, null, "CHE999999997", null, null);
-				sec.addNumeroIDE(dateDebut, null, ide);
+				                                                                     null, null, ide, null, null);
 
 				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire2, org, dateDebut, null, "Toto Lausanne 2", null,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
