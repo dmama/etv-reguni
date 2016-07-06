@@ -1,11 +1,7 @@
 +++++ PM 8226
 Catégorie SUIVI :
-
-
 - INFO;8226;Inactive;CHE104488701;101448657;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.1988 : tous les 12 mois, à partir du premier 31.12.
 - INFO;8226;Inactive;CHE104488701;101448657;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.11.1999 : tous les 12 mois, à partir du premier 23.11.
-
-
 Catégorie FORS :
 - INFO;8226;Inactive;CHE104488701;101448657;For principal COMMUNE_OU_FRACTION_VD/5561 [28.12.1987 -> 23.11.1999] généré.
 - INFO;8226;Inactive;CHE104488701;101448657;For secondaire 'immeuble' [25.01.1988 -> 04.12.1998] ajouté sur la commune 5561.
@@ -24,25 +20,22 @@ Catégorie DECLARATIONS :
 - INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 09.09.1998.
 - INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1998 à partir des dates [01.01.1998 -> 31.12.1998] de l'exercice commercial 6 et du dossier fiscal correspondant.
 - INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 15.09.1999.
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'un délai accordé au 31.10.1999 (demande du 08.09.1999).
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'un délai accordé au 15.11.1999 (demande du 28.10.1999).
 - INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 04.01.1999.
 - INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 29.11.1999.
 - INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1999 à partir des dates [01.01.1999 -> 23.11.1999] de l'exercice commercial 7 et du dossier fiscal correspondant.
 - INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 31.10.2000.
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'un délai accordé au 31.10.2000 (demande du 11.09.2000).
 - INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 03.01.2000.
 - INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 09.10.2000.
-
-
 Catégorie MAPPINGS_REGIMES_FISCAUX :
 - INFO;8226;Inactive;CHE104488701;101448657;1993-01-01;CH;01;01;
 - INFO;8226;Inactive;CHE104488701;101448657;1993-01-01;VD;01;01;
 
 +++++ PM 31745
 Catégorie SUIVI :
-
-
 - INFO;31745;Active;CHE109345167;101598042;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.1996 : tous les 12 mois, à partir du premier 31.12.
-
-
 Catégorie FORS :
 - INFO;31745;Active;CHE109345167;101598042;For principal COMMUNE_OU_FRACTION_VD/5590 [23.05.1995 -> ?] généré.
 Catégorie DECLARATIONS :
@@ -128,14 +121,11 @@ Catégorie DECLARATIONS :
 - INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2015 à partir des dates [01.01.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
 - INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2016.
 - INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 04.01.2016.
-
 Catégorie MAPPINGS_REGIMES_FISCAUX :
 - INFO;31745;Active;CHE109345167;101598042;1995-05-23;CH;709;709;
 - INFO;31745;Active;CHE109345167;101598042;1995-05-23;VD;709;709;
 
-
 +++++ PM 49597
-
 Catégorie FORS :
 - INFO;49597;Active;;101466069;For principal PAYS_HS/8215 [21.02.2007 -> ?] généré.
 - INFO;49597;Active;;101466069;For secondaire 'activité' [21.02.2007 -> ?] ajouté sur la commune 5642.
@@ -170,8 +160,7 @@ Catégorie DECLARATIONS :
 - INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2016.
 - INFO;49597;Active;;101466069;Etat 'EMISE' migré au 15.02.2016.
 
-
-+++++ PM 51130
++++++ Graphe /home/jacob/sipm/env.sipm/pr/dump/00046340.data
 Catégorie SUIVI :
 - INFO;51130;Active;CHE106751559;101442423;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2008 : tous les 12 mois, à partir du premier 31.12.
 Catégorie FORS :
@@ -219,13 +208,9 @@ Catégorie MAPPINGS_REGIMES_FISCAUX :
 - INFO;51130;Active;CHE106751559;101442423;2007-10-20;CH;01;01;
 - INFO;51130;Active;CHE106751559;101442423;2007-10-20;VD;01;01;
 
-
 +++++ PM 55076
 Catégorie SUIVI :
-
-
 - INFO;55076;Active;CHE112228970;101464771;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2004 : tous les 12 mois, à partir du premier 31.12.
-
 Catégorie FORS :
 - INFO;55076;Active;CHE112228970;101464771;For principal COMMUNE_OU_FRACTION_VD/5422 [01.07.2004 -> ?] généré.
 Catégorie DECLARATIONS :
@@ -278,24 +263,15 @@ Catégorie DECLARATIONS :
 - INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2015 à partir des dates [01.01.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
 - INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2016.
 - INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 04.01.2016.
-
 Catégorie MAPPINGS_REGIMES_FISCAUX :
 - INFO;55076;Active;CHE112228970;101464771;2004-07-01;CH;70;70;
 - INFO;55076;Active;CHE112228970;101464771;2004-07-01;VD;70;70;
 
-
 +++++ PM 73391
 Catégorie SUIVI :
-
 - INFO;73391;Active;CHE468929885;101595912;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2016 : tous les 12 mois, à partir du premier 31.12.
-
 Catégorie FORS :
 - INFO;73391;Active;CHE468929885;101595912;For principal COMMUNE_OU_FRACTION_VD/5624 [01.07.2015 -> ?] généré.
-Catégorie DECLARATIONS :
-- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2015 à partir des dates [01.07.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
-- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2016.
-- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 04.01.2016.
 Catégorie MAPPINGS_REGIMES_FISCAUX :
 - INFO;73391;Active;CHE468929885;101595912;2015-07-01;CH;01;01;
 - INFO;73391;Active;CHE468929885;101595912;2015-07-01;VD;01;01;
-
