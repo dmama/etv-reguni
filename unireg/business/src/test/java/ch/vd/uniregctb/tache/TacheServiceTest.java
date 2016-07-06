@@ -5851,6 +5851,79 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * [SIFISC-19894] c'était juste le type du document "local" qui posait un problème face à une
+	 * période d'imposition qui calculait un type "batch", différence qui était jugée "majeure"...
+	 */
+	@Test
+	public void testTacheAutomatiqueEnvoiPMChangementTypeDocumentLocalBatch() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
+			}
+		});
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// là non plus, rien...
+			}
+		});
+
+		final int oldPremierePeriodeDIPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
+		final long pmId;
+		try {
+			// mise en place fiscale
+			final RegDate dateDebutActivite = date(RegDate.get().year() - 1, 6, 15);
+			pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					// entreprise
+					final Entreprise pm = addEntrepriseInconnueAuCivil();
+					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite entreprise");
+					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SARL);
+					addCapitalEntreprise(pm, dateDebutActivite, null, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+
+					// avec DI du mauvais type de document (on imagine que la DI a été émise puis la forme juridique modifiée...)
+					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, pf);
+					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+
+					return pm.getNumero();
+				}
+			});
+		}
+		finally {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeDIPM);
+		}
+
+		// vérification des tâches autour des DI
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+				assertNotNull(pm);
+
+				// aucune tâche générée
+				{
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setContribuable(pm);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					assertNotNull(taches);
+					assertEquals(0, taches.size());
+				}
+			}
+		});
+	}
+
+	/**
 	 * [SIFISC-11939] Tâche de contrôle de dossier générée au départ HC dans la période fiscale courante
 	 */
 	@Test

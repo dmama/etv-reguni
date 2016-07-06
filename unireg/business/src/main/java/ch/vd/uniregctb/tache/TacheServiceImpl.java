@@ -99,10 +99,12 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -967,10 +969,13 @@ public class TacheServiceImpl implements TacheService {
 			@Override
 			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
 				if (di.getTypeContribuable() == pi.getTypeContribuable() && DateRangeHelper.equals(di, pi)) {
-					if (di.getTypeDeclaration() == pi.getTypeDocumentDeclaration() && DateRangeHelper.equals(((DeclarationImpotOrdinairePM) di).getExerciceCommercial(), ((PeriodeImpositionPersonnesMorales) pi).getExerciceCommercial())) {
+					// [SIFISC-19894] sur une DI migrée de SIMPA, il n'y a pas de type de déclaration... la comparaison ne fait alors pas de sens
+					// [SIFISC-19894] sauf qu'en fait, le type de document a été rattrapé par script (afin de pouvoir faire des duplicata) et il faut comparer les types par groupe
+					final boolean areTypeDocumentEquivalent = areEquivalent(di.getTypeDeclaration(), pi.getTypeDocumentDeclaration());
+					if (DateRangeHelper.equals(((DeclarationImpotOrdinairePM) di).getExerciceCommercial(), ((PeriodeImpositionPersonnesMorales) pi).getExerciceCommercial()) && areTypeDocumentEquivalent) {
 						return Mutation.AUCUNE;
 					}
-					else if (di.getTypeDeclaration() != pi.getTypeDocumentDeclaration()) {
+					else if (!areTypeDocumentEquivalent) {
 						return Mutation.MAJEURE;
 					}
 					else {
@@ -1104,6 +1109,20 @@ public class TacheServiceImpl implements TacheService {
 		 * @return une liste d'actions à appliquer effectivement
 		 */
 		public abstract <T extends SynchronizeAction> List<T> filtrerActions(List<T> actions, ParametreAppService paramService);
+	}
+
+	/**
+	 * @param type1 un type de document
+	 * @param type2 un autre type de document
+	 * @return <code>true</code> si les deux types sont identiques ou dans le même {@link ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal}
+	 */
+	private static boolean areEquivalent(TypeDocument type1, TypeDocument type2) {
+		if (type1 == type2) {
+			return true;
+		}
+		final GroupeTypesDocumentBatchLocal groupe1 = GroupeTypesDocumentBatchLocal.of(type1);
+		final GroupeTypesDocumentBatchLocal groupe2 = GroupeTypesDocumentBatchLocal.of(type2);
+		return groupe1 != null && groupe2 != null && groupe1 == groupe2;
 	}
 
 	@NotNull
