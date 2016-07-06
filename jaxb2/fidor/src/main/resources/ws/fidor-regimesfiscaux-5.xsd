@@ -5,7 +5,7 @@
 		   xmlns:regime-fiscal="http://www.vd.ch/fiscalite/fidor/regimefiscal/1"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/regimefiscal/1" schemaLocation="fidor-regimefiscal-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/regimefiscal/1" schemaLocation="../data/fidor-regimefiscal-1.xsd"/>
 
 	<xs:element name="regimesFiscaux">
 		<xs:complexType>
