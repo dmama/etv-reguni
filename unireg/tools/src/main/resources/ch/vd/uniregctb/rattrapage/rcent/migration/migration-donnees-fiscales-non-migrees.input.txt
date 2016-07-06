@@ -1,0 +1,301 @@
++++++ PM 8226
+Catégorie SUIVI :
+
+
+- INFO;8226;Inactive;CHE104488701;101448657;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.1988 : tous les 12 mois, à partir du premier 31.12.
+- INFO;8226;Inactive;CHE104488701;101448657;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.11.1999 : tous les 12 mois, à partir du premier 23.11.
+
+
+Catégorie FORS :
+- INFO;8226;Inactive;CHE104488701;101448657;For principal COMMUNE_OU_FRACTION_VD/5561 [28.12.1987 -> 23.11.1999] généré.
+- INFO;8226;Inactive;CHE104488701;101448657;For secondaire 'immeuble' [25.01.1988 -> 04.12.1998] ajouté sur la commune 5561.
+Catégorie DECLARATIONS :
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1995 à partir des dates [01.01.1995 -> 31.12.1995] de l'exercice commercial 3 et du dossier fiscal correspondant.
+- INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 08.08.1996.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 11.01.1996.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 22.04.1996.
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1996 à partir des dates [01.01.1996 -> 31.12.1996] de l'exercice commercial 4 et du dossier fiscal correspondant.
+- INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 30.07.1997.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 01.01.1997.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 08.04.1997.
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1997 à partir des dates [01.01.1997 -> 31.12.1997] de l'exercice commercial 5 et du dossier fiscal correspondant.
+- INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 15.09.1998.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 05.01.1998.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 09.09.1998.
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1998 à partir des dates [01.01.1998 -> 31.12.1998] de l'exercice commercial 6 et du dossier fiscal correspondant.
+- INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 15.09.1999.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 04.01.1999.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 29.11.1999.
+- INFO;8226;Inactive;CHE104488701;101448657;Génération d'une déclaration sur la PF 1999 à partir des dates [01.01.1999 -> 23.11.1999] de l'exercice commercial 7 et du dossier fiscal correspondant.
+- INFO;8226;Inactive;CHE104488701;101448657;Délai initial de retour fixé au 31.10.2000.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'EMISE' migré au 03.01.2000.
+- INFO;8226;Inactive;CHE104488701;101448657;Etat 'RETOURNEE' migré au 09.10.2000.
+
+
+Catégorie MAPPINGS_REGIMES_FISCAUX :
+- INFO;8226;Inactive;CHE104488701;101448657;1993-01-01;CH;01;01;
+- INFO;8226;Inactive;CHE104488701;101448657;1993-01-01;VD;01;01;
+
++++++ PM 31745
+Catégorie SUIVI :
+
+
+- INFO;31745;Active;CHE109345167;101598042;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.1996 : tous les 12 mois, à partir du premier 31.12.
+
+
+Catégorie FORS :
+- INFO;31745;Active;CHE109345167;101598042;For principal COMMUNE_OU_FRACTION_VD/5590 [23.05.1995 -> ?] généré.
+Catégorie DECLARATIONS :
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 1996 à partir des dates [23.05.1995 -> 31.12.1996] de l'exercice commercial 1 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 12.05.1999.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 14.10.1998.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 14.10.1998.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 1997 à partir des dates [01.01.1997 -> 31.12.1997] de l'exercice commercial 2 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 12.05.1999.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 14.10.1998.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 14.10.1998.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 1998 à partir des dates [01.01.1998 -> 31.12.1998] de l'exercice commercial 3 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.1999.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 05.01.1999.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 01.07.1999.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 1999 à partir des dates [01.01.1999 -> 31.12.1999] de l'exercice commercial 4 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2000.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 04.01.2000.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 29.08.2000.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2000 à partir des dates [01.01.2000 -> 31.12.2000] de l'exercice commercial 5 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2001.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'un délai accordé au 30.09.2001 (demande du 25.02.2001).
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 09.01.2001.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 18.07.2001.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2001 à partir des dates [01.01.2001 -> 31.12.2001] de l'exercice commercial 6 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2002.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 15.02.2002.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 04.09.2002.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2002 à partir des dates [01.01.2002 -> 31.12.2002] de l'exercice commercial 7 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2003.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 06.01.2003.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 01.05.2003.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2003 à partir des dates [01.01.2003 -> 31.12.2003] de l'exercice commercial 8 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2004.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 02.01.2004.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 12.05.2004.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2004 à partir des dates [01.01.2004 -> 31.12.2004] de l'exercice commercial 9 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2005.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 02.01.2005.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 24.06.2005.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2005 à partir des dates [01.01.2005 -> 31.12.2005] de l'exercice commercial 10 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2006.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 02.01.2006.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 03.07.2006.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2006 à partir des dates [01.01.2006 -> 31.12.2006] de l'exercice commercial 11 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2007.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 02.01.2007.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 28.06.2007.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2007 à partir des dates [01.01.2007 -> 31.12.2007] de l'exercice commercial 12 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2008.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 01.01.2008.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 12.06.2008.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2008 à partir des dates [01.01.2008 -> 31.12.2008] de l'exercice commercial 13 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2009.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'un délai accordé au 30.09.2009 (demande du 05.07.2009).
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 02.02.2009.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 22.09.2009.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2009 à partir des dates [01.01.2009 -> 31.12.2009] de l'exercice commercial 14 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2010.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 04.01.2010.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 10.06.2010.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2010 à partir des dates [01.01.2010 -> 31.12.2010] de l'exercice commercial 15 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2011.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 02.01.2011.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 17.06.2011.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2011 à partir des dates [01.01.2011 -> 31.12.2011] de l'exercice commercial 16 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2012.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 03.01.2012.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 11.07.2012.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2012 à partir des dates [01.01.2012 -> 31.12.2012] de l'exercice commercial 17 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2013.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 03.01.2013.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'SOMMEE' migré au 23.09.2013.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 09.10.2013.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2013 à partir des dates [01.01.2013 -> 31.12.2013] de l'exercice commercial 18 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2014.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 06.01.2014.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 04.06.2014.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2014 à partir des dates [01.01.2014 -> 31.12.2014] de l'exercice commercial 19 et du dossier fiscal correspondant.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2015.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 01.01.2015.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'RETOURNEE' migré au 02.07.2015.
+- INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2015 à partir des dates [01.01.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
+- INFO;31745;Active;CHE109345167;101598042;Délai initial de retour fixé au 15.09.2016.
+- INFO;31745;Active;CHE109345167;101598042;Etat 'EMISE' migré au 04.01.2016.
+
+Catégorie MAPPINGS_REGIMES_FISCAUX :
+- INFO;31745;Active;CHE109345167;101598042;1995-05-23;CH;709;709;
+- INFO;31745;Active;CHE109345167;101598042;1995-05-23;VD;709;709;
+
+
++++++ PM 49597
+
+Catégorie FORS :
+- INFO;49597;Active;;101466069;For principal PAYS_HS/8215 [21.02.2007 -> ?] généré.
+- INFO;49597;Active;;101466069;For secondaire 'activité' [21.02.2007 -> ?] ajouté sur la commune 5642.
+Catégorie DECLARATIONS :
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2007.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2008.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 04.02.2008.
+- INFO;49597;Active;;101466069;Etat 'ECHUE' migré au 18.06.2009.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2008.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2009.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 23.02.2009.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2009.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2010.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 04.01.2010.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2010.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2011.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 25.02.2011.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2011.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2012.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 20.02.2012.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2012.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2013.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 18.02.2013.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2013.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2014.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 21.02.2014.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2014.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2015.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 17.02.2015.
+- INFO;49597;Active;;101466069;Etat 'RAPPELEE' migré au 17.09.2015.
+- INFO;49597;Active;;101466069;Génération d'un questionnaire SNC sur la période fiscale 2015.
+- INFO;49597;Active;;101466069;Délai initial fixé au 15.03.2016.
+- INFO;49597;Active;;101466069;Etat 'EMISE' migré au 15.02.2016.
+
+
++++++ PM 51130
+Catégorie SUIVI :
+- INFO;51130;Active;CHE106751559;101442423;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2008 : tous les 12 mois, à partir du premier 31.12.
+Catégorie FORS :
+- INFO;51130;Active;CHE106751559;101442423;For principal COMMUNE_OU_FRACTION_VD/5721 [19.10.2007 -> ?] généré.
+- INFO;51130;Active;CHE106751559;101442423;For secondaire 'immeuble' [17.12.2012 -> ?] ajouté sur la commune 5721.
+Catégorie DECLARATIONS :
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2008 à partir des dates [01.10.2007 -> 31.12.2008] de l'exercice commercial 1 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2009.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 02.02.2009.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'SOMMEE' migré au 22.09.2009.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 23.10.2009.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2009 à partir des dates [01.01.2009 -> 31.12.2009] de l'exercice commercial 2 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2010.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 04.01.2010.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'SOMMEE' migré au 21.09.2010.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 15.11.2010.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2010 à partir des dates [01.01.2010 -> 31.12.2010] de l'exercice commercial 3 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2011.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 02.01.2011.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'SOMMEE' migré au 21.09.2011.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 28.10.2011.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2011 à partir des dates [01.01.2011 -> 31.12.2011] de l'exercice commercial 4 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2012.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 03.01.2012.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'SOMMEE' migré au 28.09.2012.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 17.10.2012.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2012 à partir des dates [01.01.2012 -> 31.12.2012] de l'exercice commercial 5 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2013.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 03.01.2013.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'SOMMEE' migré au 23.09.2013.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 14.10.2013.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2013 à partir des dates [01.01.2013 -> 31.12.2013] de l'exercice commercial 6 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2014.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 06.01.2014.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 05.08.2014.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2014 à partir des dates [01.01.2014 -> 31.12.2014] de l'exercice commercial 7 et du dossier fiscal correspondant.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2015.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 01.01.2015.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'SOMMEE' migré au 22.09.2015.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'RETOURNEE' migré au 08.10.2015.
+- INFO;51130;Active;CHE106751559;101442423;Génération d'une déclaration sur la PF 2015 à partir des dates [01.01.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
+- INFO;51130;Active;CHE106751559;101442423;Délai initial de retour fixé au 15.09.2016.
+- INFO;51130;Active;CHE106751559;101442423;Etat 'EMISE' migré au 04.01.2016.
+Catégorie MAPPINGS_REGIMES_FISCAUX :
+- INFO;51130;Active;CHE106751559;101442423;2007-10-20;CH;01;01;
+- INFO;51130;Active;CHE106751559;101442423;2007-10-20;VD;01;01;
+
+
++++++ PM 55076
+Catégorie SUIVI :
+
+
+- INFO;55076;Active;CHE112228970;101464771;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2004 : tous les 12 mois, à partir du premier 31.12.
+
+Catégorie FORS :
+- INFO;55076;Active;CHE112228970;101464771;For principal COMMUNE_OU_FRACTION_VD/5422 [01.07.2004 -> ?] généré.
+Catégorie DECLARATIONS :
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2004 à partir des dates [01.07.2004 -> 31.12.2004] de l'exercice commercial 1 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 21.02.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2005 à partir des dates [01.01.2005 -> 31.12.2005] de l'exercice commercial 2 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 21.02.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2006 à partir des dates [01.01.2006 -> 31.12.2006] de l'exercice commercial 3 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 21.02.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2007 à partir des dates [01.01.2007 -> 31.12.2007] de l'exercice commercial 4 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 21.02.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2008 à partir des dates [01.01.2008 -> 31.12.2008] de l'exercice commercial 5 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 21.02.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 11.06.2009.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2009 à partir des dates [01.01.2009 -> 31.12.2009] de l'exercice commercial 6 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 04.01.2010.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 29.04.2010.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2010 à partir des dates [01.01.2010 -> 31.12.2010] de l'exercice commercial 7 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2011.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 02.01.2011.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 12.07.2011.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2011 à partir des dates [01.01.2011 -> 31.12.2011] de l'exercice commercial 8 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2012.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 03.01.2012.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 26.06.2012.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2012 à partir des dates [01.01.2012 -> 31.12.2012] de l'exercice commercial 9 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2013.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 03.01.2013.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'SOMMEE' migré au 23.09.2013.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 15.10.2013.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2013 à partir des dates [01.01.2013 -> 31.12.2013] de l'exercice commercial 10 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2014.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 06.01.2014.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 22.05.2014.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2014 à partir des dates [01.01.2014 -> 31.12.2014] de l'exercice commercial 11 et du dossier fiscal correspondant.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2015.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 01.01.2015.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'SOMMEE' migré au 22.09.2015.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'RETOURNEE' migré au 13.10.2015.
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2015 à partir des dates [01.01.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2016.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 04.01.2016.
+
+Catégorie MAPPINGS_REGIMES_FISCAUX :
+- INFO;55076;Active;CHE112228970;101464771;2004-07-01;CH;70;70;
+- INFO;55076;Active;CHE112228970;101464771;2004-07-01;VD;70;70;
+
+
++++++ PM 73391
+Catégorie SUIVI :
+
+- INFO;73391;Active;CHE468929885;101595912;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2016 : tous les 12 mois, à partir du premier 31.12.
+
+Catégorie FORS :
+- INFO;73391;Active;CHE468929885;101595912;For principal COMMUNE_OU_FRACTION_VD/5624 [01.07.2015 -> ?] généré.
+Catégorie DECLARATIONS :
+- INFO;55076;Active;CHE112228970;101464771;Génération d'une déclaration sur la PF 2015 à partir des dates [01.07.2015 -> 31.12.2015] de la période d'imposition calculée et du dossier fiscal 2015/1 sans exercice commercial lié.
+- INFO;55076;Active;CHE112228970;101464771;Délai initial de retour fixé au 15.09.2016.
+- INFO;55076;Active;CHE112228970;101464771;Etat 'EMISE' migré au 04.01.2016.
+Catégorie MAPPINGS_REGIMES_FISCAUX :
+- INFO;73391;Active;CHE468929885;101595912;2015-07-01;CH;01;01;
+- INFO;73391;Active;CHE468929885;101595912;2015-07-01;VD;01;01;
+
