@@ -9,6 +9,7 @@ import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
@@ -179,4 +180,9 @@ public interface FidorClient {
 	 * @return la liste de tous les régimes fiscaux connus de FiDoR
 	 */
 	List<RegimeFiscal> getRegimesFiscaux();
+
+	/**
+	 * @return la liste des types d'impôts spéciaux connus de FiDoR
+	 */
+	List<ImpotSpecial> getImpotsSpeciaux();
 }

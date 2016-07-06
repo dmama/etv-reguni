@@ -24,9 +24,11 @@ import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.ListOfFiscalEntities;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.fidor.xml.ws.v5.impotsspeciaux.ImpotSpeciaux;
 import ch.vd.fidor.xml.ws.v5.postallocalities.PostalLocalities;
 import ch.vd.fidor.xml.ws.v5.regimesfiscaux.RegimesFiscaux;
 import ch.vd.fidor.xml.ws.v5.streets.Streets;
@@ -56,6 +58,7 @@ public class FidorClientImpl implements FidorClient {
 	private String streetsByEstridPath = "streets/byEstrid";
 	private String regimeFiscalPath = "regimeFiscal";
 	private String regimesFiscauxPath = "regimesFiscaux";
+	private String impotsSpeciauxPath = "impotsSpeciaux";
 
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
@@ -131,6 +134,10 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setRegimesFiscauxPath(String regimesFiscauxPath) {
 		this.regimesFiscauxPath = regimesFiscauxPath;
+	}
+
+	public void setImpotsSpeciauxPath(String impotsSpeciauxPath) {
+		this.impotsSpeciauxPath = impotsSpeciauxPath;
 	}
 
 	@Override
@@ -695,6 +702,22 @@ public class FidorClientImpl implements FidorClient {
 				return null;
 			}
 			return result.getRegimeFiscal();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public List<ImpotSpecial> getImpotsSpeciaux() {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(impotsSpeciauxPath);
+		try {
+			final ImpotSpeciaux result = wc.get(ImpotSpeciaux.class);
+			if (result == null || result.getNbOfResults() == 0) {
+				return null;
+			}
+			return result.getImpotSpecial();
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
