@@ -113,7 +113,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		 */
 		RegDate dateAuPlusTot = null;
 		final ForFiscalPrincipalPM premierForFiscalPrincipal = entreprise.getPremierForFiscalPrincipal();
-		if (premierForFiscalPrincipal.getMotifOuverture() == MotifFor.DEBUT_EXPLOITATION &&
+		if (premierForFiscalPrincipal != null && premierForFiscalPrincipal.getMotifOuverture() == MotifFor.DEBUT_EXPLOITATION &&
 				premierForFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			dateAuPlusTot = premierForFiscalPrincipal.getDateDebut();
 		}

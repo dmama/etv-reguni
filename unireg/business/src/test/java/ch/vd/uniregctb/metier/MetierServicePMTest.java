@@ -963,6 +963,72 @@ public class MetierServicePMTest extends BusinessTest {
 	}
 
 	@Test
+	public void testCalculForsSecondairesSansForPrincipal() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2000, 4, 1);
+		final RegDate dateCreationEtablissementSecondaire = date(2010, 4, 13);
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+			long idEtablissementSecondaire;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateCreationEntreprise, null, "Ma petite association");
+				addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+
+				final Etablissement etablissementPrincipal = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
+				addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
+
+				final Etablissement etablissementSecondaire = addEtablissement();
+				addDomicileEtablissement(etablissementSecondaire, dateCreationEtablissementSecondaire, null, MockCommune.ChateauDoex);
+				addActiviteEconomique(entreprise, etablissementSecondaire, dateCreationEtablissementSecondaire, null, false);
+
+				addEtatEntreprise(entreprise, dateCreationEntreprise, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+				final Ids ids = new Ids();
+				ids.idEntreprise = entreprise.getNumero();
+				ids.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+				ids.idEtablissementSecondaire = etablissementSecondaire.getNumero();
+				return ids;
+			}
+		});
+
+		// traitement de l'annulation de la faillite
+		final AjustementForsSecondairesResult ajustementForsSecondairesResult = doInNewTransactionAndSession(new TxCallback<AjustementForsSecondairesResult>() {
+			@Override
+			public AjustementForsSecondairesResult execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				return metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
+			}
+		});
+
+		Assert.assertNotNull(ajustementForsSecondairesResult);
+
+		Assert.assertEquals(0, ajustementForsSecondairesResult.getAFermer().size());
+		Assert.assertEquals(0, ajustementForsSecondairesResult.getAAnnuler().size());
+		final List<ForFiscalSecondaire> aCreer = ajustementForsSecondairesResult.getACreer();
+		Assert.assertEquals(1, aCreer.size());
+		final ForFiscalSecondaire forFiscalSecondaire = aCreer.get(0);
+		Assert.assertNotNull(forFiscalSecondaire);
+		Assert.assertEquals(date(2010, 4, 13), forFiscalSecondaire.getDateDebut());
+		Assert.assertNull(forFiscalSecondaire.getDateFin());
+		Assert.assertEquals(GenreImpot.REVENU_FORTUNE, forFiscalSecondaire.getGenreImpot()); // FIXME: SIFISC-19910 corriger le genre d'impôt
+		Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+	}
+
+	@Test
 	public void testDemenagementSiegeEntrepriseInconnueAuCivil() throws Exception {
 
 		final RegDate dateCreation = date(2000, 5, 1);
