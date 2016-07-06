@@ -12,6 +12,7 @@ import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
@@ -620,6 +621,27 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		}
 		finally {
 			tracing.end(time, t, "getRegimesFiscaux", items, null);
+		}
+	}
+
+	@Override
+	public List<ImpotSpecial> getImpotsSpeciaux() {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<ImpotSpecial> types = target.getImpotsSpeciaux();
+			if (types != null) {
+				items = types.size();
+			}
+			return types;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getImpotsSpeciaux", items, null);
 		}
 	}
 
