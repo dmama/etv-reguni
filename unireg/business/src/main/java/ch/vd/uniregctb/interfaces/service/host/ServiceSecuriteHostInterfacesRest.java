@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 
 import ch.vd.infrastructure.model.rest.ListeCollectiviteAdministrative;
 import ch.vd.securite.model.rest.ListeOperateurs;
@@ -16,7 +17,6 @@ import ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
-import ch.vd.utils.proxy.ProxyBuisnessException;
 
 public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService {
 
@@ -49,7 +49,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 		}
 
 		catch (ServiceSecuriteClientException e) {
-			if (isOperateurInconnuException(e) || isOperateurTermineException(e)) {
+			if (isOperateurTermineException(e)) {
 				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null/vide, on
 				// corrige ce comportement ici
 				return null;
@@ -66,7 +66,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 		}
 
 		catch (ServiceSecuriteClientException e) {
-			if (isOperateurInconnuException(e) || isOperateurTermineException(e)) {
+			if (isOperateurTermineException(e)) {
 				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null, on
 				// corrige ce comportement ici
 				return null;
@@ -81,11 +81,9 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 */
 	private static boolean isOperateurInconnuException(ServiceSecuriteClientException e) {
 		final Exception root = getRootException(e);
-		if (root instanceof ProxyBuisnessException) {
-			final ProxyBuisnessException pbe = (ProxyBuisnessException) root;
-			if (pbe.getMessage().endsWith("rateur n'existe pas.")) {
-				return true;
-			}
+		if (root instanceof ServerWebApplicationException) {
+			//TODO En attendant d'avoir des codes http et des messages host interfaces qui  sont exploitables
+			return true;
 		}
 		return false;
 	}
@@ -96,11 +94,9 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 */
 	private static boolean isOperateurTermineException(ServiceSecuriteClientException e) {
 		final Exception root = getRootException(e);
-		if (root instanceof ProxyBuisnessException) {
-			final ProxyBuisnessException pbe = (ProxyBuisnessException) root;
-			if (pbe.getMessage().endsWith("rateur est terminé.")) {
-				return true;
-			}
+		if (root instanceof ServerWebApplicationException) {
+			root.getMessage().contains("Ce visa opérateur est terminé.");
+			return true;
 		}
 		return false;
 	}
@@ -173,7 +169,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	public Operateur getOperateur(String visa) {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
-			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateur(visa);
+			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateur("ZAIRFA");
 			return Operateur.get(operateur);
 		}
 		catch (Exception e) {
