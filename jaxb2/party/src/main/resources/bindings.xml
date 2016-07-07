@@ -65,6 +65,9 @@
 		<jxb:bindings node="//xs:complexType[@name='partyType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
 		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='partyLabelType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="party-5" />
 		</jxb:bindings>
