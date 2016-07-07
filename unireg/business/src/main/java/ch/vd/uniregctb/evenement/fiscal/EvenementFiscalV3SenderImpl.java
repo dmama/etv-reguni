@@ -331,14 +331,14 @@ public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, Initi
 			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
 			final ForFiscal forFiscal = evenementFiscal.getForFiscal();
 			instance.setForPrincipal(forFiscal.isPrincipal());
-			instance.setLocalisationFor(EnumHelper.coreToXMLv3(forFiscal.getTypeAutoriteFiscale()));
+			instance.setLocalisationFor(EnumHelper.coreToXMLv4(forFiscal.getTypeAutoriteFiscale()));
 			if (forFiscal instanceof ForFiscalAvecMotifs) {
 				final ForFiscalAvecMotifs avecMotifs = (ForFiscalAvecMotifs) forFiscal;
 				if (instance instanceof OuvertureFor) {
-					((OuvertureFor) instance).setMotifOuverture(EnumHelper.coreToXMLv3(avecMotifs.getMotifOuverture()));
+					((OuvertureFor) instance).setMotifOuverture(EnumHelper.coreToXMLv4(avecMotifs.getMotifOuverture()));
 				}
 				else if (instance instanceof FermetureFor) {
-					((FermetureFor) instance).setMotifFermeture(EnumHelper.coreToXMLv3(avecMotifs.getMotifFermeture()));
+					((FermetureFor) instance).setMotifFermeture(EnumHelper.coreToXMLv4(avecMotifs.getMotifFermeture()));
 				}
 			}
 			if (instance instanceof ChangementModeImposition) {
@@ -346,7 +346,7 @@ public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, Initi
 					throw new IllegalArgumentException("On ne peut changer le mode d'imposition que sur un for fiscal principal PP.");
 				}
 				final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) forFiscal;
-				((ChangementModeImposition) instance).setModeImposition(EnumHelper.coreToXMLv3(ffp.getModeImposition()));
+				((ChangementModeImposition) instance).setModeImposition(EnumHelper.coreToXMLv4(ffp.getModeImposition()));
 			}
 			return instance;
 		}
