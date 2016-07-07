@@ -3,12 +3,12 @@
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/fiscal/3" elementFormDefault="qualified" attributeFormDefault="unqualified"
            xmlns="http://www.vd.ch/fiscalite/unireg/event/fiscal/3"
            xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/2"
-           xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3"
+           xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/4"
            xmlns:corporation="http://www.vd.ch/fiscalite/unireg/party/corporation/5"
            xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-3.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/4" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-4.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/5" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-5.xsd" />
 
 	<!-- L'élément racine -->
