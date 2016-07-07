@@ -21,5 +21,6 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/ws/parties/7" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-parties-7.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/ws/party/7" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-party-7.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/ws/searchparty/7" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-searchparty-7.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/ws/fiscalevents/7" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-fiscalevents-7.xsd" />
 
 </xs:schema>

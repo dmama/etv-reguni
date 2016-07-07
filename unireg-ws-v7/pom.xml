@@ -23,6 +23,11 @@
 			<version>5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<artifactId>unireg-jaxb2-events</artifactId>
+			<groupId>ch.vd.uniregctb</groupId>
+			<version>5.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
@@ -78,6 +83,8 @@
 						<exclude>ch/vd/unireg/xml/exception/v1/**</exclude>
 						<!-- unireg-jaxb2-party -->
 						<exclude>ch/vd/unireg/xml/party/**</exclude>
+						<!-- unireg-jaxb2-events -->
+						<exclude>ch/vd/unireg/xml/event/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

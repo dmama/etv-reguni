@@ -287,6 +287,20 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<!-- Reprise de jaxb2/events -->
+
+	<jxb:bindings schemaLocation="events/evt-fiscal-3.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.fiscal.v3" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='evenementFiscalDeclarationType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-fiscal-3" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<!-- local XSDs -->
 
 	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-security-7.xsd">
@@ -376,6 +390,15 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ws-searchparty-7" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-fiscalevents-7.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.fiscalevents.v7" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-fiscalevents-7" />
 		</jxb:bindings>
 	</jxb:bindings>
 
