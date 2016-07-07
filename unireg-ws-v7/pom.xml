@@ -64,12 +64,19 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<excludes>
-						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb-common, car ils ont déjà été compilés dans ce dernier -->
+						<!-- on exclut les répertoires des beans qui correspondent aux XSDs des projets unireg-jaxb-*, car ils ont déjà été compilés dans ces derniers -->
+						<!--
+							Attention : en passant à la version 3.x du plugin, ces exclusions ne sont plus réellement prises en compte car certaines classes incluses
+                            dépendent de classes excluses ici, et le plugin force leur inclusion...
+						-->
+						<!-- unireg-jaxb2-ech -->
 						<exclude>ch/ech/ech0007/v4/**</exclude>
 						<exclude>ch/ech/ech0010/v5/**</exclude>
 						<exclude>ch/ech/ech0044/v3/**</exclude>
+						<!-- unireg-jaxb2-common -->
 						<exclude>ch/vd/unireg/xml/common/v2/**</exclude>
 						<exclude>ch/vd/unireg/xml/exception/v1/**</exclude>
+						<!-- unireg-jaxb2-party -->
 						<exclude>ch/vd/unireg/xml/party/**</exclude>
 					</excludes>
 				</configuration>
