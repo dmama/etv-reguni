@@ -27,6 +27,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -81,6 +82,7 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 		webService.setTiersSearcher(globalTiersSearcher);
 		webService.setTiersService(tiersService);
 		webService.setTransactionManager(transactionManager);
+		webService.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 
 		cache = new PartyWebServiceCache();
 		cache.setCacheManager(manager);

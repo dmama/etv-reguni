@@ -29,6 +29,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.security.MockSecurityProvider;
@@ -70,6 +71,7 @@ public class PartyRequestHandlerV1Test extends BusinessTest {
 		handler.setTiersDAO(tiersDAO);
 		handler.setTiersService(tiersService);
 		handler.setTransactionManager(transactionManager);
+		handler.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 	}
 
 	@Test
