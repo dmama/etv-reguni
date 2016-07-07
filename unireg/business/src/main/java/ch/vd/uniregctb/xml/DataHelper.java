@@ -31,6 +31,7 @@ import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.CollectiviteAdministrativeIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
+import ch.vd.uniregctb.indexer.tiers.EtablissementIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
@@ -621,7 +622,7 @@ public abstract class DataHelper {
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
 			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.HOUSEHOLD);
 			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
+			put(EtablissementIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v1.PartyType.DEBTOR);
 		}
 	};
@@ -633,7 +634,7 @@ public abstract class DataHelper {
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
 			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.HOUSEHOLD);
 			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
+			put(EtablissementIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v2.PartyType.DEBTOR);
 		}
 	};
@@ -645,7 +646,7 @@ public abstract class DataHelper {
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.HOUSEHOLD);
 			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.OTHER_COMMUNITY);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
+			put(EtablissementIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.DEBTOR);
 			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.PartyType.ADMINISTRATIVE_AUTHORITY);
 		}
@@ -658,7 +659,7 @@ public abstract class DataHelper {
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
 			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.HOUSEHOLD);
 			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.OTHER_COMMUNITY);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
+			put(EtablissementIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.DEBTOR);
 			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.ADMINISTRATIVE_AUTHORITY);
 		}
@@ -671,7 +672,7 @@ public abstract class DataHelper {
 			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.CORPORATION);
 			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.HOUSEHOLD);
 			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.OTHER_COMMUNITY);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.CORPORATION);
+			put(EtablissementIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.ESTABLISHMENT);
 			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.DEBTOR);
 			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.ADMINISTRATIVE_AUTHORITY);
 		}
