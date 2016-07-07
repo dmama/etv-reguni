@@ -12,7 +12,6 @@ import org.junit.Test;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
@@ -65,7 +64,7 @@ public class FidorServiceTest {
 	@Test
 	public void testGetRues() throws Exception {
 		final FidorClient wc = buildClient();
-		final List<Street> streets = wc.getRuesParNumeroOrdrePosteEtDate(MockLocalite.Renens.getNoOrdre(), null);
+		final List<Street> streets = wc.getRuesParNumeroOrdrePosteEtDate(165 /* c'est Renens */, null);
 		Assert.assertNotNull(streets);
 		Assert.assertTrue(streets.size() > 80);     // quand le test a été écrit, il y avait 94 rues à Renens VD
 
@@ -81,7 +80,7 @@ public class FidorServiceTest {
 	@Test
 	public void testGetLocalitePostale() throws Exception {
 		final FidorClient wc = buildClient();
-		final PostalLocality localite = wc.getLocalitePostale(null, MockLocalite.Renens.getNoOrdre());
+		final PostalLocality localite = wc.getLocalitePostale(null, 165);
 		Assert.assertNotNull(localite);
 		Assert.assertEquals("Renens VD", localite.getLongName());
 	}

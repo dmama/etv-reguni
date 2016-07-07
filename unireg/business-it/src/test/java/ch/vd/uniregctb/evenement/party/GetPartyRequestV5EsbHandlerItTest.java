@@ -76,7 +76,7 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		                     "party/unireg-party-person-5.xsd");
 	}
 
-	@Test       //(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testSimpleCaseWithSomeParts() throws Exception {
 
 		final long noIndividu = 3278347L;

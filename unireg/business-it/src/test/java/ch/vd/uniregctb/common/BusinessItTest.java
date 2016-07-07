@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.jms.EsbMessageValidatorImpl;
@@ -23,6 +24,11 @@ import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 public abstract class BusinessItTest extends AbstractBusinessTest {
 
 	//private final static Logger LOGGER = LoggerFactory.getLogger(AbstractBusinessItTest.class);
+
+	/**
+	 * DUMMY instance histoire de s'assurer une initialisation correcte des mocks du services infrastructure
+	 */
+	private static final DefaultMockServiceInfrastructureService DUMMY = new DefaultMockServiceInfrastructureService();
 
 	/**
 	 * Timeout par défaut pour les attentes de messages JMS dans les tests BIT
