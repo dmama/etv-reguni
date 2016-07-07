@@ -169,7 +169,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	public Operateur getOperateur(String visa) {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
-			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateur("ZAIRFA");
+			final ch.vd.securite.model.rest.Operateur operateur = client.getOperateur(visa);
 			return Operateur.get(operateur);
 		}
 		catch (Exception e) {
