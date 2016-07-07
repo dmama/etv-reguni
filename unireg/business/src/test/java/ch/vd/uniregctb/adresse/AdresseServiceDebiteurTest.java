@@ -39,6 +39,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
+	private LocaliteInvalideMatcherService localiteInvalideMatcherService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -46,12 +47,13 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		localiteInvalideMatcherService = getBean(LocaliteInvalideMatcherService.class, "localiteInvalideMatcherService");
 
 		// Pas d'indexation parce qu'on teste des cas qui font peter l'indexation et qui pourrissent les logs!
 		globalTiersIndexer.setOnTheFlyIndexation(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
-		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil);
+		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil, localiteInvalideMatcherService);
 	}
 
 	@Override

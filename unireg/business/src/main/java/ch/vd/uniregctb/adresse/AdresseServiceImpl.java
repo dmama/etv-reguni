@@ -90,6 +90,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceCivilService serviceCivilService;
+	private LocaliteInvalideMatcherService localiteInvalideMatcherService;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 
@@ -114,6 +115,10 @@ public class AdresseServiceImpl implements AdresseService {
 		this.serviceCivilService = serviceCivilService;
 	}
 
+	public void setLocaliteInvalideMatcherService(LocaliteInvalideMatcherService localiteInvalideMatcherService) {
+		this.localiteInvalideMatcherService = localiteInvalideMatcherService;
+	}
+
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -126,12 +131,13 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	protected AdresseServiceImpl(TiersService tiersService, TiersDAO tiersDAO, ServiceInfrastructureService serviceInfra,
-	                             ServiceOrganisationService serviceOrganisationService, ServiceCivilService serviceCivilService) {
+	                             ServiceOrganisationService serviceOrganisationService, ServiceCivilService serviceCivilService, LocaliteInvalideMatcherService localiteInvalideMatcherService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.serviceInfra = serviceInfra;
 		this.serviceOrganisationService = serviceOrganisationService;
 		this.serviceCivilService = serviceCivilService;
+		this.localiteInvalideMatcherService = localiteInvalideMatcherService;
 	}
 
 	private AdresseEnvoiDetaillee createAdresseEnvoi(Tiers tiers, @Nullable AdresseGenerique adresseDestination, TypeAdresseFiscale type, @Nullable RegDate date) throws AdresseException {
@@ -149,7 +155,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final boolean artificelle = adresseDestination == null; // SIFISC-4967
 
 		// Remplis l'adresse d'envoi
-		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType, dateDebut, dateFin, artificelle);
+		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType, dateDebut, dateFin, artificelle, localiteInvalideMatcherService);
 		fillDestinataire(adresseEnvoi, envoi.destinataire, tiersPourAdresse, date, true);
 		fillDestination(adresseEnvoi, adresseDestination);
 
@@ -162,6 +168,12 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdresseGenerique adresseDestination = getAdresseFiscale(tiers, type, date, strict);
 		return createAdresseEnvoi(tiers, adresseDestination, type, date);
+	}
+
+	@Override
+	public AdresseEnvoiDetaillee getDummyAdresseEnvoi(Tiers tiers) {
+		Assert.notNull(tiers);
+		return new AdresseEnvoiDetaillee(tiers, null, null, null, true, localiteInvalideMatcherService);
 	}
 
 	@Override
@@ -445,7 +457,8 @@ public class AdresseServiceImpl implements AdresseService {
 				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse);
 			}
 			else if (ctb != null) {
-				final AdresseEnvoiDetaillee sub = new AdresseEnvoiDetaillee(adresse.getDestinataire(), adresse.getSource(), adresse.getDateDebut(), adresse.getDateFin(), adresse.isArtificelle());
+				final AdresseEnvoiDetaillee sub = new AdresseEnvoiDetaillee(adresse.getDestinataire(), adresse.getSource(), adresse.getDateDebut(), adresse.getDateFin(), adresse.isArtificelle(),
+				                                                            localiteInvalideMatcherService);
 				fillDestinataire(sub, ctb, null, date, fillFormulePolitesse);
 				for (String ligneRaisonSociale : sub.getRaisonsSociales()) {
 					adresse.addRaisonSociale(ligneRaisonSociale);
@@ -599,7 +612,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdressesCiviles adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
-			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE_PERS, date, date, adresseCourrier == null);
+			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE_PERS, date, date, adresseCourrier == null, localiteInvalideMatcherService);
 			adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
 			adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
@@ -2121,7 +2134,7 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null, date, date, true);
+		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null, date, date, true, localiteInvalideMatcherService);
 		fillDestinataire(adresse, tiers, null, date, false);
 
 		List<String> list = adresse.getNomsPrenomsOuRaisonsSociales();

@@ -25,6 +25,8 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.LocaliteInvalideMatcherService;
+import ch.vd.uniregctb.adresse.LocaliteInvalideMatcherServiceImpl;
 import ch.vd.uniregctb.avatar.AvatarServiceImpl;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmerImpl;
 import ch.vd.uniregctb.common.Constants;
@@ -82,6 +84,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private ProxyServiceOrganisation serviceOrganisation;
 	private ServiceInfrastructureService serviceInfra;
 	private MockTiersDAO tiersDAO;
+	private LocaliteInvalideMatcherService localiteInvalideMatcherService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -145,11 +148,14 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		avatarService = new AvatarServiceImpl();
 		avatarService.setTiersService(tiersService);
 
+		localiteInvalideMatcherService = new LocaliteInvalideMatcherServiceImpl();
+
 		adresseService = new AdresseServiceImpl();
 		adresseService.setServiceInfra(serviceInfra);
 		adresseService.setServiceCivilService(serviceCivil);
 		adresseService.setTiersService(tiersService);
 		adresseService.setServiceOrganisationService(serviceOrganisation);
+		adresseService.setLocaliteInvalideMatcherService(localiteInvalideMatcherService);
 	}
 
 

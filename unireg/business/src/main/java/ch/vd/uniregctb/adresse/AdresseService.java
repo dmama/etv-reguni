@@ -137,6 +137,15 @@ public interface AdresseService {
 	AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, @Nullable RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException;
 
 	/**
+	 * Crée et retourne une adresse d'envoi vide pour un tiers donné à utiliser pour les cas en erreur où on a besoin de passer
+	 * le message d'erreur dans les champs (pour reporting).
+	 *
+	 * @param tiers  le tiers dont on "recherche" l'adresse.
+	 * @return       une adresse d'envoi vide
+	 */
+	AdresseEnvoiDetaillee getDummyAdresseEnvoi(Tiers tiers);
+
+	/**
 	 * Crée et retourne l'historique complet des adresses d'envoi formattée (six lignes) pour un tiers donné.
 	 *
 	 * @param tiers  le tiers dont on recherche l'adresse.

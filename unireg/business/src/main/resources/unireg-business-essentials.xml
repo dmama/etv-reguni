@@ -119,6 +119,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="localiteInvalideMatcherService" ref="localiteInvalideMatcherService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

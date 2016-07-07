@@ -10,6 +10,7 @@ import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.LocaliteInvalideMatcherService;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -31,7 +32,12 @@ public class AddressBuilderTest extends WithoutSpringTest {
 		// l'adresse bizarre
 		final AdresseEnvoiDetaillee from =
 				new AdresseEnvoiDetaillee(RegDate.get(2011, 10, 1), null, "Monsieur", "Monsieur", new NomPrenom("Porte", "Jean-Claude"), new RueEtNumero("Rue Aimé Pinel", "42"),
-						new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE_PERS);
+				                          new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE_PERS, new LocaliteInvalideMatcherService(){
+					@Override
+					public boolean match(String localite) {
+						return false;
+					}
+				});
 		
 		final Address to = new Address();
 		AddressBuilder.fillDestination(to, from);

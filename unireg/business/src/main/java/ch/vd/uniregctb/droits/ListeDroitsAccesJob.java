@@ -138,7 +138,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 				}
 				catch (Exception e) {
 					LOGGER.error("Exception dans le calcul de l'adresse du tiers n°" + tiers.getNumero(), e);
-					AdresseEnvoiDetaillee a = new AdresseEnvoiDetaillee(tiers, null, null, null, true);
+					AdresseEnvoiDetaillee a = adresseService.getDummyAdresseEnvoi(tiers);
 					a.addNomPrenom(new NomPrenom("#erreur : " + e.getMessage(), ""));
 					a.addLine("#erreur : " + e.getMessage());
 					return a;

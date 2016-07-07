@@ -51,23 +51,28 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 	private Integer noOfsCommune;
 	private final AdresseGenerique.SourceType source;
 
+	private final LocaliteInvalideMatcherService localiteInvalideMatcherService;
+
 	/**
 	 * Vrai si cette adresse a été créée de toutes pièces dans le seul but de porter les informations du destinataire (noms/prénoms, salutations, ...), et qu'il n'y a donc pas de véritable adresse
 	 * derrière ces données.
 	 */
 	private final boolean artificelle;
 
-	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin, boolean artificelle) {
+	protected AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin, boolean artificelle, LocaliteInvalideMatcherService localiteInvalideMatcherService) {
 		this.source = source;
 		this.destinataire = destinataire;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.artificelle = artificelle;
+		this.localiteInvalideMatcherService = localiteInvalideMatcherService;
 	}
 
-	// pour le testing uniquement !
+	/**
+	 * Pour le testing uniquement !
+ 	 */
 	public AdresseEnvoiDetaillee(RegDate dateDebut, RegDate dateFin, String salutations, String formuleAppel, NomPrenom nomPrenom, RueEtNumero rueEtNumero, NpaEtLocalite npaEtLocalite, Pays pays,
-	                             Integer numeroOrdrePostal, Integer numeroTechniqueRue, AdresseGenerique.SourceType source) {
+	                                Integer numeroOrdrePostal, Integer numeroTechniqueRue, AdresseGenerique.SourceType source, LocaliteInvalideMatcherService localiteInvalideMatcherService) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.destinataire = null;
@@ -81,6 +86,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 		this.nomsPrenoms.add(nomPrenom);
 		this.source = source;
 		this.artificelle = false;
+		this.localiteInvalideMatcherService = localiteInvalideMatcherService;
 	}
 
 	@Override
@@ -374,7 +380,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 		boolean localiteInvalide = false;
 		if (!localiteVideOuInconnue) {
-			localiteInvalide = LocaliteInvalideMatcher.match(npaEtLocalite.getLocalite());
+			localiteInvalide = localiteInvalideMatcherService.match(npaEtLocalite.getLocalite());
 		}
 
 		return (rueVideOuInconnue && casePostaleInconnue && complementVideOuInconnu) || localiteVideOuInconnue || paysVideOuInconnu || localiteInvalide;

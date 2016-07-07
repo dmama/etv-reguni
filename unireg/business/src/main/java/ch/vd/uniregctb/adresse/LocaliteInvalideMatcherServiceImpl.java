@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * <p>Cette classe possède une unique méthode {@link LocaliteInvalideMatcher#match} qui permet de controler si un libellé de commune est valide.
+ * <p>Cette classe possède une unique méthode {@link LocaliteInvalideMatcherServiceImpl#match} qui permet de controler si un libellé de commune est valide.
  * En effet, certains libellés de commune dans les adresses renseignées par l'utilisateur sont là pour dénoter le fait que l'ont ne
  * connait pas l'adresse de la personne. On retrouvera donc des libellés comme "Sans Adresse", "Inconnu", "parti à l'étranger" dans
  * le champs normalement dédiés au libellé de la commune.
@@ -45,50 +45,38 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * Les regexp générées sont cases insensitves
  *
- * <h1>Notes concernant l'implémentation
- *
- * <p>Les membres static de la classe et donc les paramètres du match sont initialisés
- * lors de l'instantiation d'un objet par le conteneur spring (cf. {@link ch.vd.uniregctb.adresse.LocaliteInvalideMatcher#afterPropertiesSet()}).
- *
- * <p>Cette mécanique est un peu bizarre mais pratique. Elle permet de paramètrer facilement le composant en utilisant des propriétés définies dans unireg.properties et
- * d'accéder à la fonction {@link LocaliteInvalideMatcher#match(String) match()}  par l'intermédiaire d'un membre statique.
- * match() est donc utilisable la méthode dans les classes qui ne sont pas instanciées par Spring, comme c'est le cas ici dans {@link AdresseEnvoiDetaillee}
- *
- * <p>Le pendant de cette façon de faire est qu'on ne peut pas instancier 2 LocaliteInvalideMatcher car l'instantiation du deuxieme ecraserait les paramètres
- * initialisé par le premier.
-
  *
  */
-public class LocaliteInvalideMatcher implements InitializingBean {
+public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatcherService, InitializingBean {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(LocaliteInvalideMatcher.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(LocaliteInvalideMatcherServiceImpl.class);
 
-	private static boolean enabled;
-	private static String localitesInvalides;
-	private static String fauxPositifs;
+	private boolean enabled;
+	private String localitesInvalides;
+	private String fauxPositifs;
 
-	private static Map<Character, String> conversionSpeciales = new HashMap<>();
-	private static List<Pattern> patternsLocaliteInvalide = new ArrayList<>();
-	private static List<Pattern> patternsFauxPositif  = new ArrayList<>();
+	private Map<Character, String> conversionSpeciales = new HashMap<>();
+	private List<Pattern> patternsLocaliteInvalide = new ArrayList<>();
+	private List<Pattern> patternsFauxPositif  = new ArrayList<>();
 
-	private static boolean initialized = false;
+	private boolean initialized = false;
 
 
 	/**
 	 * Utile pour éviter les appels à la méthode match pendant que le bean initialise les champs statics
 	 */
-	private static ReadWriteLock lockInit = new ReentrantReadWriteLock();
+	private ReadWriteLock lockInit = new ReentrantReadWriteLock();
 
 	public void setEnabled(boolean enabled) {
-		LocaliteInvalideMatcher.enabled = enabled;
+		this.enabled = enabled;
 	}
 
 	public void setLocalitesInvalides(String propertyPatterns) {
-		LocaliteInvalideMatcher.localitesInvalides = propertyPatterns;
+		this.localitesInvalides = propertyPatterns;
 	}
 
 	public void setFauxPositifs(String propertyFauxPositifs) {
-		LocaliteInvalideMatcher.fauxPositifs = propertyFauxPositifs;
+		this.fauxPositifs = propertyFauxPositifs;
 	}
 
 	/**
@@ -101,7 +89,8 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 	 * @param localite la désignation de la localité à analyser
 	 * @return <code>true</code> si la localité correspond à un pattern de localité invalide
 	 */
-	public static boolean match(String localite) {
+	@Override
+	public boolean match(String localite) {
 		lockInit.readLock().lock();
 		try {
 			if (!initialized) {
@@ -137,9 +126,9 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 
 	// expression régulière mappant les caractères qui peuvent être utilisé comme séparateur dans les localités invalides
 	// On match ainsi les strings du type: "I N C O N N U","Non-Indiqué", "E_T_R_A_N_G_E_R", "S/DC"
-	private static final String REGEXP_SEPARATEURS = "[ -./_,\\\\:;|*]*";
+	private final String REGEXP_SEPARATEURS = "[ -./_,\\\\:;|*]*";
 
-	private static String buildRegExpLocaliteInvalide (String terme) {
+	private String buildRegExpLocaliteInvalide (String terme) {
 		StringBuilder sb = new StringBuilder();
 		for(Character c: terme.toCharArray()) {
 			sb.append("([");
@@ -159,7 +148,7 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 		return sb.toString();
 	}
 
-	private static String buildRegExpFauxPositif (String terme) {
+	private String buildRegExpFauxPositif (String terme) {
 		StringBuilder sb = new StringBuilder();
 		for(Character c: terme.toCharArray()) {
 			sb.append("[");
@@ -176,7 +165,7 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 	 * Utile pour les tests, ne devrait pas être utiliser dans le code de prod pour l'instant
 	 * cependant dans le futur on pourrait imaginer un rechargement à chaud des parametres et donc l'utilité de cette méthode
 	 */
-	static void reset() {
+	void reset() {
 		lockInit.writeLock().lock();
 		try {
 			conversionSpeciales = new HashMap<>();
