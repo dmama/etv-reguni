@@ -44,5 +44,6 @@ public class PartySearchTypeTest extends EnumTest {
 		assertEquals(TiersCriteria.TypeTiers.MENAGE_COMMUN, EnumHelper.toCore(PartySearchType.HOUSEHOLD));
 		assertEquals(TiersCriteria.TypeTiers.NON_HABITANT, EnumHelper.toCore(PartySearchType.NON_RESIDENT_NATURAL_PERSON));
 		assertEquals(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE, EnumHelper.toCore(PartySearchType.NATURAL_PERSON));
+		assertEquals(TiersCriteria.TypeTiers.ETABLISSEMENT, EnumHelper.toCore(PartySearchType.ESTABLISHMENT));
 	}
 }

@@ -106,6 +106,8 @@ public abstract class EnumHelper {
 			return TiersCriteria.TypeTiers.MENAGE_COMMUN;
 		case CORPORATION:
 			return TiersCriteria.TypeTiers.ENTREPRISE;
+		case ESTABLISHMENT:
+			return TiersCriteria.TypeTiers.ETABLISSEMENT;
 		case NATURAL_PERSON:
 			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
 		case NON_RESIDENT_NATURAL_PERSON:

@@ -33,6 +33,11 @@ public enum PartySearchType {
 	CORPORATION,
 
 	/**
+	 * Un établissement.
+	 */
+	ESTABLISHMENT,
+
+	/**
 	 * Une collectivité administrative.
 	 */
 	ADMINISTRATIVE_AUTHORITY,
