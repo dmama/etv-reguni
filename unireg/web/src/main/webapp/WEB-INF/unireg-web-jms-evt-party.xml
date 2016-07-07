@@ -99,6 +99,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="partyRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV2">
@@ -120,6 +121,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="partyRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV3">
@@ -143,6 +145,7 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="partyRequestHandlerV4" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV4">
@@ -166,6 +169,7 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="partyRequestHandlerV5" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV5">
@@ -189,6 +193,7 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="createNonresidentRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV1">

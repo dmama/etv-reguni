@@ -106,4 +106,9 @@ public interface WebService {
 	@Path("/avatar/{partyNo}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	Response getAvatar(@PathParam("partyNo") int partyNo);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/fiscalEvents/{partyNo}")
+	Response getFiscalEvents(@PathParam("partyNo") int partyNo, @QueryParam("user") String user);
 }

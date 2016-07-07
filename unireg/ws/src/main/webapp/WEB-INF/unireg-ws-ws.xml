@@ -63,6 +63,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
@@ -110,6 +111,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="partyService4Cache" class="ch.vd.uniregctb.webservices.party4.cache.PartyWebServiceCache">
@@ -223,6 +225,7 @@
 		<property name="threadPool" ref="wsThreadPool"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<!-- WS REST v6 -->
@@ -310,6 +313,7 @@
 		<property name="threadPool" ref="wsThreadPool"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<!-- WS REST v7 -->
@@ -397,6 +401,7 @@
 		<property name="threadPool" ref="wsThreadPool"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 </beans>

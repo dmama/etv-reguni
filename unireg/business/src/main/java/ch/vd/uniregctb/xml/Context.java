@@ -6,6 +6,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -66,4 +67,6 @@ public class Context {
 	public EFactureService eFactureService;
 
 	public ExerciceCommercialHelper exerciceCommercialHelper;
+
+	public EvenementFiscalService evenementFiscalService;
 }

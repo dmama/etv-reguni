@@ -32,6 +32,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -82,6 +83,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.debtorinfo.v7.ObjectFactory debtorInfoFactory = new ch.vd.unireg.ws.debtorinfo.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.search.party.v7.ObjectFactory searchPartyObjectFactory = new ch.vd.unireg.ws.search.party.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.party.v7.ObjectFactory partyObjectFactory = new ch.vd.unireg.ws.party.v7.ObjectFactory();
+	private final ch.vd.unireg.ws.fiscalevents.v7.ObjectFactory fiscalEventsObjectFactory = new ch.vd.unireg.ws.fiscalevents.v7.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -592,6 +594,29 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 					IOUtils.copy(data.getDataStream(), bos);
 					return ExecutionResult.with(Response.ok(bos.toByteArray(), data.getMimeType()).build());
 				}
+			}
+		});
+	}
+
+	@Override
+	public Response getFiscalEvents(final int partyNo, final String user) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getFiscalEvents{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
+			@NotNull
+			@Override
+			public ExecutionResult execute(UserLogin userLogin) throws Exception {
+				final FiscalEvents events = target.getFiscalEvents(userLogin, partyNo);
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events)).build());
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+
 			}
 		});
 	}

@@ -68,6 +68,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -95,6 +96,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -955,6 +957,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		nh.setDateNaissance(dateNaissance);
 		nh.setSexe(sexe);
 		return merge(nh);
+	}
+
+	protected EvenementFiscalFor addEvenementFiscalFor(Tiers tiers, ForFiscal ff, RegDate dateValeur, EvenementFiscalFor.TypeEvenementFiscalFor type) {
+		final EvenementFiscalFor evt = new EvenementFiscalFor(dateValeur, ff, type);
+		evt.setTiers(tiers);
+		return merge(evt);
 	}
 
 	/**

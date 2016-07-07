@@ -50,6 +50,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResult;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -58,6 +60,9 @@ import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.ws.taxoffices.v7.TaxOffices;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
+import ch.vd.unireg.xml.event.fiscal.v3.CategorieTiers;
+import ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.OuvertureFor;
 import ch.vd.unireg.xml.party.address.v3.Address;
 import ch.vd.unireg.xml.party.address.v3.AddressInformation;
 import ch.vd.unireg.xml.party.address.v3.AddressType;
@@ -123,6 +128,7 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -136,6 +142,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
@@ -147,6 +154,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -3232,9 +3240,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 	}
 
-	/**
-	 * TODO Je n'ai pas encore mis la part ADDRESSES car la récupération des adresses des PM n'est pas encore codée correctement (il y a toujours ce host...)
-	 */
 	@Test
 	public void testGetPartyAllPartsOnCorporation() throws Exception {
 
@@ -3277,7 +3282,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 		assertValidInteger(idpm);
 
-		final Set<PartyPart> parts = EnumSet.complementOf(EnumSet.of(PartyPart.ADDRESSES));
+		final Set<PartyPart> parts = EnumSet.allOf(PartyPart.class);
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
 		final Party party = service.getParty(user, (int) idpm, parts);
 		Assert.assertNotNull(party);
@@ -4231,5 +4236,63 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(Debtor.class, sans.getClass());
 		final Debtor sansDebtor = (Debtor) sans;
 		Assert.assertFalse(sansDebtor.isOtherCantonTaxAdministration());
+	}
+
+	@Test
+	public void testGetFiscalEvents() throws Exception {
+
+		final class Ids {
+			int ppAvec;
+			int ppSans;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique avec = addNonHabitant("Albert", "Pommery", date(1985, 3, 15), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(avec, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addEvenementFiscalFor(avec, ffp, date(2000, 1, 1), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+
+				final PersonnePhysique sans = addNonHabitant("Bartholomé", "Mazo", date(1956, 8, 3), Sexe.MASCULIN);
+
+				final Ids ids = new Ids();
+				ids.ppAvec = avec.getNumero().intValue();
+				ids.ppSans = sans.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		// interrogation
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+
+		// sans événement fiscal
+		final FiscalEvents sans = service.getFiscalEvents(user, ids.ppSans);
+		Assert.assertNotNull(sans);
+		Assert.assertNotNull(sans.getEvents());
+		Assert.assertEquals(0, sans.getEvents().size());
+
+		// avec un événement fiscal
+		final FiscalEvents avec = service.getFiscalEvents(user, ids.ppAvec);
+		Assert.assertNotNull(avec);
+		Assert.assertNotNull(avec.getEvents());
+		Assert.assertEquals(1, avec.getEvents().size());
+		{
+			final FiscalEvent evt = avec.getEvents().get(0);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(AuthenticationHelper.getCurrentPrincipal(), evt.getUser());
+			Assert.assertNotNull(evt.getTreatmentDate());
+			Assert.assertEquals("Ouverture d'un for principal pour motif 'Arrivée de hors-Suisse'", evt.getDescription());
+
+			final EvenementFiscal xml = evt.getEvent();
+			Assert.assertNotNull(xml);
+			Assert.assertEquals(OuvertureFor.class, xml.getClass());
+			Assert.assertEquals(date(2000, 1, 1), DataHelper.webToRegDate(xml.getDate()));
+			Assert.assertEquals(CategorieTiers.PP, xml.getCategorieTiers());
+			Assert.assertEquals(ids.ppAvec, xml.getNumeroTiers());
+
+			final OuvertureFor ouverture = (OuvertureFor) xml;
+			Assert.assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, ouverture.getMotifOuverture());
+		}
 	}
 }

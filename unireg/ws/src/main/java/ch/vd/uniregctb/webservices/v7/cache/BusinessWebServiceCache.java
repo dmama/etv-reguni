@@ -23,6 +23,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -358,6 +359,11 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	@Override
 	public ImageData getAvatar(int partyNo) throws ServiceException {
 		return target.getAvatar(partyNo);
+	}
+
+	@Override
+	public FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException {
+		return target.getFiscalEvents(user, partyNo);
 	}
 
 	/**

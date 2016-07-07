@@ -17,6 +17,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -127,6 +128,11 @@ public class PartyRequestHandlerV4 implements RequestHandlerV1<PartyRequest> {
 
 	public void setEFactureService(EFactureService eFactureService) {
 		context.eFactureService = eFactureService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		context.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -136,6 +137,11 @@ public class PartyRequestHandlerV2 implements RequestHandlerV1<PartyRequest> {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		context.securityProvider = securityProvider;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		context.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override

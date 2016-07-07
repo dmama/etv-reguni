@@ -11,6 +11,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
@@ -162,4 +163,13 @@ public interface BusinessWebService {
 	 * @throws ServiceException en cas de problème
 	 */
 	ImageData getAvatar(int partyNo) throws ServiceException;
+
+	/**
+	 * Récupère les événements fiscaux liés au tiers donné
+	 * @param user désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param partyNo numéro du tiers
+	 * @return les événements fiscaux liés au tiers
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ce genre de recherche
+	 */
+	FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException;
 }

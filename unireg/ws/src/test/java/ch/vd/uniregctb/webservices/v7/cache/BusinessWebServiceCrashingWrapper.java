@@ -15,6 +15,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -129,6 +130,12 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	public ImageData getAvatar(int partyNo) throws ServiceException {
 		check(partyNo);
 		return target.getAvatar(partyNo);
+	}
+
+	@Override
+	public FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException {
+		check(partyNo);
+		return target.getFiscalEvents(user, partyNo);
 	}
 
 	private void check(int partyNo) {

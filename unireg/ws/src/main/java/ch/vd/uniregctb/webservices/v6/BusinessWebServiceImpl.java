@@ -82,6 +82,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -237,6 +238,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setAvatarService(AvatarService avatarService) {
 		this.avatarService = avatarService;
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		context.evenementFiscalService = evenementFiscalService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {

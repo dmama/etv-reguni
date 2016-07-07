@@ -11,6 +11,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
@@ -120,5 +121,12 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	@Override
 	public ImageData getAvatar(int partyNo) throws ServiceException {
 		return target.getAvatar(partyNo);
+	}
+
+	@Override
+	public FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadAccess(securityProvider, user, partyNo);
+		return target.getFiscalEvents(user, partyNo);
 	}
 }

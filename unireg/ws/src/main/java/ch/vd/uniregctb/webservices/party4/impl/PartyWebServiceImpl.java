@@ -71,6 +71,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
@@ -220,6 +221,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setThreadPool(ExecutorService threadPool) {
 		this.threadPool = threadPool;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		context.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override

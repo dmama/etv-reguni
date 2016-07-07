@@ -3,7 +3,9 @@ package ch.vd.uniregctb.webservices.v7;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackException;
+import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -51,6 +54,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResult;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
+import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -70,6 +75,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.ImageData;
 import ch.vd.uniregctb.avatar.TypeAvatar;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -82,6 +88,9 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV3Factory;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -121,6 +130,7 @@ import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
+import ch.vd.uniregctb.webservices.common.EvenementFiscalDescriptionHelper;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 import ch.vd.uniregctb.xml.Context;
@@ -237,6 +247,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setAvatarService(AvatarService avatarService) {
 		this.avatarService = avatarService;
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		context.evenementFiscalService = evenementFiscalService;
 	}
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
@@ -666,19 +680,19 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		Party buildParty(T tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException;
 	}
 
-	private static <T extends Tiers> void addToPartyFactorMap(Map<Class<? extends Tiers>, PartyFactory<?>> map, Class<T> clazz, PartyFactory<T> factory) {
+	private static <T extends Tiers> void addToPartyFactoryMap(Map<Class<? extends Tiers>, PartyFactory<?>> map, Class<T> clazz, PartyFactory<T> factory) {
 		map.put(clazz, factory);
 	}
 
 	private static Map<Class<? extends Tiers>, PartyFactory<?>> buildPartyFactoryMap() {
 		final Map<Class<? extends Tiers>, PartyFactory<?>> map = new HashMap<>();
-		addToPartyFactorMap(map, PersonnePhysique.class, new NaturalPersonPartyFactory());
-		addToPartyFactorMap(map, MenageCommun.class, new CommonHouseholdPartyFactory());
-		addToPartyFactorMap(map, DebiteurPrestationImposable.class, new DebtorPartyFactory());
-		addToPartyFactorMap(map, Entreprise.class, new CorporationPartyFactory());
-		addToPartyFactorMap(map, CollectiviteAdministrative.class, new AdministrativeAuthorityPartyFactory());
-		addToPartyFactorMap(map, AutreCommunaute.class, new OtherCommunityPartyFactory());
-		addToPartyFactorMap(map, Etablissement.class, new EstablishmentPartyFactory());
+		addToPartyFactoryMap(map, PersonnePhysique.class, new NaturalPersonPartyFactory());
+		addToPartyFactoryMap(map, MenageCommun.class, new CommonHouseholdPartyFactory());
+		addToPartyFactoryMap(map, DebiteurPrestationImposable.class, new DebtorPartyFactory());
+		addToPartyFactoryMap(map, Entreprise.class, new CorporationPartyFactory());
+		addToPartyFactoryMap(map, CollectiviteAdministrative.class, new AdministrativeAuthorityPartyFactory());
+		addToPartyFactoryMap(map, AutreCommunaute.class, new OtherCommunityPartyFactory());
+		addToPartyFactoryMap(map, Etablissement.class, new EstablishmentPartyFactory());
 		return map;
 	}
 
@@ -974,4 +988,48 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			}
 		}
 	}
+
+	@Override
+	public FiscalEvents getFiscalEvents(final UserLogin user, final int partyNo) throws AccessDeniedException {
+		return doInTransaction(true, new TransactionCallback<FiscalEvents>() {
+			@Override
+			public FiscalEvents doInTransaction(TransactionStatus status) {
+				final Tiers tiers = context.tiersDAO.get(partyNo, false);
+				if (tiers == null) {
+					throw new ObjectNotFoundException("Le tiers " + partyNo + " n'existe pas");
+				}
+
+				final Collection<EvenementFiscal> evts = context.evenementFiscalService.getEvenementsFiscaux(tiers);
+				final List<EvenementFiscal> sortedList;
+				if (evts == null || evts.isEmpty()) {
+					sortedList = Collections.emptyList();
+				}
+				else {
+					sortedList = AnnulableHelper.sansElementsAnnules(evts);     // on n'est jamais trop prudent...
+					Collections.sort(sortedList, new Comparator<EvenementFiscal>() {
+						@Override
+						public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+							int comparison = NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());
+							if (comparison == 0) {
+								comparison = o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
+							}
+							return comparison;
+						}
+					});
+				}
+
+				final List<FiscalEvent> list = new ArrayList<>(sortedList.size());
+				for (EvenementFiscal evtFiscal : sortedList) {
+					final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal xml = EvenementFiscalV3Factory.buildOutputData(evtFiscal);
+					list.add(new FiscalEvent(evtFiscal.getLogCreationUser(),
+					                         XmlUtils.date2cal(evtFiscal.getLogCreationDate()),
+					                         EvenementFiscalDescriptionHelper.getTextualDescription(evtFiscal),
+					                         xml,
+					                         null));
+				}
+				return new FiscalEvents(list, 0, null);
+			}
+		});
+	}
+
 }
