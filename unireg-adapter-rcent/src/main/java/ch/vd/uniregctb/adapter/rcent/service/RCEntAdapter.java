@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.adapter.rcent.service;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -175,30 +176,53 @@ public class RCEntAdapter {
 			for (NoticeOrganisation org : after.getOrganisation()) {
 				for (ch.vd.evd0022.v3.OrganisationLocation location : org.getOrganisation().getOrganisationLocation()) {
 					if (location.getCantonalId().longValue() == targetLocationId && location.getCommercialRegisterData() != null) {
-						if (location.getCommercialRegisterData().getDiaryEntry() != null && !location.getCommercialRegisterData().getDiaryEntry().isEmpty()) {
-							if (location.getCommercialRegisterData().getDiaryEntry().size() > 1) {
-								throw new RCEntAdapterException(
-										String.format("Trouvé plus d'une entrée de journal du RC pour un seul événement! Evénement: %d, organisation: %d, location: %d.",
-										              eventId, org.getOrganisation().getCantonalId(), location.getCantonalId()));
+						final List<CommercialRegisterDiaryEntry> allDiaryEntries = location.getCommercialRegisterData().getDiaryEntry();
+						if (allDiaryEntries != null && !allDiaryEntries.isEmpty()) {
+							CommercialRegisterDiaryEntry logEntryRC = null;
+							if (allDiaryEntries.size() > 1) {
+								final List<CommercialRegisterDiaryEntry> diaryEntriesForTheDay = new ArrayList<>();
+								for (CommercialRegisterDiaryEntry entry : allDiaryEntries) {
+									if (entry.getSwissGazetteOfCommercePublication().getPublicationDate() == evtDate) {
+										diaryEntriesForTheDay.add(entry);
+									}
+								}
+								// SIFISC-19916 On supporte qu'il y a plusieurs entrées pour le même jour, mais si c'est le cas, c'est comme s'il n'y en avait pas.
+								if (diaryEntriesForTheDay.size() == 1) {
+									logEntryRC = diaryEntriesForTheDay.iterator().next();
+								}
+							} else {
+								// On a bien trouvé une entrée au journal du RC, on peut prendre les valeurs
+								logEntryRC = allDiaryEntries.iterator().next();
 							}
-							// On a bien trouvé une entrée au journal du RC, on peut prendre les valeurs
-							CommercialRegisterDiaryEntry logEntryRC = location.getCommercialRegisterData().getDiaryEntry().iterator().next();
-							eventResult.setCommercialRegisterEntryNumber(logEntryRC.getDiaryEntryNumber().longValue());
-							eventResult.setCommercialRegisterEntryDate(logEntryRC.getDiaryEntryDate());
-							eventResult.setDocumentNumberFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getDocumentNumber());
-							eventResult.setPublicationDateFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getPublicationDate());
-							break;
+							if (logEntryRC != null) {
+								eventResult.setCommercialRegisterEntryNumber(logEntryRC.getDiaryEntryNumber().longValue());
+								eventResult.setCommercialRegisterEntryDate(logEntryRC.getDiaryEntryDate());
+								eventResult.setDocumentNumberFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getDocumentNumber());
+								eventResult.setPublicationDateFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getPublicationDate());
+								break;
+							}
 						}
 						else if (location.getBusinessPublication() != null && !location.getBusinessPublication().isEmpty()) {
+							BusinessPublication businessPublication = null;
 							if (location.getBusinessPublication().size() > 1) {
-								throw new RCEntAdapterException(
-										String.format("Trouvé plus d'une business publication pour un seul événement! Evénement: %d, organisation: %d, location: %d.",
-										              eventId, org.getOrganisation().getCantonalId(), location.getCantonalId()));
+								final List<BusinessPublication> businessPublicationsForTheDay = new ArrayList<>();
+								for (BusinessPublication publication : location.getBusinessPublication()) {
+									if (publication.getSwissGazetteOfCommercePublication().getPublicationDate() == evtDate) {
+										businessPublicationsForTheDay.add(publication);
+									}
+								}
+								// SIFISC-19916 On supporte qu'il y a plusieurs entrées pour le même jour, mais si c'est le cas, c'est comme s'il n'y en avait pas.
+								if (businessPublicationsForTheDay.size() == 1) {
+									businessPublication = businessPublicationsForTheDay.iterator().next();
+								}
+							} else {
+								businessPublication = location.getBusinessPublication().iterator().next();
 							}
-							final BusinessPublication businessPublication = location.getBusinessPublication().iterator().next();
-							eventResult.setDocumentNumberFOSC(businessPublication.getSwissGazetteOfCommercePublication().getDocumentNumber());
-							eventResult.setPublicationDateFOSC(businessPublication.getSwissGazetteOfCommercePublication().getPublicationDate());
-							break;
+							if (businessPublication != null) {
+								eventResult.setDocumentNumberFOSC(businessPublication.getSwissGazetteOfCommercePublication().getDocumentNumber());
+								eventResult.setPublicationDateFOSC(businessPublication.getSwissGazetteOfCommercePublication().getPublicationDate());
+								break;
+							}
 						}
 					}
 				}

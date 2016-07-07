@@ -643,4 +643,81 @@ public class RCEntAdapterTest {
 		assertEquals("Piguet Galland & Cie SA", locationName.get(0).getPayload());
 	}
 
+	@Test
+	public void testGetOrgaOfNoticePublicationForEventWithMultiplesPublicationsFosc() throws JAXBException {
+		final long eventId = 505765L;
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
+
+		final Long noOrganisation = 101580748L;
+
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
+
+		final OrganisationEvent organisationEvent = historyMap.get(noOrganisation);
+
+		assertThat(organisationEvent.getPseudoHistory().getCantonalId(), equalTo(noOrganisation));
+
+		assertThat(organisationEvent.getCommercialRegisterEntryNumber(), equalTo(9342L));
+		assertThat(organisationEvent.getCommercialRegisterEntryDate(), equalTo(RegDate.get(2016, 6, 8)));
+		assertThat(organisationEvent.getDocumentNumberFOSC(), equalTo("2886205"));
+		assertThat(organisationEvent.getPublicationDateFOSC(), equalTo(RegDate.get(2016, 6, 13)));
+	}
+
+	// Selon SIFISC-19916 On supporte qu'il y a plusieurs entrées pour le même jour, mais si c'est le cas, c'est comme s'il n'y en avait pas.
+	@Test
+	public void testGetOrgaOfNoticePublicationForEventWithMultiplesSameDayPublicationsFosc() throws JAXBException {
+		final long eventId = 505765L;
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-multi-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-multi-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
+
+		final Long noOrganisation = 101580748L;
+
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
+
+		final OrganisationEvent organisationEvent = historyMap.get(noOrganisation);
+
+		assertThat(organisationEvent.getPseudoHistory().getCantonalId(), equalTo(noOrganisation));
+
+		assertNull(organisationEvent.getCommercialRegisterEntryNumber());
+		assertNull(organisationEvent.getCommercialRegisterEntryDate());
+		assertNull(organisationEvent.getDocumentNumberFOSC());
+		assertNull(organisationEvent.getPublicationDateFOSC());
+	}
+
+	// Aucune entrée
+	@Test
+	public void testGetOrgaOfNoticePublicationForEventWithNoPublicationsFosc() throws JAXBException {
+		final long eventId = 505765L;
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-none-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-none-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
+
+		final Long noOrganisation = 101580748L;
+
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
+
+		final OrganisationEvent organisationEvent = historyMap.get(noOrganisation);
+
+		assertThat(organisationEvent.getPseudoHistory().getCantonalId(), equalTo(noOrganisation));
+
+		assertNull(organisationEvent.getCommercialRegisterEntryNumber());
+		assertNull(organisationEvent.getCommercialRegisterEntryDate());
+		assertNull(organisationEvent.getDocumentNumberFOSC());
+		assertNull(organisationEvent.getPublicationDateFOSC());
+	}
+
 }
