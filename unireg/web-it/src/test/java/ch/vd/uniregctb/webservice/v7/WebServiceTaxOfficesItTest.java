@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.ws.taxoffices.v7.TaxOffices;
+import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 
 public class WebServiceTaxOfficesItTest extends AbstractWebServiceItTest {
 
