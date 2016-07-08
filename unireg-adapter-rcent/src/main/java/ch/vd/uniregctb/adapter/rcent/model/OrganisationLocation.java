@@ -6,6 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
@@ -30,6 +31,7 @@ public class OrganisationLocation {
 
 	public final RCEntRCData rc;
 	public final RCEntUIDData uid;
+	public final RCEntBURData bur;
 
 	public final Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication;
 
@@ -44,7 +46,7 @@ public class OrganisationLocation {
 	private final List<DateRangeHelper.Ranged<Long>> uidReplacedBy;
 	private final List<DateRangeHelper.Ranged<Long>> uidInReplacementOf;
 
-	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid,
+	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid, RCEntBURData bur,
 	                            Map<String, List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> additionalName,
 	                            List<DateRangeHelper.Ranged<TypeOfLocation>> typeOfLocation, List<DateRangeHelper.Ranged<LegalForm>> legalForm,
 	                            List<DateRangeHelper.Ranged<Integer>> seat, Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication,
@@ -55,6 +57,7 @@ public class OrganisationLocation {
 		this.name = name;
 		this.rc = rc;
 		this.uid = uid;
+		this.bur = bur;
 		this.businessPublication = businessPublication;
 		this.identifiers = identifiers;
 		this.additionalName = additionalName;
@@ -121,6 +124,10 @@ public class OrganisationLocation {
 
 	public RCEntUIDData getUid() {
 		return uid;
+	}
+
+	public RCEntBURData getBur() {
+		return bur;
 	}
 
 	/**
@@ -275,6 +282,24 @@ public class OrganisationLocation {
 
 		public List<DateRangeHelper.Ranged<KindOfUidEntity>> getTypeOfOrganisation() {
 			return typeOfOrganisation;
+		}
+	}
+
+	public static class RCEntBURData {
+		private final List<DateRangeHelper.Ranged<BurLocalUnitStatus>> burLocalUnitStatus;
+		private final List<DateRangeHelper.Ranged<RegDate>> burRegistrationDate;
+
+		public RCEntBURData(List<DateRangeHelper.Ranged<BurLocalUnitStatus>> burLocalUnitStatus, List<DateRangeHelper.Ranged<RegDate>> burRegistrationDate) {
+			this.burLocalUnitStatus = burLocalUnitStatus;
+			this.burRegistrationDate = burRegistrationDate;
+		}
+
+		public List<DateRangeHelper.Ranged<BurLocalUnitStatus>> getBurLocalUnitStatus() {
+			return burLocalUnitStatus;
+		}
+
+		public List<DateRangeHelper.Ranged<RegDate>> getBurRegistrationDate() {
+			return burRegistrationDate;
 		}
 	}
 }

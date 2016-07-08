@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import ch.ech.ech0097.v2.NamedOrganisationId;
 
 import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
@@ -41,6 +42,8 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesCasePostaleIde
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesLegalesExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationAdditionalNameExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurRegistrationDateExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurStatusExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferFromExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferToExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBusinessPublicationExtractor;
@@ -183,6 +186,14 @@ public class OrganisationHistorizer {
 		                                                                                                                                                           Equalator.DEFAULT
 		);
 
+		// REE
+		final IndexedDataCollector<Organisation, BurLocalUnitStatus, BigInteger> locationBurStatusCollector = new SingleValueIndexedDataCollector<>(new LocationBurStatusExtractor(),
+		                                                                                                                                            Equalator.DEFAULT
+		);
+		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationBurRegistrationDateCollector = new SingleValueIndexedDataCollector<>(new LocationBurRegistrationDateExtractor(),
+		                                                                                                                                     Equalator.DEFAULT
+		);
+
 
 		// on collecte les plages de dates dans les collectors
 		Historizer.historize(organisationMap, Arrays.asList(organisationIdentifiersCollector,
@@ -215,7 +226,10 @@ public class OrganisationHistorizer {
 		                                                    locationUidTypeOfOrganisation,
 		                                                    locationUidEffectiveAddressCollector,
 		                                                    locationPostalBoxUidAddressCollector,
-		                                                    locationUidRegisterLiquidationReason
+		                                                    locationUidRegisterLiquidationReason,
+
+		                                                    locationBurStatusCollector,
+		                                                    locationBurRegistrationDateCollector
 
 		));
 
@@ -261,7 +275,10 @@ public class OrganisationHistorizer {
 				locationUidTypeOfOrganisation.getCollectedData(),
 				locationUidEffectiveAddressCollector.getCollectedData(),
 				locationPostalBoxUidAddressCollector.getCollectedData(),
-				locationUidRegisterLiquidationReason.getCollectedData()
+				locationUidRegisterLiquidationReason.getCollectedData(),
+
+				locationBurStatusCollector.getCollectedData(),
+				locationBurRegistrationDateCollector.getCollectedData()
 		);
 
 		// Entreprise / Organisation

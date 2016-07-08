@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import ch.ech.ech0097.v2.NamedOrganisationId;
 
 import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
@@ -59,6 +60,9 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidPostalBoxAddresses;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidDeregistrationReason>>> uidLiquidationReason;
 
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<BurLocalUnitStatus>>> burStatus;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> burRegistrationDate;
+
 	public OrganisationLocationBuilder(Map<BigInteger, List<DateRangeHelper.Ranged<NamedOrganisationId>>> identifiers,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> names,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> additionalName,
@@ -86,7 +90,9 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<KindOfUidEntity>>> uidTypeOfOrganisation,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidPostalBoxAddresses,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidDeregistrationReason>>> uidLiquidationReason) {
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidDeregistrationReason>>> uidLiquidationReason,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BurLocalUnitStatus>>> burStatus,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> burRegistrationDate) {
 		this.legalForm = legalForm;
 		this.burTransferTo = burTransferTo;
 		this.burTransferFrom = burTransferFrom;
@@ -115,6 +121,8 @@ public class OrganisationLocationBuilder {
 		this.cancellationDate = cancellationDate;
 		this.vDCancellationDate = vDCancellationDate;
 		this.businessPublication = businessPublication;
+		this.burStatus = burStatus;
+		this.burRegistrationDate = burRegistrationDate;
 	}
 
 	public List<OrganisationLocation> build() {
@@ -138,6 +146,8 @@ public class OrganisationLocationBuilder {
 				                                                                         uidPostalBoxAddresses.get(e.getKey()),
 				                                                                         uidLiquidationReason.get(e.getKey())
 				                                   ),
+				                                   new OrganisationLocation.RCEntBURData(burStatus.get(e.getKey()),
+				                                                                         burRegistrationDate.get(e.getKey())),
 				                                   identifiers.get(e.getKey()) == null
 						                                   ? null
 						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey()), NamedOrganisationId::getOrganisationIdCategory, NamedOrganisationId::getOrganisationId),
@@ -155,6 +165,7 @@ public class OrganisationLocationBuilder {
 				                                   burTransferFrom.get(e.getKey()) == null ? null : DateRangedConvertor.convert(burTransferFrom.get(e.getKey()), BigInteger::longValue),
 				                                   uidReplacedBy.get(e.getKey()) == null ? null : DateRangedConvertor.convert(uidReplacedBy.get(e.getKey()), BigInteger::longValue),
 				                                   uidInReplacementOf.get(e.getKey()) == null ? null : DateRangedConvertor.convert(uidInReplacementOf.get(e.getKey()), BigInteger::longValue)
+
 				     )
 				)
 				.collect(Collectors.toList());
