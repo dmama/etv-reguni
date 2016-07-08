@@ -128,6 +128,16 @@
         </jxb:typesafeEnumClass>
     </jxb:bindings>
 
+    <jxb:bindings node="//xs:simpleType[@name='burLocalUnitStatusType']">
+        <jxb:typesafeEnumClass name="BurLocalUnitStatus">
+            <jxb:typesafeEnumMember name="ACTIF" value="1"/>
+            <jxb:typesafeEnumMember name="INACTIF" value="2"/>
+            <jxb:typesafeEnumMember name="RADIE" value="3"/>
+            <jxb:typesafeEnumMember name="INCONNU" value="4"/>
+            <jxb:typesafeEnumMember name="TRANSFERE" value="6"/>
+        </jxb:typesafeEnumClass>
+    </jxb:bindings>
+
     <jxb:bindings node="//xs:simpleType[@name='diaryKindOfEntryType']">
         <jxb:typesafeEnumClass name='DiaryKindOfEntry'>
             <jxb:typesafeEnumMember name="AUTRE" value="0"/>
