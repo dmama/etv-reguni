@@ -24,6 +24,8 @@
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/events/evt-fiscal-3.xsd" uri="events/evt-fiscal-3.xsd"/>
 
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/infra/unireg-taxoffices-1.xsd" uri="infra/unireg-taxoffices-1.xsd" />
+
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-security-7.xsd" uri="ws/unireg-ws-security-7.xsd" />
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-error-7.xsd" uri="ws/unireg-ws-error-7.xsd" />
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-ack-7.xsd" uri="ws/unireg-ws-ack-7.xsd" />

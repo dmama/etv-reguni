@@ -301,6 +301,17 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<!-- Reprise de jaxb2/infra -->
+
+	<jxb:bindings schemaLocation="infra/unireg-taxoffices-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.infra.taxoffices.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="taxoff-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<!-- local XSDs -->
 
 	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-security-7.xsd">
