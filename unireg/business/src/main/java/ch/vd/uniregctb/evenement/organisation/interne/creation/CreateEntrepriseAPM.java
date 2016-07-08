@@ -42,26 +42,38 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		super.doHandle(warnings, suivis);
+		/*
+		 SIFISC-19723 Pour éviter les doublons lors de la mauvaise identification d'APM créées à la main par l'ACI et simultanément enregistrée par SiTi,
+		 pas de création automatique des APM, sauf lorsque l'inscription provient du RC, qui dans ce cas est nécessairement l'institution émettrice.
+		  */
+		if (getOrganisation().isInscritAuRC(getDateEvt())) {
+			super.doHandle(warnings, suivis);
 
-		MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
+			MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
-		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateOuvertureFiscale(), suivis);
+			openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateOuvertureFiscale(), suivis);
 
-		openForFiscalPrincipal(getDateOuvertureFiscale(),
-		                       getAutoriteFiscalePrincipale(),
-		                       MotifRattachement.DOMICILE,
-		                       motifOuverture,
-		                       GenreImpot.BENEFICE_CAPITAL,
-		                       warnings, suivis);
+			openForFiscalPrincipal(getDateOuvertureFiscale(),
+			                       getAutoriteFiscalePrincipale(),
+			                       MotifRattachement.DOMICILE,
+			                       motifOuverture,
+			                       GenreImpot.BENEFICE_CAPITAL,
+			                       warnings, suivis);
 
-		// Création du bouclement
-		createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
-		// Ajoute les for secondaires
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
+			// Création du bouclement
+			createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
+			// Ajoute les for secondaires
+			adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 
-		// SIFISC-19335 - mettre à l'état "a vérifier" les annoces de créations d'APM
-		warnings.addWarning(String.format("Vérification requise après la création de l'APM n°%s.", FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero())));
+			// SIFISC-19335 - mettre à l'état "a vérifier" les annoces de créations d'APM
+			warnings.addWarning(String.format("Vérification requise après la création de l'APM n°%s.", FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero())));
+		}
+		else {
+			warnings.addWarning(String.format("Pas de création automatique de l'APM n°%d [%s] non inscrite au RC (risque de création de doublon). " +
+					                                  "Veuillez vérifier et le cas échéant créer le tiers associé.",
+			                                  getOrganisation().getNumeroOrganisation(), getOrganisation().getNom(getDateEvt())));
+		}
+
 	}
 
 	@Override

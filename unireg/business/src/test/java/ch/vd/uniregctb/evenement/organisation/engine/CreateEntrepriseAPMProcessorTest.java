@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
@@ -144,24 +145,10 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
-				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
 
-				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
-				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
-				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
-				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
-
-				                             {
-					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
-					                             Assert.assertEquals(1, etbsPrns.size());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 24), etbsPrns.get(0).getDateDebut());
-				                             }
-				                             {
-					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-					                             Assert.assertEquals(0, etbsSecs.size());
-				                             }
+				                             Assert.assertEquals(String.format("Pas de création automatique de l'APM n°%d [Association bidule] non inscrite au RC (risque de création de doublon). Veuillez vérifier et le cas échéant créer le tiers associé.", noOrganisation)
+						                             , evt.getErreurs().get(2).getMessage());
 
 				                             return null;
 			                             }
@@ -170,13 +157,13 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 	}
 
 	@Test(timeout = 10000L)
-	public void testArriveeAPMIDE() throws Exception {
+	public void testArriveeAPMIDERC() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
 
-		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy Assoc", RegDate.get(2015, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
-		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
+		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy Assoc", RegDate.get(2015, 6, 28), null, FormeLegale.N_0109_ASSOCIATION,
+		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, RegDate.get(2015, 6, 26),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -193,7 +180,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.IDE_MUTATION, RegDate.get(2015, 6, 26), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 28), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
