@@ -388,9 +388,9 @@
 					<source>1.7</source>
 					<additionalparam>
 						-inferrel -inferdep -quiet -hide java.* -collpackages java.util.* -qualify -postfixpackage -nodefontsize 9
-						-nodefontpackagesize 7
+						-nodefontpackagesize 7 -Xdoclint:none
 					</additionalparam>
-					<additionalJOption>-J-Xmx1024m -Xdoclint:none</additionalJOption>
+					<maxmemory>1024m</maxmemory>
 					<aggregate>true</aggregate>
 					<excludePackageNames>javax.jws.*:ch.vd.uniregctb.webservices.*</excludePackageNames>
 					<links>
