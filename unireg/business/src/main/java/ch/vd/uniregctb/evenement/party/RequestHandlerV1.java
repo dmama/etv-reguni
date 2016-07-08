@@ -6,6 +6,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.xml.ServiceException;
 

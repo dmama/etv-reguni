@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.uniregctb.evenement;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

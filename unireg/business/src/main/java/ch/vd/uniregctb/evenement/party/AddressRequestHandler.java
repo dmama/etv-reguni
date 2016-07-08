@@ -15,6 +15,7 @@ import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;

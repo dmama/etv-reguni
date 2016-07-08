@@ -17,6 +17,7 @@ import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;

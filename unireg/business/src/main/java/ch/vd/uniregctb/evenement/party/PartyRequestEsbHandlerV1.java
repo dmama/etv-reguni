@@ -46,6 +46,7 @@ import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EsbMessageValidationHelper;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;

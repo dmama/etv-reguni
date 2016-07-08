@@ -11,6 +11,7 @@ import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest;
 import ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;

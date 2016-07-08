@@ -22,6 +22,7 @@ import ch.vd.unireg.xml.event.party.taxliab.v2.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlService;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;

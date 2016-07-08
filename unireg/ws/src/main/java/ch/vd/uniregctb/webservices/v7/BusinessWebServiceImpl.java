@@ -46,7 +46,6 @@ import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.ws.ack.v7.AckStatus;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
@@ -63,7 +62,6 @@ import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
-import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffice;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v5.Party;
@@ -135,6 +133,7 @@ import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.infra.v1.TaxOfficesBuilder;
 import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
 
 public class BusinessWebServiceImpl implements BusinessWebService {
@@ -554,27 +553,11 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
-
-		final Commune commune = context.infraService.getCommuneByNumeroOfs(municipalityId, date);
-		if (commune == null || !commune.isVaudoise()) {
-			throw new ObjectNotFoundException(String.format("Commune %d inconnue dans le canton de Vaud.", municipalityId));
-		}
-
-		final Integer codeRegion = commune.getCodeRegion();
-		final Integer codeDistrict = commune.getCodeDistrict();
-		if (codeRegion == null || codeDistrict == null) {
-			throw new ObjectNotFoundException("Code(s) région et/ou district inconnu(s) pour la commune.");
-		}
-
+	public TaxOffices getTaxOffices(final int municipalityId, @Nullable final RegDate date) {
 		return doInTransaction(true, new TransactionCallback<TaxOffices>() {
 			@Override
-			public TaxOffices doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oid = context.tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict, false);
-				final CollectiviteAdministrative oir = context.tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
-				return new TaxOffices(new TaxOffice(oid.getNumero().intValue(), oid.getNumeroCollectiviteAdministrative()),
-				                      new TaxOffice(oir.getNumero().intValue(), oir.getNumeroCollectiviteAdministrative()),
-				                      null);
+			public TaxOffices doInTransaction(TransactionStatus transactionStatus) {
+				return TaxOfficesBuilder.newTaxOffices(municipalityId, date, context);
 			}
 		});
 	}

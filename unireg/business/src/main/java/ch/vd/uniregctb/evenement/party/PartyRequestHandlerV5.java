@@ -18,6 +18,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;

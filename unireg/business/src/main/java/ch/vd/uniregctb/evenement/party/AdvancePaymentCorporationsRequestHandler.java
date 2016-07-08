@@ -36,6 +36,7 @@ import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;

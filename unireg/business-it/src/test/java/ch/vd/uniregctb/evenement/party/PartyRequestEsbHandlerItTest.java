@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:ut/unireg-businessit-jms-evt-party.xml",
 		"classpath:ut/unireg-businessit-security.xml"
 })
-abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
+public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;

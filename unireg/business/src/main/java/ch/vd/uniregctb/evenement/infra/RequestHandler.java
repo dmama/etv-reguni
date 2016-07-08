@@ -1,19 +1,16 @@
-package ch.vd.uniregctb.evenement.party;
+package ch.vd.uniregctb.evenement.infra;
 
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.unireg.xml.event.party.v2.Request;
-import ch.vd.unireg.xml.event.party.v2.Response;
+import ch.vd.unireg.xml.event.infra.v1.Request;
+import ch.vd.unireg.xml.event.infra.v1.Response;
 import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.xml.ServiceException;
 
-/**
- * Handler de requêtes sur les données de tiers.
- */
-public interface RequestHandlerV2<T extends Request> {
+public interface RequestHandler<T extends Request> {
 	/**
 	 * Reçoit et répond à la requête.
 	 *

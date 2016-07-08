@@ -18,6 +18,7 @@ import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.AutreCommunaute;

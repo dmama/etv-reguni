@@ -9,16 +9,19 @@
 	</bean>
 
 	<!-- Différenciation entre les hiérarchies de requêtes -->
+
 	<bean id="partyRequestDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.party.PartyRequestDispatchingEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="http://www.vd.ch/fiscalite/unireg/event/party/request/1" value-ref="partyRequestEsbHandlerV1"/>
 				<entry key="http://www.vd.ch/fiscalite/unireg/event/party/request/2" value-ref="partyRequestEsbHandlerV2"/>
+				<entry key="http://www.vd.ch/fiscalite/unireg/event/infra/request/1" value-ref="infraRequestEsbHandler"/>
 			</util:map>
 		</property>
 	</bean>
 
 	<!-- Pour les requêtes qui héritent de party/request/1 -->
+
 	<bean id="partyRequestEsbHandlerV1" class="ch.vd.uniregctb.evenement.party.PartyRequestEsbHandlerV1">
 		<property name="handlers">
 			<util:map>
@@ -42,6 +45,7 @@
 	</bean>
 
 	<!-- Pour les requêtes qui héritent de party/request/2 -->
+
 	<bean id="partyRequestEsbHandlerV2" class="ch.vd.uniregctb.evenement.party.PartyRequestEsbHandlerV2">
 		<property name="handlers">
 			<util:map>
@@ -52,6 +56,20 @@
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
 	</bean>
+
+	<!-- Pour les requêtes qui héritent de infra/request/1 -->
+
+	<bean id="infraRequestEsbHandler" class="ch.vd.uniregctb.evenement.infra.InfraRequestEsbHandler">
+		<property name="handlers">
+			<util:map>
+				<entry key="ch.vd.unireg.xml.event.infra.taxoffices.v1.TaxOfficesRequest" value-ref="taxOfficesRequestHandlerV1"/>
+			</util:map>
+		</property>
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
+	</bean>
+
+	<!-- le point d'entrée principal du partyService asynchrone -->
 
 	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
@@ -68,6 +86,8 @@
 		<property name="autoStartup" value="${extprop.jms.queue.party.service.enabled}" />
 		<property name="description" value="Réception des demandes asynchrones concernant des tiers"/>
 	</bean>
+
+	<!-- les handlers spécifiques -->
 
 	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -241,6 +261,30 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="taxOfficesRequestHandlerV1" class="ch.vd.uniregctb.evenement.infra.TaxOfficesRequestHandlerV1">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="EFactureService" ref="efactureService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 </beans>

@@ -16,6 +16,7 @@ import ch.vd.unireg.xml.event.party.taxliab.v3.TaxLiabilityResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.uniregctb.evenement.RequestHandlerResult;
 import ch.vd.uniregctb.evenement.party.control.ControlRuleException;
 import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlEchec;
 import ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlResult;
