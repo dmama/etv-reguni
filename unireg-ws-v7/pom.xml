@@ -14,7 +14,7 @@
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS v7</name>
-	<description>Unireg - classes Java pour le web-service v6 de Unireg</description>
+	<description>Unireg - classes Java pour le web-service v7 de Unireg</description>
 	
 	<dependencies>
 		<dependency>
