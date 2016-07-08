@@ -563,4 +563,40 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.infra.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-infra-req-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/taxoffices-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.infra.taxoffices.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-infra-taxoff-req-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.infra.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-infra-res-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/taxoffices-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.infra.taxoffices.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-infra-taxoff-res-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

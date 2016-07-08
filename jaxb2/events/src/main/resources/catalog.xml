@@ -58,6 +58,11 @@
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/data/dataEvent-1.xsd" uri="event/data/dataEvent-1.xsd"/>
 
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/request-1.xsd" uri="event/infra/request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/response-1.xsd" uri="event/infra/response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/taxoffices-request-1.xsd" uri="event/infra/taxoffices-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/infra/taxoffices-response-1.xsd" uri="event/infra/taxoffices-response-1.xsd"/>
+
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd" uri="event/lr/evtQuittanceListe-v1.xsd"/>
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd" uri="event/lr/evtListe-1.xsd"/>
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-2.xsd" uri="event/lr/evtListe-2.xsd"/>
@@ -72,6 +77,7 @@
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/reqdes/creation-modification-contribuables-1.xsd" uri="event/reqdes/creation-modification-contribuables-1.xsd"/>
 
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/party" catalog="../../../../party/src/main/resources/catalog.xml" />
+	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/infra" catalog="../../../../infra/src/main/resources/catalog.xml" />
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
 	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
 
