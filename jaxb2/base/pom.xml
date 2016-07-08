@@ -25,6 +25,7 @@
 		<module>../rcent</module>
 		<module>../editique</module>
 		<module>../host-interfaces</module>
+		<module>../infra</module>
 	</modules>
 
 	<dependencies>
