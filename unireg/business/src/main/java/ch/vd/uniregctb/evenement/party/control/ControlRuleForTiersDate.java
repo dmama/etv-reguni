@@ -34,11 +34,19 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 
 	private AssujettissementStatut hasForPrincipalVaudois(@NotNull Tiers tiers, Set<ModeImposition> aRejeter) throws ControlRuleException {
 		//On se situe dans le cadre d'un contrôle assujetissement sur PP
-		final ForFiscalPrincipalPP forFiscalPrincipalPP = (ForFiscalPrincipalPP) tiers.getForFiscalPrincipalAt(date);
-		final boolean modeImpositionNonConforme = isModeImpositionNonConforme(aRejeter, forFiscalPrincipalPP);
-		final boolean isAssujetti = forFiscalPrincipalPP != null && forFiscalPrincipalPP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !modeImpositionNonConforme;
-
-		return  new AssujettissementStatut(isAssujetti,modeImpositionNonConforme);
+		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
+		final boolean isAssujetti;
+		final boolean modeImpositionNonConforme;
+		if (forFiscalPrincipal instanceof ForFiscalPrincipalPP) {
+			modeImpositionNonConforme = isModeImpositionNonConforme(aRejeter, (ForFiscalPrincipalPP) forFiscalPrincipal);
+			isAssujetti = forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !modeImpositionNonConforme;
+		}
+		else {
+			// les entreprise ne sont pas encore supportées par ce service...!
+			isAssujetti = false;
+			modeImpositionNonConforme = false;
+		}
+		return  new AssujettissementStatut(isAssujetti, modeImpositionNonConforme);
 	}
 
 	private boolean isModeImpositionNonConforme(Set<ModeImposition> aRejeter, ForFiscalPrincipalPP forFiscalPrincipalPP) {
