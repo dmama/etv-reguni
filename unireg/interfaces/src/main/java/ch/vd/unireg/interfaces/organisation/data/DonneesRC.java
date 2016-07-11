@@ -15,7 +15,7 @@ public interface DonneesRC {
 
 	List<Capital> getCapital();
 
-	List<DateRanged<StatusInscriptionRC>> getStatusREE();
+	List<DateRanged<StatusInscriptionRC>> getStatusInscription();
 
 	List<DateRanged<RaisonDeDissolutionRC>> getRaisonDeDissolutionVd();
 
@@ -23,7 +23,7 @@ public interface DonneesRC {
 
 	RaisonDeDissolutionRC getRaisonDeDissolutionVd(RegDate date);
 
-	List<DateRanged<RegDate>> getDateInscriptionREE();
+	List<DateRanged<RegDate>> getDateInscription();
 
 	RegDate getDateInscription(RegDate date);
 

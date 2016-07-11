@@ -451,7 +451,7 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isRadieDuRC(SiteOrganisation site, RegDate date) {
 		final DonneesRC donneesRC = site.getDonneesRC();
-		if (donneesRC != null && donneesRC.getStatusREE() != null && ! donneesRC.getStatusREE().isEmpty()) {
+		if (donneesRC != null && donneesRC.getStatusInscription() != null && ! donneesRC.getStatusInscription().isEmpty()) {
 			return donneesRC.getStatusInscription(defaultDate(date)) == StatusInscriptionRC.RADIE;
 		}
 		return false;
@@ -596,7 +596,7 @@ public abstract class OrganisationHelper {
 	 */
 	public static List<DateRange> activite (SiteOrganisation site) {
 		RegDate dateCreation = site.getNom().get(0).getDateDebut();
-		final List<DateRanged<RegDate>> datesInscription = site.getDonneesRC().getDateInscriptionREE();
+		final List<DateRanged<RegDate>> datesInscription = site.getDonneesRC().getDateInscription();
 		if (datesInscription != null && !datesInscription.isEmpty()) {
 			RegDate dateInscription = datesInscription.get(0).getPayload();
 			if (dateInscription.isBefore(dateCreation)) {

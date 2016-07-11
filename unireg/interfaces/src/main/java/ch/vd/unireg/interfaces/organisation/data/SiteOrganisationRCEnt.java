@@ -166,7 +166,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscriptionREE(), date);
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscription(), date);
 	}
 
 	@Override

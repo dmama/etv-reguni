@@ -65,10 +65,12 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 		return capital;
 	}
 
-	public List<DateRanged<StatusInscriptionRC>> getStatusREE() {
+	@Override
+	public List<DateRanged<StatusInscriptionRC>> getStatusInscription() {
 		return statusInscription;
 	}
 
+	@Override
 	public List<DateRanged<RaisonDeDissolutionRC>> getRaisonDeDissolutionVd() {
 		return raisonDeDissolutionVd;
 	}
@@ -83,7 +85,8 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 		return OrganisationHelper.valueForDate(getRaisonDeDissolutionVd(), date);
 	}
 
-	public List<DateRanged<RegDate>> getDateInscriptionREE() {
+	@Override
+	public List<DateRanged<RegDate>> getDateInscription() {
 		return dateInscription;
 	}
 
