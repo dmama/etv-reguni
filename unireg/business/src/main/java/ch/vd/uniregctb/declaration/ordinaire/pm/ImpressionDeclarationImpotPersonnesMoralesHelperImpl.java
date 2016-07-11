@@ -2,7 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire.pm;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +29,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -222,20 +219,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	}
 
 	/**
-	 * @return l'adresse du CEDI à utiliser comme adresse de retour
-	 */
-	private CTypeAdresse buildAdresseCEDI() {
-		final CollectiviteAdministrative cedi = infraService.getCEDI();
-		final List<String> lignes = new ArrayList<>(4);
-		final Adresse adresse = cedi.getAdresse();
-		lignes.add(cedi.getNomComplet1());
-		lignes.add(cedi.getNomComplet2());
-		lignes.add(cedi.getNomCourt() + ' ' + ServiceInfrastructureService.noOIPM);
-		lignes.add(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
-		return new CTypeAdresse(lignes);
-	}
-
-	/**
 	 * @param liste liste de valeurs datées, supposées triées chronologiquement
 	 * @param date date de référence
 	 * @param <T> type des éléments dans la liste
@@ -318,7 +301,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		remplirSiegeEtAdministrationEffective(di, pm, declaration.getDateFin());
 
 		di.setAdresseRaisonSociale(buildAdresseRaisonSociale(pm, declaration.getDateFin()));
-		di.setAdresseRetour(buildAdresseCEDI());      // TODO autre choix que retour au CEDI ?
+		di.setAdresseRetour(buildAdresseCEDI(ServiceInfrastructureService.noOIPM));      // TODO autre choix que retour au CEDI ?
 		di.setCodeControleNIP(declaration.getCodeControle());
 
 		if (declaration.getCodeSegment() != null) {

@@ -61,7 +61,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
 
-	public static final String VERSION_XSD = "16.5";
+	public static final String VERSION_XSD = "16.6";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
@@ -192,6 +192,21 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		}
 
 		return lignes.isEmpty() ? null : new CTypeAdresse(lignes);
+	}
+
+	/**
+	 * @param noColAdministrative numéro à placer dans "CEDI XX" (c'est le XX) sur la troisième ligne
+	 * @return l'adresse du CEDI à utiliser comme adresse de retour
+	 */
+	protected final CTypeAdresse buildAdresseCEDI(int noColAdministrative) {
+		final CollectiviteAdministrative cedi = infraService.getCEDI();
+		final List<String> lignes = new ArrayList<>(4);
+		final Adresse adresse = cedi.getAdresse();
+		lignes.add(cedi.getNomComplet1());
+		lignes.add(cedi.getNomComplet2());
+		lignes.add(cedi.getNomCourt() + ' ' + noColAdministrative);
+		lignes.add(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
+		return new CTypeAdresse(lignes);
 	}
 
 	protected static CTypeInfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, String cleArchivage, long noTiers, RegDate dateTraitement) {

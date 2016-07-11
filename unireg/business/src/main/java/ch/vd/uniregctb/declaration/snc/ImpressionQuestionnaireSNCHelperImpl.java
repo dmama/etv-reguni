@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.snc;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
@@ -20,6 +22,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
@@ -57,11 +60,19 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 	}
 
 	private CTypeQuestSNC buildDocumentQuestionnaire(QuestionnaireSNC questionnaire) throws EditiqueException {
-		final ForFiscalPrincipal ffp = getForPrincipalInteressant(questionnaire.getTiers(), questionnaire.getPeriode().getAnnee());
-		final String siege = getNomCommuneOuPays(ffp);
-		final String numCommune = ffp != null ? String.valueOf(ffp.getNumeroOfsAutoriteFiscale()) : StringUtils.EMPTY;
-		final String delaiRetourImprime = RegDateHelper.toIndexString(extractDelaiRetourImprime(questionnaire));
-		return new CTypeQuestSNC(delaiRetourImprime, siege, numCommune);
+		try {
+			final ForFiscalPrincipal ffp = getForPrincipalInteressant(questionnaire.getTiers(), questionnaire.getPeriode().getAnnee());
+			final String siege = getNomCommuneOuPays(ffp);
+			final String numCommune = ffp != null ? String.valueOf(ffp.getNumeroOfsAutoriteFiscale()) : StringUtils.EMPTY;
+			final String delaiRetourImprime = RegDateHelper.toIndexString(extractDelaiRetourImprime(questionnaire));
+			final CTypeAdresse adresseRetour = buildAdresse(infraService.getACIOIPM());
+			final XMLGregorianCalendar pf = XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee()));
+			final String codeRoutage = String.format("%d-%d", ServiceInfrastructureService.noOIPM, 0);    // TODO changer ce 0 en autre chose... mais quoi ?
+			return new CTypeQuestSNC(pf, adresseRetour, delaiRetourImprime, codeRoutage, siege, numCommune);
+		}
+		catch (Exception e) {
+			throw new EditiqueException(e);
+		}
 	}
 
 	@NotNull
