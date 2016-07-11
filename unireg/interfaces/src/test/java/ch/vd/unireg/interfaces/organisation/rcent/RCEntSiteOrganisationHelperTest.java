@@ -85,7 +85,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
 		final OrganisationLocation.RCEntUIDData uid = new OrganisationLocation.RCEntUIDData(null, statusIde, null, null, null);
 
-		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
+		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, null, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
 
 		// Conversion
 		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
@@ -133,7 +133,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
 		final OrganisationLocation.RCEntUIDData uid = new OrganisationLocation.RCEntUIDData(null, statusIde, null, null, null);
 
-		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
+		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, null, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
 
 		// Conversion
 		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
