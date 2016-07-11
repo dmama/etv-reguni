@@ -372,7 +372,7 @@ public abstract class OrganisationHelper {
 	 * Une organisation est réputée inscrite à l'IDE à la date fournie si le statut de son site principal n'est ni AUTRE, ni ANNULE.
 	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
 	 * @param organisation l'organisation
-	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si inscrite, false sinon
 	 */
 	public static boolean isInscritIDE(Organisation organisation, RegDate date) {
@@ -395,6 +395,38 @@ public abstract class OrganisationHelper {
 		}
 		final StatusRegistreIDE statusInscription = donneesIDE.getStatus(defaultDate(date));
 		return statusInscription != null && !(statusInscription == StatusRegistreIDE.AUTRE || statusInscription == StatusRegistreIDE.ANNULE);
+	}
+
+	/**
+	 * Une organisation est réputée inscrite au REE à la date fournie si le statut de son site principal n'est pas vide.
+	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut connaitre la situation au REE
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isInscritREE(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
+		return sitePrincipal != null && isInscritREE(sitePrincipal.getPayload(), dateEffective);
+	}
+
+	/**
+	 * Un site est réputé inscrit au REE à la date fournie s'il a un statut non vide.
+	 *
+	 * Voir SIFISC-18739: INCONNU == inscrit dont le REE ne connais pas la situation exacte entre "actif" et "inactif", qui eux-mêmes
+	 * concerne la présence ou non d'employés dans l'entité.
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation au l'REE
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isInscritREE(SiteOrganisation site, RegDate date) {
+		final DonneesREE donneesREE = site.getDonneesREE();
+		if (donneesREE == null) {
+			return false;
+		}
+		final StatusREE statusREE = donneesREE.getStatusREE(defaultDate(date));
+		return statusREE != null;
 	}
 
 	/**
@@ -426,8 +458,6 @@ public abstract class OrganisationHelper {
 	 * Dire si un site est globallement actif, c'est à dire qu'il a une existence à la date fournie chez au
 	 * moins un fournisseur primaire (RC, IDE). Etre actif signifie être inscrit et non radié.
 	 *
-	 * NOTE: Le REE n'est pas encore supporté. Les éventuels établissements strictement REE sont rapporté comme inactifs.
-	 *
 	 * @param site le site
 	 * @param date la date pour laquelle on veut connaitre la situation du site
 	 * @return true si actif, false sinon
@@ -437,6 +467,9 @@ public abstract class OrganisationHelper {
 			return true;
 		}
 		else if (isInscritIDE(site, date) && !isRadieIDE(site, date)) {
+			return true;
+		}
+		else if (isInscritREE(site, date) && !isRadieREE(site, date)) {
 			return true;
 		}
 		return false;
@@ -461,7 +494,7 @@ public abstract class OrganisationHelper {
 	 * Une organisation est réputée radiée de l'IDE à la date fournie si le statut de son site principal RADIE ou DEFINITIVEMENT_RADIE.
 	 *
 	 * @param organisation l'organisation
-	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si radié, false sinon
 	 */
 	public static boolean isRadieIDE(Organisation organisation, RegDate date) {
@@ -474,7 +507,7 @@ public abstract class OrganisationHelper {
 	 * Un site est réputé radié de l'IDE à la date fournie si son statut est RADIE ou DEFINITIVEMENT_RADIE
 	 *
 	 * @param site le site
-	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si radié, false sinon
 	 */
 	public static boolean isRadieIDE(SiteOrganisation site, RegDate date) {
@@ -483,6 +516,47 @@ public abstract class OrganisationHelper {
 			final RegDate dateEffective = defaultDate(date);
 			final StatusRegistreIDE statusIde = donneesIDE.getStatus(dateEffective);
 			return statusIde == StatusRegistreIDE.RADIE || donneesIDE.getStatus(dateEffective) == StatusRegistreIDE.DEFINITIVEMENT_RADIE;
+		}
+		return false;
+	}
+
+	/**
+	 * Une organisation est réputée radiée du REE à la date fournie si le statut de son site principal RADIE ou TRANSFERE.
+	 *
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut connaitre la situation au REE
+	 * @return true si radié, false sinon
+	 */
+	public static boolean isRadieREE(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
+		return sitePrincipal != null && isRadieREE(sitePrincipal.getPayload(), dateEffective);
+	}
+
+	/**
+	 * Un site est réputé radié du REE à la date fournie si son statut est RADIE ou TRANSFERE
+	 *
+	 * Repris SIFISC-18739 pour la documentation du statut REE (citation de Gabrielle Servoz, RCEnt):
+	 *
+	 * <ul>
+	 *     <li>"actif REE" veut dire d'un point de vue du REE : "entité avec de l'emploi au sens de la statistique"</li>
+	 *     <li>"inactif REE" veut dire : "pas d'emploi au sens de la statistique, entreprise boite au lettre, lieux d'activité sans personnel permanant ..." mais non radié.</li>
+	 *     <li>"inconnu REE" veut dire "entité inscrite dans un registre mais dont le statut n'a pas encore été confirmé. En attente de réponse à l'enquête faite par le REE"</li>
+	 *     <li>"radié REE" veut dire "établissement radié ou fermé"</li>
+	 *     <li>"transféré REE" veut dire "transféré suite à fusion, scission, déménagement ..." => il y a forcément un autre établissement qui était déjà "actif" en remplacement.</li>
+	 * </ul>
+	 * => pour être binaire : un établissement est pour moi actif si son statut REE vaut "actif", "inactif" ou "inconnu". Un établissement est pour moi radié si son statut vaut "radié" ou "transféré".
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation au REE
+	 * @return true si radié, false sinon
+	 */
+	public static boolean isRadieREE(SiteOrganisation site, RegDate date) {
+		final DonneesREE donneesREE = site.getDonneesREE();
+		if (donneesREE != null && donneesREE.getStatusREE() != null && ! donneesREE.getStatusREE().isEmpty()) {
+			final RegDate dateEffective = defaultDate(date);
+			final StatusREE statusREE = donneesREE.getStatusREE(dateEffective);
+			return (statusREE == StatusREE.RADIE || statusREE == statusREE.TRANSFERE);
 		}
 		return false;
 	}
