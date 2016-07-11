@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="serviceInfrastructureServiceHostEjb" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+	</bean>
+
+	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
+		<property name="client" ref="serviceInfrastructureClient" />
+	</bean>
+
+	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
+		<property name="ejbClient" ref="serviceInfrastructureServiceHostEjb"/>
+		<property name="restClient" ref="serviceInfrastructureServiceHostRest"/>
+		<property name="modeRest" value="${extprop.host-interfaces.webservice.mode.rest}"/>
+	</bean>
+
+	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
+		<property name="fidorClient" ref="fidorClient" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
+		<property name="hostService" ref="serviceInfrastructureHostMarshaller" />
+		<property name="fidorService" ref="serviceInfrastructureFidor" />
+	</bean>
+
+	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
+		<property name="target" ref="serviceInfrastructureMarshaller" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
+		<property name="target" ref="serviceInfrastructureTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceInfra" />
+		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceInfrastructureEndPoint" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureEndPoint">
+		<property name="target" ref="serviceInfrastructureCache"/>
+	</bean>
+
+	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureEndPoint"/>
+
+</beans>

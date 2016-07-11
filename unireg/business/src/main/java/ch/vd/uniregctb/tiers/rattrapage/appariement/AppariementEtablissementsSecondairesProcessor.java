@@ -1,0 +1,192 @@
+package ch.vd.uniregctb.tiers.rattrapage.appariement;
+
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.dialect.Dialect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.common.AuthenticationInterface;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
+
+/**
+ * Processeur d'appariement d'établissements secondaires
+ */
+public class AppariementEtablissementsSecondairesProcessor {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AppariementEtablissementsSecondairesProcessor.class);
+
+	private static final int BATCH_SIZE = 10;
+
+	private final PlatformTransactionManager transactionManager;
+	private final HibernateTemplate hibernateTemplate;
+	private final AppariementService appariementService;
+	private final Dialect dbDialect;
+
+	public AppariementEtablissementsSecondairesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, AppariementService appariementService, Dialect dbDialect) {
+		this.transactionManager = transactionManager;
+		this.hibernateTemplate = hibernateTemplate;
+		this.appariementService = appariementService;
+		this.dbDialect = dbDialect;
+	}
+
+	public AppariementEtablissementsSecondairesResults run(int nbThreads, boolean simulation, StatusManager s) {
+		final StatusManager status = s == null ? new LoggingStatusManager(LOGGER) : s;
+		status.setMessage("Récupération des entreprises ayant des établissements candidats à une tentative d'appariement...");
+		final List<Long> ids = getIdsEntreprisesApparieesAvecEtablissementSecondaireNonApparie();
+		return run(ids, nbThreads, simulation, status);
+	}
+
+	public AppariementEtablissementsSecondairesResults run(List<Long> ids, final int nbThreads, final boolean simulation, StatusManager s) {
+		final StatusManager status = s == null ? new LoggingStatusManager(LOGGER) : s;
+		final AppariementEtablissementsSecondairesResults rapportFinal = new AppariementEtablissementsSecondairesResults(nbThreads, simulation, ids);
+		final ParallelBatchTransactionTemplateWithResults<Long, AppariementEtablissementsSecondairesResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids,
+		                                                                                                                                                                  BATCH_SIZE,
+		                                                                                                                                                                  nbThreads,
+		                                                                                                                                                                  Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                                                  transactionManager,
+		                                                                                                                                                                  status,
+		                                                                                                                                                                  AuthenticationInterface.INSTANCE);
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, AppariementEtablissementsSecondairesResults>() {
+			@Override
+			public boolean doInTransaction(List<Long> batch, AppariementEtablissementsSecondairesResults rapport) throws Exception {
+				status.setMessage("Tentatives d'appariement...", progressMonitor.getProgressInPercent());
+				for (Long id : batch) {
+					final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, id);
+					if (entreprise == null) {
+						throw new TiersNotFoundException(id);
+					}
+					else if (status.interrupted()) {
+						break;
+					}
+
+					// tentative d'appariement des établissements secondaires non-appariés
+					traitementEntreprise(entreprise, simulation, rapport);
+				}
+				return !status.interrupted();
+			}
+
+			@Override
+			public AppariementEtablissementsSecondairesResults createSubRapport() {
+				return new AppariementEtablissementsSecondairesResults(nbThreads, simulation, null);
+			}
+		}, progressMonitor);
+
+		status.setMessage("Procédure d'appariements d'établissements secondaires terminée.");
+
+		rapportFinal.setInterrupted(status.interrupted());
+		rapportFinal.end();
+		return rapportFinal;
+	}
+
+	private void traitementEntreprise(Entreprise entreprise, boolean simulation, AppariementEtablissementsSecondairesResults rapport) {
+		final List<CandidatAppariement> appariements = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
+		if (!appariements.isEmpty()) {
+			if (!simulation) {
+				for (CandidatAppariement appariement : appariements) {
+					apparier(appariement.getEtablissement(), appariement.getSite());
+				}
+			}
+			pushToRapport(entreprise, appariements, rapport);
+		}
+	}
+
+	private static void pushToRapport(Entreprise entreprise, List<CandidatAppariement> appariements, AppariementEtablissementsSecondairesResults rapport) {
+		for (CandidatAppariement appariement : appariements) {
+			switch (appariement.getCritere()) {
+			case LOCALISATION:
+				rapport.addNouvelAppariementEtablissementCommune(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
+				break;
+			case IDE:
+				rapport.addNouvelAppariementEtablissementIde(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
+				break;
+			case RAISON_SOCIALE:
+				rapport.addNouvelAppariementEtablissementRaisonSociale(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
+				break;
+			default:
+				throw new IllegalArgumentException("Type de critère décisif inconnu : " + appariement.getCritere());
+			}
+		}
+	}
+
+	private void apparier(Etablissement etablissement, SiteOrganisation site) {
+		final List<Domicile> domiciles = site.getDomicilesEnActivite();
+		final RegDate debutCivil = domiciles.isEmpty() ? RegDate.get() : domiciles.get(0).getDateDebut();
+		final RegDate finFiscale = debutCivil.getOneDayBefore();
+
+		// mise à jour du numéro cantonal
+		etablissement.setNumeroEtablissement(site.getNumeroSite());
+
+		// on stoppe les domiciles fiscaux à la veille de la date de début, si celle-ci a un sens...
+		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
+		for (DomicileEtablissement domicileFiscal : domicilesFiscaux) {
+			if (RegDateHelper.isBefore(finFiscale, domicileFiscal.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				domicileFiscal.setAnnule(true);
+			}
+			else if (domicileFiscal.getDateFin() == null) {
+				domicileFiscal.setDateFin(finFiscale);
+			}
+			else if (RegDateHelper.isBefore(finFiscale, domicileFiscal.getDateFin(), NullDateBehavior.LATEST)) {
+				final DomicileEtablissement nouveauDomicile = domicileFiscal.duplicate();
+				domicileFiscal.setAnnule(true);
+				nouveauDomicile.setDateFin(finFiscale);
+				etablissement.addDomicile(nouveauDomicile);
+			}
+		}
+	}
+
+	private List<Long> getIdsEntreprisesApparieesAvecEtablissementSecondaireNonApparie() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+						final String sql = "SELECT DISTINCT ENTR.NUMERO FROM TIERS ENTR"
+								+ " JOIN RAPPORT_ENTRE_TIERS AE ON AE.TIERS_SUJET_ID=ENTR.NUMERO AND AE.ANNULATION_DATE IS NULL AND AE.RAPPORT_ENTRE_TIERS_TYPE='ActiviteEconomique' AND AE.ETB_PRINCIPAL=%s"
+								+ " JOIN TIERS ETB ON AE.TIERS_OBJET_ID=ETB.NUMERO AND ETB.NUMERO_ETABLISSEMENT IS NULL"
+								+ " WHERE ENTR.NUMERO_ENTREPRISE IS NOT NULL AND ENTR.ANNULATION_DATE IS NULL AND ENTR.TIERS_TYPE='Entreprise'"
+								+ " ORDER BY ENTR.NUMERO";
+
+						final Query query = session.createSQLQuery(String.format(sql, dbDialect.toBooleanValueString(false)));
+						//noinspection unchecked
+						final List<Number> brutto = query.list();
+						final List<Long> res = new LinkedList<>();
+						for (Number id : brutto) {
+							res.add(id.longValue());
+						}
+						return res;
+					}
+				});
+			}
+		});
+	}
+}
