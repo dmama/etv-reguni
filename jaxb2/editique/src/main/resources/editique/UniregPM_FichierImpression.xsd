@@ -652,9 +652,20 @@ U1P8ADASROUTE
     </xs:complexType>
     <xs:complexType name="CTypeQuestSNC">
         <xs:sequence>
+            <xs:element name="periodeFiscale" type="xs:gYear">
+                <xs:annotation>
+                    <xs:documentation>AAAA</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="adresseRetour" type="CTypeAdresse"/>
             <xs:element name="dateLimiteRetour" type="STypeDate">
                 <xs:annotation>
                     <xs:documentation>AAAAMMJJ</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element form="qualified" name="codeRoutage" type="STypeCodeRoutage">
+                <xs:annotation>
+                    <xs:documentation>21-X</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="siege" type="xs:string"/>
@@ -890,7 +901,7 @@ U1P8ADASROUTE
     </xs:simpleType>
     <xs:simpleType name="STypeVersionXSD">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="16.5"/>
+            <xs:enumeration value="16.6"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>
