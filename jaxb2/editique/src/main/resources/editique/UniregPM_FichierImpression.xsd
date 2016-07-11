@@ -674,6 +674,7 @@ U1P8ADASROUTE
                     <xs:documentation>AAAA</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element minOccurs="1" name="codeBarre" type="STypeCodeBarreDI"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="CTypeQuestSNCRappel">
