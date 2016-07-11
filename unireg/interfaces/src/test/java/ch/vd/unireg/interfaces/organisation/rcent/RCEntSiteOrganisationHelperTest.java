@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.LegalForm;
@@ -85,7 +86,9 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
 		final OrganisationLocation.RCEntUIDData uid = new OrganisationLocation.RCEntUIDData(null, statusIde, null, null, null);
 
-		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, null, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
+		final OrganisationLocation.RCEntBURData bur = new OrganisationLocation.RCEntBURData(null, null);
+
+		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, bur, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
 
 		// Conversion
 		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
@@ -94,7 +97,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		assertEquals("Ma boîte", site.getNom().get(0).getPayload());
 		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
 		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
-		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusInscription().get(0).getPayload());
+		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusREE().get(0).getPayload());
 		assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
 
 		assertEquals(100000L, site.getDonneesRC().getCapital().get(0).getCapitalLibere().longValue());
@@ -133,7 +136,13 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
 		final OrganisationLocation.RCEntUIDData uid = new OrganisationLocation.RCEntUIDData(null, statusIde, null, null, null);
 
-		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, null, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
+		final List<Ranged<BurLocalUnitStatus>> burLocalUnitStatus = new ArrayList<>();
+		burLocalUnitStatus.add(new Ranged<>(refDate, null, BurLocalUnitStatus.ACTIF));
+		final List<Ranged<RegDate>> burRegistrationDate = new ArrayList<>();
+		burRegistrationDate.add(new Ranged<>(refDate, null, refDate.getOneDayBefore()));
+		final OrganisationLocation.RCEntBURData bur = new OrganisationLocation.RCEntBURData(burLocalUnitStatus, burRegistrationDate);
+
+		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, bur, identifiers, additionalName, typeOfLocation, legalForm, municipality, null, function, null, null, replacedBy, inReplacementOf);
 
 		// Conversion
 		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
@@ -142,7 +151,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		assertEquals("Ma boîte", site.getNom().get(0).getPayload());
 		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
 		assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNumeroOfsAutoriteFiscale());
-		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusInscription().get(0).getPayload());
+		assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusREE().get(0).getPayload());
 		assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
 
 		assertTrue(site.getDonneesRC().getCapital().isEmpty());

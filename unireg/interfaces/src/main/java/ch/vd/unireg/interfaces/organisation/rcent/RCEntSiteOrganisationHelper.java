@@ -6,10 +6,13 @@ import ch.vd.evd0022.v3.Capital;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.DonneesREE;
+import ch.vd.unireg.interfaces.organisation.data.DonneesREERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverters;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.BurLocalUnitStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.BusinessPublicationConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalPredicate;
@@ -41,11 +44,13 @@ public class RCEntSiteOrganisationHelper {
 	private static final UidRegisterTypeOfOrganisationConverter UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER = new UidRegisterTypeOfOrganisationConverter();
 	private static final UidRegisterRaisonDeRadiationRegistreIDEConverter UID_REGISTER_LIQUIDATION_REASON_CONVERTER = new UidRegisterRaisonDeRadiationRegistreIDEConverter();
 	private static final Predicate<Capital> CAPITAL_PREDICATE = new CapitalPredicate();
+	private static final BurLocalUnitStatusConverter BUR_STATUS_CONVERTER = new BurLocalUnitStatusConverter();
 
 	public static SiteOrganisationRCEnt get(OrganisationLocation rcEntLocation, ServiceInfrastructureRaw infraService) {
 
 		final OrganisationLocation.RCEntRCData rc = rcEntLocation.getRc();
 		final OrganisationLocation.RCEntUIDData uid = rcEntLocation.getUid();
+		final OrganisationLocation.RCEntBURData bur = rcEntLocation.getBur();
 
 		return new SiteOrganisationRCEnt(
 				rcEntLocation.getCantonalId(),
@@ -58,6 +63,7 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convertAndMap(rcEntLocation.getFunction(), FUNCTION_CONVERTER),
 				createDonneesRC(rc),
 				createDonneesIDE(uid),
+				createDonneesREE(bur),
 				RCEntHelper.convertAndMapDerange(rcEntLocation.getBusinessPublication(), BUSINESS_PUBLICATION_CONVERTER),
 				RCEntHelper.convert(rcEntLocation.getUidReplacedBy()),
 				RCEntHelper.convert(rcEntLocation.getUidInReplacementOf()),
@@ -89,6 +95,13 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convertAndMap(uid.getTypeOfOrganisation(), UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER),
 				RCEntHelper.convertAndDerange(uid.getEffectiveAddress(), ADDRESS_EFFECIVE_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getLiquidationReason(), UID_REGISTER_LIQUIDATION_REASON_CONVERTER)
+		);
+	}
+
+	private static DonneesREE createDonneesREE(OrganisationLocation.RCEntBURData bur) {
+		return new DonneesREERCEnt(
+				RCEntHelper.convertAndMap(bur.getBurLocalUnitStatus(), BUR_STATUS_CONVERTER),
+				RCEntHelper.convert(bur.getBurRegistrationDate())
 		);
 	}
 }

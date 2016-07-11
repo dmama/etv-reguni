@@ -132,4 +132,6 @@ public interface SiteOrganisation {
 	 * @return true si le site est radié de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isRadieIDE(RegDate date);
+
+	DonneesREE getDonneesREE();
 }

@@ -54,14 +54,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, List<PublicationBusiness>> publicationsBusiness = new TreeMap<>();
 	private final MockDonneesRegistreIDE donneesRegistreIDE;
 	private final MockDonneesRC donneesRC;
+	private final MockDonneesREE donneesREE;
 	private final NavigableMap<RegDate, Long> ideRemplacePar = new TreeMap<>();
 	private final NavigableMap<RegDate, Long> ideEnRemplacementDe = new TreeMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
-	public MockSiteOrganisation(long numeroSite, MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC) {
+	public MockSiteOrganisation(long numeroSite, MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC, MockDonneesREE donneesREE) {
 		this.numeroSite = numeroSite;
 		this.donneesRegistreIDE = donneesRegistreIDE;
 		this.donneesRC = donneesRC;
+		this.donneesREE = donneesREE;
 	}
 
 	public void changeNom(RegDate date, String nouveauNom) {
@@ -189,6 +191,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public MockDonneesREE getDonneesREE() {
+		return donneesREE;
+	}
+
+	@Override
 	public List<Domicile> getDomiciles() {
 		final List<DateRanged<Pair<TypeAutoriteFiscale, Integer>>> brutto = MockOrganisationHelper.getHisto(domicile);
 		final List<Domicile> domiciles = new ArrayList<>(brutto.size());
@@ -225,7 +232,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscription(), date);
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscriptionREE(), date);
 	}
 
 	@Override

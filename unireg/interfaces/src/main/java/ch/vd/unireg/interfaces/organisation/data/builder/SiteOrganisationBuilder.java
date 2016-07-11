@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.DonneesREE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -21,6 +22,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	public DonneesRC rc;
 	public DonneesRegistreIDE ide;
+	public DonneesREE ree;
 
 	private final long numeroSite;
 	private Map<String, List<DateRanged<String>>> identifiants;
@@ -41,7 +43,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	@NotNull
 	public SiteOrganisationRCEnt build() {
-		return new SiteOrganisationRCEnt(numeroSite, identifiants, nom, nomAdditionnel, typesDeSite, formeLegale, domiciles, fonction, rc, ide, null, remplacePar, enRemplacementDe, transfereA, transferDe);
+		return new SiteOrganisationRCEnt(numeroSite, identifiants, nom, nomAdditionnel, typesDeSite, formeLegale, domiciles, fonction, rc, ide, ree, null, remplacePar, enRemplacementDe, transfereA, transferDe);
 	}
 
 	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -106,6 +108,11 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	public SiteOrganisationBuilder withIde(@NotNull DonneesRegistreIDE ide) {
 		this.ide = ide;
+		return this;
+	}
+
+	public SiteOrganisationBuilder withRee(@NotNull DonneesREE ree) {
+		this.ree = ree;
 		return this;
 	}
 

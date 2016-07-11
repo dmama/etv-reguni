@@ -93,14 +93,13 @@ public class MockDonneesRC implements DonneesRC {
 		MockOrganisationHelper.addRangedData(capital, dateDebut, dateFin, nouveauCapital);
 	}
 
-	@Override
-	public List<DateRanged<StatusInscriptionRC>> getStatusInscription() {
+	public List<DateRanged<StatusInscriptionRC>> getStatusREE() {
 		return MockOrganisationHelper.getHisto(statusInscription);
 	}
 
 	@Override
 	public StatusInscriptionRC getStatusInscription(RegDate date) {
-		return OrganisationHelper.valueForDate(getStatusInscription(), date);
+		return OrganisationHelper.valueForDate(getStatusREE(), date);
 	}
 
 	public void changeStatusInscription(RegDate date, StatusInscriptionRC nouveauStatusInscription) {
@@ -129,8 +128,7 @@ public class MockDonneesRC implements DonneesRC {
 		MockOrganisationHelper.addRangedData(raisonDeDissolutionVd, dateDebut, dateFin, nouvelleRaisonDeDissolution);
 	}
 
-	@Override
-	public List<DateRanged<RegDate>> getDateInscription() {
+	public List<DateRanged<RegDate>> getDateInscriptionREE() {
 		return MockOrganisationHelper.getHisto(dateInscription);
 	}
 
@@ -144,7 +142,7 @@ public class MockDonneesRC implements DonneesRC {
 
 	@Override
 	public RegDate getDateInscription(RegDate date) {
-		return OrganisationHelper.valueForDate(getDateInscription(), date);
+		return OrganisationHelper.valueForDate(getDateInscriptionREE(), date);
 	}
 
 	@Override

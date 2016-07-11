@@ -35,6 +35,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	public final DonneesRC rc;
 	public final DonneesRegistreIDE ide;
+	public final DonneesREE ree;
 
 	private final Map<RegDate, List<PublicationBusiness>> publications;
 
@@ -54,6 +55,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
 	                             DonneesRC rc,
 	                             DonneesRegistreIDE ide,
+	                             DonneesREE ree,
 	                             Map<RegDate, List<PublicationBusiness>> publications,
 	                             List<DateRanged<Long>> ideRemplacePar,
 	                             List<DateRanged<Long>> ideEnRemplacementDe,
@@ -69,6 +71,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
 		this.rc = rc;
+		this.ree = ree;
 		this.publications = publications;
 		this.ide = ide;
 		this.typeDeSite = typeDeSite;
@@ -163,7 +166,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscription(), date);
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscriptionREE(), date);
 	}
 
 	@Override
@@ -264,5 +267,10 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	@Override
 	public boolean isRadieIDE(RegDate date) {
 		return OrganisationHelper.isRadieIDE(this, date);
+	}
+
+	@Override
+	public DonneesREE getDonneesREE() {
+		return ree;
 	}
 }
