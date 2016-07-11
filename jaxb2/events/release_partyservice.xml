@@ -6,7 +6,15 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources/event/party</directory>
-			<outputDirectory>messages</outputDirectory>
+			<outputDirectory>messages/party</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>*.xsd</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/event/infra</directory>
+			<outputDirectory>messages/infra</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
 				<include>*.xsd</include>
@@ -22,15 +30,29 @@
 		</fileSet>
 		<fileSet>
 			<directory>../ech/src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
+			<outputDirectory>ech</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
 				<include>*.xsd</include>
 			</includes>
+			<excludes>
+				<exclude>main.xsd</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>../common/src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
+			<outputDirectory>common</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>*.xsd</include>
+			</includes>
+			<excludes>
+				<exclude>main.xsd</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../infra/src/main/resources/infra</directory>
+			<outputDirectory>infra</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
 				<include>*.xsd</include>
