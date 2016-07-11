@@ -136,7 +136,7 @@
 
 			<!-- Bouton d'impression de duplicata -->
 			<authz:authorize ifAnyGranted="ROLE_QSNC_DUPLICATA">
-				<c:if test="${!depuisTache && !questionnaire.annule}">
+				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.duplicable}">
 					<unireg:buttonTo name="Duplicata" action="/qsnc/duplicata.do" method="post" params='{id:${questionnaire.id}}'/>
 				</c:if>
 			</authz:authorize>

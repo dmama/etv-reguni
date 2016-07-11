@@ -43,6 +43,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -171,6 +172,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 				questionnaire.setDateDebut(tacheATraiter.getDateDebut());
 				questionnaire.setDateFin(tacheATraiter.getDateFin());
 				questionnaire.setPeriode(pf);
+				questionnaire.setModeleDocument(pf.get(TypeDocument.QUESTIONNAIRE_SNC));
 				questionnaire.setNumero(getNewSequenceNumber(entreprise, pf.getAnnee()));
 				questionnaire.setTiers(entreprise);
 				final QuestionnaireSNC saved = hibernateTemplate.merge(questionnaire);

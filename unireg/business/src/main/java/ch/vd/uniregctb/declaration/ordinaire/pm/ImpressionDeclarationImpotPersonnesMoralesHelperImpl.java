@@ -40,11 +40,11 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
+import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -171,7 +171,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		for (ModeleFeuilleDocumentEditique annexe : annexes) {
 			if (annexe.getNombreFeuilles() > 0) {
 				final CTypeAnnexesDI feuille = new CTypeAnnexesDI();
-				feuille.setCodeBarreFeuille(buildCodeBarre(di, annexe));
+				feuille.setCodeBarreFeuille(buildCodeBarre(di, annexe, ServiceInfrastructureService.noOIPM));
 				feuille.setNombreFeuille(BigInteger.valueOf(annexe.getNombreFeuilles()));
 				feuille.setReferenceFeuille(MAP_ANNEXES_PM.get(annexe.getNoCADEV()));
 				document.getFeuilles().add(feuille);
@@ -183,7 +183,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		for (ModeleFeuilleDocumentEditique annexe : annexes) {
 			if (annexe.getNombreFeuilles() > 0) {
 				final CTypeAnnexesDIAPM feuille = new CTypeAnnexesDIAPM();
-				feuille.setCodeBarreFeuille(buildCodeBarre(di, annexe));
+				feuille.setCodeBarreFeuille(buildCodeBarre(di, annexe, ServiceInfrastructureService.noOIPM));
 				feuille.setNombreFeuille(BigInteger.valueOf(annexe.getNombreFeuilles()));
 				feuille.setReferenceFeuille(MAP_ANNEXES_APM.get(annexe.getNoCADEV()));
 				document.getFeuilles().add(feuille);
@@ -318,16 +318,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			di.setTitulaireCompte(pm.getTitulaireCompteBancaire());
 		}
 		di.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(declaration.getPeriode().getAnnee())));
-	}
-
-	private static String buildCodeBarre(DeclarationImpotOrdinairePM declaration, ModeleFeuilleDocumentEditique modele) {
-		return String.format("%04d%05d%04d%09d%02d%02d",
-		                     modele.getNoCADEV(),
-		                     modele.getNoFormulaireACI() != null ? modele.getNoFormulaireACI() : 0,
-		                     declaration.getPeriode().getAnnee(),
-		                     declaration.getTiers().getNumero(),
-		                     declaration.getNumero() % 100,
-		                     ServiceInfrastructureService.noOIPM);
 	}
 
 	private static String buildCodeRoutage(int codeSegment) {

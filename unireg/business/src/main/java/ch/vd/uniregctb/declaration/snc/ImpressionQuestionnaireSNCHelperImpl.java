@@ -1,14 +1,13 @@
 package ch.vd.uniregctb.declaration.snc;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
@@ -23,11 +22,14 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
+import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -65,14 +67,37 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			final String siege = getNomCommuneOuPays(ffp);
 			final String numCommune = ffp != null ? String.valueOf(ffp.getNumeroOfsAutoriteFiscale()) : StringUtils.EMPTY;
 			final String delaiRetourImprime = RegDateHelper.toIndexString(extractDelaiRetourImprime(questionnaire));
-			final CTypeAdresse adresseRetour = buildAdresse(infraService.getACIOIPM());
-			final XMLGregorianCalendar pf = XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee()));
 			final String codeRoutage = String.format("%d-%d", ServiceInfrastructureService.noOIPM, 0);    // TODO changer ce 0 en autre chose... mais quoi ?
-			return new CTypeQuestSNC(pf, adresseRetour, delaiRetourImprime, codeRoutage, siege, numCommune);
+			return new CTypeQuestSNC(XmlUtils.regdate2xmlcal(RegDate.get(questionnaire.getPeriode().getAnnee())),
+			                         buildAdresse(infraService.getACIOIPM()),
+			                         delaiRetourImprime,
+			                         codeRoutage,
+			                         siege,
+			                         numCommune,
+			                         buildCodeBarre(questionnaire, extractModeleFeuilleDocumentEditique(questionnaire), ServiceInfrastructureService.noOIPM));
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
+	}
+
+	private static ModeleFeuilleDocumentEditique extractModeleFeuilleDocumentEditique(QuestionnaireSNC questionnaire) {
+		final ModeleDocument md = questionnaire.getModeleDocument();
+		if (md == null) {
+			throw new IllegalArgumentException("Le questionnaire n'a pas de modèle de document associé.");
+		}
+
+		final Set<ModeleFeuilleDocument> feuilles = md.getModelesFeuilleDocument();
+		if (feuilles == null || feuilles.isEmpty()) {
+			throw new IllegalArgumentException("Le modèle de document des questionnaires SNC pour la PF " + md.getPeriodeFiscale().getAnnee() + " n'a pas de feuille associée.");
+		}
+
+		final ModeleFeuilleDocument feuille = feuilles.iterator().next();
+		if (feuille == null) {
+			throw new IllegalArgumentException("La feuille trouvée dans le modèle de document des questionnaires SNC pour la PF " + md.getPeriodeFiscale().getAnnee() + " est vide.");
+		}
+
+		return new ModeleFeuilleDocumentEditique(feuille, 1);
 	}
 
 	@NotNull

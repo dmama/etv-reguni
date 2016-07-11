@@ -53,6 +53,12 @@ public enum ModeleFeuille {
 	ANNEXE_148(148, 11118, "Annexe 04a", TypeDocument.DECLARATION_IMPOT_PM_BATCH, TypeDocument.DECLARATION_IMPOT_PM_LOCAL),
 	ANNEXE_149(149, 11119, "Annexe 04b", TypeDocument.DECLARATION_IMPOT_PM_BATCH, TypeDocument.DECLARATION_IMPOT_PM_LOCAL),
 
+	//
+	// Modèle pour le document QSNC
+	//
+
+	ANNEXE_280(280, 21025, "Questionnaire SNC", TypeDocument.QUESTIONNAIRE_SNC),
+
 	;
 
 	private static final Map<Integer, ModeleFeuille> byNoCADEV = buildMapByNoCADEV();

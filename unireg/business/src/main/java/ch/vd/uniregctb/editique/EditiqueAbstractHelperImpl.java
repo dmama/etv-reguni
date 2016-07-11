@@ -39,6 +39,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
+import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -133,6 +134,23 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	private static boolean isEnFaillite(Contribuable contribuable) {
 		final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
 		return dernierForPrincipal != null && dernierForPrincipal.getDateFin() != null && dernierForPrincipal.getMotifFermeture() == MotifFor.FAILLITE;
+	}
+
+	/**
+	 * Construit un code-à-barres compatible avec les nouveaux documents éditiques
+	 * @param declaration une déclaration
+	 * @param modele le modèle de document choisi
+	 * @param noCollectivite le numéro de la collectivité administrative qui doit faire partie du code-à-barres
+	 * @return le code à barres
+	 */
+	protected static String buildCodeBarre(DeclarationAvecNumeroSequence declaration, ModeleFeuilleDocumentEditique modele, int noCollectivite) {
+		return String.format("%04d%05d%04d%09d%02d%02d",
+		                     modele.getNoCADEV(),
+		                     modele.getNoFormulaireACI() != null ? modele.getNoFormulaireACI() : 0,
+		                     declaration.getPeriode().getAnnee(),
+		                     declaration.getTiers().getNumero(),
+		                     declaration.getNumero() % 100,
+		                     noCollectivite);
 	}
 
 	/**

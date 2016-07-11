@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.common;
+package ch.vd.uniregctb.editique;
 
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 

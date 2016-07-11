@@ -4,9 +4,9 @@ import java.util.List;
 
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public interface ImpressionDeclarationImpotPersonnesMoralesHelper extends EditiqueAbstractHelper {

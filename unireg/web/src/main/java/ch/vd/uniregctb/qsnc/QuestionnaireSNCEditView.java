@@ -10,11 +10,13 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 
-	private final boolean rappelable;
+	private final boolean rappelable;       // si on peut envoyer un rappel
+	private final boolean duplicable;       // si on peut en faire un duplicata
 
-	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, MessageSource messageSource, boolean allowedRappel) {
+	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, MessageSource messageSource, boolean allowedRappel, boolean allowedDuplicata) {
 		super(questionnaire, messageSource);
 		this.rappelable = allowedRappel && isRappelable(questionnaire);
+		this.duplicable = allowedDuplicata && isDuplicable(questionnaire);
 	}
 
 	private static TypeEtatDeclaration getDernierEtat(QuestionnaireSNC q) {
@@ -33,7 +35,15 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 		return isRappelable;
 	}
 
+	private static boolean isDuplicable(QuestionnaireSNC q) {
+		return q.getModeleDocument() != null;
+	}
+
 	public boolean isRappelable() {
 		return rappelable;
+	}
+
+	public boolean isDuplicable() {
+		return duplicable;
 	}
 }

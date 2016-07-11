@@ -65,6 +65,7 @@ import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.transaction.TransactionHelper;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -341,6 +342,7 @@ public class QuestionnaireSNCController {
 				questionnaire.setDateDebut(RegDate.get(view.getPeriodeFiscale(), 1, 1));
 				questionnaire.setDateFin(RegDate.get(view.getPeriodeFiscale(), 12, 31));
 				questionnaire.setPeriode(periodeFiscale);
+				questionnaire.setModeleDocument(periodeFiscale.get(TypeDocument.QUESTIONNAIRE_SNC));
 				questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
@@ -467,7 +469,8 @@ public class QuestionnaireSNCController {
 		// construction de la vue et affichage
 		final QuestionnaireSNCView view = new QuestionnaireSNCEditView(questionnaire,
 		                                                               messageSource,
-		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL));
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
+		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA));
 		model.addAttribute("questionnaire", view);
 		model.addAttribute("depuisTache", depuisTache);
 		return "qsnc/editer";
@@ -638,7 +641,7 @@ public class QuestionnaireSNCController {
 				checkEditRightOnEntreprise(entreprise);
 
 				// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
-				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, messageSource, true);
+				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, messageSource, true, false);
 				if (!view.isRappelable()) {
 					throw new ActionException("Le questionnaire SNC n'est pas dans un état 'rappelable'.");
 				}
