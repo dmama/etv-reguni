@@ -146,4 +146,58 @@ public class REEIgnoreTest extends AbstractEvenementOrganisationProcessorTest {
 		);
 	}
 
+	// SIFISC-19766 - Une forme juridique null est possible, dans le cas ou le RC et l'IDE ne sont pas impliqués.
+	@Test(timeout = 10000L)
+	public void testREEPureIgnoreePasDeFormeJuridique() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				MockOrganisation organisation =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Société de Jeunesse de Ballens", date(2016, 5, 20), null, null,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
+						                                           null, null, null, null, null);
+
+				addOrganisation(organisation);
+
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.REE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 5, 20), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+
+				                             Assert.assertEquals(String.format("L'organisation Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noOrganisation),
+				                                                 evt.getErreurs().get(1).getMessage());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
 }

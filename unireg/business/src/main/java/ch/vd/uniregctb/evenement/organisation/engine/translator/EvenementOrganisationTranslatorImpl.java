@@ -431,7 +431,8 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			}
 			StringBuilder champs = new StringBuilder();
 			FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
-			if (formeLegale == null) {
+			// SIFISC-19766 - Une forme juridique null est possible, dans le cas ou le RC et l'IDE ne sont pas impliqués.
+			if (formeLegale == null && (organisation.isInscritAuRC(dateEvenement) || organisation.isInscritIDE(dateEvenement))) {
 				champs.append("[legalForm] ");
 			}
 			for (SiteOrganisation site : organisation.getDonneesSites()) {
