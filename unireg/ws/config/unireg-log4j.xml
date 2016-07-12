@@ -156,7 +156,7 @@
 	</logger>
 
 	<root>
-		<level value="DEBUG" />
+		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />
 		<!-- appender-ref ref="CONSOLE" /-->
 	</root>
