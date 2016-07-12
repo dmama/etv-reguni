@@ -34,7 +34,7 @@ import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
@@ -124,7 +124,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	/**
 	 * Alimente la vue RecapPersonneUtilisateurView
 	 *
-	 * @param numeroPP
+	 * @param numeroTiers
 	 * @param noIndividuOperateur
 	 * @return
 	 * @throws ServiceInfrastructureException
@@ -132,18 +132,18 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException {
+	public RecapPersonneUtilisateurView get(Long numeroTiers, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException {
 		final RecapPersonneUtilisateurView recapPersonneUtilisateurView = new RecapPersonneUtilisateurView();
 
 		final UtilisateurView utilisateurView = utilisateurManager.get(noIndividuOperateur);
 		recapPersonneUtilisateurView.setUtilisateur(utilisateurView);
 
-		final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroPP);
-		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getPersonnePhysique(pp, true);
+		final Tiers tiers = tiersService.getTiers(numeroTiers);
+		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		recapPersonneUtilisateurView.setDossier(tiersGeneralView);
 
 		recapPersonneUtilisateurView.setType(TypeDroitAcces.INTERDICTION);
-		recapPersonneUtilisateurView.setNoDossier(numeroPP);
+		recapPersonneUtilisateurView.setNoDossier(numeroTiers);
 		recapPersonneUtilisateurView.setNoIndividuOperateur(noIndividuOperateur);
 
 		return recapPersonneUtilisateurView;

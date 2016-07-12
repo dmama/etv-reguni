@@ -6126,6 +6126,32 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
+	@Override
+	public RegDate getDateCreation(@NotNull Entreprise entreprise) {
+		// la date d'inscription RC (en provenance du civil)
+		final Organisation organisation = getOrganisation(entreprise);
+		if (organisation != null) {
+			final RegDate inscriptionRC = organisation.getSitePrincipal(null).getPayload().getDateInscriptionRC(null);
+			if (inscriptionRC != null) {
+				return inscriptionRC;
+			}
+		}
+
+		// pas de date d'inscription RC en provenance des données civiles... voyons si on trouve quelque chose dans les états de l'entreprise
+		final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
+		if (etats != null && !etats.isEmpty()) {
+			final Set<TypeEtatEntreprise> etatsInteressants = EnumSet.of(TypeEtatEntreprise.FONDEE, TypeEtatEntreprise.INSCRITE_RC);
+			for (EtatEntreprise etat : etats) {
+				if (etatsInteressants.contains(etat.getType())) {
+					return etat.getDateObtention();
+				}
+			}
+		}
+
+		// aucune date connue -> null
+		return null;
+	}
+
 	@Nullable
 	@Override
 	public String getNumeroIDE(@NotNull Entreprise entreprise) {

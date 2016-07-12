@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,6 +80,8 @@ public class DroitAccesController {
 	private static final String TYPE_DROIT_ACCES_NOM_MAP_NAME = "typesDroitAcces";
 	private static final String TYPES_RECHERCHE_NOM = "typesRechercheNom";
 	private static final String TYPE_OPERATION_MAP_NAME = "typesOperation";
+	private static final String TYPES_RECHERCHE_FJ_ENUM = "formesJuridiquesEnum";
+	private static final String TYPES_RECHERCHE_CAT_ENUM = "categoriesEntreprisesEnum";
 
 	private static final String LIST = "list";
 	private static final String COMMAND = "command";
@@ -171,7 +174,7 @@ public class DroitAccesController {
 				criteria.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(criteria.getNumeroAVS()));
 			}
 
-			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+			criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE, TiersCriteria.TypeTiers.ENTREPRISE));
 			try {
 				final List<TiersIndexedDataView> results = searchTiers(criteria);
 				model.addAttribute(LIST, results);
@@ -188,6 +191,8 @@ public class DroitAccesController {
 
 		model.addAttribute(COMMAND, criteria);
 		model.addAttribute(TYPES_RECHERCHE_NOM, tiersMapHelper.getMapTypeRechercheNom());
+		model.addAttribute(TYPES_RECHERCHE_FJ_ENUM, tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		model.addAttribute(TYPES_RECHERCHE_CAT_ENUM, tiersMapHelper.getMapCategoriesEntreprise());
 		return "acces/par-dossier/list-pp";
 	}
 
@@ -354,9 +359,9 @@ public class DroitAccesController {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(CsvHelper.COMMA);
-				b.append("NOM_PRENOM").append(CsvHelper.COMMA);
+				b.append("NOM_RAISON_SOCIALE").append(CsvHelper.COMMA);
 				b.append("LOCALITE").append(CsvHelper.COMMA);
-				b.append("DATE_NAISSANCE").append(CsvHelper.COMMA);
+				b.append("DATE_NAISSANCE_INSC_RC").append(CsvHelper.COMMA);
 				b.append("PRE_EXISTANT_TYPE_ACCES").append(CsvHelper.COMMA);
 				b.append("PRE_EXISTANT_LECTURE_ECRITURE").append(CsvHelper.COMMA);
 				b.append("COPIE_TYPE_ACCES").append(CsvHelper.COMMA);
@@ -398,7 +403,7 @@ public class DroitAccesController {
 				bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 			}
 
-			bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
+			bean.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE, TiersCriteria.TypeTiers.ENTREPRISE));
 			try {
 				final List<TiersIndexedDataView> results = searchTiers(bean);
 				model.addAttribute(LIST, results);
@@ -419,6 +424,8 @@ public class DroitAccesController {
 
 		model.addAttribute(COMMAND, bean);
 		model.addAttribute(TYPES_RECHERCHE_NOM, tiersMapHelper.getMapTypeRechercheNom());
+		model.addAttribute(TYPES_RECHERCHE_FJ_ENUM, tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		model.addAttribute(TYPES_RECHERCHE_CAT_ENUM, tiersMapHelper.getMapCategoriesEntreprise());
 		return "acces/par-utilisateur/list-pp";
 	}
 

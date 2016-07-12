@@ -49,8 +49,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 
 	private Long ancienNumeroSourcier;
 
-	private Set<DroitAcces> droitsAccesAppliques;
-
 	private RegDate dateDeces;
 
 	/**
@@ -242,16 +240,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 
 	public void setAncienNumeroSourcier(Long theAncienNumeroSourcier) {
 		ancienNumeroSourcier = theAncienNumeroSourcier;
-	}
-
-	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_DA_TRS_ID")
-	public Set<DroitAcces> getDroitsAccesAppliques() {
-		return droitsAccesAppliques;
-	}
-
-	public void setDroitsAccesAppliques(Set<DroitAcces> droitsAccesAppliques) {
-		this.droitsAccesAppliques = droitsAccesAppliques;
 	}
 
 	@Transient

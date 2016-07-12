@@ -2105,6 +2105,12 @@ public interface TiersService {
 	SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement);
 
 	/**
+	 * @param entreprise une entreprise
+	 * @return la date d'inscription au RC (ou, à défaut, la date de fondation) de l'entreprise
+	 */
+	RegDate getDateCreation(@NotNull Entreprise entreprise);
+
+	/**
 	 * Renvoie le dernier numéro IDE associé à une entreprise dans le registre civil ou fiscal.
 	 * Le registre civil est prépondérant.
 	 *

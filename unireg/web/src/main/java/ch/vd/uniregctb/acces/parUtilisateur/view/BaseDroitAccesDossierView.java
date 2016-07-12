@@ -6,6 +6,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -28,7 +29,15 @@ public class BaseDroitAccesDossierView {
 		}
 
 		this.prenomNom = tiersService.getNomRaisonSociale(ctb);
-		this.dateNaissance = ctb instanceof PersonnePhysique ? tiersService.getDateNaissance((PersonnePhysique) ctb) : null;
+		if (ctb instanceof PersonnePhysique) {
+			this.dateNaissance = tiersService.getDateNaissance((PersonnePhysique) ctb);
+		}
+		else if (ctb instanceof Entreprise) {
+			this.dateNaissance = tiersService.getDateCreation((Entreprise) ctb);
+		}
+		else {
+			this.dateNaissance = null;
+		}
 	}
 
 	public Long getNumeroCTB() {

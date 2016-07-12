@@ -17,19 +17,19 @@ public interface DossierEditRestrictionManager {
 
 	/**
 	 * Alimente la vue du controller
-	 * @param numeroPP
+	 * @param numeroTiers
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public DossierEditRestrictionView get(Long numeroPP)  throws ServiceInfrastructureException;
+	DossierEditRestrictionView get(Long numeroTiers)  throws ServiceInfrastructureException;
 
 	/**
 	 * Persiste un droit d'acces
 	 * @param droitAccesView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(DroitAccesView droitAccesView) throws DroitAccesException;
+	void save(DroitAccesView droitAccesView) throws DroitAccesException;
 
 	/**
 	 * Annule une restriction
@@ -37,5 +37,5 @@ public interface DossierEditRestrictionManager {
 	 * @param idRestriction
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerRestriction(Long idRestriction) throws DroitAccesException ;
+	void annulerRestriction(Long idRestriction) throws DroitAccesException ;
 }

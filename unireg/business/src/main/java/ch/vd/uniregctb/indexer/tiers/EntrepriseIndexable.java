@@ -1,12 +1,8 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -89,7 +85,7 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		}
 
 		// la date de création / d'inscription RC
-		data.addDateNaissance(extractDateCreation());
+		data.addDateNaissance(tiersService.getDateCreation(tiers));
 
 		// le siège (= domicile de l'établissement principal)
 		final List<DomicileHisto> sieges = tiersService.getSieges(tiers, false);
@@ -155,32 +151,6 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		}
 		data.setCorporationSplit(isSplit);
 		data.setCorporationTransferedPatrimony(hasTransferedPatrimony);
-	}
-
-	@Nullable
-	private RegDate extractDateCreation() {
-
-		// la date d'inscription RC (en provenance du civil)
-		if (organisation != null) {
-			final RegDate inscriptionRC = organisation.getSitePrincipal(null).getPayload().getDateInscriptionRC(null);
-			if (inscriptionRC != null) {
-				return inscriptionRC;
-			}
-		}
-
-		// pas de date d'inscription RC en provenance des données civiles... voyons si on trouve quelque chose dans les états de l'entreprise
-		final List<EtatEntreprise> etats = tiers.getEtatsNonAnnulesTries();
-		if (etats != null && !etats.isEmpty()) {
-			final Set<TypeEtatEntreprise> etatsInteressants = EnumSet.of(TypeEtatEntreprise.FONDEE, TypeEtatEntreprise.INSCRITE_RC);
-			for (EtatEntreprise etat : etats) {
-				if (etatsInteressants.contains(etat.getType())) {
-					return etat.getDateObtention();
-				}
-			}
-		}
-
-		// rien trouvé...
-		return null;
 	}
 
 	@Override

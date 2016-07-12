@@ -4,7 +4,7 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title">
-		<fmt:message key="title.acces.utilisateur.recherche.pp" />
+		<fmt:message key="title.acces.dossier.recherche.pp.ou.entreprise" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
@@ -35,18 +35,18 @@
 		</form:form>
 
 		<display:table 	name="list" id="row" pagesize="25" requestURI="/acces/par-utilisateur/ajouter-restriction.do" class="display" sort="list">
-			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
-			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
-			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
-			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
+			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.dossier.trouve" /></span></display:setProperty>
+			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.dossier.trouve" /></span></display:setProperty>
+			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.dossiers.trouves" /></span></display:setProperty>
+			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.dossiers.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
 				<a href="recap.do?numero=${row.numero}&noIndividuOperateur=${command.noIndividuOperateur}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.prenom.nom" >
+			<display:column sortable ="true" titleKey="label.nom.raison" >
 				<c:out value="${row.nom1}" />
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissanceInscriptionRC">
+			<display:column sortable ="true" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissanceInscriptionRC">
 				<unireg:date date="${row.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column property="localiteOuPays" sortable ="true" titleKey="label.localitePays"  />

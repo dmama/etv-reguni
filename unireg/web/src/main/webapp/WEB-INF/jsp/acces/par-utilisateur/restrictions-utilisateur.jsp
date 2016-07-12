@@ -35,9 +35,9 @@
 				<table class="display conflicts">
 					<tr>
 						<th rowspan="2"><fmt:message key="label.numero.contribuable"/></th>
-						<th rowspan="2"><fmt:message key="label.prenom.nom"/></th>
+						<th rowspan="2"><fmt:message key="label.nom.raison"/></th>
 						<th rowspan="2"><fmt:message key="label.localite"/></th>
-						<th rowspan="2"><fmt:message key="label.date.naissance"/></th>
+						<th rowspan="2"><fmt:message key="label.date.naissance.ou.rc"/></th>
 						<th colspan="2" style="text-align: center;"><fmt:message key="label.droit.acces.preexistant"/></th>
 						<th colspan="2" style="text-align: center;"><fmt:message key="label.droit.acces.souhaite"/></th>
 					</tr>
@@ -160,13 +160,13 @@
 				<display:column sortable ="false" titleKey="label.date.fin">
 					<unireg:regdate regdate="${restriction.dateFin}" format="dd.MM.yyyy"/>
 				</display:column>
-				<display:column sortable ="false" titleKey="label.prenom.nom">
+				<display:column sortable ="false" titleKey="label.nom.raison">
 					<c:out value="${restriction.prenomNom}" />
 				</display:column>
 				<display:column sortable ="false" titleKey="label.localite">
 					<c:out value="${restriction.localite}" />
 				</display:column>
-				<display:column sortable ="false" titleKey="label.date.naissance">
+				<display:column sortable ="false" titleKey="label.date.naissance.ou.rc">
 					<unireg:date date="${restriction.dateNaissance}"/>
 				</display:column>
 				<display:column sortable ="false" titleKey="label.lecture.seule">

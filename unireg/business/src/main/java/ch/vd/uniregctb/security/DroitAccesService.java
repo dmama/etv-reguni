@@ -2,8 +2,8 @@ package ch.vd.uniregctb.security;
 
 import java.util.List;
 
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 
@@ -30,7 +30,7 @@ public interface DroitAccesService {
 	 * @param destination dossier auquel les droits d'accès doivent être ajoutés
 	 * @throws DroitAccesException en cas de conflit entre les droits existant sur le dossier de destination et ceux sur le dossier source
 	 */
-	void copieDroitsAcces(PersonnePhysique source, PersonnePhysique destination) throws DroitAccesException;
+	void copieDroitsAcces(Contribuable source, Contribuable destination) throws DroitAccesException;
 
 	/**
 	 * Copie les droits d'accès d'un opérateur à un autre.

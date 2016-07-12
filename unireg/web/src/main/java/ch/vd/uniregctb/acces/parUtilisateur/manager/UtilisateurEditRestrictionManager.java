@@ -23,20 +23,20 @@ public interface UtilisateurEditRestrictionManager {
      * @throws ServiceInfrastructureException
      */
     @Transactional(readOnly = true)
-    public UtilisateurEditRestrictionView get(long noIndividuOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException;
+    UtilisateurEditRestrictionView get(long noIndividuOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException;
 
 
     /**
      * Alimente la vue RecapPersonneUtilisateurView
      *
-     * @param numeroPP
+     * @param numeroTiers
      * @param noIndividuOperateur
      * @return
      * @throws ServiceInfrastructureException
      * @throws AdressesResolutionException
      */
     @Transactional(readOnly = true)
-    public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException;
+    RecapPersonneUtilisateurView get(Long numeroTiers, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException;
 
 
     /**
@@ -46,7 +46,7 @@ public interface UtilisateurEditRestrictionManager {
      */
 
     @Transactional(rollbackFor = Throwable.class)
-    public void annulerRestrictions(List<Long> listIdRestriction) throws DroitAccesException;
+    void annulerRestrictions(List<Long> listIdRestriction) throws DroitAccesException;
 
     /**
      * Annule toutes les restrictions
@@ -55,7 +55,7 @@ public interface UtilisateurEditRestrictionManager {
      */
 
     @Transactional(rollbackFor = Throwable.class)
-    public  void annulerToutesLesRestrictions(Long noIndividuOperateur);
+    void annulerToutesLesRestrictions(Long noIndividuOperateur);
     /**
      * Persiste le DroitAcces
      *
@@ -63,7 +63,7 @@ public interface UtilisateurEditRestrictionManager {
      * @throws DroitAccesException TODO
      */
     @Transactional(rollbackFor = Throwable.class)
-    public void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException;
+    void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException;
 
     /**
      * Demande l'export des droits d'accès d'un utilisateur
@@ -72,7 +72,6 @@ public interface UtilisateurEditRestrictionManager {
      * @return la demande d'extraction
      */
     @Transactional(readOnly = true)
-    public ExtractionJob exportListeDroitsAcces(Long operateurId);
-
+    ExtractionJob exportListeDroitsAcces(Long operateurId);
 
 }

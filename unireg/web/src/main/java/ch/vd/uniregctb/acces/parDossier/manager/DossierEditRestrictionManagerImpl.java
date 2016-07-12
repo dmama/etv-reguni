@@ -12,6 +12,8 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
@@ -19,8 +21,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
@@ -58,22 +60,20 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 
 	/**
 	 * Alimente la vue du controller
-	 * @param numeroPP
+	 * @param numeroTiers
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public DossierEditRestrictionView get(Long numeroPP) throws ServiceInfrastructureException {
-
-		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(numeroPP);
+	public DossierEditRestrictionView get(Long numeroTiers) throws ServiceInfrastructureException {
 
 		final DossierEditRestrictionView dossierEditRestrictionView = new DossierEditRestrictionView();
-
-		final TiersGeneralView dossier = tiersGeneralManager.getPersonnePhysique(pp, true);
+		final Contribuable tiers = (Contribuable) tiersDAO.get(numeroTiers);
+		final TiersGeneralView dossier = tiersGeneralManager.getTiers(tiers, true);
 		dossierEditRestrictionView.setDossier(dossier);
 
-		final Set<DroitAcces> droitsAccesAppliques = pp.getDroitsAccesAppliques();
+		final Set<DroitAcces> droitsAccesAppliques = tiers.getDroitsAccesAppliques();
 		final List<DroitAccesView> droitsAccesView =  new ArrayList<>(droitsAccesAppliques.size());
 		for (DroitAcces droitAcces : droitsAccesAppliques) {
 			final DroitAccesView droitAccesView = new DroitAccesView();
@@ -92,17 +92,16 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 				droitAccesView.setPrenomNom(prenomNom);
 				droitAccesView.setVisaOperateur(operator.getCode());
 
-				String officeImpot = null;
+				String officeImpot;
 				try {
-					final List<CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
-					for (CollectiviteAdministrative collectiviteAdministrative : collectivitesAdministrative) {
-						if (officeImpot != null) {
-							officeImpot = officeImpot + ", " + collectiviteAdministrative.getNomCourt();
+					final List<CollectiviteAdministrative> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
+					final StringRenderer<CollectiviteAdministrative> nomsCourts = new StringRenderer<CollectiviteAdministrative>() {
+						@Override
+						public String toString(CollectiviteAdministrative ca) {
+							return ca.getNomCourt();
 						}
-						else {
-							officeImpot = collectiviteAdministrative.getNomCourt();
-						}
-					}
+					};
+					officeImpot = CollectionsUtils.toString(collectivitesAdministratives, nomsCourts, ", ", null);
 				}
 				catch (ServiceSecuriteException e) {
 					officeImpot = null;

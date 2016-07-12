@@ -13,7 +13,7 @@
 	</c:choose>
 </c:set>
 <c:choose>
-	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation'}">
+	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation' || typeRecherche == 'acces'}">
 		<c:set var="typeContribuableRecherche" value="ppoupm"/>       <%-- pm ou pp --%>
 	</c:when>
 	<c:when test="${typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise' || typeRecherche == 'transfertPatrimoine' || typeRecherche == 'reinscriptionRC'}">
@@ -171,7 +171,7 @@
 			</script>
 		</tr>
 	</c:if>
-	<c:if test="${typeRecherche == 'principale' || typeContribuableRecherche == 'pmonly'}">
+	<c:if test="${typeRecherche == 'principale' || typeContribuableRecherche != 'pponly'}">
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.ide" />&nbsp;:</td>
 			<td width="25%">

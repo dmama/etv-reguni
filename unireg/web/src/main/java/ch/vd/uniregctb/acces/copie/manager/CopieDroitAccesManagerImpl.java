@@ -20,8 +20,8 @@ import ch.vd.uniregctb.security.DroitAccesConflit;
 import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.DroitAccesService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -97,9 +97,8 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 				String nomPrenom = null;
 				RegDate dateNaissance = null;
 				String npaLocalite = null;
-				if (tiers instanceof PersonnePhysique) {
-					final PersonnePhysique pp = (PersonnePhysique) tiers;
-					final BaseDroitAccesDossierView ppView = new BaseDroitAccesDossierView(pp, tiersService, adresseService);
+				if (tiers instanceof Contribuable) {
+					final BaseDroitAccesDossierView ppView = new BaseDroitAccesDossierView((Contribuable) tiers, tiersService, adresseService);
 					nomPrenom = ppView.getPrenomNom();
 					dateNaissance = ppView.getDateNaissance();
 					npaLocalite = ppView.getLocalite();

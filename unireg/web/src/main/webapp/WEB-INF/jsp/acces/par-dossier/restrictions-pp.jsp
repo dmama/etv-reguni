@@ -29,7 +29,7 @@
 		</authz:authorize>
 		<c:if test="${not empty command.restrictions}">
 			<display:table
-					name="command.restrictions" id="restriction" pagesize="10" 
+					name="command.restrictions" id="restriction" pagesize="10" sort="list"
 					requestURI="${url}"
 					class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			

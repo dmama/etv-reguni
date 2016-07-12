@@ -41,6 +41,7 @@ public abstract class Contribuable extends Tiers {
 
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 	private Set<DecisionAci> decisionsAci;
+	private Set<DroitAcces> droitsAccesAppliques;
 
 	public Contribuable() {
 	}
@@ -81,6 +82,16 @@ public abstract class Contribuable extends Tiers {
 
 	public void setDateLimiteExclusionEnvoiDeclarationImpot(RegDate dateLimiteExclusionEnvoiDeclarationImpot) {
 		this.dateLimiteExclusionEnvoiDeclarationImpot = dateLimiteExclusionEnvoiDeclarationImpot;
+	}
+
+	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ForeignKey(name = "FK_DA_TRS_ID")
+	public Set<DroitAcces> getDroitsAccesAppliques() {
+		return droitsAccesAppliques;
+	}
+
+	public void setDroitsAccesAppliques(Set<DroitAcces> droitsAccesAppliques) {
+		this.droitsAccesAppliques = droitsAccesAppliques;
 	}
 
 	// ***********************************************

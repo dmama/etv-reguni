@@ -15,7 +15,9 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -57,24 +59,32 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		if (tiers == null) {
 			throw new DroitAccesException("Le tiers n°" + tiersId + " n'existe pas.");
 		}
-		if (!(tiers instanceof PersonnePhysique)) {
-			throw new DroitAccesException("Le tiers n°" + tiersId + " n'est pas une personne physique.");
-		}
-
-		return ajouteDroitAcces(operateurId, (PersonnePhysique) tiers, type, niveau, aujourdhui, null);
+		checkTiers(tiers);
+		return ajouteDroitAcces(operateurId, (Contribuable) tiers, type, niveau, aujourdhui, null);
 	}
 
 	/**
-	 * Crée un nouveau droit d'accès sur le dossier de la personne physique donnée, ou adapte un droit existant si possible
-	 * @param ppSource dossier source des droits d'accès
-	 * @param ppDestination dossier auquel les droits d'accès doivent être ajoutés
+	 * Vérifie que le tiers est soit une personne physique soit une entreprise
+	 * @param tiers tiers à tester
+	 * @throws DroitAccesException si le tiers n'est ni une personne physique ni une entreprise
+	 */
+	private static void checkTiers(Tiers tiers) throws DroitAccesException {
+		if (!(tiers instanceof PersonnePhysique) && !(tiers instanceof Entreprise)) {
+			throw new DroitAccesException("Le tiers n°" + tiers.getNumero() + " n'est ni une personne physique ni une entreprise.");
+		}
+	}
+
+	/**
+	 * Crée un nouveau droit d'accès sur le dossier du contribuable donné, ou adapte un droit existant si possible
+	 * @param ctbSource dossier source des droits d'accès
+	 * @param ctbDestination dossier auquel les droits d'accès doivent être ajoutés
 	 * @throws DroitAccesException en cas de conflit entre les droits existant sur le dossier de destination et ceux sur le dossier source
 	 */
 	@Override
-	public void copieDroitsAcces(final PersonnePhysique ppSource, final PersonnePhysique ppDestination) throws DroitAccesException {
-
-		final Set<DroitAcces> droitsSource = ppSource.getDroitsAccesAppliques();
-		final Set<DroitAcces> droitsDestination = ppDestination.getDroitsAccesAppliques();
+	public void copieDroitsAcces(final Contribuable ctbSource, final Contribuable ctbDestination) throws DroitAccesException {
+		checkTiers(ctbDestination);
+		final Set<DroitAcces> droitsSource = ctbSource.getDroitsAccesAppliques();
+		final Set<DroitAcces> droitsDestination = ctbDestination.getDroitsAccesAppliques();
 		final RegDate aujourdhui = RegDate.get();
 
 		copieDroitsAcces(droitsSource, droitsDestination, aujourdhui, new CopieDroitCallback() {
@@ -85,7 +95,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 
 			@Override
 			public void fillDestinationContext(DroitAcces droit) {
-				droit.setTiers(ppDestination);
+				droit.setTiers(ctbDestination);
 			}
 
 			@Override
@@ -157,14 +167,14 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 * Crée une nouvelle instance de DroitAcces non-annulée
 	 * @return la nouvelle instance déjà sauvegardée
 	 */
-	private DroitAcces ajouteDroitAcces(long operateurId, PersonnePhysique pp, TypeDroitAcces type, Niveau niveau, RegDate dateDebut, RegDate dateFin) {
+	private DroitAcces ajouteDroitAcces(long operateurId, Contribuable ctb, TypeDroitAcces type, Niveau niveau, RegDate dateDebut, RegDate dateFin) {
 		final DroitAcces droitAcces = new DroitAcces();
 		droitAcces.setDateDebut(dateDebut);
 		droitAcces.setDateFin(dateFin);
 		droitAcces.setNiveau(niveau);
 		droitAcces.setType(type);
 		droitAcces.setNoIndividuOperateur(operateurId);
-		droitAcces.setTiers(pp);
+		droitAcces.setTiers(ctb);
 		return droitAccesDAO.save(droitAcces);
 	}
 
