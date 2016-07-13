@@ -363,7 +363,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper
 		bvrstd.setPrefixe(prefixeBVRST);
 		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + ' ' + lr.getPeriode().getAnnee().toString());
 		bvrstd.setVersPourLigne1("Département des finances");
-		bvrstd.setVersPourLigne2("Administration des impôts");
+		bvrstd.setVersPourLigne2("Administration cantonale des impôts");
 		bvrstd.setVersPourLigne3("");
 		bvrstd.setVersPourNpaLoc("1014 Lausanne");
 		bvrstd.setLigneReference(noReference);
