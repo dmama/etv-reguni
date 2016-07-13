@@ -370,11 +370,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	}
 
 	@Override
-	public void onPersonneMoraleChange(long id) {
-		// rien à faire ici
-	}
-
-	@Override
 	public void onDroitAccessChange(long tiersId) {
 		// Supprime tous les éléments cachés sur le tiers spécifié.
 		final List<?> keys = cache.getKeys();

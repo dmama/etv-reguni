@@ -173,10 +173,6 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public void onPersonneMoraleChange(long id) {
-		}
-
-		@Override
 		public void onDroitAccessChange(long ppId) {
 			droitsChanged.add(ppId);
 		}

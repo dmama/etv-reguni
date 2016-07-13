@@ -37,15 +37,6 @@ public interface DataEventListener {
 	void onIndividuChange(long id);
 
 	/**
-	 * Cette méthode est appelée lorsqu'une personne morale (la partie civile d'une entreprise) a été ajouté/modifié dans le registre PM.
-	 * <p/>
-	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
-	 *
-	 * @param id le numéro de la personne morale
-	 */
-	void onPersonneMoraleChange(long id);
-
-	/**
 	 * Cette méthode est appelée lorsqu'un droit d'accès va être ajouté/modifié dans la base de données.
 	 * <p/>
 	 * Note: toute exception levée durant l'exécution du callback sera ignorée.

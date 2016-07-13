@@ -57,11 +57,6 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public void onPersonneMoraleChange(long id) {
-
-		}
-
-		@Override
 		public void onDroitAccessChange(long ppId) {
 
 		}

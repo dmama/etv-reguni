@@ -24,7 +24,6 @@ import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.data.v1.PmChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -61,7 +60,6 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		addToMap(map, DroitAccesChangeEvent.class, new DroitAccesChangeEventHandler());
 		addToMap(map, IndividuChangeEvent.class, new IndividuChangeEventHandler());
 		addToMap(map, TiersChangeEvent.class, new TiersChangeEventHandler());
-		addToMap(map, PmChangeEvent.class, new PmChangeEventHandler());
 		addToMap(map, RelationChangeEvent.class, new RelationChangeEventHandler());
 		return map;
 	}
@@ -117,16 +115,6 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				LOGGER.debug("Réception d'un événement db de changement sur le tiers n°" + event.getId());
 			}
 			dataEventService.onTiersChange(event.getId());
-		}
-	}
-
-	private final class PmChangeEventHandler implements Handler<PmChangeEvent> {
-		@Override
-		public void onEvent(PmChangeEvent event) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur la PM n°" + event.getId());
-			}
-			dataEventService.onPersonneMoraleChange(event.getId());
 		}
 	}
 

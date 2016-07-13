@@ -9,7 +9,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 public class MockDataEventService implements DataEventService {
 
 	public final List<Long> changedTiers = new ArrayList<>();
-	public final List<Long> changedPMs = new ArrayList<>();
 
 	@Override
 	public void register(DataEventListener listener) {
@@ -18,7 +17,6 @@ public class MockDataEventService implements DataEventService {
 
 	public void clear() {
 		changedTiers.clear();
-		changedPMs.clear();
 	}
 
 	@Override
@@ -33,11 +31,6 @@ public class MockDataEventService implements DataEventService {
 	@Override
 	public void onOrganisationChange(long id) {
 
-	}
-
-	@Override
-	public void onPersonneMoraleChange(long id) {
-		changedPMs.add(id);
 	}
 
 	@Override

@@ -418,7 +418,14 @@ public class ForsController {
 
 		tiersService.annuleForFiscal(forFiscal);
 
-		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
+		// [SIFISC-19956] si le tiers est maintenant "désactivé", le droit de modification des fors n'est plus
+		// -> rien ne sert alors d'aller sur la page d'édition des fors, cela ne mène à rien...
+		if (tiers.isDesactive(null)) {
+			return "redirect:/tiers/visu.do?id=" + tiers.getId();
+		}
+		else {
+			return "redirect:/fiscal/edit.do?id=" + tiers.getId() + buildHighlightForParam(forFiscal);
+		}
 	}
 
 	@RequestMapping(value = "/principal/editModeImposition.do", method = RequestMethod.GET)

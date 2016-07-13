@@ -4,11 +4,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.w3c.dom.Document;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -21,14 +26,13 @@ import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
-import ch.vd.unireg.xml.event.data.v1.PmChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.Relationship;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
- * Bean qui envoie les événements de modification de données comme messages JSM.
+ * Bean qui envoie les événements de modification de données comme messages JMS.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -44,6 +48,138 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private JAXBContext jaxbContext;
+
+	/**
+	 * Container des données déjà émises dans la transaction courante
+	 * (histoire ne ne pas envoyer plusieurs messages identiques dans une même transaction)
+	 */
+	private ThreadLocal<Data> alreadySent = new ThreadLocal<Data>() {
+		@Override
+		protected Data initialValue() {
+			return new Data();
+		}
+	};
+
+	/**
+	 * Clé d'identification d'une relation entre tiers
+	 */
+	private static final class RelationshipKey implements Serializable {
+
+		private static final long serialVersionUID = -6472419012587666128L;
+
+		public final TypeRapportEntreTiers type;
+		public final long sujetId;
+		public final long objetId;
+
+		private RelationshipKey(TypeRapportEntreTiers type, long sujetId, long objetId) {
+			this.type = type;
+			this.sujetId = sujetId;
+			this.objetId = objetId;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final RelationshipKey that = (RelationshipKey) o;
+
+			if (objetId != that.objetId) return false;
+			if (sujetId != that.sujetId) return false;
+			if (type != that.type) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = type.hashCode();
+			result = 31 * result + (int) (sujetId ^ (sujetId >>> 32));
+			result = 31 * result + (int) (objetId ^ (objetId >>> 32));
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "RelationshipKey{" +
+					"type=" + type +
+					", sujetId=" + sujetId +
+					", objetId=" + objetId +
+					'}';
+		}
+	}
+
+	/**
+	 * Ids des entités changées pour lesquelles une notification a déjà été envoyée dans la transaction courante
+	 * (comme ces notifications ne sont de toute façon envoyées qu'à la fin de la transaction, rien de sert
+	 * de l'envoyer plusieurs fois...)
+	 */
+	private static class Data {
+
+		private final Set<Long> tiersChange = new HashSet<>();
+		private final Set<Long> individuChange = new HashSet<>();
+		private final Set<Long> organisationChange = new HashSet<>();
+		private final Set<Long> droitsAccesChange = new HashSet<>();
+		private final Set<RelationshipKey> relationshipChange = new HashSet<>();
+
+		public Data() {
+			// cleanup une fois la transaction terminée
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+				@Override
+				public void afterCompletion(int status) {
+					clear();
+				}
+			});
+		}
+
+		/**
+		 * @param id identifiant du tiers modifié
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme tiers modifié
+		 */
+		public boolean addTiersChange(Long id) {
+			return tiersChange.add(id);
+		}
+
+		/**
+		 * @param id identifiant de l'individu modifié
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme individu modifié
+		 */
+		public boolean addIndividuChange(Long id) {
+			return individuChange.add(id);
+		}
+
+		/**
+		 * @param id identifiant de l'organisation modifiée
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme organisation modifiée
+		 */
+		public boolean addOrganisationChange(Long id) {
+			return organisationChange.add(id);
+		}
+
+		/**
+		 * @param id identifiant du tiers dont les droits d'accès ont été modifiés
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme tiers modifié
+		 */
+		public boolean addDroitAccesChange(Long id) {
+			return droitsAccesChange.add(id);
+		}
+
+		/**
+		 * @param key identifiant de la relation entre tiers modifiée
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme relation modifiée
+		 */
+		public boolean addRelationshipChange(RelationshipKey key) {
+			return relationshipChange.add(key);
+		}
+
+		public void clear() {
+			tiersChange.clear();
+			individuChange.clear();
+			organisationChange.clear();
+			droitsAccesChange.clear();
+			relationshipChange.clear();
+		}
+	}
 
 	/**
 	 * for testing purpose
@@ -79,107 +215,148 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
+	private interface OnNotificationAction {
+		/**
+		 * @param data les données maintenues
+		 * @return <code>true</code> s'il s'agit d'un nouvel enregistrement (= première fois que l'on voit cette notification)
+		 */
+		boolean registerNotification(Data data);
+	}
+
+	/**
+	 * @param action action sur les données maintenues
+	 * @return la valeur de retour de l'action
+	 */
+	private boolean onNewNotification(OnNotificationAction action) {
+		final Data data = alreadySent.get();
+		return action.registerNotification(data);
+	}
+
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void onDroitAccessChange(long tiersId) {
-		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Emission d'un événement db de changement sur les droits d'accès du tiers n°" + tiersId);
+	public void onDroitAccessChange(final long tiersId) {
+		final OnNotificationAction action = new OnNotificationAction() {
+			@Override
+			public boolean registerNotification(Data data) {
+				return data.addDroitAccesChange(tiersId);
 			}
+		};
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement db de changement sur les droits d'accès du tiers n°" + tiersId);
+				}
 
-			final DroitAccesChangeEvent event = objectFactory.createDroitAccesChangeEvent();
-			event.setId(tiersId);
-			sendDataEvent(String.valueOf(tiersId), event);
-		}
-		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de changement de droit d'accès sur le tiers n°" + tiersId, e);
+				final DroitAccesChangeEvent event = objectFactory.createDroitAccesChangeEvent();
+				event.setId(tiersId);
+				sendDataEvent(String.valueOf(tiersId), event);
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un message de changement de droit d'accès sur le tiers n°" + tiersId, e);
+			}
 		}
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void onTiersChange(long id) {
-		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Emission d'un événement db de changement sur le tiers n°" + id);
+	public void onTiersChange(final long id) {
+		final OnNotificationAction action = new OnNotificationAction() {
+			@Override
+			public boolean registerNotification(Data data) {
+				return data.addTiersChange(id);
 			}
+		};
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement db de changement sur le tiers n°" + id);
+				}
 
-			final TiersChangeEvent event = objectFactory.createTiersChangeEvent();
-			event.setId(id);
-			sendDataEvent(String.valueOf(id), event);
-		}
-		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de changement du tiers n°" + id, e);
+				final TiersChangeEvent event = objectFactory.createTiersChangeEvent();
+				event.setId(id);
+				sendDataEvent(String.valueOf(id), event);
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un message de changement du tiers n°" + id, e);
+			}
 		}
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Emission d'un événement db de changement sur l'organisation n°" + id);
+	public void onOrganisationChange(final long id) {
+		final OnNotificationAction action = new OnNotificationAction() {
+			@Override
+			public boolean registerNotification(Data data) {
+				return data.addOrganisationChange(id);
 			}
+		};
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement db de changement sur l'organisation n°" + id);
+				}
 
-			final OrganisationChangeEvent event = objectFactory.createOrganisationChangeEvent();
-			event.setId(id);
-			sendDataEvent(String.valueOf(id), event);
-		}
-		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de changement de l'organisation n°" + id, e);
+				final OrganisationChangeEvent event = objectFactory.createOrganisationChangeEvent();
+				event.setId(id);
+				sendDataEvent(String.valueOf(id), event);
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un message de changement de l'organisation n°" + id, e);
+			}
 		}
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void onIndividuChange(long id) {
-		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Emission d'un événement db de changement sur l'individu n°" + id);
+	public void onIndividuChange(final long id) {
+		final OnNotificationAction action = new OnNotificationAction() {
+			@Override
+			public boolean registerNotification(Data data) {
+				return data.addIndividuChange(id);
 			}
+		};
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement db de changement sur l'individu n°" + id);
+				}
 
-			final IndividuChangeEvent event = objectFactory.createIndividuChangeEvent();
-			event.setId(id);
-			sendDataEvent(String.valueOf(id), event);
-		}
-		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de changement de l'individu n°" + id, e);
-		}
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void onPersonneMoraleChange(long id) {
-		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Emission d'un événement db de changement sur la PM n°" + id);
+				final IndividuChangeEvent event = objectFactory.createIndividuChangeEvent();
+				event.setId(id);
+				sendDataEvent(String.valueOf(id), event);
 			}
-
-			final PmChangeEvent event = objectFactory.createPmChangeEvent();
-			event.setId(id);
-			sendDataEvent(String.valueOf(id), event);
-		}
-		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de changement de la PM n°" + id, e);
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un message de changement de l'individu n°" + id, e);
+			}
 		}
 	}
 
 	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		try {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Emission d'un événement db de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId);
+		final RelationshipKey key = new RelationshipKey(type, sujetId, objetId);
+		final OnNotificationAction action = new OnNotificationAction() {
+			@Override
+			public boolean registerNotification(Data data) {
+				return data.addRelationshipChange(key);
 			}
+		};
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement db de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId);
+				}
 
-			final Relationship relationship = getRelationshipMapping(type);
+				final Relationship relationship = getRelationshipMapping(type);
 
-			final RelationChangeEvent event = objectFactory.createRelationChangeEvent();
-			event.setRelationType(relationship);
-			event.setSujetId(sujetId);
-			event.setObjetId(objetId);
-			sendDataEvent(String.valueOf(event.hashCode()), event);
-		}
-		catch (Exception e) {
-			LOGGER.error("Impossible d'envoyer un message de load de la DB", e);
+				final RelationChangeEvent event = objectFactory.createRelationChangeEvent();
+				event.setRelationType(relationship);
+				event.setSujetId(sujetId);
+				event.setObjetId(objetId);
+				sendDataEvent(String.valueOf(event.hashCode()), event);
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un message de load de la DB", e);
+			}
 		}
 	}
 

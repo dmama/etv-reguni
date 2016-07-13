@@ -41,11 +41,6 @@ public class DataEventSlaveServiceListener implements DataEventListener, Initial
 	}
 
 	@Override
-	public void onPersonneMoraleChange(long id) {
-		slave.onPersonneMoraleChange(id);
-	}
-
-	@Override
 	public void onDroitAccessChange(long tiersId) {
 		slave.onDroitAccessChange(tiersId);
 	}

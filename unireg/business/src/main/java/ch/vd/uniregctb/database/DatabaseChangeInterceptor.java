@@ -2,7 +2,6 @@ package ch.vd.uniregctb.database;
 
 import java.io.Serializable;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.CallbackException;
@@ -31,12 +30,6 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
-	private final ThreadLocal<Data> data = new ThreadLocal<Data>() {
-		@Override
-		protected Data initialValue() {
-			return new Data();
-		}
-	};
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParent(ModificationInterceptor parent) {
@@ -49,91 +42,6 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	private static final class RelationshipKey implements Serializable {
-
-		private static final long serialVersionUID = -2980295059934269128L;
-
-		public final TypeRapportEntreTiers type;
-		public final long sujetId;
-		public final long objetId;
-
-		private RelationshipKey(TypeRapportEntreTiers type, long sujetId, long objetId) {
-			this.type = type;
-			this.sujetId = sujetId;
-			this.objetId = objetId;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final RelationshipKey that = (RelationshipKey) o;
-
-			if (objetId != that.objetId) return false;
-			if (sujetId != that.sujetId) return false;
-			if (type != that.type) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = type.hashCode();
-			result = 31 * result + (int) (sujetId ^ (sujetId >>> 32));
-			result = 31 * result + (int) (objetId ^ (objetId >>> 32));
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return "RelationshipKey{" +
-					"type=" + type +
-					", sujetId=" + sujetId +
-					", objetId=" + objetId +
-					'}';
-		}
-	}
-
-	/**
-	 * Ids des tiers changés qui ont déjà été notifiés.
-	 */
-	private static class Data {
-		private final Set<Long> tiersChange = new HashSet<>();
-		private final Set<Long> droitsAccesChange = new HashSet<>();
-		private final Set<RelationshipKey> relationshipChange = new HashSet<>();
-
-		public void addTiersChange(Long id) {
-			tiersChange.add(id);
-		}
-
-		public void addDroitAccesChange(Long id) {
-			droitsAccesChange.add(id);
-		}
-
-		public void addRelationshipChange(RelationshipKey key) {
-			relationshipChange.add(key);
-		}
-
-		public boolean containsTiersChange(Long id) {
-			return tiersChange.contains(id);
-		}
-
-		public boolean containsDroitAcessChange(Long id) {
-			return droitsAccesChange.contains(id);
-		}
-
-		public boolean containsRelationshipChange(RelationshipKey key) {
-			return relationshipChange.contains(key);
-		}
-
-		public void clear() {
-			tiersChange.clear();
-			droitsAccesChange.clear();
-			relationshipChange.clear();
-		}
 	}
 
 	@Override
@@ -188,42 +96,15 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	}
 
 	private void onTiersChange(Long id) {
-		final Data d = getThreadData();
-		if (!d.containsTiersChange(id)) { // on n'envoie un événement qu'une seule fois par transaction
-			dataEventService.onTiersChange(id);
-			d.addTiersChange(id);
-		}
+		dataEventService.onTiersChange(id);
 	}
 
 	private void onDroitAccesChange(Long id) {
-		final Data d = getThreadData();
-		if (!d.containsDroitAcessChange(id)) { // on n'envoie un événement qu'une seule fois par transaction
-			dataEventService.onDroitAccessChange(id);
-			d.addDroitAccesChange(id);
-		}
+		dataEventService.onDroitAccessChange(id);
 	}
 
 	private void onRelationshipChange(TypeRapportEntreTiers type, Long sujetId, Long objetId) {
-		final Data d = getThreadData();
-		final RelationshipKey key = new RelationshipKey(type, sujetId, objetId);
-		if (!d.containsRelationshipChange(key)) { // on n'envoie un événement qu'une seule fois par transaction
-			dataEventService.onRelationshipChange(type, sujetId, objetId);
-			d.addRelationshipChange(key);
-		}
-	}
-
-	/**
-	 * @return les données locales au thread courant. Ces données sont créées à la demande si nécessaire.
-	 */
-	private Data getThreadData() {
-		return data.get();
-	}
-
-	private void clearThreadData() {
-		final Data d = data.get();
-		if (d != null) {
-			d.clear();
-		}
+		dataEventService.onRelationshipChange(type, sujetId, objetId);
 	}
 
 	@Override
@@ -238,12 +119,12 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 	@Override
 	public void postTransactionCommit() {
-		clearThreadData();
+		// rien à faire ici
 	}
 
 	@Override
 	public void postTransactionRollback() {
-		clearThreadData();
+		// rien à faire ici
 	}
 
 	@Override
