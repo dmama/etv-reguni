@@ -479,7 +479,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page de recherche par dossier
 	@Test
 	public void testAccesList() throws Exception {
-		assertPage("/acces/par-dossier.do", "Accès par dossier - Recherche d'une personne physique");
+		assertPage("/acces/par-dossier.do", "Accès par dossier - Recherche d'une personne physique ou d'une entreprise");
 	}
 
 	// Page de restrictions de dossier
@@ -491,7 +491,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition de droit d'accès par dossier
 	@Test
 	public void testAccesEdit() throws Exception {
-		assertPage("/acces/par-dossier/ajouter-restriction.do?numero=12300002", "Création d'un droit d'accès sur la personne physique n°123.000.02");
+		assertPage("/acces/par-dossier/ajouter-restriction.do?numero=12300002", "Création d'un droit d'accès sur le contribuable n°123.000.02");
 	}
 
 	// Page de sélection d'un utilisateur
@@ -509,7 +509,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page de recherche d'un dossier pour un utilisateur
 	@Test
 	public void testAccesListPersonneUtilisateur() throws Exception {
-		assertPage("/acces/par-utilisateur/ajouter-restriction.do?noIndividuOperateur=582380", "Accès par utilisateur - Recherche d'une personne physique");
+		assertPage("/acces/par-utilisateur/ajouter-restriction.do?noIndividuOperateur=582380", "Accès par utilisateur - Recherche d'une personne physique ou d'une entreprise");
 	}
 
 	// Page de récapitulation de droit d'accès par dossier

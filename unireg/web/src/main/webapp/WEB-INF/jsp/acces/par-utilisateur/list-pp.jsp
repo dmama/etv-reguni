@@ -4,7 +4,7 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title">
-		<fmt:message key="title.acces.dossier.recherche.pp.ou.entreprise" />
+		<fmt:message key="title.acces.utilisateur.recherche.pp.ou.entreprise" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
