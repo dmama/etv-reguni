@@ -422,7 +422,99 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             Assert.assertEquals(0, evtsFiscaux.size()); // Pas de for secondaire créé
 
 				                             final String message = evt.getErreurs().get(4).getMessage();
-				                             Assert.assertEquals("Impossible de créer le for secondaire à Aubonne (VD) (ofs: 5422) débutant le 04.07.2015 en l’absence d'un for principal valide sur l'ensemble de la période. Veuillez le créer à la main après avoir corrigé le for principal.", message);
+				                             Assert.assertEquals(String.format("Calcul des fors secondaires entreprise n°%s: Impossible de calculer les fors secondaires en l'absence d'un for principal.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())), message);
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testNouvelEtablissementSecondaireForPrincipalCouvrePartiellement() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+		final Long noSite2 = noOrganisation + 2000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995");
+
+				MockSiteOrganisation nouveauSiteSecondaire = MockSiteOrganisationFactory.addSite(noSite2, org, date(2015, 7, 8), null, "Synergy Aubonne SA",
+				                                                                                 FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                 MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 7, 4),
+				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
+				addOrganisation(org);
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Etablissement etablissement = addEtablissement();
+				etablissement.setNumeroEtablissement(noSite);
+
+				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
+
+				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+				addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, date(2015, 9, 30),
+				                MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+
+				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementPrincipal);
+				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getRapportObjetValidAt(date(2010, 6, 24), TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE).getDateDebut());
+				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire);
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(2, evtsFiscaux.size()); // Pas de for secondaire créé
+
+				                             final String message = evt.getErreurs().get(5).getMessage();
+				                             Assert.assertEquals("Impossible de créer le for: la période de for fiscal secondaire à Aubonne (VD) (ofs: 5422) débutant le 01.10.2015 n'est pas couverte " +
+						                                                 "par un for principal valide. Veuillez créer ou ajuster le for à la main après avoir corrigé le for principal.", message);
 
 				                             return null;
 			                             }
@@ -950,6 +1042,263 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
 					                             Assert.assertEquals(date(2015, 7, 5), eff.getForFiscal().getDateDebut());
 					                             Assert.assertEquals(null, eff.getForFiscal().getDateFin());
+				                             }
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	/*
+	Simulation d'un hypothétique changement de genre d'impôt de REVENU/FORTUNE à BENEFICE/CAPITAL puis retour à REVENU/FORTUNE
+	 */
+	@Test(timeout = 10000L)
+	public void testDebutES2CommuneForPrincipalChgmtGenreImpot() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 1012021L;
+		final Long noSite = noOrganisation + 100;
+		final Long noSite2 = noOrganisation + 200;
+		final Long noSite3 = noOrganisation + 300;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.AUTRE, "CHE999999994");
+
+				MockSiteOrganisation nouveauSiteSecondaire = MockSiteOrganisationFactory.addSite(noSite2, org, date(2010, 6, 26), null, "Synergy Conception Aubonne SA",
+				                                                                                 FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                 MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
+				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.AUTRE, "CHE999999995");
+				nouveauSiteSecondaire.changeFormeLegale(date(2015, 1, 1), FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockDonneesRegistreIDE donneesRegistreIDE = nouveauSiteSecondaire.getDonneesRegistreIDE();
+				donneesRegistreIDE.changeTypeOrganisation(date(2015, 1, 1), TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+				MockSiteOrganisation nouveauSiteSecondaire2 = MockSiteOrganisationFactory.addSite(noSite3, org, date(2015, 7, 8), null, "Synergy Distribution Lausanne SA",
+				                                                                                  FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                                  MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 7, 5),
+				                                                                                  StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.AUTRE, "CHE999999996");
+				addOrganisation(org);
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+
+				Etablissement etablissement = addEtablissement();
+				etablissement.setNumeroEtablissement(noSite);
+
+				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
+
+				Etablissement etablissementSecondaire = addEtablissement();
+				etablissementSecondaire.setNumeroEtablissement(noSite2);
+
+				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
+
+				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				// Ici CHGT_MODE_IMPOSITION utilisé faute de mieux.
+				addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, date(2014, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2015, 7, 7), MotifFor.CHGT_MODE_IMPOSITION,
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+				addForPrincipal(entreprise, date(2015, 7, 8), MotifFor.DEBUT_EXPLOITATION, null, null,
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+
+				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementPrincipal);
+				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire);
+				                             final Etablissement etablissementSecondaire2 = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(1).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire2);
+
+				                             {
+					                             final List<ForFiscalSecondaire> forFiscalSecondaires = entreprise.getForsFiscauxSecondairesActifsSortedMapped().get(MockCommune.Aubonne.getNoOFS());
+					                             Assert.assertEquals(3, forFiscalSecondaires.size());
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondaires.get(0);
+						                             Assert.assertEquals(date(2010, 6, 24), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(date(2014, 12, 31), forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, forFiscalSecondaire.getMotifFermeture());
+						                             Assert.assertEquals(GenreImpot.REVENU_FORTUNE, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+					                             }
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondaires.get(1);
+						                             Assert.assertEquals(date(2015, 1, 1), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(date(2015, 7, 7), forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, forFiscalSecondaire.getMotifFermeture());
+						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+					                             }
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondaires.get(2);
+						                             Assert.assertEquals(date(2015, 7, 8), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(null, forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(null, forFiscalSecondaire.getMotifFermeture());
+						                             Assert.assertEquals(GenreImpot.REVENU_FORTUNE, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+					                             }
+				                             }
+				                             {
+					                             final List<ForFiscalSecondaire> forFiscalSecondaires = entreprise.getForsFiscauxSecondairesActifsSortedMapped().get(MockCommune.Lausanne.getNoOFS());
+					                             Assert.assertEquals(2, forFiscalSecondaires.size());
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondaires.get(0);
+						                             Assert.assertEquals(date(2015, 7, 5), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(date(2015, 7, 7), forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, forFiscalSecondaire.getMotifFermeture());
+						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+					                             }
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondaires.get(1);
+						                             Assert.assertEquals(date(2015, 7, 8), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(null, forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(null, forFiscalSecondaire.getMotifFermeture());
+						                             Assert.assertEquals(GenreImpot.REVENU_FORTUNE, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+					                             }
+				                             }
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(8, evtsFiscaux.size()); // 8 for secondaire créé, 6 fermé
+
+				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+					                             @Override
+					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						                             return Long.compare(o1.getId(), o2.getId());
+					                             }
+				                             });
+
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 7, 5), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 7, 7), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 7, 8), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(3);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2010, 6, 24), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(4);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2014, 12, 31), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(5);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 1, 1), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(6);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 7, 7), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(7);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 7, 8), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
 				                             }
 
 				                             return null;

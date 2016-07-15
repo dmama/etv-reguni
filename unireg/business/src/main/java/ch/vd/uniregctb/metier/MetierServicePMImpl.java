@@ -108,16 +108,6 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
 
-		/*
-			Détection du début effectif des données fiscales. Règle de la date + 1 lors d'une fondation d'entreprise VD.
-		 */
-		RegDate dateAuPlusTot = null;
-		final ForFiscalPrincipalPM premierForFiscalPrincipal = entreprise.getPremierForFiscalPrincipal();
-		if (premierForFiscalPrincipal != null && premierForFiscalPrincipal.getMotifOuverture() == MotifFor.DEBUT_EXPLOITATION &&
-				premierForFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			dateAuPlusTot = premierForFiscalPrincipal.getDateDebut();
-		}
-
 		// Les domiciles VD classés par commune
 		final Map<Integer, List<Domicile>> tousLesDomicilesVD = new HashMap<>();
 		for (DateRanged<Etablissement> etablissement : etablissements) {
@@ -163,11 +153,27 @@ public class MetierServicePMImpl implements MetierServicePM {
 			tousLesDomicilesVD.put(domicilesCommune.getKey(), DateRangeHelper.collate(domicilesCommune.getValue()));
 		}
 
+		/*
+			Détection du début effectif des données fiscales. Règle de la date + 1 lors d'une fondation d'entreprise VD.
+		 */
+		RegDate dateDebutFiscal = null;
+		final ForFiscalPrincipalPM premierForFiscalPrincipal = entreprise.getPremierForFiscalPrincipal();
+		if (premierForFiscalPrincipal != null) {
+			dateDebutFiscal = premierForFiscalPrincipal.getDateDebut();
+			LOGGER.info("Calcul des fors secondaires entreprise {}: utilisation de la date de début du premier for fiscal principal comme début effectif des données fiscales.",
+			            FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
+		} else {
+			throw new MetierServiceException(
+					String.format("Calcul des fors secondaires entreprise n°%s: Impossible de calculer les fors secondaires en l'absence d'un for principal.",
+					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
+		}
+
 		// Charger les historiques de fors secondaire établissement stables existant pour chaque commune
 		final Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune =
 				entreprise.getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement.ETABLISSEMENT_STABLE);
 
-		return AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, dateAuPlusTot);
+		return AjustementForsSecondairesEtablissementHelper
+				.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, entreprise.getForsFiscauxPrincipauxActifsSorted(), dateDebutFiscal);
 	}
 
 	@Override

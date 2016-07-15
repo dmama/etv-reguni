@@ -963,7 +963,7 @@ public class MetierServicePMTest extends BusinessTest {
 	}
 
 	@Test
-	public void testCalculForsSecondairesSansForPrincipal() throws Exception {
+	public void testCalculForsSecondaires() throws Exception {
 
 		final RegDate dateCreationEntreprise = date(2000, 4, 1);
 		final RegDate dateCreationEtablissementSecondaire = date(2010, 4, 13);
@@ -986,6 +986,10 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, null, null,
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+
 				final Etablissement etablissementPrincipal = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
 				addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
@@ -1004,7 +1008,6 @@ public class MetierServicePMTest extends BusinessTest {
 			}
 		});
 
-		// traitement de l'annulation de la faillite
 		final AjustementForsSecondairesResult ajustementForsSecondairesResult = doInNewTransactionAndSession(new TxCallback<AjustementForsSecondairesResult>() {
 			@Override
 			public AjustementForsSecondairesResult execute(TransactionStatus status) throws Exception {
@@ -1023,8 +1026,9 @@ public class MetierServicePMTest extends BusinessTest {
 		final ForFiscalSecondaire forFiscalSecondaire = aCreer.get(0);
 		Assert.assertNotNull(forFiscalSecondaire);
 		Assert.assertEquals(date(2010, 4, 13), forFiscalSecondaire.getDateDebut());
+		Assert.assertEquals(MockCommune.ChateauDoex.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().longValue());
 		Assert.assertNull(forFiscalSecondaire.getDateFin());
-		Assert.assertEquals(GenreImpot.REVENU_FORTUNE, forFiscalSecondaire.getGenreImpot()); // FIXME: SIFISC-19910 corriger le genre d'impôt
+		Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
 		Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
 	}
 
