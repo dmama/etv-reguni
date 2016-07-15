@@ -34,10 +34,17 @@ import ch.vd.uniregctb.type.TypeMandat;
  */
 public class Job {
 
+	private enum VersionDB {
+		_16R2,
+		_16R3
+	}
+
 	private static final String EXTRACTION = "extraction-simpa.csv";
 	private static final String MAPPING = "mappings-migration.csv";
 
 	private static final String VISA = "[Rattrapage-mutations-mandataires-" + RegDateHelper.toIndexString(RegDate.get()) + "]";
+
+	private static final VersionDB CIBLE = VersionDB._16R2;
 
 	private static final String SQL_FILE = "/tmp/rattrapage-auto-mandataires.sql";
 
@@ -213,9 +220,22 @@ public class Job {
 				final String prenomContact = StringUtils.trimToNull(mandat.getPrenomContact());
 				final String telephone = removeNonNumbers(mandat.getTelephoneContact());
 				final String copyCourriers = mandat.getTypeMandat() == TypeMandat.TIERS ? toDb(null) : "1";
-				pw.println("-- Ajout du nouveau mandat de type " + mandat.getTypeMandat() + " ouvert vers l'entité " + mandat.getTypeMandataire() + " " + FormatNumeroHelper.numeroCTBToDisplay(idMandataire));
-				pw.println("INSERT INTO RAPPORT_ENTRE_TIERS (ID, RAPPORT_ENTRE_TIERS_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, TIERS_SUJET_ID, TIERS_OBJET_ID, TYPE_MANDAT, IBAN_MANDAT, NOM_CONTACT_MANDAT, PRENOM_CONTACT_MANDAT, TEL_CONTACT_MANDAT, WITH_COPY_MANDAT)");
-				pw.println("SELECT HIBERNATE_SEQUENCE.NEXTVAL, 'Mandat', CURRENT_DATE, '" + VISA + "', CURRENT_DATE, '" + VISA + "', " + RegDateHelper.toIndexString(mandat.getDateAttribution()) + ", " + idMandant + ", " + idMandataire + ", '" + mandat.getTypeMandat() + "', " + toDb(iban) + ", " + toDb(nomContact) + ", " + toDb(prenomContact) + ", " + toDb(telephone) + ", " + copyCourriers + " FROM DUAL;");
+				switch (CIBLE) {
+				case _16R2:
+					// la colonne WITH_COPY_MANDAT n'existait pas encore
+					pw.println("-- Ajout du nouveau mandat de type " + mandat.getTypeMandat() + " ouvert vers l'entité " + mandat.getTypeMandataire() + " " + FormatNumeroHelper.numeroCTBToDisplay(idMandataire));
+					pw.println("INSERT INTO RAPPORT_ENTRE_TIERS (ID, RAPPORT_ENTRE_TIERS_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, TIERS_SUJET_ID, TIERS_OBJET_ID, TYPE_MANDAT, IBAN_MANDAT, NOM_CONTACT_MANDAT, PRENOM_CONTACT_MANDAT, TEL_CONTACT_MANDAT)");
+					pw.println("SELECT HIBERNATE_SEQUENCE.NEXTVAL, 'Mandat', CURRENT_DATE, '" + VISA + "', CURRENT_DATE, '" + VISA + "', " + RegDateHelper.toIndexString(mandat.getDateAttribution()) + ", " + idMandant + ", " + idMandataire + ", '" + mandat.getTypeMandat() + "', " + toDb(iban) + ", " + toDb(nomContact) + ", " + toDb(prenomContact) + ", " + toDb(telephone) + " FROM DUAL;");
+					break;
+				case _16R3:
+					// apparition de la colonne WITH_COPY_MANDAT
+					pw.println("-- Ajout du nouveau mandat de type " + mandat.getTypeMandat() + " ouvert vers l'entité " + mandat.getTypeMandataire() + " " + FormatNumeroHelper.numeroCTBToDisplay(idMandataire));
+					pw.println("INSERT INTO RAPPORT_ENTRE_TIERS (ID, RAPPORT_ENTRE_TIERS_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, TIERS_SUJET_ID, TIERS_OBJET_ID, TYPE_MANDAT, IBAN_MANDAT, NOM_CONTACT_MANDAT, PRENOM_CONTACT_MANDAT, TEL_CONTACT_MANDAT, WITH_COPY_MANDAT)");
+					pw.println("SELECT HIBERNATE_SEQUENCE.NEXTVAL, 'Mandat', CURRENT_DATE, '" + VISA + "', CURRENT_DATE, '" + VISA + "', " + RegDateHelper.toIndexString(mandat.getDateAttribution()) + ", " + idMandant + ", " + idMandataire + ", '" + mandat.getTypeMandat() + "', " + toDb(iban) + ", " + toDb(nomContact) + ", " + toDb(prenomContact) + ", " + toDb(telephone) + ", " + copyCourriers + " FROM DUAL;");
+					break;
+				default:
+					throw new IllegalArgumentException("Cible non supportée !");
+				}
 				pw.println();
 			}
 		}
