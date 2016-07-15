@@ -691,8 +691,9 @@ public abstract class EvenementOrganisationInterne {
 	 * @return                         le nouveau for fiscal secondaire
 	 */
 	protected ForFiscalSecondaire creerForFiscalSecondaire(RegDate dateOuverture, @Nullable RegDate dateFermeture, MotifRattachement motifRattachement,
-	                                        int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, @Nullable MotifFor motifFermeture,
-	                                        EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
+	                                                       int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+	                                                       MotifFor motifOuverture, @Nullable MotifFor motifFermeture, GenreImpot genreImpot,
+	                                                       EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
 		if (!commune.isPrincipale()) {
 			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
@@ -707,7 +708,7 @@ public abstract class EvenementOrganisationInterne {
 			);
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().addForSecondaire(entreprise, dateOuverture, dateFermeture, motifRattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale,
-			                                           motifOuverture, motifFermeture, GenreImpot.BENEFICE_CAPITAL);
+			                                           motifOuverture, motifFermeture, genreImpot);
 		} else {
 			warnings.addWarning(
 					String.format("La création doit être faite manuellement pour un for fiscal secondaire sur une commune faîtière de fractions " +
@@ -872,45 +873,42 @@ public abstract class EvenementOrganisationInterne {
 			ajustementForsSecondaires = getContext().getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
 		}
 		catch (MetierServiceException e) {
-			throw new EvenementOrganisationException(e);
+			warnings.addWarning(e.getMessage());
+			return;
 		}
 
 		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
 			annulerForFiscalSecondaire(forAAnnuler, warnings, suivis);
 		}
 
-		final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
-
 		for (AjustementForsSecondairesResult.ForAFermer forAFermer : ajustementForsSecondaires.getAFermer()) {
 			closeForFiscalSecondaire(forAFermer.getDateFermeture(), forAFermer.getForFiscal(), MotifFor.FIN_EXPLOITATION, suivis);
 		}
+		final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
 
 		for (ForFiscalSecondaire forACreer : ajustementForsSecondaires.getACreer()) {
-			final boolean forPrincipalCouvreLaPeriode = isForPrincipalExistantSurTouteLaPeriode(forACreer, forsFiscauxPrincipauxActifsSorted);
+			final boolean forPrincipalCouvreLaPeriode = DateRangeHelper.isFullyCovered(forACreer, forsFiscauxPrincipauxActifsSorted);
 			if (forPrincipalCouvreLaPeriode) {
 				creerForFiscalSecondaire(forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getTypeAutoriteFiscale(),
-				                         forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), warnings, suivis);
+				                         forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), forACreer.getGenreImpot(), warnings, suivis);
 			} else {
-				final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getDateDebut());
-				warnings.addWarning(String.format("Impossible de créer le for secondaire à %s (ofs: %d) débutant le %s%s " +
-						                                  "en l’absence d'un for principal valide sur l'ensemble de la période. Veuillez le créer à la main après avoir corrigé le for principal.",
-				                                  commune.getNomOfficielAvecCanton(),
-				                                  forACreer.getNumeroOfsAutoriteFiscale(),
-				                                  RegDateHelper.dateToDisplayString(forACreer.getDateDebut()),
-				                                  forACreer.getDateFin() != null ? " et se terminant le " + RegDateHelper.dateToDisplayString(forACreer.getDateFin()) : ""
-				));
+				warnings.addWarning(renderNonCouvertWarning(forACreer));
 			}
 		}
 	}
 
-	private boolean isPremierSnapshot() {
-		return organisation.getSitePrincipal(getDateEvt().getOneDayBefore()) == null;
+	private String renderNonCouvertWarning(ForFiscalSecondaire forSecondaireNonCouvert) {
+		return String.format("Impossible de créer le for: la période de for fiscal secondaire à %s (ofs: %d) débutant le %s%s " +
+				                                  "n'est pas couverte par un for principal valide. Veuillez créer ou ajuster le for à la main après avoir corrigé le for principal.",
+		                     context.getServiceInfra().getCommuneByNumeroOfs(forSecondaireNonCouvert.getNumeroOfsAutoriteFiscale(), forSecondaireNonCouvert.getDateDebut()).getNomOfficielAvecCanton(),
+		                     forSecondaireNonCouvert.getNumeroOfsAutoriteFiscale(),
+		                     RegDateHelper.dateToDisplayString(forSecondaireNonCouvert.getDateDebut()),
+		                     forSecondaireNonCouvert.getDateFin() != null ? " et se terminant le " + RegDateHelper.dateToDisplayString(forSecondaireNonCouvert.getDateFin()) : ""
+		);
 	}
 
-	private boolean isForPrincipalExistantSurTouteLaPeriode(DateRange periode, List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted) {
-		final List<DateRange> mergedForPrincipaux = DateRangeHelper.merge(forsFiscauxPrincipauxActifsSorted);
-		final List<DateRange> intersections = DateRangeHelper.intersections(periode, mergedForPrincipaux);
-		return intersections != null && intersections.size() == 1 && DateRangeHelper.within(periode, intersections.get(0)); // S'il devait y avoir des trous, cela voudrait dire qu'il n'y a pas une couverture continue par un for principal.
+	private boolean isPremierSnapshot() {
+		return organisation.getSitePrincipal(getDateEvt().getOneDayBefore()) == null;
 	}
 
 	/**

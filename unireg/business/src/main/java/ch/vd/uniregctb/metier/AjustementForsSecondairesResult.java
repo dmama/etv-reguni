@@ -12,11 +12,13 @@ public class AjustementForsSecondairesResult {
 	private final List<ForFiscalSecondaire> aAnnuler;
 	private final List<ForAFermer> aFermer;
 	private final List<ForFiscalSecondaire> aCreer;
+	private final List<ForFiscalSecondaire> nonCouverts;
 
-	public AjustementForsSecondairesResult(List<ForFiscalSecondaire> aAnnuler, List<ForAFermer> aFermer, List<ForFiscalSecondaire> aCreer) {
+	public AjustementForsSecondairesResult(List<ForFiscalSecondaire> aAnnuler, List<ForAFermer> aFermer, List<ForFiscalSecondaire> aCreer, List<ForFiscalSecondaire> nonCouverts) {
 		this.aAnnuler = aAnnuler;
 		this.aFermer = aFermer;
 		this.aCreer = aCreer;
+		this.nonCouverts = nonCouverts;
 	}
 
 	public List<ForFiscalSecondaire> getAAnnuler() {
@@ -29,6 +31,10 @@ public class AjustementForsSecondairesResult {
 
 	public List<ForFiscalSecondaire> getACreer() {
 		return aCreer;
+	}
+
+	public List<ForFiscalSecondaire> getNonCouverts() {
+		return nonCouverts;
 	}
 
 	public static class ForAFermer {

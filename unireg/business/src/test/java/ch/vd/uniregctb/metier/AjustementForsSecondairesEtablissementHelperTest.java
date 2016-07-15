@@ -9,8 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -28,15 +30,17 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Raphaël Marmier, 2016-03-04, <raphael.marmier@vd.ch>
  */
-public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
+public class AjustementForsSecondairesEtablissementHelperTest extends WithoutSpringTest {
 
 	private Map<Integer, List<Domicile>> tousLesDomicilesVD;
 	private Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune;
+	private List<ForFiscalPrincipalPM> tousLesForPrincipaux;
 
 	@Before
 	public void setup() {
 		tousLesDomicilesVD = new HashMap<>();
 		tousLesForsFiscauxSecondairesParCommune = new HashMap<>();
+		tousLesForPrincipaux = new ArrayList<>();
 	}
 
 	@Test
@@ -44,8 +48,10 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 
 		addDomicile(date(2015, 1, 1), date(2015, 1, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
 
+		addForPrincipal(date(2010, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+
 		final AjustementForsSecondairesResult resultatAjustementForsSecondaires =
-				AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, null);
+				AjustementForsSecondairesEtablissementHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, tousLesForPrincipaux, date(2010, 1, 1));
 
 		assertTrue(resultatAjustementForsSecondaires.getAAnnuler().isEmpty());
 		assertTrue(resultatAjustementForsSecondaires.getAFermer().isEmpty());
@@ -62,8 +68,10 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		ForFiscalSecondaire seraAnnule1 = addFor(date(2015, 1, 1), DEBUT_EXPLOITATION, date(2015, 1, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 		ForFiscalSecondaire seraAnnule2 = addFor(date(2015, 3, 1), DEBUT_EXPLOITATION, date(2015, 3, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 
+		addForPrincipal(date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+
 		final AjustementForsSecondairesResult resultatAjustementForsSecondaires =
-				AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, null);
+				AjustementForsSecondairesEtablissementHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, tousLesForPrincipaux, date(2015, 1, 1));
 
 		final List<ForFiscalSecondaire> aAnnuler = resultatAjustementForsSecondaires.getAAnnuler();
 		assertNotNull(aAnnuler);
@@ -84,8 +92,10 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		addFor(date(2015, 1, 1), DEBUT_EXPLOITATION, date(2015, 1, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 		ForFiscalSecondaire seraFerme = addFor(date(2015, 3, 1), DEBUT_EXPLOITATION, null, FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 
+		addForPrincipal(date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+
 		final AjustementForsSecondairesResult resultatAjustementForsSecondaires =
-				AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, null);
+				AjustementForsSecondairesEtablissementHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, tousLesForPrincipaux, date(2015, 1, 1));
 
 		assertTrue(resultatAjustementForsSecondaires.getAAnnuler().isEmpty());
 		final List<AjustementForsSecondairesResult.ForAFermer> aFermer = resultatAjustementForsSecondaires.getAFermer();
@@ -106,8 +116,10 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		addFor(date(2015, 1, 1), DEBUT_EXPLOITATION, date(2015, 1, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 		addFor(date(2015, 3, 1), DEBUT_EXPLOITATION, date(2015, 3, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 
+		addForPrincipal(date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+
 		final AjustementForsSecondairesResult resultatAjustementForsSecondaires =
-				AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, null);
+				AjustementForsSecondairesEtablissementHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, tousLesForPrincipaux, date(2015, 1, 1));
 
 		assertTrue(resultatAjustementForsSecondaires.getAAnnuler().isEmpty());
 		assertTrue(resultatAjustementForsSecondaires.getAFermer().isEmpty());
@@ -124,8 +136,10 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		ForFiscalSecondaire seraAnnule1 = addFor(date(2015, 1, 1), DEBUT_EXPLOITATION, date(2015, 1, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 		ForFiscalSecondaire seraAnnule2 = addFor(date(2015, 3, 1), DEBUT_EXPLOITATION, date(2015, 3, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 
+		addForPrincipal(date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+
 		final AjustementForsSecondairesResult resultatAjustementForsSecondaires =
-				AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, null);
+				AjustementForsSecondairesEtablissementHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, tousLesForPrincipaux, date(2015, 1, 1));
 
 		final List<ForFiscalSecondaire> aAnnuler = resultatAjustementForsSecondaires.getAAnnuler();
 		assertNotNull(aAnnuler);
@@ -150,8 +164,10 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		addFor(date(2015, 1, 1), DEBUT_EXPLOITATION, date(2015, 1, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 		ForFiscalSecondaire seraFerme = addFor(date(2015, 3, 1), DEBUT_EXPLOITATION, null, null, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
 
+		addForPrincipal(date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+
 		final AjustementForsSecondairesResult resultatAjustementForsSecondaires =
-				AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, null);
+				AjustementForsSecondairesEtablissementHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, tousLesForPrincipaux, date(2015, 1, 1));
 
 		assertEquals(0, resultatAjustementForsSecondaires.getAAnnuler().size());
 		final List<AjustementForsSecondairesResult.ForAFermer> aFermer = resultatAjustementForsSecondaires.getAFermer();
@@ -183,5 +199,11 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		final ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(dateDebut, motifOuverture, dateFin, motifFermeture, noOfs, typeAutoriteFiscale, motifRattachement);
 		forFiscalSecondaires.add(forFiscalSecondaire);
 		return forFiscalSecondaire;
+	}
+
+	protected ForFiscalPrincipalPM addForPrincipal(RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, Integer noOfs, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
+		final ForFiscalPrincipalPM forFiscalPrincipal = new ForFiscalPrincipalPM(dateDebut, motifOuverture, dateFin, motifFermeture, noOfs, typeAutoriteFiscale, motifRattachement);
+		tousLesForPrincipaux.add(forFiscalPrincipal);
+		return forFiscalPrincipal;
 	}
 }

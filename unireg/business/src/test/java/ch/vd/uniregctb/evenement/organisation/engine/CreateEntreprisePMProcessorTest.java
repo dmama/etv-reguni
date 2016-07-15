@@ -211,7 +211,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		);
 	}
 
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testCreationPMAvecSiteSecondaire() throws Exception {
 
 		// Mise en place service mock
@@ -230,8 +230,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 						                                                             StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
 						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995", "CHE999999996");
-				addOrganisation(
-						organisationAvecSiteSecondaire);
+				addOrganisation(organisationAvecSiteSecondaire);
 			}
 		});
 
@@ -271,18 +270,15 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
 				                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipal.getMotifOuverture());
 
-				                             final List<ForFiscal> forsFiscauxSorted = entreprise.getForsFiscauxSorted();
-				                             for (ForFiscal forFiscal : forsFiscauxSorted) {
-					                             if (forFiscal instanceof ForFiscalSecondaire) {
-						                             ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-						                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalSecondaire.getDateDebut());
-						                             Assert.assertNull(forFiscalSecondaire.getDateFin());
-						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
-						                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
-						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
-						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
-						                             break;
-					                             }
+				                             final List<ForFiscalSecondaire> forsFiscauxSecondairesSorted = entreprise.getForsParType(true).secondaires;
+				                             {
+					                             ForFiscalSecondaire forFiscalSecondaire = forsFiscauxSecondairesSorted.get(0);
+					                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalSecondaire.getDateDebut());
+					                             Assert.assertNull(forFiscalSecondaire.getDateFin());
+					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+					                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+					                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
 				                             }
 
 				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
