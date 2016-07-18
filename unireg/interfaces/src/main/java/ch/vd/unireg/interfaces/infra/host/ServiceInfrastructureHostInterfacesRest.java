@@ -307,6 +307,9 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 
 	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
+		if (noClearing == null) {
+			return Collections.emptyList();
+		}
 		final List<InstitutionFinanciere> institutions = new ArrayList<>();
 		try {
 			final ListeInstitutionsFinancieres listeInstitutionsFinancieres = client.getInstitutionsFinancieres(noClearing);
