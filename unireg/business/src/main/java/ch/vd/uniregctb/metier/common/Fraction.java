@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.MotifFor;
 
 /**
@@ -91,5 +92,17 @@ public abstract class Fraction {
 	 */
 	public MotifFor getMotifFermeture() {
 		return motifFermeture;
+	}
+
+	@Override
+	public String toString() {
+		final DateRange impact = getPeriodeImpact();
+		return String.format("%s au %s (impact du %s au %s) : %s / %s",
+		                     getClass().getSimpleName(),
+		                     RegDateHelper.dateToDisplayString(date),
+		                     RegDateHelper.dateToDisplayString(impact.getDateDebut()),
+		                     RegDateHelper.dateToDisplayString(impact.getDateFin()),
+		                     motifOuverture,
+		                     motifFermeture);
 	}
 }

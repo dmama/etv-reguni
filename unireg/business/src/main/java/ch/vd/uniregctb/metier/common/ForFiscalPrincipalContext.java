@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.Predicate;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -91,6 +94,35 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		all.add(current);
 		all.addAll(nexts);
 		return all;
+	}
+
+	/**
+	 * @param filter un filtre applicable sur les for du contexte courant
+	 * @return un nouveau contexte qui ne conserve (dans les deux sens) que les fors contigus au for courant qui satisfont le prédicat
+	 * @throws IllegalStateException si le for courant ne satisfait pas au prédicat...
+	 */
+	public ForFiscalPrincipalContext<FFP> filter(Predicate<? super FFP> filter) {
+		if (!filter.evaluate(current)) {
+			throw new IllegalStateException("Le for courant ne satisfait pas au prédicat.");
+		}
+		final List<FFP> filteredPreviouses = extractFirstMatchingElements(previouses, filter);
+		final List<FFP> filteredNexts = extractFirstMatchingElements(nexts, filter);
+		return new ForFiscalPrincipalContext<>(current, filteredNexts, filteredPreviouses);
+	}
+
+	@NotNull
+	private static <T> List<T> extractFirstMatchingElements(List<? extends T> source, Predicate<? super T> predicate) {
+		if (source == null || source.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<T> filtered = new ArrayList<>(source.size());
+		for (T src : source) {
+			if (!predicate.evaluate(src)) {
+				break;
+			}
+			filtered.add(src);
+		}
+		return filtered;
 	}
 
 	/**

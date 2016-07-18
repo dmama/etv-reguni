@@ -63,7 +63,7 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 			if (f == null) {
 				map.put(d, fraction);
 			}
-			else {
+			else if (f.getMotifOuverture() == null) {
 				f.setMotifOuverture(fraction.getMotifOuverture());
 			}
 		}
@@ -92,7 +92,7 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 					}
 				}
 			}
-			else {
+			else if (f.getMotifFermeture() == null) {
 				f.setMotifFermeture(fraction.getMotifFermeture());
 			}
 		}

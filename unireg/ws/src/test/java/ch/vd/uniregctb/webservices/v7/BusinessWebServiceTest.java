@@ -2142,7 +2142,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final NaturalPerson tpAvec = (NaturalPerson) partyAvec;
 		Assert.assertNotNull(tpAvec.getWithholdingTaxationPeriods());
-		Assert.assertEquals(7, tpAvec.getWithholdingTaxationPeriods().size());
+		Assert.assertEquals(8, tpAvec.getWithholdingTaxationPeriods().size());
 
 		{
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(0);
@@ -2175,13 +2175,22 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(3);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2010, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
+			Assert.assertEquals(dateMariage.getLastDayOfTheMonth(),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
+			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
+			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
+		}
+		{
+			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(4);
+			Assert.assertNotNull(wtp);
+			Assert.assertEquals(dateMariage.getLastDayOfTheMonth().getOneDayAfter(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
 			Assert.assertEquals(date(2010, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 		{
-			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(4);
+			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(5);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2011, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
 			Assert.assertEquals(date(2011, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
@@ -2190,7 +2199,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 		{
-			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(5);
+			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(6);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2012, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
 			Assert.assertEquals(date(2012, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
@@ -2199,7 +2208,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
 		}
 		{
-			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(6);
+			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(7);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2013, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
 			Assert.assertEquals(dateDeces,  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
