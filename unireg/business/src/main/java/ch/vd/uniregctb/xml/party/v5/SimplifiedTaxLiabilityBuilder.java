@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.xml.party.v5;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.xml.party.taxresidence.v4.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v4.SimplifiedTaxLiabilityType;
@@ -49,15 +48,6 @@ public class SimplifiedTaxLiabilityBuilder {
 			result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
 		}
 
-		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
-		if (result != null && result.getDateTo() != null) {
-			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = DataHelper.xmlToCore(result.getDateTo());
-			if (dateFin.isAfter(aujourdhui)) {
-				result.setDateTo(null);
-			}
-		}
-
 		return result;
 	}
 
@@ -91,15 +81,6 @@ public class SimplifiedTaxLiabilityBuilder {
 					|| a instanceof ch.vd.uniregctb.metier.assujettissement.VaudoisDepense
 					|| a instanceof ch.vd.uniregctb.metier.assujettissement.Indigent);
 			result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
-		}
-
-		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
-		if (result != null && result.getDateTo() != null) {
-			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = DataHelper.xmlToCore(result.getDateTo());
-			if (dateFin.isAfter(aujourdhui)) {
-				result.setDateTo(null);
-			}
 		}
 
 		return result;
