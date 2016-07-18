@@ -9,7 +9,9 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-host-interfaces</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+        <!-- BEGIN_LVERSION -->
+	<version>1.0</version>
+        <!-- END_LVERSION -->
 
 	<name>Unireg - Client host-interfaces</name>
 	<description>Unireg - Client Java pour le web-service d'échange de données avec host-interfaces</description>
@@ -18,7 +20,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-host-interfaces</artifactId>
-			<version>5.0-SNAPSHOT</version>
+			<version>5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
@@ -71,6 +73,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<goals>
