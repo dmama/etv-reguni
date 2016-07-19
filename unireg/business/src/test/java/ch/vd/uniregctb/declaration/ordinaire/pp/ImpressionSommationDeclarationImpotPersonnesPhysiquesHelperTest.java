@@ -41,8 +41,10 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest extends BusinessTest {
 
@@ -150,7 +152,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periodeFiscale, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 				di.setEtats(Collections.<EtatDeclaration>singleton(new EtatDeclarationEmise(date(2009, 1, 1))));
-				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 				try {
 					impressionSommationDIHelper.remplitSommationDI(params);
 					Assert.fail("Devrait exploser car l'individu n'est pas dans le registre civil...");
@@ -213,7 +215,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 				FichierImpressionDocument fichier;
 				try {
 					fichier = impressionSommationDIHelper.remplitSommationDI(params);
@@ -233,7 +235,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	@Test
 	public void testGetLocaliteExpeditionWithLaValleeException() throws Exception {
 
-// préparation fiscale
+		// préparation fiscale
 		final DeclarationImpotOrdinairePP di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
 			@Override
 			public DeclarationImpotOrdinairePP doInTransaction(TransactionStatus status) {
@@ -256,7 +258,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 			FichierImpressionDocument fichier;
 			try {
 				fichier = impressionSommationDIHelper.remplitSommationDI(params);
@@ -275,7 +277,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	@Test
 	public void testGetLocaliteExpeditionCasStandard() throws Exception {
 
-// préparation fiscale
+		// préparation fiscale
 		final DeclarationImpotOrdinairePP di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
 			@Override
 			public DeclarationImpotOrdinairePP doInTransaction(TransactionStatus status) {
@@ -298,7 +300,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 				FichierImpressionDocument fichier;
 				try {
 					fichier = impressionSommationDIHelper.remplitSommationDI(params);
@@ -355,14 +357,14 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 				// di 2011 -> sans code de contrôle sur la sommation
 				{
 					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diSans);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
 					assertNull(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
 				}
 				// di 2012 -> avec code de contrôle sur la sommation
 				{
 					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diAvec);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
 					assertEquals("J75397", doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getCodeValidation());
 				}
@@ -373,7 +375,6 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 
 	@Test
 	public void testSommationDiSurMenageAvecUnMembresDecede() throws Exception {
-		final Long noIndLui = 1234567L;
 		final Long noIndElle = 1234568L;
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -436,7 +437,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 
 				{
 					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diId);
-					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 					FichierImpressionDocument fichier;
 					try {
 						fichier = impressionSommationDIHelper.remplitSommationDI(params);
@@ -445,16 +446,73 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 						throw new RuntimeException(e);
 
 					}
-					//On ne doit avoir qu'une seule sommation et pas 2 sommations séparés			}
+
+					// On ne doit avoir qu'une seule sommation et pas 2 sommations séparés
 					assertEquals("On devrait avoir 1 document pour le survivant", 1, fichier.getFichierImpression().getDocumentArray().length);
 					assertNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
-
-
 				}
 
 				return null;
 			}
 		});
 
+	}
+
+	@Test
+	public void testEmolument() throws Exception {
+
+		final class Ids {
+			long diAvec;
+			long diSans;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pfSans = addPeriodeFiscale(2011);
+				final ModeleDocument mdSans = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfSans);
+
+				final PeriodeFiscale pfAvec = addPeriodeFiscale(2012);
+				final ModeleDocument mdAvec = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec);
+
+				final PersonnePhysique pp = addNonHabitant("Gudule", "Tsichorée", date(1979, 8, 25), Sexe.FEMININ);
+				addForPrincipal(pp, date(2011, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 12, 31), MotifFor.DEPART_HS, MockCommune.Vevey);
+
+				final DeclarationImpotOrdinairePP diSans = addDeclarationImpot(pp, pfSans, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdSans);
+				addEtatDeclarationEmise(diSans, date(2012, 1, 20));
+
+				final DeclarationImpotOrdinairePP diAvec = addDeclarationImpot(pp, pfAvec, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec);
+				addEtatDeclarationEmise(diAvec, date(2013, 1, 18));
+
+				final Ids ids = new Ids();
+				ids.diAvec = diAvec.getId();
+				ids.diSans = diSans.getId();
+				return ids;
+			}
+		});
+
+		// test de construction des données des sommations à envoyer à l'éditique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// di 2011 -> sans émolument
+				{
+					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diSans);
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+					assertFalse(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
+				}
+				// di 2012 -> avec émolument de 46 francs
+				{
+					final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ids.diAvec);
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), 46);
+					final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+					assertTrue(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
+					assertEquals(46, doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getMontantEmolument());
+				}
+				return null;
+			}
+		});
 	}
 }

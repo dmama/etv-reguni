@@ -382,9 +382,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException {
-		// TODO émolument sommation DI à intégrer dans le message éditique
 		final TypeDocumentEditique typeDocument = impressionSommationDIPPHelper.getTypeDocumentEditique();
-		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(declaration, miseSousPliImpossible, dateEvenement);
+		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(declaration, miseSousPliImpossible, dateEvenement, emolument);
 		final FichierImpressionDocument document = impressionSommationDIPPHelper.remplitSommationDI(params);
 		final String nomDocument = impressionSommationDIPPHelper.construitIdDocument(declaration);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
@@ -415,10 +414,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException, JMSException {
-		// TODO émolument sommation DI à intégrer dans le message éditique
 		final TypeDocumentEditique typeDocument = impressionSommationDIPPHelper.getTypeDocumentEditique();
 		final String[] infoOperateur = getInfoOperateur();
-		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createOnlineParams(declaration, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur(), dateEvenement);
+		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.online(declaration, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur(), dateEvenement, emolument);
 		final FichierImpressionDocument document = impressionSommationDIPPHelper.remplitSommationDI(params);
 		final String nomDocument = impressionSommationDIPPHelper.construitIdDocument(declaration);
 

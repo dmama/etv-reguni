@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 
@@ -11,14 +13,26 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
  */
 public class ImpressionSommationDIHelperParams {
 	
-	private boolean batch;
-	private DeclarationImpotOrdinairePP di;
-	private RegDate dateTraitement;
-	private boolean miseSousPliImpossible;
-	private String traitePar;
-	private String adrMsg;
-	private String tel;
-	
+	private final boolean batch;
+	private final DeclarationImpotOrdinairePP di;
+	private final RegDate dateTraitement;
+	private final boolean miseSousPliImpossible;
+	private final String traitePar;
+	private final String adrMsg;
+	private final String tel;
+	private final Integer montantEmolument;
+
+	private ImpressionSommationDIHelperParams(boolean batch, DeclarationImpotOrdinairePP di, RegDate dateTraitement, boolean miseSousPliImpossible, String traitePar, String adrMsg, String tel, Integer montantEmolument) {
+		this.batch = batch;
+		this.di = di;
+		this.dateTraitement = dateTraitement;
+		this.miseSousPliImpossible = miseSousPliImpossible;
+		this.traitePar = traitePar;
+		this.adrMsg = adrMsg;
+		this.tel = tel;
+		this.montantEmolument = montantEmolument;
+	}
+
 	/**
 	 * @return true si les parametres sont utilisés dans le cadre d'une impression demandée par le batch des sommations
 	 */
@@ -74,8 +88,14 @@ public class ImpressionSommationDIHelperParams {
 	public String getNoTelephone(){
 		return tel;
 	}
-	
-	private ImpressionSommationDIHelperParams(){}
+
+	/**
+	 * @return montant de l'émolument à percevoir pour la sommation
+	 */
+	@Nullable
+	public Integer getMontantEmolument() {
+		return montantEmolument;
+	}
 
 	/**
 	 * Instancie un nouvel objet {@link ImpressionSommationDIHelperParams} à utiliser 
@@ -88,16 +108,8 @@ public class ImpressionSommationDIHelperParams {
 	 * @param dateTraitement
 	 * @return
 	 */
-	public static ImpressionSommationDIHelperParams createOnlineParams(DeclarationImpotOrdinairePP di, String traitePar, String adrMsg, String tel, RegDate dateTraitement) {
-		ImpressionSommationDIHelperParams params = new ImpressionSommationDIHelperParams();
-		params.batch = false;
-		params.di = di;
-		params.miseSousPliImpossible = false;
-		params.dateTraitement = dateTraitement;
-		params.traitePar = traitePar;
-		params.adrMsg = adrMsg;
-		params.tel = tel;
-		return params;
+	public static ImpressionSommationDIHelperParams online(DeclarationImpotOrdinairePP di, String traitePar, String adrMsg, String tel, RegDate dateTraitement, @Nullable Integer montantEmolument) {
+		return new ImpressionSommationDIHelperParams(false, di, dateTraitement, false, traitePar, adrMsg, tel, montantEmolument);
 	}
 	
 	/**
@@ -110,22 +122,7 @@ public class ImpressionSommationDIHelperParams {
 	 * @param dateTraitement
 	 * @return
 	 */
-	public static ImpressionSommationDIHelperParams createBatchParams(
-			DeclarationImpotOrdinairePP di,
-			boolean miseSousPliImpossible,
-			RegDate dateTraitement
-	) {
-		ImpressionSommationDIHelperParams params = new ImpressionSommationDIHelperParams();
-		params.batch = true;
-		params.di = di;
-		params.miseSousPliImpossible = miseSousPliImpossible;
-		params.dateTraitement = dateTraitement;
-		params.traitePar = "CAT";
-		params.adrMsg = null;		
-		params.tel = null; // le numero de telephone pour les impressions générées par batch est le numero de l'aci. il est renseigné lors de la construction du xml.
-		return params;
+	public static ImpressionSommationDIHelperParams batch(DeclarationImpotOrdinairePP di, boolean miseSousPliImpossible, RegDate dateTraitement, @Nullable Integer montantEmolument) {
+		return new ImpressionSommationDIHelperParams(true, di, dateTraitement, miseSousPliImpossible, "CAT", null, null, montantEmolument);
 	}
-
-
-
 }

@@ -86,7 +86,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 
 	@Override
 	public FichierImpressionDocument remplitSommationDI(final ImpressionSommationDIHelperParams params) throws EditiqueException {
-		TraitementRemplissageSommation traitement = determineStrategieDeRemplissageDeLaSommation(params);
+		final TraitementRemplissageSommation traitement = determineStrategieDeRemplissageDeLaSommation(params);
 		return traitement.remplitSommationDI(params);
 	}
 
@@ -299,6 +299,9 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));
 			if (pf.isShowCodeControleSommationDeclarationPP() && StringUtils.isNotBlank(di.getCodeControle())) {
 				lettreSom.setCodeValidation(di.getCodeControle());
+			}
+			if (params.getMontantEmolument() != null && params.getMontantEmolument() > 0) {
+				lettreSom.setMontantEmolument(params.getMontantEmolument());
 			}
 		}
 
