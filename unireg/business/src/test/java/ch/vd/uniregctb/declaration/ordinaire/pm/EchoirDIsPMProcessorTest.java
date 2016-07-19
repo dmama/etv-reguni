@@ -211,7 +211,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addEtatDeclarationSommee(declaration, date(2015, 8, 15), date(2015, 8, 17));
+				addEtatDeclarationSommee(declaration, date(2015, 8, 15), date(2015, 8, 17), null);
 				addEtatDeclarationSuspendue(declaration, date(2015, 8, 20));
 				return declaration.getId();
 			}
@@ -291,7 +291,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addEtatDeclarationSommee(declaration, date(2015, 8, 15), date(2015, 8, 17));
+				addEtatDeclarationSommee(declaration, date(2015, 8, 15), date(2015, 8, 17), null);
 				addEtatDeclarationSuspendue(declaration, date(2015, 8, 20));
 				return declaration.getId();
 			}
@@ -335,7 +335,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
 				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
 		});
@@ -373,7 +373,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
 				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 
 				// on met un sursis à la veille de la date de traitement, pour bien montrer que le délai
 				// administratif de 15 jours est bien pris en compte (= le sursis est toujours actif même au lendemain de sa date officielle)
@@ -422,7 +422,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
 				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
 		});
@@ -474,7 +474,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
 				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 
 				// on est obligé de revenir en arrière un gros bout pour coutourner le délai administratif de 15 jours
 				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.addDays(-20), EtatDelaiDeclaration.ACCORDE);
@@ -517,7 +517,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addEtatDeclarationSommee(declaration, date(2015, 6, 30), date(2015, 6, 30));
+				addEtatDeclarationSommee(declaration, date(2015, 6, 30), date(2015, 6, 30), null);
 				addEtatDeclarationEchue(declaration, date(2015, 10, 15));
 				return declaration.getId();
 			}

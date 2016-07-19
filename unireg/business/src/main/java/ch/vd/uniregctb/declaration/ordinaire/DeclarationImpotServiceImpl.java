@@ -463,9 +463,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
+	public void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws DeclarationException {
 		try {
-			editiqueCompositionService.imprimeSommationDIForBatch(declaration, miseSousPliImpossible, dateEvenement);
+			editiqueCompositionService.imprimeSommationDIForBatch(declaration, miseSousPliImpossible, dateEvenement, emolument);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);

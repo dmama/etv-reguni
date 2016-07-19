@@ -189,7 +189,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	public void imprimerSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws Exception {
 
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement,dateExpedition);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
 		lr.addEtat(etat);
 		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalSommationListeRecapitulative(lr, etat.getDateObtention());

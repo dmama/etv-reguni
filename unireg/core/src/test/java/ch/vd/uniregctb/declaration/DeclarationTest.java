@@ -39,7 +39,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationEchue(date(2000, 3, 3)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat());
 	}
@@ -49,7 +49,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		final DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinairePP();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationEchue(date(2000, 3, 3)));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 		declaration.addEtat(new EtatDeclarationSuspendue(date(2000, 1, 6)));
 
 		assertEtat(date(2000, 1, 6), TypeEtatDeclaration.SUSPENDUE, declaration.getDernierEtat());
@@ -60,7 +60,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		final DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinairePP();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationEchue(date(2000, 3, 3)));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 		declaration.addEtat(new EtatDeclarationSuspendue(date(2000, 1, 6)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
 
@@ -73,7 +73,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinairePP();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 2, 2), "TEST"));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat());
 	}
@@ -87,7 +87,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(date(2000, 4, 4), "TEST");
 		etatRetourne.setAnnule(true);
 		declaration.addEtat(etatRetourne);
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtat());
 	}
@@ -99,7 +99,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationEchue(date(2000, 3, 3)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
 		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
@@ -113,7 +113,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinairePP();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 2, 2), "TEST"));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
 		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
@@ -130,7 +130,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		final EtatDeclaration etatRetourne = new EtatDeclarationRetournee(date(2000, 4, 4), "TEST");
 		etatRetourne.setAnnule(true);
 		declaration.addEtat(etatRetourne);
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
 		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
@@ -144,11 +144,11 @@ public class DeclarationTest extends WithoutSpringTest {
 		// cas DI avec états incohérents
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinairePP();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
-		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 		declaration.addEtat(new EtatDeclarationEchue(date(2000, 3, 3)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
 		declaration.addEtat(new EtatDeclarationEmise(date(2001, 1, 1)));
-		declaration.addEtat(new EtatDeclarationSommee(date(2001, 2, 2),date(2000, 2, 2)));
+		declaration.addEtat(new EtatDeclarationSommee(date(2001, 2, 2),date(2000, 2, 2), null));
 
 		assertEtat(date(2001, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
 		assertEtat(date(2001, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));

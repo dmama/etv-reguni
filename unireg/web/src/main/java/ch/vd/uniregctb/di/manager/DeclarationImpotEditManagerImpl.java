@@ -27,6 +27,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.audit.Audit;
@@ -48,6 +49,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -85,6 +87,7 @@ import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeDocumentEmolument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -136,13 +139,16 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Interface pour les implémentations spécifiques de génération d'un document de sommation pour les DI PP ou PM
 	 */
-	private interface DeclarationSummoner {
-		EditiqueResultat imprimeSommation(Declaration declaration, RegDate date) throws DeclarationException, EditiqueException, JMSException;
+	private interface DeclarationSummoner<T extends Declaration> {
+		@Nullable
+		Integer getMontantEmolument(T declaration);
+
+		EditiqueResultat imprimeSommation(T declaration, RegDate date, @Nullable Integer emolument) throws DeclarationException, EditiqueException, JMSException;
 	}
 
 	private Map<TypeDocument, DeclarationPrinter> printers;
 	private Map<Class<? extends Tiers>, DeclarationImpotGenerator> diGenerators;
-	private Map<Class<? extends Declaration>, DeclarationSummoner> summoners;
+	private Map<Class<? extends DeclarationImpotOrdinaire>, DeclarationSummoner<?>> summoners;
 
 	/**
 	 * {@inheritDoc}
@@ -349,8 +355,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@NotNull
-	private DeclarationSummoner getDeclarationSummoner(@NotNull Declaration declaration) throws DeclarationException {
-		final DeclarationSummoner summoner = summoners.get(declaration.getClass());
+	private <T extends DeclarationImpotOrdinaire> DeclarationSummoner<T> getDeclarationSummoner(@NotNull T declaration) throws DeclarationException {
+		//noinspection unchecked
+		final DeclarationSummoner<T> summoner = (DeclarationSummoner<T>) summoners.get(declaration.getClass());
 		if (summoner == null) {
 			throw new DeclarationException("Sommation d'une déclaration de type " + declaration.getClass().getSimpleName() + " non-supportée.");
 		}
@@ -650,14 +657,19 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException {
-
-		final RegDate dateDuJour = RegDate.get();
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour, dateDuJour);
+		return envoieImpressionLocalSommationDI(di);
+	}
+
+	private <T extends DeclarationImpotOrdinaire> EditiqueResultat envoieImpressionLocalSommationDI(T di) throws EditiqueException, DeclarationException {
+		final DeclarationSummoner<T> summoner = getDeclarationSummoner(di);
+		final Integer emolument = summoner.getMontantEmolument(di);
+		final RegDate today = RegDate.get();
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(today, today, emolument);
 		di.addEtat(etat);
 
 		try {
-			final EditiqueResultat resultat = getDeclarationSummoner(di).imprimeSommation(di, dateDuJour);
+			final EditiqueResultat resultat = summoner.imprimeSommation(di, today, emolument);
 			evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(di, etat.getDateObtention());
 			return resultat;
 		}
@@ -915,26 +927,35 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Sommation des déclarations d'impôt PP
 	 */
-	private class DeclarationImpotPersonnesPhysiquesSummoner implements DeclarationSummoner {
+	private class DeclarationImpotPersonnesPhysiquesSummoner implements DeclarationSummoner<DeclarationImpotOrdinairePP> {
+		@Nullable
 		@Override
-		public EditiqueResultat imprimeSommation(Declaration declaration, RegDate date) throws DeclarationException, EditiqueException, JMSException {
-			if (!(declaration instanceof DeclarationImpotOrdinairePP)) {
-				throw new DeclarationException("Cette déclaration n'est pas une déclaration d'impôt de personne physique.");
-			}
-			return editiqueCompositionService.imprimeSommationDIOnline((DeclarationImpotOrdinairePP) declaration, date);
+		public Integer getMontantEmolument(DeclarationImpotOrdinairePP declaration) {
+			final ParametrePeriodeFiscaleEmolument paramEmolument = declaration.getPeriode().getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
+			return paramEmolument != null ? paramEmolument.getMontant() : null;
+		}
+
+		@Override
+		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePP declaration, RegDate date, @Nullable Integer emolument) throws DeclarationException, EditiqueException, JMSException {
+			return editiqueCompositionService.imprimeSommationDIOnline(declaration, date, emolument);
 		}
 	}
 
 	/**
 	 * Sommation des déclaration d'impôt PM
 	 */
-	private class DeclarationImpotPersonnesMoralesSummoner implements DeclarationSummoner {
+	private class DeclarationImpotPersonnesMoralesSummoner implements DeclarationSummoner<DeclarationImpotOrdinairePM> {
+		@Nullable
 		@Override
-		public EditiqueResultat imprimeSommation(Declaration declaration, RegDate date) throws DeclarationException, EditiqueException, JMSException {
-			if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
-				throw new DeclarationException("Cette déclaration n'est pas une déclaration d'impôt de personne morales.");
-			}
-			return editiqueCompositionService.imprimeSommationDIOnline((DeclarationImpotOrdinairePM) declaration, date, date);
+		public Integer getMontantEmolument(DeclarationImpotOrdinairePM declaration) {
+			// pas d'émolument pour les sommations de DI PM
+			return null;
+		}
+
+		@Override
+		public EditiqueResultat imprimeSommation(DeclarationImpotOrdinairePM declaration, RegDate date, @Nullable Integer emolument) throws DeclarationException, EditiqueException, JMSException {
+			Assert.isNull(emolument);       // si ça pête, c'est qu'on a oublié de mettre en cohérence le résultat de la méthode getMontantEmolument avec celle-ci...
+			return editiqueCompositionService.imprimeSommationDIOnline(declaration, date, date);
 		}
 	}
 
@@ -963,10 +984,21 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		this.diGenerators.put(MenageCommun.class, ppGenerator);
 		this.diGenerators.put(Entreprise.class, pmGenerator);
 
-		final DeclarationSummoner ppSummoner = new DeclarationImpotPersonnesPhysiquesSummoner();
-		final DeclarationSummoner pmSummoner = new DeclarationImpotPersonnesMoralesSummoner();
 		this.summoners = new HashMap<>(2);
-		this.summoners.put(DeclarationImpotOrdinairePP.class, ppSummoner);
-		this.summoners.put(DeclarationImpotOrdinairePM.class, pmSummoner);
+		registerSummoner(this.summoners, DeclarationImpotOrdinairePP.class, new DeclarationImpotPersonnesPhysiquesSummoner());
+		registerSummoner(this.summoners, DeclarationImpotOrdinairePM.class, new DeclarationImpotPersonnesMoralesSummoner());
+	}
+
+	/**
+	 * Enregistrement d'une factory de sommation pour une classe de déclaration d'impôt ordinaire (on passe par une méthode ad'hoc
+	 * histoire de garantir un peu de validation sur les types des déclarations et des factories associées)
+	 * @param map map destination des mappings
+	 * @param clazz class de la déclaration d'impôt concernée
+	 * @param summoner factory de sommation pour ce genre de déclaration d'impôt
+	 * @param <T> type de la déclaration d'impôt
+	 */
+	private static <T extends DeclarationImpotOrdinaire> void registerSummoner(Map<Class<? extends DeclarationImpotOrdinaire>, DeclarationSummoner<?>> map,
+	                                                                           Class<T> clazz, DeclarationSummoner<T> summoner) {
+		map.put(clazz, summoner);
 	}
 }

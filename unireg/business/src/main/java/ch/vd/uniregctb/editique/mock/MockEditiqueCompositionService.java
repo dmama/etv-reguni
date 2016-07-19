@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MimeTypeHelper;
@@ -72,7 +73,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException {
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 

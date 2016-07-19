@@ -143,7 +143,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 				}
 
 				// LR émise, sommée et finalement retournée pour avril
@@ -156,7 +156,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationRetournee(lr, retour);
 				}
 
@@ -170,7 +170,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 				}
 
@@ -185,7 +185,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 					addEtatDeclarationRetournee(lr, retour);
 				}
@@ -268,7 +268,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 				}
 
 				// LR émise, sommée et finalement retournée pour avril
@@ -281,7 +281,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationRetournee(lr, retour);
 				}
 
@@ -295,7 +295,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 				}
 
@@ -310,7 +310,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 					addEtatDeclarationRetournee(lr, retour);
 				}
@@ -381,7 +381,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 				}
 
 				// LR émise, sommée et finalement retournée pour avril
@@ -394,7 +394,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationRetournee(lr, retour);
 				}
 
@@ -408,7 +408,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 				}
 
@@ -423,7 +423,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 					addEtatDeclarationRetournee(lr, retour);
 				}
@@ -494,7 +494,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 				}
 
 				// LR émise, sommée et finalement retournée pour avril
@@ -507,7 +507,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationRetournee(lr, retour);
 				}
 
@@ -521,7 +521,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 				}
 
@@ -536,7 +536,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 
 					final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, debut, fin, modeleLr);
 					addEtatDeclarationEmise(lr, emission);
-					addEtatDeclarationSommee(lr, sommation, sommation);
+					addEtatDeclarationSommee(lr, sommation, sommation, null);
 					addEtatDeclarationEchue(lr, echeance);
 					addEtatDeclarationRetournee(lr, retour);
 				}

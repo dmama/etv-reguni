@@ -1217,9 +1217,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return etat;
 	}
 
-	protected EtatDeclarationSommee addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
+	protected EtatDeclarationSommee addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi, @Nullable Integer emolument) {
 		Assert.assertTrue(declaration.isSommable());
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi, emolument);
 		declaration.addEtat(etat);
 		return etat;
 	}

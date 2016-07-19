@@ -181,8 +181,9 @@ public interface DeclarationImpotService {
 	 * @param declaration           la déclaration d'impôt ordinaire à imprimer
 	 * @param miseSousPliImpossible true si la mise sous pli automatique est impossible pour des raisons techniques
 	 * @param dateEvenement         la date d'impression
+	 * @param emolument             le montant de l'émolument (optionnel) en francs suisses
 	 */
-	void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
+	void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,

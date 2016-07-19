@@ -2893,7 +2893,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
 				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
 				assertValidInteger(pp.getNumero());
 				assertValidInteger(dpi.getNumero());
@@ -3193,7 +3193,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
 				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
 				assertValidInteger(pp.getNumero());
 				assertValidInteger(dpi.getNumero());
@@ -3555,7 +3555,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
 				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
 
 				assertValidInteger(pp.getNumero());
 				assertValidInteger(dpi.getNumero());

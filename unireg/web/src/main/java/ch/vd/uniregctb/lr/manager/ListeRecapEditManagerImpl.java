@@ -568,7 +568,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		//Sauvegarde de la DI
 		final RegDate dateDuJour = RegDate.get();
 		final DeclarationImpotSource lr = save(lrEditView);
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour,dateDuJour);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour, dateDuJour, null);
 		lr.addEtat(etat);
 		lrDAO.save(lr);
 

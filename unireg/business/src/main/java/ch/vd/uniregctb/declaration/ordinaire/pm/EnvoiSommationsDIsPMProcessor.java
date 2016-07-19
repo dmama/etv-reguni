@@ -227,7 +227,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	private void sommerDI(final DeclarationImpotOrdinairePM di, final RegDate dateTraitement) throws DeclarationException {
 
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition);
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
 		etat.setDeclaration(di);
 		etat.setAnnule(false);
 		di.addEtat(etat);

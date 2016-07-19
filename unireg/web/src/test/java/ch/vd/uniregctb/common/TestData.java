@@ -1508,7 +1508,7 @@ public class TestData {
 		dis0.addEtat(ed0);
 		dis0 = hibernateTemplate.merge(dis0);
 
-		EtatDeclaration ed1 = new EtatDeclarationSommee(RegDate.get(2008, 5, 15),RegDate.get(2008, 5, 18));
+		EtatDeclaration ed1 = new EtatDeclarationSommee(RegDate.get(2008, 5, 15),RegDate.get(2008, 5, 18), null);
 		ed1.setId(8L);
 		ed1.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addEtat(ed1);
@@ -1544,7 +1544,7 @@ public class TestData {
 		dio1.addEtat(ed6);
 		dio1 = hibernateTemplate.merge(dio1);
 
-		EtatDeclaration ed7 = new EtatDeclarationSommee(RegDate.get(2007, 9, 15),RegDate.get(2007, 9, 18));
+		EtatDeclaration ed7 = new EtatDeclarationSommee(RegDate.get(2007, 9, 15),RegDate.get(2007, 9, 18), null);
 		ed7.setId(5L);
 		ed7.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addEtat(ed7);

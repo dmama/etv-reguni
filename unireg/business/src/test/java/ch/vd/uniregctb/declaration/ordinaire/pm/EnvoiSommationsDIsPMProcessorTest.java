@@ -485,7 +485,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3));
+				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
 				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}

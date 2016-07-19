@@ -2166,7 +2166,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDeclaration.ACCORDE);
 				addEtatDeclarationEmise(di, date(annee + 1, 1, 7));
 				addEtatDeclarationRetournee(di, date(annee + 1, 7, 31));
-				addEtatDeclarationSommee(di, date(annee + 1, 7, 20), date(annee + 1, 7, 18));
+				addEtatDeclarationSommee(di, date(annee + 1, 7, 20), date(annee + 1, 7, 18), null);
 
 				final Ids ids = new Ids();
 				ids.ppId = pp.getNumero();
@@ -2258,7 +2258,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				// 2010 : sommée
 				final DeclarationImpotOrdinaire di2010 = addDI(pp, 2010);
-				addEtatDeclarationSommee(di2010, date(2011, 9, 1), date(2011, 9, 3));
+				addEtatDeclarationSommee(di2010, date(2011, 9, 1), date(2011, 9, 3), null);
 
 				// 2010 : émise
 				final DeclarationImpotOrdinaire di2011 = addDI(pp, 2011);

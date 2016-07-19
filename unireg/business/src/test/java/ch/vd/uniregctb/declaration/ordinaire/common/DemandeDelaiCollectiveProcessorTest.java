@@ -151,7 +151,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// TEST : La déclaration passe à l'état reçu :
 			// Resultat attendu :
 			// - aucun accord de délai ne doit passer
-			addEtatDeclarationSommee(d, date(2010, 7, 18), date(2010, 7, 18));
+			addEtatDeclarationSommee(d, date(2010, 7, 18), date(2010, 7, 18), null);
 
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.accorderDelaiDeclaration(mrKong, 2009, date(2010, 12, 4), dateTraitement, rapport);
@@ -478,7 +478,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				// TEST : La déclaration passe à l'état sommée :
 				// Resultat attendu :
 				// - aucun accord de délai ne doit passer
-				addEtatDeclarationSommee(d, date(annee + 1, 7, 18), date(annee + 1, 7, 19));
+				addEtatDeclarationSommee(d, date(annee + 1, 7, 18), date(annee + 1, 7, 19), null);
 
 				return e.getNumero();
 			}

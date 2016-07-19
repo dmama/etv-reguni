@@ -381,7 +381,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException {
+		// TODO émolument sommation DI à intégrer dans le message éditique
 		final TypeDocumentEditique typeDocument = impressionSommationDIPPHelper.getTypeDocumentEditique();
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(declaration, miseSousPliImpossible, dateEvenement);
 		final FichierImpressionDocument document = impressionSommationDIPPHelper.remplitSommationDI(params);
@@ -413,7 +414,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException, JMSException {
+		// TODO émolument sommation DI à intégrer dans le message éditique
 		final TypeDocumentEditique typeDocument = impressionSommationDIPPHelper.getTypeDocumentEditique();
 		final String[] infoOperateur = getInfoOperateur();
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createOnlineParams(declaration, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur(), dateEvenement);

@@ -206,7 +206,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(gustave, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						declarationComplete2010);
 				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				addEtatDeclarationSommee(declaration2010, date(2011, 4, 26), date(2011, 4, 28));
+				addEtatDeclarationSommee(declaration2010, date(2011, 4, 26), date(2011, 4, 28), null);
 				ids.declarationId = declaration2010.getId();
 
 				return null;
@@ -263,7 +263,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(coridon, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						declarationComplete2010);
 				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				addEtatDeclarationSommee(declaration2010, date(2011, 7, 26), date(2011, 7, 28));
+				addEtatDeclarationSommee(declaration2010, date(2011, 7, 26), date(2011, 7, 28), null);
 				ids.declarationId = declaration2010.getId();
 
 				return null;

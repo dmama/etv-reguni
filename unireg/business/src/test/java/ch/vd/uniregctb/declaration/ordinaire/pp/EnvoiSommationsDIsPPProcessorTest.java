@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -15,6 +16,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -32,6 +34,8 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeDocumentEmolument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 
@@ -541,7 +545,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3));
+				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
 				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
@@ -605,5 +609,97 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		Assert.assertNotNull(erreur);
 		Assert.assertEquals((Long) ids.mcId, erreur.getNumeroTiers());
 		Assert.assertEquals(expectedError, erreur.getCause());
+	}
+
+	@Test
+	public void testSommationAvecEmolument() throws Exception {
+
+		// 3 sommations : une sans émolument, une avec un émolument à 30 frs, une autre encore avec un émolument à 50 frs
+		final int pfSansEmolument = 2014;
+		final int pfAvecEmolument1 = 2013;
+		final int pfAvecEmolument2 = 2012;
+		final int emolument1 = 30;
+		final int emolument2 = 50;
+
+		// mise en place
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@SuppressWarnings("ConstantConditions")
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Aristolius", "Flamingo", date(1954, 7, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+				final PeriodeFiscale pfSans = addPeriodeFiscale(pfSansEmolument);
+				pfSans.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(null);
+				final PeriodeFiscale pfAvec1 = addPeriodeFiscale(pfAvecEmolument1);
+				pfAvec1.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(emolument1);
+				final PeriodeFiscale pfAvec2 = addPeriodeFiscale(pfAvecEmolument2);
+				pfAvec2.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP).setMontant(emolument2);
+
+				final ModeleDocument mdSans = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfSans);
+				final ModeleDocument mdAvec1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec1);
+				final ModeleDocument mdAvec2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec2);
+
+				final DeclarationImpotOrdinairePP diSans = addDeclarationImpot(pp, pfSans, date(pfSansEmolument, 1, 1), date(pfSansEmolument, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdSans);
+				addEtatDeclarationEmise(diSans, date(pfSansEmolument + 1, 1, 7));
+				addDelaiDeclaration(diSans, date(pfSansEmolument + 1, 1, 7), date(pfSansEmolument + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+
+				final DeclarationImpotOrdinairePP diAvec1 = addDeclarationImpot(pp, pfAvec1, date(pfAvecEmolument1, 1, 1), date(pfAvecEmolument1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec1);
+				addEtatDeclarationEmise(diAvec1, date(pfAvecEmolument1 + 1, 1, 7));
+				addDelaiDeclaration(diAvec1, date(pfAvecEmolument1 + 1, 1, 7), date(pfAvecEmolument1 + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+
+				final DeclarationImpotOrdinairePP diAvec2 = addDeclarationImpot(pp, pfAvec2, date(pfAvecEmolument2, 1, 1), date(pfAvecEmolument2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec2);
+				addEtatDeclarationEmise(diAvec2, date(pfAvecEmolument2 + 1, 1, 7));
+				addDelaiDeclaration(diAvec2, date(pfAvecEmolument2 + 1, 1, 7), date(pfAvecEmolument2 + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+
+				return pp.getNumero();
+			}
+		});
+
+		// lancement des sommations
+		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(3, results.getSommations().size());     // les trois DI sont sommées
+
+		// vérification des émoluments associés aux états "sommée"
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				{
+					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfSansEmolument, 1, 1));
+					Assert.assertNotNull(di);
+					final EtatDeclaration etat = di.getDernierEtat();
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+					Assert.assertNull(sommation.getEmolument());
+				}
+				{
+					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument1, 1, 1));
+					Assert.assertNotNull(di);
+					final EtatDeclaration etat = di.getDernierEtat();
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+					Assert.assertEquals((Integer) emolument1, sommation.getEmolument());
+				}
+				{
+					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument2, 1, 1));
+					Assert.assertNotNull(di);
+					final EtatDeclaration etat = di.getDernierEtat();
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+					Assert.assertEquals((Integer) emolument2, sommation.getEmolument());
+				}
+			}
+		});
 	}
 }

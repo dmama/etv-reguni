@@ -18,7 +18,7 @@ public class ParametrePeriodeFiscaleEmolument extends ParametrePeriodeFiscale {
 	private TypeDocumentEmolument typeDocument;
 	private Integer montant;
 
-	protected ParametrePeriodeFiscaleEmolument() {
+	public ParametrePeriodeFiscaleEmolument() {
 	}
 
 	public ParametrePeriodeFiscaleEmolument(TypeDocumentEmolument typeDocument, @Nullable Integer montant, PeriodeFiscale pf) {

@@ -50,7 +50,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			final RegDate dateObtention = RegDate.get().addDays(-10);
 			final RegDate dateEnvoiCourrier = RegDate.get().addDays(-5);
 
-			final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier);
+			final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier, null);
 			final TaxDeclarationStatus etatWeb = TaxDeclarationBuilder.newTaxDeclarationStatus(sommee);
 
 			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv2(dateEnvoiCourrier), etatWeb.getDateFrom());

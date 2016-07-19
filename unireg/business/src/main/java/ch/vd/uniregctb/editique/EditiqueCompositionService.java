@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -153,8 +154,9 @@ public interface EditiqueCompositionService {
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
 	 * @param dateEvenement la date d'impression
+	 * @param emolument     montant de l'émolument (optionnel) à percevoir pour la sommation émise, en francs suisses
 	 */
-	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException;
+	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException;
 
 	/**
 	 * Imprime la sommation pour la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
@@ -191,10 +193,11 @@ public interface EditiqueCompositionService {
 	 *
 	 * @param declaration
 	 * @param dateEvenement
+	 * @param emolument     montant de l'émolument (optionnel) à percevoir pour la sommation émise, en francs suisses
 	 * @return l'id du document
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement, @Nullable Integer emolument) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la sommation pour la déclaration d'impôt PM spécifiée on-line.

@@ -306,7 +306,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(2007);
 				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
-				addEtatDeclarationSommee(lr, date(2007, 3, 12), date(2007, 3, 15));
+				addEtatDeclarationSommee(lr, date(2007, 3, 12), date(2007, 3, 15), null);
 				return null;
 			}
 		});

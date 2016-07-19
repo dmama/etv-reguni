@@ -29,6 +29,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -46,6 +47,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.TypeDocumentEmolument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EnvoiSommationsDIsPPProcessor {
@@ -279,14 +281,14 @@ public class EnvoiSommationsDIsPPProcessor {
 	}
 
 	private void sommerDI(final DeclarationImpotOrdinairePP di, boolean miseSousPliImpossible, final RegDate dateTraitement) throws DeclarationException {
-
-		RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
-		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement,dateExpedition);
+		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
+		final ParametrePeriodeFiscaleEmolument paramEmolument = di.getPeriode().getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
+		final Integer emolument = paramEmolument != null ? paramEmolument.getMontant() : null;
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, emolument);
 		etat.setDeclaration(di);
 		etat.setAnnule(false);
 		di.addEtat(etat);
-
-		diService.envoiSommationDIPPForBatch(di, miseSousPliImpossible, dateTraitement);
+		diService.envoiSommationDIPPForBatch(di, miseSousPliImpossible, dateTraitement, emolument);
 	}
 
 	/**

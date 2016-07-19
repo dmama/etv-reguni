@@ -55,7 +55,7 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 		final DeclarationImpotSource lr = addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf, TypeEtatDeclaration.EMISE);
 		final RegDate dateObtention = date(2011, 1, 17);
 		final RegDate dateEnvoiCourrier = date(2011, 1, 20);
-		final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier);
+		final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier, null);
 		lr.addEtat(sommee);
 
 		final InfoEnteteDocument infoEnteteDocument = impressionSommationLRHelper.remplitEnteteDocument(lr);
