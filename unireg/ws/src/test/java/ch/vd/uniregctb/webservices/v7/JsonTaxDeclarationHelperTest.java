@@ -117,7 +117,7 @@ public class JsonTaxDeclarationHelperTest extends WithoutSpringTest {
 	@Test
 	public void testMutationNoNulls() throws Exception {
 		final List<TaxDeclarationStatus> statuses = new ArrayList<>();
-		statuses.add(new TaxDeclarationStatus(generateRandomDate(), null, TaxDeclarationStatusType.SENT, null, 0, null));
+		statuses.add(new TaxDeclarationStatus(generateRandomDate(), null, TaxDeclarationStatusType.SENT, null, 0, null, 0, null));
 
 		final List<TaxDeclarationDeadline> deadlines = new ArrayList<>();
 		deadlines.add(new TaxDeclarationDeadline(generateRandomDate(), generateRandomDate(), generateRandomDate(), null, true, null));
@@ -130,7 +130,7 @@ public class JsonTaxDeclarationHelperTest extends WithoutSpringTest {
 	@Test
 	public void testAlreadyJson() throws Exception {
 		final List<TaxDeclarationStatus> statuses = new ArrayList<>();
-		statuses.add(new TaxDeclarationStatus(generateRandomDate(), null, TaxDeclarationStatusType.SENT, null, 0, null));
+		statuses.add(new TaxDeclarationStatus(generateRandomDate(), null, TaxDeclarationStatusType.SENT, null, 0, null, 0, null));
 
 		final List<TaxDeclarationDeadline> deadlines = new ArrayList<>();
 		deadlines.add(new TaxDeclarationDeadline(generateRandomDate(), generateRandomDate(), generateRandomDate(), null, true, null));

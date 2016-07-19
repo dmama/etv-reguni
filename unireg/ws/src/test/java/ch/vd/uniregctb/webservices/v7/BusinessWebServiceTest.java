@@ -2914,6 +2914,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					Assert.assertNotNull(status);
 					Assert.assertNull(status.getCancellationDate());
 					Assert.assertNull(status.getSource());
+					Assert.assertNull(status.getFee());
 					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
 					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
@@ -3179,6 +3180,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					Assert.assertNotNull(status);
 					Assert.assertNull(status.getCancellationDate());
 					Assert.assertNull(status.getSource());
+					Assert.assertNull(status.getFee());
 					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
 					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
@@ -3187,6 +3189,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					Assert.assertNotNull(status);
 					Assert.assertNull(status.getCancellationDate());
 					Assert.assertNull(status.getSource());
+					Assert.assertNull(status.getFee());
 					Assert.assertEquals(dateSommationLR.addDays(3), ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
 					Assert.assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
 				}
@@ -3656,7 +3659,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
 				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
-				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), null);
+				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3), 10);
 
 				assertValidInteger(pp.getNumero());
 				assertValidInteger(dpi.getNumero());
@@ -3732,6 +3735,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					Assert.assertNotNull(status);
 					Assert.assertNull(status.getCancellationDate());
 					Assert.assertNull(status.getSource());
+					Assert.assertNull(status.getFee());
 					Assert.assertEquals(dateEmissionLR, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
 					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}
@@ -3740,6 +3744,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					Assert.assertNotNull(status);
 					Assert.assertNull(status.getCancellationDate());
 					Assert.assertNull(status.getSource());
+					Assert.assertEquals((Integer) 10, status.getFee());
 					Assert.assertEquals(dateSommationLR.addDays(3), ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
 					Assert.assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status.getType());
 				}
@@ -3843,6 +3848,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 					Assert.assertNotNull(status);
 					Assert.assertNull(status.getCancellationDate());
 					Assert.assertNull(status.getSource());
+					Assert.assertNull(status.getFee());
 					Assert.assertEquals(dateEmissionDI, ch.vd.uniregctb.xml.DataHelper.xmlToCore(status.getDateFrom()));
 					Assert.assertEquals(TaxDeclarationStatusType.SENT, status.getType());
 				}

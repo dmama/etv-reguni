@@ -137,6 +137,9 @@ public class TaxDeclarationBuilder {
 		if (etat instanceof EtatDeclarationRetournee) {
 			e.setSource(((EtatDeclarationRetournee) etat).getSource());
 		}
+		if (etat instanceof EtatDeclarationSommee) {
+			e.setFee(((EtatDeclarationSommee) etat).getEmolument());
+		}
 		return e;
 	}
 
@@ -195,7 +198,7 @@ public class TaxDeclarationBuilder {
 		if (etat == null) {
 			return null;
 		}
-		return new TaxDeclarationStatus(etat.getDateFrom(), etat.getCancellationDate(), etat.getType(), etat.getSource(), 0, null);
+		return new TaxDeclarationStatus(etat.getDateFrom(), etat.getCancellationDate(), etat.getType(), etat.getSource(), 0, etat.getFee(), 0, null);
 	}
 
 	private static List<TaxDeclarationDeadline> cloneDeadlines(List<TaxDeclarationDeadline> deadlines) {
