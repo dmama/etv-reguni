@@ -16,6 +16,7 @@
 							<xs:element name="PeriodeFiscal" type="typAnnee"/>
 							<xs:element name="DateEnrg" type="typDatAAAAMMJJ"/>
 							<xs:element name="CodeValidation" type="typCodeNip" minOccurs="0"/>
+							<xs:element name="MontantEmolument" type="typEntierPositif" minOccurs="0"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
