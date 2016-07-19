@@ -45,6 +45,7 @@
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC</value>
+		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>

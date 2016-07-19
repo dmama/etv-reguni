@@ -14,6 +14,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
 import ch.vd.uniregctb.parametrage.PeriodeFiscaleService;
 import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocumentEmolument;
 
 public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
@@ -126,6 +128,12 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public ParametrePeriodeFiscaleEmolument getEmolumentSommationDIPPByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getEmolumentSommationDIPPByPeriodeFiscale(periodeFiscale);
+	}
+
+	@Override
 	public ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getPMUtilitePubliqueByPeriodeFiscale(periodeFiscale);
 	}
@@ -153,12 +161,16 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscalePPEditView createParametrePeriodeFiscalePPEditView(Long idPeriode) {
-		ParametrePeriodeFiscalePPEditView ppfv = new ParametrePeriodeFiscalePPEditView();
-		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
+		final ParametrePeriodeFiscalePPEditView ppfv = new ParametrePeriodeFiscalePPEditView();
+		final PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
 
 		ppfv.setIdPeriodeFiscale(pf.getId());
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
 		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclarationPP());
+
+		final ParametrePeriodeFiscaleEmolument emolument = pf.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
+		ppfv.setMontantEmolumentSommationDI(emolument != null ? emolument.getMontant() : null);
+		ppfv.setEmolumentSommationDI(emolument != null && emolument.getMontant() != null);
 
 		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscalePPDepense().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getDateFinEnvoiMasseDI());
@@ -288,6 +300,22 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		final PeriodeFiscale pf = periodeFiscaleDAO.get(ppfv.getIdPeriodeFiscale());
 		pf.setShowCodeControleSommationDeclarationPP(ppfv.isCodeControleSurSommationDI());
+
+		final ParametrePeriodeFiscaleEmolument emolument = pf.getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
+		if (ppfv.isEmolumentSommationDI()) {
+			if (emolument == null) {
+				final ParametrePeriodeFiscaleEmolument param = new ParametrePeriodeFiscaleEmolument();
+				param.setTypeDocument(TypeDocumentEmolument.SOMMATION_DI_PP);
+				param.setMontant(ppfv.getMontantEmolumentSommationDI());
+				pf.addParametrePeriodeFiscale(param);
+			}
+			else {
+				emolument.setMontant(ppfv.getMontantEmolumentSommationDI());
+			}
+		}
+		else if (emolument != null) {
+			emolument.setMontant(null);
+		}
 
 		final ParametrePeriodeFiscalePP[] ppfs = new ParametrePeriodeFiscalePP[] {
 				pf.getParametrePeriodeFiscalePPVaudoisOrdinaire(),

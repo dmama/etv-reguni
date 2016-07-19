@@ -24,6 +24,9 @@
 			div.checkbox {
 				float: right;
 			}
+			div.emolument {
+				text-align: center;
+			}
 
 			.colonneTitreParametres {
 				width: 35%;
@@ -107,6 +110,13 @@
 						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDIPP}">checked</c:if>/>
 						<fmt:message key="label.param.code.controle.sur.sommation"/>
 					</div>
+					<c:if test="${parametrePeriodeFiscaleEmomulementSommationDIPP.montant != null}">
+						<div class="emolument">
+							<fmt:message key="label.param.emolument.sommation"/>&nbsp;:
+							<span style="font-weight: bold;"><c:out value="${parametrePeriodeFiscaleEmomulementSommationDIPP.montant}"/></span>
+							<fmt:message key="label.chf"/>
+						</div>
+					</c:if>
 
 					<table>
 						<tr>

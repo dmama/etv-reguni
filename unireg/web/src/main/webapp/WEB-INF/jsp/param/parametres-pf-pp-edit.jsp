@@ -8,8 +8,11 @@
 				width: 50%;
 				text-align: center;
 			}
-			div.checkbox {
+			div.checkbox, div.emolument {
 				margin: 10px;
+			}
+			div.emolument {
+				height: 2em;
 			}
 		</style>
 	</tiles:put>
@@ -32,6 +35,17 @@
 					<fmt:message key="label.param.code.controle.sur.sommation"/>
 				</c:set>
 				<form:checkbox path="codeControleSurSommationDI" label=" ${labelCheckbox}"/>
+			</div>
+			<div class="emolument">
+				<c:set var="labelEmolument">
+					<fmt:message key="label.param.emolument.sommation"/>
+				</c:set>
+				<form:checkbox path="emolumentSommationDI" label=" ${labelEmolument}" id="emolumentCheckBox" onchange="ParamPeriodePPEdit.onChangeEmolumentFlag();"/>
+				<span id="montantEmolumentSpan" style="display: none; margin-left: 50px;">
+					<form:input path="montantEmolumentSommationDI" maxlength="8" cssStyle="width: 8ex;"/>
+					&nbsp;<fmt:message key="label.chf"/>
+					<form:errors path="montantEmolumentSommationDI" cssClass="error" cssStyle="margin-left: 20px;"/>
+				</span>
 			</div>
 
 			<table>
@@ -153,6 +167,27 @@
 				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="document.location.href='list.do?pf=${command.idPeriodeFiscale}'">
 			</span>
 		</div>
+
+		<script type="application/javascript">
+			var ParamPeriodePPEdit = {
+				onChangeEmolumentFlag: function() {
+					const checked = $('#emolumentCheckBox').is(':checked');
+					const emolumentSpan = $('#montantEmolumentSpan');
+					if (checked) {
+						emolumentSpan.find(':input').removeAttr('disabled');
+						emolumentSpan.show();
+					}
+					else {
+						emolumentSpan.hide();
+						emolumentSpan.find(':input').attr('disabled', 'disabled');
+					}
+				}
+			};
+
+			$(function() {
+				ParamPeriodePPEdit.onChangeEmolumentFlag();
+			});
+		</script>
 	</form:form>	
 	</tiles:put>
 </tiles:insert>

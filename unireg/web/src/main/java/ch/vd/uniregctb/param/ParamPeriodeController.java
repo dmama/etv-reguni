@@ -128,6 +128,8 @@ public class ParamPeriodeController {
 
 		model.addAttribute("parametrePeriodeFiscaleSNC", manager.getSNCByPeriodeFiscale(periodeSelectionnee));
 
+		model.addAttribute("parametrePeriodeFiscaleEmomulementSommationDIPP", manager.getEmolumentSommationDIPPByPeriodeFiscale(periodeSelectionnee));
+
 		final List<ModeleDocument> modeles = new ArrayList<>(manager.getModeleDocuments(periodeSelectionnee));
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
 			@Override

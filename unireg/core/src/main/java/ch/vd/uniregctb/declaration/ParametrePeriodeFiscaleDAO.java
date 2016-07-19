@@ -77,4 +77,10 @@ public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeF
 	 * @return les paramètres de période fiscale pour les questionnaires SNC, pour une période donnée
 	 */
 	ParametrePeriodeFiscaleSNC getSNCByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les paramètres de période fiscale pour l'émolument des sommations de DI PP, pour la période donnée
+	 */
+	ParametrePeriodeFiscaleEmolument getEmolumentSommationDIPPByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 }

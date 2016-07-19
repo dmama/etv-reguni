@@ -57,5 +57,16 @@ public class ParametrePeriodeFiscalePPValidator implements Validator {
 				LOGGER.error(e.getMessage(), e);
 			}
 		}
+
+		// validation du montant de l'émolument
+		if (view.isEmolumentSommationDI() && !errors.hasFieldErrors("montantEmolumentSommationDI")) {
+			// le montant doit être fournit, et doit être positif
+			if (view.getMontantEmolumentSommationDI() == null) {
+				errors.rejectValue("montantEmolumentSommationDI", "error.champ.obligatoire");
+			}
+			else if (view.getMontantEmolumentSommationDI() <= 0) {
+				errors.rejectValue("montantEmolumentSommationDI", "error.param.entierPositif");
+			}
+		}
 	}
 }

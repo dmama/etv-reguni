@@ -19,6 +19,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
@@ -81,6 +82,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		addInitializerMapping(initializers, ParametrePeriodeFiscalePP.class, new ParametrePeriodeFiscalePPInitializer());
 		addInitializerMapping(initializers, ParametrePeriodeFiscalePM.class, new ParametrePeriodeFiscalePMInitializer());
 		addInitializerMapping(initializers, ParametrePeriodeFiscaleSNC.class, new ParametrePeriodeFiscaleSNCInitializer());
+		addInitializerMapping(initializers, ParametrePeriodeFiscaleEmolument.class, new ParametrePeriodeFiscaleEmolumentInitializer());
 
 		for (ParametrePeriodeFiscale ppf : source.getParametrePeriodeFiscale()) {
 			final ParametrePeriodeFiscale newParam = initializeNewParameter(initializers, ppf, destination);
@@ -164,6 +166,15 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 			return new ParametrePeriodeFiscaleSNC(nvellePeriodeFiscale,
 			                                      previous.getTermeGeneralRappelImprime().addYears(nbYearsDifference),
 			                                      previous.getTermeGeneralRappelEffectif().addYears(nbYearsDifference));
+		}
+	}
+
+	private static class ParametrePeriodeFiscaleEmolumentInitializer implements ParametrePeriodeFiscalInitializer<ParametrePeriodeFiscaleEmolument> {
+		@Override
+		public ParametrePeriodeFiscaleEmolument createFrom(ParametrePeriodeFiscaleEmolument previous, PeriodeFiscale nvellePeriodeFiscale) {
+			return new ParametrePeriodeFiscaleEmolument(previous.getTypeDocument(),
+			                                            previous.getMontant(),
+			                                            nvellePeriodeFiscale);
 		}
 	}
 

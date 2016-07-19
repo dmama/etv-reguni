@@ -151,6 +151,7 @@ public abstract class LengthConstants {
 
 	public static final int PARAMETRE_PF_TYPE = 5;
 	public static final int PARAMETRE_PF_REF_DELAI = 12;
+	public static final int PARAMETRE_PF_TYPE_DOCUMENT_EMOLUMENT = 15;
 
 	public static final int MONNAIE_ISO = 3;
 

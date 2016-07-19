@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
@@ -103,6 +104,13 @@ public interface ParamPeriodeManager {
 	 */
 	@Transactional(readOnly = true)
 	ParametrePeriodeFiscaleSNC getSNCByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les paramètres de période fiscale pour les émoluments de sommation de DI PP, pour la période donnée
+	 */
+	@Transactional(readOnly = false)
+	ParametrePeriodeFiscaleEmolument getEmolumentSommationDIPPByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 
 	/**
 	 * Initialise la nouvelle période fiscale

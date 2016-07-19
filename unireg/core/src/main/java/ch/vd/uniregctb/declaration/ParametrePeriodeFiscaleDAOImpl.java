@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocumentEmolument;
 
 public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriodeFiscale, Long> implements ParametrePeriodeFiscaleDAO {
 
@@ -96,5 +97,21 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 			return null;
 		}
 		return list.get(0);
+	}
+
+	private ParametrePeriodeFiscaleEmolument getEmolumentByPeriodeFiscaleEtTypeDocument(PeriodeFiscale periodeFiscale, TypeDocumentEmolument typeDocument) {
+		final List<ParametrePeriodeFiscaleEmolument> list = find("FROM ParametrePeriodeFiscaleEmolument p WHERE p.periodefiscale = :pf AND p.typeDocument = :typeDoc",
+		                                                         buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
+		                                                                              Pair.<String, Object>of("typeDoc", typeDocument)),
+		                                                         null);
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		return list.get(0);
+	}
+
+	@Override
+	public ParametrePeriodeFiscaleEmolument getEmolumentSommationDIPPByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getEmolumentByPeriodeFiscaleEtTypeDocument(periodeFiscale, TypeDocumentEmolument.SOMMATION_DI_PP);
 	}
 }

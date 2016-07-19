@@ -22,6 +22,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeDocumentEmolument;
 
 @Entity
 @Table(name = "PERIODE_FISCALE")
@@ -139,6 +140,17 @@ public class PeriodeFiscale extends HibernateEntity {
 		return null;
 	}
 
+	@Transient
+	@Nullable
+	public ParametrePeriodeFiscaleEmolument getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument type) {
+		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
+			if (ppf instanceof ParametrePeriodeFiscaleEmolument && type == ((ParametrePeriodeFiscaleEmolument) ppf).getTypeDocument()) {
+				return (ParametrePeriodeFiscaleEmolument) ppf;
+			}
+		}
+		return null;
+	}
+
 	@Column(name = "CODE_CTRL_SOMM_DI_PP", nullable = false)
 	public boolean isShowCodeControleSommationDeclarationPP() {
 		return showCodeControleSommationDeclarationPP;
@@ -220,6 +232,7 @@ public class PeriodeFiscale extends HibernateEntity {
 		addPeriodeFiscaleParametrePM(24, false, 15, false, ParametrePeriodeFiscalePM.ReferencePourDelai.EMISSION, TypeContribuable.UTILITE_PUBLIQUE);
 		addPeriodeFiscaleParametreSNC(RegDate.get(this.getAnnee() + 1, 3, 15),      // valeur par défaut du terme réglementaire au 15 mars
 		                              RegDate.get(this.getAnnee() + 1, 8, 31));     // valeur par défaut du terme effectif au 31 août
+		addPeriodeFiscaleParametreEmolument(null);
 	}
 
 	/**
@@ -255,6 +268,10 @@ public class PeriodeFiscale extends HibernateEntity {
 
 	public void addPeriodeFiscaleParametreSNC(RegDate dateRappelReglementaire, RegDate dateRappelEffectif) {
 		addParametrePeriodeFiscale(new ParametrePeriodeFiscaleSNC(this, dateRappelReglementaire, dateRappelEffectif));
+	}
+
+	public void addPeriodeFiscaleParametreEmolument(@Nullable Integer sommationDIPP) {
+		addParametrePeriodeFiscale(new ParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP, sommationDIPP, this));
 	}
 
 	public boolean possedeTypeDocument(TypeDocument typeDocument) {

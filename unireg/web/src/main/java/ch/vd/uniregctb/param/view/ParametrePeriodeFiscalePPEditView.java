@@ -8,6 +8,9 @@ public class ParametrePeriodeFiscalePPEditView {
 	private Integer anneePeriodeFiscale;
 	private boolean codeControleSurSommationDI;
 
+	private boolean emolumentSommationDI;
+	private Integer montantEmolumentSommationDI;
+
 	private RegDate sommationReglementaireVaud;
 	private RegDate sommationEffectiveVaud;
 	private RegDate finEnvoiMasseDIVaud;
@@ -34,6 +37,22 @@ public class ParametrePeriodeFiscalePPEditView {
 
 	public void setAnneePeriodeFiscale(Integer anneePeriodeFiscale) {
 		this.anneePeriodeFiscale = anneePeriodeFiscale;
+	}
+
+	public boolean isEmolumentSommationDI() {
+		return emolumentSommationDI;
+	}
+
+	public void setEmolumentSommationDI(boolean emolumentSommationDI) {
+		this.emolumentSommationDI = emolumentSommationDI;
+	}
+
+	public Integer getMontantEmolumentSommationDI() {
+		return montantEmolumentSommationDI;
+	}
+
+	public void setMontantEmolumentSommationDI(Integer montantEmolumentSommationDI) {
+		this.montantEmolumentSommationDI = montantEmolumentSommationDI;
 	}
 
 	public RegDate getSommationReglementaireVaud() {
