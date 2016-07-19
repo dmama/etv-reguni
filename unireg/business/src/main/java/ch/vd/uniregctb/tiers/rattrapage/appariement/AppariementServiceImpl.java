@@ -307,54 +307,6 @@ public class AppariementServiceImpl implements AppariementService {
 					final Localisation localisationSiteElu = siteLocalisationExtractor.extract(siteCandidat);
 					sitesParLocalisation.remove(localisationSiteElu);
 				}
-				else if (!sitesCompatibles.isEmpty()) {
-
-					// recherche sur les raisons sociales
-					final Map<String, List<Etablissement>> etbsParRaisonSociale = dispatchToMap(etablissementsCompatibles,
-					                                                                            new DataExtractor<Etablissement, String>() {
-						                                                                            @Override
-						                                                                            public String extract(Etablissement source) {
-							                                                                            return source.getRaisonSociale();
-						                                                                            }
-					                                                                            });
-
-					final Map<String, List<SiteOrganisation>> sitesParRaisonSociale = dispatchToMap(sitesCompatibles,
-					                                                                                new DataExtractor<SiteOrganisation, String>() {
-						                                                                                @Override
-						                                                                                public String extract(SiteOrganisation source) {
-							                                                                                return source.getNom(null);
-						                                                                                }
-					                                                                                });
-
-					// maintenant, on peut ne s'intéresser qu'aux raisons sociales identiques des deux côtés
-					final Set<String> raisonsSocialesCommunes = new HashSet<>(etbsParRaisonSociale.size() + sitesParRaisonSociale.size());
-					raisonsSocialesCommunes.addAll(etbsParRaisonSociale.keySet());
-					raisonsSocialesCommunes.retainAll(sitesParRaisonSociale.keySet());
-
-					// s'il n'y a pas de raisons sociales communes, ce n'est pas vraiment la peine d'aller plus loin...
-					if (!raisonsSocialesCommunes.isEmpty()) {
-
-						// bouclons donc sur ces raisons sociales communes...
-						for (String raisonSociale : raisonsSocialesCommunes) {
-
-							final List<Etablissement> etablissementsCandidats = etbsParRaisonSociale.get(raisonSociale);
-							final List<SiteOrganisation> sitesCandidats = sitesParRaisonSociale.get(raisonSociale);
-							if (etablissementsCandidats.size() == 1 && sitesCandidats.size() == 1) {
-								// mapping partfait -> on conserve ainsi
-								final Etablissement etbCandidat = etablissementsCandidats.get(0);
-								final SiteOrganisation siteCandidat = sitesCandidats.get(0);
-
-								candidats.add(new CandidatAppariement(etbCandidat, siteCandidat, CandidatAppariement.CritereDecisif.RAISON_SOCIALE, etbEntry.getKey()));
-								etbsSecondairesNonApparies.remove(etbCandidat.getNumero());
-								sitesSecondairesDisponibles.remove(siteCandidat.getNumeroSite());
-
-								// il faut également enlever le site élu de la map des sites par localisation
-								final Localisation localisationSiteElu = siteLocalisationExtractor.extract(siteCandidat);
-								sitesParLocalisation.remove(localisationSiteElu);
-							}
-						}
-					}
-				}
 			}
 		}
 

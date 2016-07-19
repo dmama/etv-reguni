@@ -33,8 +33,7 @@ public class AppariementEtablissementsSecondairesResults extends AbstractJobResu
 
 	public enum RaisonAppariement {
 		SEULS_MEME_ENDROIT("Seul couple établissement/site à cet endroit compte tenu du flag actif/inactif."),
-		IDE_MEME_ENDROIT("Etablissement et site partagent le même siège et le même numéro IDE."),
-		RAISON_SOCIALE_MEME_ENDROIT("Etablissement et site partagent le même siège et la même raison sociale.");
+		IDE_MEME_ENDROIT("Etablissement et site partagent le même siège et le même numéro IDE.");
 
 		private final String libelle;
 
@@ -119,10 +118,6 @@ public class AppariementEtablissementsSecondairesResults extends AbstractJobResu
 
 	public void addNouvelAppariementEtablissementIde(Entreprise entreprise, Etablissement etablissement, SiteOrganisation site, TypeAutoriteFiscale tafSiege, Integer ofsSiege) {
 		appariements.add(new AppariementEtablissement(entreprise.getNumero(), etablissement.getNumero(), site.getNumeroSite(), tafSiege, ofsSiege, RaisonAppariement.IDE_MEME_ENDROIT));
-	}
-
-	public void addNouvelAppariementEtablissementRaisonSociale(Entreprise entreprise, Etablissement etablissement, SiteOrganisation site, TypeAutoriteFiscale tafSiege, Integer ofsSiege) {
-		appariements.add(new AppariementEtablissement(entreprise.getNumero(), etablissement.getNumero(), site.getNumeroSite(), tafSiege, ofsSiege, RaisonAppariement.RAISON_SOCIALE_MEME_ENDROIT));
 	}
 
 	public void setInterrupted(boolean interrompu) {

@@ -584,11 +584,6 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
 				                                    null, null, "CHE999999997", null, null);
-
-				MockSiteOrganisationFactory.addSite(noCantonalEtablissementSecondaire2, org, dateDebutCivile, null, "Toto Lausanne (new!)", null,
-				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.INCONNU, null,
-				                                    null, null, "CHE999999998", null, null);
 			}
 		});
 
@@ -637,7 +632,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 			Assert.assertNotNull(appariement);
 			Assert.assertEquals(ids.idEtablissementSecondaire, appariement.idEtablissement);
 			Assert.assertEquals(noCantonalEtablissementSecondaire1, appariement.idSite);
-			Assert.assertEquals(AppariementEtablissementsSecondairesResults.RaisonAppariement.RAISON_SOCIALE_MEME_ENDROIT, appariement.raison);
+			Assert.assertEquals(AppariementEtablissementsSecondairesResults.RaisonAppariement.SEULS_MEME_ENDROIT, appariement.raison);
 		}
 
 		// vérification en base (SIMULATION -> rien)
@@ -703,7 +698,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 			Assert.assertNotNull(appariement);
 			Assert.assertEquals(ids.idEtablissementSecondaire, appariement.idEtablissement);
 			Assert.assertEquals(noCantonalEtablissementSecondaire1, appariement.idSite);
-			Assert.assertEquals(AppariementEtablissementsSecondairesResults.RaisonAppariement.RAISON_SOCIALE_MEME_ENDROIT, appariement.raison);
+			Assert.assertEquals(AppariementEtablissementsSecondairesResults.RaisonAppariement.SEULS_MEME_ENDROIT, appariement.raison);
 		}
 
 		// vérification en base
