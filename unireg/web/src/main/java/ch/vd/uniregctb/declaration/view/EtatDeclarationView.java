@@ -53,14 +53,24 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 			}
 		}
 		if (etat instanceof EtatDeclarationSommee) {
-			this.dateEnvoiCourrier = ((EtatDeclarationSommee) etat).getDateEnvoiCourrier();
-			this.dateEnvoiCourrierMessage =
-					messageSource.getMessage("label.date.envoi.courrier", new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)}, WebContextUtils.getDefaultLocale());
+			final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
+			this.dateEnvoiCourrier = sommation.getDateEnvoiCourrier();
+			if (sommation.getEmolument() != null) {
+				this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier.avec.emolument",
+				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier), Integer.toString(sommation.getEmolument())},
+				                                                         WebContextUtils.getDefaultLocale());
+			}
+			else {
+				this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier",
+				                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)},
+				                                                         WebContextUtils.getDefaultLocale());
+			}
 		}
 		if (etat instanceof EtatDeclarationRappelee) {
 			this.dateEnvoiCourrier = ((EtatDeclarationRappelee) etat).getDateEnvoiCourrier();
-			this.dateEnvoiCourrierMessage =
-					messageSource.getMessage("label.date.envoi.courrier", new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)}, WebContextUtils.getDefaultLocale());
+			this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier",
+			                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)},
+			                                                         WebContextUtils.getDefaultLocale());
 		}
 	}
 

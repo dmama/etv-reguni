@@ -46,6 +46,6 @@ public class EtatDeclarationRappelee extends EtatDeclaration {
 	public String toString() {
 		final String desc = super.toString();
 		final String dateEnvoiStr = dateEnvoiCourrier != null ? RegDateHelper.dateToDisplayString(dateEnvoiCourrier) : "?";
-		return String.format("%s, (Courrier envoyé le %s)", desc, dateEnvoiStr);
+		return String.format("%s, (courrier envoyé le %s)", desc, dateEnvoiStr);
 	}
 }

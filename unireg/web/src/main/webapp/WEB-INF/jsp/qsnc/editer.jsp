@@ -68,9 +68,7 @@
 						<unireg:regdate regdate="${etat.dateObtention}"/>
 						<c:if test="${!etat.annule && etat.etat == 'RAPPELEE'}">
 							&nbsp;
-							(<fmt:message key="label.date.envoi.courrier">
-							<fmt:param><unireg:date date="${etat.dateEnvoiCourrier}"/></fmt:param>
-						</fmt:message>)
+							(<c:out value="${etat.dateEnvoiCourrierMessage}"/>)
 						</c:if>
 					</display:column>
 					<display:column titleKey="label.etat" style="width: 30%;">
