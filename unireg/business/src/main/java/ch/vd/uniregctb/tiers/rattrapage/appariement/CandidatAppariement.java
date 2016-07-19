@@ -21,11 +21,6 @@ public class CandidatAppariement {
 		 * Même localisation (+ flag activité)
 		 */
 		LOCALISATION,
-
-		/**
-		 * Même raison sociale (+ flag activité + même localisation)
-		 */
-		RAISON_SOCIALE
 	}
 
 	private final Etablissement etablissement;

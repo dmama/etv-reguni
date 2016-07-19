@@ -457,6 +457,10 @@ public class AppariementServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * [SIFISC-19770] Au final, on ne fait plus l'appariement sur les raisons sociales identiques quand on a plusieurs
+	 * établissements/sites sur une commune donnée avec un même flag d'activité
+	 */
 	@Test
 	public void testAppariementPlusieursEtablissementsCivilsSurMemeCommuneDifferenciesParRaisonSociale() throws Exception {
 
@@ -534,17 +538,7 @@ public class AppariementServiceTest extends BusinessTest {
 				final Entreprise entreprise = (Entreprise) tiersService.getTiers(ids.idEntreprise);
 				final List<CandidatAppariement> candidats = appariementService.rechercheAppariementsEtablissementsSecondaires(entreprise);
 				Assert.assertNotNull(candidats);
-				Assert.assertEquals(1, candidats.size());
-
-				{
-					final CandidatAppariement candidat = candidats.get(0);
-					Assert.assertNotNull(candidat);
-					Assert.assertEquals(noCantonalEtablissementSecondaire1, candidat.getSite().getNumeroSite());
-					Assert.assertEquals((Long) ids.idEtablissementSecondaire2, candidat.getEtablissement().getNumero());
-					Assert.assertEquals(CandidatAppariement.CritereDecisif.RAISON_SOCIALE, candidat.getCritere());
-					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, candidat.getTypeAutoriteFiscaleSiege());
-					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), candidat.getOfsSiege());
-				}
+				Assert.assertEquals(0, candidats.size());
 			}
 		});
 	}

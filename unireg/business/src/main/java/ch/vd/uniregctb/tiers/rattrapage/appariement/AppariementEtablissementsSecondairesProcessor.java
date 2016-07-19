@@ -126,9 +126,6 @@ public class AppariementEtablissementsSecondairesProcessor {
 			case IDE:
 				rapport.addNouvelAppariementEtablissementIde(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
 				break;
-			case RAISON_SOCIALE:
-				rapport.addNouvelAppariementEtablissementRaisonSociale(entreprise, appariement.getEtablissement(), appariement.getSite(), appariement.getTypeAutoriteFiscaleSiege(), appariement.getOfsSiege());
-				break;
 			default:
 				throw new IllegalArgumentException("Type de critère décisif inconnu : " + appariement.getCritere());
 			}
