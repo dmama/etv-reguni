@@ -25,7 +25,8 @@ public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Dupli
 	}
 
 	public CapitalHisto(Capital capital) {
-		this(null, false, capital.getDateDebut(), capital.getDateFin(), new MontantMonetaire(capital.getCapitalLibere().longValue(), capital.getDevise()), Source.CIVILE);
+		// [SIFISC-19942] si RCEnt ne fournit pas de devise, on supposera CHF...
+		this(null, false, capital.getDateDebut(), capital.getDateFin(), new MontantMonetaire(capital.getCapitalLibere().longValue(), capital.getDevise() == null ? MontantMonetaire.CHF : capital.getDevise()), Source.CIVILE);
 	}
 
 	private CapitalHisto(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, MontantMonetaire montant, Source source) {
