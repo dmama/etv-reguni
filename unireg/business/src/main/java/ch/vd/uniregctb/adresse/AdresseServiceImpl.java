@@ -155,7 +155,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final boolean artificelle = adresseDestination == null; // SIFISC-4967
 
 		// Remplis l'adresse d'envoi
-		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType, dateDebut, dateFin, artificelle, localiteInvalideMatcherService);
+		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(envoi.destinataire, envoi.sourceType, dateDebut, dateFin, artificelle, localiteInvalideMatcherService);
 		fillDestinataire(adresseEnvoi, envoi.destinataire, tiersPourAdresse, date, true);
 		fillDestination(adresseEnvoi, adresseDestination);
 
