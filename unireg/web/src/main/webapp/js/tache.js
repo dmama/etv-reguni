@@ -18,10 +18,20 @@ function selectTypeTache(name) {
 	if (name == 'TacheEnvoiDeclarationImpotPP' || name == 'TacheEnvoiDeclarationImpotPM' || name == 'TacheAnnulationDeclarationImpot') {
 		$('#periode_fiscale_label').show();
 		$('#periode_fiscale_input').show();
+		$('#commentaire_ctrl_label').hide();
+		$('#commentaire_ctrl_input').hide();
+	}
+	else if (name == 'TacheControleDossier') {
+		$('#periode_fiscale_label').hide();
+		$('#periode_fiscale_input').hide();
+		$('#commentaire_ctrl_label').show();
+		$('#commentaire_ctrl_input').show();
 	}
 	else {
 		$('#periode_fiscale_label').hide();
 		$('#periode_fiscale_input').hide();
+		$('#commentaire_ctrl_label').hide();
+		$('#commentaire_ctrl_input').hide();
 	}
 }
 

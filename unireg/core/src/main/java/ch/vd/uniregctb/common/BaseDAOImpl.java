@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.common;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,19 +28,19 @@ public abstract class BaseDAOImpl<T, PK extends Serializable> extends GenericDAO
 		super(persistentClass);
 	}
 
-	public <T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
+	public <U> List<U> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
 		return hibernateTemplate.find(hql, namedParams, flushModeOverride);
 	}
 
-	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
+	public <U> Iterator<U> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
 		return hibernateTemplate.iterate(hql, namedParams, flushModeOverride);
 	}
 
-	public <T> List<T> find(String hql, @Nullable FlushMode flushModeOverride) {
+	public <U> List<U> find(String hql, @Nullable FlushMode flushModeOverride) {
 		return hibernateTemplate.find(hql, flushModeOverride);
 	}
 
-	public <T> Iterator<T> iterate(String hql, @Nullable FlushMode flushModeOverride) {
+	public <U> Iterator<U> iterate(String hql, @Nullable FlushMode flushModeOverride) {
 		return hibernateTemplate.iterate(hql, flushModeOverride);
 	}
 
@@ -47,8 +49,15 @@ public abstract class BaseDAOImpl<T, PK extends Serializable> extends GenericDAO
 		if (params == null || params.length == 0) {
 			return null;
 		}
+		return buildNamedParameters(Arrays.asList(params));
+	}
 
-		final Map<String, T> map = new HashMap<>(params.length);
+	protected static <T> Map<String, T> buildNamedParameters(Collection<Pair<String, T>> params) {
+		if (params == null || params.isEmpty()) {
+			return null;
+		}
+
+		final Map<String, T> map = new HashMap<>(params.size());
 		for (Pair<String, T> param : params) {
 			if (map.containsKey(param.getKey())) {
 				throw new IllegalArgumentException("Parameter '" + param.getKey() + "' given more than once!");

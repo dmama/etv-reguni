@@ -16,6 +16,13 @@
 				<form:options items="${periodesFiscales}" />
 			</form:select>
 		</td>
+		<td width="25%" id="commentaire_ctrl_label" style="display:none;"><fmt:message key="label.commentaire.tache" />&nbsp;:</td>
+		<td width="25%" id="commentaire_ctrl_input" style="display:none;">
+			<form:select path="commentaire" cssStyle="max-width: 40ex;">
+				<form:option value="" ><fmt:message key="option.TOUS" /></form:option>
+				<form:options items="${commentaires}" />
+			</form:select>
+		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.etat.tache" />&nbsp;:</td>
@@ -85,5 +92,6 @@
 <!-- Fin Boutons -->
 <script type="text/javascript" language="Javascript" src="<c:url value="/js/tache.js"/>"></script>
 <script type="text/javascript">
+	$('#type_tache').find('select').val('${command.typeTache}');
 	selectTypeTache('${command.typeTache}');
 </script>

@@ -15,6 +15,7 @@ import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
 import ch.vd.uniregctb.tache.view.TacheListView;
+import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * Manager de recherche de taches
@@ -34,7 +35,7 @@ public interface TacheListManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException;
+	List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException;
 
 	/**
 	 * Recherche des nouveaux dossiers suivant certains critères
@@ -45,7 +46,7 @@ public interface TacheListManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException;
+	List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws ServiceInfrastructureException, AdresseException;
 
 	/**
 	 * Recherche des nouveaux dossiers suivant certains critères
@@ -57,13 +58,13 @@ public interface TacheListManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException;
+	List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdresseException;
 
 	/**
 	 * Imprime les nouveaux dossiers
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDossier(ImpressionNouveauxDossiersView view) throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalDossier(ImpressionNouveauxDossiersView view) throws EditiqueException;
 
 	/**
 	 * Retourne le nombre de tache correspondant aux criteres
@@ -73,7 +74,7 @@ public interface TacheListManager {
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public int count(TacheCriteriaView criterion) throws ServiceInfrastructureException ;
+	int count(TacheCriteriaView criterion) throws ServiceInfrastructureException ;
 
 	/**
 	 * Retourne le nombre de nouveaux dossiers correspondant aux criteres
@@ -83,7 +84,7 @@ public interface TacheListManager {
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException ;
+	int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException ;
 
 	/**
 	 * Passe la tâche à l'état TRAITE
@@ -91,6 +92,12 @@ public interface TacheListManager {
 	 * @param id
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void traiteTache(Long id) ;
+	void traiteTache(Long id) ;
 
+	/**
+	 * @param typeTache le type de tâche
+	 * @return les commentaires distincts (par ordre alphabétique) associés aux tâches (quel que soit leur état) de ce type
+	 */
+	@Transactional(readOnly = true)
+	List<String> getCommentairesDistincts(TypeTache typeTache);
 }

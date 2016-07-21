@@ -14,6 +14,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * Service permettant la génération de tâches à la suite d'événements fiscaux
@@ -64,8 +65,9 @@ public interface TacheService {
 	/**
 	 * Génère une tâche de contrôle de dossier sur le contribuable indiqué (s'il n'en existe pas déjà une encore en instance)
 	 * @param contribuable sur lequel une tâche de contrôle de dossier doit être ajoutée
+	 * @param commentaire commentaire optionnel à associer à la tâche
 	 */
-	void genereTacheControleDossier(Contribuable contribuable);
+	void genereTacheControleDossier(Contribuable contribuable, String commentaire);
 
 	/**
 	 * @param oid l'id de l'office d'impôt courant de l'utilisateur
@@ -134,4 +136,11 @@ public interface TacheService {
 	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance
 	 */
 	void updateStats();
+
+	/**
+	 * @param typeTache un type de tâche
+	 * @return la liste (triée par ordre alphabétique) des commentaires distincts utilisés pour ce type de tâche
+	 */
+	@NotNull
+	List<String> getCommentairesDistincts(TypeTache typeTache);
 }

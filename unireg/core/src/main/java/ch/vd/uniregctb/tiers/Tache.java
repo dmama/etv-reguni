@@ -40,6 +40,7 @@ public abstract class Tache extends HibernateEntity {
 	private TypeEtatTache etat;
 	private Contribuable contribuable;
 	private CollectiviteAdministrative collectiviteAdministrativeAssignee;
+	private String commentaire;
 
 	// Ce constructeur est requis par Hibernate
 	protected Tache() {
@@ -138,6 +139,15 @@ public abstract class Tache extends HibernateEntity {
 
 	public void setCollectiviteAdministrativeAssignee(CollectiviteAdministrative theCollectiviteAdministrativeAssignee) {
 		collectiviteAdministrativeAssignee = theCollectiviteAdministrativeAssignee;
+	}
+
+	@Column(name = "COMMENTAIRE", length = LengthConstants.TACHE_COMMENTAIRE)
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
 	}
 
 	/**

@@ -412,7 +412,12 @@ INPUT.readonly {
 .validation_error td.heading, .warnings td.heading, .warning_icon {
 	background: url(warn.png) no-repeat;
 	padding-left: 20px;
-}	
+}
+
+.info_icon {
+	background: url(info.png) no-repeat;
+	padding-left: 20px;
+}
 
 .action_error td.heading {
 	background: url(error.gif) no-repeat;

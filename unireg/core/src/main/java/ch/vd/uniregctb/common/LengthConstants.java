@@ -40,6 +40,7 @@ public abstract class LengthConstants {
 	public static final int TACHE_ETAT = 11;
 	public static final int TACHE_TYPE = 15;
 	public static final int TACHE_CATEGORIE_ENTREPRISE = 10;
+	public static final int TACHE_COMMENTAIRE = 100;
 
 	public static final int SITUATIONFAMILLE_TARIF = 11;
 	public static final int SITUATIONFAMILLE_ETATCIVIL = 34;

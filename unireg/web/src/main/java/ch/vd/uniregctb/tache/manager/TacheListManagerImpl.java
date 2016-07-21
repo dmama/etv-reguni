@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.SecurityDebugConfig;
+import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
 import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
@@ -64,6 +66,7 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	private TacheDAO tacheDAO;
 	private TiersService tiersService;
+	private TacheService tacheService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private AdresseService adresseService;
 	private ServiceSecuriteService serviceSecurite;
@@ -75,6 +78,10 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setTacheService(TacheService tacheService) {
+		this.tacheService = tacheService;
 	}
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
@@ -198,6 +205,7 @@ public class TacheListManagerImpl implements TacheListManager {
 			}
 
 			tacheView.setAnnule(tache.isAnnule());
+			tacheView.setCommentaire(StringUtils.trimToNull(tache.getCommentaire()));;
 			tachesView.add(tacheView);
 		}
 
@@ -382,8 +390,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Override
 	@Transactional(readOnly = true)
 	public int count(TacheCriteriaView tacheCriteriaView) throws ServiceInfrastructureException {
-		TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteriaView);
-
+		final TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteriaView);
 		return tacheDAO.count(coreCriteria);
 	}
 
@@ -397,8 +404,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Override
 	@Transactional(readOnly = true)
 	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws ServiceInfrastructureException {
-		TacheCriteria coreCriteria = buildCoreCriteria(nouveauDossierCriteriaView);
-
+		final TacheCriteria coreCriteria = buildCoreCriteria(nouveauDossierCriteriaView);
 		return tacheDAO.count(coreCriteria);
 	}
 
@@ -410,8 +416,13 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void traiteTache(Long id) {
-		Tache tache = tacheDAO.get(id);
+		final Tache tache = tacheDAO.get(id);
 		tache.setEtat(TypeEtatTache.TRAITE);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<String> getCommentairesDistincts(TypeTache typeTache) {
+		return tacheService.getCommentairesDistincts(typeTache);
+	}
 }

@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.Date;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
-
-import java.util.Date;
 
 /**
  * Critères permettant de filtrer une requête au DAO des tâches. Un critère <b>null</b> signifie 'pas de filtre'.
@@ -25,6 +25,7 @@ public class TacheCriteria {
 	private Integer[] oidUser;
 	private boolean inclureTachesAnnulees;
 	private DeclarationImpotOrdinaire declarationAnnulee;
+	private String commentaire;
 
 	public TypeTache getTypeTache() {
 		return typeTache;
@@ -131,5 +132,13 @@ public class TacheCriteria {
 
 	public void setDeclarationAnnulee(DeclarationImpotOrdinaire declarationAnnulee) {
 		this.declarationAnnulee = declarationAnnulee;
+	}
+
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
 	}
 }

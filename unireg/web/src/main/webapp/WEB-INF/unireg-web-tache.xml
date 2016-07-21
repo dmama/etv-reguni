@@ -9,6 +9,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="editiqueService" ref="editiqueCompositionService" />
+		<property name="tacheService" ref="tacheService"/>
 	</bean>
 
 	<bean id="tacheController" class="ch.vd.uniregctb.tache.TacheController">

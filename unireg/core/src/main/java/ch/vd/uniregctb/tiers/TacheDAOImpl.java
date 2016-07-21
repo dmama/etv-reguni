@@ -1,17 +1,25 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.DiscriminatorValue;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.metadata.ClassMetadata;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -22,12 +30,33 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
-public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
+public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, InitializingBean {
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(TacheDAOImpl.class);
+	/**
+	 * Mapping DISCRIMINATOR -> Type de tâche
+	 */
+	private Map<String, TypeTache> typesTachesDiscriminators;
 
 	public TacheDAOImpl() {
 		super(Tache.class);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// récupération des mappings autours des tâches
+		final Map<String, TypeTache> typesTache = new HashMap<>();
+		for (Map.Entry<String, ClassMetadata> entry : getSessionFactory().getAllClassMetadata().entrySet()) {
+			final ClassMetadata metadata = entry.getValue();
+			final Class<?> clazz = metadata.getMappedClass();
+			if (Tache.class.isAssignableFrom(clazz)) {
+				final DiscriminatorValue discriminator = clazz.getAnnotation(DiscriminatorValue.class);
+				if (discriminator != null) {
+					final TypeTache type = TypeTache.valueOf(clazz.getSimpleName());
+					typesTache.put(discriminator.value(), type);
+				}
+			}
+		}
+		this.typesTachesDiscriminators = typesTache;
 	}
 
 	/**
@@ -158,7 +187,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
 		// Année de la période d'imposition
 		final Integer annee = criterion.getAnnee();
-		if (annee != null) {
+		if (annee != null && !criterion.isInvertTypeTache()) {
 			final RegDate dateDebutPeriode = RegDate.get(annee, 1, 1);
 			final RegDate dateFinPeriode = RegDate.get(annee, 12, 31);
 
@@ -213,9 +242,14 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		}
 
 		final Declaration declarationAnnulee = criterion.getDeclarationAnnulee();
-		if (declarationAnnulee != null && (typeTache == TypeTache.TacheAnnulationDeclarationImpot || typeTache == TypeTache.TacheAnnulationQuestionnaireSNC)) {
+		if (declarationAnnulee != null && (typeTache == TypeTache.TacheAnnulationDeclarationImpot || typeTache == TypeTache.TacheAnnulationQuestionnaireSNC) && !criterion.isInvertTypeTache()) {
 			clause += " and tache.declaration = :diAnnulee";
 			params.put("diAnnulee", declarationAnnulee);
+		}
+
+		if (StringUtils.isNotBlank(criterion.getCommentaire()) && typeTache == TypeTache.TacheControleDossier && !criterion.isInvertTypeTache()) {
+			clause += " and tache.commentaire = :commentaire";
+			params.put("commentaire", criterion.getCommentaire());
 		}
 
 		return clause;
@@ -223,7 +257,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean existsTacheEnInstanceOuEnCours(final long noCtb, final TypeTache type) {
+	public boolean existsTacheControleDossierEnInstanceOuEnCours(final long noCtb, final String commentaire) {
 
 		final Session session = getCurrentSession();
 
@@ -233,17 +267,25 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		for (Object entity : entities.values()) {
 			if (entity instanceof Tache) {
 				final Tache t = (Tache) entity;
-				if (t.getContribuable().getNumero().equals(noCtb) && type == t.getTypeTache() && (isTacheOuverte(t))) {
+				if (t.getContribuable().getNumero().equals(noCtb) && isTacheOuverte(t) && (commentaire == null || commentaire.equals(t.getCommentaire()))) {
 					return true;
 				}
 			}
 		}
 
 		// Recherche dans la base de données
-		final String query = "from "
-				+ type.name()
-				+ " tache where tache.contribuable.id = :noCtb and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-		final List<Tache> list = find(query, buildNamedParameters(Pair.of("noCtb", noCtb)), FlushMode.MANUAL);
+		final String commentSql;
+		final List<Pair<String, Object>> parametres = new ArrayList<>(2);
+		if (commentaire == null) {
+			commentSql = StringUtils.EMPTY;
+		}
+		else {
+			commentSql = " and tache.commentaire=:commentaire";
+			parametres.add(Pair.<String, Object>of("commentaire", commentaire));
+		}
+		final String query = String.format("from Tache tache where tache.contribuable.id = :noCtb and tache.annulationDate is null and tache.etat in ('EN_INSTANCE', 'EN_COURS')%s", commentSql);
+		parametres.add(Pair.<String, Object>of("noCtb", noCtb));
+		final List<Tache> list = find(query, buildNamedParameters(parametres), FlushMode.MANUAL);
 		return !list.isEmpty();
 	}
 
@@ -277,6 +319,33 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		                                                   Pair.<String, Object>of("fin", dateFin)),
 		                              FlushMode.MANUAL);
 		return !list.isEmpty();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<TypeTache, List<String>> getCommentairesDistincts() {
+		final String hql = "select distinct t.class, t.commentaire from Tache t where t.commentaire is not null";
+		final Query query = getCurrentSession().createQuery(hql);
+
+		//noinspection unchecked
+		final Map<TypeTache, List<String>> map = new EnumMap<>(TypeTache.class);
+		final List<Object[]> commentaires = (List<Object[]>) query.list();
+		for (Object[] row : commentaires) {
+			final TypeTache type = typesTachesDiscriminators.get((String) row[0]);
+			final List<String> list;
+			if (map.containsKey(type)) {
+				list = map.get(type);
+			}
+			else {
+				list = new LinkedList<>();
+				map.put(type, list);
+			}
+			list.add((String) row[1]);
+		}
+		for (List<String> list : map.values()) {
+			Collections.sort(list);
+		}
+		return map;
 	}
 
 	@Override

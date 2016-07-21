@@ -14,10 +14,12 @@ import ch.vd.uniregctb.type.TypeTache;
 
 public class TacheCriteriaViewBase implements Serializable {
 
-	private static final long serialVersionUID = 6380103088232048687L;
+	private static final long serialVersionUID = -5764421738041828312L;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(TacheCriteriaViewBase.class);
 
 	private TypeTache typeTache;
+	private String commentaire;
 	private TypeEtatTache etatTache;
 	private Date dateCreationDepuis;
 	private Date dateCreationJusqua;
@@ -99,6 +101,14 @@ public class TacheCriteriaViewBase implements Serializable {
 		this.voirTachesAnnulees = voirTachesAnnulees;
 	}
 
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
+	}
+
 	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false autrement.
 	 */
@@ -109,7 +119,8 @@ public class TacheCriteriaViewBase implements Serializable {
 				!voirTachesAutomatiques &&
 				officeImpot == null &&
 				numeroCTB == null &&
-				!voirTachesAnnulees;
+				!voirTachesAnnulees &&
+				StringUtils.isBlank(commentaire);
 	}
 
 	/**
@@ -149,6 +160,7 @@ public class TacheCriteriaViewBase implements Serializable {
 		criteria.setOid(oid);
 		criteria.setNumeroCTB(numeroCTB);
 		criteria.setInclureTachesAnnulees(voirTachesAnnulees);
+		criteria.setCommentaire(commentaire);
 		return criteria;
 	}
 }

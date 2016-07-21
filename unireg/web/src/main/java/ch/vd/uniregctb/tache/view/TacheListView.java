@@ -44,7 +44,12 @@ public class TacheListView implements Annulable {
 	private Integer delaiRetourEnJours;
 	private Integer annee;
 
-	boolean annulee;
+	private boolean annulee;
+
+	/**
+	 * [SIFISC-19535] Commentaire texte libre associé à la tâche (optionnel, surtout utilisé pour les tâches de contrôle de dossier)
+	 */
+	private String commentaire;
 
 	public Long getId() {
 		return id;
@@ -181,5 +186,13 @@ public class TacheListView implements Annulable {
 
 	public void setDateEnregistrement(Date dateEnregistrement) {
 		this.dateEnregistrement = dateEnregistrement;
+	}
+
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
 	}
 }

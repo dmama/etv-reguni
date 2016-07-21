@@ -43,6 +43,7 @@ import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
 import ch.vd.uniregctb.tache.view.TacheListView;
 import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 @Controller
 @RequestMapping("/tache")
@@ -71,6 +72,11 @@ public class TacheController {
 	 * Le nom de l'attribut utilise pour la liste des etats de tache
 	 */
 	private static final String TYPE_TACHE_MAP_NAME = "typesTache";
+
+	/**
+	 * Le nom de l'attribut utilisé pour la liste des commentaires distincts dans les tâches de contrôle de dossier
+	 */
+	private static final String COMMENTAIRE_CTRL_MAP_NAME = "commentaires";
 
 	/**
 	 * Le nom de l'attribut utilise pour les periodes fiscales
@@ -170,6 +176,7 @@ public class TacheController {
 		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapOfficeImpotUtilisateur());
 		model.addAttribute(ETAT_TACHE_MAP_NAME, tacheMapHelper.initMapEtatTache());
 		model.addAttribute(TYPE_TACHE_MAP_NAME, tacheMapHelper.initMapTypeTache());
+		model.addAttribute(COMMENTAIRE_CTRL_MAP_NAME, tacheListManager.getCommentairesDistincts(TypeTache.TacheControleDossier));
 		if (forceEmptyResult) {
 			model.addAttribute(TACHE_LIST_ATTRIBUTE_NAME, new ArrayList<TacheListView>());
 			model.addAttribute(RESULT_SIZE_NAME, 0);

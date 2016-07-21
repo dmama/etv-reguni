@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,6 +130,7 @@ public class TacheServiceImpl implements TacheService {
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<>();
+	private Map<TypeTache, List<String>> commentairesDistincts = new EnumMap<>(TypeTache.class);
 	private AdresseService adresseService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -220,9 +222,31 @@ public class TacheServiceImpl implements TacheService {
 
 		// pas de besoin de synchronisation parce que l'assignement est atomique en java
 		tacheStatsPerOid = stats;
+
+		//
+		// on va aussi aller chercher les valeurs des commentaires disponibles par type de tache
+		//
+		commentairesDistincts = template.execute(new TransactionCallback<Map<TypeTache, List<String>>>() {
+			@Override
+			public Map<TypeTache, List<String>> doInTransaction(TransactionStatus status) {
+				return tacheDAO.getCommentairesDistincts();
+			}
+		});
 	}
 
-    @Override
+	@NotNull
+	@Override
+	public List<String> getCommentairesDistincts(TypeTache typeTache) {
+		// on tape dans le cache, en le supposant rafraîchit de temps en temps
+		if (commentairesDistincts.containsKey(typeTache)) {
+			return commentairesDistincts.get(typeTache);
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
     public void annuleTachesObsoletes(final Collection<Long> ctbIds) {
 
         final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -317,7 +341,7 @@ public class TacheServiceImpl implements TacheService {
 				return;
 			}
 			if (dernierForFerme) {
-				genereTacheControleDossier(contribuable);
+				genereTacheControleDossier(contribuable, "Départ hors-Suisse.");
 			}
 			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
@@ -329,7 +353,7 @@ public class TacheServiceImpl implements TacheService {
 			 * [SIFISC-11939] cela doit être fait également en cas de départ dans la PF précédente
 			 */
 			if (dateFermeture.year() == RegDate.get().year() || dateFermeture.year() == RegDate.get().year() - 1) {
-				genereTacheControleDossier(contribuable);
+				genereTacheControleDossier(contribuable, "Départ hors-canton.");
 			}
 			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
 			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le 31.12 de la période fiscale courante.
@@ -345,7 +369,7 @@ public class TacheServiceImpl implements TacheService {
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			if (!contribuable.getForsParTypeAt(dateFermeture, false).secondaires.isEmpty()) {
 				// [UNIREG-1105] Une tâche de contrôle de dossier (pour répartir les fors secondaires) doit être ouverte sur le couple en cas de séparation
-				genereTacheControleDossier(contribuable);
+				genereTacheControleDossier(contribuable, "Clôture de ménage commun avec for(s) secondaire(s).");
 			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de séparation (car elles n'ont pas lieu d'être)
 			// [UNIREG-1111] Génère une tâche d'émission de DI
@@ -380,7 +404,7 @@ public class TacheServiceImpl implements TacheService {
 		// S'il s'agit du dernier for secondaire existant, on génère une tâche de contrôle de dossier
 		if (forsAt.secondaires.size() == 1) {
 			Assert.isEqual(forSecondaire, forsAt.secondaires.get(0));
-			genereTacheControleDossier(contribuable);
+			genereTacheControleDossier(contribuable, "Fermeture du dernier for secondaire.");
 		}
 
 		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
@@ -390,9 +414,10 @@ public class TacheServiceImpl implements TacheService {
 	 * Génère une tache de contrôle de dossier sur un contribuable, en prenant bien soin de vérifier qu'il n'y en a pas déjà une non-traitée
 	 *
 	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
+	 * @param commentaire commentaire (= motif) à associer à la tâche de contrôle de dossier
 	 */
-	public void genereTacheControleDossier(Contribuable contribuable) {
-		genereTacheControleDossier(contribuable, null);
+	public void genereTacheControleDossier(Contribuable contribuable, String commentaire) {
+		genereTacheControleDossier(contribuable, null, commentaire);
 	}
 
 
@@ -402,14 +427,14 @@ public class TacheServiceImpl implements TacheService {
 	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
 	 * @param collectivite la collectivité administrative assignée aux tâches nouvellement créées.
 	 */
-	private void genereTacheControleDossier(Contribuable contribuable, @Nullable CollectiviteAdministrative collectivite) {
-
-		if (!tacheDAO.existsTacheEnInstanceOuEnCours(contribuable.getNumero(), TypeTache.TacheControleDossier)) {
+	private void genereTacheControleDossier(Contribuable contribuable, @Nullable CollectiviteAdministrative collectivite, String commentaire) {
+		if (!tacheDAO.existsTacheControleDossierEnInstanceOuEnCours(contribuable.getNumero(), commentaire)) {
 			//UNIREG-1024 "la tâche de contrôle du dossier doit être engendrée pour l'ancien office d'impôt"
 			if (collectivite == null) {
 				collectivite = getOfficeImpot(contribuable);
 			}
 			final TacheControleDossier tache = new TacheControleDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, collectivite);
+			tache.setCommentaire(commentaire);
 			tacheDAO.save(tache);
 		}
 	}
@@ -450,7 +475,7 @@ public class TacheServiceImpl implements TacheService {
 						final Assujettissement avantdernier = assujettissements.get(size - 2);
 						if (dernier.getMotifFractDebut() == MotifFor.ARRIVEE_HC && avantdernier.getMotifFractFin() == MotifFor.DEPART_HS) {
 							// si on est en présence d'une arrivée de hors-Canton précédée d'un départ hors-Suisse, on génère une tâche de contrôle de dossier
-							genereTacheControleDossier(contribuable);
+							genereTacheControleDossier(contribuable, "Arrivée hors-canton précédée d'un départ hors-Suisse.");
 						}
 					}
 				}
@@ -497,7 +522,7 @@ public class TacheServiceImpl implements TacheService {
 				//UNIREG-1886 si l'office nest pas trouvé (cas hors canton, hors suisse) on ne génère pas de tâche
 				if (office != null) {
 					final CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm());
-					genereTacheControleDossier(contribuable, collectivite);
+					genereTacheControleDossier(contribuable, collectivite, "Déménagement dans une période échue avec changement d'OID.");
 				}
 
 			}

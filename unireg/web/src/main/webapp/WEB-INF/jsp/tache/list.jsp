@@ -27,6 +27,9 @@
 	
 			<display:column sortable ="true" titleKey="label.type.tache" sortName="class">
 				<fmt:message key="option.type.tache.${tache.typeTache}"  />
+				<c:if test="${tache.commentaire != null}">
+					<div style="float: right;" class="info_icon" title="<c:out value="${tache.commentaire}"/>">&nbsp;</div>
+				</c:if>
 			</display:column>
 			<display:column titleKey="label.type.document">
 				<c:choose>

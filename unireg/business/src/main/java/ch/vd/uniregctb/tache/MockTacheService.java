@@ -14,6 +14,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * Implémentation du tâche service qui ne fait absolument rien.
@@ -41,7 +42,7 @@ public class MockTacheService implements TacheService {
 	}
 
 	@Override
-	public void genereTacheControleDossier(Contribuable contribuable) {
+	public void genereTacheControleDossier(Contribuable contribuable, String commentaire) {
 	}
 
 	@Override
@@ -78,7 +79,13 @@ public class MockTacheService implements TacheService {
     public void annuleTachesObsoletes(Collection<Long> set) {
     }
 
-    @Override
+	@Override
 	public void updateStats() {
+	}
+
+	@NotNull
+	@Override
+	public List<String> getCommentairesDistincts(TypeTache typeTache) {
+		return Collections.emptyList();
 	}
 }

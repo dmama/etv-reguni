@@ -3,6 +3,8 @@ package ch.vd.uniregctb.tiers;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -72,18 +74,16 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	int count(TacheCriteria criterion, boolean doNotAutoFlush);
 
 	/**
-	 * Vérifie s'il existe au moins une tâche en instance (ou en cours) du type spécifié sur le contribuable donnée.
+	 * Vérifie s'il existe au moins une tâche de contrôle de dossier en instance (ou en cours) avec le commentaire spécifié
 	 * <p>
 	 * Cette méthode <b>ne flush pas</b> la session en cours, <b>mais tient compte</b> des éventuelles tâches non-flushées qui existeraient
 	 * dans la session.
 	 *
-	 * @param noCtb
-	 *            le numéro de contribuable
-	 * @param type
-	 *            le type de tâche
+	 * @param noCtb         le numéro de contribuable
+	 * @param commentaire   le commentaire associé à la tâche
 	 * @return <b>vrai</b> s'il y a au moins une tâche en instance; <b>faux</b> autrement.
 	 */
-	boolean existsTacheEnInstanceOuEnCours(long noCtb, TypeTache type);
+	boolean existsTacheControleDossierEnInstanceOuEnCours(long noCtb, @Nullable String commentaire);
 
 	/**
 	 * Vérifie s'il existe au moins une tâche d'annulation de DI en instance (ou en cours) pour le contribuable donné et la déclaration donnée.
@@ -114,6 +114,11 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 * @return <b>vrai</b> s'il y a au moins une tâche en instance; <b>faux</b> autrement.
 	 */
 	boolean existsTacheEnvoiDIPPEnInstanceOuEnCours(long noCtb, RegDate dateDebut, RegDate dateFin);
+
+	/**
+	 * @return la liste (triée par ordre alphabétique), par type de tâche, des commentaires distincts non-vides
+	 */
+	Map<TypeTache, List<String>> getCommentairesDistincts();
 
 	/**
 	 * Retourne la liste de toutes les tâches du type spécifié pour le contribuable spécifié.

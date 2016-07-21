@@ -307,7 +307,7 @@ public class TacheServiceTest extends BusinessTest {
 		});
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifierTacheControleDossier(criterion, 0);
+		verifieControleDossier(criterion, 0);
 
 		// déménagement dans la période fiscale échue => il doit y avoir une tâche de contrôle de dossier
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -331,8 +331,12 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		TacheCriteria criterion2 = new TacheCriteria();
-		verifierTacheControleDossier(criterion2, 1);
+		final TacheCriteria criterion2 = new TacheCriteria();
+		final List<Tache> taches = verifieControleDossier(criterion2, 1);
+		final Tache tache = taches.get(0);
+		Assert.assertNotNull(tache);
+		Assert.assertFalse(tache.isAnnule());
+		Assert.assertEquals("Déménagement dans une période échue avec changement d'OID.", tache.getCommentaire());
 	}
 
 	@Test
@@ -833,6 +837,7 @@ public class TacheServiceTest extends BusinessTest {
 			List<Tache> taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
 			assertEquals(1, taches.size());
+			assertEquals("Départ hors-Suisse.", taches.get(0).getCommentaire());
 
 			// il doit y avoir 2 tâches d'annulation de DIs
 			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1064,6 +1069,7 @@ public class TacheServiceTest extends BusinessTest {
 		criterion.setTypeTache(TypeTache.TacheControleDossier);
 		List<Tache> taches = tacheDAO.find(criterion);
 		assertEquals(1, taches.size());
+		assertEquals("Fermeture du dernier for secondaire.", taches.get(0).getCommentaire());
 
 		// il doit y 1 tâches d'annulation de DIs
 		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1249,6 +1255,7 @@ public class TacheServiceTest extends BusinessTest {
 		criterion.setTypeTache(TypeTache.TacheControleDossier);
 		List<Tache> taches = tacheDAO.find(criterion);
 		assertEquals(1, taches.size());
+		assertEquals("Fermeture du dernier for secondaire.", taches.get(0).getCommentaire());
 
 		// il doit y 0 tâches d'annulation de DIs
 		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1660,6 +1667,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertNotNull(controles);
 			assertEquals(1, controles.size());
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, controles.get(0));
+			assertEquals("Clôture de ménage commun avec for(s) secondaire(s).", controles.get(0).getCommentaire());
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpotPP));
@@ -2269,15 +2277,19 @@ public class TacheServiceTest extends BusinessTest {
 	 *
 	 * @param criterion
 	 */
-	private void verifieControleDossier(TacheCriteria criterion) {
-		verifieControleDossier(criterion, 1);
+	private Tache verifieControleDossier(TacheCriteria criterion) {
+		return verifieControleDossier(criterion, 1).get(0);
 	}
 
-	private void verifieControleDossier(TacheCriteria criterion, int nombreResultats) {
+	/**
+	 * Verification des tâches de contrôle de dossier
+	 */
+	private List<Tache> verifieControleDossier(TacheCriteria criterion, int nombreResultats) {
 		criterion.setTypeTache(TypeTache.TacheControleDossier);
-		List<Tache> taches = tacheDAO.find(criterion);
+		final List<Tache> taches = tacheDAO.find(criterion);
 		assertNotNull(taches);
 		assertEquals(nombreResultats, taches.size());
+		return taches;
 	}
 
 	/**
@@ -2316,20 +2328,6 @@ public class TacheServiceTest extends BusinessTest {
 		c.setTypeTache(TypeTache.TacheNouveauDossier);
 		c.setInvertTypeTache(true);
 		return tacheDAO.count(c);
-	}
-
-	/**
-	 * Verification des tâches de contrôle de dossier
-	 *
-	 */
-	private void verifierTacheControleDossier(TacheCriteria criterion, int nombreResultats) {
-
-		criterion.setTypeTache(TypeTache.TacheControleDossier);
-		List<Tache> taches = tacheDAO.find(criterion);
-		assertNotNull(taches);
-		assertEquals(nombreResultats, taches.size());
-
-
 	}
 
 	/**
@@ -2727,11 +2725,40 @@ public class TacheServiceTest extends BusinessTest {
 			criteria.setContribuable(mc);
 			final List<Tache> taches = tacheDAO.find(criteria);
 			assertNotNull(taches);
-			assertEquals(1, taches.size());
+			assertEquals(2, taches.size());
 
-			final Tache tache = taches.get(0);
-			assertNotNull(tache);
-			assertEquals(TacheControleDossier.class, tache.getClass());
+			final List<Tache> tachesTriees = new ArrayList<>(taches);
+			Collections.sort(tachesTriees, new Comparator<Tache>() {
+				@Override
+				public int compare(Tache o1, Tache o2) {
+					final String commentaire1 = o1.getCommentaire();
+					final String commentaire2 = o2.getCommentaire();
+					if (commentaire1 == commentaire2) {
+						return Long.compare(o1.getId(), o2.getId());
+					}
+
+					if (commentaire1 == null) {
+						return -1;
+					}
+					if (commentaire2 == null) {
+						return 1;
+					}
+					return commentaire1.compareTo(commentaire2);
+				}
+			});
+
+			{
+				final Tache tache = tachesTriees.get(0);
+				assertNotNull(tache);
+				assertEquals(TacheControleDossier.class, tache.getClass());
+				assertEquals("Clôture de ménage commun avec for(s) secondaire(s).", tache.getCommentaire());
+			}
+			{
+				final Tache tache = tachesTriees.get(1);
+				assertNotNull(tache);
+				assertEquals(TacheControleDossier.class, tache.getClass());
+				assertEquals("Fermeture du dernier for secondaire.", tache.getCommentaire());
+			}
 		}
 	}
 
@@ -4291,6 +4318,7 @@ public class TacheServiceTest extends BusinessTest {
 
 					final TacheControleDossier tache = (TacheControleDossier) taches.get(0);
 					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
+					assertEquals("Départ hors-Suisse.", tache.getCommentaire());
 				}
 
 				// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du départ
@@ -5970,7 +5998,8 @@ public class TacheServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setNumeroCTB(ppId);
-				verifieControleDossier(criteria, 1);
+				final List<Tache> taches = verifieControleDossier(criteria, 1);
+				assertEquals("Départ hors-canton.", taches.get(0).getCommentaire());
 			}
 		});
 	}
@@ -6022,7 +6051,8 @@ public class TacheServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setNumeroCTB(ppId);
-				verifieControleDossier(criteria, 1);
+				final List<Tache> taches = verifieControleDossier(criteria, 1);
+				assertEquals("Départ hors-canton.", taches.get(0).getCommentaire());
 			}
 		});
 	}
