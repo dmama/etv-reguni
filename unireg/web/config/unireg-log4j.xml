@@ -66,9 +66,9 @@
 		<level value="INFO" />
 	</logger>
 
-	<!--logger name="ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne">
+	<logger name="ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne">
         <level value="TRACE" />
-    </logger-->
+    </logger>
 
 	<logger name="ch.vd.unireg.servlet.remoting">
 		<level value="INFO" />

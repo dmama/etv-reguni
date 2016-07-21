@@ -71,7 +71,7 @@
 	</category>
 
 	<root>
-		<level value="WARN" />
+		<level value="TRACE" />
 		<appender-ref ref="LOGFILE" />
 		<!-- appender-ref ref="CONSOLE" /-->
 	</root>
