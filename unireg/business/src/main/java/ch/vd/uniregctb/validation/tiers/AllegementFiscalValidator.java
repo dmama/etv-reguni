@@ -44,6 +44,11 @@ public abstract class AllegementFiscalValidator<T extends AllegementFiscal> exte
 	}
 
 	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
 	protected boolean isDateFinFutureAllowed() {
 		return true;
 	}

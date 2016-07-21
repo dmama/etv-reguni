@@ -16,6 +16,11 @@ public class FlagEntrepriseValidator extends DateRangeEntityValidator<FlagEntrep
 	}
 
 	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
 	protected boolean isDateFinFutureAllowed() {
 		return true;
 	}

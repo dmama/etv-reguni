@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.view.AddAllegementFiscalView;
 
@@ -28,12 +27,6 @@ public class AddAllegementFiscalViewValidator implements Validator {
 		}
 		else if (view.getDateFin() != null && view.getDateDebut().isAfter(view.getDateFin())) {
 			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-		}
-
-		// date de début dans le futur -> interdit
-		final RegDate today = RegDate.get();
-		if (view.getDateDebut() != null && today.isBefore(view.getDateDebut())) {
-			errors.rejectValue("dateDebut", "error.date.debut.future");
 		}
 
 		// le type de collectivité et le type d'impôt sont obligatoires

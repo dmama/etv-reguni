@@ -30,4 +30,14 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 		}
 		return vr;
 	}
+
+	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isDateFinFutureAllowed() {
+		return true;
+	}
 }

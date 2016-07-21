@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.view.EditRegimeFiscalView;
 
@@ -27,15 +26,6 @@ public class EditRegimeFiscalViewValidator extends AbstractRegimeFiscalViewValid
 		}
 		else if (view.getDateFin() != null && view.getDateDebut().isAfter(view.getDateFin())) {
 			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-		}
-
-		// dates dans le futur -> interdit
-		final RegDate today = RegDate.get();
-		if (view.getDateDebut() != null && today.isBefore(view.getDateDebut())) {
-			errors.rejectValue("dateDebut", "error.date.debut.future");
-		}
-		if (view.getDateFin() != null && today.isBefore(view.getDateFin())) {
-			errors.rejectValue("dateFin", "error.date.fin.dans.futur");
 		}
 
 		// la portée est obligatoire

@@ -18,18 +18,18 @@
 
 	<c:if test="${not empty command.regimesFiscauxVD}">
 
-		<input class="noprint" name="rfvd_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoAccordingToColumn('regimesVD','rfvd_histo');" id="rfvd_histo" />
+		<input class="noprint" name="rfvd_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('regimesVD','rfvd_histo', 'histo-only');" id="rfvd_histo" />
 		<label class="noprint" for="rfvd_histo"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin" class="notShownIfNotEmpty" style="width: 20%;">
+			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin" style="width: 20%;">
 				<unireg:regdate regdate="${regimesVD.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				${regimesVD.type.libelle}
+				<c:out value="${regimesVD.type.libelle}"/>
 			</display:column>
 			<display:column class="action" style="width: 10%;">
 				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesVD.id}" />
@@ -55,18 +55,18 @@
 
 	<c:if test="${not empty command.regimesFiscauxCH}">
 
-		<input class="noprint" name="rfch_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoAccordingToColumn('regimesCH','rfch_histo');" id="rfch_histo" />
+		<input class="noprint" name="rfch_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('regimesCH','rfch_histo', 'histo-only');" id="rfch_histo" />
 		<label class="noprint" for="rfch_histo"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin" class="notShownIfNotEmpty" style="width: 20%;">
+			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin" style="width: 20%;">
 				<unireg:regdate regdate="${regimesCH.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				${regimesCH.type.libelle}
+				<c:out value="${regimesCH.type.libelle}"/>
 			</display:column>
 			<display:column class="action" style="width: 10%;">
 				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesCH.id}"/>
@@ -80,8 +80,8 @@
 <script type="text/javascript">
 
 	$(function() {
-		Histo.toggleRowsIsHistoAccordingToColumn('regimesVD','rfvd_histo');
-		Histo.toggleRowsIsHistoAccordingToColumn('regimesCH','rfch_histo');
+		Histo.toggleRowsIsHistoFromClass('regimesVD','rfvd_histo', 'histo-only');
+		Histo.toggleRowsIsHistoFromClass('regimesCH','rfch_histo', 'histo-only');
 	});
 
 </script>
