@@ -5,7 +5,9 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -77,6 +79,8 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
+import ch.vd.uniregctb.evenement.di.EvenementLiberationDeclarationImpotSender;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
@@ -124,6 +128,8 @@ public class DeclarationImpotController {
 	private ControllerUtils controllerUtils;
 	private SecurityProviderInterface securityProvider;
 	private TicketService ticketService;
+	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
+	private EvenementLiberationDeclarationImpotSender liberationSender;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -193,6 +199,14 @@ public class DeclarationImpotController {
 		this.ticketService = ticketService;
 	}
 
+	public void setSourcesQuittancementAvecLiberationPossible(Set<String> sourcesQuittancementAvecLiberationPossible) {
+		this.sourcesQuittancementAvecLiberationPossible = sourcesQuittancementAvecLiberationPossible;
+	}
+
+	public void setLiberationSender(EvenementLiberationDeclarationImpotSender liberationSender) {
+		this.liberationSender = liberationSender;
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -209,7 +223,7 @@ public class DeclarationImpotController {
 	}
 
 	private void checkAccessRights(DeclarationImpotOrdinaire di, boolean emission, boolean quittancement, boolean delais, boolean sommation, boolean duplicata,
-	                               boolean desannulation, boolean suspension, boolean desuspension) {
+	                               boolean desannulation, boolean suspension, boolean desuspension, boolean liberation) {
 		final boolean emissionOk;
 		final boolean quittancementOk;
 		final boolean delaisOk;
@@ -218,6 +232,7 @@ public class DeclarationImpotController {
 		final boolean desannulationOk;
 		final boolean suspensionOk;
 		final boolean desuspensionOk;
+		final boolean liberationOk;
 		final String qualificatifPersonnes;
 		if (di instanceof DeclarationImpotOrdinairePP) {
 			emissionOk = emission && SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP);
@@ -228,6 +243,7 @@ public class DeclarationImpotController {
 			desannulationOk = desannulation && SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PP);
 			suspensionOk = false;
 			desuspensionOk = false;
+			liberationOk = liberation && SecurityHelper.isGranted(securityProvider, Role.DI_LIBERER_PP);
 			qualificatifPersonnes = "physiques";
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
@@ -239,16 +255,17 @@ public class DeclarationImpotController {
 			desannulationOk = desannulation && SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PM);
 			suspensionOk = suspension && SecurityHelper.isGranted(securityProvider, Role.DI_SUSPENDRE_PM);
 			desuspensionOk = desuspension && SecurityHelper.isGranted(securityProvider, Role.DI_DESUSPENDRE_PM);
+			liberationOk = liberation && SecurityHelper.isGranted(securityProvider, Role.DI_LIBERER_PM);
 			qualificatifPersonnes = "morales";
 		}
 		else {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
-		if (!emissionOk && !quittancementOk && !delaisOk && !sommationOk && !duplicataOk && !desannulationOk && !suspensionOk && !desuspensionOk) {
+		if (!emissionOk && !quittancementOk && !delaisOk && !sommationOk && !duplicataOk && !desannulationOk && !suspensionOk && !desuspensionOk && !liberationOk) {
 			// on n'a pas le(s) droit(s) demandé(s)
 			// pour plus de précision dans le message, si un seul droit était exigé, on va dire lequel manque (sinon, message générique)
-			final int nbDroitsAutorises = (emission ? 1 : 0) + (quittancement ? 1 : 0) + (delais ? 1 : 0) + (sommation ? 1 : 0) + (duplicata ? 1 : 0) + (desannulation ? 1 : 0) + (suspension ? 1 : 0) + (desuspension ? 1 : 0);
+			final int nbDroitsAutorises = (emission ? 1 : 0) + (quittancement ? 1 : 0) + (delais ? 1 : 0) + (sommation ? 1 : 0) + (duplicata ? 1 : 0) + (desannulation ? 1 : 0) + (suspension ? 1 : 0) + (desuspension ? 1 : 0) + (liberation ? 1 : 0);
 			final String msg;
 			if (nbDroitsAutorises == 1) {
 				final String droitSpecifique;
@@ -275,6 +292,9 @@ public class DeclarationImpotController {
 				}
 				else if (desuspension) {
 					droitSpecifique = "de levée de suspension";
+				}
+				else if (liberation) {
+					droitSpecifique = "de libération";
 				}
 				else {
 					throw new IllegalArgumentException("Cas non supporté...");
@@ -866,7 +886,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, false, false, false, false, false, false);
+		checkAccessRights(di, false, true, false, false, false, false, false, false, false);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -903,7 +923,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, false, false, false, false, false, false);
+		checkAccessRights(di, false, true, false, false, false, false, false, false, false);
 
 		if (result.hasErrors()) {
 			view.initReadOnlyValues(di, view.isTypeDocumentEditable(), messageSource);
@@ -948,7 +968,7 @@ public class DeclarationImpotController {
 		}
 
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) etat.getDeclaration();
-		checkAccessRights(di, false, true, false, false, false, false, false, false);
+		checkAccessRights(di, false, true, false, false, false, false, false, false, false);
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
@@ -995,7 +1015,7 @@ public class DeclarationImpotController {
 	                     @RequestParam(value = "tacheId", required = false) Long tacheId,
 	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_LIBERER_PM, Role.DI_LIBERER_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt.");
 		}
 
@@ -1003,7 +1023,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, true, true, true, false, true, true);
+		checkAccessRights(di, false, true, true, true, true, false, true, true, false);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -1016,7 +1036,8 @@ public class DeclarationImpotController {
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP),
 			                                      false,
-			                                      false);
+			                                      false,
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_LIBERER_PP) && isLiberable(di));
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
 			view = new EditerDeclarationImpotView(di, tacheId, messageSource,
@@ -1025,7 +1046,8 @@ public class DeclarationImpotController {
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM) && di.getTypeDeclaration() != null,
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SUSPENDRE_PM) && EditerDeclarationImpotView.isSuspendable(di),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DESUSPENDRE_PM) && isSuspendue(di));
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DESUSPENDRE_PM) && isSuspendue(di),
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_LIBERER_PM) && isLiberable(di));
 		}
 		else {
 			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire PP ou PM.");
@@ -1050,6 +1072,16 @@ public class DeclarationImpotController {
 		return etat != null && etat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
 	}
 
+	private boolean isLiberable(DeclarationImpotOrdinaire di) {
+		final List<EtatDeclaration> etatsRetournes = di.getEtatsOfType(TypeEtatDeclaration.RETOURNEE, false);
+		final Set<String> sources = new HashSet<>(etatsRetournes.size());
+		for (EtatDeclaration etat : etatsRetournes) {
+			sources.add(((EtatDeclarationRetournee) etat).getSource());
+		}
+		sources.retainAll(sourcesQuittancementAvecLiberationPossible);
+		return !sources.isEmpty();
+	}
+
 	/**
 	 * Sommer la déclaration d'impôt spécifiée.
 	 */
@@ -1069,7 +1101,7 @@ public class DeclarationImpotController {
 				if (di == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
-				checkAccessRights(di, false, false, false, true, false, false, false, false);
+				checkAccessRights(di, false, false, false, true, false, false, false, false, false);
 
 				if (!EditerDeclarationImpotView.isSommable(di)) {
 					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas dans un état sommable.");
@@ -1100,7 +1132,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, false, false, false, true, false, false, false);
+		checkAccessRights(di, false, false, false, false, true, false, false, false, false);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -1163,7 +1195,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, false, false, false, true, false, false, false);
+		checkAccessRights(di, false, false, false, false, true, false, false, false, false);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -1529,6 +1561,44 @@ public class DeclarationImpotController {
 			final String message = messageSource.getMessage("global.error.communication.editique", null, WebContextUtils.getDefaultLocale());
 			Flash.error(message);
 			return "redirect:/di/editer.do?id=" + id;
+		}
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/liberer.do", method = RequestMethod.POST)
+	public String libererDeclaration(@RequestParam("id") long idDeclaration) {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_LIBERER_PP, Role.DI_LIBERER_PM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec de libération des déclarations d'impôt.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		checkAccessRights(di, false, false, false, false, false, false, false, false, true);
+
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// vérification de la libérabilité de la déclaration
+		if (!isLiberable(di)) {
+			final String message = messageSource.getMessage("error.di.non.liberable", null, WebContextUtils.getDefaultLocale());
+			Flash.error(message);
+			return "redirect:/di/editer.do?id=" + idDeclaration;
+		}
+
+		// envoi de la demande de libération
+		try {
+			liberationSender.demandeLiberationDeclarationImpot(di.getTiers().getNumero(),
+			                                                   di.getPeriode().getAnnee(),
+			                                                   di.getNumero(),
+			                                                   di instanceof DeclarationImpotOrdinairePP ? EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PP : EvenementLiberationDeclarationImpotSender.TypeDeclarationLiberee.DI_PM);
+			Flash.message("La demande de libération de la déclaration a été envoyée au service concerné.");
+			return "redirect:/di/editer.do?id=" + idDeclaration;
+		}
+		catch (EvenementDeclarationException e) {
+			throw new ActionException(e.getMessage(), e);
 		}
 	}
 }

@@ -214,6 +214,12 @@
 					                 action="/di/annuler.do" method="post" params='{id:${command.id}}'/>
 				</c:if>
 			</c:if>
+
+			<!-- Libération de la DI -->
+			<c:if test="${command.allowedLiberation && !command.depuisTache}">
+				<unireg:buttonTo name="Libérer la déclaration" confirm="Voulez-vous vraiment libérer cette déclaration d'impôt ?"
+				                 action="/di/liberer.do" method="post" params='{id:${command.id}}' />
+			</c:if>
 		</div>
 
 	</tiles:put>

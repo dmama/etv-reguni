@@ -154,7 +154,7 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 //	@Column(name = "TYPE", length = LengthConstants.DI_ETAT)
 //	@Type(type = "ch.vd.uniregctb.hibernate.TypeEtatDeclarationUserType")
 	@Transient
-	public abstract  TypeEtatDeclaration getEtat();
+	public abstract TypeEtatDeclaration getEtat();
 
 
 

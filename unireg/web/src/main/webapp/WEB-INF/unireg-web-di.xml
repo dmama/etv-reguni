@@ -30,6 +30,8 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="ticketService" ref="ticketService"/>
+		<property name="sourcesQuittancementAvecLiberationPossible" ref="sourcesQuittancementAvecLiberationPossible"/>
+		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >

@@ -53,6 +53,7 @@ public class EditerDeclarationImpotView {
 	private boolean isAllowedDuplicata;
 	private boolean isAllowedSuspension;
 	private boolean isAllowedAnnulationSuspension;
+	private boolean isAllowedLiberation;
 
 	private boolean isDiPP;
 	private boolean isDiPM;
@@ -61,14 +62,14 @@ public class EditerDeclarationImpotView {
 	}
 
 	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
-	                                  boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
-		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension);
+	                                  boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
+		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension, allowedLiberation);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateFin().year();
@@ -85,6 +86,7 @@ public class EditerDeclarationImpotView {
 		this.isAllowedDuplicata = allowedDuplicata;
 		this.isAllowedSuspension = allowedSuspension;
 		this.isAllowedAnnulationSuspension = allowedAnnulationSuspension;
+		this.isAllowedLiberation = allowedLiberation;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
 		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
@@ -262,6 +264,10 @@ public class EditerDeclarationImpotView {
 
 	public boolean isAllowedAnnulationSuspension() {
 		return isAllowedAnnulationSuspension;
+	}
+
+	public boolean isAllowedLiberation() {
+		return isAllowedLiberation;
 	}
 
 	public boolean isSommable() {

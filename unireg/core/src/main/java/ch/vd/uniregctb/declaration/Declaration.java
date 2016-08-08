@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -318,6 +319,22 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 			}
 		}
 		return null;
+	}
+
+	@NotNull
+	@Transient
+	public List<EtatDeclaration> getEtatsOfType(TypeEtatDeclaration type, boolean withCanceled) {
+		final List<EtatDeclaration> etatsSorted = getEtatsSorted();
+		if (etatsSorted == null || etatsSorted.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<EtatDeclaration> etatsOfType = new ArrayList<>(etatsSorted.size());
+		for (EtatDeclaration etat : etatsSorted) {
+			if ((withCanceled || !etat.isAnnule()) && etat.getEtat() == type) {
+				etatsOfType.add(etat);
+			}
+		}
+		return etatsOfType.isEmpty() ? Collections.<EtatDeclaration>emptyList() : etatsOfType;
 	}
 
 	/**

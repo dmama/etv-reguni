@@ -486,7 +486,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 				}
 			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP, Role.DI_DESANNUL_PP)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP, Role.DI_DESANNUL_PP, Role.DI_LIBERER_PP)) {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
 
@@ -595,7 +595,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_ETABLISSEMENT, Boolean.TRUE);
 			}
 
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_DESANNUL_PM)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_DESANNUL_PM, Role.DI_LIBERER_PM)) {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
 			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.QSNC_EMISSION, Role.QSNC_DUPLICATA, Role.QSNC_QUITTANCEMENT, Role.QSNC_RAPPEL)) {
