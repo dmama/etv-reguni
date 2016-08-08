@@ -14,6 +14,8 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/di/input/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-input-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/di/output/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-output-1.xsd"/>
 
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/di/liberation/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evtLiberationDeclarationImpot-1.xsd"/>
+
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/declaration/ack/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/declaration/declaration-ack-2.xsd"/>
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/cyber/codeControle/2" schemaLocation="http://www.vd.ch/fiscalite/cyber/codeControle-2.xsd"/>

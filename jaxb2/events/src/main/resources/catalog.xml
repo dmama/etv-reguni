@@ -3,8 +3,8 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-common-1.xsd" uri="event/di/evenementDeclarationImpot-common-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-input-1.xsd" uri="event/di/evenementDeclarationImpot-input-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-output-1.xsd" uri="event/di/evenementDeclarationImpot-output-1.xsd"/>
-
 	<system systemId="http://www.vd.ch/fiscalite/cyber/codeControle-2.xsd" uri="event/di/evtPublicationCodeControleCyber-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evtLiberationDeclarationImpot-1.xsd" uri="event/di/evtLiberationDeclarationImpot-1.xsd"/>
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/declaration/declaration-event-2.xsd" uri="event/declaration/declaration-event-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/declaration/declaration-ack-2.xsd" uri="event/declaration/declaration-ack-2.xsd"/>
