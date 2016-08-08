@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<evt:declarationEvent xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2"
+                      xmlns:evt="http://www.vd.ch/fiscalite/unireg/event/declaration/2"
+                      xmlns:ack="http://www.vd.ch/fiscalite/unireg/event/declaration/ack/2"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:type="ack:declarationAckType">
+	<evt:declaration>
+		<evt:partyNumber>12344556</evt:partyNumber>
+		<evt:taxPeriod>2010</evt:taxPeriod>
+		<evt:sequenceNumber>1</evt:sequenceNumber>
+	</evt:declaration>
+	<ack:source>ADDI</ack:source>
+	<ack:date>
+		<common:year>2011</common:year>
+		<common:month>5</common:month>
+		<common:day>26</common:day>
+	</ack:date>
+</evt:declarationEvent>

@@ -30,9 +30,9 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 
-public class EvenementDeclarationEsbHandler implements EsbMessageHandler, InitializingBean {
+public class EvenementDeclarationEsbHandlerV1 implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationEsbHandlerV1.class);
 
 	private EvenementDeclarationHandler handler;
 

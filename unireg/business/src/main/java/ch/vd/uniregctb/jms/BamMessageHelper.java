@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 
 /**
@@ -47,11 +48,11 @@ public abstract class BamMessageHelper {
 
 	private static final Collection<String> attributesKeysToCopyFromIncomingMessages = buildAttributeKeysToCopyFromIncomingMessages();
 
-	private static String buildNoSequence(DeclarationImpotOrdinaire di) {
+	private static String buildNoSequence(DeclarationAvecNumeroSequence di) {
 		return String.format("%02d", di.getNumero());
 	}
 
-	private static String buildPeriode(DeclarationImpotOrdinaire di) {
+	private static String buildPeriode(Declaration di) {
 		return String.format("%s-%s", RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
 	}
 
@@ -142,16 +143,16 @@ public abstract class BamMessageHelper {
 	/**
 	 * Prépare une map des attributs supplémentaires à envoyer dans le message au BAM lors du quittancement
 	 * d'un ensemble de déclarations pas trop bien identifiées (<i>a priori</i> déclaration "électronique")
-	 * @param dis la collection des déclarations quittancées
+	 * @param declarations la collection des déclarations quittancées
 	 * @param dateQuittancement date à laquelle la DI a été quittancée
 	 * @param incomingMessageHeaders dans le cas où le quittancement a été effectué suite à la réception d'un message JMS, les headers de ce message
 	 * @return les attributs à ajouter au message pour le BAM
 	 */
 	@Nullable
-	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclarations(List<DeclarationImpotOrdinaire> dis, RegDate dateQuittancement, @Nullable Map<String, String> incomingMessageHeaders) {
+	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclarations(List<? extends DeclarationAvecNumeroSequence> declarations, RegDate dateQuittancement, @Nullable Map<String, String> incomingMessageHeaders) {
 		final StringBuilder bNoSequences = new StringBuilder();
 		final StringBuilder bPeriodes = new StringBuilder();
-		for (DeclarationImpotOrdinaire di : dis) {
+		for (DeclarationAvecNumeroSequence di : declarations) {
 			if (!di.isAnnule()) {
 				if (bNoSequences.length() > 0) {
 					bNoSequences.append(';');

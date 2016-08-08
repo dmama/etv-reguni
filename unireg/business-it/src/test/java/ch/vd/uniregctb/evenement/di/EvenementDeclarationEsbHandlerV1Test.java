@@ -30,10 +30,10 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Classe de test du listener d'événements Declaration. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  */
-public class EvenementDeclarationEsbHandlerTest extends EvenementTest {
+public class EvenementDeclarationEsbHandlerV1Test extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementDeclarationEsbHandler handler;
+	private EvenementDeclarationEsbHandlerV1 handler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -60,7 +60,7 @@ public class EvenementDeclarationEsbHandlerTest extends EvenementTest {
 			}
 		};
 
-		handler = new EvenementDeclarationEsbHandler();
+		handler = new EvenementDeclarationEsbHandlerV1();
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.afterPropertiesSet();
 
