@@ -21,14 +21,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-common</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
-			<version>${pom.parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -118,6 +118,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>2.0.4</version>
 				<executions>
 					<execution>
 						<goals>
