@@ -14,6 +14,8 @@
 
 	<bean id="sourcesMonoQuittancementDi" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
 
+	<bean id="sourcesQuittancementAvecLiberationPossible" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet"/>
+
 	<!-- Identification des PM -->
 
 	<bean id="motsReservesIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
