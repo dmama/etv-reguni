@@ -74,10 +74,12 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 				rc.changeStatusInscription(RegDate.get(2012, 1, 26), StatusInscriptionRC.RADIE);
 				rc.changeStatusInscription(RegDate.get(2015, 7, 5), StatusInscriptionRC.ACTIF);
 				rc.changeDateRadiation(RegDate.get(2012, 1, 26), RegDate.get(2012, 1, 26));
-				rc.changeDateRadiation(RegDate.get(2015, 7, 5), null);
+				// En fait la date persiste dans RCEnt après la réinscription
+				//rc.changeDateRadiation(RegDate.get(2015, 7, 5), null);
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
-				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
-				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
+				// La réinscription n'a pas d'effet immédiat à l'IDE.
+				//donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
+				//donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
 				addOrganisation(organisation);
 			}
 		});
@@ -132,7 +134,7 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de réinscription de l’entreprise au RC.",
+				                             Assert.assertEquals("Réinscription de l’entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.",
 				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }

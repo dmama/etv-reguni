@@ -62,7 +62,7 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		warnings.addWarning("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de réinscription de l’entreprise au RC.");
+		warnings.addWarning("Réinscription de l’entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.");
 	}
 
 	@Override
@@ -80,8 +80,10 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		// Vérifier qu'on est bien en présence d'une réinscription
 		Assert.state(statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION);
 		Assert.state(statusInscriptionAvant == StatusInscriptionRC.RADIE);
-		Assert.isNull(dateRadiationApres, "Date de radiation toujours présente après l'annonce. Nous ne sommes pas en présence d'une réinscription.");
-		Assert.notNull(dateRadiationAvant, "Date de radiation absente avant l'annonce. Nous ne sommes pas en présence d'une réinscription.");
+		// Malheureusement, c'est le cas normal dans RCEnt
+		//Assert.isNull(dateRadiationApres, "Date de radiation toujours présente après l'annonce. Nous ne sommes pas en présence d'une réinscription.");
+		// Peut ne pas être vrai. Un date de radiation peut être présente dans RCEnt sur une entreprise précédament déménagée HC puis revenue sur VD.
+		//Assert.notNull(dateRadiationAvant, "Date de radiation absente avant l'annonce. Nous ne sommes pas en présence d'une réinscription.");
 	}
 
 	public RegDate getDateAvant() {
