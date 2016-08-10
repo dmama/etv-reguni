@@ -14,6 +14,7 @@
 				<ref bean="evenementCediHandlerV3"/>
 				<ref bean="evenementCediHandler2015V2"/>
 				<ref bean="evenementCediHandler2016V1"/>
+				<ref bean="evenementCediHandler2017V1"/>
 			</list>
 		</property>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
@@ -28,6 +29,7 @@
 	<bean id="evenementCediHandlerV3" class="ch.vd.uniregctb.evenement.cedi.V3Handler" parent="evenementCediAbstractHandler"/>
 	<bean id="evenementCediHandler2015V2" class="ch.vd.uniregctb.evenement.cedi.Pf2015V2Handler" parent="evenementCediAbstractHandler"/>
 	<bean id="evenementCediHandler2016V1" class="ch.vd.uniregctb.evenement.cedi.Pf2016V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2017V1" class="ch.vd.uniregctb.evenement.cedi.Pf2017V1Handler" parent="evenementCediAbstractHandler"/>
 
 	<bean id="evenementCediEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
