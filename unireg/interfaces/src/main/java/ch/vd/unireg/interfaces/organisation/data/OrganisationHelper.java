@@ -313,8 +313,14 @@ public abstract class OrganisationHelper {
 	}
 
 
+	/**
+	 * Extrait les entrées de journal publiées à la FOSC à la date correspondant.
+	 * @param entrees liste d'entrées de journal avec publication FOSC
+	 * @param date date de publication à la FOSC
+	 * @return les entrées de journal correspondant à la date de publication
+	 */
 	@NotNull
-	public static List<EntreeJournalRC> getEntreesJournal(List<EntreeJournalRC> entrees, RegDate date) {
+	public static List<EntreeJournalRC> getEntreesJournalPourDatePublication(List<EntreeJournalRC> entrees, RegDate date) {
 		if (entrees == null || entrees.isEmpty()) {
 			return Collections.emptyList();
 		}

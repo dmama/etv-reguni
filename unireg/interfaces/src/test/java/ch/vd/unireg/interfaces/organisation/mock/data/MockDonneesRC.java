@@ -233,8 +233,8 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	@Override
-	public List<EntreeJournalRC> getEntreesJournal(RegDate date) {
-		return OrganisationHelper.getEntreesJournal(entreesJournal, date);
+	public List<EntreeJournalRC> getEntreesJournalPourDatePublication(RegDate date) {
+		return OrganisationHelper.getEntreesJournalPourDatePublication(entreesJournal, date);
 	}
 
 	public void addEntreeJournal(EntreeJournalRC entreeJournal) {

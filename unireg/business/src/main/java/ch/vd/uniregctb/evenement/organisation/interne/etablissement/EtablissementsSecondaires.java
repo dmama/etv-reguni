@@ -224,7 +224,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 			RegDate dateDemenagement = null;
 			if (site.isInscritAuRC(getDateEvt()) && !site.isRadieDuRC(getDateEvt())) {
-				final List<EntreeJournalRC> entreesJournal = site.getDonneesRC().getEntreesJournal(getDateEvt());
+				final List<EntreeJournalRC> entreesJournal = site.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 				if (entreesJournal.isEmpty()) {
 					throw new EvenementOrganisationException(
 							String.format("Entrée de journal au RC introuvable dans l'établissement n°%s (civil: %s). Impossible de traiter le déménagement VD.",

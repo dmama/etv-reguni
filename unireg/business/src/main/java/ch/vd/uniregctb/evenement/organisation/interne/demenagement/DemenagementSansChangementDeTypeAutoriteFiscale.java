@@ -40,7 +40,7 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 		// Si on est une organisation inscrite au RC, la date de déménagement correspond à la date de l'entrée au régistre journalier.
 		if (getOrganisation().isInscritAuRC(getDateEvt()) && !getOrganisation().isRadieDuRC(getDateEvt())) {
 			final SiteOrganisation sitePrincipal = getOrganisation().getSitePrincipal(getDateEvt()).getPayload();
-			final List<EntreeJournalRC> entreesJournal = sitePrincipal.getDonneesRC().getEntreesJournal(getDateEvt());
+			final List<EntreeJournalRC> entreesJournal = sitePrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 			if (entreesJournal.isEmpty()) {
 				throw new EvenementOrganisationException(
 						String.format("Entrée de journal au RC introuvable dans l'établissement principal (civil: %s). Impossible de traiter le déménagement VD.",

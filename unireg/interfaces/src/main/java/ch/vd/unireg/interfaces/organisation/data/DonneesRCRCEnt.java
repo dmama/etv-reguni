@@ -141,7 +141,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	}
 
 	@Override
-	public List<EntreeJournalRC> getEntreesJournal(RegDate date) {
-		return OrganisationHelper.getEntreesJournal(entreesJournal, date);
+	public List<EntreeJournalRC> getEntreesJournalPourDatePublication(RegDate date) {
+		return OrganisationHelper.getEntreesJournalPourDatePublication(entreesJournal, date);
 	}
 }

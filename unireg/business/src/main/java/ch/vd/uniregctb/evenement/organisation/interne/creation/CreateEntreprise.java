@@ -1,15 +1,19 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationAbortException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
@@ -92,6 +96,27 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		// SIFISC-19700: Contrôle que la date d'inscription au RC rapportée par RCEnt correspond à celle de l'entrée de journal au RC. (il y a eu des erreurs de transcription au RC!)
+		if (isCreation() && getOrganisation().isInscritAuRC(getDateEvt())) {
+			final List<EntreeJournalRC> entreesJournalPourDatePublication = sitePrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
+			/*
+			 On part du principe que lors d'une inscription d'une nouvelle entreprise au RC, on a une et une seule publication FOSC portant sur une entrée de journal.
+			 S'il y a plusieurs entrées, c'est qu'on n'est pas vraiment dans un cas de création d'entreprise, en tout cas pas un cas standard. On ignore.
+			  */
+			if (entreesJournalPourDatePublication.size() == 1) {
+				final EntreeJournalRC entreeJournalRC = entreesJournalPourDatePublication.get(0);
+				if (entreeJournalRC.getDate() != dateDeCreation) {
+					throw new EvenementOrganisationAbortException(
+							String.format("La date d'inscription au RC (%s) de l'entreprise %s (civil: %s) diffère de la date de l'entrée de journal au RC (%s)! (Possible problème de transcription au RC) Impossible de continuer.",
+							              RegDateHelper.dateToDisplayString(dateDeCreation),
+							              getOrganisation().getNom(getDateEvt()),
+							              getNoOrganisation(),
+							              RegDateHelper.dateToDisplayString(entreeJournalRC.getDate()))
+					);
+				}
+			}
+		}
+
 		// Création & vérification de la surcharge corrective s'il y a lieu
 		SurchargeCorrectiveRange surchargeCorrectiveRange = null;
 		if (dateDeCreation.isBefore(getDateEvt())) {
