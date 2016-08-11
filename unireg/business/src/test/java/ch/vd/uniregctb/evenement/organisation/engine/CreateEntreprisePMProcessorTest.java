@@ -12,10 +12,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
@@ -74,7 +78,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		return true;
 	}
 
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testCreationPM() throws Exception {
 
 		// Mise en place service mock
@@ -1202,6 +1206,66 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
 					                             Assert.assertEquals(date(2015, 6, 25), eff.getForFiscal().getDateDebut());
 				                             }
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testCreationDonneesRCInvalides() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final RegDate datePublication = date(2015, 6, 27);
+		final RegDate dateMauvaiseInscriptionRC = date(2015, 6, 24);
+		final RegDate dateEntreeJournal = date(2015, 6, 20);
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+
+				final MockOrganisation simpleEntrepriseRC =
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", datePublication, null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                 MockCommune.Lausanne);
+				addOrganisation(
+						simpleEntrepriseRC);
+				final SiteOrganisation siteOrganisation = simpleEntrepriseRC.getDonneesSites().get(0);
+				final MockDonneesRC donneesRC = (MockDonneesRC) siteOrganisation.getDonneesRC();
+				donneesRC.addEntreeJournal(new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, dateEntreeJournal, 123456L, new PublicationFOSC(datePublication, "998877", "Nouvelle entreprise blah blah")));
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+
+				                             Assert.assertEquals(String.format("La date d'inscription au RC (%s) de l'entreprise Synergy SA (civil: %d) diffère de la date de l'entrée de journal au RC (%s)! (Possible problème de transcription au RC) Impossible de continuer.",
+				                                                               RegDateHelper.dateToDisplayString(dateMauvaiseInscriptionRC),
+				                                                               noOrganisation,
+				                                                               RegDateHelper.dateToDisplayString(dateEntreeJournal)),
+				                                                 evt.getErreurs().get(2).getMessage());
 
 				                             return null;
 			                             }

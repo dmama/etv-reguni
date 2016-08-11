@@ -45,5 +45,11 @@ public interface DonneesRC {
 
 	List<EntreeJournalRC> getEntreesJournal();
 
-	List<EntreeJournalRC> getEntreesJournal(RegDate date);
+	/**
+	 * Retourne la liste des entrées de journal au RC (englobant la publication FOSC correspondante)
+	 * correspondant à la date de publication FOSC passée en paramètre.
+	 * @param date date de publication FOSC
+	 * @return la liste des entrées de journal pour la date de publication
+	 */
+	List<EntreeJournalRC> getEntreesJournalPourDatePublication(RegDate date);
 }
