@@ -1272,4 +1272,54 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		                             }
 		);
 	}
+
+	@Test(timeout = 1000000L)
+	public void testCreationPMFailCommuneExistePasEncore() throws Exception {
+
+		// La commune de Jorat-Mézières débute civilement le 1er juillet 2016 et fiscalement le 1er janvier 2017.
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2016, 7, 10), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                 MockCommune.JoratMezieres));
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2016, 7, 12), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+
+				                             Assert.assertEquals("La commune au numéro ofs 5806 n'existe pas en date du 07.07.2016! On en trouve cependant une appelée Jorat-Mézières (VD) commençant fiscalement en date du 01.01.2017.",
+				                                                 evt.getErreurs().get(0).getMessage());
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
 }

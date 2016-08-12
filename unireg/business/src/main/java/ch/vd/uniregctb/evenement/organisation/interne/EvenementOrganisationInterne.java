@@ -600,7 +600,8 @@ public abstract class EvenementOrganisationInterne {
 	 * @param dateDebut Date de début
 	 * @return l'établissement créé
 	 */
-	protected Etablissement createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+	protected Etablissement createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
 		Assert.notNull(numeroSite);
 		Assert.notNull(autoriteFiscale);
 		Assert.notNull(dateDebut);
@@ -610,17 +611,40 @@ public abstract class EvenementOrganisationInterne {
 		// L'activité économique
 		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
-		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNumeroOfsAutoriteFiscale()), dateDebut).getNomOfficielAvecCanton();
+		final Commune commune = getCommune(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateDebut);
 
 		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour le site %d, domicile %s (ofs: %d), à partir du %s",
 		                              principal ? "principal" : "secondaire",
 		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              numeroSite,
-		                              commune,
+		                              commune.getNomOfficielAvecCanton(),
 		                              autoriteFiscale.getNumeroOfsAutoriteFiscale(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
 		raiseStatusTo(HandleStatus.TRAITE);
 		return etablissement;
+	}
+
+	/**
+	 * Recherche dans FiDoR la commune par numéro OFS et pour une date.
+	 */
+	@NotNull
+	protected Commune getCommune(int noOfsAutoriteFiscale, RegDate dateDebut) throws EvenementOrganisationException {
+		final List<Commune> communeHistoByNumeroOfs = context.getServiceInfra().getCommuneHistoByNumeroOfs(noOfsAutoriteFiscale);
+		final Commune commune = DateRangeHelper.rangeAt(communeHistoByNumeroOfs, dateDebut);
+		String infosCommuneAuCommencement = "";
+		if (commune == null) {
+			if (communeHistoByNumeroOfs.size() > 0) {
+				Commune communeAuCommencement = communeHistoByNumeroOfs.get(0);
+				infosCommuneAuCommencement = String.format(" On en trouve cependant une appelée %s commençant fiscalement en date du %s.",
+				                                           communeAuCommencement.getNomOfficielAvecCanton(),
+				                                           RegDateHelper.dateToDisplayString(communeAuCommencement.getDateDebut()));
+			}
+			throw new EvenementOrganisationException(String.format("La commune au numéro ofs %d n'existe pas en date du %s!%s",
+			                                                       noOfsAutoriteFiscale,
+			                                                       RegDateHelper.dateToDisplayString(dateDebut),
+			                                                       infosCommuneAuCommencement));
+		}
+		return commune;
 	}
 
 	/**
@@ -632,9 +656,10 @@ public abstract class EvenementOrganisationInterne {
 	 * @param dateDebut
 	 * @param suivis
 	 */
-	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
-		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNumeroOfsAutoriteFiscale()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
-		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNumeroOfsAutoriteFiscale()), dateDebut).getNomOfficielAvecCanton();
+	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
+		final String ancienneCommune = getCommune(ancienDomicile.getNumeroOfsAutoriteFiscale(), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
+		final String nouvelleCommune = getCommune(nouveauDomicile.getNumeroOfsAutoriteFiscale(), dateDebut).getNomOfficielAvecCanton();
 		suivis.addSuivi(String.format("L'établissement n°%s a déménagé de %s (ofs: %d) à %s (ofs: %d), le %s.",
 		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              ancienneCommune,
@@ -656,10 +681,11 @@ public abstract class EvenementOrganisationInterne {
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Domicile autoriteFiscale,
-	                                                      MotifRattachement rattachement, MotifFor motifOuverture, GenreImpot genreImpot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
+	                                                      MotifRattachement rattachement, MotifFor motifOuverture, GenreImpot genreImpot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateOuverture);
+		final Commune commune = getCommune(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal à %s à partir du %s, motif ouverture %s, rattachement %s, pour l'entreprise n°%s (civil: %d).",
 			                              commune.getNomOfficielAvecCanton(),
@@ -693,8 +719,8 @@ public abstract class EvenementOrganisationInterne {
 	protected ForFiscalSecondaire creerForFiscalSecondaire(RegDate dateOuverture, @Nullable RegDate dateFermeture, MotifRattachement motifRattachement,
 	                                                       int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
 	                                                       MotifFor motifOuverture, @Nullable MotifFor motifFermeture, GenreImpot genreImpot,
-	                                                       EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
+	                                                       EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		final Commune commune = getCommune(numeroOfsAutoriteFiscale, dateOuverture);
 		if (!commune.isPrincipale()) {
 			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
 			suivis.addSuivi(String.format("Création d'un for fiscal secondaire à %s à partir du %s (%s)%s, rattachement %s, entreprise n°%s (civil: %d).",
@@ -733,9 +759,10 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis       Le collector pour le suivi
 	 * @return
 	 */
-	protected ForFiscalSecondaire closeForFiscalSecondaire(RegDate dateDeFermeture, ForFiscalSecondaire forAFermer, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
+	protected ForFiscalSecondaire closeForFiscalSecondaire(RegDate dateDeFermeture, ForFiscalSecondaire forAFermer, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
 
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(forAFermer.getNumeroOfsAutoriteFiscale(), dateDeFermeture);
+		final Commune commune = getCommune(forAFermer.getNumeroOfsAutoriteFiscale(), dateDeFermeture);
 		suivis.addSuivi(String.format("Fermeture d'un for secondaire à %s en date du %s, motif fermeture %s, pour l'entreprise n°%s (civil: %d).",
 		                              commune.getNomOfficielAvecCanton(),
 		                              RegDateHelper.dateToDisplayString(dateDeFermeture),
@@ -747,8 +774,9 @@ public abstract class EvenementOrganisationInterne {
 		return context.getTiersService().closeForFiscalSecondaire(entreprise, forAFermer, dateDeFermeture, motifFermeture);
 	}
 
-	protected void annulerForFiscalSecondaire(final ForFiscalSecondaire forAAnnuler, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(forAAnnuler.getNumeroOfsAutoriteFiscale(), forAAnnuler.getDateDebut());
+	protected void annulerForFiscalSecondaire(final ForFiscalSecondaire forAAnnuler, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
+		final Commune commune = getCommune(forAAnnuler.getNumeroOfsAutoriteFiscale(), forAAnnuler.getDateDebut());
 		suivis.addSuivi(String.format("Annulation d'un for fiscal secondaire à %s débutant le %s%s, motif ouverture %s, rattachement %s, pour l'entreprise n°%s (civil: %d).",
 		                              commune.getNomOfficielAvecCanton(),
 		                              RegDateHelper.dateToDisplayString(forAAnnuler.getDateDebut()),
@@ -768,9 +796,9 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis          le collector pour le suivi
 	 * @return
 	 */
-	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
+	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		final ForFiscalPrincipalPM forFiscalPrincipal = entreprise.getForFiscalPrincipalAt(null);
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), dateDeFermeture);
+		final Commune commune = getCommune(forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), dateDeFermeture);
 		suivis.addSuivi(String.format("Fermeture du for fiscal principal à %s en date du %s, motif fermeture %s, pour l'entreprise n°%s (civil: %d)",
 		                              commune.getNomOfficielAvecCanton(),
 		                              RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture.getDescription(false),
@@ -780,8 +808,8 @@ public abstract class EvenementOrganisationInterne {
 		return context.getTiersService().closeForFiscalPrincipal(entreprise, dateDeFermeture, motifFermeture);
 	}
 
-	protected void reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, EvenementOrganisationSuiviCollector suivis) {
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getDateDebut());
+	protected void reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		final Commune commune = getCommune(forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getDateDebut());
 		suivis.addSuivi(String.format("Réouverture du for principal de %s, qui commençait le %s%s, pour l'entreprise n°%s (civil: %s).",
 		                              commune.getNomOfficielAvecCanton(),
 		                              RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateDebut()),
@@ -897,10 +925,10 @@ public abstract class EvenementOrganisationInterne {
 		}
 	}
 
-	private String renderNonCouvertWarning(ForFiscalSecondaire forSecondaireNonCouvert) {
+	private String renderNonCouvertWarning(ForFiscalSecondaire forSecondaireNonCouvert) throws EvenementOrganisationException {
 		return String.format("Impossible de créer le for: la période de for fiscal secondaire à %s (ofs: %d) débutant le %s%s " +
 				                                  "n'est pas couverte par un for principal valide. Veuillez créer ou ajuster le for à la main après avoir corrigé le for principal.",
-		                     context.getServiceInfra().getCommuneByNumeroOfs(forSecondaireNonCouvert.getNumeroOfsAutoriteFiscale(), forSecondaireNonCouvert.getDateDebut()).getNomOfficielAvecCanton(),
+		                     getCommune(forSecondaireNonCouvert.getNumeroOfsAutoriteFiscale(), forSecondaireNonCouvert.getDateDebut()).getNomOfficielAvecCanton(),
 		                     forSecondaireNonCouvert.getNumeroOfsAutoriteFiscale(),
 		                     RegDateHelper.dateToDisplayString(forSecondaireNonCouvert.getDateDebut()),
 		                     forSecondaireNonCouvert.getDateFin() != null ? " et se terminant le " + RegDateHelper.dateToDisplayString(forSecondaireNonCouvert.getDateFin()) : ""

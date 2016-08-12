@@ -79,7 +79,7 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 				final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
 				if (domicilePasse != null) {
 					if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						final Commune commune = getContext().getServiceInfra().getCommuneByNumeroOfs(domicilePasse.getNumeroOfsAutoriteFiscale(), datePasseeTropAncienne);
+						final Commune commune = getCommune(domicilePasse.getNumeroOfsAutoriteFiscale(), datePasseeTropAncienne);
 						throw new ValideurDebutDeTraitementException(
 								String.format(
 										"L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",

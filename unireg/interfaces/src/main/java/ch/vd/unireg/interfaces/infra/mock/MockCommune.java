@@ -81,6 +81,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	// quelques communes non-éternelles
 	public static final MockCommune Malapalud = new MockCommune(5526, "Malapalud", VAUD, MockDistrict.Echallens, null, RegDate.get(2008, 12, 31));
 	public static final MockCommune ValDeTravers = new MockCommune(6512, "Val-de-Travers", NEUCHATEL, null, RegDate.get(2009, 1, 1), null);
+	public static final MockCommune JoratMezieres = new MockCommune(5806, "Jorat-Mézières", VAUD, MockDistrict.Lavaux, RegDate.get(2017, 1, 1), null);
 
 	// Une commune fictive dont la date de fin de validité existe mais est TOUJOURS dans le futur
 	public static final MockCommune Mirage = new MockCommune(Integer.MAX_VALUE, "Mirage", VAUD, MockDistrict.Vevey, null, RegDate.get().getLastDayOfTheMonth());
