@@ -587,7 +587,9 @@ public class TiersMapHelper extends CommonMapHelper {
 
 	private static final Set<TypeDocument> DI_ORDINAIRE = EnumSet.of(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 	                                                                 TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,
-	                                                                 TypeDocument.DECLARATION_IMPOT_VAUDTAX);
+	                                                                 TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+	                                                                 TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
+	                                                                 TypeDocument.DECLARATION_IMPOT_DEPENSE);
 
 	/**
 	 * Initialise la map des types de declarations d'impôt ordinaires pour l'écran d'édition de la DI (quittancement)
