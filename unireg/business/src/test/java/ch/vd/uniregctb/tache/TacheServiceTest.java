@@ -336,7 +336,7 @@ public class TacheServiceTest extends BusinessTest {
 		final Tache tache = taches.get(0);
 		Assert.assertNotNull(tache);
 		Assert.assertFalse(tache.isAnnule());
-		Assert.assertEquals("Déménagement dans une période échue avec changement d'OID.", tache.getCommentaire());
+		Assert.assertEquals("Déménagement dans une période échue avec changement d'OID", tache.getCommentaire());
 	}
 
 	@Test
@@ -837,7 +837,7 @@ public class TacheServiceTest extends BusinessTest {
 			List<Tache> taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
 			assertEquals(1, taches.size());
-			assertEquals("Départ hors-Suisse.", taches.get(0).getCommentaire());
+			assertEquals("Départ hors-Suisse", taches.get(0).getCommentaire());
 
 			// il doit y avoir 2 tâches d'annulation de DIs
 			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1069,7 +1069,7 @@ public class TacheServiceTest extends BusinessTest {
 		criterion.setTypeTache(TypeTache.TacheControleDossier);
 		List<Tache> taches = tacheDAO.find(criterion);
 		assertEquals(1, taches.size());
-		assertEquals("Fermeture du dernier for secondaire.", taches.get(0).getCommentaire());
+		assertEquals("Fermeture du dernier for secondaire", taches.get(0).getCommentaire());
 
 		// il doit y 1 tâches d'annulation de DIs
 		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1255,7 +1255,7 @@ public class TacheServiceTest extends BusinessTest {
 		criterion.setTypeTache(TypeTache.TacheControleDossier);
 		List<Tache> taches = tacheDAO.find(criterion);
 		assertEquals(1, taches.size());
-		assertEquals("Fermeture du dernier for secondaire.", taches.get(0).getCommentaire());
+		assertEquals("Fermeture du dernier for secondaire", taches.get(0).getCommentaire());
 
 		// il doit y 0 tâches d'annulation de DIs
 		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1667,7 +1667,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertNotNull(controles);
 			assertEquals(1, controles.size());
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, controles.get(0));
-			assertEquals("Clôture de ménage commun avec for(s) secondaire(s).", controles.get(0).getCommentaire());
+			assertEquals("Clôture de ménage commun avec for(s) secondaire(s)", controles.get(0).getCommentaire());
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpotPP));
@@ -2751,13 +2751,13 @@ public class TacheServiceTest extends BusinessTest {
 				final Tache tache = tachesTriees.get(0);
 				assertNotNull(tache);
 				assertEquals(TacheControleDossier.class, tache.getClass());
-				assertEquals("Clôture de ménage commun avec for(s) secondaire(s).", tache.getCommentaire());
+				assertEquals("Clôture de ménage commun avec for(s) secondaire(s)", tache.getCommentaire());
 			}
 			{
 				final Tache tache = tachesTriees.get(1);
 				assertNotNull(tache);
 				assertEquals(TacheControleDossier.class, tache.getClass());
-				assertEquals("Fermeture du dernier for secondaire.", tache.getCommentaire());
+				assertEquals("Fermeture du dernier for secondaire", tache.getCommentaire());
 			}
 		}
 	}
@@ -4318,7 +4318,7 @@ public class TacheServiceTest extends BusinessTest {
 
 					final TacheControleDossier tache = (TacheControleDossier) taches.get(0);
 					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
-					assertEquals("Départ hors-Suisse.", tache.getCommentaire());
+					assertEquals("Départ hors-Suisse", tache.getCommentaire());
 				}
 
 				// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du départ
@@ -5999,7 +5999,7 @@ public class TacheServiceTest extends BusinessTest {
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setNumeroCTB(ppId);
 				final List<Tache> taches = verifieControleDossier(criteria, 1);
-				assertEquals("Départ hors-canton.", taches.get(0).getCommentaire());
+				assertEquals("Départ hors-canton", taches.get(0).getCommentaire());
 			}
 		});
 	}
@@ -6052,7 +6052,7 @@ public class TacheServiceTest extends BusinessTest {
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setNumeroCTB(ppId);
 				final List<Tache> taches = verifieControleDossier(criteria, 1);
-				assertEquals("Départ hors-canton.", taches.get(0).getCommentaire());
+				assertEquals("Départ hors-canton", taches.get(0).getCommentaire());
 			}
 		});
 	}

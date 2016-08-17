@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.retourdi;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
@@ -94,7 +95,16 @@ public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, In
 	}
 
 	private void onMessage(Source message, Map<String, String> incomingHeaders) throws JAXBException, SAXException, IOException, EsbBusinessException {
-		final Object event = parse(message);
+		final Object parsingResult = parse(message);
+		final Object event;
+		if (parsingResult instanceof JAXBElement) {
+			// des fois, le parsing renvoie un JAXBElement...
+			event = ((JAXBElement) parsingResult).getValue();
+		}
+		else {
+			// ... et des fois pas ...
+			event = parsingResult;
+		}
 		final RetourDiHandler handler = handlers.get(event.getClass());
 		if (handler == null) {
 			throw new IllegalArgumentException("Aucun handler connu pour la requête [" + event.getClass() + ']');

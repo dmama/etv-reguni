@@ -4561,10 +4561,8 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 				}
 			});
 		}
-		catch (ch.vd.registre.base.tx.TxCallbackException e) {
-			Assert.assertNotNull(e.getMessage(), e.getCause());
-			Assert.assertEquals(PeriodeImpositionImpotSourceServiceException.class, e.getCause().getClass());
-			Assert.assertTrue(e.getMessage(), e.getMessage().contains("Chevauchement de fors principaux"));
+		catch (PeriodeImpositionImpotSourceServiceException e) {
+			Assert.assertTrue(e.getMessage(), e.getMessage().startsWith("Chevauchement de fors principaux"));
 		}
 	}
 

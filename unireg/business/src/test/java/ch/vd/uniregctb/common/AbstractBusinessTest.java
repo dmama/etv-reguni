@@ -76,6 +76,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -355,15 +356,53 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	    return doUnderSwitch(validationInterceptor, false, action);
     }
 
-	protected <T> T doUnderSwitch(Switchable switchable, boolean switchValue, ExecuteCallback<T> action) throws Exception {
-		final boolean oldSwitchValue = switchable.isEnabled();
-		switchable.setEnabled(switchValue);
+	/**
+	 * Interface de définition d'une initialisation / d'un nettoyage final dans le scope
+	 * desquels on veut englober une action (qui peut être une transaction, c'est un peu le but)
+	 */
+	public interface InitCleanupCallback {
+		/**
+		 * Procédure d'initialisation - appelée en tout premier lieu
+		 * @throws Exception en cas de souci
+		 */
+		void init() throws Exception;
+
+		/**
+		 * Procédure de nettoyage - appelée en tout dernier lieu, à partir du moment où la procédure d'initialisation a été terminée sans exception
+		 * @throws Exception en cas de souci
+		 */
+		void cleanup() throws Exception;
+	}
+
+	/**
+	 * Lancement d'une action en l'englobant dans un scope d'initialisation/nettoyage
+	 */
+	protected <T> T doWithInitCleanup(InitCleanupCallback initCleanup, ExecuteCallback<T> action) throws Exception {
+		initCleanup.init();
 		try {
 			return action.execute();
 		}
 		finally {
-			switchable.setEnabled(oldSwitchValue);
+			initCleanup.cleanup();
 		}
+	}
+
+	protected <T> T doUnderSwitch(final Switchable switchable, final boolean switchValue, ExecuteCallback<T> action) throws Exception {
+		final InitCleanupCallback initCleanup = new InitCleanupCallback() {
+			private boolean oldSwitchValue;
+
+			@Override
+			public void init() throws Exception {
+				oldSwitchValue = switchable.isEnabled();
+				switchable.setEnabled(switchValue);
+			}
+
+			@Override
+			public void cleanup() throws Exception {
+				switchable.setEnabled(oldSwitchValue);
+			}
+		};
+		return doWithInitCleanup(initCleanup, action);
 	}
 
     /**
@@ -391,6 +430,19 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
                 return doInNewTransactionAndSession(action);
             }
         });
+	}
+
+	/**
+	 * Exécute une portion de code dans une nouvelle transaction et une nouvelle session hibernate, le tout dans un scope d'initialisation/nettoyage
+	 * (ces deux phases - initialisation et nettoyage - étant lancées hors de la transaction)
+	 */
+	protected <T> T doInNewTransactionAndSessionWithInitCleanup(InitCleanupCallback initCleanup, final TransactionCallback<T> action) throws Exception {
+		return doWithInitCleanup(initCleanup, new ExecuteCallback<T>() {
+			@Override
+			public T execute() throws Exception {
+				return doInNewTransactionAndSession(action);
+			}
+		});
 	}
 
     protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {
@@ -713,6 +765,13 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, MockRue rue) {
        return addAdresseSuisse(tiers, usage, debut,fin,rue,null);
     }
+
+	protected Mandat addMandatGeneral(Contribuable mandant, Contribuable mandataire, RegDate dateDebut, @Nullable RegDate dateFin, boolean withCopy) {
+		final Mandat mandat = hibernateTemplate.merge(Mandat.general(dateDebut, dateFin, mandant, mandataire, withCopy));
+		mandant.addRapportSujet(mandat);
+		mandataire.addRapportObjet(mandat);
+		return mandat;
+	}
 
     protected AdresseMandataireSuisse addAdresseMandataireSuisse(Contribuable ctb, RegDate debut, @Nullable RegDate fin, TypeMandat type, String nomMandataire, MockRue rue) {
        return addAdresseMandataireSuisse(ctb, debut, fin, type, nomMandataire, rue, null);

@@ -170,15 +170,8 @@ public class AutreCommunauteDataExtractor {
 				b.append(COMMA);
 			}
 
-			final StringRenderer<Object> renderer = new StringRenderer<Object>() {
-				@Override
-				public String toString(Object object) {
-					return object.toString();
-				}
-			};
-
 			// Numéros IDE
-			b.append(CollectionsUtils.toString(findNumerosIDE(ac), renderer, ":"));
+			b.append(CollectionsUtils.toString(findNumerosIDE(ac), StringRenderer.DEFAULT, ":"));
 
 			ps.println(b.toString());
 		}

@@ -32,6 +32,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 import static org.junit.Assert.assertEquals;
@@ -295,15 +296,6 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		}
 	}
 
-	public static class TxCallbackException extends RuntimeException {
-
-		private static final long serialVersionUID = -626013776510807208L;
-
-		public TxCallbackException(Exception e) {
-			super(e);
-		}
-	}
-
 	public abstract class TxCallback<T> implements TransactionCallback<T> {
 
 		public abstract T execute(TransactionStatus status) throws Exception;
@@ -317,7 +309,5 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 				throw new TxCallbackException(e);
 			}
 		}
-
 	}
-
 }

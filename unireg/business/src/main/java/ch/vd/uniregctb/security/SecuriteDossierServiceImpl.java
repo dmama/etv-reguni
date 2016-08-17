@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -337,13 +336,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		}
 
 		if (LOGGER.isDebugEnabled()) {
-			final StringRenderer<Object> renderer = new StringRenderer<Object>() {
-				@Override
-				public String toString(Object object) {
-					return Objects.toString(object);
-				}
-			};
-			LOGGER.debug("Le dossier n° "  + etablissement.getNumero() + " est un établissement lié aux tiers " + CollectionsUtils.toString(entites, renderer, ", ", "(aucun)"));
+			LOGGER.debug("Le dossier n° "  + etablissement.getNumero() + " est un établissement lié aux tiers " + CollectionsUtils.toString(entites, StringRenderer.DEFAULT, ", ", "(aucun)"));
 		}
 
 		// on commence par le droit le plus large et on restreint en fonction des contraintes trouvées

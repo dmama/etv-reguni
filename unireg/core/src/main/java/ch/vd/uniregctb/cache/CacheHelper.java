@@ -41,13 +41,6 @@ public abstract class CacheHelper {
 	 */
 	public static final class ValueRendererFactory {
 
-		public static final StringRenderer<Object> DEFAULT_RENDERER = new StringRenderer<Object>() {
-			@Override
-			public String toString(Object object) {
-				return String.format("%s", object);
-			}
-		};
-
 		private final Map<Class<?>, StringRenderer<?>> renderers = new HashMap<>();
 
 		/**
@@ -80,7 +73,7 @@ public abstract class CacheHelper {
 				return found;
 			}
 			else {
-				return DEFAULT_RENDERER;
+				return StringRenderer.DEFAULT;
 			}
 		}
 	}
@@ -235,7 +228,7 @@ public abstract class CacheHelper {
 			return renderer.toString(value);
 		}
 		else {
-			return ValueRendererFactory.DEFAULT_RENDERER.toString(value);
+			return StringRenderer.DEFAULT.toString(value);
 		}
 	}
 

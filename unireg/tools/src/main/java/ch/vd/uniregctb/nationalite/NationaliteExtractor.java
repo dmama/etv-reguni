@@ -143,12 +143,6 @@ public class NationaliteExtractor {
 	}
 
 	private static class InfoNationalite {
-		private static final StringRenderer<Object> DEFAULT_RENDERER = new StringRenderer<Object>() {
-			@Override
-			public String toString(Object object) {
-				return object.toString();
-			}
-		};
 		final long noCtb;
 		final Set<Integer> ofsPays = new TreeSet<>();
 
@@ -158,7 +152,7 @@ public class NationaliteExtractor {
 
 		@Override
 		public String toString() {
-			return String.format("%d;%s", noCtb, CollectionsUtils.toString(ofsPays, DEFAULT_RENDERER, "-", StringUtils.EMPTY));
+			return String.format("%d;%s", noCtb, CollectionsUtils.toString(ofsPays, StringRenderer.DEFAULT, "-", StringUtils.EMPTY));
 		}
 	}
 

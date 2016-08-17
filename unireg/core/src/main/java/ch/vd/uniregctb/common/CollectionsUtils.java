@@ -173,7 +173,7 @@ public abstract class CollectionsUtils {
 	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la collection
 	 * @param emptyCollectionString la chaîne de caractère à afficher dans le cas d'une collection nulle ou vide
 	 * @param <T> type des éléments de la collection
-	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné
+	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (les nulls de la collection sont ignorés)
 	 */
 	public static <T> String toString(Collection<T> col, StringRenderer<? super T> renderer, String separator, String emptyCollectionString) {
 		if (col == null || col.isEmpty()) {
@@ -181,10 +181,12 @@ public abstract class CollectionsUtils {
 		}
 		final StringBuilder b = new StringBuilder();
 		for (T elt : col) {
-			if (b.length() > 0) {
-				b.append(separator);
+			if (elt != null) {
+				if (b.length() > 0) {
+					b.append(separator);
+				}
+				b.append(renderer.toString(elt));
 			}
-			b.append(renderer.toString(elt));
 		}
 		return b.toString();
 	}

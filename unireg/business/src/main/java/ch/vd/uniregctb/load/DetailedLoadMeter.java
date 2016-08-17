@@ -82,15 +82,8 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 		}
 	};
 
-	private static final StringRenderer<Object> DEFAULT_RENDERER = new StringRenderer<Object>() {
-		@Override
-		public String toString(Object object) {
-			return object != null ? object.toString() : null;
-		}
-	};
-
 	public DetailedLoadMeter() {
-		this(DEFAULT_RENDERER);
+		this(StringRenderer.DEFAULT);
 	}
 	
 	public DetailedLoadMeter(StringRenderer<? super T> renderer) {

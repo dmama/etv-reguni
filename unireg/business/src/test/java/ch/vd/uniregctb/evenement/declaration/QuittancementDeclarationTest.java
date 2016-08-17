@@ -156,8 +156,8 @@ public class QuittancementDeclarationTest extends BusinessTest {
 			});
 		}
 		catch (Exception e) {
-			assertEquals(EsbBusinessException.class, e.getCause().getClass());
-			assertEquals("Le contribuable n°" + id + " ne possède pas de déclaration 2011 avec le numéro de séquence 10.", e.getCause().getMessage());
+			assertEquals(EsbBusinessException.class, e.getClass());
+			assertEquals("Le contribuable n°" + id + " ne possède pas de déclaration 2011 avec le numéro de séquence 10.", e.getMessage());
 		}
 
 		// Vérifie que les informations personnelles ainsi que le type de DI n'ont pas été mis à jour

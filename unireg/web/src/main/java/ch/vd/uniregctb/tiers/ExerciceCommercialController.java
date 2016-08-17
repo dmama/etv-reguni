@@ -3,10 +3,8 @@ package ch.vd.uniregctb.tiers;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -32,7 +30,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -224,7 +222,7 @@ public class ExerciceCommercialController {
 		final List<Bouclement> nouveauxBouclements = bouclementService.extractBouclementsDepuisDates(nouvellesDatesBouclement, 12);
 
 		// 4. comparaison avant/après et application des différences
-		gestionNouveauxBouclements(entreprise, bouclements, nouveauxBouclements);
+		BouclementHelper.resetBouclements(entreprise, nouveauxBouclements);
 
 		// 5. contrôle final des dates de bouclements
 		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement);
@@ -353,7 +351,7 @@ public class ExerciceCommercialController {
 		final List<Bouclement> nouveauxBouclements = bouclementService.extractBouclementsDepuisDates(nouvellesDatesBouclement, 12);
 
 		// 4. comparaison avant/après et application des différences
-		gestionNouveauxBouclements(entreprise, bouclements, nouveauxBouclements);
+		BouclementHelper.resetBouclements(entreprise, nouveauxBouclements);
 
 		// 5. contrôle final des dates de bouclements
 		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement);
@@ -382,35 +380,6 @@ public class ExerciceCommercialController {
 		return dateDebutAjoutable;
 	}
 
-	private void gestionNouveauxBouclements(Entreprise entreprise, Set<Bouclement> bouclements, List<Bouclement> nouveauxBouclements) {
-		final Map<RegDate, Bouclement> indexAnciensBouclements = indexBouclementsParDateDebut(AnnulableHelper.sansElementsAnnules(bouclements));
-		final Map<RegDate, Bouclement> indexNouveauxBouclements = indexBouclementsParDateDebut(nouveauxBouclements);
-		final SortedSet<RegDate> datesDebut = new TreeSet<>();
-		datesDebut.addAll(indexAnciensBouclements.keySet());
-		datesDebut.addAll(indexNouveauxBouclements.keySet());
-		for (RegDate dateDebut : datesDebut) {
-			final Bouclement ancien = indexAnciensBouclements.get(dateDebut);
-			final Bouclement nouveau = indexNouveauxBouclements.get(dateDebut);
-			if (ancien == null) {
-				// à ajouter
-				entreprise.addBouclement(nouveau);
-			}
-			else if (nouveau == null) {
-				// à annuler
-				ancien.setAnnule(true);
-			}
-			else {
-				// on a deux bouclements qui commencent à la même date...
-				// s'ils sont identiques, on continue
-				// sinon, il faut annuler l'ancien et ajouter le nouveau
-				if (ancien.getAncrage() != nouveau.getAncrage() || ancien.getPeriodeMois() != nouveau.getPeriodeMois()) {
-					ancien.setAnnule(true);
-					entreprise.addBouclement(nouveau);
-				}
-			}
-		}
-	}
-
 	private void controleDatesBouclements(@Valid @ModelAttribute(value = "command") ChangeDateExerciceCommercialView view, List<ExerciceCommercial> anciensExercicesCommerciaux,
 	                                      SortedSet<RegDate> nouvellesDatesBouclement) {
 		// contrôle des dates (au moins un bouclement par an sauf potentiellement la première année)
@@ -436,14 +405,6 @@ public class ExerciceCommercialController {
 				                                        annee));
 			}
 		}
-	}
-
-	private static Map<RegDate, Bouclement> indexBouclementsParDateDebut(List<Bouclement> bouclementsNonAnnules) {
-		final Map<RegDate, Bouclement> map = new HashMap<>(bouclementsNonAnnules.size());
-		for (Bouclement bouclement : bouclementsNonAnnules) {
-			map.put(bouclement.getDateDebut(), bouclement);
-		}
-		return map;
 	}
 
 	/**

@@ -26,6 +26,13 @@ public class IdentificationEntreprise extends HibernateEntity implements LinkedE
 	private Contribuable ctb;
 	private String numeroIde;
 
+	public IdentificationEntreprise() {
+	}
+
+	public IdentificationEntreprise(String numeroIde) {
+		this.numeroIde = numeroIde;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {

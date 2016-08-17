@@ -16,7 +16,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
- * Bean utilitaire pour les fonctionnalités spécifiques aux exercices commerciaux dans l'IHM Unireg
+ * Bean utilitaire pour les fonctionnalités spécifiques aux exercices commerciaux exposés par Unireg
  */
 public class ExerciceCommercialHelper {
 
@@ -60,7 +60,7 @@ public class ExerciceCommercialHelper {
 		try {
 			final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
 			if (assujettissements == null || assujettissements.isEmpty()) {
-				return DateConstants.EXTENDED_VALIDITY_RANGE.getDateDebut();        // vraiement très loin dans le passé...
+				return DateConstants.EXTENDED_VALIDITY_RANGE.getDateDebut();        // vraiment très loin dans le passé...
 			}
 
 			return assujettissements.get(assujettissements.size() - 1).getDateFin();

@@ -461,7 +461,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// 3. si for immeuble fermé, on crée une tâche de contrôle de dossier
 
 		if (hasImmeuble) {
-			tacheService.genereTacheControleDossier(entreprise, "Faillite - Entreprise avec immeuble(s) vaudois.");
+			tacheService.genereTacheControleDossier(entreprise, "Faillite - Entreprise avec immeuble(s) vaudois");
 		}
 
 		// 4. nouvel état fiscal
@@ -742,7 +742,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// 3. si for immeuble fermé, on crée une tâche de contrôle de dossier
 
 		if (hasImmeuble) {
-			tacheService.genereTacheControleDossier(entreprise, "Fin d'activité - Entreprise avec immeuble(s) vaudois.");
+			tacheService.genereTacheControleDossier(entreprise, "Fin d'activité - Entreprise avec immeuble(s) vaudois");
 		}
 
 		// 4. nouvel état fiscal (seulement si l'entreprise n'est pas inscrite au RC)
@@ -861,7 +861,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 			// tâche de contrôle de dossier si propriétaire d'immeuble
 			if (hasImmeuble) {
-				tacheService.genereTacheControleDossier(absorbee, "Fusion - Entreprise absorbée avec immeuble(s) vaudois.");
+				tacheService.genereTacheControleDossier(absorbee, "Fusion - Entreprise absorbée avec immeuble(s) vaudois");
 			}
 
 			// surcharge d'adresse

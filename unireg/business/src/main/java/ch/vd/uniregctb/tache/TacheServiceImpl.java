@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.PredicateUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -341,7 +343,7 @@ public class TacheServiceImpl implements TacheService {
 				return;
 			}
 			if (dernierForFerme) {
-				genereTacheControleDossier(contribuable, "Départ hors-Suisse.");
+				genereTacheControleDossier(contribuable, "Départ hors-Suisse");
 			}
 			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 			break;
@@ -353,7 +355,7 @@ public class TacheServiceImpl implements TacheService {
 			 * [SIFISC-11939] cela doit être fait également en cas de départ dans la PF précédente
 			 */
 			if (dateFermeture.year() == RegDate.get().year() || dateFermeture.year() == RegDate.get().year() - 1) {
-				genereTacheControleDossier(contribuable, "Départ hors-canton.");
+				genereTacheControleDossier(contribuable, "Départ hors-canton");
 			}
 			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
 			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le 31.12 de la période fiscale courante.
@@ -369,7 +371,7 @@ public class TacheServiceImpl implements TacheService {
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			if (!contribuable.getForsParTypeAt(dateFermeture, false).secondaires.isEmpty()) {
 				// [UNIREG-1105] Une tâche de contrôle de dossier (pour répartir les fors secondaires) doit être ouverte sur le couple en cas de séparation
-				genereTacheControleDossier(contribuable, "Clôture de ménage commun avec for(s) secondaire(s).");
+				genereTacheControleDossier(contribuable, "Clôture de ménage commun avec for(s) secondaire(s)");
 			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de séparation (car elles n'ont pas lieu d'être)
 			// [UNIREG-1111] Génère une tâche d'émission de DI
@@ -404,7 +406,7 @@ public class TacheServiceImpl implements TacheService {
 		// S'il s'agit du dernier for secondaire existant, on génère une tâche de contrôle de dossier
 		if (forsAt.secondaires.size() == 1) {
 			Assert.isEqual(forSecondaire, forsAt.secondaires.get(0));
-			genereTacheControleDossier(contribuable, "Fermeture du dernier for secondaire.");
+			genereTacheControleDossier(contribuable, "Fermeture du dernier for secondaire");
 		}
 
 		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
@@ -475,7 +477,7 @@ public class TacheServiceImpl implements TacheService {
 						final Assujettissement avantdernier = assujettissements.get(size - 2);
 						if (dernier.getMotifFractDebut() == MotifFor.ARRIVEE_HC && avantdernier.getMotifFractFin() == MotifFor.DEPART_HS) {
 							// si on est en présence d'une arrivée de hors-Canton précédée d'un départ hors-Suisse, on génère une tâche de contrôle de dossier
-							genereTacheControleDossier(contribuable, "Arrivée hors-canton précédée d'un départ hors-Suisse.");
+							genereTacheControleDossier(contribuable, "Arrivée hors-canton précédée d'un départ hors-Suisse");
 						}
 					}
 				}
@@ -522,7 +524,7 @@ public class TacheServiceImpl implements TacheService {
 				//UNIREG-1886 si l'office nest pas trouvé (cas hors canton, hors suisse) on ne génère pas de tâche
 				if (office != null) {
 					final CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm());
-					genereTacheControleDossier(contribuable, collectivite, "Déménagement dans une période échue avec changement d'OID.");
+					genereTacheControleDossier(contribuable, collectivite, "Déménagement dans une période échue avec changement d'OID");
 				}
 
 			}
@@ -1178,8 +1180,13 @@ public class TacheServiceImpl implements TacheService {
 		// On détermine les périodes d'imposition qui n'ont pas de déclaration d'impôt valide correspondante
 		//
 
-		for (PeriodeImposition periode : periodes) {
-			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
+		for (final PeriodeImposition periode : periodes) {
+			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAtWithAdditionnalFilter(declarations, periode, new Predicate<DeclarationImpotOrdinaire>() {
+				@Override
+				public boolean evaluate(DeclarationImpotOrdinaire di) {
+					return periode.getDateFin().year() == di.getPeriode().getAnnee();
+				}
+			});
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
 				if (periode.isDeclarationMandatory()) {
@@ -1272,8 +1279,13 @@ public class TacheServiceImpl implements TacheService {
 		// On détermine toutes les déclarations qui ne sont pas valides vis-à-vis des périodes d'imposition
 		//
 
-		for (DeclarationImpotOrdinaire declaration : declarations) {
-			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
+		for (final DeclarationImpotOrdinaire declaration : declarations) {
+			final List<PeriodeImposition> ps = getIntersectingRangeAtWithAdditionnalFilter(periodes, declaration, new Predicate<PeriodeImposition>() {
+				@Override
+				public boolean evaluate(PeriodeImposition pi) {
+					return pi.getDateFin().year() == declaration.getPeriode().getAnnee();
+				}
+			});
 			if (ps == null) {
 				if (!isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
 					// il n'y a pas de période correspondante
@@ -1672,20 +1684,21 @@ public class TacheServiceImpl implements TacheService {
 		return null;
 	}
 
-	private <T extends DateRange> List<T> getIntersectingRangeAt(List<T> dis, DateRange range) {
-		if (dis == null) {
+	private static <T extends DateRange> List<T> getIntersectingRangeAt(List<T> dis, DateRange range) {
+		return getIntersectingRangeAtWithAdditionnalFilter(dis, range, PredicateUtils.<T>truePredicate());
+	}
+
+	private static <T extends DateRange> List<T> getIntersectingRangeAtWithAdditionnalFilter(List<T> src, DateRange range, Predicate<? super T> filter) {
+		if (src == null || src.isEmpty()) {
 			return null;
 		}
-		List<T> result = null;
-		for (T t : dis) {
-			if (DateRangeHelper.intersect(t, range)) {
-				if (result == null) {
-					result = new ArrayList<>();
-				}
-				result.add(t);
+		final List<T> result = new LinkedList<>();
+		for (T s : src) {
+			if (DateRangeHelper.intersect(s, range) && filter.evaluate(s)) {
+				result.add(s);
 			}
 		}
-		return result;
+		return result.isEmpty() ? null : result;
 	}
 
 	/**

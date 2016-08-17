@@ -29,6 +29,7 @@
 	<bean id="evenementRetourDiHandler" class="ch.vd.uniregctb.evenement.retourdi.EvenementRetourDiEsbMessageHandler">
 		<property name="handlers">
 			<list>
+				<!-- PP -->
 				<ref bean="evenementCediHandlerV1"/>
 				<ref bean="evenementCediHandlerV2"/>
 				<ref bean="evenementCediHandlerV3"/>
@@ -36,6 +37,9 @@
 				<ref bean="evenementCediHandler2016V1"/>
 				<ref bean="evenementCediHandler2016V2"/>
 				<ref bean="evenementCediHandler2017V1"/>
+
+				<!-- PM -->
+				<ref bean="retourDiIbcHandlerV1"/>
 			</list>
 		</property>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
@@ -55,20 +59,14 @@
 	<bean id="evenementCediHandler2016V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler" parent="evenementCediAbstractHandler"/>
 	<bean id="evenementCediHandler2017V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler" parent="evenementCediAbstractHandler"/>
 
-	<bean id="evenementCediEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtCedi}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementCediListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
-		<property name="description" value="Réception des messages JMS envoyé par le CEDI suite au scannage des DIs"/>
+	<!-- DI des contribuables "personnes morales" -->
+
+	<bean id="abstractRetourDIIBCHandler" abstract="true" class="ch.vd.uniregctb.evenement.retourdi.pm.AbstractRetourDIHandler">
+		<property name="retourService" ref="retourDIPMService"/>
+	</bean>
+
+	<bean id="retourDiIbcHandlerV1" class="ch.vd.uniregctb.evenement.retourdi.pm.V1Handler" parent="abstractRetourDIIBCHandler">
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 </beans>
