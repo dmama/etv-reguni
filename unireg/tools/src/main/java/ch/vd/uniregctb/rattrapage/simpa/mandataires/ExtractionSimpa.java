@@ -30,7 +30,7 @@ public class ExtractionSimpa {
 	private final String bicSwift;
 	private final String institutionFinanciere;
 
-	private static final Pattern PATTERN = Pattern.compile("(\\d+);([^;]*);(\\d+);([^;]*);(IND|ENT|ETA);(T|G);(\\d{1,2}/\\d{1,2}/\\d{4});((?:\\d{1,2}/\\d{1,2}/\\d{4})?);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)");
+	private static final Pattern PATTERN = Pattern.compile("(\\d+);([^;]*);(\\d+);([^;]*);(IND|ENT|ETA);(T|G);(\\d{1,2}[/.]\\d{1,2}[/.]\\d{4});((?:\\d{1,2}[/.]\\d{1,2}[/.]\\d{4})?);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)(;.*)?");
 
 	public static ExtractionSimpa of(String line) throws ParseException {
 		final Matcher matcher = PATTERN.matcher(line);
@@ -72,8 +72,8 @@ public class ExtractionSimpa {
 		if (StringUtils.isBlank(str)) {
 			return null;
 		}
-		final String[] parts = str.split("/");
-		return RegDate.get(Integer.parseInt(parts[2]), Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+		final String[] parts = str.split("[/.]");
+		return RegDate.get(Integer.parseInt(parts[2]), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
 	}
 
 	private ExtractionSimpa(long noMandant, String nomMandant, long noMandataire, String nomMandataire, TypeTiers typeMandataire, TypeMandat typeMandat, RegDate dateAttribution, RegDate dateResiliation, String motifAttribution, String nomContact, String prenomContact,
