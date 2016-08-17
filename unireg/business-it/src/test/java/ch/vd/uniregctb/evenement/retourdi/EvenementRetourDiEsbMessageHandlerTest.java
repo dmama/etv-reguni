@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.cedi;
+package ch.vd.uniregctb.evenement.retourdi;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +20,16 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.evenement.retourdi.pp.EvenementCedi;
+import ch.vd.uniregctb.evenement.retourdi.pp.EvenementCediException;
+import ch.vd.uniregctb.evenement.retourdi.pp.Pf2015V2Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V1Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.RetourDI;
+import ch.vd.uniregctb.evenement.retourdi.pp.V1Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.V2Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.V3Handler;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
@@ -29,13 +39,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Classe de test du listener d'événements CEDI. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
+ * Classe de test du listener d'événements de retour de scan de DI (en provenance du CEDI, de ADDI ou, de e-DIPM). Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
+public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementCediEsbMessageHandler esbHandler;
+	private EvenementRetourDiEsbMessageHandler esbHandler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -62,7 +72,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 			}
 		};
 
-		esbHandler = new EvenementCediEsbMessageHandler();
+		esbHandler = new EvenementRetourDiEsbMessageHandler();
 		esbHandler.setHibernateTemplate(hibernateTemplate);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
@@ -88,7 +98,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<>();
 
-		esbHandler.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(new V1Handler() {
+		esbHandler.setHandlers(Arrays.<RetourDiHandler<?>>asList(new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) {
 				events.add(evt);
@@ -97,7 +107,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/retour_di.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -131,7 +141,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<>();
 
-		esbHandler.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(new V1Handler() {
+		esbHandler.setHandlers(Arrays.<RetourDiHandler<?>>asList(new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) {
 				events.add(evt);
@@ -140,7 +150,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di_presque_vide.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/retour_di_presque_vide.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -169,31 +179,31 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatV2() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v2 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v2 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2016 v1");
@@ -204,7 +214,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2.0-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2.0-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -233,31 +243,31 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatV3() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
@@ -268,7 +278,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-3.0-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-3.0-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -297,31 +307,31 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatV3_2() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
@@ -332,7 +342,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-3.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-3.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -363,31 +373,31 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatPf2015_V2() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2015 v2 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2015 v2 ne devrait pas arriver dans le handler v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2015 v2 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
@@ -398,7 +408,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2015.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2015.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -427,31 +437,31 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatPf2016_V1() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v1 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v1 ne devrait pas arriver dans le handler v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v1 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message periode 2016 v1 ne devrait pas arriver dans le handler Periode 2015 v2");
@@ -462,7 +472,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2016.1-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2016.1-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -491,44 +501,44 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatPf2016_V2() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2017 v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
 
-		final DossierElectroniqueHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
@@ -540,7 +550,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2016.2-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2016.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -569,37 +579,37 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 	public void testFormatPf2017_V1() throws Exception {
 
 		final List<EvenementCedi> events = new ArrayList<>();
-		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-		final DossierElectroniqueHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
@@ -611,7 +621,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2017.1-exemple.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2017.1-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

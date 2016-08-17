@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.cedi;
+package ch.vd.uniregctb.evenement.retourdi.pp;
 
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;

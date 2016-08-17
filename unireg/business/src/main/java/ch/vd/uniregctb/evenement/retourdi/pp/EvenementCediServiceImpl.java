@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.cedi;
+package ch.vd.uniregctb.evenement.retourdi.pp;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

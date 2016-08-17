@@ -7,7 +7,7 @@
 <bean id="entrepriseEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 <bean id="evenementEditiqueEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 <bean id="evenementExterneEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-<bean id="evenementCediEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementRetourDiEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 <bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 <bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 <bean id="evenementIAMEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>

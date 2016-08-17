@@ -141,7 +141,7 @@
 	</bean>
 
 	<!-- Section Evenement CEDI -->
-	<bean id="evenementCediService" class="ch.vd.uniregctb.evenement.cedi.EvenementCediServiceImpl">
+	<bean id="evenementCediService" class="ch.vd.uniregctb.evenement.retourdi.pp.EvenementCediServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>

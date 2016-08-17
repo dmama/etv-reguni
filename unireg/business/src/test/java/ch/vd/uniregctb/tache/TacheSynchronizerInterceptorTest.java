@@ -25,10 +25,10 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.evenement.cedi.DossierElectroniqueHandler;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediService;
-import ch.vd.uniregctb.evenement.cedi.V1Handler;
+import ch.vd.uniregctb.evenement.retourdi.EvenementRetourDiEsbMessageHandler;
+import ch.vd.uniregctb.evenement.retourdi.RetourDiHandler;
+import ch.vd.uniregctb.evenement.retourdi.pp.EvenementCediService;
+import ch.vd.uniregctb.evenement.retourdi.pp.V1Handler;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDIPP;
@@ -67,7 +67,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 	private ParametreAppService parametreAppService;
 	private Integer oldPremierePeriodeFiscaleDeclarationsPersonnesMorales;
 
-	private EvenementCediEsbMessageHandler cediListener;
+	private EvenementRetourDiEsbMessageHandler cediListener;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -80,8 +80,8 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		final V1Handler v1Handler = new V1Handler();
 		v1Handler.setEvenementCediService(cediHandler);
 
-		cediListener = new EvenementCediEsbMessageHandler();
-		cediListener.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(v1Handler));
+		cediListener = new EvenementRetourDiEsbMessageHandler();
+		cediListener.setHandlers(Arrays.<RetourDiHandler<?>>asList(v1Handler));
 		cediListener.setHibernateTemplate(hibernateTemplate);
 		cediListener.afterPropertiesSet();
 

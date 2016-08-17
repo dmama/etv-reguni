@@ -12,7 +12,7 @@ public interface EvenementIAMHandler {
 	 * Traite l'événement IAM spécifié.
 	 *
 	 * @param event un événement IAM (non-persisté).
-	 * @throws ch.vd.uniregctb.evenement.cedi.EvenementIAMException en cas d'erreur métieur dans le traitement de l'événement.
+	 * @throws EvenementIAMException en cas d'erreur métieur dans le traitement de l'événement.
 	 */
 	void onEvent(EvenementIAM event) throws EvenementIAMException;
 }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Point d'entrée JMS -->
+
+	<bean id="evenementRetourDiEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCedi}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evenementRetourDiListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
+		<property name="description" value="Réception des messages JMS contenant les informations issues du scan des DIs"/>
+	</bean>
+
+	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementRetourDiHandler" />
+	</bean>
+
+	<!-- Dispatching des différents formats supportés -->
+
+	<bean id="evenementRetourDiHandler" class="ch.vd.uniregctb.evenement.retourdi.EvenementRetourDiEsbMessageHandler">
+		<property name="handlers">
+			<list>
+				<ref bean="evenementCediHandlerV1"/>
+				<ref bean="evenementCediHandlerV2"/>
+				<ref bean="evenementCediHandlerV3"/>
+				<ref bean="evenementCediHandler2015V2"/>
+				<ref bean="evenementCediHandler2016V1"/>
+				<ref bean="evenementCediHandler2016V2"/>
+				<ref bean="evenementCediHandler2017V1"/>
+			</list>
+		</property>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+
+	<!-- DI des contribuables "personnes physiques" -->
+
+	<bean id="evenementCediAbstractHandler" abstract="true" class="ch.vd.uniregctb.evenement.retourdi.pp.AbstractDossierElectroniqueHandler">
+		<property name="evenementCediService" ref="evenementCediService"/>
+	</bean>
+
+	<bean id="evenementCediHandlerV1" class="ch.vd.uniregctb.evenement.retourdi.pp.V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandlerV2" class="ch.vd.uniregctb.evenement.retourdi.pp.V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandlerV3" class="ch.vd.uniregctb.evenement.retourdi.pp.V3Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2015V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2015V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2016V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2016V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2017V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler" parent="evenementCediAbstractHandler"/>
+
+	<bean id="evenementCediEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCedi}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evenementCediListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
+		<property name="description" value="Réception des messages JMS envoyé par le CEDI suite au scannage des DIs"/>
+	</bean>
+
+</beans>

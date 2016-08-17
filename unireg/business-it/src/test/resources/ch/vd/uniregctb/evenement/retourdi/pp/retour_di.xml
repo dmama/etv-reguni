@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <DossierElectronique noContribuable="12500001" noSequenceDI="01" periode="2009"
-					 retourPiece="false" versionSchema="2.1.1"
-					 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1">
+                     retourPiece="false" versionSchema="2.1.1"
+                     xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1">
 	<Operation>
 		<DateReception>2010-05-26</DateReception>
 		<OperateurScan>zaisyd</OperateurScan>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.cedi;
+package ch.vd.uniregctb.evenement.retourdi.pp;
 
 import java.util.Map;
 
@@ -7,17 +7,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.unireg.xml.event.taxation.pf2015.v2.DeclarationImpot;
-import ch.vd.unireg.xml.event.taxation.pf2015.v2.DossierElectronique;
+import ch.vd.unireg.xml.event.taxation.v3.DeclarationImpot;
+import ch.vd.unireg.xml.event.taxation.v3.DossierElectronique;
+import ch.vd.uniregctb.evenement.retourdi.RetourDiHandler;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 
-public class Pf2015V2Handler extends AbstractDossierElectroniqueHandler implements DossierElectroniqueHandler<DossierElectronique> {
+public class V3Handler extends AbstractDossierElectroniqueHandler implements RetourDiHandler<DossierElectronique> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Pf2015V2Handler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(V3Handler.class);
 
 	@Override
 	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DossierElectronique-2015-2.xsd");
+		return new ClassPathResource("event/taxation/DossierElectronique-3-2.xsd");
 	}
 
 	@Override

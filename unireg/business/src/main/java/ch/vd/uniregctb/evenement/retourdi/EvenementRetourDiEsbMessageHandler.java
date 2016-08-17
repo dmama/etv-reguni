@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.cedi;
+package ch.vd.uniregctb.evenement.retourdi;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,20 +29,20 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 
-public class EvenementCediEsbMessageHandler implements EsbMessageHandler, InitializingBean {
+public class EvenementRetourDiEsbMessageHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCediEsbMessageHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementRetourDiEsbMessageHandler.class);
 
-	private Map<Class<?>, DossierElectroniqueHandler<?>> handlers;
+	private Map<Class<?>, RetourDiHandler<?>> handlers;
 	private Schema schemaCache;
 	private JAXBContext jaxbContext;
 
 	private HibernateTemplate hibernateTemplate;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHandlers(List<DossierElectroniqueHandler<?>> handlerList) {
-		final Map<Class<?>, DossierElectroniqueHandler<?>> map = new HashMap<>(handlerList.size());
-		for (DossierElectroniqueHandler<?> deh : handlerList) {
+	public void setHandlers(List<RetourDiHandler<?>> handlerList) {
+		final Map<Class<?>, RetourDiHandler<?>> map = new HashMap<>(handlerList.size());
+		for (RetourDiHandler<?> deh : handlerList) {
 			map.put(deh.getHandledClass(), deh);
 		}
 		this.handlers = map;
@@ -61,10 +61,10 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler, Initia
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		AuthenticationHelper.pushPrincipal("JMS-EvtCedi");
+		AuthenticationHelper.pushPrincipal("JMS-EvtRetourDI");
 		try {
 			final String businessId = message.getBusinessId();
-			LOGGER.info("Arrivée du message CEDI n°" + businessId);
+			LOGGER.info("Arrivée du message de retour de DI n°" + businessId);
 			final Source body = message.getBodyAsSource();
 			onMessage(body, EsbMessageHelper.extractCustomHeaders(message));
 
@@ -95,7 +95,7 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler, Initia
 
 	private void onMessage(Source message, Map<String, String> incomingHeaders) throws JAXBException, SAXException, IOException, EsbBusinessException {
 		final Object event = parse(message);
-		final DossierElectroniqueHandler handler = handlers.get(event.getClass());
+		final RetourDiHandler handler = handlers.get(event.getClass());
 		if (handler == null) {
 			throw new IllegalArgumentException("Aucun handler connu pour la requête [" + event.getClass() + ']');
 		}
@@ -116,7 +116,7 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler, Initia
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final List<Source> sources = new ArrayList<>(handlers.size());
-			for (DossierElectroniqueHandler<?> handler : handlers.values()) {
+			for (RetourDiHandler<?> handler : handlers.values()) {
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
 			}

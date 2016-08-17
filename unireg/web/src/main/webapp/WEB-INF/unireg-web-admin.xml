@@ -48,7 +48,7 @@
 				<entry key="evenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
 				<entry key="retourImpression" value-ref="evenementEditiqueEndpointManager"/>
 				<entry key="evenementsExternes" value-ref="evenementExterneEndpointManager"/>
-				<entry key="evenementsCedi" value-ref="evenementCediEndpointManager"/>
+				<entry key="evenementsCedi" value-ref="evenementRetourDiEndpointManager"/>
 				<entry key="identification" value-ref="jmsIdentCtbEndpointManager"/>
 				<entry key="identificationOnline" value-ref="jmsIdentCtbEndpointManagerOnline"/>
 				<entry key="evenementsIAM" value-ref="evenementIAMEndpointManager"/>
