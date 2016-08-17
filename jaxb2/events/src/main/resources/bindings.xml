@@ -554,6 +554,7 @@
 			<namespace:prefix name="ev-scan-di-2015-2" />
 		</jxb:bindings>
 	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2016-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.taxation.pf2016.v1" />
@@ -576,6 +577,15 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-scan-di-2017-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DeclarationIBC-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.taxation.ibc.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-scan-di-ibc-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
