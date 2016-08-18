@@ -41,6 +41,7 @@ import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
@@ -337,12 +338,13 @@ public class QuestionnaireSNCController {
 				}
 
 				final RegDate dateTraitement = RegDate.get();
+				final ModeleDocument md = periodeFiscale.get(TypeDocument.QUESTIONNAIRE_SNC);
 
 				final QuestionnaireSNC questionnaire = new QuestionnaireSNC();
 				questionnaire.setDateDebut(RegDate.get(view.getPeriodeFiscale(), 1, 1));
 				questionnaire.setDateFin(RegDate.get(view.getPeriodeFiscale(), 12, 31));
 				questionnaire.setPeriode(periodeFiscale);
-				questionnaire.setModeleDocument(periodeFiscale.get(TypeDocument.QUESTIONNAIRE_SNC));
+				questionnaire.setModeleDocument(md);
 				questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
@@ -371,27 +373,43 @@ public class QuestionnaireSNCController {
 					tacheTraitee.setDateFin(questionnaire.getDateFin());
 				}
 
-				return qsncService.envoiQuestionnaireSNCOnline(questionnaire, dateTraitement);
+				// [SIFISC-20041] si on a un modèle de document, on envoie tout ça à l'éditique... mais sinon, l'envoi se fera hors-application manuellement
+				if (md != null) {
+					return qsncService.envoiQuestionnaireSNCOnline(questionnaire, dateTraitement);
+				}
+				else {
+					// c'est le signal que le questionnaire doit être imprimé et envoyé par un autre biais que l'application
+					return null;
+				}
 			}
 		});
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-				new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-					@Override
-					public String doJob(EditiqueResultatReroutageInbox resultat) {
-						return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
-					}
-				};
+		// cas d'une demande d'impression avérée
+		if (retourEditique != null) {
+			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
+					new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
+						@Override
+						public String doJob(EditiqueResultatReroutageInbox resultat) {
+							return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
+						}
+					};
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				Flash.error(String.format("%s Veuillez imprimer un duplicata du questionnaire SNC.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-				return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
-			}
-		};
+			final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
+				@Override
+				public String doJob(EditiqueResultatErreur resultat) {
+					Flash.error(String.format("%s Veuillez imprimer un duplicata du questionnaire SNC.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+					return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
+				}
+			};
 
-		return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "questionnaireSNC", inbox, null, erreur);
+			return retourEditiqueControllerHelper.traiteRetourEditique(retourEditique, response, "questionnaireSNC", inbox, null, erreur);
+		}
+		else {
+			// ici nous sommes dans le cas où un nouveau QSNC a bien été généré mais pour une PF antérieure à 2016, en gros
+			// -> un petit message comme quoi le document a bien été créé mais que l'envoi doit suivre un autre processus
+			Flash.warning("Le questionnaire SNC a maintenant été généré dans le système, mais aucune impression n'est prévue pour cette période fiscale. Veuillez procéder si nécessaire à l'envoi du document manuellement.");
+			return "redirect:/qsnc/list.do?tiersId=" + view.getEntrepriseId();
+		}
 	}
 
 	@RequestMapping(value = "/duplicata.do", method = RequestMethod.POST)
