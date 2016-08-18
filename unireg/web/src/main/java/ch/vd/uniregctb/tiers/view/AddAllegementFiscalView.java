@@ -2,12 +2,15 @@ package ch.vd.uniregctb.tiers.view;
 
 import java.math.BigDecimal;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
 import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 
-public class AddAllegementFiscalView {
+public class AddAllegementFiscalView implements DateRange {
 
 	private long pmId;
 	private RegDate dateDebut;
@@ -44,6 +47,7 @@ public class AddAllegementFiscalView {
 		this.pmId = pmId;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -52,12 +56,18 @@ public class AddAllegementFiscalView {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public AllegementFiscal.TypeCollectivite getTypeCollectivite() {

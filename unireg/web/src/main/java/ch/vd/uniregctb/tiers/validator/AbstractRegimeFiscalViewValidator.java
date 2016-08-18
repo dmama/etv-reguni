@@ -4,12 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.validation.Errors;
 
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
+import ch.vd.uniregctb.tiers.view.ValidableRegimeFiscalView;
 
 public abstract class AbstractRegimeFiscalViewValidator {
+
+	private static final DateRangeViewValidator RANGE_VALIDATOR = new DateRangeViewValidator(false, true, true, true);
 
 	private ServiceInfrastructureService infraService;
 
@@ -32,5 +38,25 @@ public abstract class AbstractRegimeFiscalViewValidator {
 		return mapRegimesParCode;
 	}
 
+	protected void doValidate(ValidableRegimeFiscalView view, Errors errors) {
 
+		// validations de base sur le range lui-même
+		RANGE_VALIDATOR.validate(view, errors);
+
+		// la portée est obligatoire
+		if (view.getPortee() == null) {
+			errors.rejectValue("portee", "error.portee.obligatoire");
+		}
+
+		// le code du régime
+		if (StringUtils.isBlank(view.getCode())) {
+			errors.rejectValue("code", "error.type.regime.fiscal.obligatoire");
+		}
+		else {
+			final Map<String, TypeRegimeFiscal> types = getMapRegimesFiscauxParCode();
+			if (types.get(view.getCode()) == null) {
+				errors.rejectValue("code", "error.type.regime.fiscal.invalide");
+			}
+		}
+	}
 }

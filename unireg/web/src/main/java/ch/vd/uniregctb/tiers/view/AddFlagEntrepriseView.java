@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.tiers.view;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
-public class AddFlagEntrepriseView {
+public class AddFlagEntrepriseView implements DateRange {
 
 	private long pmId;
 	private RegDate dateDebut;
@@ -25,6 +28,7 @@ public class AddFlagEntrepriseView {
 		this.pmId = pmId;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -33,12 +37,18 @@ public class AddFlagEntrepriseView {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public TypeFlagEntreprise getValue() {

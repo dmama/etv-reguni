@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.tiers.view;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 
-public class EditAllegementFiscalView {
+public class EditAllegementFiscalView implements DateRange {
 
 	// pour le moment, seule la date de fin est éditable
 
@@ -32,6 +35,7 @@ public class EditAllegementFiscalView {
 		this.afId = afId;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -40,11 +44,17 @@ public class EditAllegementFiscalView {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

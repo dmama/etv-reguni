@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
@@ -79,6 +80,55 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			forKey.add(data);
 		}
 		return map;
+	}
+
+	/**
+	 * Interface utilisée pour faire en sorte que la validation d'une décision soit faite
+	 * en supposant une date du jour spécifique (pour les tests)
+	 */
+	private interface ReferenceDateAccessor {
+		RegDate getReferenceDate();
+	}
+
+	private static final ReferenceDateAccessor CURRENT_DATE_ACCESSOR = new ReferenceDateAccessor() {
+		@Override
+		public RegDate getReferenceDate() {
+			return RegDate.get();
+		}
+	};
+
+	private static final ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>() {
+		@Override
+		protected ReferenceDateAccessor initialValue() {
+			return CURRENT_DATE_ACCESSOR;
+		}
+	};
+
+	/**
+	 * Méthode utilisable dans les tests et qui fait en sorte que la date de "début du futur" soit la date donnée
+	 * @param date date qui devra dorénavant être considérée comme la date du jour pour ce qui concerne la validation des décisions
+	 */
+	public static void setFutureBeginDate(@Nullable final RegDate date) {
+		if (date == null) {
+			futureBeginDateAccessors.remove();
+		}
+		else {
+			futureBeginDateAccessors.set(new ReferenceDateAccessor() {
+				@Override
+				public RegDate getReferenceDate() {
+					return date;
+				}
+			});
+		}
+	}
+
+	private static ReferenceDateAccessor getFutureBeginDateAccessor() {
+		return futureBeginDateAccessors.get();
+	}
+
+	protected static RegDate getFutureBeginDate() {
+		final ReferenceDateAccessor accessor = getFutureBeginDateAccessor();
+		return accessor.getReferenceDate();
 	}
 
 	@Override
@@ -354,14 +404,25 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 				// en fait, on ne s'intéresse qu'aux périodes récentes... (historiquement, les régimes fiscaux n'ont pas
 				// forcément été attribués pour les périodes très vieilles...)
 				final int premiereAnnee = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
-				final DateRange relevant = new DateRangeHelper.Range(RegDate.get(premiereAnnee, 1, 1), null);
+
+				// [SIFISC-19932] on fait une distinction entre le futur proche est le futur plus lointain
+				// (la frontière se situant dans 2 ans à partir de maintenant)
+				final RegDate futureBeginDate = getFutureBeginDate();
+				final RegDate farFutureBeginDate = futureBeginDate.addYears(2);
+				final DateRange nearRelevant = new DateRangeHelper.Range(RegDate.get(premiereAnnee, 1, 1), farFutureBeginDate.getOneDayBefore());
+				final DateRange farRelevant = new DateRangeHelper.Range(farFutureBeginDate, null);
 
 				for (DateRange range : nonCouverts) {
-					if (DateRangeHelper.intersect(range, relevant)) {
+					if (DateRangeHelper.intersect(range, nearRelevant)) {
 						vr.addError(String.format("La période %s possède des fors IBC non-annulés mais est exempte de régime fiscal %s%s.",
 						                          DateRangeHelper.toDisplayString(range),
 						                          portee,
-						                          DateRangeHelper.within(range, relevant) ? StringUtils.EMPTY : " (seule la période depuis " + premiereAnnee + " est réellement problématique)"));
+						                          range.getDateDebut().isAfterOrEqual(nearRelevant.getDateDebut()) ? StringUtils.EMPTY : " (seule la période depuis " + premiereAnnee + " est réellement problématique)"));
+					}
+					else if (DateRangeHelper.intersect(range, farRelevant)) {
+						vr.addWarning(String.format("La période %s possède des fors IBC non-annulés mais est exempte de régime fiscal %s (la période est suffisamment loin dans le futur pour que ceci ne soit qu'un avertissement, mais le problème devrait cependant être corrigé rapidement).",
+						                            DateRangeHelper.toDisplayString(range),
+						                            portee));
 					}
 				}
 			}

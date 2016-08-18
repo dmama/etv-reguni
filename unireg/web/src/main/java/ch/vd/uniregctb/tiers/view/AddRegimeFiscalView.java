@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.tiers.view;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
-public class AddRegimeFiscalView {
+public class AddRegimeFiscalView implements ValidableRegimeFiscalView {
 
 	private long pmId;
 	private RegimeFiscal.Portee portee;
@@ -27,6 +29,7 @@ public class AddRegimeFiscalView {
 		this.pmId = pmId;
 	}
 
+	@Override
 	public RegimeFiscal.Portee getPortee() {
 		return portee;
 	}
@@ -35,6 +38,7 @@ public class AddRegimeFiscalView {
 		this.portee = portee;
 	}
 
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -43,6 +47,7 @@ public class AddRegimeFiscalView {
 		this.dateDebut = dateDebut;
 	}
 
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
@@ -51,6 +56,12 @@ public class AddRegimeFiscalView {
 		this.dateFin = dateFin;
 	}
 
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
 	public String getCode() {
 		return code;
 	}

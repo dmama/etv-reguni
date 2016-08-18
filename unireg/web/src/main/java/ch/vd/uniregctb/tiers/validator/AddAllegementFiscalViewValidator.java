@@ -3,12 +3,11 @@ package ch.vd.uniregctb.tiers.validator;
 import java.math.BigDecimal;
 
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.view.AddAllegementFiscalView;
 
-public class AddAllegementFiscalViewValidator implements Validator {
+public class AddAllegementFiscalViewValidator extends AbstractAllegementFiscalViewValidator {
 
 	private static final BigDecimal HUNDRED = new BigDecimal(100L);
 
@@ -21,13 +20,8 @@ public class AddAllegementFiscalViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final AddAllegementFiscalView view = (AddAllegementFiscalView) target;
 
-		// présence des dates et cohérence entre elles
-		if (view.getDateDebut() == null) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
-		}
-		else if (view.getDateFin() != null && view.getDateDebut().isAfter(view.getDateFin())) {
-			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-		}
+		// les dates
+		validateRange(view, errors);
 
 		// le type de collectivité et le type d'impôt sont obligatoires
 		if (view.getTypeCollectivite() == null) {

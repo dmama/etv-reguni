@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.tiers.validator;
 
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.tiers.view.EditFlagEntrepriseView;
 
-public class EditFlagEntrepriseViewValidator implements Validator {
+public class EditFlagEntrepriseViewValidator extends AbstractFlagEntrepriseViewValidator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -16,12 +15,7 @@ public class EditFlagEntrepriseViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final EditFlagEntrepriseView view = (EditFlagEntrepriseView) target;
 
-		// présence des dates et cohérence entre elles
-		if (view.getDateDebut() == null) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
-		}
-		else if (view.getDateFin() != null && view.getDateDebut().isAfter(view.getDateFin())) {
-			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-		}
+		// les dates
+		validateRange(view, errors);
 	}
 }
