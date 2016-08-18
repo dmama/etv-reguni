@@ -42,6 +42,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -219,12 +221,18 @@ public class ForsController {
 	}
 
 	@Nullable
-	private static GenreImpot getDefaultGenreImpotForsPrincipauxEtSecondaires(Contribuable ctb) {
+	private GenreImpot getDefaultGenreImpotForsPrincipauxEtSecondaires(Contribuable ctb) {
 		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
 			return GenreImpot.REVENU_FORTUNE;
 		}
 		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return GenreImpot.BENEFICE_CAPITAL;
+			final CategorieEntreprise categorieCourante = tiersService.getCategorieEntreprise((Entreprise) ctb, null);
+			if (categorieCourante == CategorieEntreprise.SP) {
+				return GenreImpot.REVENU_FORTUNE;
+			}
+			else {
+				return GenreImpot.BENEFICE_CAPITAL;
+			}
 		}
 		return null;
 	}
@@ -235,7 +243,7 @@ public class ForsController {
 			return getGenresImpotPourForPrincipalOuSecondairePP();
 		}
 		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return getGenresImpotPourForPrincipalPM();
+			return getGenresImpotPourForPrincipalOuSecondairePM();
 		}
 		return Collections.emptyMap();
 	}
@@ -246,7 +254,7 @@ public class ForsController {
 			return getGenresImpotPourForPrincipalOuSecondairePP();
 		}
 		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return getGenresImpotPourForSecondairePM();
+			return getGenresImpotPourForPrincipalOuSecondairePM();
 		}
 		return Collections.emptyMap();
 	}
@@ -944,18 +952,11 @@ public class ForsController {
 		return genresImpotForPrincipalOuSecondairePP;
 	}
 
-	private Map<GenreImpot, String> getGenresImpotPourForPrincipalPM() {
+	private Map<GenreImpot, String> getGenresImpotPourForPrincipalOuSecondairePM() {
 		if (genresImpotForPrincipalPM == null) {
 			genresImpotForPrincipalPM = tiersMapHelper.getMapGenreImpot(GenreImpot.REVENU_FORTUNE, GenreImpot.BENEFICE_CAPITAL);
 		}
 		return genresImpotForPrincipalPM;
-	}
-
-	private Map<GenreImpot, String> getGenresImpotPourForSecondairePM() {
-		if (genresImpotForSecondairePM == null) {
-			genresImpotForSecondairePM = tiersMapHelper.getMapGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-		}
-		return genresImpotForSecondairePM;
 	}
 
 	private Map<MotifRattachement, String> getMotifsRattachementForPrincipalPP() {
