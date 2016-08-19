@@ -26,7 +26,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 /**
- * Service de transition qui délégue les appels au service host-interfaces ou au service Fidor.
+ * Service de transition qui délégue les appels au service host-interfaces EJB ou REST
  */
 public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInfrastructureRaw {
 
@@ -46,6 +46,13 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 
 	public void setModeRest(boolean modeRest) {
 		this.modeRest = modeRest;
+	}
+
+	/**
+	 * @return le client effectivement à utiliser
+	 */
+	private ServiceInfrastructureRaw getClient() {
+		return modeRest ? restClient : ejbClient;
 	}
 
 	@Override
@@ -115,32 +122,17 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 
 	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
-		if (modeRest) {
-			return restClient.getCollectivite(noColAdm);
-		}
-		else {
-			return ejbClient.getCollectivite(noColAdm);
-		}
+		return getClient().getCollectivite(noColAdm);
 	}
 
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
-		if (modeRest) {
-			return restClient.getOfficesImpot();
-		}
-		else {
-			return ejbClient.getOfficesImpot();
-		}
+		return getClient().getOfficesImpot();
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
-		if (modeRest) {
-			return restClient.getCollectivitesAdministratives();
-		}
-		else {
-			return ejbClient.getCollectivitesAdministratives();
-		}
+		return getClient().getCollectivitesAdministratives();
 	}
 
 	@Override
@@ -150,32 +142,17 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
-		if (modeRest) {
-			return restClient.getCollectivitesAdministratives(typesCollectivite);
-		}
-		else {
-			return ejbClient.getCollectivitesAdministratives(typesCollectivite);
-		}
+		return getClient().getCollectivitesAdministratives(typesCollectivite);
 	}
 
 	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		if (modeRest) {
-			return restClient.getInstitutionFinanciere(id);
-		}
-		else {
-			return ejbClient.getInstitutionFinanciere(id);
-		}
+		return getClient().getInstitutionFinanciere(id);
 	}
 
 	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException {
-		if (modeRest) {
-			return restClient.getInstitutionsFinancieres(noClearing);
-		}
-		else {
-			return ejbClient.getInstitutionsFinancieres(noClearing);
-		}
+		return getClient().getInstitutionsFinancieres(noClearing);
 	}
 
 	@Override
@@ -195,7 +172,7 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 
 	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		return restClient.getUrlVers(application, tiersId, oid);
+		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override
@@ -230,11 +207,6 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 
 	@Override
 	public void ping() throws ServiceInfrastructureException {
-		if (modeRest) {
-			restClient.ping();
-		}
-		else {
-			ejbClient.ping();
-		}
+		getClient().ping();
 	}
 }
