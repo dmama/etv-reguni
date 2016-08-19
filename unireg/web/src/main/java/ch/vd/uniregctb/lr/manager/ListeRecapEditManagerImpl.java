@@ -166,14 +166,19 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 		// [SIFISC-10283] LR annulable si EMISE, SOMMEE ou ECHUE
 		lrEditView.setAnnulable(!lr.isAnnule() && etatLR.getEtat() != TypeEtatDeclaration.RETOURNEE);
+
+		// [SIFISC-17743] ajout de délai seulement autorisée si lr seulement émise
+		lrEditView.setAllowedDelai(lrEditView.isAllowedDelai() && etatLR.getEtat() == TypeEtatDeclaration.EMISE);
+
 		return lrEditView;
 	}
 
 
 	private void setDroitLR(ListeRecapDetailView lrEditView, DebiteurPrestationImposable dpi) {
-		if(SecurityHelper.isGranted(securityProvider, Role.LR)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.LR)) {
 			lrEditView.setAllowedDelai(true);
-		} else {
+		}
+		else {
 			lrEditView.setAllowedDelai(false);
 		}
 	}
