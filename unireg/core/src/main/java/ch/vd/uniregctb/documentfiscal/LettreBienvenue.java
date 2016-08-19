@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
 @Entity
 @DiscriminatorValue(value = "LettreBienvenue")
-public class LettreBienvenue extends AutreDocumentFiscalAvecRetour {
+public class LettreBienvenue extends AutreDocumentFiscalAvecSuivi {
 
 	private TypeLettreBienvenue type;
 

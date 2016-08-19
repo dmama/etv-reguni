@@ -6,7 +6,7 @@ import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 /**
  * Validateur des lettres de bienvenue
  */
-public class LettreBienvenueValidator extends AutreDocumentFiscalAvecRetourValidator<LettreBienvenue> {
+public class LettreBienvenueValidator extends AutreDocumentFiscalAvecSuiviValidator<LettreBienvenue> {
 
 	@Override
 	protected Class<LettreBienvenue> getValidatedClass() {

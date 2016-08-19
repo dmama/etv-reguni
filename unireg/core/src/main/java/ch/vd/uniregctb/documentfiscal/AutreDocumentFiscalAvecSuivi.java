@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
 
 @Entity
-public abstract class AutreDocumentFiscalAvecRetour extends AutreDocumentFiscal {
+public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
 	private RegDate delaiRetour;
 	private RegDate dateRetour;
