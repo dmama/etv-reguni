@@ -15,8 +15,11 @@ public class CapitalViewValidator extends DateRangeViewValidator<CapitalView> {
 
 		final CapitalView view = (CapitalView) target;
 
-		if (view.getMontant() == null) {
-			errors.rejectValue("montant", "error.tiers.capital.montant.vide");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("montant")) {
+			if (view.getMontant() == null) {
+				errors.rejectValue("montant", "error.tiers.capital.montant.vide");
+			}
 		}
 		if (StringUtils.isEmpty(view.getMonnaie())) {
 			errors.rejectValue("monnaie", "error.tiers.capital.monnaie.vide");

@@ -64,14 +64,17 @@ public class CloseAdresseValidator implements Validator {
 		}
 
 		// Vérification de la date de Fin
-		if (dateFin == null) {
-			errors.rejectValue("dateFin", "error.date.fin.vide");
-		}
-		else if (dateFin.isBefore(adresseView.getDateDebut())) {
-			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-		}
-		else if (dateFin.isAfter(RegDate.get())) {
-			errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateFin")) {
+			if (dateFin == null) {
+				errors.rejectValue("dateFin", "error.date.fin.vide");
+			}
+			else if (dateFin.isBefore(adresseView.getDateDebut())) {
+				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
+			}
+			else if (dateFin.isAfter(RegDate.get())) {
+				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+			}
 		}
 
 		//gestion des droits de fermeture d'une adresse

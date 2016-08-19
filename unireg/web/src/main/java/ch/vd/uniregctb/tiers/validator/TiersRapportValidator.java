@@ -18,10 +18,12 @@ public class TiersRapportValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		RapportView rapportView = (RapportView) obj;
 
-		if (rapportView.getDateDebut() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDebut", "error.date.debut.vide");
+		// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (rapportView.getDateDebut() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "dateDebut", "error.date.debut.vide");
+			}
 		}
-
 	}
 
 }

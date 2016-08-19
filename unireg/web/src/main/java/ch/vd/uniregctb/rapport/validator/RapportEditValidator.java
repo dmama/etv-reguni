@@ -2,7 +2,6 @@ package ch.vd.uniregctb.rapport.validator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -36,14 +35,17 @@ public class RapportEditValidator implements Validator {
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 
-		RapportView rapportView = (RapportView) obj;
+		final RapportView rapportView = (RapportView) obj;
 
 		if (rapportView.getDateDebut() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDebut", "error.date.debut.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateDebut")) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
+			}
 		}
 		else {
 			//vérifier que le tuteur, le curateur ou le conseil légal a une adresse de représentation
-			Tiers tiers = null;
+			final Tiers tiers;
 			if(rapportView.getSensRapportEntreTiers() == SensRapportEntreTiers.OBJET){
 				tiers = tiersDAO.get(rapportView.getTiersLie().getNumero());
 			}
@@ -51,8 +53,7 @@ public class RapportEditValidator implements Validator {
 				tiers = tiersDAO.get(rapportView.getTiers().getNumero());
 			}
 			try {
-				AdresseGenerique adrTuteur = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, rapportView
-						.getRegDateDebut(), false);
+				AdresseGenerique adrTuteur = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, rapportView.getRegDateDebut(), false);
 				if (adrTuteur == null) {
 					errors.reject("error.rapport.adresse");
 				}

@@ -17,11 +17,13 @@ public class RapportPrestationEditValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 
-		RapportPrestationView rapportView = (RapportPrestationView) obj;
+		final RapportPrestationView rapportView = (RapportPrestationView) obj;
 
-		if (rapportView.getDateDebut() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDebut", "error.date.debut.vide");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (rapportView.getDateDebut() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "dateDebut", "error.date.debut.vide");
+			}
 		}
 	}
-
 }

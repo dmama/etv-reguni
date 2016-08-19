@@ -16,11 +16,14 @@ public class TransfertPatrimoineViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final TransfertPatrimoineView view = (TransfertPatrimoineView) target;
 
-		if (view.getDateTransfert() == null) {
-			errors.rejectValue("dateTransfert", "error.date.transfert.vide");
-		}
-		else if (view.getDateTransfert().isAfter(RegDate.get())) {
-			errors.rejectValue("dateTransfert", "error.date.transfert.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateTransfert")) {
+			if (view.getDateTransfert() == null) {
+				errors.rejectValue("dateTransfert", "error.date.transfert.vide");
+			}
+			else if (view.getDateTransfert().isAfter(RegDate.get())) {
+				errors.rejectValue("dateTransfert", "error.date.transfert.future");
+			}
 		}
 	}
 }

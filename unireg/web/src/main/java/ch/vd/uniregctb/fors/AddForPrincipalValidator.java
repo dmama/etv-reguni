@@ -69,8 +69,13 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 			}
 		}
 		if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
-			errors.rejectValue("dateDebut", "error.date.chevauchement");
-			errors.rejectValue("dateFin", "error.date.chevauchement");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateDebut")) {
+				errors.rejectValue("dateDebut", "error.date.chevauchement");
+			}
+			if (!errors.hasFieldErrors("dateFin")) {
+				errors.rejectValue("dateFin", "error.date.chevauchement");
+			}
 		}
 	}
 }

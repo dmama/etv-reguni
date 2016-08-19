@@ -31,20 +31,22 @@ public class ParametrePeriodeFiscaleSNCValidator implements Validator {
 				"rappelEffectif"
 		};
 		for (String champ : champsDate) {
-			try {
-				if (PropertyUtils.getProperty(view, champ) == null) {
-					errors.rejectValue(champ, "error.champ.obligatoire");
+			if (!errors.hasFieldErrors(champ)) {
+				try {
+					if (PropertyUtils.getProperty(view, champ) == null) {
+						errors.rejectValue(champ, "error.champ.obligatoire");
+					}
+					else if (((RegDate) PropertyUtils.getProperty(view, champ)).isPartial()) {
+						errors.rejectValue(champ, "error.date.partielle.interdite");
+					}
+					else if (((RegDate) PropertyUtils.getProperty(view, champ)).year() != requestedYear) {
+						errors.rejectValue(champ, "error.param.annee.incorrecte", new Object[]{requestedYear.toString()}, "erreur sur l''année");
+					}
 				}
-				else if (((RegDate) PropertyUtils.getProperty(view, champ)).isPartial()) {
-					errors.rejectValue(champ, "error.date.partielle.interdite");
+				catch (Exception e) {
+					errors.rejectValue(champ, e.getMessage());
+					LOGGER.error(e.getMessage(), e);
 				}
-				else if (((RegDate) PropertyUtils.getProperty(view, champ)).year() != requestedYear) {
-					errors.rejectValue(champ, "error.param.annee.incorrecte", new Object[]{requestedYear.toString()}, "erreur sur l''année");
-				}
-			}
-			catch (Exception e) {
-				errors.rejectValue(champ, e.getMessage());
-				LOGGER.error(e.getMessage(), e);
 			}
 		}
 	}

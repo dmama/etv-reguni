@@ -16,11 +16,14 @@ public class FinActiviteViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final FinActiviteView view = (FinActiviteView) target;
 
-		if (view.getDateFinActivite() == null) {
-			errors.rejectValue("dateFinActivite", "error.date.fin.vide");
-		}
-		else if (view.getDateFinActivite().isAfter(RegDate.get())) {
-			errors.rejectValue("dateFinActivite", "error.date.fin.dans.futur");
+		// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateFinActivite")) {
+			if (view.getDateFinActivite() == null) {
+				errors.rejectValue("dateFinActivite", "error.date.fin.vide");
+			}
+			else if (view.getDateFinActivite().isAfter(RegDate.get())) {
+				errors.rejectValue("dateFinActivite", "error.date.fin.dans.futur");
+			}
 		}
 	}
 }

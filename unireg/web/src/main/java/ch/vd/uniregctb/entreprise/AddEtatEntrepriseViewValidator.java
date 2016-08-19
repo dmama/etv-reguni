@@ -18,8 +18,11 @@ public class AddEtatEntrepriseViewValidator implements Validator {
 			if (view.getType() == null) {
 				errors.rejectValue("type", "error.tiers.etats.type.vide");
 			}
-			if (view.getDateObtention() == null) {
-				errors.rejectValue("dateObtention", "error.tiers.etats.date.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateObtention")) {
+				if (view.getDateObtention() == null) {
+					errors.rejectValue("dateObtention", "error.tiers.etats.date.vide");
+				}
 			}
 		}
 	}

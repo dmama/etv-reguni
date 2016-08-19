@@ -118,11 +118,16 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 		final Contribuable ctb = (Contribuable) tiers;
 
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
 		if (view.getDateDebutPeriodeImposition() == null) {
-			errors.rejectValue("dateDebutPeriodeImposition", "error.date.debut.vide");
+			if (!errors.hasFieldErrors("dateDebutPeriodeImposition")) {
+				errors.rejectValue("dateDebutPeriodeImposition", "error.date.debut.vide");
+			}
 		}
 		else if (view.getDateFinPeriodeImposition() == null) {
-			errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.vide");
+			if (!errors.hasFieldErrors("dateFinPeriodeImposition")) {
+				errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.vide");
+			}
 		}
 		else if (view.getDateFinPeriodeImposition().year() != view.getPeriodeFiscale()) {
 			errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.pas.dans.periode.fiscale");
@@ -158,7 +163,10 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 		final RegDate delaiAccorde = view.getDelaiAccorde();
 		if (delaiAccorde == null) {
-			errors.rejectValue("delaiAccorde", "error.delai.accorde.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("delaiAccorde")) {
+				errors.rejectValue("delaiAccorde", "error.delai.accorde.vide");
+			}
 		}
 
 		// [SIFISC-17773] Le délai maximal de 6 mois n'est valide que pour les DI PP
@@ -179,7 +187,10 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 		final RegDate dateRetour = view.getDateRetour();
 		if (dateRetour == null) {
-			errors.rejectValue("dateRetour", "error.date.retour.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateRetour")) {
+				errors.rejectValue("dateRetour", "error.date.retour.vide");
+			}
 			return;
 		}
 
@@ -241,22 +252,28 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
-		if (view.getDelaiAccordeAu() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
-		}
-		else {
-			final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
-			if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
-				errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("delaiAccordeAu")) {
+			if (view.getDelaiAccordeAu() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
+			}
+			else {
+				final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
+				if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
+					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+				}
 			}
 		}
 
-		if (view.getDateDemande() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
-		}
-		else if (view.getDateDemande().isAfter(RegDate.get())) {
-			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
-				errors.rejectValue("dateDemande", "error.date.demande.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDemande")) {
+			if (view.getDateDemande() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
+			}
+			else if (view.getDateDemande().isAfter(RegDate.get())) {
+				if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
+					errors.rejectValue("dateDemande", "error.date.demande.future");
+				}
 			}
 		}
 	}
@@ -275,13 +292,16 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 
 		if (view.getDecision() == EtatDelaiDeclaration.ACCORDE) {
-			if (view.getDelaiAccordeAu() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
-			}
-			else {
-				final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
-				if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
-					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("delaiAccordeAu")) {
+				if (view.getDelaiAccordeAu() == null) {
+					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.vide");
+				}
+				else {
+					final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
+					if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
+						errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+					}
 				}
 			}
 		}
@@ -295,12 +315,15 @@ public class DeclarationImpotControllerValidator implements Validator {
 			}
 		}
 
-		if (view.getDateDemande() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
-		}
-		else if (view.getDateDemande().isAfter(RegDate.get())) {
-			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
-				errors.rejectValue("dateDemande", "error.date.demande.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDemande")) {
+			if (view.getDateDemande() == null) {
+				errors.rejectValue("dateDemande", "error.date.demande.vide");
+			}
+			else if (view.getDateDemande().isAfter(RegDate.get())) {
+				if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
+					errors.rejectValue("dateDemande", "error.date.demande.future");
+				}
 			}
 		}
 	}
@@ -319,13 +342,16 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 
 		if (view.getDecision() == EtatDelaiDeclaration.ACCORDE) {
-			if (view.getDelaiAccordeAu() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
-			}
-			else {
-				final RegDate ancienDelaiAccorde = delai.getDeclaration().getDelaiAccordeAu();
-				if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
-					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("delaiAccordeAu")) {
+				if (view.getDelaiAccordeAu() == null) {
+					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.vide");
+				}
+				else {
+					final RegDate ancienDelaiAccorde = delai.getDeclaration().getDelaiAccordeAu();
+					if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
+						errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+					}
 				}
 			}
 		}
@@ -339,12 +365,15 @@ public class DeclarationImpotControllerValidator implements Validator {
 			}
 		}
 
-		if (view.getDateDemande() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
-		}
-		else if (view.getDateDemande().isAfter(RegDate.get())) {
-			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
-				errors.rejectValue("dateDemande", "error.date.demande.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDemande")) {
+			if (view.getDateDemande() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
+			}
+			else if (view.getDateDemande().isAfter(RegDate.get())) {
+				if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
+					errors.rejectValue("dateDemande", "error.date.demande.future");
+				}
 			}
 		}
 	}

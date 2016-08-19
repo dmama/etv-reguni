@@ -2,7 +2,6 @@ package ch.vd.uniregctb.activation.validator;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
@@ -28,11 +27,15 @@ public class TiersAnnulationRecapValidator implements Validator {
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 		final TiersAnnulationRecapView tiersAnnulationRecapView = (TiersAnnulationRecapView) obj;
-		if (tiersAnnulationRecapView.getDateAnnulation() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateAnnulation", "error.date.annulation.vide");
-		}
-		else if (tiersAnnulationRecapView.getDateAnnulation().isAfter(RegDate.get())) {
-			errors.rejectValue("dateAnnulation", "error.date.annulation.future");
+
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateAnnulation")) {
+			if (tiersAnnulationRecapView.getDateAnnulation() == null) {
+				errors.rejectValue("dateAnnulation", "error.date.annulation.vide");
+			}
+			else if (tiersAnnulationRecapView.getDateAnnulation().isAfter(RegDate.get())) {
+				errors.rejectValue("dateAnnulation", "error.date.annulation.future");
+			}
 		}
 
 		final Long numeroTiers = tiersAnnulationRecapView.getNumeroTiers();

@@ -16,11 +16,14 @@ public class ReinscriptionRCViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final ReinscriptionRCView view = (ReinscriptionRCView) target;
 
-		if (view.getDateRadiationRC() == null) {
-			errors.rejectValue("dateRadiationRC", "error.date.radiation.rc.vide");
-		}
-		else if (view.getDateRadiationRC().isAfter(RegDate.get())) {
-			errors.rejectValue("dateRadiationRC", "error.date.radiation.rc.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateRadiationRC")) {
+			if (view.getDateRadiationRC() == null) {
+				errors.rejectValue("dateRadiationRC", "error.date.radiation.rc.vide");
+			}
+			else if (view.getDateRadiationRC().isAfter(RegDate.get())) {
+				errors.rejectValue("dateRadiationRC", "error.date.radiation.rc.future");
+			}
 		}
 	}
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
@@ -39,11 +38,14 @@ public class DecesRecapValidator implements Validator {
 
 		final RegDate dateDeces = decesRecapView.getDateDeces();
 		if (dateDeces == null) {
-			if (veuvageMarieSeul) {
-				ValidationUtils.rejectIfEmpty(errors, "dateDeces", "error.date.veuvage.vide");
-			}
-			else {
-				ValidationUtils.rejectIfEmpty(errors, "dateDeces", "error.date.deces.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateDeces")) {
+				if (veuvageMarieSeul) {
+					errors.rejectValue("dateDeces", "error.date.veuvage.vide");
+				}
+				else {
+					errors.rejectValue("dateDeces", "error.date.deces.vide");
+				}
 			}
 		}
 		else {

@@ -37,14 +37,17 @@ public class EditModeImpositionValidator implements Validator {
 		view.initReadOnlyData(ffp);
 
 		// la date de changement du mode d'imposition
-		if (view.getDateChangement() == null) {
-			errors.rejectValue("dateChangement", "error.date.changement.vide");
-		}
-		else if (view.getDateChangement().isAfter(RegDate.get())) {
-			errors.rejectValue("dateChangement", "error.date.changement.posterieure.date.jour");
-		}
-		else if (view.getDateChangement().isBefore(ffp.getDateDebut())) {
-			errors.rejectValue("dateChangement", "error.date.changement.anterieur.date.debut.for");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateChangement")) {
+			if (view.getDateChangement() == null) {
+				errors.rejectValue("dateChangement", "error.date.changement.vide");
+			}
+			else if (view.getDateChangement().isAfter(RegDate.get())) {
+				errors.rejectValue("dateChangement", "error.date.changement.posterieure.date.jour");
+			}
+			else if (view.getDateChangement().isBefore(ffp.getDateDebut())) {
+				errors.rejectValue("dateChangement", "error.date.changement.anterieur.date.debut.for");
+			}
 		}
 
 		// le mode d'imposition lui-même
@@ -52,7 +55,7 @@ public class EditModeImpositionValidator implements Validator {
 			errors.rejectValue("modeImposition", "error.mode.imposition.incorrect");
 		}
 		else {
-			StringBuilder messageErreurModeImposition = new StringBuilder();
+			final StringBuilder messageErreurModeImposition = new StringBuilder();
 			if (!autorisationManager.isModeImpositionAllowed(ffp.getTiers(), view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
 			                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID(), messageErreurModeImposition)) {
 				errors.rejectValue("modeImposition",messageErreurModeImposition.toString());

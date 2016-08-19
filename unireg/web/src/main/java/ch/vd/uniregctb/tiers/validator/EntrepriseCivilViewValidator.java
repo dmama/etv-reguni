@@ -29,25 +29,34 @@ public class EntrepriseCivilViewValidator implements Validator {
 			errors.rejectValue("formeJuridique", "error.forme.juridique.vide");
 		}
 
-		if (!errors.hasFieldErrors("dateOuverture") && view.getDateOuverture() == null) {
-			errors.rejectValue("dateOuverture", "error.date.ouverture.vide");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateOuverture")) {
+			if (view.getDateOuverture() == null) {
+				errors.rejectValue("dateOuverture", "error.date.ouverture.vide");
+			}
 		}
 
 		// dates explicites demandées
 		if (view.getTypeDateDebutExerciceCommercial() != EntrepriseCivilView.TypeDefautDate.DEFAULT) {
-			if (!errors.hasFieldErrors("dateDebutExerciceCommercial") && view.getDateDebutExerciceCommercial() == null) {
-				errors.rejectValue("dateDebutExerciceCommercial", "error.date.debut.exercice.commercial.vide");
-			}
-			else if (view.getDateDebutExerciceCommercial() != null && view.getDateOuverture() != null && view.getDateDebutExerciceCommercial().isAfter(view.getDateOuverture())) {
-				errors.rejectValue("dateDebutExerciceCommercial", "error.date.debut.exercice.commercial.apres.date.ouverture");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateDebutExerciceCommercial")) {
+				if (view.getDateDebutExerciceCommercial() == null) {
+					errors.rejectValue("dateDebutExerciceCommercial", "error.date.debut.exercice.commercial.vide");
+				}
+				else if (view.getDateDebutExerciceCommercial() != null && view.getDateOuverture() != null && view.getDateDebutExerciceCommercial().isAfter(view.getDateOuverture())) {
+					errors.rejectValue("dateDebutExerciceCommercial", "error.date.debut.exercice.commercial.apres.date.ouverture");
+				}
 			}
 		}
 		if (view.getTypeDateFondation() != EntrepriseCivilView.TypeDefautDate.DEFAULT) {
-			if (!errors.hasFieldErrors("dateFondation") && view.getDateFondation() == null) {
-				errors.rejectValue("dateFondation", "error.date.fondation.vide");
-			}
-			else if (view.getDateFondation() != null && view.getDateOuverture() != null && view.getDateFondation().isAfter(view.getDateOuverture())) {
-				errors.rejectValue("dateFondation", "error.date.fondation.apres.date.ouverture");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateFondation")) {
+				if (view.getDateFondation() == null) {
+					errors.rejectValue("dateFondation", "error.date.fondation.vide");
+				}
+				else if (view.getDateFondation() != null && view.getDateOuverture() != null && view.getDateFondation().isAfter(view.getDateOuverture())) {
+					errors.rejectValue("dateFondation", "error.date.fondation.apres.date.ouverture");
+				}
 			}
 		}
 

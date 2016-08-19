@@ -18,11 +18,15 @@ public class TiersReactivationRecapValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		final TiersReactivationRecapView tiersReactivationRecapView = (TiersReactivationRecapView) obj;
-		if (tiersReactivationRecapView.getDateReactivation() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateReactivation", "error.date.reactivation.vide");
-		}
-		else if (tiersReactivationRecapView.getDateReactivation().isAfter(RegDate.get())) {
-			errors.rejectValue("dateReactivation", "error.date.reactivation.future");
+
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateReactivation")) {
+			if (tiersReactivationRecapView.getDateReactivation() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "dateReactivation", "error.date.reactivation.vide");
+			}
+			else if (tiersReactivationRecapView.getDateReactivation().isAfter(RegDate.get())) {
+				errors.rejectValue("dateReactivation", "error.date.reactivation.future");
+			}
 		}
 	}
 }

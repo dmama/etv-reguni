@@ -58,14 +58,18 @@ public class AddAllegementFiscalViewValidator extends AbstractAllegementFiscalVi
 			errors.rejectValue("flagPourcentageMontant", "error.choix.pourcentage.montant.allegement.vide");
 		}
 		else if (view.getFlagPourcentageMontant() == AddAllegementFiscalView.PourcentageMontant.POURCENTAGE) {
-			if (view.getPourcentageAllegement() == null) {
-				errors.rejectValue("pourcentageAllegement", "error.pourcentage.allegement.vide");
-			}
-			else if (BigDecimal.ZERO.compareTo(view.getPourcentageAllegement()) > 0) {
-				errors.rejectValue("pourcentageAllegement", "error.pourcentage.allegement.invalide");
-			}
-			else if (HUNDRED.compareTo(view.getPourcentageAllegement()) < 0) {
-				errors.rejectValue("pourcentageAllegement", "error.pourcentage.allegement.invalide");
+
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("pourcentageAllegement")) {
+				if (view.getPourcentageAllegement() == null) {
+					errors.rejectValue("pourcentageAllegement", "error.pourcentage.allegement.vide");
+				}
+				else if (BigDecimal.ZERO.compareTo(view.getPourcentageAllegement()) > 0) {
+					errors.rejectValue("pourcentageAllegement", "error.pourcentage.allegement.invalide");
+				}
+				else if (HUNDRED.compareTo(view.getPourcentageAllegement()) < 0) {
+					errors.rejectValue("pourcentageAllegement", "error.pourcentage.allegement.invalide");
+				}
 			}
 		}
 	}

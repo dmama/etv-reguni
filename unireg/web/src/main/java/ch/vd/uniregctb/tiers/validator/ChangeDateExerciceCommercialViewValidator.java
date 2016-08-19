@@ -18,8 +18,11 @@ public class ChangeDateExerciceCommercialViewValidator implements Validator {
 			final ChangeDateExerciceCommercialView view = (ChangeDateExerciceCommercialView) target;
 
 			// la nouvelle date ne doit pas être vide
-			if (view.getNouvelleDate() == null) {
-				errors.rejectValue("nouvelleDate", "error.date.obligatoire");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("nouvelleDate")) {
+				if (view.getNouvelleDate() == null) {
+					errors.rejectValue("nouvelleDate", "error.date.obligatoire");
+				}
 			}
 		}
 	}

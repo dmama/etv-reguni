@@ -16,21 +16,27 @@ public class FusionEntreprisesViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final FusionEntreprisesView view = (FusionEntreprisesView) target;
 
-		if (view.getDateContratFusion() == null) {
-			errors.rejectValue("dateContratFusion", "error.date.contrat.fusion.vide");
-		}
-		else if (view.getDateContratFusion().isAfter(RegDate.get())) {
-			errors.rejectValue("dateContratFusion", "error.date.contrat.fusion.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateContratFusion")) {
+			if (view.getDateContratFusion() == null) {
+				errors.rejectValue("dateContratFusion", "error.date.contrat.fusion.vide");
+			}
+			else if (view.getDateContratFusion().isAfter(RegDate.get())) {
+				errors.rejectValue("dateContratFusion", "error.date.contrat.fusion.future");
+			}
 		}
 
-		if (view.getDateBilanFusion() == null) {
-			errors.rejectValue("dateBilanFusion", "error.date.bilan.fusion.vide");
-		}
-		else if (view.getDateBilanFusion().isAfter(RegDate.get())) {
-			errors.rejectValue("dateBilanFusion", "error.date.bilan.fusion.future");
-		}
-		else if (view.getDateContratFusion() != null && view.getDateBilanFusion().isAfter(view.getDateContratFusion())) {
-			errors.rejectValue("dateBilanFusion", "error.date.bilan.fusion.apres.date.contrat");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateBilanFusion")) {
+			if (view.getDateBilanFusion() == null) {
+				errors.rejectValue("dateBilanFusion", "error.date.bilan.fusion.vide");
+			}
+			else if (view.getDateBilanFusion().isAfter(RegDate.get())) {
+				errors.rejectValue("dateBilanFusion", "error.date.bilan.fusion.future");
+			}
+			else if (view.getDateContratFusion() != null && view.getDateBilanFusion().isAfter(view.getDateContratFusion())) {
+				errors.rejectValue("dateBilanFusion", "error.date.bilan.fusion.apres.date.contrat");
+			}
 		}
 	}
 }

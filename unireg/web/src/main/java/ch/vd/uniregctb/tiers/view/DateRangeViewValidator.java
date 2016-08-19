@@ -40,30 +40,36 @@ public class DateRangeViewValidator {
 		final RegDate dateDebut = range.getDateDebut();
 		final RegDate dateFin = range.getDateFin();
 
-		if (dateDebut == null && !allowedNullDebut) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
-		}
-		else if (dateDebut != null && now.isBefore(dateDebut)) {
-			if (!allowedFutureDebut) {
-				errors.rejectValue("dateDebut", "error.date.debut.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (dateDebut == null && !allowedNullDebut) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
 			}
-			else if (maxFutur != null && RegDateHelper.isBefore(maxFutur, dateDebut, NullDateBehavior.LATEST)) {
-				errors.rejectValue("dateDebut", "error.date.plus.de.x.annees.dans.futur", new Object[] { Integer.toString(maxAnneesDansFutur) }, null);
+			else if (dateDebut != null && now.isBefore(dateDebut)) {
+				if (!allowedFutureDebut) {
+					errors.rejectValue("dateDebut", "error.date.debut.future");
+				}
+				else if (maxFutur != null && RegDateHelper.isBefore(maxFutur, dateDebut, NullDateBehavior.LATEST)) {
+					errors.rejectValue("dateDebut", "error.date.plus.de.x.annees.dans.futur", new Object[]{Integer.toString(maxAnneesDansFutur)}, null);
+				}
 			}
 		}
 
-		if (dateFin == null && !allowedNullFin) {
-			errors.rejectValue("dateFin", "error.date.fin.vide");
-		}
-		else if (dateDebut != null && dateFin != null && dateFin.isBefore(dateDebut)) {
-			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-		}
-		else if (dateFin != null && now.isBefore(dateFin)) {
-			if (!allowedFutureFin) {
-				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+		// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateFin")) {
+			if (dateFin == null && !allowedNullFin) {
+				errors.rejectValue("dateFin", "error.date.fin.vide");
 			}
-			else if (maxFutur != null && RegDateHelper.isBefore(maxFutur, dateFin, NullDateBehavior.LATEST)) {
-				errors.rejectValue("dateFin", "error.date.plus.de.x.annees.dans.futur", new Object[] { Integer.toString(maxAnneesDansFutur) }, null);
+			else if (dateDebut != null && dateFin != null && dateFin.isBefore(dateDebut)) {
+				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
+			}
+			else if (dateFin != null && now.isBefore(dateFin)) {
+				if (!allowedFutureFin) {
+					errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+				}
+				else if (maxFutur != null && RegDateHelper.isBefore(maxFutur, dateFin, NullDateBehavior.LATEST)) {
+					errors.rejectValue("dateFin", "error.date.plus.de.x.annees.dans.futur", new Object[]{Integer.toString(maxAnneesDansFutur)}, null);
+				}
 			}
 		}
 	}

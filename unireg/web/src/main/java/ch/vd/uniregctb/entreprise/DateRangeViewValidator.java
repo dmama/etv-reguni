@@ -22,21 +22,24 @@ public abstract class DateRangeViewValidator<T extends DateRange> implements Val
 	@Override
 	public void validate(Object target, Errors errors) {
 		final DateRange view = (DateRange) target;
-		if (view.getDateDebut() == null) {
-			errors.rejectValue(getDateDebutName(), getDateDebutVideMessage());
-		}
-		else {
-			final RegDate today = RegDate.get();
-			if (today.isBefore(view.getDateDebut())) {
+		final RegDate today = RegDate.get();
+		final RegDate dateDebut = view.getDateDebut();
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors(getDateDebutName())) {
+			if (dateDebut == null) {
+				errors.rejectValue(getDateDebutName(), getDateDebutVideMessage());
+			}
+			else if (today.isBefore(dateDebut)) {
 				errors.rejectValue(getDateDebutName(), getDateDebutFutureMessage());
 			}
-			if (view.getDateFin() != null) {
-				if (view.getDateFin().isBefore(view.getDateDebut())) {
-					errors.rejectValue(getDateFinName(), getDateFinAvantDebutMessage());
-				}
-				else if (today.isBefore(view.getDateFin())) {
-					errors.rejectValue(getDateFinName(), getDateFinFutureMessage());
-				}
+		}
+
+		if (dateDebut != null && view.getDateFin() != null) {
+			if (view.getDateFin().isBefore(dateDebut)) {
+				errors.rejectValue(getDateFinName(), getDateFinAvantDebutMessage());
+			}
+			else if (today.isBefore(view.getDateFin())) {
+				errors.rejectValue(getDateFinName(), getDateFinFutureMessage());
 			}
 		}
 	}

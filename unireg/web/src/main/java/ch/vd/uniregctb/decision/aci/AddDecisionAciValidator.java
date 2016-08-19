@@ -27,11 +27,14 @@ public class AddDecisionAciValidator  implements Validator {
 
 		// validation de la date de début
 		final RegDate dateDebut = view.getDateDebut();
-		if (dateDebut == null) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
-		}
-		else if (RegDate.get().isBefore(dateDebut)) {
-			errors.rejectValue("dateDebut", "error.date.debut.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (dateDebut == null) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
+			}
+			else if (RegDate.get().isBefore(dateDebut)) {
+				errors.rejectValue("dateDebut", "error.date.debut.future");
+			}
 		}
 
 		// validation de la date de fin

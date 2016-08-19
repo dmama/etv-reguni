@@ -39,7 +39,10 @@ public class Pp2McValidator implements Validator {
 
 		// vérification de la validité des dates
 		if (view.getDateDebut() == null) {
-			errors.rejectValue("dateDebut", "error.date.ouverture.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateDebut")) {
+				errors.rejectValue("dateDebut", "error.date.ouverture.vide");
+			}
 		}
 		else if (view.getDateFin() != null && view.getDateDebut().isAfter(view.getDateFin())) {
 			errors.rejectValue("dateFin", "error.date.fermeture.anterieure");
@@ -47,16 +50,19 @@ public class Pp2McValidator implements Validator {
 
 		// vérification du contribuable principal
 		final Long idPrincipal = view.getIdPrincipal();
-		if (idPrincipal == null) {
-			errors.rejectValue("idPrincipal", "error.numero.obligatoire");
-		}
-		else {
-			final Tiers principal = tiersDAO.get(idPrincipal);
-			if (principal == null) {
-				errors.rejectValue("idPrincipal", "error.tiers.inexistant");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("idPrincipal")) {
+			if (idPrincipal == null) {
+				errors.rejectValue("idPrincipal", "error.numero.obligatoire");
 			}
-			else if (!(principal instanceof PersonnePhysique)) {
-				errors.rejectValue("idPrincipal", "error.tiers.doit.etre.personne.physique");
+			else {
+				final Tiers principal = tiersDAO.get(idPrincipal);
+				if (principal == null) {
+					errors.rejectValue("idPrincipal", "error.tiers.inexistant");
+				}
+				else if (!(principal instanceof PersonnePhysique)) {
+					errors.rejectValue("idPrincipal", "error.tiers.doit.etre.personne.physique");
+				}
 			}
 		}
 

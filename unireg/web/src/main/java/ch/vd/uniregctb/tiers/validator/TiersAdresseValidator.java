@@ -149,7 +149,10 @@ public class TiersAdresseValidator implements Validator {
 
 		// Vérification de la date de début
 		if (dateDebut == null) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors("dateDebut")) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
+			}
 		}
 		else if (adresseView.getId() == null) {
 			if (RegDate.get().isBefore(dateDebut)) {

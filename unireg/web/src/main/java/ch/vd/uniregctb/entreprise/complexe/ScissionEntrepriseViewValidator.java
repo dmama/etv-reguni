@@ -16,11 +16,14 @@ public class ScissionEntrepriseViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final ScissionEntrepriseView view = (ScissionEntrepriseView) target;
 
-		if (view.getDateContratScission() == null) {
-			errors.rejectValue("dateContratScission", "error.date.contrat.scission.vide");
-		}
-		else if (view.getDateContratScission().isAfter(RegDate.get())) {
-			errors.rejectValue("dateContratScission", "error.date.contrat.scission.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateContratScission")) {
+			if (view.getDateContratScission() == null) {
+				errors.rejectValue("dateContratScission", "error.date.contrat.scission.vide");
+			}
+			else if (view.getDateContratScission().isAfter(RegDate.get())) {
+				errors.rejectValue("dateContratScission", "error.date.contrat.scission.future");
+			}
 		}
 	}
 }

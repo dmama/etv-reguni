@@ -47,18 +47,22 @@ public class Mc2PpValidator implements Validator {
 
 		// on vérifie que le numéro d'individu est valide
 		final Long indNo = view.getIndNo();
-		if (indNo == null) {
-			errors.rejectValue("indNo", "error.numero.obligatoire");
-		}
-		else {
-			try {
-				final Individu individu = serviceCivil.getIndividu(view.getIndNo(), null);
-				if (individu == null) {
-					errors.rejectValue("indNo", "error.individu.inexistant", new Object[]{Long.toString(indNo)}, null);
-				}
+
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("indNo")) {
+			if (indNo == null) {
+				errors.rejectValue("indNo", "error.numero.obligatoire");
 			}
-			catch (ServiceCivilException e) {
-				errors.rejectValue("indNo", "error.individu.exception", new Object[]{Long.toString(indNo), e.getMessage()}, null);
+			else {
+				try {
+					final Individu individu = serviceCivil.getIndividu(view.getIndNo(), null);
+					if (individu == null) {
+						errors.rejectValue("indNo", "error.individu.inexistant", new Object[]{Long.toString(indNo)}, null);
+					}
+				}
+				catch (ServiceCivilException e) {
+					errors.rejectValue("indNo", "error.individu.exception", new Object[]{Long.toString(indNo), e.getMessage()}, null);
+				}
 			}
 		}
 	}

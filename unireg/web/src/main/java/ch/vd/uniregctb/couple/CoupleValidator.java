@@ -105,11 +105,14 @@ public class CoupleValidator implements Validator {
 		}
 
 		// validation de la date de début
-		if (dateDebut == null) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
-		}
-		else if (RegDate.get().isBefore(dateDebut)) {
-			errors.rejectValue("dateDebut", "error.date.debut.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de date, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (dateDebut == null) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
+			}
+			else if (RegDate.get().isBefore(dateDebut)) {
+				errors.rejectValue("dateDebut", "error.date.debut.future");
+			}
 		}
 
 		// validation du futur ménage-commun
@@ -171,44 +174,50 @@ public class CoupleValidator implements Validator {
 	}
 
 	private void validatePP(Long ppId, String field, Errors errors) {
-		if (ppId == null) {
-			errors.rejectValue(field, "error.tiers.obligatoire");
-		}
-		else if (ppId > ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID) {
-			errors.rejectValue(field, "error.numero.tiers.trop.grand");
-		}
-		else {
-			final Tiers tiers = tiersDAO.get(ppId);
-			if (tiers == null) {
-				errors.rejectValue(field, "error.tiers.inexistant");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors(field)) {
+			if (ppId == null) {
+				errors.rejectValue(field, "error.tiers.obligatoire");
 			}
-			else if (!(tiers instanceof PersonnePhysique)) {
-				errors.rejectValue(field, "error.tiers.doit.etre.personne.physique");
+			else if (ppId > ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID) {
+				errors.rejectValue(field, "error.numero.tiers.trop.grand");
 			}
-			else if (!isModifGranted(tiers)) {
-				errors.rejectValue(field, "error.tiers.interdit");
+			else {
+				final Tiers tiers = tiersDAO.get(ppId);
+				if (tiers == null) {
+					errors.rejectValue(field, "error.tiers.inexistant");
+				}
+				else if (!(tiers instanceof PersonnePhysique)) {
+					errors.rejectValue(field, "error.tiers.doit.etre.personne.physique");
+				}
+				else if (!isModifGranted(tiers)) {
+					errors.rejectValue(field, "error.tiers.interdit");
+				}
 			}
 		}
 	}
 
 
 	private void validateFuturMC(Long futurMcId, Errors errors, boolean forcedMc) {
-		if (futurMcId == null) {
-			errors.rejectValue("mcId", "error.tiers.obligatoire");
-		}
-		else if (futurMcId > ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID) {
-			errors.rejectValue("mcId", "error.numero.tiers.trop.grand");
-		}
-		else {
-			final Tiers tiers = tiersDAO.get(futurMcId);
-			if (tiers == null) {
-				errors.rejectValue("mcId", "error.tiers.inexistant");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("mcId")) {
+			if (futurMcId == null) {
+				errors.rejectValue("mcId", "error.tiers.obligatoire");
 			}
-			else if (!forcedMc && !CoupleMcPickerFilter.isValideCommeTroisiemeTiers(tiers)) {
-				errors.rejectValue("mcId", "error.troisieme.tiers.non.valide");
+			else if (futurMcId > ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID) {
+				errors.rejectValue("mcId", "error.numero.tiers.trop.grand");
 			}
-			else if (!isModifGranted(tiers)) {
-				errors.rejectValue("mcId", "error.tiers.interdit");
+			else {
+				final Tiers tiers = tiersDAO.get(futurMcId);
+				if (tiers == null) {
+					errors.rejectValue("mcId", "error.tiers.inexistant");
+				}
+				else if (!forcedMc && !CoupleMcPickerFilter.isValideCommeTroisiemeTiers(tiers)) {
+					errors.rejectValue("mcId", "error.troisieme.tiers.non.valide");
+				}
+				else if (!isModifGranted(tiers)) {
+					errors.rejectValue("mcId", "error.tiers.interdit");
+				}
 			}
 		}
 	}

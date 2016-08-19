@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
@@ -54,25 +53,30 @@ public class SeparationRecapValidator implements Validator {
 		Assert.isTrue(obj instanceof SeparationRecapView);
 		SeparationRecapView separationRecapView = (SeparationRecapView) obj;
 
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
 		final RegDate dateSeparation = separationRecapView.getDateSeparation();
-		if (dateSeparation == null) {
-			if (EtatCivil.DIVORCE == separationRecapView.getEtatCivil()) {
-				ValidationUtils.rejectIfEmpty(errors, "dateSeparation", "error.date.divorce.vide");
-			}
-			else {
-				ValidationUtils.rejectIfEmpty(errors, "dateSeparation", "error.date.separation.vide");
-			}
-		}
-		else {
-			if (RegDate.get().isBefore(dateSeparation)) {
+		if (!errors.hasFieldErrors("dateSeparation")) {
+			if (dateSeparation == null) {
 				if (EtatCivil.DIVORCE == separationRecapView.getEtatCivil()) {
-					errors.rejectValue("dateSeparation", "error.date.divorce.future");
+					errors.rejectValue("dateSeparation", "error.date.divorce.vide");
 				}
 				else {
-					errors.rejectValue("dateSeparation", "error.date.separation.future");
+					errors.rejectValue("dateSeparation", "error.date.separation.vide");
 				}
 			}
+			else {
+				if (RegDate.get().isBefore(dateSeparation)) {
+					if (EtatCivil.DIVORCE == separationRecapView.getEtatCivil()) {
+						errors.rejectValue("dateSeparation", "error.date.divorce.future");
+					}
+					else {
+						errors.rejectValue("dateSeparation", "error.date.separation.future");
+					}
+				}
+			}
+		}
 
+		if (dateSeparation != null) {
 			//Validation de la séparation
 			final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
 			final ValidationResults results = new ValidationResults();

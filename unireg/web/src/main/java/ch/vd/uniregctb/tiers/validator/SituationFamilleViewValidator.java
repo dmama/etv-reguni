@@ -28,18 +28,24 @@ public class SituationFamilleViewValidator implements Validator {
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
-		SituationFamilleView situationFamilleView = (SituationFamilleView) obj;
+		final SituationFamilleView situationFamilleView = (SituationFamilleView) obj;
 
-		if (situationFamilleView.getDateDebut() == null) {
-			errors.rejectValue("dateDebut", "error.date.debut.vide");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (situationFamilleView.getDateDebut() == null) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
+			}
 		}
 
-		if (situationFamilleView.getNombreEnfants() == null) {
-			errors.rejectValue("nombreEnfants", "error.nombre.enfants.vide");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("nombreEnfants")) {
+			if (situationFamilleView.getNombreEnfants() == null) {
+				errors.rejectValue("nombreEnfants", "error.nombre.enfants.vide");
+			}
 		}
 
-		ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(situationFamilleView.getNumeroCtb());
-		SituationFamille situationFamille = ctb.getSituationFamilleActive();
+		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(situationFamilleView.getNumeroCtb());
+		final SituationFamille situationFamille = ctb.getSituationFamilleActive();
 		if ((situationFamille != null) && (situationFamilleView.getDateDebut() != null)) {
 			if (situationFamilleView.getDateDebut().before(RegDate.asJavaDate(situationFamille.getDateDebut()))) {
 				errors.rejectValue("dateDebut", "error.date.debut.anterieure");

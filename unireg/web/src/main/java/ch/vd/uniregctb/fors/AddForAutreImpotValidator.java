@@ -29,11 +29,14 @@ public class AddForAutreImpotValidator extends AddForValidator {
 
 		// validation de la date
 		final RegDate dateEvenement = view.getDateEvenement();
-		if (dateEvenement == null) {
-			errors.rejectValue("dateEvenement", "error.date.debut.vide");
-		}
-		else if (RegDate.get().isBefore(dateEvenement)) {
-			errors.rejectValue("dateEvenement", "error.date.debut.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateEvenement")) {
+			if (dateEvenement == null) {
+				errors.rejectValue("dateEvenement", "error.date.debut.vide");
+			}
+			else if (RegDate.get().isBefore(dateEvenement)) {
+				errors.rejectValue("dateEvenement", "error.date.debut.future");
+			}
 		}
 
 		if (view.getGenreImpot() == null) {

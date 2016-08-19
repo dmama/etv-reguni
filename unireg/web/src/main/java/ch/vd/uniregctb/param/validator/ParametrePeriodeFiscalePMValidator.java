@@ -40,20 +40,23 @@ public class ParametrePeriodeFiscalePMValidator implements Validator {
 
 	private void checkDelais(String[] champs, int maxValue, ParametrePeriodeFiscalePMEditView view, Errors errors) {
 		for (String champ : champs) {
-			try {
-				if (PropertyUtils.getProperty(view, champ) == null) {
-					errors.rejectValue(champ, "error.champ.obligatoire");
+			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+			if (!errors.hasFieldErrors(champ)) {
+				try {
+					if (PropertyUtils.getProperty(view, champ) == null) {
+						errors.rejectValue(champ, "error.champ.obligatoire");
+					}
+					else if (((Integer) PropertyUtils.getProperty(view, champ)) < 0) {
+						errors.rejectValue(champ, "error.delai.negatif.interdit");
+					}
+					else if (((Integer) PropertyUtils.getProperty(view, champ)) > maxValue) {
+						errors.rejectValue(champ, "error.delai.trop.grand");
+					}
 				}
-				else if (((Integer) PropertyUtils.getProperty(view, champ)) < 0) {
-					errors.rejectValue(champ, "error.delai.negatif.interdit");
+				catch (Exception e) {
+					errors.rejectValue(champ, e.getMessage());
+					LOGGER.error(e.getMessage(), e);
 				}
-				else if (((Integer) PropertyUtils.getProperty(view, champ)) > maxValue) {
-					errors.rejectValue(champ, "error.delai.trop.grand");
-				}
-			}
-			catch (Exception e) {
-				errors.rejectValue(champ, e.getMessage());
-				LOGGER.error(e.getMessage(), e);
 			}
 		}
 	}

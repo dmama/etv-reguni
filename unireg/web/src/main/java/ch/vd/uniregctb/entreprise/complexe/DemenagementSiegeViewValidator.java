@@ -16,11 +16,14 @@ public class DemenagementSiegeViewValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final DemenagementSiegeView view = (DemenagementSiegeView) target;
 
-		if (view.getDateDebutNouveauSiege() == null) {
-			errors.rejectValue("dateDebutNouveauSiege", "error.date.debut.vide");
-		}
-		else if (view.getDateDebutNouveauSiege().isAfter(RegDate.get())) {
-			errors.rejectValue("dateDebutNouveauSiege", "error.date.debut.future");
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateDebutNouveauSiege")) {
+			if (view.getDateDebutNouveauSiege() == null) {
+				errors.rejectValue("dateDebutNouveauSiege", "error.date.debut.vide");
+			}
+			else if (view.getDateDebutNouveauSiege().isAfter(RegDate.get())) {
+				errors.rejectValue("dateDebutNouveauSiege", "error.date.debut.future");
+			}
 		}
 
 		if (view.getNoAutoriteFiscale() == null) {
