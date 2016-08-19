@@ -457,6 +457,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			root.getDocument().add(copieMandataire);
 		}
 
+		// sauvegarde de la clé d'archivage
+		lettre.setCleArchivage(original.getInfoArchivage() != null ? original.getInfoArchivage().getIdDocument() : null);
+
 		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
 	}
@@ -472,6 +475,9 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
 		}
+
+		// sauvegarde de la clé d'archivage
+		lettre.setCleArchivageRappel(original.getInfoArchivage() != null ? original.getInfoArchivage().getIdDocument() : null);
 
 		final String nomDocument = impressionRappelHelper.construitIdDocument(lettre);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);

@@ -33,6 +33,7 @@ public abstract class AutreDocumentFiscal extends HibernateEntity implements Lin
 
 	private Long id;
 	private RegDate dateEnvoi;
+	private String cleArchivage;
 	private Entreprise entreprise;
 
 	@Transient
@@ -60,6 +61,15 @@ public abstract class AutreDocumentFiscal extends HibernateEntity implements Lin
 
 	public void setDateEnvoi(RegDate dateEnvoi) {
 		this.dateEnvoi = dateEnvoi;
+	}
+
+	@Column(name = "CLE_ARCHIVAGE", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	public String getCleArchivage() {
+		return cleArchivage;
+	}
+
+	public void setCleArchivage(String cleArchivage) {
+		this.cleArchivage = cleArchivage;
 	}
 
 	@ManyToOne

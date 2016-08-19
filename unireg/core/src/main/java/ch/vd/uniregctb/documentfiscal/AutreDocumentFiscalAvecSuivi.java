@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
 
 @Entity
@@ -15,6 +16,7 @@ public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 	private RegDate delaiRetour;
 	private RegDate dateRetour;
 	private RegDate dateRappel;
+	private String cleArchivageRappel;
 
 	@Column(name = "DELAI_RETOUR")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
@@ -44,6 +46,15 @@ public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
 	public void setDateRappel(RegDate dateRappel) {
 		this.dateRappel = dateRappel;
+	}
+
+	@Column(name = "CLE_ARCHIVAGE_RAPPEL", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	public String getCleArchivageRappel() {
+		return cleArchivageRappel;
+	}
+
+	public void setCleArchivageRappel(String cleArchivageRappel) {
+		this.cleArchivageRappel = cleArchivageRappel;
 	}
 
 	@Transient
