@@ -17,7 +17,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
 import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
-import ch.vd.uniregctb.load.LoadMonitorable;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 

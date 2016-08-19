@@ -15,5 +15,10 @@ public interface LoadMonitor {
 	 * @return la moyenne de la charge sur les 5 dernières minutes
 	 */
 	double getFiveMinuteAverageLoad();
-	
+
+	/**
+	 * @return l'entité monitorée
+	 */
+	LoadMonitorable getMonitorable();
+
 }

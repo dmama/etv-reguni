@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 
 public class LoadAveragerTest extends WithoutSpringTest {
 

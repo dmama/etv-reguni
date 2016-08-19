@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.stats;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -231,6 +233,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 				buildCacheStats(),
 				buildServiceStats(),
 				buildLoadMonitorStats(),
+				buildLoadMonitorDetails(),
 				buildJobMonitorStats()
 		};
 
@@ -397,6 +400,60 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		return row;
 	}
 
+	private String buildLoadMonitorDetails() {
+
+		// on veut trier les services par ordre alphabétique, d'où la TreeMap
+		final Map<String, List<LoadDetail>> allDetails = new TreeMap<>();
+
+		// on récupère les noms des services et les données
+		synchronized (loadMonitors) {
+			for (Map.Entry<String, LoadMonitor> entry : loadMonitors.entrySet()) {
+				final LoadMonitorable monitorable = entry.getValue().getMonitorable();
+				if (monitorable.getLoad() > 0 && monitorable instanceof DetailedLoadMonitorable) {
+					final DetailedLoadMonitorable detailedMonitorable = (DetailedLoadMonitorable) monitorable;
+					final List<LoadDetail> details = detailedMonitorable.getLoadDetails();
+					if (!details.isEmpty()) {
+						allDetails.put(entry.getKey(), details);
+					}
+				}
+			}
+		}
+
+		if (allDetails.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
+
+		// construction d'une table ascii-art qui contiendra les détails
+		final List<Header> headers = new ArrayList<>();
+		headers.add(new Header(new Column("Load details", AlignMode.LEFT), new Column("thread"), new Column("duration"), new Column("description", AlignMode.LEFT)));
+		final Table table = new Table(new Options(false), headers);
+
+		// on va vouloir trier les processus en cours depuis le plus ancien vers le plus récent
+		// i.e. dans l'ordre décroissant de leur durée
+		final Comparator<LoadDetail> comparator = new Comparator<LoadDetail>() {
+			@Override
+			public int compare(LoadDetail o1, LoadDetail o2) {
+				return -Long.compare(o1.getDurationMs(), o2.getDurationMs());
+			}
+		};
+
+		// log les appels en cours sur les services monitorés qui le supportent
+		for (Map.Entry<String, List<LoadDetail>> entry : allDetails.entrySet()) {
+			final List<LoadDetail> details = entry.getValue();
+			Collections.sort(details, comparator);
+			for (LoadDetail detail : details) {
+				final Row row = new Row();
+				row.addCell(new Cell(entry.getKey()));
+				row.addCell(new Cell(detail.getThreadName()));
+				row.addCell(new Cell(TimeHelper.formatDureeShort(detail.getDurationMs()), AlignMode.RIGHT));
+				row.addCell(new Cell(detail.getDescription()));
+				table.addRow(row);
+			}
+		}
+
+		return table.toString() + CR;
+	}
+
 	private String buildJobMonitorStats() {
 
 		class JobData {
@@ -430,7 +487,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 		final long nowts = DateHelper.getCurrentDate().getTime();
 		final List<Header> headers = new ArrayList<>();
-		headers.add(new Header(new Column("Running jobs", AlignMode.LEFT), new Column("Start", AlignMode.LEFT), new Column("Duration"), new Column("Progress"), new Column("Status", AlignMode.LEFT)));
+		headers.add(new Header(new Column("Running jobs", AlignMode.LEFT), new Column("start", AlignMode.LEFT), new Column("duration"), new Column("progress"), new Column("status", AlignMode.LEFT)));
 		final Table table = new Table(new Options(false), headers);
 		for (Map.Entry<String, JobData> entry : data.entrySet()) {
 			final Row row = new Row();

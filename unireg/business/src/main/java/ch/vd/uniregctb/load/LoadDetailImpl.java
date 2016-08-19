@@ -3,6 +3,7 @@ package ch.vd.uniregctb.load;
 import java.util.concurrent.TimeUnit;
 
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.stats.LoadDetail;
 
 public class LoadDetailImpl<T> implements LoadDetail {
 	

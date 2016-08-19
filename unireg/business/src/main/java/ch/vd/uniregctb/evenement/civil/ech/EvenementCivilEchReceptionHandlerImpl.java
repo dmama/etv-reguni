@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
 import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
-import ch.vd.uniregctb.load.LoadMonitorable;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 

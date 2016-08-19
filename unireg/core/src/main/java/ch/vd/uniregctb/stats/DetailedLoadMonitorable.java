@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.load;
+package ch.vd.uniregctb.stats;
 
 import java.util.List;
 

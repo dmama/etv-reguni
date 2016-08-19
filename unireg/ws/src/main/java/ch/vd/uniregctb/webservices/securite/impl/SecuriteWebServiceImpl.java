@@ -22,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.DetailedLoadMonitorable;
-import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceException;

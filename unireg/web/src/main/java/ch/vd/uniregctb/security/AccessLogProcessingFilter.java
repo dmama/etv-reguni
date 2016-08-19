@@ -17,8 +17,8 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.common.URLHelper;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.DetailedLoadMonitorable;
-import ch.vd.uniregctb.load.LoadDetail;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 
 /**
  * Ce filtre permet de récupérer de logger les accès aux page web de l'application (voir SIFISC-3085).

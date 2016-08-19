@@ -11,10 +11,10 @@ import org.springframework.jmx.export.MBeanExportOperations;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.load.DetailedLoadJmxBeanImpl;
-import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadJmxBean;
 import ch.vd.uniregctb.load.LoadJmxBeanImpl;
-import ch.vd.uniregctb.load.LoadMonitorable;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**

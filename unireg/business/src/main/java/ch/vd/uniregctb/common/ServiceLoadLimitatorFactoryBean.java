@@ -20,7 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
-import ch.vd.uniregctb.load.LoadMonitorable;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 

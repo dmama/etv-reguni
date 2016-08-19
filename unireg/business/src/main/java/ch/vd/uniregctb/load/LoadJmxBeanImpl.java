@@ -5,6 +5,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import ch.vd.uniregctb.stats.LoadMonitorable;
 import ch.vd.uniregctb.stats.StatsService;
 
 @ManagedResource

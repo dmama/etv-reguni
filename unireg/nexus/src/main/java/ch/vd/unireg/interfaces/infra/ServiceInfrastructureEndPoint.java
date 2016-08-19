@@ -22,9 +22,9 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.DetailedLoadMonitorable;
-import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.load.MethodCallDescriptor;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 
 public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, DetailedLoadMonitorable {
 

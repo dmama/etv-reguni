@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 
 /**
  * Classe qui est capable de calculer la moyenne de la charge sur un ws donné<p/>

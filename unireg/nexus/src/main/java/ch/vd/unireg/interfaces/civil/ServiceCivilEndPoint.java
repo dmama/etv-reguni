@@ -12,9 +12,9 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.DetailedLoadMonitorable;
-import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.load.MethodCallDescriptor;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 
 /**
  * Façade du service civil raw à utiliser pour exposer le service civil en spring remoting.

@@ -9,6 +9,8 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 import ch.vd.uniregctb.stats.StatsService;
 
 @ManagedResource

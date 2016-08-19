@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.load;
 
 import ch.vd.uniregctb.stats.LoadMonitor;
+import ch.vd.uniregctb.stats.LoadMonitorable;
 
 public class BasicLoadMonitor implements LoadMonitor {
 
@@ -20,5 +21,10 @@ public class BasicLoadMonitor implements LoadMonitor {
 	@Override
 	public double getFiveMinuteAverageLoad() {
 		return averager.getAverageLoad();
+	}
+
+	@Override
+	public LoadMonitorable getMonitorable() {
+		return service;
 	}
 }

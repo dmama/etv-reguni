@@ -15,8 +15,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
-import ch.vd.uniregctb.load.DetailedLoadMonitorable;
-import ch.vd.uniregctb.load.LoadDetail;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 
 /**
  * Classe d'entrée des messages JMS de l'ESB dans Unireg, et qui loggue les appels et les

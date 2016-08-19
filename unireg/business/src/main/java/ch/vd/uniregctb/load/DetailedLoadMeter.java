@@ -12,6 +12,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
+import ch.vd.uniregctb.stats.LoadDetail;
 
 public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 

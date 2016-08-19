@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.load;
+package ch.vd.uniregctb.stats;
 
 /**
  * Interface d'interrogation des détails sur une activité en cours
