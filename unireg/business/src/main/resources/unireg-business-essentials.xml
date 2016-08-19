@@ -281,6 +281,7 @@
 		<property name="delaiService" ref="delaisService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="editiqueService" ref="editiqueService"/>
 		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>

@@ -2,6 +2,8 @@ package ch.vd.uniregctb.documentfiscal;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -33,6 +35,20 @@ public interface AutreDocumentFiscalService {
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
 	LettreBienvenue envoyerLettreBienvenueBatch(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException;
+
+	/**
+	 * @param document autre document fiscal dont on veut récupérer le courrier initial
+	 * @return document PDF correspondant au courrier initial
+	 * @throws EditiqueException en cas de souci
+	 */
+	EditiqueResultat getCopieConformeDocumentInitial(AutreDocumentFiscal document) throws EditiqueException;
+
+	/**
+	 * @param document autre document fiscal dont on veut récupérer le courrier de rappel
+	 * @return document PDF correspondant au courrier de rappel
+	 * @throws EditiqueException en cas de souci
+	 */
+	EditiqueResultat getCopieConformeDocumentRappel(AutreDocumentFiscalAvecSuivi document) throws EditiqueException;
 
 	/**
 	 * @param lettre la lettre de bienvenue à rappeler (la date de rappel effective doit déjà être assignée)

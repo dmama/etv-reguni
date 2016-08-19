@@ -1,11 +1,18 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -30,8 +37,24 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private TiersService tiersService;
 	private AssujettissementService assujettissementService;
 	private DelaisService delaiService;
+	private EditiqueService editiqueService;
 	private EditiqueCompositionService editiqueCompositionService;
 	private EvenementFiscalService evenementFiscalService;
+
+	private final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> typesDocumentEnvoiInitial = buildTypesDocumentEnvoiInitial();
+	private final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> typesDocumentEnvoiRappel = buildTypesDocumentEnvoiRappel();
+
+	private static Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> buildTypesDocumentEnvoiInitial() {
+		final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> map = new HashMap<>();
+		map.put(LettreBienvenue.class, TypeDocumentEditique.LETTRE_BIENVENUE);
+		return Collections.unmodifiableMap(map);
+	}
+
+	private static Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> buildTypesDocumentEnvoiRappel() {
+		final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> map = new HashMap<>();
+		map.put(LettreBienvenue.class, TypeDocumentEditique.RAPPEL);
+		return Collections.unmodifiableMap(map);
+	}
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -55,6 +78,10 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	public void setDelaiService(DelaisService delaiService) {
 		this.delaiService = delaiService;
+	}
+
+	public void setEditiqueService(EditiqueService editiqueService) {
+		this.editiqueService = editiqueService;
 	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
@@ -173,5 +200,21 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		catch (EditiqueException e) {
 			throw new AutreDocumentFiscalException(e);
 		}
+	}
+
+	@Override
+	public EditiqueResultat getCopieConformeDocumentInitial(AutreDocumentFiscal document) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = typesDocumentEnvoiInitial.get(document.getClass());
+		return editiqueService.getPDFDeDocumentDepuisArchive(document.getEntreprise().getNumero(),
+		                                                     typeDocument,
+		                                                     document.getCleArchivage());
+	}
+
+	@Override
+	public EditiqueResultat getCopieConformeDocumentRappel(AutreDocumentFiscalAvecSuivi document) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = typesDocumentEnvoiRappel.get(document.getClass());
+		return editiqueService.getPDFDeDocumentDepuisArchive(document.getEntreprise().getNumero(),
+		                                                     typeDocument,
+		                                                     document.getCleArchivageRappel());
 	}
 }

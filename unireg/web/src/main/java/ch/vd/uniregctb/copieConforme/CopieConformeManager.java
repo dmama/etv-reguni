@@ -31,6 +31,22 @@ public interface CopieConformeManager {
 	EditiqueResultat getPdfCopieConformeDelai(Long idDelai) throws EditiqueException;
 
 	/**
+	 * Renvoie un document PDF de la copie conforme de l'envoi initial de l'autre document fiscal dont l'identifiant est passé en paramètre
+	 * @param idDocument identifiant du document
+	 * @return document PDF
+	 * @throws EditiqueException en cas de problème
+	 */
+	EditiqueResultat getPdfCopieConformeEnvoiAutreDocumentFiscal(Long idDocument) throws EditiqueException;
+
+	/**
+	 * Renvoie un document PDF de la copie conforme du rappel de l'autre document fiscal dont l'identifiant est passé en paramètre
+	 * @param idDocument identifiant du document
+	 * @return document PDF
+	 * @throws EditiqueException en cas de problème
+	 */
+	EditiqueResultat getPdfCopieConformeRappelAutreDocumentFiscal(Long idDocument) throws EditiqueException;
+
+	/**
 	 * Renvoie un document PDF identifié par sa clé d'archivage dans Folders
 	 * @param noCtb numéro du contribuable pour lequel on va chercher un document
 	 * @param typeDoc le type de document (voir {@link ch.vd.uniregctb.editique.TypeDocumentEditique})

@@ -177,6 +177,7 @@
 		<property name="diService" ref="diService"/>
 		<property name="lrService" ref="lrService"/>
 		<property name="qsncService" ref="qsncService"/>
+		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="editiqueService" ref="editiqueService"/>
 	</bean>
 

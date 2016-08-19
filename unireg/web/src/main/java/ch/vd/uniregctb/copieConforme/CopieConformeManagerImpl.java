@@ -15,6 +15,9 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
@@ -28,6 +31,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	private DeclarationImpotService diService;
 	private ListeRecapService lrService;
 	private QuestionnaireSNCService qsncService;
+	private AutreDocumentFiscalService autreDocumentFiscalService;
 	private EditiqueService editiqueService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -44,6 +48,10 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 
 	public void setQsncService(QuestionnaireSNCService qsncService) {
 		this.qsncService = qsncService;
+	}
+
+	public void setAutreDocumentFiscalService(AutreDocumentFiscalService autreDocumentFiscalService) {
+		this.autreDocumentFiscalService = autreDocumentFiscalService;
 	}
 
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -96,6 +104,22 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
 		Assert.notNull(delai);
 		return diService.getCopieConformeConfirmationDelai(delai);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public EditiqueResultat getPdfCopieConformeEnvoiAutreDocumentFiscal(Long idDocument) throws EditiqueException {
+		final AutreDocumentFiscal doc = hibernateTemplate.get(AutreDocumentFiscal.class, idDocument);
+		Assert.notNull(doc);
+		return autreDocumentFiscalService.getCopieConformeDocumentInitial(doc);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public EditiqueResultat getPdfCopieConformeRappelAutreDocumentFiscal(Long idDocument) throws EditiqueException {
+		final AutreDocumentFiscalAvecSuivi doc = hibernateTemplate.get(AutreDocumentFiscalAvecSuivi.class, idDocument);
+		Assert.notNull(doc);
+		return autreDocumentFiscalService.getCopieConformeDocumentRappel(doc);
 	}
 
 	@Override

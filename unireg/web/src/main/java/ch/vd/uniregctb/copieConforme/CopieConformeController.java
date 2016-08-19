@@ -23,8 +23,9 @@ public class CopieConformeController {
 
 	private static final String ID_DELAI = "idDelai";
 	private static final String ID_ETAT = "idEtat";
+	private static final String ID_DOC = "idDoc";
 
-	private static final String NOCTB= "noCtb";
+	private static final String NOCTB = "noCtb";
 	private static final String TYPE_DOC = "typeDoc";
 	private static final String KEY = "key";
 
@@ -122,6 +123,26 @@ public class CopieConformeController {
 			@Override
 			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConformeRappel(idEtat);
+			}
+		});
+	}
+
+	@RequestMapping(value = "/autresdocs/copie-conforme-envoi.do", method = RequestMethod.GET)
+	public String getAutreDocumentFiscalInitial(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DOC, required = true) final Long idDocument) throws Exception {
+		return getDocumentCopieConforme(request, response, "copieEnvoi", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
+			@Override
+			public EditiqueResultat getCopieConforme() throws EditiqueException {
+				return copieConformeManager.getPdfCopieConformeEnvoiAutreDocumentFiscal(idDocument);
+			}
+		});
+	}
+
+	@RequestMapping(value = "/autresdocs/copie-conforme-rappel.do", method = RequestMethod.GET)
+	public String getAutreDocumentFiscalRappel(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DOC, required = true) final Long idDocument) throws Exception {
+		return getDocumentCopieConforme(request, response, "copieRappel", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
+			@Override
+			public EditiqueResultat getCopieConforme() throws EditiqueException {
+				return copieConformeManager.getPdfCopieConformeRappelAutreDocumentFiscal(idDocument);
 			}
 		});
 	}

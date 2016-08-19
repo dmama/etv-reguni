@@ -56,6 +56,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
@@ -658,17 +659,29 @@ public class TiersManager implements MessageSourceAware {
 		// les autres documents fiscaux
 		final Set<AutreDocumentFiscal> autresDocuments = entreprise.getAutresDocumentsFiscaux();
 		if (autresDocuments != null && !autresDocuments.isEmpty()) {
-			final List<AutreDocumentFiscalView> views = new ArrayList<>(autresDocuments.size());
+			final List<AutreDocumentFiscalView> avecSuiviViews = new ArrayList<>(autresDocuments.size());
+			final List<AutreDocumentFiscalView> sansSuiviViews = new ArrayList<>(autresDocuments.size());
 			for (AutreDocumentFiscal document : autresDocuments) {
-				views.add(AutreDocumentFiscalView.of(document, messageSource));
+				final AutreDocumentFiscalView view = AutreDocumentFiscalView.of(document, messageSource);
+				if (document instanceof AutreDocumentFiscalAvecSuivi) {
+					avecSuiviViews.add(view);
+				}
+				else {
+					sansSuiviViews.add(view);
+				}
 			}
-			Collections.sort(views, new Comparator<AutreDocumentFiscalView>() {
+
+			final Comparator<AutreDocumentFiscalView> comparator = new Comparator<AutreDocumentFiscalView>() {
 				@Override
 				public int compare(AutreDocumentFiscalView o1, AutreDocumentFiscalView o2) {
 					return -NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
 				}
-			});
-			tiersView.setAutresDocumentsFiscaux(views);
+			};
+			Collections.sort(avecSuiviViews, comparator);
+			Collections.sort(sansSuiviViews, comparator);
+
+			tiersView.setAutresDocumentsFiscauxSuivis(avecSuiviViews);
+			tiersView.setAutresDocumentsFiscauxNonSuivis(sansSuiviViews);
 		}
 
 		// les liens vers les mandataires

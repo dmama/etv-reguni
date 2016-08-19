@@ -116,7 +116,8 @@ public class TiersView {
 	private List<ExerciceCommercial> exercicesCommerciaux;
 	private List<FlagEntrepriseView> flags;
 
-	private List<AutreDocumentFiscalView> autresDocumentsFiscaux;
+	private List<AutreDocumentFiscalView> autresDocumentsFiscauxSuivis;
+	private List<AutreDocumentFiscalView> autresDocumentsFiscauxNonSuivis;
 
 	private List<DomicileEtablissementView> domicilesEtablissement;
 
@@ -417,12 +418,20 @@ public class TiersView {
 		this.domicilesEtablissement = domicilesEtablissement;
 	}
 
-	public List<AutreDocumentFiscalView> getAutresDocumentsFiscaux() {
-		return autresDocumentsFiscaux;
+	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSuivis() {
+		return autresDocumentsFiscauxSuivis;
 	}
 
-	public void setAutresDocumentsFiscaux(List<AutreDocumentFiscalView> autresDocumentsFiscaux) {
-		this.autresDocumentsFiscaux = autresDocumentsFiscaux;
+	public void setAutresDocumentsFiscauxSuivis(List<AutreDocumentFiscalView> autresDocumentsFiscauxSuivis) {
+		this.autresDocumentsFiscauxSuivis = autresDocumentsFiscauxSuivis;
+	}
+
+	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxNonSuivis() {
+		return autresDocumentsFiscauxNonSuivis;
+	}
+
+	public void setAutresDocumentsFiscauxNonSuivis(List<AutreDocumentFiscalView> autresDocumentsFiscauxNonSuivis) {
+		this.autresDocumentsFiscauxNonSuivis = autresDocumentsFiscauxNonSuivis;
 	}
 
 	public ForFiscalView getForsPrincipalActif() {

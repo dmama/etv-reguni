@@ -7,10 +7,10 @@
 
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
-	<legend><span><fmt:message key="label.autres.documents.fiscaux"/></span></legend>
+	<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis"/></span></legend>
 
-	<c:if test="${not empty command.autresDocumentsFiscaux}">
-		<display:table name="${command.autresDocumentsFiscaux}" id="docFiscal" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<c:if test="${not empty command.autresDocumentsFiscauxSuivis}">
+		<display:table name="${command.autresDocumentsFiscauxSuivis}" id="docFiscal" htmlId="docFiscalAvecSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
 				${docFiscal.libelleTypeDocument}
 			</display:column>
@@ -19,6 +19,10 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
 				<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
+				<c:if test="${docFiscal.avecCopieConformeEnvoi}">
+					&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
+					<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
+				</c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiRetour">
 				<unireg:regdate regdate="${docFiscal.delaiRetour}"/>
@@ -28,12 +32,42 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.etat.avancement" >
 				<fmt:message key="option.etat.avancement.${docFiscal.etat}" />
+				<c:if test="${docFiscal.avecCopieConformeRappel}">
+					&nbsp;<a href="../autresdocs/copie-conforme-rappel.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-rappel-${docFiscal.id}" title="Rappel envoyé" onclick="Link.tempSwap(this, '#disabled-print-rappel-${docFiscal.id}');">&nbsp;</a>
+					<span class="pdf-grayed" id="disabled-print-rappel-${docFiscal.id}" style="display: none;">&nbsp;</span>
+				</c:if>
 			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
 			</display:column>
 		</display:table>
 
+	</c:if>
+
+</fieldset>
+
+<fieldset>
+	<legend><span><fmt:message key="label.autres.documents.fiscaux.non.suivis"/></span></legend>
+
+	<c:if test="${not empty command.autresDocumentsFiscauxNonSuivis}">
+		<display:table name="${command.autresDocumentsFiscauxNonSuivis}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
+				${docFiscal.libelleTypeDocument}
+			</display:column>
+			<display:column sortable="true" titleKey="label.autre.document.fiscal.soustype.document">
+				${docFiscal.libelleSousType}
+			</display:column>
+			<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
+				<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
+				<c:if test="${docFiscal.avecCopieConformeEnvoi}">
+					&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
+					<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
+				</c:if>
+			</display:column>
+			<display:column class="action">
+				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
+			</display:column>
+		</display:table>
 	</c:if>
 
 </fieldset>

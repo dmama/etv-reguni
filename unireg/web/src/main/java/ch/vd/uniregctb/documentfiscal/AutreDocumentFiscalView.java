@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
@@ -19,6 +20,8 @@ public class AutreDocumentFiscalView implements Annulable {
 	private final String libelleTypeDocument;
 	private final String libelleSousType;
 	private final boolean annule;
+	private final boolean avecCopieConformeEnvoi;
+	private final boolean avecCopieConformeRappel;
 
 	public static AutreDocumentFiscalView of(AutreDocumentFiscal document, MessageSource messageSource) {
 		if (document == null) {
@@ -43,6 +46,8 @@ public class AutreDocumentFiscalView implements Annulable {
 		this.libelleTypeDocument = messageSource.getMessage("label.autre.document.fiscal.lettre.bienvenue", null, WebContextUtils.getDefaultLocale());
 		this.libelleSousType = messageSource.getMessage("label.autre.document.fiscal.lettre.bienvenue.type." + lettreBienvenue.getType(), null, WebContextUtils.getDefaultLocale());
 		this.annule = lettreBienvenue.isAnnule();
+		this.avecCopieConformeEnvoi = StringUtils.isNotBlank(lettreBienvenue.getCleArchivage());
+		this.avecCopieConformeRappel = StringUtils.isNotBlank(lettreBienvenue.getCleArchivageRappel()) && dateRappel != null;
 	}
 
 	public long getId() {
@@ -84,5 +89,13 @@ public class AutreDocumentFiscalView implements Annulable {
 	@Override
 	public boolean isAnnule() {
 		return annule;
+	}
+
+	public boolean isAvecCopieConformeEnvoi() {
+		return avecCopieConformeEnvoi;
+	}
+
+	public boolean isAvecCopieConformeRappel() {
+		return avecCopieConformeRappel;
 	}
 }
