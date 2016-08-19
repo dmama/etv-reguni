@@ -95,8 +95,9 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	private static boolean isOperateurTermineException(ServiceSecuriteClientException e) {
 		final Exception root = getRootException(e);
 		if (root instanceof ServerWebApplicationException) {
-			root.getMessage().contains("Ce visa opérateur est terminé.");
-			return true;
+			if (root.getMessage().contains("Ce visa opérateur est terminé.")) {
+				return true;
+			}
 		}
 		return false;
 	}
