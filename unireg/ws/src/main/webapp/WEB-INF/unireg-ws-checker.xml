@@ -25,7 +25,7 @@
 	</bean>
 
 	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.ServiceSecuriteChecker">
-		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceHost" />
+		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceTracing" />
 	</bean>
 
 	<bean id="tiersSearcherChecker" class="ch.vd.uniregctb.checker.TiersSearcherChecker">
