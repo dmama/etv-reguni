@@ -21,6 +21,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -979,13 +980,18 @@ public class TestData {
 		dpi0.setLogCreationDate(new Timestamp(1199142000000L));
 		dpi0.setLogModifDate(new Timestamp(1199142000000L));
 		dpi0.setModeCommunication(ModeCommunication.PAPIER);
-		dpi0.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi0.setAdressesTiers(new HashSet());
 		dpi0.setDeclarations(new HashSet());
 		dpi0.setForsFiscaux(new HashSet());
 		dpi0.setRapportsObjet(new HashSet());
 		dpi0.setRapportsSujet(new HashSet());
 		dpi0 = hibernateTemplate.merge(dpi0);
+
+		final Periodicite per0 = new Periodicite();
+		per0.setId(1L);
+		per0.setDateDebut(RegDate.get(2007, 1, 1));
+		per0.setPeriodiciteDecompte(PeriodiciteDecompte.TRIMESTRIEL);
+		dpi0.addPeriodicite(per0);
 
 		DebiteurPrestationImposable dpi1 = new DebiteurPrestationImposable();
 		dpi1.setNumero(1678439L);
@@ -998,12 +1004,17 @@ public class TestData {
 		dpi1.setLogCreationDate(new Timestamp(1199142000000L));
 		dpi1.setLogModifDate(new Timestamp(1199142000000L));
 		dpi1.setModeCommunication(ModeCommunication.PAPIER);
-		dpi1.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi1.setAdressesTiers(new HashSet());
 		dpi1.setDeclarations(new HashSet());
 		dpi1.setForsFiscaux(new HashSet());
 		dpi1.setRapportsObjet(new HashSet());
 		dpi1.setRapportsSujet(new HashSet());
+
+		final Periodicite per1 = new Periodicite();
+		per1.setId(2L);
+		per1.setDateDebut(RegDate.get(2008, 1, 1));
+		per1.setPeriodiciteDecompte(PeriodiciteDecompte.TRIMESTRIEL);
+		dpi1.addPeriodicite(per1);
 
 		ForDebiteurPrestationImposable forDebiteur1 = new ForDebiteurPrestationImposable();
 		forDebiteur1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);

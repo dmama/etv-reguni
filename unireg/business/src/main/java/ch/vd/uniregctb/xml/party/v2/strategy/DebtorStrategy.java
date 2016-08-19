@@ -83,7 +83,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 	}
 
 	private static void initPeriodicities(Debtor left, DebiteurPrestationImposable right) {
-		for (ch.vd.uniregctb.declaration.Periodicite periodicite : right.getPeriodicitesNonAnnules(true)) {
+		for (ch.vd.uniregctb.declaration.Periodicite periodicite : right.getPeriodicitesNonAnnulees(true)) {
 			left.getPeriodicities().add(DebtorPeriodicityBuilder.newPeriodicity(periodicite));
 		}
 	}

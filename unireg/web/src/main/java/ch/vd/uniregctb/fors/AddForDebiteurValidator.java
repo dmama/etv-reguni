@@ -2,6 +2,7 @@ package ch.vd.uniregctb.fors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.validation.Errors;
 
@@ -9,6 +10,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -98,7 +100,22 @@ public class AddForDebiteurValidator extends AddForAvecMotifsValidator {
 
 			// [SIFISC-12888] ... et doit correspondre à une date qui va bien
 			if (view.getDateDebut() != null) {
-				final List<RegDate> autorisees = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, view.getDateDebut(), view.getDateFin());
+
+				// [SIFISC-16852] dans le cas où nous sommes en train de créer le premier for, il peut être nécessaire
+				// de déplacer la date de début de la première périodicité (ce sera fait de toute façon au moment de la sauvegarde)
+				// avant de valider la pertinence de la date de fin demandée
+				// (le résultat de DPI.getPeriodicitesNonAnnules() est une nouvelle collection non-adossée à la persistence, on peut donc jouer avec comme ça)
+				final List<Periodicite> periodicites = dpi.getPeriodicitesNonAnnulees(true);
+				if (!periodicites.isEmpty() && dpi.getDernierForDebiteur() == null) {
+					final Periodicite first = periodicites.get(0);
+					if (first.getDateDebut().isAfter(view.getDateDebut())) {
+						final Periodicite displacedFirst = first.duplicate();
+						displacedFirst.setDateDebut(view.getDateDebut());
+						periodicites.set(0, displacedFirst);
+					}
+				}
+
+				final Set<RegDate> autorisees = ForDebiteurPrestationImposableValidator.getDatesFermetureAutorisees(dpi, view.getDateDebut(), view.getDateFin(), periodicites);
 				if (!autorisees.contains(view.getDateFin())) {
 					errors.rejectValue("dateFin", "error.date.fermeture.invalide");
 				}

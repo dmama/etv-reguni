@@ -88,7 +88,6 @@ public class ForsController {
 	private Map<MotifRattachement, String> motifsRattachementForAutreElementImposable;
 	private Map<GenreImpot, String> genresImpotForPrincipalOuSecondairePP;
 	private Map<GenreImpot, String> genresImpotForPrincipalPM;
-	private Map<GenreImpot, String> genresImpotForSecondairePM;
 	private Map<GenreImpot, String> genresImpotForAutreImpot;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -835,7 +834,7 @@ public class ForsController {
 	@RequestMapping(value = "/debiteur/datesFermeture.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@ResponseBody
-	public List<RegDate> datesFermetureForDebiteur(@RequestParam(value = "forId") long forId) {
+	public Set<RegDate> datesFermetureForDebiteur(@RequestParam(value = "forId") long forId) {
 
 		final ForDebiteurPrestationImposable fdpi = hibernateTemplate.get(ForDebiteurPrestationImposable.class, forId);
 		if (fdpi == null) {

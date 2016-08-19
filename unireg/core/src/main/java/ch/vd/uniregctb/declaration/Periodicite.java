@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -36,11 +37,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Periodicite extends HibernateEntity implements CollatableDateRange, LinkedEntity {
-
-	//private static final Logger LOGGER = LoggerFactory.getLogger(Periodicite.class);
-
-	private static final long serialVersionUID = 956376828051331469L;
+public class Periodicite extends HibernateEntity implements CollatableDateRange, LinkedEntity, Duplicable<Periodicite> {
 
 	/**
 	 * The ID
@@ -147,6 +144,11 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public Periodicite duplicate() {
+		return new Periodicite(this);
 	}
 
 	/**
@@ -261,6 +263,6 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return debiteur == null ? null : Arrays.asList(debiteur);
+		return debiteur == null ? null : Collections.singletonList(debiteur);
 	}
 }

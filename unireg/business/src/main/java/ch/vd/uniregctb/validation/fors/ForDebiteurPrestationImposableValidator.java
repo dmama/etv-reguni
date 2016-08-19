@@ -1,13 +1,14 @@
 package ch.vd.uniregctb.validation.fors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -86,7 +87,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 
 				// on ne fait le test que si la date de début est renseignée
 				if (ff.getDateDebut() != null) {
-					final Set<RegDate> finsAutorisees = new HashSet<>(getDatesFermetureAutorisees((DebiteurPrestationImposable) ff.getTiers(), ff, ff.getDateFin(), true));
+					final Set<RegDate> finsAutorisees = getDatesFermetureAutorisees((DebiteurPrestationImposable) ff.getTiers(), ff, ff.getDateFin(), true);
 					if (!finsAutorisees.contains(ff.getDateFin())) {
 						vr.addError(String.format("La date de fermeture du for débiteur %s est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.", getEntityDisplayString(ff)));
 					}
@@ -104,34 +105,38 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 	 * @param ignoreDateFermetureActuelle <code>true</code> s'il faut calculer une liste même en présence d'un for déjà fermé (si <code>false</code>, dans le cas d'un for déjà fermé, seule cette date sera dans la liste)
 	 * @return une liste (potentiellement vide) des dates possibles de fermeture
 	 */
-	public static List<RegDate> getDatesFermetureAutorisees(DebiteurPrestationImposable dpi, ForDebiteurPrestationImposable fdpi, RegDate maxAllowed, boolean ignoreDateFermetureActuelle) {
+	public static SortedSet<RegDate> getDatesFermetureAutorisees(DebiteurPrestationImposable dpi, ForDebiteurPrestationImposable fdpi, RegDate maxAllowed, boolean ignoreDateFermetureActuelle) {
 		if (dpi != fdpi.getTiers()) {
 			throw new IllegalArgumentException("Le for donné n'appartient pas au débiteur donné...");
 		}
 
 		// un for déjà fermé n'a qu'une date de fermeture possible...
 		if (!ignoreDateFermetureActuelle && fdpi.getDateFin() != null) {
-			return Arrays.asList(fdpi.getDateFin());
+			return new TreeSet<>(Collections.singleton(fdpi.getDateFin()));
 		}
 
-		return getDatesFermetureAutorisees(dpi, fdpi.getDateDebut(), maxAllowed);
+		return getDatesFermetureAutorisees(dpi, fdpi.getDateDebut(), maxAllowed, dpi.getPeriodicitesNonAnnulees(true));
 	}
+
+	private static final SortedSet<RegDate> EMPTY_DATE_SET = Collections.unmodifiableSortedSet(new TreeSet<RegDate>());
 
 	/**
 	 * Méthode utilitaire qui permet de savoir quelles sont les dates de fermeture possibles d'un for de débiteur IS
 	 * @param dpi le débiteur lui-même
 	 * @param dateDebutFor le for que l'on cherche à fermer
 	 * @param maxAllowed la date maximale de fermeture autorisée
-	 * @return une liste (potentiellement vide) des dates possibles de fermeture
+	 * @param periodicites la liste des périodicités à prendre en compte pour le calcul des dates de fermetures valides
+	 * @return un ensemble (trié, mais potentiellement vide) des dates possibles de fermeture
 	 */
-	public static List<RegDate> getDatesFermetureAutorisees(DebiteurPrestationImposable dpi, RegDate dateDebutFor, RegDate maxAllowed) {
+	@NotNull
+	public static SortedSet<RegDate> getDatesFermetureAutorisees(DebiteurPrestationImposable dpi, RegDate dateDebutFor, RegDate maxAllowed, List<Periodicite> periodicites) {
 		if (maxAllowed == null) {
 			throw new IllegalArgumentException("maxAllowed must not be null!");
 		}
 
 		if (dateDebutFor == null || dateDebutFor.isAfter(maxAllowed)) {
 			// je ne sais pas répondre...
-			return Collections.emptyList();
+			return EMPTY_DATE_SET;
 		}
 
 		// le for est donc ouvert... et sa date de fermeture...
@@ -150,7 +155,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 		final List<DateRange> trousFuturs = DateRangeHelper.subtract(futur, fors);
 		if (trousFuturs.isEmpty()) {
 			// aucune date de fermeture possible
-			return Collections.emptyList();
+			return EMPTY_DATE_SET;
 		}
 		final DateRange premierTrou = trousFuturs.get(0);
 		if (!premierTrou.isValidAt(dateDebutFor)) {
@@ -173,9 +178,9 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 			candidate = dateDebutFor.getOneDayBefore();
 		}
 
-		final Set<RegDate> datesCandidates = new TreeSet<>();
+		final SortedSet<RegDate> datesCandidates = new TreeSet<>();
 		while (true) {
-			final Periodicite p = dpi.getPeriodiciteAt(candidate.getOneDayAfter());
+			final Periodicite p = DateRangeHelper.rangeAt(periodicites, candidate.getOneDayAfter());
 			if (p == null || PeriodiciteValidator.validatePeriodicite(p).hasErrors()) {
 				break;
 			}
@@ -192,6 +197,6 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 			datesCandidates.add(dateFinTrou);
 		}
 
-		return datesCandidates.isEmpty() ? Collections.<RegDate>emptyList() : new ArrayList<>(datesCandidates);
+		return datesCandidates;
 	}
 }

@@ -28,7 +28,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test case du controlleur spring du m�me nom.
+ * Test case du controlleur spring du même nom.
  *
  * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */

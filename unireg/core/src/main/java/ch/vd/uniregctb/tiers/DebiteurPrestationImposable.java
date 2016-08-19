@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -253,8 +254,9 @@ public class DebiteurPrestationImposable extends Tiers {
 	 * @return les périodicités non annulés
 	 */
 	@Transient
-	public List<Periodicite> getPeriodicitesNonAnnules(boolean sort) {
-		List<Periodicite> periodicitesNonAnnulees = new ArrayList<>();
+	@NotNull
+	public List<Periodicite> getPeriodicitesNonAnnulees(boolean sort) {
+		final List<Periodicite> periodicitesNonAnnulees = new ArrayList<>();
 		if (periodicites != null) {
 			for (Periodicite p : periodicites) {
 				if (!p.isAnnule()) {
@@ -357,7 +359,7 @@ public class DebiteurPrestationImposable extends Tiers {
 			}
 			//Si aucune périodicité n'est trouvé et que la date spécifé se trouve avant la date de début de validité
 			//de la première periodicité et que celle ci est unique, on la renvoie
-			final List<Periodicite> periodicitesTriees = getPeriodicitesNonAnnules(true);
+			final List<Periodicite> periodicitesTriees = getPeriodicitesNonAnnulees(true);
 			if (!periodicitesTriees.isEmpty()) {
 				final Periodicite premiere = periodicitesTriees.get(0);
 				if (premiere.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && date != null && date.isBefore(premiere.getDateDebut())) {
