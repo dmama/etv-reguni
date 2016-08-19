@@ -118,7 +118,9 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			return restClient.getCollectivite(noColAdm);
 		}
-		return ejbClient.getCollectivite(noColAdm);
+		else {
+			return ejbClient.getCollectivite(noColAdm);
+		}
 	}
 
 	@Override
@@ -126,7 +128,9 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			return restClient.getOfficesImpot();
 		}
-		return ejbClient.getOfficesImpot();
+		else {
+			return ejbClient.getOfficesImpot();
+		}
 	}
 
 	@Override
@@ -134,7 +138,9 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			return restClient.getCollectivitesAdministratives();
 		}
-		return ejbClient.getCollectivitesAdministratives();
+		else {
+			return ejbClient.getCollectivitesAdministratives();
+		}
 	}
 
 	@Override
@@ -147,7 +153,9 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			return restClient.getCollectivitesAdministratives(typesCollectivite);
 		}
-		return ejbClient.getCollectivitesAdministratives(typesCollectivite);
+		else {
+			return ejbClient.getCollectivitesAdministratives(typesCollectivite);
+		}
 	}
 
 	@Override
@@ -155,7 +163,9 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			return restClient.getInstitutionFinanciere(id);
 		}
-		return ejbClient.getInstitutionFinanciere(id);
+		else {
+			return ejbClient.getInstitutionFinanciere(id);
+		}
 	}
 
 	@Override
@@ -163,7 +173,9 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			return restClient.getInstitutionsFinancieres(noClearing);
 		}
-		return ejbClient.getInstitutionsFinancieres(noClearing);
+		else {
+			return ejbClient.getInstitutionsFinancieres(noClearing);
+		}
 	}
 
 	@Override
@@ -221,7 +233,8 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		if (modeRest) {
 			restClient.ping();
 		}
-		ejbClient.ping();
-
+		else {
+			ejbClient.ping();
+		}
 	}
 }
