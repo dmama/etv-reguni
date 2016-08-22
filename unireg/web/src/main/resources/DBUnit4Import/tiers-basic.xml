@@ -7278,6 +7278,7 @@
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
 	<column>CODE_CTRL_SOMM_DI_PP</column>
+	<column>CODE_CTRL_SOMM_DI_PM</column>
     <row>
       <value>2</value>
       <null/>
@@ -7287,6 +7288,7 @@
       <value><![CDATA[2012-10-04 08:16:54.017]]></value>
       <value>usrreg06</value>
       <value>2002</value>
+	  <value>0</value>
 	  <value>0</value>
     </row>
     <row>
@@ -7299,6 +7301,7 @@
       <value>usrreg06</value>
       <value>2003</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>4</value>
@@ -7309,6 +7312,7 @@
       <value><![CDATA[2012-10-04 08:17:53.659]]></value>
       <value>usrreg06</value>
       <value>2004</value>
+      <value>0</value>
       <value>0</value>
     </row>
     <row>
@@ -7321,6 +7325,7 @@
       <value>usrreg06</value>
       <value>2005</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>6</value>
@@ -7331,6 +7336,7 @@
       <value><![CDATA[2012-10-04 08:19:01.449]]></value>
       <value>usrreg06</value>
       <value>2006</value>
+      <value>0</value>
       <value>0</value>
     </row>
     <row>
@@ -7343,6 +7349,7 @@
       <value>tiers-basic</value>
       <value>2007</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>8</value>
@@ -7353,6 +7360,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>2008</value>
+      <value>0</value>
       <value>0</value>
     </row>
     <row>
@@ -7365,6 +7373,7 @@
       <value>tiers-basic</value>
       <value>2009</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>37888052</value>
@@ -7375,6 +7384,7 @@
       <value><![CDATA[2012-10-04 08:15:53.906]]></value>
       <value>usrreg06</value>
       <value>2010</value>
+      <value>0</value>
       <value>0</value>
     </row>
     <row>
@@ -7387,6 +7397,7 @@
       <value>usrreg06</value>
       <value>2011</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>37888090</value>
@@ -7397,6 +7408,7 @@
       <value><![CDATA[2012-10-04 08:15:58.914]]></value>
       <value>usrreg06</value>
       <value>2012</value>
+      <value>0</value>
       <value>0</value>
     </row>
   </table>

@@ -120,10 +120,12 @@
     <column>ID</column>
     <column>ANNEE</column>
     <column>CODE_CTRL_SOMM_DI_PP</column>
+    <column>CODE_CTRL_SOMM_DI_PM</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>2005</value>
+      <value>0</value>
       <value>0</value>
     </row>
     <row>
@@ -131,11 +133,13 @@
       <value>2</value>
       <value>2006</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>3</value>
       <value>2007</value>
+      <value>0</value>
       <value>0</value>
     </row>
     <row>
@@ -143,11 +147,13 @@
       <value>4</value>
       <value>2008</value>
       <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>5</value>
       <value>2009</value>
+      <value>0</value>
       <value>0</value>
     </row>
   </table>

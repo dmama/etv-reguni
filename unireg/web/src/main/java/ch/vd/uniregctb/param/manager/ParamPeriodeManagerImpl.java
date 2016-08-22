@@ -201,6 +201,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		ppfv.setIdPeriodeFiscale(idPeriode);
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
+		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclarationPM());
 
 		final ParametrePeriodeFiscalePM hc = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON);
 		if (hc != null) {
@@ -362,8 +363,9 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscalePMEditView view) {
 
 		// ATTENTION à l'ordre des évéments dans les différents tableaux, qui doivent se correspondre...
-
 		final PeriodeFiscale pf = periodeFiscaleDAO.get(view.getIdPeriodeFiscale());
+		pf.setShowCodeControleSommationDeclarationPM(view.isCodeControleSurSommationDI());
+
 		final ParametrePeriodeFiscalePM[] ppfs = new ParametrePeriodeFiscalePM[] {
 				pf.getParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE),
 				pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON),

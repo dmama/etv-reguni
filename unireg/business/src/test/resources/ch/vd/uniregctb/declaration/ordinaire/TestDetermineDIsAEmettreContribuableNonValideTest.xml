@@ -148,6 +148,7 @@
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
     <column>CODE_CTRL_SOMM_DI_PP</column>
+    <column>CODE_CTRL_SOMM_DI_PM</column>
     <row>
       <value>6</value>
       <null/>
@@ -157,6 +158,7 @@
       <value><![CDATA[2008-12-23 09:24:18.302]]></value>
       <value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
       <value>2007</value>
+      <value>0</value>
       <value>0</value>
     </row>
   </table>

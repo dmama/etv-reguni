@@ -29,12 +29,12 @@
 		<fieldset>
 			<legend><fmt:message key="label.param.parametres-pf-edit" /></legend>
 
-			<%--<div class="checkbox">--%>
-				<%--<c:set var="labelCheckbox">--%>
-					<%--<fmt:message key="label.param.code.controle.sur.sommation"/>--%>
-				<%--</c:set>--%>
-				<%--<form:checkbox path="codeControleSurSommationDI" label=" ${labelCheckbox}"/>--%>
-			<%--</div>--%>
+			<div class="checkbox">
+				<c:set var="labelCheckbox">
+					<fmt:message key="label.param.code.controle.sur.sommation.pm"/>
+				</c:set>
+				<form:checkbox path="codeControleSurSommationDI" label=" ${labelCheckbox}"/>
+			</div>
 
 			<table>
 			<tr>

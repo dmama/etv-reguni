@@ -32,7 +32,7 @@
 
 			<div class="checkbox">
 				<c:set var="labelCheckbox">
-					<fmt:message key="label.param.code.controle.sur.sommation"/>
+					<fmt:message key="label.param.code.controle.sur.sommation.pp"/>
 				</c:set>
 				<form:checkbox path="codeControleSurSommationDI" label=" ${labelCheckbox}"/>
 			</div>

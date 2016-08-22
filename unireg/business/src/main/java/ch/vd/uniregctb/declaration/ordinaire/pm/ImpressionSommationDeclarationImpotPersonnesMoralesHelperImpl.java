@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -83,8 +84,11 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 	private FichierImpression.Document.Sommation buildInfoSommation(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, boolean batch) {
 		final FichierImpression.Document.Sommation sommation = new FichierImpression.Document.Sommation();
 		sommation.setDateBaseSommation(RegDateHelper.toIndexString(dateTraitement));
-		sommation.setCodeControleNIP(declaration.getCodeControle());
-		sommation.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(declaration.getPeriode().getAnnee())));
+		final PeriodeFiscale periode = declaration.getPeriode();
+		if (periode.isShowCodeControleSommationDeclarationPM() && StringUtils.isNotBlank(declaration.getCodeControle())) {
+			sommation.setCodeControleNIP(declaration.getCodeControle());
+		}
+		sommation.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(periode.getAnnee())));
 		return sommation;
 	}
 

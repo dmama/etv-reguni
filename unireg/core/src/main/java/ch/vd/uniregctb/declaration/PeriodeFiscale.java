@@ -33,6 +33,7 @@ public class PeriodeFiscale extends HibernateEntity {
 	private Set<ModeleDocument> modelesDocument;
 	private Set<ParametrePeriodeFiscale> parametrePeriodeFiscale;
 	private boolean showCodeControleSommationDeclarationPP = false;
+	private boolean showCodeControleSommationDeclarationPM = false;
 
 	@Transient
 	@Override
@@ -158,6 +159,15 @@ public class PeriodeFiscale extends HibernateEntity {
 
 	public void setShowCodeControleSommationDeclarationPP(boolean showCodeControleSommationDeclarationPP) {
 		this.showCodeControleSommationDeclarationPP = showCodeControleSommationDeclarationPP;
+	}
+
+	@Column(name = "CODE_CTRL_SOMM_DI_PM", nullable = false)
+	public boolean isShowCodeControleSommationDeclarationPM() {
+		return showCodeControleSommationDeclarationPM;
+	}
+
+	public void setShowCodeControleSommationDeclarationPM(boolean showCodeControleSommationDeclarationPM) {
+		this.showCodeControleSommationDeclarationPM = showCodeControleSommationDeclarationPM;
 	}
 
 	/**

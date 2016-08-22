@@ -6,6 +6,7 @@ public class ParametrePeriodeFiscalePMEditView {
 
 	private Long idPeriodeFiscale;
 	private Integer anneePeriodeFiscale;
+	private boolean codeControleSurSommationDI;
 
 	private Integer delaiImprimeMoisVaud;
 	private ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiVaud;
@@ -205,5 +206,13 @@ public class ParametrePeriodeFiscalePMEditView {
 
 	public void setRefDelaiUtilitePublique(ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiUtilitePublique) {
 		this.refDelaiUtilitePublique = refDelaiUtilitePublique;
+	}
+
+	public boolean isCodeControleSurSommationDI() {
+		return codeControleSurSommationDI;
+	}
+
+	public void setCodeControleSurSommationDI(boolean codeControleSurSommationDI) {
+		this.codeControleSurSommationDI = codeControleSurSommationDI;
 	}
 }

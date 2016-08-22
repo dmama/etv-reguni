@@ -121,6 +121,7 @@ public class ParamPeriodeController {
 		model.addAttribute("parametrePeriodeFiscalePPHorsSuisse", manager.getPPHorsSuisseByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePPDiplomateSuisse", manager.getPPDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
 
+		model.addAttribute("codeControleSurSommationDIPM", periodeSelectionnee.isShowCodeControleSommationDeclarationPM());
 		model.addAttribute("parametrePeriodeFiscalePMVaud", manager.getPMVaudByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePMHorsCanton", manager.getPMHorsCantonByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePMHorsSuisse", manager.getPMHorsSuisseByPeriodeFiscale(periodeSelectionnee));

@@ -108,7 +108,7 @@
 
 					<div class="checkbox">
 						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDIPP}">checked</c:if>/>
-						<fmt:message key="label.param.code.controle.sur.sommation"/>
+						<fmt:message key="label.param.code.controle.sur.sommation.pp"/>
 					</div>
 					<c:if test="${parametrePeriodeFiscaleEmomulementSommationDIPP.montant != null}">
 						<div class="emolument">
@@ -191,10 +191,10 @@
 					</legend>
 					<a href="pf-edit-pm.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
 
-					<%--<div class="checkbox">--%>
-						<%--<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDIPM}">checked</c:if>/>--%>
-						<%--<fmt:message key="label.param.code.controle.sur.sommation"/>--%>
-					<%--</div>--%>
+					<div class="checkbox">
+						<input type="checkbox" disabled="disabled" <c:if test="${codeControleSurSommationDIPM}">checked</c:if>/>
+						<fmt:message key="label.param.code.controle.sur.sommation.pm"/>
+					</div>
 
 					<table>
 						<tr>
