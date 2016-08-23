@@ -150,23 +150,64 @@ public class StatsEvenementsCivilsOrganisationsResults {
 		}
 	}
 
+	public static class EvenementEnSouffranceInfo implements StatistiqueEvenementInfo {
+
+		private final long id;
+		private final long noOrganisation;
+		private final long noEvenement;
+		private final RegDate dateEvenement;
+		private final Date dateReception;
+		private final EtatEvenementOrganisation etat;
+
+		public EvenementEnSouffranceInfo(long id, long noOrganisation, long noEvenement, RegDate dateEvenement, Date dateReception, EtatEvenementOrganisation etat) {
+			this.id = id;
+			this.noOrganisation = noOrganisation;
+			this.noEvenement = noEvenement;
+			this.dateEvenement = dateEvenement;
+			this.dateReception = dateReception;
+			this.etat = etat;
+		}
+
+		private static final String[] COLONNES = {"ID", "NO_EVT", "NO_ORGANISATION", "DATE_EVT", "DATE_RECEPTION", "ETAT"};
+
+		@Override
+		public String[] getNomsColonnes() {
+			return COLONNES;
+		}
+
+		@Override
+		public String[] getValeursColonnes() {
+			return new String[] {
+					Long.toString(id),
+					Long.toString(noEvenement),
+					Long.toString(noOrganisation),
+					RegDateHelper.dateToDashString(dateEvenement),
+					DateHelper.dateTimeToDisplayString(dateReception),
+					etat.name()
+			};
+		}
+	}
+
 	private final Map<EtatEvenementOrganisation, Integer> etats;
 	private final Map<EtatEvenementOrganisation, Integer> etatsNouveaux;                    // <-- sur les événements reçus récemment
 	private final Map<MutationsTraiteesStatsKey, Integer> mutationsTraitees;
 	private final Map<MutationsTraiteesStatsKey, Integer> mutationsRecentesTraitees;        // <-- sur les événements reçus récemment seulement
 	private final List<DetailMutationTraitee> detailsMutationsTraiteesRecentes;             // <-- sur les événements traités récemment seulement
 	private final List<ErreurInfo> erreurs;
+	private final List<EvenementEnSouffranceInfo> enSouffrance;
 
 	public StatsEvenementsCivilsOrganisationsResults(Map<EtatEvenementOrganisation, Integer> etats, Map<EtatEvenementOrganisation, Integer> etatsNouveaux,
 	                                                 Map<MutationsTraiteesStatsKey, Integer> mutationsTraitees, Map<MutationsTraiteesStatsKey, Integer> mutationsRecentesTraitees,
 	                                                 List<DetailMutationTraitee> detailsMutationsTraiteesRecentes,
-	                                                 List<ErreurInfo> erreurs) {
+	                                                 List<ErreurInfo> erreurs,
+	                                                 List<EvenementEnSouffranceInfo> enSouffrance) {
 		this.etats = CollectionsUtils.unmodifiableNeverNull(etats);
 		this.etatsNouveaux = CollectionsUtils.unmodifiableNeverNull(etatsNouveaux);
 		this.mutationsTraitees = CollectionsUtils.unmodifiableNeverNull(mutationsTraitees);
 		this.mutationsRecentesTraitees = CollectionsUtils.unmodifiableNeverNull(mutationsRecentesTraitees);
 		this.detailsMutationsTraiteesRecentes = CollectionsUtils.unmodifiableNeverNull(detailsMutationsTraiteesRecentes);
 		this.erreurs = CollectionsUtils.unmodifiableNeverNull(erreurs);
+		this.enSouffrance = CollectionsUtils.unmodifiableNeverNull(enSouffrance);
 	}
 
 	@NotNull
@@ -197,5 +238,10 @@ public class StatsEvenementsCivilsOrganisationsResults {
 	@NotNull
 	public List<ErreurInfo> getErreurs() {
 		return erreurs;
+	}
+
+	@NotNull
+	public List<EvenementEnSouffranceInfo> getEnSouffrance() {
+		return enSouffrance;
 	}
 }

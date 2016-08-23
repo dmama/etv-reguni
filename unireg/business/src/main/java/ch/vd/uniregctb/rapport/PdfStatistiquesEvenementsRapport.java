@@ -184,7 +184,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		if (civilsOrganisations != null) {
 
 			newPage();
-			addTitrePrincipal("Evénements civils (organisation)");
+			addTitrePrincipal("Evénements civils (organisations)");
 
 			// Evénements civils : états
 			addEntete1("Répartition par état");
@@ -216,6 +216,16 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				final String titre = "Erreurs des événements civils (organisations)";
 				final String listeVide = "(aucune)";
 				try (TemporaryFile contenu = asCsvStatFile(civilsOrganisations.getErreurs(), filename, status)) {
+					addListeDetaillee(writer, titre, listeVide, filename, contenu);
+				}
+			}
+
+			// événements en souffrance depuis plus de 15 jours
+			{
+				final String filename = "en_souffrance_organisations.csv";
+				final String titre = "Evénements civils (organisations) reçus il y a plus de 15 jours et encore en souffrance";
+				final String listeVide = "(aucun)";
+				try (TemporaryFile contenu = asCsvStatFile(civilsOrganisations.getEnSouffrance(), filename, status)) {
 					addListeDetaillee(writer, titre, listeVide, filename, contenu);
 				}
 			}

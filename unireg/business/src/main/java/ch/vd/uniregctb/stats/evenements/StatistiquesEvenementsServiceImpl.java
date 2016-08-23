@@ -216,7 +216,8 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> mutationsRecentesTraitees = getStatistiquesMutationsTraitees(debutActivite);
 		final List<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee> detailsMutationsTraiteesRecentes = getMutationsTraiteesDepuis(debutActivite);
 		final List<StatsEvenementsCivilsOrganisationsResults.ErreurInfo> erreurs = getToutesErreursEvenementsCivilsOrganisations();
-		return new StatsEvenementsCivilsOrganisationsResults(etats, etatsRecents, mutationsTraitees, mutationsRecentesTraitees, detailsMutationsTraiteesRecentes, erreurs);
+		final List<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo> enSouffrance = getEvenementsCivilsOrganisationEnSouffrance(15);
+		return new StatsEvenementsCivilsOrganisationsResults(etats, etatsRecents, mutationsTraitees, mutationsRecentesTraitees, detailsMutationsTraiteesRecentes, erreurs, enSouffrance);
 	}
 
 	private Map<EtatEvenementOrganisation, Integer> getEtatsEvenementsCivilsOrganisation(@Nullable RegDate debutActivite) {
@@ -352,6 +353,27 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final long noOrganisation = ((Number) row[5]).longValue();
 				final String message = (String) row[6];
 				return new StatsEvenementsCivilsOrganisationsResults.ErreurInfo(id, noOrganisation, noEvenement, dateEvenement, dateTraitement, etat, message);
+			}
+		});
+	}
+
+	private List<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo> getEvenementsCivilsOrganisationEnSouffrance(int seuilEnJours) {
+		final String sql = "SELECT ID, NO_EVENEMENT, NO_ORGANISATION, DATE_EVENEMENT, LOG_CDATE, ETAT FROM EVENEMENT_ORGANISATION"
+				+ " WHERE ETAT IN ('A_TRAITER', 'A_VERIFIER', 'EN_ERREUR', 'EN_ATTENTE')"
+				+ " AND LOG_CDATE < CURRENT_DATE - INTERVAL '" + seuilEnJours + "' DAY ORDER BY ID ASC";
+
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo>() {
+			@Override
+			public StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo onRow(Object[] row) {
+				Assert.isEqual(6, row.length);
+
+				final long id = ((Number) row[0]).longValue();
+				final long noEvevement = ((Number) row[1]).longValue();
+				final long noOrganisation = ((Number) row[2]).longValue();
+				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[3]).intValue(), false);
+				final Date dateReception = (Date) row[4];
+				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[5]);
+				return new StatsEvenementsCivilsOrganisationsResults.EvenementEnSouffranceInfo(id, noOrganisation, noEvevement, dateEvenement, dateReception, etat);
 			}
 		});
 	}
