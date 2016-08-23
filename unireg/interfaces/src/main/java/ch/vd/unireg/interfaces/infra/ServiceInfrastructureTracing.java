@@ -615,11 +615,14 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(final int npa) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByNPA(final int npa, final RegDate dateReference) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
+		int items = 0;
 		try {
-			return target.getLocaliteByNPA(npa);
+			final List<Localite> liste = target.getLocalitesByNPA(npa, dateReference);
+			items = liste == null ? 0 : liste.size();
+			return liste;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -630,10 +633,10 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocaliteByNPA", new Object() {
+			tracing.end(time, t, "getLocalitesByNPA", items, new Object() {
 				@Override
 				public String toString() {
-					return String.format("npa=%d", npa);
+					return String.format("npa=%d, dateReference=%s", npa, ServiceTracing.toString(dateReference));
 				}
 			});
 		}

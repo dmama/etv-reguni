@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Canton;
@@ -946,10 +948,17 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			final String sigle = getSigleCantonEmetteur(emetteur);
 			final Integer npa = adresse.getNpaSuisse();
 			if (npa != null && sigle != null) {
-				final Localite localite = infraService.getLocaliteByNPA(npa);
-				if (localite != null) {
-					final Commune commune = localite.getCommuneLocalite();
-					return commune != null && sigle.equals(commune.getSigleCanton());
+				final RegDate dateDemande = RegDateHelper.get(message.getDemande().getDate());
+				final List<Localite> localites = infraService.getLocalitesByNPA(npa, dateDemande);
+				if (localites != null && !localites.isEmpty()) {
+					final Set<String> siglesCantons = new HashSet<>(localites.size());
+					for (Localite localite : localites) {
+						final Commune commune = localite.getCommuneLocalite();
+						if (commune != null) {
+							siglesCantons.add(commune.getSigleCanton());
+						}
+					}
+					return siglesCantons.contains(sigle);
 				}
 			}
 		}

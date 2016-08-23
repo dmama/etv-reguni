@@ -165,8 +165,8 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return getClient().getLocaliteByNPA(npa);
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		return getClient().getLocalitesByNPA(npa, dateReference);
 	}
 
 	@Override

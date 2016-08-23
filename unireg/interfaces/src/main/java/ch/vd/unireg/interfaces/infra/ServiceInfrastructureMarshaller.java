@@ -151,8 +151,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return fidorService.getLocaliteByNPA(npa);
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		return fidorService.getLocalitesByNPA(npa, dateReference);
 	}
 
 	@Override

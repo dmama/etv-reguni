@@ -187,13 +187,14 @@ public interface ServiceInfrastructureService {
 	List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException;
 
 	/**
-	 * Permet de retourner une localite a partir d'un npa
+	 * Permet de retourner une ou plusieurs localités à partir d'un npa
 	 *
 	 * @param npa le npa
-	 * @return la localite
+	 * @param dateReference la date de référence
+	 * @return la liste des localités ciblées
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException;
+	List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException;
 
 	/**
 	 * Construit et retourne l'url vers la page de visualisation d'un tiers dans un application fiscale connectée à Unireg.

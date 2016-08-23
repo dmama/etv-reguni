@@ -107,12 +107,9 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	}
 
 	@Override
-	public ch.vd.unireg.interfaces.infra.data.Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
+	public List<ch.vd.unireg.interfaces.infra.data.Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getLocaliteByNPA' ne doit pas être appelée sur le service host-interfaces.");
 	}
-
-
-
 
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {

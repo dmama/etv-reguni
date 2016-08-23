@@ -2,7 +2,12 @@ package ch.vd.uniregctb.evenement.retourdi.pm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -170,26 +175,40 @@ public abstract class AdresseRaisonSociale {
 			}
 
 			// on a donc quelque chose...
-			final Localite localitePostale = infraService.getLocaliteByNPA(npaEntier);
-			if (localitePostale == null) {
+			final List<Localite> localitesPostales = getLocalitesPostalesCandidates(npaEntier, localite, dateReference, infraService);
+			if (localitesPostales.isEmpty()) {
 				LOGGER.error(String.format("Aucune localité postale suisse ne correspond au NPA donné (%s).", npaEntier));
 				return null;
 			}
 
-			// quelles sont les rues officielles de cette localité postale ?
-			final List<Rue> ruesOfficielles = infraService.getRues(localitePostale);
-			if (ruesOfficielles == null || ruesOfficielles.isEmpty()) {
-				LOGGER.warn(String.format("Aucune rue connue sur la localité postale %s (onrp %d).", localitePostale.getNom(), localitePostale.getNoOrdre()));
+			// un joli log peut grandement aider...
+			final StringRenderer<Localite> onrpRenderer = new StringRenderer<Localite>() {
+				@Override
+				public String toString(Localite localite) {
+					return Objects.toString(localite.getNoOrdre());
+				}
+			};
+			final String descriptionLocalite = String.format("%d %s (onrp %s)", npaEntier, localite, CollectionsUtils.toString(localitesPostales, onrpRenderer, ", "));
+
+			// quelles sont les rues officielles de ces localités postales ?
+			final List<Rue> ruesOfficielles = new LinkedList<>();
+			for (Localite localitePostale : localitesPostales) {
+				final List<Rue> rues = infraService.getRues(localitePostale);
+				if (rues != null) {
+					ruesOfficielles.addAll(rues);
+				}
+			}
+			if (ruesOfficielles.isEmpty()) {
+				LOGGER.warn(String.format("Aucune rue connue sur la localité postale %s.", descriptionLocalite));
 				return null;
 			}
 
 			// analyse des lignes
-			final SplitData data = comparerRues(localitePostale, ruesOfficielles);
+			final SplitData data = comparerRues(descriptionLocalite, ruesOfficielles);
 			if (data == null) {
 				// rien trouvé...
-				LOGGER.warn(String.format("Aucune rue identifiée sur la localité postale %s (onrp %d) depuis les lignes fournies (%s).",
-				                          localitePostale.getNom(),
-				                          localitePostale.getNoOrdre(),
+				LOGGER.warn(String.format("Aucune rue identifiée sur la localité postale %s depuis les lignes fournies (%s).",
+				                          descriptionLocalite,
 				                          toDisplayString()));
 				return null;
 			}
@@ -199,7 +218,11 @@ public abstract class AdresseRaisonSociale {
 			final String raisonSociale = data.extractRaisonSociale();
 
 			// et l'adresse avec le reste ?
-			final Adresse adresse = data.buildAdresse(localitePostale);
+			final Map<Integer, Localite> localitesParONRP = new HashMap<>(localitesPostales.size());
+			for (Localite localite : localitesPostales) {
+				localitesParONRP.put(localite.getNoOrdre(), localite);
+			}
+			final Adresse adresse = data.buildAdresse(localitesParONRP.get(data.rueIdentifiee.getNoLocalite()));
 			return Pair.of(raisonSociale, adresse);
 		}
 
@@ -216,6 +239,39 @@ public abstract class AdresseRaisonSociale {
 				}
 			}
 			return lignes.toArray(new String[lignes.size()]);
+		}
+
+		/**
+		 * Retrouve la localité postale indiquée par le NPA et le nom (si aucun nom n'est donné / ne correspond, toute les localités correspondantes seront retournées)
+		 * @param npa npa suisse d'une localité
+		 * @param nom nom associé au NPA (des fois qu'il y en aurait plusieurs)
+		 * @param dateReference date de référence pour les résolutions de nom...
+		 * @param infraService service infrastructure
+		 * @return la localité trouvée, ou <code>null</code> si rien de bien convaincant
+		 */
+		@NotNull
+		private static List<Localite> getLocalitesPostalesCandidates(int npa, String nom, RegDate dateReference, ServiceInfrastructureService infraService) {
+			// toutes les localités avec le NPA
+			final List<Localite> all = infraService.getLocalitesByNPA(npa, dateReference);
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			// filtrage sur les données valides à la date de référence, et indexation par nom
+			final Map<String, Localite> parNom = new HashMap<>(2 * all.size());
+			for (Localite localite : all) {
+				parNom.put(canonize(localite.getNom()), localite);
+				parNom.put(canonize(localite.getNomAbrege()), localite);
+			}
+
+			final String nomCanonise = canonize(nom);
+			final Localite unique = parNom.get(nomCanonise);
+			if (unique != null) {
+				return Collections.singletonList(unique);
+			}
+			else {
+				return all.isEmpty() ? Collections.<Localite>emptyList() : all;
+			}
 		}
 
 		/**
@@ -383,12 +439,12 @@ public abstract class AdresseRaisonSociale {
 		 * Essaie de récupérer la bonne rue identifiée dans les lignes
 		 */
 		@Nullable
-		private SplitData comparerRues(Localite localitePostale, List<Rue> ruesOfficielles) {
+		private SplitData comparerRues(String npaEtNomLocalite, List<Rue> ruesOfficielles) {
 
 			// constitution d'un tableau des lignes utilisables
 			final String[] lignes = getLignes1a5();
 			if (lignes.length == 0) {
-				LOGGER.warn(String.format("Aucune ligne d'adresse utilisable pour comparer aux rues de la localité postale %s (%d).", localitePostale.getNom(), localitePostale.getNoOrdre()));
+				LOGGER.warn(String.format("Aucune ligne d'adresse utilisable pour comparer aux rues de la localité postale '%s'.", npaEtNomLocalite));
 				return null;
 			}
 			final String[] lignesMinuscules = new String[lignes.length];
@@ -424,7 +480,7 @@ public abstract class AdresseRaisonSociale {
 			if (string == null) {
 				return null;
 			}
-			return StringComparator.toLowerCaseWithoutAccent(string).replaceAll("[^A-Za-z0-9 ]", " ").replaceAll(" {2,}", " ");
+			return StringUtils.trimToNull(StringComparator.toLowerCaseWithoutAccent(string).replaceAll("[^A-Za-z0-9 ]", " ").replaceAll(" {2,}", " "));
 		}
 
 		/**

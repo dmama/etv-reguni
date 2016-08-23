@@ -215,13 +215,13 @@ public interface ServiceInfrastructureRaw {
 	List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException;
 
 	/**
-	 * Permet de retourner une localite a partir d'un npa
-	 *
+	 * Permet de retourner une plusieurs localités à partir d'un npa
 	 * @param npa le npa
-	 * @return la localite
+	 * @param dateReference date de référence
+	 * @return les localités trouvées pour ce NPA
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException;
+	List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException;
 
 	/**
 	 * Construit et retourne l'url vers la page de visualisation d'un tiers dans un application fiscale connectée à Unireg.

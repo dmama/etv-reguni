@@ -215,15 +215,14 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		Localite localite = null;
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		final List<Localite> localites = new ArrayList<>();
 		for (Localite loc : getLocalites()) {
-			if (loc.getNPA() == npa) {
-				localite = loc;
-				break;
+			if (loc.getNPA() == npa && loc.isValidAt(dateReference)) {
+				localites.add(loc);
 			}
 		}
-		return localite;
+		return localites;
 	}
 
 	@Override

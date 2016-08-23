@@ -456,8 +456,8 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return target.getLocaliteByNPA(npa);
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		return target.getLocalitesByNPA(npa, dateReference);
 	}
 
 	@Override

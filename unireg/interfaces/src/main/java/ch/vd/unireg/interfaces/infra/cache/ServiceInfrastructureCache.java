@@ -1412,8 +1412,8 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	 *  {@inheritDoc}
 	 */
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return target.getLocaliteByNPA(npa);
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		return target.getLocalitesByNPA(npa, dateReference);
 	}
 
 	@Override

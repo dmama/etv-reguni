@@ -438,8 +438,24 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		try {
+			final List<PostalLocality> postalLocalities = fidorClient.getLocalitesPostales(dateReference, npa, null, null, null);
+			if (postalLocalities != null && !postalLocalities.isEmpty()) {
+				final Map<Integer, List<Commune>> map = buildHistoMap(getCommunes());
+				final List<Localite> localites = new ArrayList<>(postalLocalities.size());
+				for (PostalLocality pl : postalLocalities) {
+					localites.add(LocaliteImpl.get(pl, map));
+				}
+				return localites;
+			}
+			else {
+				return Collections.emptyList();
+			}
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override

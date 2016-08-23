@@ -279,10 +279,10 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getLocaliteByNPA", "npa", npa));
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getLocaliteByNPA", "npa", npa, "dateReference", dateReference));
 		try {
-			return target.getLocaliteByNPA(npa);
+			return target.getLocalitesByNPA(npa, dateReference);
 		}
 		finally {
 			loadMeter.end();

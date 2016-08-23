@@ -752,8 +752,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return rawService.getLocaliteByNPA(npa);
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		return rawService.getLocalitesByNPA(npa, dateReference);
 	}
 
 	@Override

@@ -153,11 +153,12 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		if (localitesByNPA==null) {
+	public List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException {
+		if (localitesByNPA == null) {
 			initLocaliteByNPA();
 		}
-		return localitesByNPA.get(npa);
+		final Localite result = localitesByNPA.get(npa);
+		return result == null ? null : Collections.singletonList(result);
 	}
 
 
