@@ -14,6 +14,9 @@
 			input[type=checkbox] {
 				vertical-align: bottom;
 			}
+			div.checkbox {
+				margin: 10px;
+			}
 		</style>
 	</tiles:put>
 
