@@ -9,6 +9,14 @@
 				<unireg:numCTB numero="${command.idEntreprise}"/>
 			</fmt:param>
 		</fmt:message>
+		<c:choose>
+			<c:when test="${entrepriseConnueAuRegistreCivil}">
+				(<fmt:message key="label.entreprise.connue.registre.civil"/>)
+			</c:when>
+			<c:otherwise>
+				(<fmt:message key="label.entreprise.inconnue.registre.civil"/>)
+			</c:otherwise>
+		</c:choose>
 	</tiles:put>
 
 	<tiles:put name="body">
@@ -35,6 +43,34 @@
 								</c:when>
 								<c:when test="${typeAutoriteFiscaleSiegeActuel == 'PAYS_HS'}">
 									<unireg:pays ofs="${noOfsSiegeActuel}" displayProperty="nomCourt" date="${dateDebutSiegeActuel}" titleProperty="noOFS"/>
+								</c:when>
+							</c:choose>
+						</c:if>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+
+		<fieldset>
+			<legend><span><fmt:message key="label.caracteristiques.for.principal.actuel"/></span></legend>
+			<table>
+				<tr class="<unireg:nextRowClass/>">
+					<td width="25%"><fmt:message key="label.date.debut"/></td>
+					<td width="75%"><unireg:regdate regdate="${dateDebutForPrincipalActuel}"/></td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>">
+					<td width="25%"><fmt:message key="label.commune.pays"/></td>
+					<td width="75%">
+						<c:if test="${noOfsForPrincipalActuel != null}">
+							<c:choose>
+								<c:when test="${typeAutoriteFiscaleForPrincipalActuel == 'COMMUNE_OU_FRACTION_VD'}">
+									<unireg:commune ofs="${noOfsForPrincipalActuel}" displayProperty="nomOfficiel" date="${dateDebutForPrincipalActuel}" titleProperty="noOFS"/>
+								</c:when>
+								<c:when test="${typeAutoriteFiscaleForPrincipalActuel == 'COMMUNE_HC'}">
+									<unireg:commune ofs="${noOfsForPrincipalActuel}" displayProperty="nomOfficielAvecCanton" date="${dateDebutForPrincipalActuel}" titleProperty="noOFS"/>
+								</c:when>
+								<c:when test="${typeAutoriteFiscaleForPrincipalActuel == 'PAYS_HS'}">
+									<unireg:pays ofs="${noOfsForPrincipalActuel}" displayProperty="nomCourt" date="${dateDebutForPrincipalActuel}" titleProperty="noOFS"/>
 								</c:when>
 							</c:choose>
 						</c:if>

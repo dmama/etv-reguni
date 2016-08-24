@@ -1,8 +1,13 @@
 package ch.vd.uniregctb.entreprise.complexe;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.RandomAccess;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.Flash;
@@ -22,6 +28,9 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.LocalisationFiscale;
+import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.transaction.TransactionHelper;
@@ -34,9 +43,15 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 
 	private static final String TYPES_AUTORITE_FISCALE = "typesAutoriteFiscale";
 
+	private static final String CONNUE_CIVILEMENT = "entrepriseConnueAuRegistreCivil";
+
 	private static final String DEBUT_SIEGE_ACTUEL = "dateDebutSiegeActuel";
 	private static final String TYPE_AUTORITE_SIEGE_ACTUEL = "typeAutoriteFiscaleSiegeActuel";
 	private static final String OFS_SIEGE_ACTUEL = "noOfsSiegeActuel";
+
+	private static final String DEBUT_FOR_PRINCIPAL_ACTUEL = "dateDebutForPrincipalActuel";
+	private static final String TYPE_AUTORITE_FOR_PRINCIPAL_ACTUEL = "typeAutoriteFiscaleForPrincipalActuel";
+	private static final String OFS_FOR_PRINCIPAL_ACTUEL = "noOfsForPrincipalActuel";
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
@@ -52,7 +67,6 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 	@Override
 	protected void fillCriteriaWithImplicitValues(TiersCriteriaView criteria) {
 		criteria.setTiersActif(Boolean.TRUE);
-		criteria.setConnuAuCivil(Boolean.FALSE);
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 	}
 
@@ -75,35 +89,64 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 			@Override
 			public String doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				if (entreprise.isConnueAuCivil()) {
-					Flash.error("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");
-					return "redirect:list.do";
+				model.addAttribute(CONNUE_CIVILEMENT, entreprise.isConnueAuCivil());
+
+				// le dernier siège
+				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
+				final Pair<RegDate, LocalisationFiscale> dernierSiege = getDerniereLocalisation(sieges);
+				if (dernierSiege != null) {
+					model.addAttribute(DEBUT_SIEGE_ACTUEL, dernierSiege.getLeft());
+					model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getRight().getTypeAutoriteFiscale());
+					model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getRight().getNumeroOfsAutoriteFiscale());
 				}
 
-				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
-				if (sieges != null && !sieges.isEmpty()) {
-					final DomicileHisto dernierSiege = CollectionsUtils.getLastElement(sieges);
-
-					// on essaie de récupérer la date de début du siège à cet endroit (même si c'est passé par des données
-					// civiles et fiscales...)
-					RegDate dateDebut = dernierSiege.getDateDebut();
-					for (DomicileHisto domicile : CollectionsUtils.revertedOrder(sieges)) {
-						if (domicile.getTypeAutoriteFiscale() != dernierSiege.getTypeAutoriteFiscale() ||
-								domicile.getNumeroOfsAutoriteFiscale() == null ||
-								!domicile.getNumeroOfsAutoriteFiscale().equals(dernierSiege.getNumeroOfsAutoriteFiscale())) {
-							break;
-						}
-						dateDebut = domicile.getDateDebut();
-					}
-
-					model.addAttribute(DEBUT_SIEGE_ACTUEL, dateDebut);
-					model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getTypeAutoriteFiscale());
-					model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getNumeroOfsAutoriteFiscale());
+				// le dernier for principal
+				final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+				final Pair<RegDate, LocalisationFiscale> dernierForPrincipal = getDerniereLocalisation(ffps);
+				if (dernierForPrincipal != null) {
+					model.addAttribute(DEBUT_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getLeft());
+					model.addAttribute(TYPE_AUTORITE_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getRight().getTypeAutoriteFiscale());
+					model.addAttribute(OFS_FOR_PRINCIPAL_ACTUEL, dernierForPrincipal.getRight().getNumeroOfsAutoriteFiscale());
 				}
 
 				return "entreprise/demenagement/start";
 			}
 		});
+	}
+
+	@Nullable
+	private static Pair<RegDate, LocalisationFiscale> getDerniereLocalisation(List<? extends LocalizedDateRange> sorted) {
+		if (sorted == null || sorted.isEmpty()) {
+			return null;
+		}
+		final LocalizedDateRange dernierElement = CollectionsUtils.getLastElement(sorted);
+		if (sorted.size() == 1) {
+			// raccourci en présence d'une seule valeur
+			return Pair.<RegDate, LocalisationFiscale>of(dernierElement.getDateDebut(), dernierElement);
+		}
+
+		// passage à une liste accessible facilement par index
+		final List<? extends LocalizedDateRange> indexed;
+		if (sorted instanceof RandomAccess) {
+			indexed = sorted;
+		}
+		else {
+			indexed = new ArrayList<>(sorted);
+		}
+
+		// ne nous intéressent que les éléments contigus à la même position
+		LocalizedDateRange firstAtLocation = dernierElement;
+		for (int index = indexed.size() - 2; index >= 0 ; -- index) {
+			final LocalizedDateRange current = indexed.get(index);
+			final LocalizedDateRange next = indexed.get(index + 1);
+			if (!DateRangeHelper.isCollatable(current, next)
+					|| current.getTypeAutoriteFiscale() != next.getTypeAutoriteFiscale()
+					|| !Objects.equals(current.getNumeroOfsAutoriteFiscale(), next.getNumeroOfsAutoriteFiscale())) {
+				break;
+			}
+			firstAtLocation = current;
+		}
+		return Pair.<RegDate, LocalisationFiscale>of(firstAtLocation.getDateDebut(), dernierElement);
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
@@ -119,9 +162,6 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 			@Override
 			public void execute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
-				if (entreprise.isConnueAuCivil()) {
-					throw new MetierServiceException("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");
-				}
 				metierService.demenageSiege(entreprise, view.getDateDebutNouveauSiege(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 			}
 		});
