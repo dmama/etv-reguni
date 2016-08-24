@@ -566,7 +566,7 @@ public abstract class AdresseRaisonSociale {
 
 		@Override
 		public String getTitre() {
-			return StringUtils.defaultIfBlank(ligne1, StringUtils.defaultIfBlank(ligne2, StringUtils.EMPTY));
+			return StringUtils.defaultIfBlank(ligne1, StringUtils.defaultIfBlank(ligne2, null));
 		}
 
 		@Override
