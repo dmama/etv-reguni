@@ -281,4 +281,16 @@
 	<bean id="addFlagEntrepriseViewValidator" class="ch.vd.uniregctb.tiers.validator.AddFlagEntrepriseViewValidator"/>
 	<bean id="editFlagEntrepriseViewValidator" class="ch.vd.uniregctb.tiers.validator.EditFlagEntrepriseViewValidator"/>
 
+	<bean id="mandataireController" class="ch.vd.uniregctb.mandataire.MandataireController">
+		<property name="adresseService" ref="adresseService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="transactionHelper" ref="transactionHelper"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="ibanValidator" ref="ibanValidator"/>
+	</bean>
+
 </beans>

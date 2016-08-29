@@ -20,8 +20,8 @@ import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
-import ch.vd.uniregctb.mandataire.AdresseMandataireView;
-import ch.vd.uniregctb.mandataire.LienMandataireView;
+import ch.vd.uniregctb.mandataire.MandataireCourrierView;
+import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -64,7 +64,6 @@ public class TiersView {
 	private IndividuView individuConjoint;
 
 	private List<AdresseView> historiqueAdresses;
-	private List<AdresseMandataireView> adressesMandataires;
 
 	private List<AdresseCivilView> historiqueAdressesCiviles;
 	private String exceptionAdresseCiviles;
@@ -78,7 +77,6 @@ public class TiersView {
 
 	private List<RapportView> rapportsEtablissements;
 	private List<RapportView> dossiersApparentes;
-	private List<LienMandataireView> liensMandataires;
 	private List<RapportPrestationView> rapportsPrestation;
 
 	private boolean rapportsPrestationHisto;
@@ -137,6 +135,9 @@ public class TiersView {
 	private boolean forsPrincipauxPagines = true;
 	private boolean forsSecondairesPagines = true;
 	private boolean autresForsPagines = true;
+
+	private List<MandataireCourrierView> mandatairesCourrier;
+	private List<MandatairePerceptionView> mandatairesPerception;
 
 	public boolean isPmOuEtablissement() {
 		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
@@ -245,14 +246,6 @@ public class TiersView {
 		this.historiqueAdresses = historiqueAdresses;
 	}
 
-	public List<AdresseMandataireView> getAdressesMandataires() {
-		return adressesMandataires;
-	}
-
-	public void setAdressesMandataires(List<AdresseMandataireView> adressesMandataires) {
-		this.adressesMandataires = adressesMandataires;
-	}
-
 	public NatureTiers getNatureMembrePrincipal() {
 		if (tiersPrincipal != null)
 			return tiersPrincipal.getNatureTiers();
@@ -287,14 +280,6 @@ public class TiersView {
 
 	public void setDossiersApparentes(List<RapportView> dossiersApparentes) {
 		this.dossiersApparentes = dossiersApparentes;
-	}
-
-	public List<LienMandataireView> getLiensMandataires() {
-		return liensMandataires;
-	}
-
-	public void setLiensMandataires(List<LienMandataireView> liensMandataires) {
-		this.liensMandataires = liensMandataires;
 	}
 
 	public Set<DebiteurView> getDebiteurs() {
@@ -714,5 +699,21 @@ public class TiersView {
 
 	public void setAutresForsPagines(boolean autresForsPagines) {
 		this.autresForsPagines = autresForsPagines;
+	}
+
+	public List<MandataireCourrierView> getMandatairesCourrier() {
+		return mandatairesCourrier;
+	}
+
+	public void setMandatairesCourrier(List<MandataireCourrierView> mandatairesCourrier) {
+		this.mandatairesCourrier = mandatairesCourrier;
+	}
+
+	public List<MandatairePerceptionView> getMandatairesPerception() {
+		return mandatairesPerception;
+	}
+
+	public void setMandatairesPerception(List<MandatairePerceptionView> mandatairesPerception) {
+		this.mandatairesPerception = mandatairesPerception;
 	}
 }

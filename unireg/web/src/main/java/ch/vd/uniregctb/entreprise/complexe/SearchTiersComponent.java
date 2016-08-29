@@ -185,7 +185,7 @@ public class SearchTiersComponent {
 	 * (à appeler à l'affichage du formulaire de recherche)
 	 */
 	public String showFormulaireRecherche(Model model, HttpSession session) {
-		final TiersCriteriaView criteria = (TiersCriteriaView) session.getAttribute(searchCriteriaSessionBeanName);
+		final TiersCriteriaView criteria = getSessionView(session);
 		return fillModelForRecherche(model, session, criteria, false);
 	}
 
@@ -196,6 +196,14 @@ public class SearchTiersComponent {
 	public String resetCriteresRecherche(HttpSession session, String redirectAction) {
 		session.removeAttribute(searchCriteriaSessionBeanName);
 		return "redirect:" + redirectAction;
+	}
+
+	private TiersCriteriaView getSessionView(HttpSession session) {
+		return (TiersCriteriaView) session.getAttribute(searchCriteriaSessionBeanName);
+	}
+
+	public void fillModel(Model model, HttpSession session, boolean error) {
+		fillModelForRecherche(model, session, getSessionView(session), error);
 	}
 
 	/**

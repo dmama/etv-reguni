@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -66,6 +67,7 @@ import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -83,6 +85,7 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -150,6 +153,7 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
@@ -6062,6 +6066,172 @@ public class TiersServiceImpl implements TiersService {
 	public void annuleFlagEntreprise(FlagEntreprise flag) {
 		flag.setAnnule(true);
 		evenementFiscalService.publierEvenementFiscalAnnulationFlagEntreprise(flag);
+	}
+
+	private static final class MandatKey {
+
+		private final TypeMandat typeMandat;
+		private final String codeGenreImpot;
+
+		public MandatKey(Mandat mandat) {
+			this.typeMandat = mandat.getTypeMandat();
+			this.codeGenreImpot = this.typeMandat == TypeMandat.SPECIAL ? mandat.getCodeGenreImpot() : null;
+		}
+
+		public MandatKey(AdresseMandataire adresse) {
+			this.typeMandat = adresse.getTypeMandat();
+			this.codeGenreImpot = this.typeMandat == TypeMandat.SPECIAL ? adresse.getCodeGenreImpot() : null;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final MandatKey mandatKey = (MandatKey) o;
+			return typeMandat == mandatKey.typeMandat && Objects.equals(codeGenreImpot, mandatKey.codeGenreImpot);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = typeMandat != null ? typeMandat.hashCode() : 0;
+			result = 31 * result + (codeGenreImpot != null ? codeGenreImpot.hashCode() : 0);
+			return result;
+		}
+	}
+
+	/**
+	 * Annule les entites existantes qui intersectent avec le nouveau mandat ciblé et renvoie une liste d'entités non-persistés
+	 * qui prennent en compte la place que va occuper le nouveau mandat
+	 * @param mandat le nouveau mandat (enfin, ses dates...)
+	 * @param sortedExistingMandats la liste triée des mandats existants de même type
+	 * @param <T> le type d'entité de mandat
+	 * @return la liste des nouvelles entités à créer pour que, en tenant compte des entités annulés, on ait bien la place pour le nouveau mandat
+	 */
+	@NotNull
+	private static <T extends HibernateDateRangeEntity & Duplicable<T>> List<T> computeNewEntitieForRoomMaking(DateRange mandat, List<T> sortedExistingMandats) {
+		// intersections du nouveau mandat avec les mandats de même type existants ?
+		final List<DateRange> intersections = DateRangeHelper.intersections(mandat, sortedExistingMandats);
+		if (intersections != null && !intersections.isEmpty()) {
+			final List<T> aAjouter = new LinkedList<>();
+			for (DateRange intersection : intersections) {
+				// pour toute intersection, on recopie la partie avant et la partie après du mandat existant
+				final RegDate dateReference = intersection.getDateDebut() != null ? intersection.getDateDebut() : intersection.getDateFin();
+				final T intersectant = DateRangeHelper.rangeAt(sortedExistingMandats, dateReference);
+				RegDate datePourFermerIntersectant = null;
+				if (RegDateHelper.isBefore(intersectant.getDateDebut(), intersection.getDateDebut(), NullDateBehavior.EARLIEST)) {
+					// si l'existant n'est pas fermé, on peut juste faire ça...
+					if (intersectant.getDateFin() == null) {
+						datePourFermerIntersectant = intersection.getDateDebut().getOneDayBefore();
+					}
+					else {
+						// sinon, il faut passer par une annulation / recréation
+						final T copie = intersectant.duplicate();
+						copie.setDateFin(intersection.getDateDebut().getOneDayBefore());
+						aAjouter.add(copie);
+					}
+				}
+				if (RegDateHelper.isAfter(intersectant.getDateFin(), intersection.getDateFin(), NullDateBehavior.LATEST)) {
+					final T copie = intersectant.duplicate();
+					copie.setDateDebut(intersection.getDateFin().getOneDayAfter());
+					aAjouter.add(copie);
+				}
+				if (datePourFermerIntersectant == null) {
+					intersectant.setAnnule(true);
+				}
+				else {
+					intersectant.setDateFin(datePourFermerIntersectant);
+				}
+			}
+			return aAjouter;
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
+	private void makeRoomInMandats(Contribuable mandant, DateRange mandat, MandatKey key) {
+		// on regarde dans les mandats de même type (= dont la MandatKey est la même)
+		final Set<RapportEntreTiers> rets = mandant.getRapportsSujet();
+		final List<RapportEntreTiers> mandatsConnusMemeType = new ArrayList<>(rets.size());
+		for (RapportEntreTiers ret : rets) {
+			if (ret instanceof Mandat && !ret.isAnnule()) {
+				final Mandat candidate = (Mandat) ret;
+				final MandatKey retKey = new MandatKey(candidate);
+				if (key.equals(retKey)) {
+					mandatsConnusMemeType.add(candidate);
+				}
+			}
+		}
+		Collections.sort(mandatsConnusMemeType, new DateRangeComparator<>());
+
+		// maintenant, on fait de la place
+		final List<RapportEntreTiers> aAjouter = computeNewEntitieForRoomMaking(mandat, mandatsConnusMemeType);
+		if (!aAjouter.isEmpty()) {
+			// ajout des nouveautés
+			for (RapportEntreTiers ret : aAjouter) {
+				final RapportEntreTiers saved = hibernateTemplate.merge(ret);
+				mandant.getRapportsSujet().add(saved);
+
+				final Tiers mandataire = tiersDAO.get(saved.getObjetId());
+				mandataire.getRapportsObjet().add(saved);
+			}
+		}
+	}
+
+	private static void makeRoomInAdressesMandataires(Contribuable mandant, DateRange mandat, MandatKey key) {
+		// on regarde les adresses mandataires de même type
+		final Set<AdresseMandataire> toutes = mandant.getAdressesMandataires();
+		final List<AdresseMandataire> connuesMemeType = new ArrayList<>(toutes.size());
+		for (AdresseMandataire am : toutes) {
+			if (!am.isAnnule()) {
+				final MandatKey candidateKey = new MandatKey(am);
+				if (key.equals(candidateKey)) {
+					connuesMemeType.add(am);
+				}
+			}
+		}
+		Collections.sort(connuesMemeType, new DateRangeComparator<>());
+
+		// maintenant, on fait de la place
+		final List<AdresseMandataire> aAjouter = computeNewEntitieForRoomMaking(mandat, connuesMemeType);
+		if (!aAjouter.isEmpty()) {
+			// ajout des nouveautés
+			for (AdresseMandataire am : aAjouter) {
+				mandant.addAdresseMandataire(am);
+			}
+		}
+	}
+
+	@Override
+	public void addMandat(Contribuable mandant, Mandat mandat) {
+		if (mandat.getId() != null) {
+			throw new IllegalArgumentException("Mandat déjà persisté interdit ici...");
+		}
+		if (mandat.getSujetId() != null && !Objects.equals(mandat.getSujetId(), mandant.getNumero())) {
+			throw new IllegalArgumentException("Mandat assigné au mandant " + mandat.getSujetId() + " alors qu'il est demandé pour le mandant " + mandant.getNumero());
+		}
+
+		final MandatKey key = new MandatKey(mandat);
+		makeRoomInMandats(mandant, mandat, key);
+		makeRoomInAdressesMandataires(mandant, mandat, key);
+
+		final Tiers mandataire = tiersDAO.get(mandat.getObjetId());
+		addRapport(mandat, mandant, mandataire);
+	}
+
+	@Override
+	public void addMandat(Contribuable mandant, AdresseMandataire mandat) {
+		if (mandat.getId() != null) {
+			throw new IllegalArgumentException("Adresse mandataire déjà persistée interdite ici...");
+		}
+		if (mandat.getMandant() != null && mandat.getMandant() != mandant) {
+			throw new IllegalArgumentException("Adresse mandantaire assignée au mandant " + mandat.getMandant().getNumero() + " alors qu'elle est demandée pour le mandant " + mandant.getNumero());
+		}
+
+		final MandatKey key = new MandatKey(mandat);
+		makeRoomInMandats(mandant, mandat, key);
+		makeRoomInAdressesMandataires(mandant, mandat, key);
+		mandant.addAdresseMandataire(mandat);
 	}
 
 	@Override

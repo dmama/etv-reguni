@@ -57,6 +57,14 @@ public class Autorisations {
 	private final boolean mouvements;
 	private final boolean situationsFamille;
 
+	/**
+	 * Si <b>vrai</b>, l'édition des mandats est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des mandats est interdite.
+	 */
+	private final boolean mandats;
+	private final boolean mandatsGeneraux;
+	private final boolean mandatsSpeciaux;
+	private final boolean mandatsTiers;
+
 	private final boolean remarques;
 
 	public Autorisations() {
@@ -96,6 +104,11 @@ public class Autorisations {
 		this.debiteurs = false;
 		this.mouvements = false;
 		this.situationsFamille = false;
+
+		this.mandats = false;
+		this.mandatsGeneraux = false;
+		this.mandatsSpeciaux = false;
+		this.mandatsTiers = false;
 
 		this.remarques = false;
 	}
@@ -138,6 +151,11 @@ public class Autorisations {
 		this.mouvements = isAllowed(map, AutorisationManagerImpl.MODIF_MOUVEMENT);
 		this.situationsFamille = isAllowed(map, AutorisationManagerImpl.FISCAL_SIT_FAMILLLE);
 
+		this.mandats = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS);
+		this.mandatsGeneraux = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS_GENERAUX);
+		this.mandatsSpeciaux = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS_SPECIAUX);
+		this.mandatsTiers = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS_TIERS);
+
 		this.remarques = isAllowed(map, AutorisationManagerImpl.MODIF_REMARQUES);
 	}
 
@@ -154,6 +172,7 @@ public class Autorisations {
 				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
+				|| (mandats && (mandatsGeneraux || mandatsSpeciaux || mandatsTiers))
 				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
 				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || remarques;
 	}
@@ -280,6 +299,22 @@ public class Autorisations {
 
 	public boolean isFlagsPM() {
 		return flagsPM;
+	}
+
+	public boolean isMandats() {
+		return mandats;
+	}
+
+	public boolean isMandatsGeneraux() {
+		return mandatsGeneraux && mandats;
+	}
+
+	public boolean isMandatsSpeciaux() {
+		return mandatsSpeciaux && mandats;
+	}
+
+	public boolean isMandatsTiers() {
+		return mandatsTiers && mandats;
 	}
 
 	public boolean isRemarques() {

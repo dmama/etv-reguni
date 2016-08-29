@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +36,6 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.adresse.AdresseMandataireAdapter;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -71,8 +71,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
-import ch.vd.uniregctb.mandataire.AdresseMandataireView;
-import ch.vd.uniregctb.mandataire.LienMandataireView;
+import ch.vd.uniregctb.mandataire.MandataireCourrierView;
+import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
 import ch.vd.uniregctb.mandataire.MandataireViewHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
@@ -142,6 +142,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -684,49 +685,41 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setAutresDocumentsFiscauxNonSuivis(sansSuiviViews);
 		}
 
+		//
+		// mandataires
+		//
+		final List<MandataireCourrierView> mandatairesCourrier = new LinkedList<>();
+		final List<MandatairePerceptionView> mandatairesPerception = new LinkedList<>();
+
 		// les liens vers les mandataires
 		final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
 		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
-			final List<LienMandataireView> liens = new ArrayList<>(rapportsSujet.size());
 			for (RapportEntreTiers ret : rapportsSujet) {
 				if (ret instanceof Mandat) {
-					liens.add(new LienMandataireView((Mandat) ret, tiersService, adresseService, serviceInfrastructureService));
-				}
-			}
-			if (!liens.isEmpty()) {
-				Collections.sort(liens, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<LienMandataireView>() {
-					@Override
-					public int compare(LienMandataireView o1, LienMandataireView o2) {
-						int comparison = -NullDateBehavior.LATEST.compare(o1.getRegDateFin(), o2.getRegDateFin());
-						if (comparison == 0) {
-							comparison = -NullDateBehavior.EARLIEST.compare(o1.getRegDateDebut(), o2.getRegDateDebut());
-						}
-						return comparison;
+					final Mandat mandat = (Mandat) ret;
+					if (mandat.getTypeMandat() == TypeMandat.TIERS) {
+						mandatairesPerception.add(new MandatairePerceptionView(mandat, tiersService));
 					}
-				}));
-				tiersView.setLiensMandataires(liens);
+					else {
+						mandatairesCourrier.add(new MandataireCourrierView(mandat, tiersService, serviceInfrastructureService));
+					}
+				}
 			}
 		}
 
 		// les adresses mandataires
 		final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
 		if (adressesMandataires != null && !adressesMandataires.isEmpty()) {
-			final List<AdresseMandataireView> views = new ArrayList<>(adressesMandataires.size());
 			for (AdresseMandataire adresse : adressesMandataires) {
-				views.add(createAdresseMandataireView(adresse));
+				mandatairesCourrier.add(new MandataireCourrierView(adresse, serviceInfrastructureService));
 			}
-			Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<AdresseMandataireView>() {
-				@Override
-				public int compare(AdresseMandataireView o1, AdresseMandataireView o2) {
-					int comparison = -NullDateBehavior.LATEST.compare(o1.getDateFin(), o2.getDateFin());
-					if (comparison == 0) {
-						comparison = -NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-					return comparison;
-				}
-			}));
-			tiersView.setAdressesMandataires(views);
 		}
+
+		// tri et transfert dans la vue globale
+		Collections.sort(mandatairesCourrier, MandataireViewHelper.COURRIER_COMPARATOR);
+		Collections.sort(mandatairesPerception, MandataireViewHelper.BASIC_COMPARATOR);
+		tiersView.setMandatairesCourrier(mandatairesCourrier);
+		tiersView.setMandatairesPerception(mandatairesPerception);
 
 		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 	}
@@ -1260,22 +1253,6 @@ public class TiersManager implements MessageSourceAware {
 		final AdresseView adresseView = new AdresseView();
 		fillAdresseView(adresseView, adresse, type);
 		return adresseView;
-	}
-
-	/**
-	 * Crée une adresse mandataire view à partir d'une adresse mandataire
-	 * @param adresse
-	 * @return
-	 */
-	public AdresseMandataireView createAdresseMandataireView(AdresseMandataire adresse) {
-		final AdresseMandataireView view = new AdresseMandataireView();
-		final AdresseMandataireAdapter adapter = new AdresseMandataireAdapter(adresse, serviceInfrastructureService);
-		fillAdresseView(view, adapter, TypeAdresseTiers.COURRIER);
-		view.setNomDestinataire(adresse.getNomDestinataire());
-		view.setTypeMandat(adresse.getTypeMandat());
-		view.setWithCopy(adresse.isWithCopy());
-		view.setLibelleGenreImpot(MandataireViewHelper.extractLibelleGenreImpot(adresse.getCodeGenreImpot(), serviceInfrastructureService));
-		return view;
 	}
 
 	private boolean estDansLeCanton(AdresseGenerique adresse) {

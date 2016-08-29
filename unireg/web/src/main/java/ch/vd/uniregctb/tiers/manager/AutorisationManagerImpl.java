@@ -75,6 +75,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String DOSSIER_NO_TRAVAIL = "DOS_NO_TRA";
 	static final String FISCAL_DECISION_ACI = "DEC_ACI";
 	static final String MODIF_CTB_AVEC_DECISION_ACI = "CTB_DCI_ACI";
+	static final String MODIF_MANDATS = "MANDATS";
+	static final String MODIF_MANDATS_SPECIAUX = "MANDATS_SPECIAUX";
+	static final String MODIF_MANDATS_GENERAUX = "MANDATS_GENERAUX";
+	static final String MODIF_MANDATS_TIERS = "MANDATS_TIERS";
 	static final String MODIF_REMARQUES = "REMARQUES";
 	
 	private TiersService tiersService;
@@ -403,6 +407,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_FLAGS_PM, Boolean.FALSE);
 			map.put(MODIF_REMARQUES, Boolean.FALSE);
+			map.put(MODIF_MANDATS, Boolean.FALSE);
 			return map;
 		}
 
@@ -600,6 +605,19 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.QSNC_EMISSION, Role.QSNC_DUPLICATA, Role.QSNC_QUITTANCEMENT, Role.QSNC_RAPPEL)) {
 				map.put(MODIF_QSNC, Boolean.TRUE);
+			}
+
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_GENERAL)) {
+				map.put(MODIF_MANDATS_GENERAUX, Boolean.TRUE);
+				map.put(MODIF_MANDATS, Boolean.TRUE);
+			}
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_SPECIAL)) {
+				map.put(MODIF_MANDATS_SPECIAUX, Boolean.TRUE);
+				map.put(MODIF_MANDATS, Boolean.TRUE);
+			}
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_TIERS)) {
+				map.put(MODIF_MANDATS_TIERS, Boolean.TRUE);
+				map.put(MODIF_MANDATS, Boolean.TRUE);
 			}
 
 			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {

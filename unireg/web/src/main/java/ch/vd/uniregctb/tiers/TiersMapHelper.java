@@ -55,6 +55,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -113,6 +114,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<AllegementFiscalCantonCommune.Type, String> mapTypesICCAllegement;
 	private Map<TypeFlagEntreprise, String> mapTypesFlagEntreprise;
 	private Map<ParametrePeriodeFiscalePM.ReferencePourDelai, String> mapReferencesPourDelai;
+	private Map<TypeMandat, String> mapTypesMandat;
 
 	private ServiceInfrastructureService infraService;
 
@@ -815,5 +817,15 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapReferencesPourDelai = initMapEnum(ApplicationConfig.masterKeyReferencePourDelai, ParametrePeriodeFiscalePM.ReferencePourDelai.class);
 		}
 		return mapReferencesPourDelai;
+	}
+
+	/**
+	 * @return la map des types disponibles pour les mandats
+	 */
+	public Map<TypeMandat, String> getTypesMandat() {
+		if (mapTypesMandat == null) {
+			mapTypesMandat = initMapEnum(ApplicationConfig.masterKeyTypeMandat, TypeMandat.class);
+		}
+		return mapTypesMandat;
 	}
 }

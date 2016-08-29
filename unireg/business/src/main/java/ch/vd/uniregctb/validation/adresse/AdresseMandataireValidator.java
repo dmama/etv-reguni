@@ -31,4 +31,14 @@ public abstract class AdresseMandataireValidator<T extends AdresseMandataire> ex
 	protected String getEntityCategoryName() {
 		return "L'adresse mandataire";
 	}
+
+	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isDateFinFutureAllowed() {
+		return true;
+	}
 }

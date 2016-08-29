@@ -13,7 +13,7 @@
 	</c:choose>
 </c:set>
 <c:choose>
-	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation' || typeRecherche == 'acces'}">
+	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation' || typeRecherche == 'acces' || typeRecherche == 'mandataire'}">
 		<c:set var="typeContribuableRecherche" value="ppoupm"/>       <%-- pm ou pp --%>
 	</c:when>
 	<c:when test="${typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise' || typeRecherche == 'transfertPatrimoine' || typeRecherche == 'reinscriptionRC'}">
@@ -31,13 +31,15 @@
 			<form:input  path="numeroFormatte" id="numeroFormatte" cssClass="number"/>
 			<form:errors path="numeroFormatte" cssClass="error"/>
 		</td>
-		<c:if test="${typeRecherche == 'principale' }">
-			<td width="12px"></td>
-			<td style="vertical-align:middle; text-align:right;" width="2%"><a href="#" onclick="return Search.toogleMode();" style="font-size:11px">recherche simple</a></td>
-		</c:if>
-		<c:if test="${typeRecherche != 'principale' }">
-			<td colspan="2">&nbsp;</td>
-		</c:if>
+		<c:choose>
+			<c:when test="${typeRecherche == 'principale'}">
+				<td width="12px"></td>
+				<td style="vertical-align:middle; text-align:right;" width="2%"><a href="#" onclick="return Search.toogleMode();" style="font-size:11px">recherche simple</a></td>
+			</c:when>
+			<c:otherwise>
+				<td colspan="2">&nbsp;</td>
+			</c:otherwise>
+		</c:choose>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td>

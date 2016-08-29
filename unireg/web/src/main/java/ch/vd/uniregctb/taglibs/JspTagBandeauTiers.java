@@ -126,9 +126,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private boolean showLinks = true;
 	private boolean showAvatar = true;
 	private boolean showComplements = false;
-	private String forceAvatar;
+	private TypeAvatar forceAvatar;
 	private int rowcount;
 	private String urlRetour;
+	private TypeAdresseFiscale typeAdresse = TypeAdresseFiscale.COURRIER;
 
 	@Override
 	public int doStartTag() throws JspTagException {
@@ -187,8 +188,14 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		this.urlRetour = urlRetour;
 	}
 
-	public void setForceAvatar(String forceAvatar) {
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setForceAvatar(TypeAvatar forceAvatar) {
 		this.forceAvatar = forceAvatar;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTypeAdresse(TypeAdresseFiscale typeAdresse) {
+		this.typeAdresse = typeAdresse;
 	}
 
 	@Override
@@ -421,7 +428,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		// Adresse envoi
 		try {
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
+			final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, typeAdresse, false);
 
 			// 1ère ligne
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
@@ -433,11 +440,20 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			s.append("</tr>\n");
 
 			// lignes 2 à 6
+			boolean typeAdresseEcrit = false;
 			for (int i = 2; i <= 6; ++i) {
 				final String ligne = adresse.getLigne(i);
 				if (StringUtils.isNotBlank(ligne)) {
 					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-					s.append("\t<td width=\"15%\">&nbsp;</td>\n");
+					s.append("\t<td width=\"15%\">");
+					if (typeAdresse != TypeAdresseFiscale.COURRIER && !typeAdresseEcrit) {
+						s.append("(").append(message("option.usage." + typeAdresse.name())).append(")");
+						typeAdresseEcrit = true;
+					}
+					else {
+						s.append("&nbsp;");
+					}
+					s.append("</td>\n");
 					s.append("\t<td width=\"85%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne)).append("</td>\n");
 					s.append("</tr>\n");
 				}
@@ -627,7 +643,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	}
 
 	private String buildImageTiers(Tiers tiers) {
-		final String image = buildImageUrl(forceAvatar == null ? avatarService.getTypeAvatar(tiers) : TypeAvatar.valueOf(forceAvatar), false);
+		final String image = buildImageUrl(forceAvatar == null ? avatarService.getTypeAvatar(tiers) : forceAvatar, false);
 		final StringBuilder s = new StringBuilder();
 		s.append("<img class=\"iepngfix\" src=\"").append(url(image)).append("\">\n");
 		return s.toString();

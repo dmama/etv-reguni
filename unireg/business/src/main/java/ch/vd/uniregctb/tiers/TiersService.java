@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -2070,6 +2071,20 @@ public interface TiersService {
      * @param flag le flag à annuler
      */
     void annuleFlagEntreprise(FlagEntreprise flag);
+
+	/**
+	 * Ajoute un mandat en base avec modification des autres mandats (et adresses mandataires, le cas échéant) similaires du mandant
+	 * @param mandant le mandant
+	 * @param mandat le nouveau mandat
+	 */
+	void addMandat(Contribuable mandant, Mandat mandat);
+
+	/**
+	 * Ajoute un mandat sous la forme d'une adresse de mandataire, en modifiant si nécessaire les mandats et autres adresses de mandataires similaires existants sur le mandant
+	 * @param mandant le mandant
+	 * @param mandat la nouvelle adresse mandataire
+	 */
+	void addMandat(Contribuable mandant, AdresseMandataire mandat);
 
     /**
      * L'historiques des données civiles fourni par RCEnt (en gros, rien avant leur reprise, quelque part en 2015...) ne nous permet pas de donner

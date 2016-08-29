@@ -12,7 +12,7 @@ public interface ControllerUtils {
 	String PARAMETER_MODIFIER = "__MODIFIER__";
 
 	/**
-	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
+	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture sur le <b>dossier</b> du tiers spécifié.
 	 * <p/>
 	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode {@link ch.vd.uniregctb.security.SecurityHelper#isGranted(ch.vd.uniregctb.security.Role)}
 	 * sont nécessaires en complément.

@@ -47,6 +47,10 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 	private TexteCasePostale texteCasePostale;
 	private Integer numeroCasePostale;
 
+	private String nomPersonneContact;
+	private String prenomPersonneContact;
+	private String noTelephoneContact;
+
 	public AdresseMandataire() {
 	}
 
@@ -61,6 +65,9 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.numeroMaison = src.numeroMaison;
 		this.texteCasePostale = src.texteCasePostale;
 		this.numeroCasePostale = src.numeroCasePostale;
+		this.nomPersonneContact = src.nomPersonneContact;
+		this.prenomPersonneContact = src.prenomPersonneContact;
+		this.noTelephoneContact = src.noTelephoneContact;
 	}
 
 	@Transient
@@ -171,6 +178,33 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 
 	public void setNumeroCasePostale(Integer numeroCasePostale) {
 		this.numeroCasePostale = numeroCasePostale;
+	}
+
+	@Column(name = "NOM_CONTACT", length = LengthConstants.MANDAT_NOM_CONTACT)
+	public String getNomPersonneContact() {
+		return nomPersonneContact;
+	}
+
+	public void setNomPersonneContact(String nomPersonneContact) {
+		this.nomPersonneContact = nomPersonneContact;
+	}
+
+	@Column(name = "PRENOM_CONTACT", length = LengthConstants.MANDAT_NOM_CONTACT)
+	public String getPrenomPersonneContact() {
+		return prenomPersonneContact;
+	}
+
+	public void setPrenomPersonneContact(String prenomPersonneContact) {
+		this.prenomPersonneContact = prenomPersonneContact;
+	}
+
+	@Column(name = "TEL_CONTACT", length = LengthConstants.TIERS_NUMTEL)
+	public String getNoTelephoneContact() {
+		return noTelephoneContact;
+	}
+
+	public void setNoTelephoneContact(String noTelephoneContact) {
+		this.noTelephoneContact = noTelephoneContact;
 	}
 
 	@Transient

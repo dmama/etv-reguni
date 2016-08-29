@@ -141,6 +141,13 @@
 		<property name="avatarService" ref="avatarService"/>
 	</bean>
 
+	<bean id="jspTagAdresseMandataire" class="ch.vd.uniregctb.taglibs.JspTagAdresseMandataire">
+		<property name="adresseService" ref="adresseService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
 	<bean id="jspTagInteroperabilite" class="ch.vd.uniregctb.taglibs.JspTagInteroperabilite"/>
 
 	<bean id="jspTagSetAutorisations" class="ch.vd.uniregctb.taglibs.JspTagSetAutorisations">

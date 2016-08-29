@@ -1473,6 +1473,31 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<description>détermine le type d'adresse affichée (par défaut COURRIER), voir le enum TypeAdresseFiscale.</description>
+			<name>typeAdresse</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<description>Affiche une adresse mandataire sur plusieurs lignes</description>
+		<name>adresseMandataire</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagAdresseMandataire</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>l'identifiant de l'adresse mandataire</description>
+			<name>idAdresse</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Le mode d'affichage : MULTILINE (par défaut) ou TABLE</description>
+			<name>displayMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 
 	<tag>

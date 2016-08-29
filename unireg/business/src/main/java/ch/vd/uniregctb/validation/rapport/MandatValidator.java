@@ -45,4 +45,14 @@ public class MandatValidator extends RapportEntreTiersValidator<Mandat> {
 	protected Class<Mandat> getValidatedClass() {
 		return Mandat.class;
 	}
+
+	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isDateFinFutureAllowed() {
+		return true;
+	}
 }

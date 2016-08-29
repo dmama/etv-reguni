@@ -2958,3 +2958,96 @@ var gestionJMS = {
 
 
 };
+
+
+//===================================================
+
+var Mandataires = {
+
+	showDetailsMandat: function(idMandat) {
+		$.getJSON(App.curl("/mandataire/adresse-de-mandat.do?idMandat=") + idMandat + "&" + new Date().getTime(), function(details) { Mandataires.showDetails(details); })
+			.error(Ajax.notifyErrorHandler("affichage des détails du mandat"));
+	},
+
+	showDetailsAdresse: function(idAdresse) {
+		$.getJSON(App.curl("/mandataire/adresse-mandataire.do?idAdresse=") + idAdresse + "&" + new Date().getTime(), function(details) { Mandataires.showDetails(details); })
+			.error(Ajax.notifyErrorHandler("affichage des détails du mandat"));
+
+	},
+
+	showAdresseRepresentation: function(idTiers) {
+		$.getJSON(App.curl("/mandataire/adresse-representation.do?idTiers=") + idTiers + "&" + new Date().getTime(), function(details) {
+			if (details) {
+				var info = '<fieldset class="information">';
+				info += '<table><tr class="odd"><td>';
+				var first = true;
+				for (var idx in details.adresse) {
+					var ligne = details.adresse[idx];
+					if (StringUtils.isNotBlank(ligne)) {
+						if (!first) {
+							info += '<br/>';
+						}
+						info += StringUtils.escapeHTML(ligne);
+						first = false;
+					}
+				}
+				info += '</td></tr></table></fieldset>\n';
+				Mandataires.openDialog('Adresse de représentation', info);
+			}
+			else {
+				alert("Pas d'adresse de représentation trouvée.");
+			}
+		})
+	},
+
+	showDetails: function(details) {
+		/** @namespace details.personneContact */
+		/** @namespace details.noTelContact */
+		/** @namespace details.adresse */
+		/** @namespace details.erreur */
+		if (details) {
+			var info = '<fieldset class="information">';
+			info += '<table><tr class="odd"><td width="40%">Personne de contact&nbsp;:</td><td>' + StringUtils.escapeHTML(details.personneContact) + '</td></tr>';
+			info += '<tr class="even"><td width="40%">Téléphone de contact&nbsp;:</td><td>' + StringUtils.escapeHTML(details.noTelContact) + '</td></tr>';
+			info += '<tr class="odd"><td width="40%">Adresse&nbsp;:</td><td>';
+			if (details.erreur != null) {
+				info += '<span class="erreur">' + StringUtils.escapeHTML(details.erreur) + '</span>';
+			}
+			else {
+				var first = true;
+				for (var idx in details.adresse) {
+					var ligne = details.adresse[idx];
+					if (StringUtils.isNotBlank(ligne)) {
+						if (!first) {
+							info += '<br/>';
+						}
+						info += StringUtils.escapeHTML(ligne);
+						first = false;
+					}
+				}
+			}
+			info += '</td></tr>';
+			info += '</table></fieldset>\n';
+
+			Mandataires.openDialog('Détails du mandat', info);
+		}
+		else {
+			alert("Le mandat n'existe pas.");
+		}
+	},
+
+	openDialog: function(titre, htmlContent) {
+		var dialog = Dialog.create_dialog_div('details-adresse-mandat-dialog');
+		dialog.html(htmlContent);
+		dialog.dialog({
+			              title: titre,
+			              width: 500,
+			              modal: true,
+			              buttons: {
+				              Ok: function() {
+					              dialog.dialog("close");
+				              }
+			              }
+		              });
+	}
+};

@@ -7,89 +7,117 @@
 
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
-	<legend><span><fmt:message key="label.mandataires.liens"/></span></legend>
+	<legend><span><fmt:message key="label.mandataires.courrier"/></span></legend>
 
-	<c:if test="${not empty command.liensMandataires}">
-		<display:table name="${command.liensMandataires}" id="lien" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="regDateDebut" style="width: 12ex;">
-				<unireg:regdate regdate="${lien.regDateDebut}"/>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="regDateFin" style="width: 12ex;">
-				<unireg:regdate regdate="${lien.regDateFin}"/>
-			</display:column>
-			<display:column sortable="true" titleKey="label.type" style="width: 20ex;">
-				<fmt:message key="option.mandat.type.${lien.typeMandat}"/>
-			</display:column>
-			<display:column titleKey="label.genre.impot" style="width: 25ex;">
-				<c:out value="${lien.libelleGenreImpot}"/>
-			</display:column>
-			<display:column titleKey="label.avec.copie.courriers" style="text-align: center; width: 10%;">
-				<c:if test="${lien.withCopy != null}">
-					<input type="checkbox" disabled="disabled" <c:if test="${lien.withCopy}">checked="checked"</c:if>/>
+	<c:if test="${autorisations.mandatsGeneraux || autorisations.mandatsSpeciaux}">
+		<table border="0">
+			<tr><td>
+				<c:if test="${empty param['message'] && empty param['retour']}">
+					<unireg:raccourciModifier link="../mandataire/courrier/edit-list.do?ctbId=${command.tiers.numero}" display="label.bouton.modifier"/>
 				</c:if>
-			</display:column>
-			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="numero">
-				<unireg:numCTB numero="${lien.numero}" link="true"/>
-			</display:column>
-			<display:column titleKey="label.nom.raison">
-				<unireg:multiline lines="${lien.nomCourrier}"/>
-			</display:column>
-			<display:column sortable="true" titleKey="label.complement.numeroIBAN" style="width: 30ex;">
-				<c:out value="${lien.iban}"/>
-			</display:column>
-			<display:column class="action" style="width: 3ex;">
-				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${lien.id}"/>
-			</display:column>
-		</display:table>
+			</td></tr>
+		</table>
 	</c:if>
 
+	<c:if test="${not empty command.mandatairesCourrier}">
+		<input class="noprint" name="courrier_histo"  id="isCourrierHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('courrier','isCourrierHisto', 'histo-only');"/>
+		<label class="noprint" for="isCourrierHisto"><fmt:message key="label.historique" /></label>
+
+		<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+			<display:column titleKey="label.type" style="width: 20ex;">
+				<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
+			</display:column>
+			<display:column titleKey="label.date.debut" style="width: 12ex;">
+				<unireg:regdate regdate="${courrier.dateDebut}"/>
+			</display:column>
+			<display:column titleKey="label.date.fin" style="width: 12ex;">
+				<unireg:regdate regdate="${courrier.dateFin}"/>
+			</display:column>
+			<display:column titleKey="label.numero.tiers.mandataire" style="width: 15ex;">
+				<unireg:numCTB numero="${courrier.idMandataire}" link="true"/>
+			</display:column>
+			<display:column titleKey="label.nom.raison">
+				<c:out value="${courrier.nomRaisonSociale}"/>
+				<c:choose>
+					<c:when test="${courrier.idMandataire != null}">
+						<unireg:raccourciDetail onClick="Mandataires.showDetailsMandat(${courrier.id});" tooltip="Détails"/>
+					</c:when>
+					<c:otherwise>
+						<unireg:raccourciDetail onClick="Mandataires.showDetailsAdresse(${courrier.id});" tooltip="Détails"/>
+					</c:otherwise>
+				</c:choose>
+			</display:column>
+			<display:column titleKey="label.avec.copie.courriers" style="text-align: center; width: 10%;">
+				<c:if test="${courrier.withCopy != null}">
+					<input type="checkbox" disabled="disabled" <c:if test="${courrier.withCopy}">checked="checked"</c:if>/>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.genre.impot" style="width: 25ex;">
+				<c:out value="${courrier.libelleGenreImpot}"/>
+			</display:column>
+			<display:column class="action" style="width: 3ex;">
+				<c:choose>
+					<c:when test="${courrier.idMandataire != null}">
+						<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${courrier.id}"/>
+					</c:when>
+					<c:otherwise>
+						<unireg:consulterLog entityNature="AdresseMandataire" entityId="${courrier.id}"/>
+					</c:otherwise>
+				</c:choose>
+			</display:column>
+		</display:table>
+
+		<script type="application/javascript">
+			$(function() {
+				Histo.toggleRowsIsHistoFromClass('courrier', 'isCourrierHisto', 'histo-only');
+			});
+		</script>
+	</c:if>
 </fieldset>
 
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
-	<legend><span><fmt:message key="label.mandataires.adresses"/></span></legend>
+	<legend><span><fmt:message key="label.mandataires.perception"/></span></legend>
 
-	<c:if test="${not empty command.adressesMandataires}">
-		<display:table name="${command.adressesMandataires}" id="adresseMandataire" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 12ex;">
-				<unireg:regdate regdate="${adresseMandataire.dateDebut}"/>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin" style="width: 12ex;">
-				<unireg:regdate regdate="${adresseMandataire.dateFin}"/>
-			</display:column>
-			<display:column sortable="true" titleKey="label.type" style="width: 20ex;">
-				<fmt:message key="option.mandat.type.${adresseMandataire.typeMandat}"/>
-			</display:column>
-			<display:column titleKey="label.genre.impot" style="width: 25ex;">
-				<c:out value="${adresseMandataire.libelleGenreImpot}"/>
-			</display:column>
-			<display:column titleKey="label.avec.copie.courriers" style="text-align: center; width: 10%;">
-				<input type="checkbox" disabled="disabled" <c:if test="${adresseMandataire.withCopy}">checked="checked"</c:if>/>
-			</display:column>
-			<display:column sortable="true" titleKey="label.nom.raison">
-				${adresseMandataire.nomDestinataire}
-			</display:column>
-			<display:column sortable="true" titleKey="label.adresse.complement">
-				<c:out value="${adresseMandataire.complements}"/>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.rueCasePostale">
-				<c:out value="${adresseMandataire.rue}"/>
-				<c:if test="${not empty adresseMandataire.formattedCasePostale}">
-					<br/><c:out value="${adresseMandataire.formattedCasePostale}"/>
+	<c:if test="${autorisations.mandatsTiers}">
+		<table border="0">
+			<tr><td>
+				<c:if test="${empty param['message'] && empty param['retour']}">
+					<unireg:raccourciModifier link="../mandataire/perception/edit-list.do?ctbId=${command.tiers.numero}" display="label.bouton.modifier"/>
 				</c:if>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.localite" >
-				<c:out value="${adresseMandataire.localite}"/>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.pays" >
-				<c:if test="${adresseMandataire.paysOFS != null }">
-					<unireg:pays ofs="${adresseMandataire.paysOFS}" displayProperty="nomCourt" date="${adresseMandataire.dateDebut}"/>
-				</c:if>
-			</display:column>
-			<display:column class="action" style="width: 3ex;">
-				<unireg:consulterLog entityNature="AdresseMandataire" entityId="${adresseMandataire.id}"/>
-			</display:column>
-		</display:table>
+			</td></tr>
+		</table>
 	</c:if>
 
+	<c:if test="${not empty command.mandatairesPerception}">
+		<input class="noprint" name="perception_histo"  id="isPerceptionHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('mandatperc','isPerceptionHisto', 'histo-only');"/>
+		<label class="noprint" for="isPerceptionHisto"><fmt:message key="label.historique" /></label>
+
+		<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+			<display:column titleKey="label.date.debut" style="width: 12ex;">
+				<unireg:regdate regdate="${mandatperc.dateDebut}"/>
+			</display:column>
+			<display:column titleKey="label.date.fin" style="width: 12ex;">
+				<unireg:regdate regdate="${mandatperc.dateFin}"/>
+			</display:column>
+			<display:column titleKey="label.numero.tiers.mandataire" style="width: 15ex;">
+				<unireg:numCTB numero="${mandatperc.idMandataire}" link="true"/>
+			</display:column>
+			<display:column titleKey="label.nom.raison">
+				<c:out value="${mandatperc.nomRaisonSociale}"/>
+			</display:column>
+			<display:column sortable="true" titleKey="label.complement.numeroIBAN" style="width: 35ex;">
+				<c:out value="${mandatperc.iban}"/>
+			</display:column>
+			<display:column class="action" style="width: 3ex;">
+				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${mandatperc.id}"/>
+			</display:column>
+		</display:table>
+
+		<script type="application/javascript">
+			$(function() {
+				Histo.toggleRowsIsHistoFromClass('mandatperc', 'isPerceptionHisto', 'histo-only');
+			});
+		</script>
+	</c:if>
 </fieldset>
