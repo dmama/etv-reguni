@@ -502,6 +502,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					final String patternTaoBA = getUrl("TAOBA", "dossier");
 					final String patternTaoIS = getUrl("TAOIS", "default");
 					final String patternTaoISDebiteur = getUrl("TAOIS", "debiteur");
+					final String patternTaoPM = getUrl("TAOPM", "synthese");
 					final String patternSipf = getUrl("SIPF", "explorer");
 					final String patternDPerm = getUrl("REPELEC", "contribuable");
 
@@ -510,6 +511,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					map.put(ApplicationFiscale.TAO_BA, patternTaoBA);
 					map.put(ApplicationFiscale.TAO_IS, patternTaoIS);
 					map.put(ApplicationFiscale.TAO_IS_DEBITEUR, patternTaoISDebiteur);
+					map.put(ApplicationFiscale.TAO_PM, patternTaoPM);
 					map.put(ApplicationFiscale.SIPF, patternSipf); // [UNIREG-2409]
 					map.put(ApplicationFiscale.DPERM, patternDPerm);
 					LOGGER.info("URLs externes (FiDoR) :\n" +
@@ -517,6 +519,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 							" * TAOBA = " + patternTaoBA + '\n' +
 							" * TAOIS = " + patternTaoIS + '\n' +
 							" * TAOIS = " + patternTaoISDebiteur + '\n' +
+							" * TAOPM = " + patternTaoPM + '\n' +
 							" * SIPF = " + patternSipf + '\n' +
 							" * DPERM = " + patternDPerm);
 

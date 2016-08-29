@@ -2912,6 +2912,9 @@ var Search = {
 							var urlTaoIs = e.tiersType==='debiteurprestationimposable' ? '/redirect/TAO_IS_DEBITEUR.do?id=':'/redirect/TAO_IS.do?id=';
 							table += '<option value="' + App.curl(urlTaoIs + e.numero) + '">TAO-IS</option>';
 						}
+						if (e.tiersType === 'entreprise') {
+							table += '<option value="' + App.curl('/redirect/TAOPM.do?id=' + e.numero) + '">TAO-PM</option>';
+						}
 						table += '<option value="' + App.curl('/redirect/SIPF.do?id=' + e.numero) + '">SIPF</option>';
 						if (isPP) {
 							table += '<option value="' + App.curl('/redirect/DPERM.do?id=' + e.numero) + '">DPERM</option>';

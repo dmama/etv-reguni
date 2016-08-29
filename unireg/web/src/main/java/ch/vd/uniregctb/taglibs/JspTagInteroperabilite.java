@@ -132,6 +132,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		final boolean showTAOPP = !debiteurInactif || isPP;
 		final boolean showTAOBA = !isEntreprise && (!debiteurInactif || isPP);
 		final boolean showTAOIS = !isEntreprise && (!debiteurInactif || isPP);
+		final boolean showTAOPM = isEntreprise;
 		final boolean showSIPF = true;
 		final boolean showDPERM = isPP;
 
@@ -151,8 +152,11 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 			apps.add(ApplicationFiscale.TAO_BA);
 		}
 		if (showTAOIS) {
-			ApplicationFiscale lienTAOIS = natureTiers == NatureTiers.DebiteurPrestationImposable? ApplicationFiscale.TAO_IS_DEBITEUR:ApplicationFiscale.TAO_IS;
+			final ApplicationFiscale lienTAOIS = natureTiers == NatureTiers.DebiteurPrestationImposable? ApplicationFiscale.TAO_IS_DEBITEUR : ApplicationFiscale.TAO_IS;
 			apps.add(lienTAOIS);
+		}
+		if (showTAOPM) {
+			apps.add(ApplicationFiscale.TAO_PM);
 		}
 		if (showSIPF) {
 			apps.add(ApplicationFiscale.SIPF);
