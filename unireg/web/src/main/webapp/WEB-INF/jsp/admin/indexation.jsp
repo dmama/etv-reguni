@@ -41,7 +41,8 @@
 					<td>
 						<form:input path="indNo" size ="15" cssErrorClass="input-with-errors"/>
 						<form:errors path="indNo" cssClass="error"/>
-						<form:checkbox path="logIndividu" />
+						<form:checkbox path="logIndividu" id="logIndividuCheckBox"/>
+						<label for="logIndividuCheckBox">Avec log de rechargement</label>
 					</td>
 					<td>
 						<input type="button" value="Recharger" onclick="submitIndex('reloadIndividu');"/>
@@ -78,7 +79,7 @@
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
 					<td colspan ="2">
-						<input type="button" value="<fmt:message key="label.bouton.retour"/>" onclick="document.location='index.do';"/>
+						<input type="button" value="<fmt:message key="label.bouton.retour"/>" onclick="document.location='../index.do';"/>
 						<input type="button" value="<fmt:message key="label.bouton.rechercher"/>" onclick="submitIndex('search');"/>
 					</td>
 				</tr>
