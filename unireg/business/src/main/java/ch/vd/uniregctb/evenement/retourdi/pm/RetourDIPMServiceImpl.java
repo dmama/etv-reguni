@@ -692,10 +692,11 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	private void traiterInformationsBancaires(Entreprise entreprise, int pf, int noSequence, @Nullable String iban, @Nullable String titulaireCompte) {
 
 		// d'abord, on traite l'IBAN
-		final boolean ibanModifie = iban != null
-				&& StringUtils.isNotBlank(iban)
-				&& !"CH".equalsIgnoreCase(iban)
-				&& traiterCompteBancaire(entreprise, pf, noSequence, iban);
+		final String ibanNormalise = IbanHelper.normalize(iban);
+		final boolean ibanModifie = ibanNormalise != null
+				&& StringUtils.isNotBlank(ibanNormalise)
+				&& !"CH".equalsIgnoreCase(ibanNormalise)
+				&& traiterCompteBancaire(entreprise, pf, noSequence, ibanNormalise);
 
 		// puis on traite le titulaire du compte
 		if (ibanModifie) {
@@ -714,12 +715,12 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * @param entreprise entreprise concernée
 	 * @param pf période fiscale de la déclaration
 	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
-	 * @param iban IBAN fourni
+	 * @param iban IBAN fourni (sous sa forme normalisée)
 	 * @return <code>true</code> si l'IBAN a été mis à jour, <code>false</code> dans le cas contraire
 	 */
 	private boolean traiterCompteBancaire(Entreprise entreprise, int pf, int noSequence, @NotNull String iban) {
 		final CoordonneesFinancieres coordonneesFinancieres = entreprise.getCoordonneesFinancieres();
-		final String ibanConnu = coordonneesFinancieres != null ? coordonneesFinancieres.getIban() : null;
+		final String ibanConnu = coordonneesFinancieres != null ? IbanHelper.normalize(coordonneesFinancieres.getIban()) : null;
 		if (ibanConnu == null || !ibanConnu.equalsIgnoreCase(iban)) {
 			final String newIbanValidationError = ibanValidator.getIbanValidationError(iban);
 			boolean accepterNouvelIban = false;
