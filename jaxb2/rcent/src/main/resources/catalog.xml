@@ -1,0 +1,13 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd" uri="eVD-0004-3-0.xsd" />
+
+	<!-- RCEnt v3 -->
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-2.xsd" uri="eVD-0022-3-2.xsd" />
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0023/3/eVD-0023-3-2.xsd" uri="eVD-0023-3-2.xsd" />
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0024/3/eVD-0024-3-2.xsd" uri="eVD-0024-3-2.xsd" />
+
+	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
+	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
+
+</catalog>

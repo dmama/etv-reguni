@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<bean id="evtCivilEchMasseEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evtCivilEchIndividuelEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="entrepriseEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementEditiqueEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementExterneEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementRetourDiEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementIAMEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementDeclarationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementEfactureEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evenementEfactureResponseEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+
+</beans>

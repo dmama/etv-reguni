@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="schedulerJob" class="ch.vd.uniregctb.scheduler.JobDefinition" abstract="true">
+		<property name="batchScheduler" ref="batchScheduler"/>
+		<property name="uniregModeHelper" ref="uniregModeHelper"/>
+	</bean>
+
+    <bean id="wsCacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.common.WebServiceCachesResetJob">
+        <constructor-arg value="1"/>
+        <constructor-arg value="Resetter les caches des web-services d'Unireg"/>
+        <property name="caches">
+			<list>
+				<ref bean="partyService3Cache"/>
+				<ref bean="partyService4Cache"/>
+				<ref bean="wsv5Cache"/>
+				<ref bean="wsv6Cache"/>
+				<ref bean="wsv7Cache"/>
+			</list>
+        </property>
+    </bean>
+
+</beans>

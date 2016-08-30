@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
+		<property name="username" value="${extprop.webservice.fidor.username}" />
+		<property name="password" value="${extprop.webservice.fidor.password}" />
+	</bean>
+
+	<bean id="fidorClientTracing" class="ch.vd.uniregctb.wsclient.fidor.FidorClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="fidorClientRaw"/>
+	</bean>
+
+	<alias name="fidorClientTracing" alias="fidorClient"/>
+
+</beans>
