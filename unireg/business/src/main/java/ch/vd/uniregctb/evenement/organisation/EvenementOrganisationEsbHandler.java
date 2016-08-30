@@ -29,6 +29,7 @@ import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfNoticeConverter;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -47,6 +48,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationEsbHandler.class);
 
 	private static final String DEFAULT_BUSINESS_USER = "JMSEvtOrganisation-SansVisa";
+	public static final TypeOfNoticeConverter TYPE_OF_NOTICE_CONVERTER = new TypeOfNoticeConverter();
 
 	private Schema schemaCache;
 	private JAXBContext jaxbContext;
@@ -290,7 +292,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 */
 	private boolean isIgnored(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
-			return ignoredEventTypes != null && ignoredEventTypes.contains(TypeEvenementOrganisation.valueOf(message.getNotice().getTypeOfNotice().name()));
+			return ignoredEventTypes != null && ignoredEventTypes.contains(TYPE_OF_NOTICE_CONVERTER.convert(message.getNotice().getTypeOfNotice()));
 		}
 		catch (RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);

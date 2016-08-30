@@ -16,6 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.connection.JmsTransactionManager;
 
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.TypeOfNotice;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -363,5 +364,39 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			Assert.assertEquals(0, evenementsIgnores.size());
 			Assert.assertEquals(0, evenementsExploses.size());
 		}
+	}
+
+	// SIFISC-20423 PROD: Exception à la récéption d'une annonce FOSC de type communication dans la poursuite (Problème de conversion de type)
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceptionEvenementCommunicationDansPoursuite() throws Exception {
+		final Long noEvenement = 5640006354L;
+		final RegDate dateEvenement = RegDate.get();
+		long noOrganisation = 657133465L;
+		final TypeOfNotice type = TypeOfNotice.FOSC_COMMUNICATION_DANS_LA_PROUSUITE;
+
+		Assert.assertEquals(0, evenementsTraites.size());
+		sender.sendEvent("toto", true, noEvenement, dateEvenement, type, noOrganisation);
+
+		// On attend le message
+		synchronized (evenementsVusPasser) {
+			while (evenementsVusPasser.size() == 0) {
+				evenementsVusPasser.wait();
+			}
+		}
+		Assert.assertEquals(1, evenementsVusPasser.size());
+		Assert.assertEquals(1, evenementsTraites.size());
+
+		final EvenementOrganisation recu = evenementsTraites.get(0);
+		Assert.assertNotNull(recu);
+		Assert.assertEquals((long) noEvenement, recu.getNoEvenement());
+		Assert.assertEquals(dateEvenement, recu.getDateEvenement());
+		Assert.assertNull(recu.getCommentaireTraitement());
+		Assert.assertNull(recu.getDateTraitement());
+		Assert.assertEquals(EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
+		Assert.assertEquals(noOrganisation, recu.getNoOrganisation());
+		Assert.assertEquals(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LA_POURSUITE, recu.getType());
+
+		Assert.assertEquals(0, evenementsIgnores.size());
+		Assert.assertEquals(0, evenementsExploses.size());
 	}
 }

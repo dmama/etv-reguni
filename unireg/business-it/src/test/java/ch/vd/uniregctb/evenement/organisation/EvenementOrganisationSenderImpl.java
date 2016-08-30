@@ -24,6 +24,7 @@ import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0022.v3.TypeOfNotice;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
@@ -69,9 +70,19 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
+
+
 	@Override
 	public void sendEvent(EvenementOrganisation evt, String businessUser, boolean validate) throws Exception {
+		final long noEvenement = evt.getNoEvenement();
+		final RegDate dateEvenement = evt.getDateEvenement();
+		final TypeEvenementOrganisation type = evt.getType();
+		final long noOrganisation = evt.getNoOrganisation();
 
+		sendEvent(businessUser, validate, noEvenement, dateEvenement, convertNoticeType(type), noOrganisation);
+	}
+
+	public void sendEvent(String businessUser, boolean validate, long noEvenement, RegDate dateEvenement, TypeOfNotice type, long noOrganisation) throws Exception {
 		final Marshaller marshaller = jaxbContext.createMarshaller();
 
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -80,16 +91,16 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 		final Document doc = db.newDocument();
 
 		final Notice notice = objectFactory.createNoticeType();
-		notice.setNoticeDate(evt.getDateEvenement());
-		notice.setNoticeId(BigInteger.valueOf(evt.getNoEvenement()));
-		notice.setTypeOfNotice(convertNoticeType(evt.getType()));
+		notice.setNoticeDate(dateEvenement);
+		notice.setNoticeId(BigInteger.valueOf(noEvenement));
+		notice.setTypeOfNotice(type);
 
 		final NamedOrganisationId identifier = new NamedOrganisationId();
 		identifier.setOrganisationIdCategory(OrganisationConstants.CLE_IDE);
 		identifier.setOrganisationId("65465465164");
 
 		final Identification ident = new Identification();
-		ident.setCantonalId(BigInteger.valueOf(evt.getNoOrganisation()));
+		ident.setCantonalId(BigInteger.valueOf(noOrganisation));
 		ident.getIdentifier().add(identifier);
 		ident.setName("ESB TEST SENDER FAKE NAME");
 
@@ -105,7 +116,7 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 		location.setLegalForm(LegalForm.N_0106_SOCIETE_ANONYME);
 
 		final Organisation organisation = new Organisation();
-		organisation.setCantonalId(BigInteger.valueOf(evt.getNoOrganisation()));
+		organisation.setCantonalId(BigInteger.valueOf(noOrganisation));
 		organisation.getIdentifier().add(identifier);
 		organisation.getOrganisationLocation().add(location);
 
@@ -123,7 +134,7 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 
 		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setServiceDestination(serviceDestination);
-		m.setBusinessId(String.valueOf(evt.getNoEvenement()));
+		m.setBusinessId(String.valueOf(noEvenement));
 		m.setBusinessUser(businessUser);
 		m.setContext("evenementOrganisation");
 		m.setBody(doc);
@@ -132,7 +143,7 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 			m.setServiceDestination(outputQueue);
 		}
 
-			System.err.println("Message envoyé : " + m.getBodyAsString());
+		System.err.println("Message envoyé : " + m.getBodyAsString());
 
 		if (validate) {
 			esbValidator.validate(m);
