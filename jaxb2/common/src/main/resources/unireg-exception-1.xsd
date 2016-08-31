@@ -187,6 +187,11 @@
 					<xs:documentation>Le message de réponse n'est pas valide (d'un point-de-vue XML) et ne peut pas être retouré.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="ALREADY_EXISTING_PARTY">
+				<xs:annotation>
+					<xs:documentation>Demande de création de tiers non-aboutie car un tiers trop similaire existe déjà.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
