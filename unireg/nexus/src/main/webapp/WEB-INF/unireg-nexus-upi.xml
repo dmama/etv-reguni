@@ -4,6 +4,7 @@
 
 	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">
 		<property name="client" ref="rcPersClient" />
+		<property name="infraService" ref="serviceInfrastructureRaw"/>
 	</bean>
 
 	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">

@@ -20,9 +20,11 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
@@ -4339,6 +4341,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new MockServiceUpi() {
 			@Override
 			protected void init() {
+				addData(new UpiPersonInfo(newAvs, "Albert", "Foldingue", Sexe.MASCULIN, date(2000, 5, 3), null, MockNationalite.of(null, null, MockPays.Suisse), null, null));
 				addReplacement(oldAvs, newAvs);
 			}
 		});
@@ -4388,6 +4391,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new MockServiceUpi() {
 			@Override
 			protected void init() {
+				addData(new UpiPersonInfo(newAvs, "Albert", "Foldingue", Sexe.MASCULIN, date(2000, 5, 3), null, MockNationalite.of(null, null, MockPays.France), null, null));
 				addReplacement(oldAvs, newAvs);
 			}
 
@@ -4442,6 +4446,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new MockServiceUpi() {
 			@Override
 			protected void init() {
+				addData(new UpiPersonInfo(newAvs, "Mathilda", "Tourdesac", Sexe.FEMININ, date(1969, 4, 2), null, MockNationalite.of(null, null, MockPays.RoyaumeUni), null, null));
 				addReplacement(oldAvs, newAvs);
 			}
 
@@ -4518,6 +4523,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new MockServiceUpi() {
 			@Override
 			protected void init() {
+				addData(new UpiPersonInfo(newAvs, "Mathilda", "Tourdesac", Sexe.FEMININ, date(1969, 4, 2), null, MockNationalite.of(null, null, MockPays.RoyaumeUni), null, null));
 				addReplacement(oldAvs, newAvs);
 			}
 		});
@@ -4584,6 +4590,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		serviceUpi.setUp(new MockServiceUpi() {
 			@Override
 			protected void init() {
+				addData(new UpiPersonInfo(newAvs, "Mathilda", "Tourdesac", Sexe.FEMININ, date(1967, 4, 9), null, MockNationalite.of(null, null, MockPays.RoyaumeUni), null, null));
 				addReplacement(oldAvs, newAvs);
 			}
 		});

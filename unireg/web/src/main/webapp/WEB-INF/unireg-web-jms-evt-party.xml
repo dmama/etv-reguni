@@ -51,6 +51,7 @@
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest" value-ref="advancePaymentCorporationsRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v5.PartyRequest" value-ref="partyRequestHandlerV5" />
+				<entry key="ch.vd.unireg.xml.event.party.nonresident.vn.v1.CreateNonresidentByVNRequest" value-ref="createNonresidentByVNRequestHandlerV1"/>
 			</util:map>
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
@@ -224,6 +225,13 @@
 	<bean id="createNonresidentRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV2">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="createNonresidentByVNRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.CreateNonresidentByVNRequestHandlerV1">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="serviceUpi" ref="serviceUpiRaw"/>
+		<property name="tiersSearcher" ref="globalTiersSearcher"/>
 	</bean>
 
 	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">

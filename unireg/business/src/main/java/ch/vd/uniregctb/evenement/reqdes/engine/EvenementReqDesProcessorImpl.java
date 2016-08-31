@@ -1510,7 +1510,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
 		pp.setNom(nom);
 		pp.setTousPrenoms(prenoms);
-		pp.setPrenomUsuel(extractPrenomUsuel(prenoms));
+		pp.setPrenomUsuel(NomPrenom.extractPrenomUsuel(prenoms));
 		return hibernateTemplate.merge(pp);
 	}
 
@@ -1519,7 +1519,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNom(), NOM_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getNomNaissance(), NOM_NAISSANCE_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getPrenoms(), PRENOMS_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
-		addRemarqueElement(elementsRemarque, updateAttribute(dest, extractPrenomUsuel(src.getPrenoms()), PRENOM_USUEL_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
+		addRemarqueElement(elementsRemarque, updateAttribute(dest, NomPrenom.extractPrenomUsuel(src.getPrenoms()), PRENOM_USUEL_ACCESSOR, withRemarqueOnChange, DEFAULT_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getCategorieEtranger(), CATEGORIE_ETRANGER_ACCESSOR, withRemarqueOnChange, CATEGORIE_ETRANGER_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getDateDeces(), DATE_DECES_ACCESSOR, withRemarqueOnChange, DATE_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getDateNaissance(), DATE_NAISSANCE_ACCESSOR, withRemarqueOnChange, DATE_RENDERER));
@@ -1532,14 +1532,6 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getOrigine(), ORIGINE_ACCESSOR, withRemarqueOnChange, ORIGINE_RENDERER));
 		addRemarqueElement(elementsRemarque, updateAttribute(dest, src.getSexe(), SEXE_ACCESSOR, withRemarqueOnChange, SEXE_RENDERER));
 		return elementsRemarque;
-	}
-
-	private static String extractPrenomUsuel(String prenoms) {
-		if (StringUtils.isBlank(prenoms)) {
-			return null;
-		}
-		final String[] parts = prenoms.trim().split("\\s");
-		return parts[0];
 	}
 
 	private void addRemarqueCreation(Contribuable ctb, EvenementReqDes evt) {

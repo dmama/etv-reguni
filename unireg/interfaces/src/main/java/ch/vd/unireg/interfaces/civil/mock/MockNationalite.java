@@ -83,4 +83,8 @@ public class MockNationalite implements Nationalite {
 				", pays=" + pays +
 				'}';
 	}
+
+	public static MockNationalite of(RegDate dateDebut, RegDate dateFin, Pays pays) {
+		return new MockNationalite(dateDebut, dateFin, pays);
+	}
 }
