@@ -25,6 +25,7 @@
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
+
 	<!-- Service Organisation -->
 
 	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
@@ -59,6 +60,7 @@
 
 	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">
 		<property name="client" ref="rcPersClient"/>
+		<property name="infraService" ref="serviceInfrastructureRaw"/>
 	</bean>
 
 	<bean id="serviceUpiTracing" class="ch.vd.unireg.interfaces.upi.ServiceUpiTracing">
@@ -68,7 +70,6 @@
 
 	<alias alias="serviceUpiRaw" name="serviceUpiTracing"/>
 
-	<!-- Service infra -->
 
 	<!-- Service infra -->
 
@@ -80,18 +81,11 @@
 	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
 		<property name="client" ref="serviceInfrastructureClient" />
 	</bean>
-	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
 
+	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
 		<property name="ejbClient" ref="serviceInfrastructureServiceHostEjb"/>
 		<property name="restClient" ref="serviceInfrastructureServiceHostRest"/>
 		<property name="modeRest" value="${testprop.host-interfaces.webservice.mode.rest}"/>
-	</bean>
-
-
-	<bean id="serviceSecuriteMarshaller" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteMarshaller">
-		<property name="ejbClient" ref="serviceSecuriteServiceHost" />
-		<property name="restClient" ref="serviceSecuriteServiceHostRest" />
-		<property name="modeRest" value="${testprop.host-interfaces.webservice.mode.rest}" />
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
@@ -119,5 +113,14 @@
 	</bean>
 
 	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+
+
+	<!-- Service sécurité -->
+
+	<bean id="serviceSecuriteMarshaller" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteMarshaller">
+		<property name="ejbClient" ref="serviceSecuriteServiceHost" />
+		<property name="restClient" ref="serviceSecuriteServiceHostRest" />
+		<property name="modeRest" value="${testprop.host-interfaces.webservice.mode.rest}" />
+	</bean>
 
 </beans>

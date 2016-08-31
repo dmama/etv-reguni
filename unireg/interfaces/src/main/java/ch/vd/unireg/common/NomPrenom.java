@@ -3,6 +3,7 @@ package ch.vd.unireg.common;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Container pour les informations dissociées de nom/prénom sur une personne physique
@@ -75,5 +76,18 @@ public class NomPrenom implements Serializable {
 				"nom='" + nom + '\'' +
 				", prenom='" + prenom + '\'' +
 				'}';
+	}
+
+	/**
+	 * @param tousPrenoms une chaîne de caractères contenant tous les prénoms d'une personne physique, séparés par des 'blancs'
+	 * @return le premier de ces prénoms, considéré par défaut comme étant le prénom usuel
+	 */
+	@Nullable
+	public static String extractPrenomUsuel(String tousPrenoms) {
+		if (StringUtils.isBlank(tousPrenoms)) {
+			return null;
+		}
+		final String[] parts = tousPrenoms.trim().split("\\s");
+		return parts[0];
 	}
 }
