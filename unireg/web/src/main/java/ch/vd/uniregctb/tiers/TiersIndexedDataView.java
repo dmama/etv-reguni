@@ -140,6 +140,14 @@ public class TiersIndexedDataView implements Annulable {
 		return numerosIDE != null && !numerosIDE.isEmpty() ? numerosIDE.get(0) : null;
 	}
 
+	public String getNumeroAVS1() {
+		return data.getNavs13_1();
+	}
+
+	public String getNumeroAVS2() {
+		return data.getNavs13_2();
+	}
+
 	public String getDomicileEtablissementPrincipal() {
 		return data.getDomicileEtablissementPrincipal();
 	}

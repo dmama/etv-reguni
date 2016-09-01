@@ -79,14 +79,29 @@
 				<display:column sortable="true" titleKey="label.numero.ide" sortProperty="numeroIDE">
 					<unireg:numIDE numeroIDE="${row.numeroIDE}"/>
 				</display:column>
-				<display:column sortable="true" titleKey="label.date.inscription.rc" sortProperty="dateNaissanceInscriptionRC">
+				<display:column sortable="true" titleKey="label.numero.avs" sortProperty="numeroAVS1">
+					<unireg:numAVS numeroAssureSocial="${row.numeroAVS1}"/>
+				</display:column>
+				<display:column sortable="true" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissanceInscriptionRC">
 					<unireg:date date="${row.dateNaissanceInscriptionRC}"/>
 				</display:column>
-				<display:column sortable="true" titleKey="label.raison.sociale">
+				<display:column sortable="true" titleKey="label.nom.raison">
 					<c:out value="${row.nom1}"/>
 					<unireg:raccourciDetail tooltip="Adresse de représentation" onClick="Mandataires.showAdresseRepresentation(${row.numero});"/>
 				</display:column>
-				<display:column sortable="true" titleKey="label.siege" property="domicileEtablissementPrincipal"/>
+				<display:column titleKey="label.domicile.siege">
+					<c:choose>
+						<c:when test="${row.domicileEtablissementPrincipal != null && row.domicileEtablissementPrincipal != ''}">
+							<c:out value="${row.domicileEtablissementPrincipal}"/>
+						</c:when>
+						<c:when test="${row.noOfsCommuneDomicile != null}">
+							<unireg:commune ofs="${row.noOfsCommuneDomicile}" displayProperty="nomOfficiel"/>
+						</c:when>
+						<c:otherwise>
+							<c:out value="${row.forPrincipal}"/>
+						</c:otherwise>
+					</c:choose>
+				</display:column>
 				<display:column sortable="true" titleKey="label.forme.juridique" sortProperty="formeJuridique.codeECH">
 					<c:if test="${row.formeJuridique != null}">
 						<c:out value="${row.formeJuridique}"/>
