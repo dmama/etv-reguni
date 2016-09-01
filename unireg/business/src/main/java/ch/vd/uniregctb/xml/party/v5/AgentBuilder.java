@@ -58,10 +58,10 @@ public class AgentBuilder {
 				final Agent agent;
 				switch (mandat.getTypeMandat()) {
 				case GENERAL:
-					agent = buildGeneralAgent(intersection, envoi, neverNull(mandat.getWithCopy(), true));
+					agent = buildGeneralAgent(intersection, envoi, neverNull(mandat.getWithCopy(), false));
 					break;
 				case SPECIAL:
-					agent = buildSpecialAgent(intersection, envoi, neverNull(mandat.getWithCopy(), true), mandat.getCodeGenreImpot());
+					agent = buildSpecialAgent(intersection, envoi, neverNull(mandat.getWithCopy(), false), mandat.getCodeGenreImpot());
 					break;
 				case TIERS:
 					agent = null;

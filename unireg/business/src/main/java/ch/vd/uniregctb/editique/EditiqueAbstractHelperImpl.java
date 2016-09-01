@@ -390,8 +390,11 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	@Nullable
 	private Tiers findMandataireGeneral(Tiers tiers, RegDate dateReference) {
 		for (RapportEntreTiers ret : tiers.getRapportsSujet()) {
-			if (ret.getType() == TypeRapportEntreTiers.MANDAT && ((Mandat) ret).getTypeMandat() == TypeMandat.GENERAL && ret.isValidAt(dateReference)) {
-				return tiersService.getTiers(ret.getObjetId());
+			if (ret.getType() == TypeRapportEntreTiers.MANDAT && ret.isValidAt(dateReference)) {
+				final Mandat mandat = (Mandat) ret;
+				if (mandat.getTypeMandat() == TypeMandat.GENERAL && mandat.getWithCopy() != null && mandat.getWithCopy()) {
+					return tiersService.getTiers(ret.getObjetId());
+				}
 			}
 		}
 		return null;
@@ -400,7 +403,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	@Nullable
 	private AdresseMandataire findAdresseMandataireGeneral(Contribuable contribuable, RegDate dateReference) {
 		for (AdresseMandataire adresse : contribuable.getAdressesMandataires()) {
-			if (adresse.getTypeMandat() == TypeMandat.GENERAL && adresse.isValidAt(dateReference)) {
+			if (adresse.getTypeMandat() == TypeMandat.GENERAL && adresse.isValidAt(dateReference) && adresse.isWithCopy()) {
 				return adresse;
 			}
 		}
