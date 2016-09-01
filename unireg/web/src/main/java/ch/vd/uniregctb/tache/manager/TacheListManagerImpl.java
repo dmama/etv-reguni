@@ -226,7 +226,7 @@ public class TacheListManagerImpl implements TacheListManager {
 
 			if (!SecurityDebugConfig.isIamDebug()) {
 
-				List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative> collectivites = null;
+				List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur> collectivites = null;
 				try {
 					collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 				}

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.interfaces.service.host;
 
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
@@ -33,7 +33,7 @@ public class ServiceSecuriteMarshaller implements ServiceSecuriteService {
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
 		return getClient().getCollectivitesUtilisateur(visaOperateur);
 	}
 

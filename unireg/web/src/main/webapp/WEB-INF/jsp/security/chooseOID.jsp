@@ -11,7 +11,14 @@
 			<form:hidden path="initialUrl"/>
 			<form:select path="selectedOID">
 				<c:forEach items="${command.officesImpot}" var="oi">
-					<form:option value="${oi.noColAdm}"><c:out value="${oi.nomCourt}"/></form:option>
+					<c:choose>
+						<c:when test="${oi.collectiviteParDefaut}">
+							<option value="${oi.noColAdm}" selected="selected"><c:out value="${oi.nomCourt}"/></option>
+						</c:when>
+						<c:otherwise>
+							<option value="${oi.noColAdm}"><c:out value="${oi.nomCourt}"/></option>
+						</c:otherwise>
+					</c:choose>
 				</c:forEach>
 			</form:select>
 

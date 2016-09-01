@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
@@ -36,8 +37,8 @@ public class UtilisateurManagerImpl implements UtilisateurManager {
 			}
 			utilisateurView.setPrenomNom(prenomNom);
 			utilisateurView.setVisaOperateur(operateur.getCode());
-			List<CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
-			Iterator<CollectiviteAdministrative> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
+			List<CollectiviteAdministrativeUtilisateur> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operateur.getCode());
+			Iterator<CollectiviteAdministrativeUtilisateur> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
 			String officeImpot = null;
 			while (itCollectiviteAdministrative.hasNext()) {
 				CollectiviteAdministrative collectiviteAdministrative = itCollectiviteAdministrative.next();

@@ -13,6 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.ApplicationConfig;
@@ -109,7 +110,7 @@ public class TacheMapHelper extends CommonMapHelper {
 
 		final Map<Integer, String> map = new HashMap<>();
 		if (!SecurityDebugConfig.isIfoSecDebug()) {
-			final List<CollectiviteAdministrative> collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+			final List<CollectiviteAdministrativeUtilisateur> collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 			if (collectivites != null) {
 				for (CollectiviteAdministrative collectivite : collectivites) {
 					map.put(collectivite.getNoColAdm(), collectivite.getNomCourt());
