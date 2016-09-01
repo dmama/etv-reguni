@@ -1,6 +1,5 @@
-package ch.vd.uniregctb.rattrapage.simpa.mandataires;
+package ch.vd.uniregctb.rattrapage.simpa.mandataires.generaux;
 
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +26,9 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.rattrapage.simpa.mandataires.Helper;
+import ch.vd.uniregctb.rattrapage.simpa.mandataires.MappingMigration;
+import ch.vd.uniregctb.rattrapage.simpa.mandataires.TypeTiers;
 import ch.vd.uniregctb.type.TypeMandat;
 
 /**
@@ -40,7 +42,7 @@ public class Job {
 	}
 
 	private static final String EXTRACTION = "extraction-simpa.csv";
-	private static final String MAPPING = "mappings-migration.csv";
+	private static final String MAPPING = "../mappings-migration.csv";
 
 	private static final String VISA = "[Rattrapage-mutations-mandataires-" + RegDateHelper.toIndexString(RegDate.get()) + "]";
 
@@ -72,7 +74,7 @@ public class Job {
 		try (InputStream is = Job.class.getResourceAsStream(MAPPING);
 		     Reader r = new InputStreamReader(is, Charset.defaultCharset())) {
 
-			 data = loadFile(MAPPING, r, new Parser<MappingMigration>() {
+			 data = Helper.loadFile(MAPPING, r, new Helper.Parser<MappingMigration>() {
 				@Override
 				public MappingMigration parse(String string) throws ParseException {
 					return MappingMigration.of(string);
@@ -94,7 +96,7 @@ public class Job {
 		try (InputStream is = Job.class.getResourceAsStream(EXTRACTION);
 		     Reader r = new InputStreamReader(is, Charset.defaultCharset())) {;
 
-			extraction = loadFile(EXTRACTION, r, new Parser<ExtractionSimpa>() {
+			extraction = Helper.loadFile(EXTRACTION, r, new Helper.Parser<ExtractionSimpa>() {
 				@Override
 				public ExtractionSimpa parse(String string) throws ParseException {
 					return ExtractionSimpa.of(string);
@@ -118,29 +120,6 @@ public class Job {
 			list.add(data);
 		}
 		return Collections.unmodifiableMap(map);
-	}
-
-	private interface Parser<T> {
-		T parse(String string) throws ParseException;
-	}
-
-	private static <T> List<T> loadFile(String filename, Reader reader, Parser<T> parser) throws IOException {
-		final List<T> resultat = new LinkedList<>();
-		try (BufferedReader br = new BufferedReader(reader)) {
-			String line;
-			while ((line = br.readLine()) != null) {
-				try {
-					// on ignore les commentaires... (= lignes qui commencent par un '#')
-					if (!line.startsWith("#")) {
-						resultat.add(parser.parse(line));
-					}
-				}
-				catch (Exception e) {
-					System.err.println("Fichier " + filename + " : ligne '" + line + "' ignorée (" + e.getMessage() + ").");
-				}
-			}
-		}
-		return resultat;
 	}
 
 	private static void traiterMandant(Long idMandant, List<ExtractionSimpa> mandats, Map<MappingMigration.Key, Long> mapping, PrintWriter pw) throws IOException {
