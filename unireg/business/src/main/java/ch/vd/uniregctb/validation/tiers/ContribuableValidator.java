@@ -1,17 +1,25 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -21,7 +29,10 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
@@ -30,10 +41,16 @@ import ch.vd.uniregctb.validation.ValidationService;
 public abstract class ContribuableValidator<T extends Contribuable> extends TiersValidator<T> {
 
 	private PeriodeImpositionService periodeImpositionService;
+	private ServiceInfrastructureService infraService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	@Override
@@ -42,6 +59,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		if (!ctb.isAnnule()) {
 			vr.merge(validateDecisions(ctb));
 			vr.merge(validateAdressesMandataires(ctb));
+			vr.merge(validateChevauchementsMandats(ctb));
 		}
 		return vr;
 	}
@@ -203,5 +221,123 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 			                                     descriptionDI, RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
 			results.addWarning(message);
 		}
+	}
+
+	/**
+	 * Clé extractible depuis un mandat-lien ou une adresse mandataire pour déterminer les différentes typologies
+	 * de mandat dans chacune desquelles il ne doit pas y avoir de chevauchement
+	 */
+	private static final class MandatTypeKey {
+
+		private final TypeMandat typeMandat;
+		private final String codeGenreImpot;
+
+		public MandatTypeKey(Mandat mandat) {
+			this.typeMandat = mandat.getTypeMandat();
+			this.codeGenreImpot = this.typeMandat == TypeMandat.SPECIAL ? mandat.getCodeGenreImpot() : null;
+		}
+
+		public MandatTypeKey(AdresseMandataire adresse) {
+			this.typeMandat = adresse.getTypeMandat();
+			this.codeGenreImpot = this.typeMandat == TypeMandat.SPECIAL ? adresse.getCodeGenreImpot() : null;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final MandatTypeKey mandatKey = (MandatTypeKey) o;
+			return typeMandat == mandatKey.typeMandat && Objects.equals(codeGenreImpot, mandatKey.codeGenreImpot);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = typeMandat != null ? typeMandat.hashCode() : 0;
+			result = 31 * result + (codeGenreImpot != null ? codeGenreImpot.hashCode() : 0);
+			return result;
+		}
+	}
+
+	private String toDisplayString(MandatTypeKey key) {
+		if (key.codeGenreImpot == null) {
+			return key.typeMandat.name();
+		}
+		else {
+			final List<GenreImpotMandataire> gims = infraService.getGenresImpotMandataires();
+			String libelle = key.codeGenreImpot;
+			for (GenreImpotMandataire gim : gims) {
+				if (Objects.equals(key.codeGenreImpot, gim.getCode())) {
+					libelle = gim.getLibelle();
+					break;
+				}
+			}
+			return String.format("%s (%s)", key.typeMandat.name(), libelle);
+		}
+	}
+
+	/**
+	 * Validation que, par type de mandat, il n'y a pas de chevauchement entre les différents mandats non-annulés, quelle qu'en soit la forme
+	 * (mandat-lien ou adresse de mandataire)
+	 * @param mandant mandant, point de départ
+	 * @return des éventuelles erreurs de validation concernant les chevauchements trouvés
+	 */
+	private ValidationResults validateChevauchementsMandats(Contribuable mandant) {
+
+		// différents univers de non-chevauchement
+		final Map<MandatTypeKey, List<DateRange>> universes = new HashMap<>();
+
+		// on parcourt d'abord les mandats-liens
+		final Set<RapportEntreTiers> rets = mandant.getRapportsSujet();
+		if (rets != null && !rets.isEmpty()) {
+			for (RapportEntreTiers ret : rets) {
+				if (!ret.isAnnule() && ret instanceof Mandat) {
+					final Mandat mandat = (Mandat) ret;
+					final MandatTypeKey key = new MandatTypeKey(mandat);
+					consolidateInMap(universes, key, mandat);
+				}
+			}
+		}
+
+		// ... puis les adresses mandataire
+		final Set<AdresseMandataire> adresses = mandant.getAdressesMandataires();
+		if (adresses != null && !adresses.isEmpty()) {
+			for (AdresseMandataire adresse : adresses) {
+				if (!adresse.isAnnule()) {
+					final MandatTypeKey key = new MandatTypeKey(adresse);
+					consolidateInMap(universes, key, adresse);
+				}
+			}
+		}
+
+		// préparons l'objet à fournir en sortie
+		final ValidationResults vr = new ValidationResults();
+
+		// ensuite, on prend chaque univers un par un
+		final DateRangeComparator<DateRange> rangeComparator = new DateRangeComparator<>();
+		for (Map.Entry<MandatTypeKey, List<DateRange>> entry : universes.entrySet()) {
+			final List<DateRange> ranges = entry.getValue();
+			if (ranges.size() > 1) {
+				Collections.sort(ranges, rangeComparator);
+				final List<DateRange> overlaps = DateRangeHelper.overlaps(ranges);
+				if (overlaps != null && !overlaps.isEmpty()) {
+					for (DateRange overlap : overlaps) {
+						vr.addError(String.format("La période %s est couverte par plusieurs mandats de type %s",
+						                          DateRangeHelper.toDisplayString(overlap),
+						                          toDisplayString(entry.getKey())));
+					}
+				}
+			}
+		}
+
+		return vr;
+	}
+
+	private static <K, V> void consolidateInMap(Map<K, List<V>> map, K key, V value) {
+		List<V> list = map.get(key);
+		if (list == null) {
+			list = new LinkedList<>();
+			map.put(key, list);
+		}
+		list.add(value);
 	}
 }

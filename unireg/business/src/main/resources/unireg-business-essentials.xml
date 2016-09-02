@@ -296,6 +296,7 @@
 
 	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator">
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="debiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.tiers.DebiteurPrestationImposableValidator" parent="tiersValidator" />
