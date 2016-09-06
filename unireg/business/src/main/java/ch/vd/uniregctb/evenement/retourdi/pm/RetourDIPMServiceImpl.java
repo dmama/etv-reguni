@@ -704,7 +704,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				entreprise.setTitulaireCompteBancaire(titulaireCompte.trim());
 			}
 			else {
-				final String raisonSociale = tiersService.getRaisonSociale(entreprise);
+				final String raisonSociale = tiersService.getDerniereRaisonSociale(entreprise);
 				entreprise.setTitulaireCompteBancaire(raisonSociale);
 			}
 		}

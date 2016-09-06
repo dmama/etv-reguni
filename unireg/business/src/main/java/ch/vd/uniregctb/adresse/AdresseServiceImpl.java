@@ -913,7 +913,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'enteprise sur une seule ligne
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
-		return tiersService.getRaisonSociale(entreprise);
+		return tiersService.getDerniereRaisonSociale(entreprise);
 	}
 
 	/**
@@ -923,7 +923,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'etablissement sur une seule ligne
 	 */
 	private String getRaisonSociale(Etablissement etablissement) {
-		return tiersService.getRaisonSociale(etablissement);
+		return tiersService.getDerniereRaisonSociale(etablissement);
 	}
 
 	public static RueEtNumero buildRueEtNumero(AdresseGenerique adresse) {

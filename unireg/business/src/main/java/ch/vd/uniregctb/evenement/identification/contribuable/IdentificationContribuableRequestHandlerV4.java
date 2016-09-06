@@ -172,7 +172,7 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 
 				final Contribuable ctb = (Contribuable) tiersService.getTiers(id);
 				if (ctb instanceof Entreprise) {
-					final String raisonSociale = tiersService.getRaisonSociale((Entreprise) ctb);
+					final String raisonSociale = tiersService.getDerniereRaisonSociale((Entreprise) ctb);
 					ic.setRaisonSociale(tokenize(raisonSociale, MAX_NAME_LENGTH));
 				}
 				else if (ctb instanceof AutreCommunaute) {

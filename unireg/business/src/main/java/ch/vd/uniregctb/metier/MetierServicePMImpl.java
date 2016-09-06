@@ -210,10 +210,10 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// Rapprochement de l'établissement principal
 		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(date).getPayload();
 		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
-		if (etablissementsPrincipauxEntreprise.isEmpty() || CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise) == null) {
+		if (etablissementsPrincipauxEntreprise.isEmpty() || DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date) == null) {
 			throw new MetierServiceException(String.format("L'entreprise %s ne possède pas d'établissement principal!", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 		}
-		DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise);
+		DateRanged<Etablissement> etablissementPrincipalRange = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, date);
 		if (etablissementPrincipalRange.getDateDebut().isAfter(date)) {
 			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
 		}

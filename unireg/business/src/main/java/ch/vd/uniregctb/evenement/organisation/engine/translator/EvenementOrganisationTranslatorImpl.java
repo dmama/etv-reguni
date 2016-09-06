@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.StringsUtils;
@@ -285,11 +286,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			if (tiers != null) {
 				if (tiers instanceof Entreprise) {
 					entreprise = (Entreprise) tiers;
-					final String derniereRaisonSocialeFiscale = getDerniereRaisonSocialeFiscale(entreprise);
+					final RaisonSocialeFiscaleEntreprise raisonSocialeFiscaleEntreprise = DateRangeHelper.rangeAt(entreprise.getRaisonsSocialesNonAnnuleesTriees(), event.getDateEvenement());
 
 					final String message = String.format("Entreprise n°%s%s identifiée sur la base de ses attributs civils [%s].",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
+					                                     raisonSocialeFiscaleEntreprise.getRaisonSociale() != null ? " (" + raisonSocialeFiscaleEntreprise.getRaisonSociale() + ")" : "",
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuiviPreExecution(event, organisation, entreprise, context, options, message));
@@ -300,7 +301,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 						final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesNonAnnuleesTriees = entreprise.getFormesJuridiquesNonAnnuleesTriees();
 						FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise = null;
 						if (!formesJuridiquesNonAnnuleesTriees.isEmpty()) {
-							formeJuridiqueFiscaleEntreprise = CollectionsUtils.getLastElement(entreprise.getFormesJuridiquesNonAnnuleesTriees());
+							formeJuridiqueFiscaleEntreprise = DateRangeHelper.rangeAt(entreprise.getFormesJuridiquesNonAnnuleesTriees(), event.getDateEvenement());
 						}
 
 						final FormeLegale formeLegale = organisation.getFormeLegale(event.getDateEvenement());
@@ -310,7 +311,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 						                                          organisation.getNumeroOrganisation(),
 						                                          formeLegale != null ? " (" + formeLegale + ")" : "",
 						                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-						                                          StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
+						                                          raisonSocialeFiscaleEntreprise != null ? " (" + raisonSocialeFiscaleEntreprise.getRaisonSociale() + ")" : "",
 						                                          formeJuridiqueFiscaleEntreprise != null ? " (" + formeJuridiqueFiscaleEntreprise.getFormeJuridique().getLibelle() + ")" : "",
 						                                          attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil)
 						                            )
@@ -397,7 +398,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private boolean checkFormesJuridiquesCompatibles(EvenementOrganisation event, Organisation organisation, Entreprise entreprise) {
 		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesNonAnnuleesTriees = entreprise.getFormesJuridiquesNonAnnuleesTriees();
 		if (!formesJuridiquesNonAnnuleesTriees.isEmpty()) {
-			final FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise = CollectionsUtils.getLastElement(formesJuridiquesNonAnnuleesTriees);
+			final FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise = DateRangeHelper.rangeAt(formesJuridiquesNonAnnuleesTriees, event.getDateEvenement());
 			final FormeLegale formeLegaleEntreprise = FormeLegale.fromCode(formeJuridiqueFiscaleEntreprise.getFormeJuridique().getCodeECH());
 			if (formeLegaleEntreprise != null && formeLegaleEntreprise == organisation.getFormeLegale(event.getDateEvenement())) {
 				return true;
@@ -449,15 +450,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					String.format("Donnée RCEnt invalide: Champ obligatoire 'nom' pas trouvé pour l'organisation no civil: %d",
 					              organisation.getNumeroOrganisation()));
 		}
-	}
-
-	@Nullable
-	private static String getDerniereRaisonSocialeFiscale(Entreprise e) {
-		final List<RaisonSocialeFiscaleEntreprise> toutes = e.getRaisonsSocialesNonAnnuleesTriees();
-		if (toutes.isEmpty()) {
-			return null;
-		}
-		return CollectionsUtils.getLastElement(toutes).getRaisonSociale();
 	}
 
 	/**

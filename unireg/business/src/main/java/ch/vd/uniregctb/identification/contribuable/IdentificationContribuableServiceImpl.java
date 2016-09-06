@@ -410,7 +410,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		final Tiers tiers = tiersDAO.get(found.getNumero());
-		final String knownRaisonSociale = getRaisonSocialeEntreprise(tiers);
+		final String knownRaisonSociale = getDerniereRaisonSocialeEntreprise(tiers);
 		return knownRaisonSociale != null && containedIn(knownRaisonSociale, askedRaisonSociale);
 	}
 
@@ -434,9 +434,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return lowercases.replaceAll("\\s+", " ").trim();
 	}
 
-	private String getRaisonSocialeEntreprise(Tiers tiers) {
+	private String getDerniereRaisonSocialeEntreprise(Tiers tiers) {
 		if (tiers instanceof Entreprise) {
-			return tiersService.getRaisonSociale((Entreprise) tiers);
+			return tiersService.getDerniereRaisonSociale((Entreprise) tiers);
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			return ((AutreCommunaute) tiers).getNom();

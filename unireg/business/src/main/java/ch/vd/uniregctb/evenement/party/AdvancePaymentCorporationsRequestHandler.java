@@ -497,7 +497,7 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 					else {
 						final RegDate veilleDebutExerciceCourant = exerciceCourant.getDateDebut().getOneDayBefore();
 						results.addExtrait(id,
-						                   tiersService.getRaisonSociale(entreprise),
+						                   tiersService.getDerniereRaisonSociale(entreprise),
 						                   exerciceCourant.getDateFin(),
 						                   DateRangeHelper.rangeAt(exercicesCommerciaux, veilleDebutExerciceCourant) != null ? veilleDebutExerciceCourant : null,
 						                   icc != null ? icc.getDateDebut() : null,

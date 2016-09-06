@@ -292,7 +292,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		}
 
 		// pas d'adresse connue ? pas grave, on met au moins la raison sociale
-		return new CTypeAdresse(Collections.singletonList(tiersService.getRaisonSociale(entreprise)));
+		return new CTypeAdresse(Collections.singletonList(tiersService.getDerniereRaisonSociale(entreprise)));
 	}
 
 	private void fillDocumentDI(CTypeDeclarationImpot di, DeclarationImpotOrdinairePM declaration) throws AdresseException, DonneesCivilesException, EditiqueException {

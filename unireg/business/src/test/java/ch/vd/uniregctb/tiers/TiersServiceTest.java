@@ -4070,7 +4070,7 @@ debut PF                                                                        
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
-				final String raisonSociale = tiersService.getRaisonSociale(etb);
+				final String raisonSociale = tiersService.getDerniereRaisonSociale(etb);
 				Assert.assertNotNull(raisonSociale);
 				Assert.assertEquals("Une super raison sociale", raisonSociale);
 				return null;
@@ -4110,7 +4110,7 @@ debut PF                                                                        
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
-				final String raisonSociale = tiersService.getRaisonSociale(etb);
+				final String raisonSociale = tiersService.getDerniereRaisonSociale(etb);
 				Assert.assertNotNull(raisonSociale);
 				final Set<RapportEntreTiers> rapportsEntreTiers = etb.getRapportsObjet();
 				Assert.assertNotNull(rapportsEntreTiers);

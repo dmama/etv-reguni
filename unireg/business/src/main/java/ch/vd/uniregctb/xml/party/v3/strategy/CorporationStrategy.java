@@ -52,7 +52,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.initBase(to, from, context);
 
 		final Entreprise entreprise = (Entreprise) from;
-		final String raisonSociale = context.tiersService.getRaisonSociale(entreprise);
+		final String raisonSociale = context.tiersService.getDerniereRaisonSociale(entreprise);
 		to.setName1(raisonSociale);
 		to.setShortName(raisonSociale);
 

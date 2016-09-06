@@ -56,7 +56,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.initBase(to, from, context);
 
 		final Entreprise entreprise = (Entreprise) from;
-		to.setName(context.tiersService.getRaisonSociale(entreprise));
+		to.setName(context.tiersService.getDerniereRaisonSociale(entreprise));
 
 		// L'exposition du numéro IDE
 		if (entreprise.isConnueAuCivil()) {

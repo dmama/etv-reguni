@@ -1396,13 +1396,13 @@ public interface TiersService {
      * @param pm l'entreprise dont on veut connaître la raison sociale complète
      * @return la raison sociale complète de l'entreprise donnée, potentiellement sur plusieurs lignes
      */
-    String getRaisonSociale(Entreprise pm);
+    String getDerniereRaisonSociale(Entreprise pm);
 
     /**
      * @param etablissement l'établissement dont on veut connaître la raison sociale
      * @return la raison sociale
      */
-    String getRaisonSociale(Etablissement etablissement);
+    String getDerniereRaisonSociale(Etablissement etablissement);
 
     /**
      * Renvoie une liste des composants du ménage valides à une date donnée.

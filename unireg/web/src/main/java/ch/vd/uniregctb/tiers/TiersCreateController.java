@@ -459,7 +459,7 @@ public class TiersCreateController {
 
 		Entreprise entreprise = (Entreprise) tiersDAO.get(noCtbAssocie);
 		// On récupère la dernière raison sociale de l'entreprise pour la raison sociale par défaut de l'établissement
-		String raisonSociale = tiersService.getRaisonSociale(entreprise);
+		String raisonSociale = tiersService.getDerniereRaisonSociale(entreprise);
 
 		return showCreateEtablissement(model, noCtbAssocie, new CreateEtablissementView(raisonSociale));
 	}

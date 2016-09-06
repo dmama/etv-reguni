@@ -3714,7 +3714,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * @param tiers un tiers
-	 * @return sur une ligne, le nom ou la raison sociale du tiers à la date demandée
+	 * @return sur une ligne, le nom ou la raison sociale du tiers
 	 */
 	@Override
 	public String getNomRaisonSociale(Tiers tiers) {
@@ -3746,10 +3746,10 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		if (tiers instanceof Entreprise) {
-			return getRaisonSociale((Entreprise) tiers);
+			return getDerniereRaisonSociale((Entreprise) tiers);
 		}
 		if (tiers instanceof Etablissement) {
-			return getRaisonSociale((Etablissement) tiers);
+			return getDerniereRaisonSociale((Etablissement) tiers);
 		}
 		if (tiers instanceof CollectiviteAdministrative) {
 			return getNomCollectiviteAdministrative((CollectiviteAdministrative) tiers);
@@ -4891,9 +4891,9 @@ public class TiersServiceImpl implements TiersService {
             } else if (referent instanceof AutreCommunaute) {
                 raisonSociale = Collections.singletonList(((AutreCommunaute) referent).getNom());
             } else if (referent instanceof Entreprise) {
-	            raisonSociale = Collections.singletonList(getRaisonSociale((Entreprise) referent));
+	            raisonSociale = Collections.singletonList(getDerniereRaisonSociale((Entreprise) referent));
             } else if (referent instanceof Etablissement) {
-	            raisonSociale = Collections.singletonList(getRaisonSociale((Etablissement) referent));
+	            raisonSociale = Collections.singletonList(getDerniereRaisonSociale((Etablissement) referent));
             } else if (referent instanceof CollectiviteAdministrative) {
                 try {
                     final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
@@ -4933,7 +4933,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
     @Override
-    public String getRaisonSociale(Entreprise entreprise) {
+    public String getDerniereRaisonSociale(Entreprise entreprise) {
 	    final List<RaisonSocialeHisto> rss = getRaisonsSociales(entreprise, false);
 	    if (! rss.isEmpty()) {
 		    return CollectionsUtils.getLastElement(rss).getRaisonSociale();
@@ -4942,7 +4942,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
     @Override
-    public String getRaisonSociale(Etablissement etablissement) {
+    public String getDerniereRaisonSociale(Etablissement etablissement) {
 	    if (etablissement.isConnuAuCivil()) {
 		    SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
 		    final List<DateRanged<String>> nom = siteOrganisation.getNom();

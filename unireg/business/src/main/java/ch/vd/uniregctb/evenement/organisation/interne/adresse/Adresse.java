@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
@@ -15,7 +16,6 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -126,12 +126,12 @@ public class Adresse extends EvenementOrganisationInterneDeTraitement {
 		if (adressesTiersSorted.isEmpty()) {
 			return null;
 		}
-		final AdresseTiers adresseTiers = CollectionsUtils.getLastElement(adressesTiersSorted);
+		final AdresseTiers adresseTiers = DateRangeHelper.rangeAt(adressesTiersSorted, date);
 		if (adresseTiers != null) {
 			if (adresseTiers.getDateFin() != null) {
 				return null;
 			}
-			if (adresseTiers.getDateDebut().isAfter(date)) {
+			if (adresseTiers.getDateDebut().isAfter(date)) { // SIFISC-19483 - N'est plus censé se produire
 				throw new EvenementOrganisationException(String.format("L'adresse valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
 			}
 			if (adresseTiers instanceof AdresseSupplementaire) {
