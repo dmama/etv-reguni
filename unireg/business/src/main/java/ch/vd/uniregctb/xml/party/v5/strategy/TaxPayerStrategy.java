@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
@@ -122,7 +123,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		 */
 		final List<ch.vd.uniregctb.metier.assujettissement.Assujettissement> list;
 		try {
-			list = context.assujettissementService.determine(right, null, true /* collate */);
+			list = context.assujettissementService.determine(right, (DateRange) null);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e.getMessage(), e);

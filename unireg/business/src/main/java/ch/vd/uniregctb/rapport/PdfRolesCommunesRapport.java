@@ -18,20 +18,21 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AutoCloseableContainer;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.role.InfoCommune;
+import ch.vd.uniregctb.role.InfoContribuable;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
-import ch.vd.uniregctb.role.ProduireRolesResults;
 
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les communes
  */
-public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommunesResults> {
+public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesResults<T>, ICTB extends InfoContribuable<ICTB>, ICOM extends InfoCommune<ICTB, ICOM>> extends PdfRolesRapport<T> {
 
 	public PdfRolesCommunesRapport(ServiceInfrastructureService infraService) {
 		super(infraService);
 	}
 
-	public void write(final ProduireRolesCommunesResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
+	public void write(final T results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 		Assert.notNull(status);
 
 		status.setMessage("Génération du rapport...");
@@ -59,6 +60,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		        @Override
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
 		            table.addLigne("Année fiscale :", String.valueOf(results.annee));
+			        table.addLigne("Type de rôles :", results.getTypeRoles().name());
 		            table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
 		            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		        }
@@ -75,8 +77,9 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 			final int nbCommunesTraitees;
 			if (results.noOfsCommune != null) {
 			    nbCommunesTraitees = 1; // par définition
-			} else {
-			    nbCommunesTraitees = results.infosCommunes.size();
+			}
+			else {
+			    nbCommunesTraitees = results.getNoOfsCommunesTraitees().size();
 			}
 
 		    addTableSimple(2, new TableSimpleCallback() {
@@ -117,8 +120,19 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private void writeCommuneParCommune(final ProduireRolesCommunesResults results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
-		final List<Commune> communes = getListeCommunes(results, true);
+	/**
+	 * Extraction des données des communes depuis le résultats
+	 * @param results le résultat de l'extraction
+	 * @return une map des données des communes indexée par le numéro OFS de la commune
+	 */
+	protected abstract Map<Integer, ICOM> getInfosCommunes(T results);
+
+	/**
+	 * Boucle sur les communes et génération du rapport page par page
+	 */
+	private void writeCommuneParCommune(final T results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
+		final Map<Integer, ICOM> infosCommunes = getInfosCommunes(results);
+		final List<Commune> communes = getListeCommunes(infosCommunes.keySet(), results.annee, true);
 		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);
 
 		// Détail commune par commune
@@ -135,7 +149,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		        }
 		    }
 
-		    final ProduireRolesResults.InfoCommune infoCommune = results.infosCommunes.get(commune.getNoOFS());
+		    final ICOM infoCommune = infosCommunes.get(commune.getNoOFS());
 		    if (infoCommune == null) {
 		        Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomOfficiel()
 		                + "(n°ofs " + commune.getNoOFS() + ')');
@@ -157,7 +171,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    // Résumé de la commune
 		    addEntete1("Résumé");
 		    {
-		        final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoCommune.getInfosContribuables().values());
+		        final Map<InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoCommune.getInfosContribuables());
 		        addTableSimple(2, new TableSimpleCallback() {
 		            @Override
 		            public void fillTable(PdfTableSimple table) throws DocumentException {
@@ -183,19 +197,5 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 	/**
 	 * Utilisé par le traitement commune par commune
 	 */
-	private TemporaryFile[] asCsvFiles(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
-
-		final int noOfsCommune = infoCommune.getNoOfs();
-		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoCommune.getInfosContribuables().values());
-
-		final String nomCommune = nomsCommunes.get(noOfsCommune);
-		status.setMessage(String.format("Génération du rapport pour la commune de %s...", nomCommune));
-
-		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
-			@Override
-			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
-				return noOfsCommune;
-			}
-		});
-	}
+	protected abstract TemporaryFile[] asCsvFiles(final Map<Integer, String> nomsCommunes, ICOM infoCommune, StatusManager status);
 }

@@ -8,22 +8,22 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesCommunesPPRapport;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamCommune;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
- * Job qui produit les rôles pour les communes
+ * Job qui produit les rôles PP pour les communes
  */
-public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
+public class ProduireRolesPPCommunesJob extends AbstractProduireRolesJob {
 
-	public static final String NAME = "ProduireRolesCommuneJob";
+	public static final String NAME = "ProduireRolesPPCommuneJob";
 
 	public static final String NO_OFS_COMMUNE = "NO_OFS_COMMUNE";
 
-	public ProduireRolesCommunesJob(int sortOrder, String description) {
+	public ProduireRolesPPCommunesJob(int sortOrder, String description) {
 		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		final RegDate today = RegDate.get();
@@ -48,25 +48,25 @@ public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 		final int nbThreads = getNbThreads(params);
 		final Integer noOfsCommune = getOptionalIntegerValue(params, NO_OFS_COMMUNE);
 
-		final ProduireRolesCommunesResults results;
+		final ProduireRolesPPCommunesResults results;
 		if (noOfsCommune != null) {
-			results = getService().produireRolesPourUneCommune(annee, noOfsCommune, nbThreads, statusManager);
+			results = getService().produireRolesPPPourUneCommune(annee, noOfsCommune, nbThreads, statusManager);
 		}
 		else {
-			results = getService().produireRolesPourToutesCommunes(annee, nbThreads, statusManager);
+			results = getService().produireRolesPPPourToutesCommunes(annee, nbThreads, statusManager);
 		}
 
 		// Produit le rapport dans une transaction read-write.
 		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 		template.setReadOnly(false);
-		final RolesCommunesRapport rapport = template.execute(new TransactionCallback<RolesCommunesRapport>() {
+		final RolesCommunesPPRapport rapport = template.execute(new TransactionCallback<RolesCommunesPPRapport>() {
 			@Override
-			public RolesCommunesRapport doInTransaction(TransactionStatus status) {
+			public RolesCommunesPPRapport doInTransaction(TransactionStatus status) {
 				return getRapportService().generateRapport(results, statusManager);
 			}
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des rôles (communes) pour l'année " + annee + " est terminée.", rapport);
+		Audit.success("La production des rôles PP (communes) pour l'année " + annee + " est terminée.", rapport);
 	}
 }

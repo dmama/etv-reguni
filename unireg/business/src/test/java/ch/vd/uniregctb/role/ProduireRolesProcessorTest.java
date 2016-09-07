@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.role;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -14,7 +17,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -22,6 +24,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -34,16 +38,18 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
+import ch.vd.uniregctb.role.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.role.ProduireRolesResults.Erreur;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoCommune;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -140,7 +146,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 				final List<Long> expected =
 						Arrays.asList(ids.paul, ids.incognito, ids.raoul, ids.arnold, ids.victor, ids.geo, ids.donald, ids.johnny, ids.tyler, ids.marc, ids.louis, ids.albertine, rodolf);
 
-				final List<Long> list = processor.getIdsOfAllContribuables(2007);
+				final List<Long> list = processor.getIdsOfAllContribuablesPP(2007);
 				assertNotNull(list);
 				assertEquals(expected, list);
 			}
@@ -203,38 +209,38 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(19, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(2, results.ctbsIgnores.size()); // le diplomate et le sourcier gris
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getInfosCommunes().size());
 
 		{
 			final int ofsCommune = MockCommune.Lausanne.getNoOFS();
-			final InfoCommune infoLausanne = results.getInfoPourCommune(ofsCommune);
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(ofsCommune);
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoPaul = infoLausanne.getInfoPourContribuable(ids.paul);
-			final InfoContribuable infoIncognito = infoLausanne.getInfoPourContribuable(ids.incognito);
-			final InfoContribuable infoRaoul = infoLausanne.getInfoPourContribuable(ids.raoul);
-			final InfoContribuable infoDidier = infoLausanne.getInfoPourContribuable(ids.didier);
-			final InfoContribuable infoLaurent = infoLausanne.getInfoPourContribuable(ids.laurent);
-			final InfoContribuable infoArnold = infoLausanne.getInfoPourContribuable(ids.arnold);
-			final InfoContribuable infoVictor = infoLausanne.getInfoPourContribuable(ids.victor);
-			final InfoContribuable infoAlbertine = infoLausanne.getInfoPourContribuable(ids.albertine);
-			final InfoContribuable infoGeo = infoLausanne.getInfoPourContribuable(ids.geo);
-			final InfoContribuable infoDonald = infoLausanne.getInfoPourContribuable(ids.donald);
-			final InfoContribuable infoJohnny = infoLausanne.getInfoPourContribuable(ids.johnny);
-			final InfoContribuable infoTyler = infoLausanne.getInfoPourContribuable(ids.tyler);
-			final InfoContribuable infoPascal = infoLausanne.getInfoPourContribuable(ids.pascal);
-			final InfoContribuable infoMarc = infoLausanne.getInfoPourContribuable(ids.marc);
-			final InfoContribuable infoLouis = infoLausanne.getInfoPourContribuable(ids.louis);
-			final InfoContribuable infoAlbert = infoLausanne.getInfoPourContribuable(ids.albert);
-			final InfoContribuable infoGeorges = infoLausanne.getInfoPourContribuable(ids.georges);
-			final InfoContribuable infoMarie = infoLausanne.getInfoPourContribuable(ids.marie);
-			final InfoContribuable infoJean = infoLausanne.getInfoPourContribuable(ids.jean);
-			final InfoContribuable infoTom = infoLausanne.getInfoPourContribuable(ids.tom);
+			final InfoContribuablePP infoPaul = infoLausanne.getInfoPourContribuable(ids.paul);
+			final InfoContribuablePP infoIncognito = infoLausanne.getInfoPourContribuable(ids.incognito);
+			final InfoContribuablePP infoRaoul = infoLausanne.getInfoPourContribuable(ids.raoul);
+			final InfoContribuablePP infoDidier = infoLausanne.getInfoPourContribuable(ids.didier);
+			final InfoContribuablePP infoLaurent = infoLausanne.getInfoPourContribuable(ids.laurent);
+			final InfoContribuablePP infoArnold = infoLausanne.getInfoPourContribuable(ids.arnold);
+			final InfoContribuablePP infoVictor = infoLausanne.getInfoPourContribuable(ids.victor);
+			final InfoContribuablePP infoAlbertine = infoLausanne.getInfoPourContribuable(ids.albertine);
+			final InfoContribuablePP infoGeo = infoLausanne.getInfoPourContribuable(ids.geo);
+			final InfoContribuablePP infoDonald = infoLausanne.getInfoPourContribuable(ids.donald);
+			final InfoContribuablePP infoJohnny = infoLausanne.getInfoPourContribuable(ids.johnny);
+			final InfoContribuablePP infoTyler = infoLausanne.getInfoPourContribuable(ids.tyler);
+			final InfoContribuablePP infoPascal = infoLausanne.getInfoPourContribuable(ids.pascal);
+			final InfoContribuablePP infoMarc = infoLausanne.getInfoPourContribuable(ids.marc);
+			final InfoContribuablePP infoLouis = infoLausanne.getInfoPourContribuable(ids.louis);
+			final InfoContribuablePP infoAlbert = infoLausanne.getInfoPourContribuable(ids.albert);
+			final InfoContribuablePP infoGeorges = infoLausanne.getInfoPourContribuable(ids.georges);
+			final InfoContribuablePP infoMarie = infoLausanne.getInfoPourContribuable(ids.marie);
+			final InfoContribuablePP infoJean = infoLausanne.getInfoPourContribuable(ids.jean);
+			final InfoContribuablePP infoTom = infoLausanne.getInfoPourContribuable(ids.tom);
 
 			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
 			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, ofsCommune, date(2007, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoIncognito);
@@ -262,13 +268,13 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 		{
 			final int ofsCommune = MockCommune.Cossonay.getNoOFS();
-			final InfoCommune infoCossonay = results.getInfoPourCommune(ofsCommune);
+			final InfoCommunePP infoCossonay = results.getInfosCommunes().get(ofsCommune);
 			assertNotNull(infoCossonay);
 
-			final InfoContribuable infoPascal = infoCossonay.getInfoPourContribuable(ids.pascal);
-			final InfoContribuable infoMarc = infoCossonay.getInfoPourContribuable(ids.marc);
-			final InfoContribuable infoLouis = infoCossonay.getInfoPourContribuable(ids.louis);
-			final InfoContribuable infoAlbert = infoCossonay.getInfoPourContribuable(ids.albert);
+			final InfoContribuablePP infoPascal = infoCossonay.getInfoPourContribuable(ids.pascal);
+			final InfoContribuablePP infoMarc = infoCossonay.getInfoPourContribuable(ids.marc);
+			final InfoContribuablePP infoLouis = infoCossonay.getInfoPourContribuable(ids.louis);
+			final InfoContribuablePP infoAlbert = infoCossonay.getInfoPourContribuable(ids.albert);
 
 			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
@@ -284,12 +290,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 		Long rodolf = newCtbVaudoisOrdinaireEtImmeubleInvalide();
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(1, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(0, results.infosCommunes.size());
+		assertEquals(0, results.getNoOfsCommunesTraitees().size());
 
 		final Erreur erreur = results.ctbsEnErrors.get(0);
 		assertNotNull(erreur);
@@ -312,18 +318,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoBenjamin = infoLausanne.getInfoPourContribuable(ids.benjamin);
+			final InfoContribuablePP infoBenjamin = infoLausanne.getInfoPourContribuable(ids.benjamin);
 
 			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
@@ -342,28 +348,28 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoBenjamin = infoLausanne.getInfoPourContribuable(idCtb);
+			final InfoContribuablePP infoBenjamin = infoLausanne.getInfoPourContribuable(idCtb);
 
 			assertInfo(idCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
 		{
-			final InfoCommune infoBussigny = results.getInfoPourCommune(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infoBussigny = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infoBussigny);
 
-			final InfoContribuable infoBenjamin = infoBussigny.getInfoPourContribuable(idCtb);
+			final InfoContribuablePP infoBenjamin = infoBussigny.getInfoPourContribuable(idCtb);
 
 			assertInfo(idCtb, TypeContribuable.ORDINAIRE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
@@ -391,28 +397,28 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoBenjamin = infoLausanne.getInfoPourContribuable(idCtb);
+			final InfoContribuablePP infoBenjamin = infoLausanne.getInfoPourContribuable(idCtb);
 
 			assertInfo(idCtb, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
 		{
-			final InfoCommune infoBussigny = results.getInfoPourCommune(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infoBussigny = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infoBussigny);
 
-			final InfoContribuable infoBenjamin = infoBussigny.getInfoPourContribuable(idCtb);
+			final InfoContribuablePP infoBenjamin = infoBussigny.getInfoPourContribuable(idCtb);
 
 			assertInfo(idCtb, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
@@ -443,28 +449,28 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoCtb = infoLausanne.getInfoPourContribuable(idMarie);
+			final InfoContribuablePP infoCtb = infoLausanne.getInfoPourContribuable(idMarie);
 
 			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
 		{
-			final InfoCommune infoBussigny = results.getInfoPourCommune(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infoBussigny = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infoBussigny);
 
-			final InfoContribuable infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
+			final InfoContribuablePP infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
 
 			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), date(2007, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
@@ -495,28 +501,28 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoCtb = infoLausanne.getInfoPourContribuable(idMarie);
+			final InfoContribuablePP infoCtb = infoLausanne.getInfoPourContribuable(idMarie);
 
 			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
 		{
-			final InfoCommune infoBussigny = results.getInfoPourCommune(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infoBussigny = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infoBussigny);
 
-			final InfoContribuable infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
+			final InfoContribuablePP infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
 
 			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
 
@@ -552,18 +558,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(pfRoles, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(pfRoles, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Cossonay.getNoOFS());
+			final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Cossonay.getNoOFS());
 			assertNotNull(infoCommune);
 
-			final InfoContribuable infoCtb = infoCommune.getInfoPourContribuable(ppId);
+			final InfoContribuablePP infoCtb = infoCommune.getInfoPourContribuable(ppId);
 
 			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Cossonay.getNoOFS(), dateArrivee, dateDepartHc, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC,
 			           InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
@@ -606,17 +612,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(pfRoles, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(pfRoles, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
-		final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Cossonay.getNoOFS());
+		final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Cossonay.getNoOFS());
 		assertNotNull(infoCommune);
 
-		final InfoContribuable infoCtb = infoCommune.getInfoPourContribuable(ppId);
+		final InfoContribuablePP infoCtb = infoCommune.getInfoPourContribuable(ppId);
 
 		assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateArrivee, dateDemenagement, MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD,
 		           InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
@@ -641,18 +647,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable infoGeneview = infoLausanne.getInfoPourContribuable(ids.genevieve);
+			final InfoContribuablePP infoGeneview = infoLausanne.getInfoPourContribuable(ids.genevieve);
 			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(2003, 10, 1), null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeneview);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
@@ -673,38 +679,38 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(3, results.infosCommunes.size());
+		assertEquals(3, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infoLausanne = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infoLausanne);
 
-			final InfoContribuable info = infoLausanne.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infoLausanne.getInfoPourContribuable(ppId);
 			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Lausanne.getNoOFS(), date(2005, 1, 1), date(2008, 5, 15), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
 
 		{
-			final InfoCommune infoCroy = results.getInfoPourCommune(MockCommune.Croy.getNoOFS());
+			final InfoCommunePP infoCroy = results.getInfosCommunes().get(MockCommune.Croy.getNoOFS());
 			assertNotNull(infoCroy);
 
-			final InfoContribuable info = infoCroy.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infoCroy.getInfoPourContribuable(ppId);
 			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Croy.getNoOFS(), date(2004, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 
 			assertEquals(1, infoCroy.getInfosContribuables().size());
 		}
 
 		{
-			final InfoCommune infoRomainmotier = results.getInfoPourCommune(MockCommune.RomainmotierEnvy.getNoOFS());
+			final InfoCommunePP infoRomainmotier = results.getInfosCommunes().get(MockCommune.RomainmotierEnvy.getNoOFS());
 			assertNotNull(infoRomainmotier);
 
-			final InfoContribuable info = infoRomainmotier.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infoRomainmotier.getInfoPourContribuable(ppId);
 			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.RomainmotierEnvy.getNoOFS(), date(2003, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 
 			assertEquals(1, infoRomainmotier.getInfosContribuables().size());
@@ -759,31 +765,31 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		// Lausanne
 		{
-			final InfoCommune infos = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 			assertNotNull(infos);
 			assertEquals(1, infos.getInfosContribuables().size());
 
-			final InfoContribuable infosCtb = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP infosCtb = infos.getInfoPourContribuable(ppId);
 			assertNotNull(infosCtb);
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFin, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 		}
 
 		// Cossonay
 		{
-			final InfoCommune infos = results.getInfoPourCommune(MockCommune.Cossonay.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Cossonay.getNoOFS());
 			assertNotNull(infos);
 			assertEquals(1, infos.getInfosContribuables().size());
 
-			final InfoContribuable infosCtb = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP infosCtb = infos.getInfoPourContribuable(ppId);
 			assertNotNull(infosCtb);
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateDebut, dateFin, MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 		}
@@ -813,14 +819,14 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
-		final InfoCommune infos = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+		final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 		assertNotNull(infos);
 		assertEquals(1, infos.getInfosContribuables().size());
 
@@ -852,18 +858,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
-		final InfoCommune infos = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+		final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
 		assertNotNull(infos);
 		assertEquals(1, infos.getInfosContribuables().size());
 
-		final InfoContribuable infosCtb = infos.getInfoPourContribuable(idpp);
+		final InfoContribuablePP infosCtb = infos.getInfoPourContribuable(idpp);
 		assertNotNull(infosCtb);
 		assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arriveeLausanne, departLausanne, MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 	}
@@ -891,19 +897,19 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourUnOfficeImpot(2007, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
+		final ProduireRolesOIDsResults results = processor.runPourUnOfficeImpot(2007, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Renens.getNoOFS()));
+			final Collection<InfoContribuablePP> infosRegroupees = results.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Renens.getNoOFS()));
 			assertNotNull(infosRegroupees);
 			assertEquals(1, infosRegroupees.size());
 
-			final InfoContribuable infoCtb = infosRegroupees.get(idpp);
+			final InfoContribuablePP infoCtb = infosRegroupees.iterator().next();
 			assertNotNull(infoCtb);
 			assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), arriveeRenens, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
 		}
@@ -937,23 +943,27 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourUnOfficeImpot(2007, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
+		final ProduireRolesOIDsResults results = processor.runPourUnOfficeImpot(2007, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
 		assertNotNull(results);
 		assertEquals(6, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
 
 		{
-			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFS(), MockCommune.Renens.getNoOFS()));
+			final Collection<InfoContribuablePP> infosRegroupees = results.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFS(), MockCommune.Renens.getNoOFS()));
 			assertNotNull(infosRegroupees);
 			assertEquals(6, infosRegroupees.size());
+			final Map<Long, InfoContribuablePP> map = new HashMap<>(infosRegroupees.size());
+			for (InfoContribuablePP info : infosRegroupees) {
+				map.put(info.noCtb, info);
+			}
 
-			final InfoContribuable infoPaul = infosRegroupees.get(ids.paul);
-			final InfoContribuable infoRaoul = infosRegroupees.get(ids.raoul);
-			final InfoContribuable infoDidier = infosRegroupees.get(ids.didier);
-			final InfoContribuable infoArnold = infosRegroupees.get(ids.arnold);
-			final InfoContribuable infoVictor = infosRegroupees.get(ids.victor);
-			final InfoContribuable infoBalthazar = infosRegroupees.get(ids.balthazar);
+			final InfoContribuablePP infoPaul = map.get(ids.paul);
+			final InfoContribuablePP infoRaoul = map.get(ids.raoul);
+			final InfoContribuablePP infoDidier = map.get(ids.didier);
+			final InfoContribuablePP infoArnold = map.get(ids.arnold);
+			final InfoContribuablePP infoVictor = map.get(ids.victor);
+			final InfoContribuablePP infoBalthazar = map.get(ids.balthazar);
 
 			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
 			assertInfo(ids.raoul, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoRaoul);
@@ -967,7 +977,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	private static void assertInfo(long id, TypeContribuable type, int ofsCommune, RegDate ouvertureFor, @Nullable RegDate fermetureFor,
 	                               MotifFor motifOuverture, @Nullable MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
-	                               @Nullable TypeContribuable ancienTypeContribuable, InfoContribuable info) {
+	                               @Nullable TypeContribuable ancienTypeContribuable, InfoContribuable<?> info) {
 		assertNotNull(info);
 		assertEquals(id, info.noCtb);
 		assertEquals(type, info.getTypeCtb());
@@ -981,8 +991,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 	private static void assertInfoExtremite(RegDate date, MotifFor motif, Pair<RegDate, MotifFor> infosExtremite) {
 		if (infosExtremite != null) {
-			assertEquals(date, infosExtremite.getFirst());
-			assertEquals(motif, infosExtremite.getSecond());
+			assertEquals(date, infosExtremite.getLeft());
+			assertEquals(motif, infosExtremite.getRight());
 		}
 		else {
 			assertNull(date);
@@ -1365,12 +1375,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(1, results.ctbsIgnores.size());
-		assertEquals(0, results.infosCommunes.size());
+		assertEquals(0, results.getNoOfsCommunesTraitees().size());
 
 		final ProduireRolesResults.Ignore ignore = results.ctbsIgnores.get(0);
 		assertNotNull(ignore);
@@ -1390,12 +1400,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(1, results.ctbsIgnores.size());
-		assertEquals(0, results.infosCommunes.size());
+		assertEquals(0, results.getNoOfsCommunesTraitees().size());
 
 		final ProduireRolesResults.Ignore ignore = results.ctbsIgnores.get(0);
 		assertNotNull(ignore);
@@ -1419,12 +1429,12 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(1, results.ctbsIgnores.size());
-		assertEquals(0, results.infosCommunes.size());
+		assertEquals(0, results.getNoOfsCommunesTraitees().size());
 
 		final ProduireRolesResults.Ignore ignore = results.ctbsIgnores.get(0);
 		assertNotNull(ignore);
@@ -1450,18 +1460,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
@@ -1491,18 +1501,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2008, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Cossonay.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Cossonay.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
@@ -1536,24 +1546,24 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2011, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2011, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Echallens.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Echallens.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Echallens.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Moudon.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Moudon.getNoOFS());
 			assertNotNull(infos);
 
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
@@ -1592,18 +1602,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(communeAvant.getDateFinValidite().year(), 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(communeAvant.getDateFinValidite().year(), 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Villette.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Villette.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Villette.getNoOFS(), arrivee, communeAvant.getDateFinValidite(), MotifFor.ARRIVEE_HS, MotifFor.FUSION_COMMUNES, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
@@ -1641,27 +1651,27 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2012, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2012, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Aigle.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Aigle.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			// c'est assez bizarre de trouver un NON_ASSUJETTI sur Aigle alors qu'il y a un immeuble, mais c'est dû au
@@ -1703,27 +1713,27 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(2012, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(2012, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(2, results.infosCommunes.size());
+		assertEquals(2, results.getNoOfsCommunesTraitees().size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Aigle.getNoOFS());
+			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Aigle.getNoOFS());
 			assertNotNull(infos);
 
-			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Aigle.getNoOFS(), dateAchat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
@@ -1778,22 +1788,22 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		});
 
 		// calcul des rôles
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(anneeRoles, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(anneeRoles, 1, null);
 		assertNotNull(results);
 		assertEquals(2, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(1, results.infosCommunes.size());
+		assertEquals(1, results.getNoOfsCommunesTraitees().size());
 
 		// quelle information obtenue sur la commune de Leysin ? (= le couple seulement)
 		// (en effet, la personne physique, bien que résidente célibataire un bon moment sur Leysin, n'y a pas d'assujettissement, et comme elle n'en avait pas
 		// non plus l'année d'avant, elle est tout simplement omise...)
 		{
-			final InfoCommune infoCommune = results.infosCommunes.get(MockCommune.Leysin.getNoOFS());
+			final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Leysin.getNoOFS());
 			assertNotNull(infoCommune);
 			assertEquals(1, infoCommune.getInfosContribuables().size());
 
-			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.mcId);
+			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
 			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Leysin.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
@@ -1853,43 +1863,43 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		});
 
 		// calcul des rôles
-		final ProduireRolesResults<?> results = processor.runPourToutesCommunes(anneeRoles, 1, null);
+		final ProduireRolesPPCommunesResults results = processor.runPPPourToutesCommunes(anneeRoles, 1, null);
 		assertNotNull(results);
 		assertEquals(2, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
-		assertEquals(3, results.infosCommunes.size());      // le sentier, l'abbaye et le pont
+		assertEquals(3, results.getNoOfsCommunesTraitees().size());      // le sentier, l'abbaye et le pont
 
 		// informations obtenues sur les communes ?
 		{
 			// le sentier
-			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Fraction.LeSentier.getNoOFS());
+			final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Fraction.LeSentier.getNoOFS());
 			assertNotNull(infoCommune);
 			assertEquals(1, infoCommune.getInfosContribuables().size());
 
-			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.ppId);
+			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.ppId);
 			assertNotNull(info);
 
 			assertInfo(ids.ppId, TypeContribuable.SOURCE, MockCommune.Fraction.LeSentier.getNoOFS(), date(2000, 1, 1), dateMariage.getOneDayBefore(), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 		}
 		{
 			// l'abbaye
-			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Fraction.LAbbaye.getNoOFS());
+			final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Fraction.LAbbaye.getNoOFS());
 			assertNotNull(infoCommune);
     		assertEquals(1, infoCommune.getInfosContribuables().size());
 
-			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.mcId);
+			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
 			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LAbbaye.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
 			// le pont
-			final InfoCommune infoCommune = results.getInfoPourCommune(MockCommune.Fraction.LePont.getNoOFS());
+			final InfoCommunePP infoCommune = results.getInfosCommunes().get(MockCommune.Fraction.LePont.getNoOFS());
 			assertNotNull(infoCommune);
 			assertEquals(1, infoCommune.getInfosContribuables().size());
 
-			final InfoContribuable info = infoCommune.getInfoPourContribuable(ids.mcId);
+			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
 			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LePont.getNoOFS(), dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
@@ -1935,9 +1945,410 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(0, res.ctbsIgnores.size());
 		assertEquals(1, res.ctbsTraites);
 
-		final Map<Long, InfoContribuable> infos = res.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.Prilly.getNoOFS(), MockCommune.VufflensLaVille.getNoOFS()));
+		final Collection<InfoContribuablePP> infos = res.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.Prilly.getNoOFS(), MockCommune.VufflensLaVille.getNoOFS()));
 		assertNotNull(infos);
 		assertEquals(1, infos.size());
-		assertEquals((Long) ppId, infos.keySet().iterator().next());
+		assertEquals(ppId, infos.iterator().next().noCtb);
+	}
+
+	@Test
+	public void testRolesPMSimple() throws Exception {
+
+		// entreprise HC qui possède un immeuble dans une commune vaudoise
+		final RegDate dateDebut = date(2010, 5, 6);
+		final RegDate dateAchat = date(2012, 8, 14);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+				addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(1, res.getNoOfsCommunesTraitees().size());      // juste Grandson
+
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Grandson.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
+			assertNotNull(info);
+
+			assertInfo(pmId, TypeContribuable.HORS_CANTON, MockCommune.Grandson.getNoOFS(), dateAchat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(2015, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Bern.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, info.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testRolesPMVenteAvantFinExercice() throws Exception {
+
+		// entreprise HC qui possède un immeuble dans une commune vaudoise
+		final RegDate dateDebut = date(2010, 5, 6);
+		final RegDate dateAchat = date(2012, 8, 14);
+		final RegDate dateVente = date(2015, 2, 4);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+				addForPrincipal(pm, dateAchat, null, MockCommune.Bern);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(1, res.getNoOfsCommunesTraitees().size());      // juste Grandson
+
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Grandson.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
+			assertNotNull(info);
+
+			assertInfo(pmId, TypeContribuable.HORS_CANTON, MockCommune.Grandson.getNoOFS(), dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertEquals(date(2015, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Bern.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, info.getTafForPrincipal());
+		}
+	}
+
+	/**
+	 * Au début, on pensait que pour les entreprises vaudoises, les fors secondaires ne devait pas intervenir...
+	 * Et puis on est revenu sur cette décision (mail de PTF, 07.09.2016), donc maintenant, c
+	 */
+	@Test
+	public void testRolesPMEntrepriseVaudoiseAvecForSecondaires() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 6);
+		final RegDate dateAchat = date(2012, 8, 14);
+		final RegDate dateVente = date(2015, 2, 4);
+		final String ide = "CHE213456789";
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addIdentificationEntreprise(pm, ide);
+				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(2, res.getNoOfsCommunesTraitees().size());      // Lausanne et Grandson
+
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
+			assertNotNull(info);
+
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(2015, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertEquals(ide, info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Grandson.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
+			assertNotNull(info);
+
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Grandson.getNoOFS(), dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertEquals(date(2015, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertEquals(ide, info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testFailliteAnneePrecedentBouclement() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 10);
+		final RegDate dateFaillite = date(2014, 12, 6);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Lausanne);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(1, res.getNoOfsCommunesTraitees().size());      // juste Lausanne...
+
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
+			assertNotNull(info);
+
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFaillite, MotifFor.DEBUT_EXPLOITATION, MotifFor.FAILLITE, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertEquals(date(2015, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testRolesPMPremiereAnneeSansBouclement() throws Exception {
+
+		final RegDate dateDebut = date(2015, 5, 10);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut.addYears(1), DayMonth.get(6, 30), 12);      // bouclements depuis 2016 seulement
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois -> rien
+		final ProduireRolesPMCommunesResults res2015 = processor.runPMPourToutesCommunes(2015, 1, null);
+		assertNotNull(res2015);
+		assertEquals(0, res2015.ctbsEnErrors.size());
+		assertEquals(0, res2015.ctbsIgnores.size());
+		assertEquals(0, res2015.ctbsTraites);
+		assertEquals(0, res2015.getNoOfsCommunesTraitees().size());
+
+		// rôles 2016 vaudois -> là l'entreprise apparaît
+		final ProduireRolesPMCommunesResults res2016 = processor.runPMPourToutesCommunes(2016, 1, null);
+		assertNotNull(res2016);
+		assertEquals(0, res2016.ctbsEnErrors.size());
+		assertEquals(0, res2016.ctbsIgnores.size());
+		assertEquals(1, res2016.ctbsTraites);
+		assertEquals(1, res2016.getNoOfsCommunesTraitees().size());      // juste Lausanne...
+
+		{
+			final InfoCommunePM infoCommune = res2016.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2016, 6, 30));
+			assertNotNull(info);
+
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(2016, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0106_SOCIETE_ANONYME, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testRolesPMDeuxBouclementsDansAnnee() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 10);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);              // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+				addBouclement(pm, date(2015, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(1, res.getNoOfsCommunesTraitees().size());      // juste Lausanne...
+
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(2, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info03 = infoCommune.getInfoPourContribuable(pmId, date(2015, 3, 31));
+			assertNotNull(info03);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info03);
+			assertEquals(date(2015, 3, 31), info03.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info03.getFormeJuridique());
+			assertNull(info03.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info03.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info03.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info03.getTafForPrincipal());
+
+			final InfoContribuablePM info12 = infoCommune.getInfoPourContribuable(pmId, date(2015, 12, 31));
+			assertNotNull(info12);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info12);
+			assertEquals(date(2015, 12, 31), info12.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info12.getFormeJuridique());
+			assertNull(info12.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info12.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info12.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info12.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testRolesPMDeuxBouclementsDansAnneeAvecDemenagementEntreDeux() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 10);
+		final int anneeRoles = 2015;
+		final RegDate dateDemenagement = date(anneeRoles, 7, 18);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);                    // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+				addBouclement(pm, date(anneeRoles, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pm, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(anneeRoles, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(2, res.getNoOfsCommunesTraitees().size());      // Lausanne et Morges
+
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(2, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info03 = infoCommune.getInfoPourContribuable(pmId, date(anneeRoles, 3, 31));
+			assertNotNull(info03);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info03);
+			assertEquals(date(anneeRoles, 3, 31), info03.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info03.getFormeJuridique());
+			assertNull(info03.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info03.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info03.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info03.getTafForPrincipal());
+
+			final InfoContribuablePM info12 = infoCommune.getInfoPourContribuable(pmId, date(anneeRoles, 12, 31));
+			assertNotNull(info12);
+			assertInfo(pmId, TypeContribuable.NON_ASSUJETTI, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, info12);
+			assertEquals(date(anneeRoles, 12, 31), info12.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info12.getFormeJuridique());
+			assertNull(info12.getNoIde());
+			assertEquals((Integer) MockCommune.Morges.getNoOFS(), info12.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info12.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info12.getTafForPrincipal());
+		}
+		{
+			final InfoCommunePM infoCommune = res.getInfosCommunes().get(MockCommune.Morges.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.getInfosContribuables().size());
+
+			final InfoContribuablePM info12 = infoCommune.getInfoPourContribuable(pmId, date(anneeRoles, 12, 31));
+			assertNotNull(info12);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Morges.getNoOFS(), dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info12);
+			assertEquals(date(anneeRoles, 12, 31), info12.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info12.getFormeJuridique());
+			assertNull(info12.getNoIde());
+			assertEquals((Integer) MockCommune.Morges.getNoOFS(), info12.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info12.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info12.getTafForPrincipal());
+		}
 	}
 }

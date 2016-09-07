@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -66,11 +65,6 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	@Nullable
 	private List<Assujettissement> determine(Entreprise entreprise, int annee) throws AssujettissementException {
 		return determine(AssujettissementHelper.yearLimiting(calculator, annee), entreprise, null);
-	}
-	
-	@Nullable
-	private List<Assujettissement> determine(Entreprise entreprise, DateRange range, boolean collate) throws AssujettissementException {
-		return determine(AssujettissementHelper.rangeLimiting(calculator, range, collate), entreprise, null);
 	}
 
 	@Test

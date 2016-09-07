@@ -9,6 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -122,7 +123,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 
 		final List<Assujettissement> list;
 		try {
-			list = assujettissementService.determine(ctb, null, true);
+			list = assujettissementService.determine(ctb, (DateRange) null);
 		}
 		catch (Exception e) {
 			return "assujettissement exception:" + e.getMessage();

@@ -28,7 +28,7 @@ import ch.vd.uniregctb.validation.ValidationService;
  */
 public class AssujettissementServiceImpl implements AssujettissementService, InitializingBean {
 
-	private ValidationService validationService = null;
+	private ValidationService validationService;
 	private TiersService tiersService;
 
 	public void setValidationService(ValidationService validationService) {
@@ -260,14 +260,26 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 	}
 
 	@Override
-	public List<Assujettissement> determine(Contribuable contribuable, @Nullable final DateRange range, boolean collate) throws AssujettissementException {
+	public List<Assujettissement> determine(Contribuable contribuable, @Nullable final DateRange range) throws AssujettissementException {
 		final AssujettissementCalculator<? super Contribuable> calculator = findCalculator(contribuable);
 		if (calculator == null) {
 			// pas de calculateur -> pas d'assujettissement
 			return null;
 		}
 
-		final AssujettissementCalculator<? super Contribuable> limited = AssujettissementHelper.rangeLimiting(calculator, range, collate);
-		return determineAssujettissement(contribuable, limited, null);
+		final AssujettissementCalculator<? super Contribuable> limiting = AssujettissementHelper.collatedRangeLimiting(calculator, range);
+		return determineAssujettissement(contribuable, limiting, null);
+	}
+
+	@Override
+	public List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException {
+		final AssujettissementCalculator<? super Contribuable> calculator = findCalculator(contribuable);
+		if (calculator == null) {
+			// pas de calculateur -> pas d'assujettissement
+			return null;
+		}
+
+		final AssujettissementCalculator<? super Contribuable> limiting = AssujettissementHelper.rangeLimiting(calculator, splittingRanges);
+		return determineAssujettissement(contribuable, limiting, null);
 	}
 }

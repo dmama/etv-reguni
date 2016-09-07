@@ -3,6 +3,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -100,7 +101,18 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 	
 	@Nullable
 	private List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb, DateRange range, boolean collate) throws AssujettissementException {
-		return determine(AssujettissementHelper.rangeLimiting(calculator, range, collate), ctb, null);
+		final AssujettissementCalculator<ContribuableImpositionPersonnesPhysiques> calc;
+		if (collate) {
+			calc = AssujettissementHelper.collatedRangeLimiting(calculator, range);
+		}
+		else {
+			final List<DateRange> splitters = new LinkedList<>();
+			for (int year = range.getDateDebut().year() ; year <= range.getDateFin().year() ; ++ year) {
+				splitters.add(new DateRangeHelper.Range(date(year, 1, 1), date(year, 12, 31)));
+			}
+			calc = AssujettissementHelper.rangeLimiting(calculator, splitters);
+		}
+		return determine(calc, ctb, null);
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000001&print=true&title=${methodName}")

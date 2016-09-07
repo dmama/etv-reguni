@@ -25,6 +25,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -42,8 +43,10 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -54,6 +57,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionFors;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
+import ch.vd.uniregctb.metier.assujettissement.DecompositionForsPeriode;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -62,12 +66,11 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierMixte;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoCommune;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeAssujettissement;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoFor;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.uniregctb.role.InfoContribuable.TypeAssujettissement;
+import ch.vd.uniregctb.role.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -130,14 +133,14 @@ public class ProduireRolesProcessor {
 
 		@Override
 		public Set<Integer> getCommunes(Integer ofsReference) {
-			return new HashSet<>(Arrays.asList(ofsReference));
+			return Collections.singleton(ofsReference);
 		}
 	}
 
-	private static class GroupementCommunesPourOID implements GroupementCommunes {
+	private static class GroupementCommunesPourOfficeImpot implements GroupementCommunes {
 		private final Set<Integer> ofsCommunes;
 
-		private GroupementCommunesPourOID(Set<Integer> ofsCommunes) {
+		private GroupementCommunesPourOfficeImpot(Set<Integer> ofsCommunes) {
 			this.ofsCommunes = ofsCommunes;
 		}
 
@@ -170,6 +173,13 @@ public class ProduireRolesProcessor {
 		 * Retourne le groupement de communes à utiliser pour la recherche de fors historiques
 		 */
 		GroupementCommunes getGroupementCommunes();
+
+		/**
+		 * Détermine si un contribuable sera pris en compte dans le traitement (peut être utile si des calculs
+		 * non-négligeables sont nécessaires - et carrément impossibles en base - pour déterminer si un contribuable
+		 * doit apparaître dans les rôles)
+		 */
+		boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) throws ServiceException;
 	}
 
 	/**
@@ -236,7 +246,9 @@ public class ProduireRolesProcessor {
 					final Contribuable ctb = (Contribuable) tiers;
 
 					try {
-						processContribuable(anneePeriode, rapport, groupement, ctb);
+						if (variante.isContribuableInteressant(ctb, anneePeriode)) {
+							processContribuable(anneePeriode, rapport, groupement, ctb);
+						}
 					}
 					catch (Exception e) {
 						final String msgException = String.format("Exception levée lors du traitement du contribuable %s", FormatNumeroHelper.numeroCTBToDisplay(ctbId));
@@ -304,30 +316,36 @@ public class ProduireRolesProcessor {
 	}
 
 	/**
-	 * Produit la liste de contribuables de toutes les communes (et fractions de commune) vaudoise pour la période fiscale spécifiée.
+	 * Produit la liste de contribuables PP de toutes les communes (et fractions de commune) vaudoise pour la période fiscale spécifiée.
 	 *
 	 * @param anneePeriode l'année de la période fiscale considérée.
 	 * @return un rapport (technique) sur les rôles par commune et contribuables.
 	 */
-	public ProduireRolesCommunesResults runPourToutesCommunes(final int anneePeriode, final int nbThreads, @Nullable final StatusManager s) throws ServiceException {
+	public ProduireRolesPPCommunesResults runPPPourToutesCommunes(final int anneePeriode, final int nbThreads, @Nullable final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
-		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesCommunesResults>() {
+		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesPPCommunesResults>() {
 			@Override
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
-				return getIdsOfAllContribuables(anneePeriode);
+				return getIdsOfAllContribuablesPP(anneePeriode);
 			}
 
 			@Override
-			public ProduireRolesCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesCommunesResults(anneePeriode, nbThreads, today, tiersService, adresseService);
+			public ProduireRolesPPCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesPPCommunesResults(anneePeriode, nbThreads, today, tiersService, adresseService);
 			}
 
 			@Override
 			public GroupementCommunes getGroupementCommunes() {
 				return communeParCommune;
+			}
+
+			@Override
+			public boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) {
+				// la requête en base est suffisante...
+				return true;
 			}
 		});
 	}
@@ -344,27 +362,160 @@ public class ProduireRolesProcessor {
 	 *            le numéro Ofs de la commune à traiter
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
-	public ProduireRolesCommunesResults runPourUneCommune(final int anneePeriode, final int noOfsCommune, final int nbThreads, final StatusManager s) throws ServiceException {
+	public ProduireRolesPPCommunesResults runPPPourUneCommune(final int anneePeriode, final int noOfsCommune, final int nbThreads, final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
-		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesCommunesResults>() {
+		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesPPCommunesResults>() {
 			@Override
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
-				return getIdsOfAllContribuablesSurCommunes(anneePeriode, Arrays.asList(noOfsCommune));
+				return getIdsOfAllContribuablesPPSurCommunes(anneePeriode, Collections.singletonList(noOfsCommune));
 			}
 
 			@Override
-			public ProduireRolesCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesCommunesResults(anneePeriode, noOfsCommune, nbThreads, today, tiersService, adresseService);
+			public ProduireRolesPPCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesPPCommunesResults(anneePeriode, noOfsCommune, nbThreads, today, tiersService, adresseService);
 			}
 
 			@Override
 			public GroupementCommunes getGroupementCommunes() {
 				return communeParCommune;
 			}
+
+			@Override
+			public boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) {
+				// la requête en base est suffisante...
+				return true;
+			}
 		});
+	}
+
+	/**
+	 * Produit la liste de contribuables PM de toutes les communes (et fractions de commune) vaudoise pour la période fiscale spécifiée.
+	 *
+	 * @param anneePeriode l'année de la période fiscale considérée.
+	 * @return un rapport (technique) sur les rôles par commune et contribuables.
+	 */
+	public ProduireRolesPMCommunesResults runPMPourToutesCommunes(final int anneePeriode, final int nbThreads, @Nullable final StatusManager s) throws ServiceException {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final GroupementCommunes communeParCommune = new CommuneParCommune();
+
+		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesPMCommunesResults>() {
+			@Override
+			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
+				return getIdsOfAllContribuablesPM();
+			}
+
+			@Override
+			public ProduireRolesPMCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesPMCommunesResults(anneePeriode, nbThreads, today, tiersService, adresseService);
+			}
+
+			@Override
+			public GroupementCommunes getGroupementCommunes() {
+				return communeParCommune;
+			}
+
+			@Override
+			public boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) throws ServiceException {
+				// la requête en base n'est pas suffisante... il faut voir avec les PFs
+				try {
+					final List<Assujettissement> assujettissements = assujettissementService.determine(ctb);
+					final List<DateRange> exercicesInteressants = getRangesExercicesCommerciauxInteressants((Entreprise) ctb, anneePeriode);
+
+					// si on a une intersection entre les deux collections (assujettissements & exercices récents),
+					// alors on prend l'entreprise
+					return DateRangeHelper.intersections(exercicesInteressants, assujettissements) != null;
+				}
+				catch (AssujettissementException e) {
+					throw new ServiceException("Assujettissement incalculable sur l'entreprise " + FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()), e);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Produit la liste de contribuables PM d'une commune (ou fraction de commune) vaudoise pour la période fiscale spécifiée.
+	 * <p>
+	 * Note: le rapport peut contenir quelques résultats pour des communes autres que la commune spécifiée, en fonction des déménagement des
+	 * contribuables.
+	 *
+	 * @param anneePeriode l'année de la période fiscale considérée.
+	 * @param noOfsCommune le numéro Ofs de la commune à traiter
+	 * @return un rapport (technique) sur les rôles par commune et contribuables.
+	 */
+	public ProduireRolesPMCommunesResults runPMPourUneCommune(final int anneePeriode, final int noOfsCommune, final int nbThreads, @Nullable final StatusManager s) throws ServiceException {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final GroupementCommunes communeParCommune = new CommuneParCommune();
+		final Set<Integer> communesInteressantes = Collections.singleton(noOfsCommune);
+
+		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesPMCommunesResults>() {
+			@Override
+			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
+				return getIdsOfAllContribuablesPMSurCommunes(communesInteressantes);
+			}
+
+			@Override
+			public ProduireRolesPMCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesPMCommunesResults(anneePeriode, noOfsCommune, nbThreads, today, tiersService, adresseService);
+			}
+
+			@Override
+			public GroupementCommunes getGroupementCommunes() {
+				return communeParCommune;
+			}
+
+			@Override
+			public boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) throws ServiceException {
+				// la requête en base n'est pas suffisante... il faut voir avec les PFs
+				try {
+					final List<Assujettissement> assujettissements = assujettissementService.determinePourCommunes(ctb, communesInteressantes);
+					final List<DateRange> exercicesInteressants = getRangesExercicesCommerciauxInteressants((Entreprise) ctb, anneePeriode);
+
+					// si on a une intersection entre les deux collections (assujettissements & exercices récents),
+					// alors on prend l'entreprise
+					return DateRangeHelper.intersections(exercicesInteressants, assujettissements) != null;
+				}
+				catch (AssujettissementException e) {
+					throw new ServiceException("Assujettissement incalculable sur l'entreprise " + FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()), e);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Ne nous intéressent que les exercices commerciaux de l'année donnée et, éventuellement, le dernier exercice
+	 * avant le premier de l'année donnée
+	 * @param entreprise entreprise ciblée
+	 * @param anneePeriode année ciblée
+	 * @return la liste de ces ranges d'exercices commerciaux
+	 */
+	private List<DateRange> getRangesExercicesCommerciauxInteressants(Entreprise entreprise, int anneePeriode) {
+		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+
+		// ne nous intéressent que les exercices commerciaux de l'année donnée et, éventuellement, le dernier
+		// avant le premier de l'année donnée
+		final List<DateRange> exercicesInteressants = new ArrayList<>(exercices.size());
+		final MovingWindow<ExerciceCommercial> wnd = new MovingWindow<>(exercices);
+		while (wnd.hasNext()) {
+			final MovingWindow.Snapshot<ExerciceCommercial> snap = wnd.next();
+			final ExerciceCommercial current = snap.getCurrent();
+			if (current.getDateFin().year() == anneePeriode) {
+				final ExerciceCommercial previous = snap.getPrevious();
+				if (previous != null && previous.getDateFin().year() == anneePeriode - 1) {
+					exercicesInteressants.add(previous);
+				}
+				exercicesInteressants.add(current);
+			}
+			else if (current.getDateFin().year() == anneePeriode - 1 && snap.getNext() == null) {
+				exercicesInteressants.add(current);
+			}
+		}
+
+		return exercicesInteressants;
 	}
 
 	/**
@@ -381,6 +532,57 @@ public class ProduireRolesProcessor {
 	 */
 	public ProduireRolesOIDsResults runPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager s) throws ServiceException {
 		return runPourUnOfficeImpot(anneePeriode, oid, nbThreads, null, s, false, DEFAULT_PROGRESS_CALCULATOR);
+	}
+
+	/**
+	 * Produit la liste des contribuables PM du canton
+	 * @param anneePeriode la période fiscale concernée
+	 * @param nbThreads le nombre de threads de processing souhaité
+	 * @param s status manager
+	 * @return un rapport (technique) sur les rôles des contribuables PM du canton
+	 * @throws ServiceException en cas de souci
+	 */
+	public ProduireRolesOIPMResults runPourOfficePersonnesMorales(int anneePeriode, int nbThreads, StatusManager s) throws ServiceException {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final List<Commune> communesVaudoises = infraService.getCommunesDeVaud();
+		final Set<Integer> ofsCommunesVaudoises = new HashSet<>(communesVaudoises.size());
+		for (Commune commune : communesVaudoises) {
+			ofsCommunesVaudoises.add(commune.getNoOFS());
+		}
+		final GroupementCommunes groupementCommunes = new GroupementCommunesPourOfficeImpot(ofsCommunesVaudoises);
+
+		return doRun(anneePeriode, nbThreads, null, status, DEFAULT_PROGRESS_CALCULATOR, new VarianteProductionRole<ProduireRolesOIPMResults>() {
+			@Override
+			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
+				return getIdsOfAllContribuablesPM();
+			}
+
+			@Override
+			public ProduireRolesOIPMResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesOIPMResults(anneePeriode, nbThreads, today, tiersService, adresseService);
+			}
+
+			@Override
+			public GroupementCommunes getGroupementCommunes() {
+				return groupementCommunes;
+			}
+
+			@Override
+			public boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) throws ServiceException {
+				// la requête en base n'est pas suffisante... il faut voir avec les PFs
+				try {
+					final List<Assujettissement> assujettissements = assujettissementService.determine(ctb);
+					final List<DateRange> exercicesInteressants = getRangesExercicesCommerciauxInteressants((Entreprise) ctb, anneePeriode);
+
+					// si on a une intersection entre les deux collections (assujettissements & exercices récents),
+					// alors on prend l'entreprise
+					return DateRangeHelper.intersections(exercicesInteressants, assujettissements) != null;
+				}
+				catch (AssujettissementException e) {
+					throw new ServiceException("Assujettissement incalculable sur l'entreprise " + FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()), e);
+				}
+			}
+		});
 	}
 
 	/**
@@ -453,12 +655,12 @@ public class ProduireRolesProcessor {
 		}
 
 		if (!nosOfsCommunes.isEmpty() || !nullSiAucuneCommune) {
-			final GroupementCommunes groupement = new GroupementCommunesPourOID(nosOfsCommunes);
+			final GroupementCommunes groupement = new GroupementCommunesPourOfficeImpot(nosOfsCommunes);
 			return doRun(anneePeriode, nbThreads, statusMessagePrefixe, status, progressCalculator, new VarianteProductionRole<ProduireRolesOIDsResults>() {
 
 				@Override
 				public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
-					return getIdsOfAllContribuablesSurCommunes(anneePeriode, nosOfsCommunes);
+					return getIdsOfAllContribuablesPPSurCommunes(anneePeriode, nosOfsCommunes);
 				}
 
 				@Override
@@ -469,6 +671,12 @@ public class ProduireRolesProcessor {
 				@Override
 				public GroupementCommunes getGroupementCommunes() {
 					return groupement;
+				}
+
+				@Override
+				public boolean isContribuableInteressant(Contribuable ctb, int anneePeriode) {
+					// la requête en base est suffisante...
+					return true;
 				}
 			});
 		}
@@ -578,7 +786,7 @@ public class ProduireRolesProcessor {
 	 */
 	private void processAssujettissements(int anneePeriode, Contribuable contribuable, ProduireRolesResults rapport, GroupementCommunes groupement) throws TraitementException {
 
-		final AssujettissementContainer assujettissementContainer = new AssujettissementContainer(contribuable, anneePeriode, rapport, assujettissementService);
+		final AssujettissementContainer assujettissementContainer = new AssujettissementContainer(contribuable, anneePeriode, rapport, assujettissementService, tiersService);
 
 		// traite les assujettissements
 		final List<Assujettissement> assujettissements = assujettissementContainer.getAssujettissementAnneePeriode();
@@ -588,11 +796,10 @@ public class ProduireRolesProcessor {
 			}
 		}
 		else {
-
-			final DecompositionForsAnneeComplete fors = assujettissementContainer.getForsAnneePeriode();
+			final DecompositionFors fors = assujettissementContainer.getForsAnneePeriode();
 			if (!fors.isFullyEmpty()) {
 				// pas d'assujettissement, mais des fors quand-même... A priori ils se terminent dans la période...
-				processNonAssujettissement(fors, assujettissementContainer, groupement);
+				processNonAssujettissement(fors, assujettissementContainer, groupement, RegDate.get(anneePeriode, 1, 1));
 			}
 		}
 	}
@@ -640,10 +847,10 @@ public class ProduireRolesProcessor {
 	 * @param groupement
 	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	private void processNonAssujettissement(DecompositionForsAnneeComplete fors, AssujettissementContainer assujettissementContainer, GroupementCommunes groupement) throws TraitementException {
+	private void processNonAssujettissement(DecompositionFors fors, AssujettissementContainer assujettissementContainer, GroupementCommunes groupement, RegDate dateDebutPeriodeCourante) throws TraitementException {
 
 		// calcul de l'assujettissement dans la période précédente
-		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
+		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente(dateDebutPeriodeCourante);
 
 		// prenons ensuite les communes des fors de la décomposition
 		final Set<Integer> ofsCommunes = new HashSet<>(fors.principauxDansLaPeriode.size() + fors.secondairesDansLaPeriode.size());
@@ -658,7 +865,7 @@ public class ProduireRolesProcessor {
 
 		// sur chacune de ces communes, il faut ensuite indiquer que le contribuable n'est pas assujetti
 		for (Integer noOfsCommune : ofsCommunes) {
-			traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, noOfsCommune, groupement);
+			traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, noOfsCommune, groupement, dateDebutPeriodeCourante);
 		}
 	}
 
@@ -668,43 +875,72 @@ public class ProduireRolesProcessor {
 		private final Contribuable ctb;
 		private final ProduireRolesResults rapport;
 		private final AssujettissementService assujettissementService;
+		private final List<DateRange> periodesFiscales;
 
-		private final DecompositionForsAnneeComplete forsAnneePeriode;
+		private final DecompositionFors forsAnneePeriode;
 		private final List<Assujettissement> assujettissementAnneePeriode;
-		private List<Assujettissement> assujettissementAnneePrecedente;
+		private final Map<RegDate, List<Assujettissement>> assujettissementPeriodePrecedente;
 
-		private AssujettissementContainer(Contribuable ctb, int anneePeriode, ProduireRolesResults rapport, AssujettissementService assujettissementService) throws TraitementException {
+		private AssujettissementContainer(Contribuable ctb, int anneePeriode, ProduireRolesResults<?> rapport, AssujettissementService assujettissementService, TiersService tiersService) throws TraitementException {
 			this.anneePeriode = anneePeriode;
 			this.ctb = ctb;
 			this.rapport = rapport;
 			this.assujettissementService = assujettissementService;
-			this.forsAnneePeriode = new DecompositionForsAnneeComplete(ctb, anneePeriode);
-			this.assujettissementAnneePeriode = determineAssujettissement(forsAnneePeriode, ctb, rapport);
-		}
+			this.periodesFiscales = rapport.getPeriodesFiscales(ctb, tiersService);
 
-		public List<Assujettissement> getAssujettissementPeriodePrecedente() throws TraitementException {
-			if (assujettissementAnneePrecedente == null) {
-				final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(ctb, anneePeriode - 1);
-				assujettissementAnneePrecedente = determineAssujettissement(fors, ctb, rapport);
-				if (assujettissementAnneePrecedente == null) {
-					// histoire qu'on ne le fasse pas plusieurs fois...
-					assujettissementAnneePrecedente = Collections.emptyList();
+			final List<DateRange> periodesFiscalesPourAnneeRoles = new ArrayList<>(periodesFiscales.size());
+			for (DateRange pf : this.periodesFiscales) {
+				if (pf.getDateFin().year() == anneePeriode) {
+					periodesFiscalesPourAnneeRoles.add(pf);
 				}
 			}
-			return assujettissementAnneePrecedente.isEmpty() ? null : assujettissementAnneePrecedente;
+			if (periodesFiscalesPourAnneeRoles.isEmpty()) {
+				// par dépit plutôt qu'autre chose
+				this.forsAnneePeriode = new DecompositionForsAnneeComplete(ctb, anneePeriode);
+			}
+			else {
+				this.forsAnneePeriode = new DecompositionForsPeriode(ctb, periodesFiscalesPourAnneeRoles.get(0).getDateDebut(),
+				                                                     CollectionsUtils.getLastElement(periodesFiscalesPourAnneeRoles).getDateFin());
+			}
+			this.assujettissementAnneePeriode = determineAssujettissement(forsAnneePeriode, ctb, rapport);
+			this.assujettissementPeriodePrecedente = new HashMap<>();
+		}
+
+		@Nullable
+		public List<Assujettissement> getAssujettissementPeriodePrecedente(RegDate dateDebutPeriodeCourante) throws TraitementException {
+			final List<Assujettissement> cached = assujettissementPeriodePrecedente.get(dateDebutPeriodeCourante);
+			if (cached != null) {
+				return cached.isEmpty() ? null : cached;
+			}
+
+			final RegDate dateFinPeriodePrecedente = dateDebutPeriodeCourante.getOneDayBefore();
+			final DateRange rangePrecedent = DateRangeHelper.rangeAt(periodesFiscales, dateFinPeriodePrecedente);
+			final DecompositionFors fors;
+			if (rangePrecedent == null) {
+				// par dépit plutôt qu'autre chose
+				fors = new DecompositionForsAnneeComplete(ctb, dateDebutPeriodeCourante.year() - 1);
+			}
+			else {
+				fors = new DecompositionForsPeriode(ctb, rangePrecedent.getDateDebut(), rangePrecedent.getDateFin());
+			}
+			final List<Assujettissement> computed = determineAssujettissement(fors, ctb, rapport);
+			final List<Assujettissement> newlyStored = computed != null ? computed : Collections.<Assujettissement>emptyList();
+			assujettissementPeriodePrecedente.put(dateDebutPeriodeCourante, newlyStored);
+			return computed;
 		}
 
 		public List<Assujettissement> getAssujettissementAnneePeriode() {
 			return assujettissementAnneePeriode;
 		}
 
-		public DecompositionForsAnneeComplete getForsAnneePeriode() {
+		public DecompositionFors getForsAnneePeriode() {
 			return forsAnneePeriode;
 		}
 
-		private List<Assujettissement> determineAssujettissement(DecompositionForsAnneeComplete fors, Contribuable ctb, ProduireRolesResults rapport) throws TraitementException {
+		private List<Assujettissement> determineAssujettissement(DecompositionFors fors, Contribuable ctb, ProduireRolesResults rapport) throws TraitementException {
 			try {
-				return assujettissementService.determine(fors.contribuable, fors, false);
+				final List<DateRange> pfDansFors = DateRangeHelper.intersections(fors, periodesFiscales);
+				return assujettissementService.determine(fors.contribuable, pfDansFors);
 			}
 			catch (AssujettissementException e) {
 				rapport.addErrorErreurAssujettissement(ctb, e.getMessage());
@@ -744,7 +980,7 @@ public class ProduireRolesProcessor {
 				// -> s'il y en avait un avant, il faut l'indiquer dans le rapport
 				// (sauf si le contribuable était alors sourcier gris, auquel cas il ne doit pas apparaître)
 				if (!tiersService.isSourcierGris(contribuable, RegDate.get(anneePeriode - 1, 12, 31))) {
-					traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune, groupement);
+					traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune, groupement, assujettissement.getDateDebut());
 				}
 			}
 			else {
@@ -755,10 +991,8 @@ public class ProduireRolesProcessor {
 					throw new TraitementException();
 				}
 				else {
-					final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
-					final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
 					final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, type, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
-					infoCtb.addFor(infoFor);
+					rapport.digestInfoFor(infoFor, contribuable, assujettissement, assujettissement.getDateDebut().getOneDayBefore(), anneePeriode, ofsCommune, adresseService, tiersService);
 				}
 			}
 		}
@@ -772,9 +1006,9 @@ public class ProduireRolesProcessor {
 		}
 	}
 
-	private void traiteNonAssujettiAvecPrecedentAssujettissement(AssujettissementContainer assujettissementContainer, Integer ofsCommune, GroupementCommunes groupement) throws TraitementException {
+	private void traiteNonAssujettiAvecPrecedentAssujettissement(AssujettissementContainer assujettissementContainer, Integer ofsCommune, GroupementCommunes groupement, RegDate dateDebutPeriodeCourante) throws TraitementException {
 
-		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
+		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente(dateDebutPeriodeCourante);
 		if (assujettissementsAnneePrecedente != null) {
 
 			final ProduireRolesResults rapport = assujettissementContainer.rapport;
@@ -786,12 +1020,12 @@ public class ProduireRolesProcessor {
 				final DecompositionFors forsAnneePrecedente = assAnneePrecedente.getFors();
 				for (ForFiscalRevenuFortune ff : forsAnneePrecedente.principauxDansLaPeriode) {
 					if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ff.getNumeroOfsAutoriteFiscale() == ofsCommune.intValue()) {
-						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, groupement, typeCtbAnneePrecedente, ff);
+						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, assAnneePrecedente, ofsCommune, groupement, typeCtbAnneePrecedente, ff);
 					}
 				}
 				for (ForFiscalRevenuFortune ff : forsAnneePrecedente.secondairesDansLaPeriode) {
 					if (ff.getNumeroOfsAutoriteFiscale() == ofsCommune.intValue()) {
-						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, groupement, typeCtbAnneePrecedente, ff);
+						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, assAnneePrecedente, ofsCommune, groupement, typeCtbAnneePrecedente, ff);
 					}
 				}
 			}
@@ -803,19 +1037,18 @@ public class ProduireRolesProcessor {
 	 * sur la période précédente
 	 * @param rapport rapport à compléter
 	 * @param contribuable contribuable en cours de traitement
-	 * @param anneePeriode année de la période courante
+	 * @param assujettissementPrecedent assujettissement précédent la période actuelle de non-assujettissement
 	 * @param ofsCommune numéro OFS de la commune considérée
-	 * @param groupement
+	 * @param groupement groupement des communes considérées
 	 * @param typeCtbAnneePrecedente type de contribuable sur la commune à l'époque de la période précédente
 	 * @param ff for fiscal sur la commune qui était ouvert dans la période précédente
 	 */
-	private void traiteNonAssujettiAvecPrecedentAssujettissement(ProduireRolesResults rapport, Contribuable contribuable, int anneePeriode, Integer ofsCommune,
+	private void traiteNonAssujettiAvecPrecedentAssujettissement(ProduireRolesResults rapport, Contribuable contribuable, Assujettissement assujettissementPrecedent, Integer ofsCommune,
 	                                                             GroupementCommunes groupement, TypeContribuable typeCtbAnneePrecedente, ForFiscalRevenuFortune ff) {
+		final int anneePeriode = assujettissementPrecedent.getDateFin().getOneDayAfter().year();
 		final DebutFinFor debutFin = getInformationDebutFin(ff, groupement, anneePeriode, null, null);
-		final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
-		final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
 		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement(), ofsCommune);
-		infoCtb.addFor(infoFor);
+		rapport.digestInfoFor(infoFor, contribuable, null, assujettissementPrecedent.getDateFin(), anneePeriode, ofsCommune, adresseService, tiersService);
 	}
 
 	private static class DebutFinFor {
@@ -1034,10 +1267,10 @@ public class ProduireRolesProcessor {
 	}
 
 	/**
-	 * @return la liste des ID de tous les contribuables ayant au moins un for fiscal actif dans une commune vaudoise durant l'année spécifiée
+	 * @return la liste des ID de tous les contribuables PP ayant au moins un for fiscal actif dans une commune vaudoise durant l'année spécifiée
 	 *         <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement).
 	 */
-	protected List<Long> getIdsOfAllContribuables(final int annee) {
+	protected List<Long> getIdsOfAllContribuablesPP(final int annee) {
 
 		final StringBuilder b = new StringBuilder();
 		b.append("SELECT DISTINCT cont.id FROM ContribuableImpositionPersonnesPhysiques AS cont INNER JOIN cont.forsFiscaux AS for");
@@ -1073,10 +1306,42 @@ public class ProduireRolesProcessor {
 	}
 
 	/**
+	 * @return la liste des ID de tous les contribuables PM ayant au moins un for fiscal actif dans une commune vaudoise durant l'année spécifiée
+	 *         <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement).
+	 */
+	protected List<Long> getIdsOfAllContribuablesPM() {
+
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT DISTINCT cont.id FROM Entreprise AS cont INNER JOIN cont.forsFiscaux AS for");
+		b.append(" WHERE cont.annulationDate IS NULL");
+		b.append(" AND for.annulationDate IS NULL AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
+		b.append(" AND for.genreImpot = 'BENEFICE_CAPITAL'");
+		b.append(" ORDER BY cont.id ASC");
+		final String hql = b.toString();
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+					@Override
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+						final Query query = session.createQuery(hql);
+						//noinspection unchecked
+						return query.list();
+					}
+				});
+			}
+		});
+	}
+
+	/**
 	 * @return la liste des ID de tous les contribuables ayant au moins un for fiscal actif dans la commune vaudoise spécifiée durant l'année
 	 *         spécifiée <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement). Si aucune commune n'est donnée, aucun contribuable ne sera renvoyé.
 	 */
-	protected List<Long> getIdsOfAllContribuablesSurCommunes(final int annee, final Collection<Integer> noOfsCommunes) {
+	protected List<Long> getIdsOfAllContribuablesPPSurCommunes(final int annee, final Collection<Integer> noOfsCommunes) {
 
 		if (noOfsCommunes == null || noOfsCommunes.isEmpty()) {
 			return Collections.emptyList();
@@ -1108,6 +1373,45 @@ public class ProduireRolesProcessor {
 							final Query query = session.createQuery(hql);
 							query.setParameter("debutPeriode", debutPeriode);
 							query.setParameter("finPeriode", finPeriode);
+							query.setParameterList("noOfsCommune", noOfsCommunes);
+							//noinspection unchecked
+							return query.list();
+						}
+					});
+				}
+			});
+		}
+	}
+
+	/**
+	 * @return la liste des ID de tous les contribuables ayant au moins un for fiscal actif dans la commune vaudoise spécifiée durant l'année
+	 *         spécifiée <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement). Si aucune commune n'est donnée, aucun contribuable ne sera renvoyé.
+	 */
+	protected List<Long> getIdsOfAllContribuablesPMSurCommunes(final Collection<Integer> noOfsCommunes) {
+
+		if (noOfsCommunes == null || noOfsCommunes.isEmpty()) {
+			return Collections.emptyList();
+		}
+		else {
+			final StringBuilder b = new StringBuilder();
+			b.append("SELECT DISTINCT cont.id FROM Entreprise AS cont INNER JOIN cont.forsFiscaux AS for");
+			b.append(" WHERE cont.annulationDate IS NULL");
+			b.append(" AND for.annulationDate IS NULL AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
+			b.append(" AND for.numeroOfsAutoriteFiscale IN (:noOfsCommune)");
+			b.append(" AND for.genreImpot = 'BENEFICE_CAPITAL'");
+			b.append(" ORDER BY cont.id ASC");
+			final String hql = b.toString();
+
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+
+			return template.execute(new TransactionCallback<List<Long>>() {
+				@Override
+				public List<Long> doInTransaction(TransactionStatus status) {
+					return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+						@Override
+						public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+							final Query query = session.createQuery(hql);
 							query.setParameterList("noOfsCommune", noOfsCommunes);
 							//noinspection unchecked
 							return query.list();

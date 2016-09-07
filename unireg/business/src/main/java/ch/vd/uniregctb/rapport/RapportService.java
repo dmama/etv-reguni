@@ -75,8 +75,10 @@ import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
-import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesCommunesPMRapport;
+import ch.vd.uniregctb.document.RolesCommunesPPRapport;
 import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.RolesOIPMRapport;
 import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
 import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
@@ -103,8 +105,10 @@ import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
-import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
+import ch.vd.uniregctb.role.ProduireRolesOIPMResults;
+import ch.vd.uniregctb.role.ProduireRolesPMCommunesResults;
+import ch.vd.uniregctb.role.ProduireRolesPPCommunesResults;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
@@ -196,14 +200,24 @@ public interface RapportService {
 	FusionDeCommunesRapport generateRapport(final FusionDeCommunesResults results, StatusManager s);
 
 	/**
-	 * Genère le rapport (PDF) des rôles des contribuables, décomposé par commune.
+	 * Genère le rapport (PDF) des rôles des contribuables PP, décomposé par commune.
 	 *
 	 * @param results
-	 *            le résultat de l'exécution du job de production des rôles pour les communes.
+	 *            le résultat de l'exécution du job de production des rôles PP pour les communes.
 	 *
 	 * @return le rapport
 	 */
-	RolesCommunesRapport generateRapport(final ProduireRolesCommunesResults results, StatusManager status);
+	RolesCommunesPPRapport generateRapport(final ProduireRolesPPCommunesResults results, StatusManager status);
+
+	/**
+	 * Genère le rapport (PDF) des rôles des contribuables PM, décomposé par commune.
+	 *
+	 * @param results
+	 *            le résultat de l'exécution du job de production des rôles PM pour les communes.
+	 *
+	 * @return le rapport
+	 */
+	RolesCommunesPMRapport generateRapport(final ProduireRolesPMCommunesResults results, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) des rôles des contribuables pour un OID donné
@@ -212,6 +226,15 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RolesOIDsRapport generateRapport(final ProduireRolesOIDsResults[] results, RegDate dateTraitement, StatusManager status);
+
+	/**
+	 * Genère le rapport (PDF) des rôles des contribuables PM du canton (pour l'OIPM, donc)
+	 * @param results le résultat de l'exécution du job de production des rôles pour l'OIPM
+	 * @param dateTraitement date du traitement
+	 * @param status status manager
+	 * @return le rapport
+	 */
+	RolesOIPMRapport generateRapport(final ProduireRolesOIPMResults results, RegDate dateTraitement, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) des statistiques sur les déclaration d'impôt ordinaires.
@@ -423,7 +446,6 @@ public interface RapportService {
 	 */
 	ResolutionAdresseRapport generateRapport(ResolutionAdresseResults results, StatusManager status);
 
-
 	/**
 	 * Génère le rapport suite à l'execution du job de comparaison de situation de famille
 	 */
@@ -490,7 +512,6 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ListeDroitsAccesRapport generateRapport(ListeDroitsAccesResults results, StatusManager status);
-
 
 	/**
 	 * Génère le rapport d'exécution du batch de suppression d'un OID.

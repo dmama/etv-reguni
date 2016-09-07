@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.role;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
@@ -12,20 +13,16 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ProduireRolesOIDsResults extends ProduireRolesResults<ProduireRolesOIDsResults> {
-
-	/** renseigné en cas de sélection d'un office d'impôt */
-	public final Integer noColOID;
+public class ProduireRolesPPCommunesResults extends ProduireRolesCommunesResults<ProduireRolesPPCommunesResults> {
 
 	private final RolesPP roles = new RolesPP();
 
-	public ProduireRolesOIDsResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
-		this(anneePeriode, null, nbThreads, dateTraitement, tiersService, adresseService);
+	public ProduireRolesPPCommunesResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(anneePeriode, nbThreads, dateTraitement, tiersService, adresseService);
 	}
 
-	public ProduireRolesOIDsResults(int anneePeriode, Integer noColOID, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
-		super(anneePeriode, nbThreads, dateTraitement, tiersService, adresseService);
-		this.noColOID = noColOID;
+	public ProduireRolesPPCommunesResults(int anneePeriode, Integer noOfsCommune, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(anneePeriode, noOfsCommune, nbThreads, dateTraitement, tiersService, adresseService);
 	}
 
 	@Override
@@ -44,17 +41,28 @@ public class ProduireRolesOIDsResults extends ProduireRolesResults<ProduireRoles
 	}
 
 	@Override
-	public void addAll(ProduireRolesOIDsResults rapport) {
+	public void addAll(ProduireRolesPPCommunesResults rapport) {
 		super.addAll(rapport);
 		roles.addAll(rapport.roles);
 	}
 
-	public Collection<InfoContribuablePP> buildInfoPourRegroupementCommunes(List<Integer> noOfsCommunes) {
-		return roles.buildInfosPourRegroupementCommunes(noOfsCommunes);
-	}
-
 	@Override
 	public Set<Integer> getNoOfsCommunesTraitees() {
-		return roles.getNoOfsCommunesTraitees();
+		if (noOfsCommune == null) {
+			return roles.getNoOfsCommunesTraitees();
+		}
+		else {
+			return Collections.singleton(noOfsCommune);
+		}
+	}
+
+	public Map<Integer, InfoCommunePP> getInfosCommunes() {
+		final Map<Integer, InfoCommunePP> full = roles.getInfosCommunes();
+		if (noOfsCommune == null) {
+			return full;
+		}
+		else {
+			return Collections.singletonMap(noOfsCommune, full.get(noOfsCommune));
+		}
 	}
 }

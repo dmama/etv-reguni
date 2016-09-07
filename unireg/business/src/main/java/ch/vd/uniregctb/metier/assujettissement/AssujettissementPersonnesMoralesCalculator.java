@@ -418,6 +418,10 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		else if (fraction != null) {
 			afin = fraction.getDate().getOneDayBefore();
 		}
+		else if (forPrincipal.getNext() != null && !isDepartOuArriveeHorsCanton(current, forPrincipal.getNext()) && !isDepartOuArriveeHorsSuisse(current, forPrincipal.getNext())) {
+			// si on change de commune, alors l'assujettissement sera généré par le for suivant...
+			afin = getDernierDebutExercice(exercicesCommerciaux, fin).getOneDayBefore();
+		}
 		else {
 			// dans tous les autres cas, l'assujettissement finit à la fin de l'exercice commercial
 			afin = getProchaineFinExercice(exercicesCommerciaux, fin);

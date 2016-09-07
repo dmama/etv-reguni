@@ -1,14 +1,14 @@
 package ch.vd.uniregctb.role;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Collection;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -26,15 +26,13 @@ public class ProduireRolesResultsTest extends BusinessTest {
 	private final int anneeRoles = dateTraitement.year() - 1;
 
 	private AdresseService adresseService;
-	private ProduireRolesResults results;
+	private ProduireRolesOIDsResults results;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
 		adresseService = getBean(AdresseService.class, "adresseService");
-
-		results = new ProduireRolesResults(anneeRoles, 1, dateTraitement, tiersService, adresseService) {};
+		results = new ProduireRolesOIDsResults(anneeRoles, 1, dateTraitement, tiersService, adresseService);
 	}
 
 	private PersonnePhysique addNonHabitantAvecAdresseCourierALausanne() {
@@ -52,61 +50,59 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		final Contribuable ctb = addNonHabitantAvecAdresseCourierALausanne();
 		{
-			final ProduireRolesResults.InfoCommune infoRenens = results.getOrCreateInfoPourCommune(MockCommune.Renens.getNoOFS());
-			final ProduireRolesResults.InfoContribuable infoCtbRenens = infoRenens.getOrCreateInfoPourContribuable(ctb, anneeRoles, adresseService, tiersService);
-			infoCtbRenens.addFor(new ProduireRolesResults.InfoFor(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON,
-					date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeRoles, 6, 1), MotifFor.VENTE_IMMOBILIER, ProduireRolesResults.InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF,
-					false, MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Renens.getNoOFS()));
+			final InfoFor infoForRenens = new InfoFor(InfoContribuable.TypeContribuable.HORS_CANTON,
+			                                    date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeRoles, 6, 1), MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF,
+			                                    false, MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Renens.getNoOFS());
+			results.digestInfoFor(infoForRenens, ctb, null, date(anneeRoles - 1, 12, 31), anneeRoles, MockCommune.Renens.getNoOFS(), adresseService, tiersService);
 
-			final ProduireRolesResults.InfoCommune infoPrilly = results.getOrCreateInfoPourCommune(MockCommune.CheseauxSurLausanne.getNoOFS());
-			final ProduireRolesResults.InfoContribuable infoCtbCheseaux = infoPrilly.getOrCreateInfoPourContribuable(ctb, anneeRoles, adresseService, tiersService);
-			infoCtbCheseaux.addFor(new ProduireRolesResults.InfoFor(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON,
-					date(anneeRoles, 10, 15), MotifFor.DEBUT_EXPLOITATION, null, null, ProduireRolesResults.InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF,
-					false, MotifRattachement.ACTIVITE_INDEPENDANTE, MockCommune.CheseauxSurLausanne.getNoOFS()));
+			final InfoFor infoForCheseaux = new InfoFor(InfoContribuable.TypeContribuable.HORS_CANTON,
+			                                    date(anneeRoles, 10, 15), MotifFor.DEBUT_EXPLOITATION, null, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF,
+			                                    false, MotifRattachement.ACTIVITE_INDEPENDANTE, MockCommune.CheseauxSurLausanne.getNoOFS());
+			results.digestInfoFor(infoForCheseaux, ctb, null, date(anneeRoles - 1, 12, 31), anneeRoles, MockCommune.CheseauxSurLausanne.getNoOFS(), adresseService, tiersService);
 
-			Assert.assertNotNull(results.getInfoPourCommune(MockCommune.Renens.getNoOFS()));
-			Assert.assertNotNull(results.getInfoPourCommune(MockCommune.CheseauxSurLausanne.getNoOFS()));
+			Assert.assertTrue(results.getNoOfsCommunesTraitees().contains(MockCommune.Renens.getNoOFS()));
+			Assert.assertTrue(results.getNoOfsCommunesTraitees().contains(MockCommune.CheseauxSurLausanne.getNoOFS()));
 		}
 
 		// Renens-Cossonay -> ne doit prendre en compte que le for de Renens
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.Cossonay.getNoOFS()));
-			Assert.assertNotNull(map);
-			Assert.assertEquals(1, map.size());
+			final Collection<InfoContribuablePP> infos = results.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.Cossonay.getNoOFS()));
+			Assert.assertNotNull(infos);
+			Assert.assertEquals(1, infos.size());
 
-			final ProduireRolesResults.InfoContribuable infoCtb = map.get(ctb.getNumero());
+			final InfoContribuablePP infoCtb = infos.iterator().next();
 			Assert.assertNotNull(infoCtb);
 			Assert.assertEquals((long) ctb.getNumero(), infoCtb.noCtb);
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, infoCtb.getTypeAssujettissementAgrege());
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
+			Assert.assertEquals(InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, infoCtb.getTypeAssujettissementAgrege());
+			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
 			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
-			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getFirst());
-			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getSecond());
+			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getLeft());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getRight());
 
 			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNotNull(infoFermeture);
-			Assert.assertEquals(date(anneeRoles, 6, 1), infoFermeture.getFirst());
-			Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, infoFermeture.getSecond());
+			Assert.assertEquals(date(anneeRoles, 6, 1), infoFermeture.getLeft());
+			Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, infoFermeture.getRight());
 		}
 
 		// Renens-Cheseaux -> doit prendre tous les fors ajoutés
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.CheseauxSurLausanne.getNoOFS()));
-			Assert.assertNotNull(map);
-			Assert.assertEquals(1, map.size());
+			final Collection<InfoContribuablePP> infos = results.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.CheseauxSurLausanne.getNoOFS()));
+			Assert.assertNotNull(infos);
+			Assert.assertEquals(1, infos.size());
 
-			final ProduireRolesResults.InfoContribuable infoCtb = map.get(ctb.getNumero());
+			final InfoContribuablePP infoCtb = infos.iterator().next();
 			Assert.assertNotNull(infoCtb);
 			Assert.assertEquals((long) ctb.getNumero(), infoCtb.noCtb);
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
+			Assert.assertEquals(InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
+			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
 			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
-			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getFirst());
-			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getSecond());
+			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getLeft());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getRight());
 
 			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNull(infoFermeture);
@@ -114,20 +110,20 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		// Cheseaux-Renens-Aubonne -> doit prendre tous les fors ajoutés
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFS(), MockCommune.Renens.getNoOFS(), MockCommune.Aubonne.getNoOFS()));
-			Assert.assertNotNull(map);
-			Assert.assertEquals(1, map.size());
+			final Collection<InfoContribuablePP> infos = results.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFS(), MockCommune.Renens.getNoOFS(), MockCommune.Aubonne.getNoOFS()));
+			Assert.assertNotNull(infos);
+			Assert.assertEquals(1, infos.size());
 
-			final ProduireRolesResults.InfoContribuable infoCtb = map.get(ctb.getNumero());
+			final InfoContribuablePP infoCtb = infos.iterator().next();
 			Assert.assertNotNull(infoCtb);
 			Assert.assertEquals((long) ctb.getNumero(), infoCtb.noCtb);
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
+			Assert.assertEquals(InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
+			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
 			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
-			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getFirst());
-			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getSecond());
+			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getLeft());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getRight());
 
 			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNull(infoFermeture);
@@ -135,20 +131,20 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		// Cheseaux-Lausanne -> seulement le for de Cheseaux
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS()));
-			Assert.assertNotNull(map);
-			Assert.assertEquals(1, map.size());
+			final Collection<InfoContribuablePP> infos = results.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS()));
+			Assert.assertNotNull(infos);
+			Assert.assertEquals(1, infos.size());
 
-			final ProduireRolesResults.InfoContribuable infoCtb = map.get(ctb.getNumero());
+			final InfoContribuablePP infoCtb = infos.iterator().next();
 			Assert.assertNotNull(infoCtb);
 			Assert.assertEquals((long) ctb.getNumero(), infoCtb.noCtb);
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
-			Assert.assertEquals(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
+			Assert.assertEquals(InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
+			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
 			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
-			Assert.assertEquals(date(anneeRoles, 10, 15), infoOuverture.getFirst());
-			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, infoOuverture.getSecond());
+			Assert.assertEquals(date(anneeRoles, 10, 15), infoOuverture.getLeft());
+			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, infoOuverture.getRight());
 
 			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNull(infoFermeture);

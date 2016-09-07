@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +20,9 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.common.AutoCloseableContainer;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.role.InfoContribuable;
+import ch.vd.uniregctb.role.InfoContribuablePP;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
-import ch.vd.uniregctb.role.ProduireRolesResults;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les OID
@@ -138,10 +140,11 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			if (results.noColOID != null) {
 				// calcule le compte exact des communes gérées par l'OID (le résultats du job
 				// peut en contenir plus en fonction des déménagements, ...)
-				final List<Integer> list = getListeCommunesDansOid(getListeCommunes(results, false), results.noColOID);
+				final List<Integer> list = getListeCommunesDansOid(getListeCommunes(results.getNoOfsCommunesTraitees(), results.annee, false), results.noColOID);
 				nbCommunesTraitees = list.size();
-			} else {
-				nbCommunesTraitees = results.infosCommunes.size();
+			}
+			else {
+				nbCommunesTraitees = results.getNoOfsCommunesTraitees().size();
 			}
 
 		    addTableSimple(2, new TableSimpleCallback() {
@@ -204,18 +207,19 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 
 	private void writeResultatsOid(ProduireRolesOIDsResults results, StatusManager status, PdfWriter writer) throws ServiceInfrastructureException, DocumentException {
 
-		final List<Commune> communes = getListeCommunes(results, false);
+		final List<Commune> communes = getListeCommunes(results.getNoOfsCommunesTraitees(), results.annee, false);
 		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);
 
 		// filtrage des seules communes qui sont effectivement dans l'OID
 		final List<Integer> ofsCommunesDansOID = getListeCommunesDansOid(communes, results.noColOID);
 
-		final Map<Long, ProduireRolesResults.InfoContribuable> infoOid = results.buildInfosPourRegroupementCommunes(ofsCommunesDansOID);
+
+		final Collection<InfoContribuablePP> infoOid = results.buildInfoPourRegroupementCommunes(ofsCommunesDansOID);
 
 		// Résumé des types de contribuables
 		addEntete1("Résumé des types de contribuables trouvés");
 		{
-		    final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoOid.values());
+		    final Map<InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoOid);
 		    addTableSimple(new float[]{2.0f, 1.0f}, new TableSimpleCallback() {
 		        @Override
 		        public void fillTable(PdfTableSimple table) throws DocumentException {
@@ -236,13 +240,13 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 	/**
 	 * Utilisé par le traitement d'un OID complet
 	 */
-	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
-		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoOid.values());
+	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, Collection<InfoContribuablePP> infoOid, StatusManager status) {
+		final List<InfoContribuablePP> infos = getListeTriee(infoOid);
 		status.setMessage("Génération du rapport");
 
-		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
+		return traiteListeContribuablesPP(infos, nomsCommunes, new AccesCommune() {
 			@Override
-			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
+			public int getNoOfsCommune(InfoContribuable infoContribuable) {
 				return infoContribuable.getNoOfsDerniereCommune();
 			}
 		});

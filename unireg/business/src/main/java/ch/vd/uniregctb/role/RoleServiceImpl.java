@@ -68,18 +68,18 @@ public class RoleServiceImpl implements RoleService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ProduireRolesCommunesResults produireRolesPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
+	public ProduireRolesPPCommunesResults produireRolesPPPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
-		return processor.runPourToutesCommunes(anneePeriode, nbThreads, status);
+		return processor.runPPPourToutesCommunes(anneePeriode, nbThreads, status);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ProduireRolesCommunesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
+	public ProduireRolesPPCommunesResults produireRolesPPPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
-		return processor.runPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
+		return processor.runPPPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
 	}
 
 	/**
@@ -98,5 +98,23 @@ public class RoleServiceImpl implements RoleService {
 	public ProduireRolesOIDsResults[] produireRolesPourTousOfficesImpot(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourTousOfficesImpot(anneePeriode, nbThreads, status);
+	}
+
+	@Override
+	public ProduireRolesPMCommunesResults produireRolesPMPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
+		return processor.runPMPourToutesCommunes(anneePeriode, nbThreads, status);
+	}
+
+	@Override
+	public ProduireRolesPMCommunesResults produireRolesPMPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
+		return processor.runPMPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
+	}
+
+	@Override
+	public ProduireRolesOIPMResults produireRolesPourOfficePersonnesMorales(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
+		return processor.runPourOfficePersonnesMorales(anneePeriode, nbThreads, status);
 	}
 }

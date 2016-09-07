@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -54,21 +58,37 @@ public abstract class AssujettissementHelper {
 	/**
 	 * Découpe les assujettissements spécifié année par année pour les années spécifiées
 	 *
-	 * @param list      les assujettissements à découper
-	 * @param startYear l'année de départ (comprise)
-	 * @param endYear   l'année de fin (comprise)
-	 * @return une liste d'assujettissements découpés année par année
+	 * @param source      les assujettissements à découper (ils sont triés)
+	 * @param splitters   dates de fin de périodes à respecter
+	 * @return une liste d'assujettissements découpés en fonction des dates de découpe données
 	 */
-	public static List<Assujettissement> split(List<Assujettissement> list, int startYear, int endYear) {
-
-		List<Assujettissement> splitted = new ArrayList<>();
-
-		// split des assujettissement par années
-		for (int year = startYear; year <= endYear; ++year) {
-			final List<Assujettissement> extracted = extractYear(list, year);
-			splitted.addAll(extracted);
+	public static List<Assujettissement> split(List<Assujettissement> source, Set<RegDate> splitters) {
+		final NavigableSet<RegDate> sortedSplitters = new TreeSet<>(splitters);
+		final List<Assujettissement> splitted = new LinkedList<>();
+		for (Assujettissement a : source) {
+			final List<Assujettissement> localSplitted = split(a, sortedSplitters);
+			splitted.addAll(localSplitted);
 		}
+		return splitted;
+	}
 
+	@NotNull
+	private static List<Assujettissement> split(Assujettissement assujettissement, NavigableSet<RegDate> splitters) {
+		final List<Assujettissement> splitted = new LinkedList<>();
+		final NavigableSet<RegDate> relevantSplitters;
+		if (assujettissement.getDateFin() != null) {
+			relevantSplitters = splitters.headSet(assujettissement.getDateFin(), false).tailSet(assujettissement.getDateDebut(), true);
+		}
+		else {
+			relevantSplitters = splitters.tailSet(assujettissement.getDateDebut(), true);
+		}
+		RegDate cursor = assujettissement.getDateDebut();
+		for (RegDate splitter : relevantSplitters) {
+			final List<Assujettissement> extracted = extract(Collections.singletonList(assujettissement), cursor, splitter);
+			splitted.addAll(extracted);
+			cursor = splitter.getOneDayAfter();
+		}
+		splitted.addAll(extract(Collections.singletonList(assujettissement), cursor, assujettissement.getDateFin()));
 		return splitted;
 	}
 
@@ -118,12 +138,11 @@ public abstract class AssujettissementHelper {
 
 	/**
 	 * @param source calculateur d'assujettissement source
-	 * @param range range de limitation de l'assujettissement (obligatoire si <i>collate</i> est faux)
-	 * @param collate indique s'il faut fusionner les assujettissements adjacents dans le résultat fourni
-	 * @param <T> type de contribuable traité par le calculateur
-	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source à la période indiquée
+	 * @param range (optionnel) range limitant l'assujettissement retourné
+	 * @param <T> type de contribuable supporté par le calculateur
+	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source au range indiqué, après <string>collate</string> sur les assujettissements sources
 	 */
-	public static <T extends Contribuable> AssujettissementCalculator<T> rangeLimiting(final AssujettissementCalculator<T> source, @Nullable final DateRange range, final boolean collate) {
+	public static <T extends Contribuable> AssujettissementCalculator<T> collatedRangeLimiting(final AssujettissementCalculator<T> source, @Nullable final DateRange range) {
 		return new AssujettissementCalculator<T>() {
 			@Override
 			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
@@ -132,27 +151,37 @@ public abstract class AssujettissementHelper {
 					return null;
 				}
 
-				final List<Assujettissement> splittedCollated;
-				if (!collate) {
-					if (range == null) {
-						throw new IllegalArgumentException("Le range doit être spécifié si collate=false");
-					}
-					splittedCollated = split(all, range.getDateDebut().year(), range.getDateFin().year());
-				}
-				else {
-					splittedCollated = DateRangeHelper.collate(all);
-				}
-
+				final List<Assujettissement> collated = DateRangeHelper.collate(all);
 				final List<Assujettissement> ranged;
 				if (range != null) {
-					// Limitation des assujettissements au range demandé
-					ranged = extract(splittedCollated, range.getDateDebut(), range.getDateFin());
+					ranged = extract(collated, range.getDateDebut(), range.getDateFin());
 				}
 				else {
-					ranged = splittedCollated;
+					ranged = collated;
 				}
 
 				return ranged.isEmpty() ? null : ranged;
+			}
+		};
+	}
+
+	/**
+	 * @param source calculateur d'assujettissement source
+	 * @param splittingRanges ensemble de dates auxquelles les assujettissements doivent être coupées (= dates de fin de période)
+	 * @param <T> type de contribuable traité par le calculateur
+	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source à la période indiquée
+	 */
+	public static <T extends Contribuable> AssujettissementCalculator<T> rangeLimiting(final AssujettissementCalculator<T> source, final List<DateRange> splittingRanges) {
+		return new AssujettissementCalculator<T>() {
+			@Override
+			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
+				if (all == null) {
+					return null;
+				}
+
+				final List<Assujettissement> splitted = DateRangeHelper.extract(all, splittingRanges, ADAPTER);
+				return splitted.isEmpty() ? null : splitted;
 			}
 		};
 	}

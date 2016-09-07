@@ -267,7 +267,12 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 
 			@Override
-			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException {
 				throw new UnsupportedOperationException();
 			}
 		});
@@ -482,7 +487,12 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 
 			@Override
-			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException {
 				throw new UnsupportedOperationException();
 			}
 		});
@@ -612,7 +622,12 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 
 			@Override
-			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException {
 				throw new UnsupportedOperationException();
 			}
 		});
@@ -741,7 +756,12 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 
 			@Override
-			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException {
 				throw new UnsupportedOperationException();
 			}
 		});

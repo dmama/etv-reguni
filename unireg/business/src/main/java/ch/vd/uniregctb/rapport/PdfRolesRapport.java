@@ -7,26 +7,32 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.role.InfoContribuable;
+import ch.vd.uniregctb.role.InfoContribuablePM;
+import ch.vd.uniregctb.role.InfoContribuablePP;
 import ch.vd.uniregctb.role.ProduireRolesResults;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les communes ou les OID
@@ -49,11 +55,11 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		final String[] filenames = new String[contenu.length];
 		if (filenames.length > 1) {
 			for (int i = 0 ; i < contenu.length ; ++ i) {
-				filenames[i] = String.format("%s_role_pp_%d-%d.csv", human2file(nomEntite), results.annee, i + 1);
+				filenames[i] = String.format("%s_role_%s_%d-%d.csv", human2file(nomEntite), results.getTypeRoles().name().toLowerCase(), results.annee, i + 1);
 			}
 		}
 		else if (filenames.length == 1) {
-			filenames[0] = String.format("%s_role_pp_%d.csv", human2file(nomEntite), results.annee);
+			filenames[0] = String.format("%s_role_%s_%d.csv", human2file(nomEntite), results.getTypeRoles().name().toLowerCase(), results.annee);
 		}
 		final String titre = "Liste détaillée";
 		final String listVide = "(aucun rôle trouvé)";
@@ -73,13 +79,24 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return map;
 	}
 
-	protected static void addLignesStatsParTypeCtb(PdfTableSimple table, Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType) {
-		table.addLigne("Contribuables ordinaires:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.ORDINAIRE), nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE)));
-		table.addLigne("Contribuables hors canton:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON)));
-		table.addLigne("Contribuables hors Suisse:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_SUISSE)));
-		table.addLigne("Contribuables à la source:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.SOURCE)));
-		table.addLigne("Contribuables à la dépense:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.DEPENSE)));
-		table.addLigne("Contribuables plus assujettis:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.NON_ASSUJETTI)));
+	protected static void addLignesStatsParTypeCtb(PdfTableSimple table, Map<InfoContribuable.TypeContribuable, Integer> nombreParType) {
+		addLigneStatSiNonZero(table, "Contribuables ordinaires :", nombreParType.get(InfoContribuable.TypeContribuable.ORDINAIRE), nombreParType.get(InfoContribuable.TypeContribuable.MIXTE));
+		addLigneStatSiNonZero(table, "Contribuables hors-canton :", nombreParType.get(InfoContribuable.TypeContribuable.HORS_CANTON));
+		addLigneStatSiNonZero(table, "Contribuables hors-Suisse :", nombreParType.get(InfoContribuable.TypeContribuable.HORS_SUISSE));
+		addLigneStatSiNonZero(table, "Contribuables à la source :", nombreParType.get(InfoContribuable.TypeContribuable.SOURCE));
+		addLigneStatSiNonZero(table, "Contribuables à la dépense :", nombreParType.get(InfoContribuable.TypeContribuable.DEPENSE));
+		addLigneStatSiNonZero(table, "Contribuables plus assujettis :", nombreParType.get(InfoContribuable.TypeContribuable.NON_ASSUJETTI));
+	}
+
+	private static void addLigneStatSiNonZero(PdfTableSimple table, String libelle, Integer nombre) {
+		if (nombre != null && nombre > 0) {
+			table.addLigne(libelle, nombreAsString(nombre));
+		}
+	}
+
+	private static void addLigneStatSiNonZero(PdfTableSimple table, String libelle, Integer nombre1, Integer nombre2) {
+		final int nombreTotal = (nombre1 != null ? nombre1 : 0) + (nombre2 != null ? nombre2 : 0);
+		addLigneStatSiNonZero(table, libelle, nombreTotal);
 	}
 
 	protected final OfficeImpot getOfficeImpot(Integer noColOID) {
@@ -110,22 +127,21 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	}
 
 	/**
-	 * @param results le résultat du job
+	 * @param noOfsCommunes les numéros OFS des communes à lister
 	 * @param triAlphabetique <code>false</code> si les commune ne doivent pas être spécialement triées, <code>true</code> si le tri doit être fait alphabétiquement
 	 * @return la liste des communes triées (ou non) par ordre alphabétique
 	 */
-	protected final List<Commune> getListeCommunes(final ProduireRolesResults<? extends T> results, boolean triAlphabetique) {
+	protected final List<Commune> getListeCommunes(Set<Integer> noOfsCommunes, int annee, boolean triAlphabetique) {
 
-		final List<Commune> listCommunes = new ArrayList<>(results.infosCommunes.size());
-		for (ProduireRolesResults.InfoCommune infoCommune : results.infosCommunes.values()) {
-			final int noOfs = infoCommune.getNoOfs();
-			final Commune commune = getCommune(noOfs, RegDate.get(results.annee, 12, 31));
+		final List<Commune> listCommunes = new ArrayList<>(noOfsCommunes.size());
+		for (Integer noOfsCommune : noOfsCommunes) {
+			final Commune commune = getCommune(noOfsCommune, RegDate.get(annee, 12, 31));
 
 			if (commune == null) {
-				Audit.error("Rôles: impossible de déterminer la commune avec le numéro Ofs = " + noOfs);
+				Audit.error("Rôles: impossible de déterminer la commune avec le numéro Ofs = " + noOfsCommune);
 				continue;
 			}
-			Assert.isEqual(noOfs, commune.getNoOFS());
+			Assert.isEqual(noOfsCommune, commune.getNoOFS());
 			listCommunes.add(commune);
 		}
 
@@ -146,21 +162,19 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 * @param col la collection en entrée (son contenu sera recopié dans la liste triée)
 	 * @return une nouvelle instance de liste, triée par numéro de contribuable
 	 */
-	protected static List<ProduireRolesResults.InfoContribuable> getListeTriee(Collection<ProduireRolesResults.InfoContribuable> col) {
+	protected static <T extends InfoContribuable> List<T> getListeTriee(Collection<T> col) {
 
 		if (col == null || col.isEmpty()) {
 			return null;
 		}
 
-		final List<ProduireRolesResults.InfoContribuable> triee = new ArrayList<>(col);
-
-		Collections.sort(triee, new Comparator<ProduireRolesResults.InfoContribuable>() {
+		final List<T> triee = new ArrayList<>(col);
+		Collections.sort(triee, new Comparator<InfoContribuable>() {
 		    @Override
-		    public int compare(ProduireRolesResults.InfoContribuable o1, ProduireRolesResults.InfoContribuable o2) {
+		    public int compare(InfoContribuable o1, InfoContribuable o2) {
 		        return (int) (o1.noCtb - o2.noCtb);
 		    }
 		});
-
 		return triee;
 	}
 
@@ -168,12 +182,12 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return motif.getDescription(ouverture);
 	}
 
-	protected static String getComplementTypeContribuable(ProduireRolesResults.InfoContribuable info) {
+	protected static String getComplementTypeContribuable(InfoContribuable info) {
 		final String complement;
-		if (info.getTypeCtb() == ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE) {
-			complement = String.format("(%s)", ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE.description());
+		if (info.getTypeCtb() == InfoContribuable.TypeContribuable.MIXTE) {
+			complement = String.format("(%s)", InfoContribuable.TypeContribuable.MIXTE.description());
 		}
-		else if (info.getTypeCtb() == ProduireRolesResults.InfoContribuable.TypeContribuable.NON_ASSUJETTI && info.getAncienTypeContribuable() != null) {
+		else if (info.getTypeCtb() == InfoContribuable.TypeContribuable.NON_ASSUJETTI && info.getAncienTypeContribuable() != null) {
 			complement = String.format("(%s)", info.getAncienTypeContribuable().description());
 		}
 		else {
@@ -186,20 +200,20 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 * Interface interne pour factoriser la production de CSV d'après une liste d'information
 	 */
 	protected interface AccesCommune {
-		int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable);
+		int getNoOfsCommune(InfoContribuable infoContribuable);
 	}
 
 	private static String emptyInsteadNull(String str) {
 		return StringUtils.isBlank(str) ? "" : str;
 	}
 
-	protected final TemporaryFile[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
+	protected final TemporaryFile[] traiteListeContribuablesPP(final List<InfoContribuablePP> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
 		final List<TemporaryFile> fichiers = new ArrayList<>();
 		if (infos != null) {
-			final List<List<ProduireRolesResults.InfoContribuable>> decoupage = CollectionsUtils.split(infos, MAX_ROLES_PAR_FICHIER);
-			for (List<ProduireRolesResults.InfoContribuable> portion : decoupage) {
-				final TemporaryFile contenu = CsvHelper.asCsvTemporaryFile(portion, "...", null, new CsvHelper.FileFiller<ProduireRolesResults.InfoContribuable>() {
+			final List<List<InfoContribuablePP>> decoupage = CollectionsUtils.split(infos, MAX_ROLES_PAR_FICHIER);
+			for (List<InfoContribuablePP> portion : decoupage) {
+				final TemporaryFile contenu = CsvHelper.asCsvTemporaryFile(portion, "...", null, new CsvHelper.FileFiller<InfoContribuablePP>() {
 					@Override
 					public void fillHeader(CsvHelper.LineFiller b) {
 						b.append("Numéro OFS de la commune").append(COMMA);
@@ -222,7 +236,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 					}
 
 					@Override
-					public boolean fillLine(CsvHelper.LineFiller b, ProduireRolesResults.InfoContribuable info) {
+					public boolean fillLine(CsvHelper.LineFiller b, InfoContribuablePP info) {
 						final long noCtb = info.noCtb;
 						final List<NomPrenom> noms = info.getNomsPrenoms();
 						final List<String> nosAvs = info.getNosAvs();
@@ -244,24 +258,24 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 						final String debut;
 						final String motifOuverture;
 						if (infosOuverture != null) {
-							debut = infosOuverture.getFirst().toString();
-							motifOuverture = emptyInsteadNull(infosOuverture.getSecond() != null ? getDescriptionMotif(infosOuverture.getSecond(), true) : null);
+							debut = infosOuverture.getLeft().toString();
+							motifOuverture = emptyInsteadNull(infosOuverture.getRight() != null ? getDescriptionMotif(infosOuverture.getRight(), true) : null);
 						}
 						else {
-							debut = "";
-							motifOuverture = "";
+							debut = StringUtils.EMPTY;
+							motifOuverture = StringUtils.EMPTY;
 						}
 
 						final Pair<RegDate, MotifFor> infosFermeture = info.getInfosFermeture();
 						final String fin;
 						final String motifFermeture;
 						if (infosFermeture != null) {
-							fin = infosFermeture.getFirst().toString();
-							motifFermeture = emptyInsteadNull(infosFermeture.getSecond() != null ? getDescriptionMotif(infosFermeture.getSecond(), false) : null);
+							fin = infosFermeture.getLeft().toString();
+							motifFermeture = emptyInsteadNull(infosFermeture.getRight() != null ? getDescriptionMotif(infosFermeture.getRight(), false) : null);
 						}
 						else {
-							fin = "";
-							motifFermeture = "";
+							fin = StringUtils.EMPTY;
+							motifFermeture = StringUtils.EMPTY;
 						}
 
 						final String assujettissement = info.getTypeAssujettissementAgrege().description();
@@ -298,35 +312,149 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return fichiers.toArray(new TemporaryFile[fichiers.size()]);
 	}
 
-	protected final String asCvsField(ProduireRolesResults.InfoContribuable.TypeContribuable typeCtb) {
-	    if (ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE == typeCtb) {
+	protected final TemporaryFile[] traiteListeContribuablesPM(final List<InfoContribuablePM> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
+
+		final List<TemporaryFile> fichiers = new ArrayList<>();
+		if (infos != null) {
+			final List<List<InfoContribuablePM>> decoupage = CollectionsUtils.split(infos, MAX_ROLES_PAR_FICHIER);
+			for (List<InfoContribuablePM> portion : decoupage) {
+				final TemporaryFile contenu = CsvHelper.asCsvTemporaryFile(portion, "...", null, new CsvHelper.FileFiller<InfoContribuablePM>() {
+					@Override
+					public void fillHeader(CsvHelper.LineFiller b) {
+						b.append("Numéro OFS de la commune").append(COMMA);
+						b.append("Nom de la commune").append(COMMA);
+						b.append("Type de contribuable").append(COMMA);
+						b.append("Complément type contribuable").append(COMMA);
+						b.append("Numéro de contribuable").append(COMMA);
+						b.append("Numéro IDE").append(COMMA);
+						b.append("Raison sociale").append(COMMA);
+						b.append("Forme juridique").append(COMMA);
+						b.append("Adresse courrier").append(COMMA);
+						b.append("Date d'ouverture").append(COMMA);
+						b.append("Motif d'ouverture").append(COMMA);
+						b.append("Date de fermeture").append(COMMA);
+						b.append("Motif de fermeture").append(COMMA);
+						b.append("Localisation for principal").append(COMMA);
+						b.append("Numéro OFS for principal").append(COMMA);
+						b.append("Nom for principal").append(COMMA);
+						b.append("Date de bouclement").append(COMMA);
+						b.append("Assujettissement");
+					}
+
+					@Override
+					public boolean fillLine(CsvHelper.LineFiller b, InfoContribuablePM info) {
+						final long noCtb = info.noCtb;
+						final String[] adresse = info.getAdresseEnvoi();
+
+						// ajout des infos au fichier
+						final String ide = FormatNumeroHelper.formatNumIDE(info.getNoIde());
+						final String rs = info.getRaisonSociale();
+						final String fj = info.getFormeJuridique() != null ? info.getFormeJuridique().getLibelle() : StringUtils.EMPTY;
+						final String dateBouclement = info.getDateBouclement().toString();
+						final String adresseCourrier = asCsvField(adresse);
+						final String typeCtb = asCvsField(info.getTypeCtb());
+						final String complTypeCtb = getComplementTypeContribuable(info);
+						final String localisationForPrincipal = info.getTafForPrincipal() != null ? info.getTafForPrincipal().name().substring(info.getTafForPrincipal().name().length() - 2) : StringUtils.EMPTY;
+						final String noOfsForPrincipal = info.getNoOfsForPrincipal() != null ? Integer.toString(info.getNoOfsForPrincipal()) : StringUtils.EMPTY;
+						final String nomForPrincipal;
+						if (info.getTafForPrincipal() == null) {
+							nomForPrincipal = StringUtils.EMPTY;
+						}
+						else if (info.getTafForPrincipal() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || info.getTafForPrincipal() == TypeAutoriteFiscale.COMMUNE_HC) {
+							final Commune commune = infraService.getCommuneByNumeroOfs(info.getNoOfsForPrincipal(), info.getDateBouclement());
+							nomForPrincipal = commune != null ? commune.getNomOfficiel() : StringUtils.EMPTY;
+						}
+						else {
+							final Pays pays = infraService.getPays(info.getNoOfsForPrincipal(), info.getDateBouclement());
+							nomForPrincipal = pays != null ? pays.getNomCourt() : StringUtils.EMPTY;
+						}
+
+						final Pair<RegDate, MotifFor> infosOuverture = info.getInfosOuverture();
+						final String debut;
+						final String motifOuverture;
+						if (infosOuverture != null) {
+							debut = infosOuverture.getLeft().toString();
+							motifOuverture = emptyInsteadNull(infosOuverture.getRight() != null ? getDescriptionMotif(infosOuverture.getRight(), true) : null);
+						}
+						else {
+							debut = StringUtils.EMPTY;
+							motifOuverture = StringUtils.EMPTY;
+						}
+
+						final Pair<RegDate, MotifFor> infosFermeture = info.getInfosFermeture();
+						final String fin;
+						final String motifFermeture;
+						if (infosFermeture != null) {
+							fin = infosFermeture.getLeft().toString();
+							motifFermeture = emptyInsteadNull(infosFermeture.getRight() != null ? getDescriptionMotif(infosFermeture.getRight(), false) : null);
+						}
+						else {
+							fin = StringUtils.EMPTY;
+							motifFermeture = StringUtils.EMPTY;
+						}
+
+						final String assujettissement = info.getTypeAssujettissementAgrege().description();
+
+						final int noOfsCommune = accesCommune.getNoOfsCommune(info);
+						final String nomCommune = nomsCommunes.get(noOfsCommune);
+
+						b.append(noOfsCommune).append(COMMA);
+						b.append(CsvHelper.escapeChars(nomCommune)).append(COMMA);
+						b.append(typeCtb).append(COMMA);
+						b.append(complTypeCtb).append(COMMA);
+						b.append(noCtb).append(COMMA);
+						b.append(ide).append(COMMA);
+						b.append(CsvHelper.escapeChars(rs)).append(COMMA);
+						b.append(CsvHelper.escapeChars(fj)).append(COMMA);
+						b.append(adresseCourrier).append(COMMA);
+						b.append(debut).append(COMMA);
+						b.append(motifOuverture).append(COMMA);
+						b.append(fin).append(COMMA);
+						b.append(motifFermeture).append(COMMA);
+						b.append(localisationForPrincipal).append(COMMA);
+						b.append(noOfsForPrincipal).append(COMMA);
+						b.append(CsvHelper.escapeChars(nomForPrincipal)).append(COMMA);
+						b.append(dateBouclement).append(COMMA);
+						b.append(assujettissement);
+						return true;
+					}
+				});
+
+				fichiers.add(contenu);
+			}
+		}
+		return fichiers.toArray(new TemporaryFile[fichiers.size()]);
+	}
+
+	protected final String asCvsField(InfoContribuable.TypeContribuable typeCtb) {
+	    if (InfoContribuable.TypeContribuable.MIXTE == typeCtb) {
 	        // selon la spécification
-	        return ProduireRolesResults.InfoContribuable.TypeContribuable.ORDINAIRE.description();
+	        return InfoContribuable.TypeContribuable.ORDINAIRE.description();
 	    } else {
 	        return typeCtb.description();
 	    }
 	}
 
-	protected final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> extractNombreParType(Collection<ProduireRolesResults.InfoContribuable> infosCtbs) {
+	protected final Map<InfoContribuable.TypeContribuable, Integer> extractNombreParType(Collection<? extends InfoContribuable> infosCtbs) {
 
-		final int nbTypesContribuables = ProduireRolesResults.InfoContribuable.TypeContribuable.values().length;
+		final int nbTypesContribuables = InfoContribuable.TypeContribuable.values().length;
 		final int[] nombreParType = new int[nbTypesContribuables];
 		for (int i = 0 ; i < nbTypesContribuables ; ++ i) {
 			nombreParType[i] = 0;
 		}
 
-		for (ProduireRolesResults.InfoContribuable info : infosCtbs) {
-			final ProduireRolesResults.InfoContribuable.TypeContribuable typeCtb = info.getTypeCtb();
+		for (InfoContribuable info : infosCtbs) {
+			final InfoContribuable.TypeContribuable typeCtb = info.getTypeCtb();
 			if (typeCtb != null) {
 				final int index = typeCtb.ordinal();
 				++ nombreParType[index];
 			}
 		}
 
-		final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> map = new HashMap<>(nbTypesContribuables);
+		final Map<InfoContribuable.TypeContribuable, Integer> map = new HashMap<>(nbTypesContribuables);
 		for (int i = 0 ; i < nbTypesContribuables ; ++ i) {
 			if (nombreParType[i] > 0) {
-				map.put(ProduireRolesResults.InfoContribuable.TypeContribuable.values()[i], nombreParType[i]);
+				map.put(InfoContribuable.TypeContribuable.values()[i], nombreParType[i]);
 			}
 		}
 		return map;
@@ -334,11 +462,6 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 
 	protected static String nombreAsString(Integer nombre) {
 		return nombre == null ? "0" : String.valueOf(nombre);
-	}
-
-	protected static String nombreAsString(Integer integer1, Integer integer2) {
-		int n = (integer1 == null ? 0 : integer1) + (integer2 == null ? 0 : integer2);
-		return String.valueOf(n);
 	}
 
 	protected static String human2file(String nom) {

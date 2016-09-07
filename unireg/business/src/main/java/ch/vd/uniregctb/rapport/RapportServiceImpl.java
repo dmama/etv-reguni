@@ -85,8 +85,10 @@ import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
-import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesCommunesPMRapport;
+import ch.vd.uniregctb.document.RolesCommunesPPRapport;
 import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.RolesOIPMRapport;
 import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
 import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
@@ -114,8 +116,10 @@ import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
-import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
+import ch.vd.uniregctb.role.ProduireRolesOIPMResults;
+import ch.vd.uniregctb.role.ProduireRolesPMCommunesResults;
+import ch.vd.uniregctb.role.ProduireRolesPPCommunesResults;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
@@ -354,19 +358,45 @@ public class RapportServiceImpl implements RapportService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public RolesCommunesRapport generateRapport(final ProduireRolesCommunesResults results, final StatusManager s) {
+	public RolesCommunesPPRapport generateRapport(final ProduireRolesPPCommunesResults results, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RolesCommunes" + results.dateTraitement.index();
-		final String description = String.format("Rapport des rôles pour les communes.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final String nom = "RolesCommunesPP" + results.dateTraitement.index();
+		final String description = String.format("Rapport des rôles PP pour les communes.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RolesCommunesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesRapport>() {
+			return docService.newDoc(RolesCommunesPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesPPRapport>() {
 				@Override
-				public void writeDoc(RolesCommunesRapport doc, OutputStream os) throws Exception {
-					final PdfRolesCommunesRapport document = new PdfRolesCommunesRapport(infraService);
+				public void writeDoc(RolesCommunesPPRapport doc, OutputStream os) throws Exception {
+					final PdfRolesPPCommunesRapport document = new PdfRolesPPCommunesRapport(infraService);
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public RolesCommunesPMRapport generateRapport(final ProduireRolesPMCommunesResults results, final StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RolesCommunesPM" + results.dateTraitement.index();
+		final String description = String.format("Rapport des rôles PM pour les communes.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RolesCommunesPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesPMRapport>() {
+				@Override
+				public void writeDoc(RolesCommunesPMRapport doc, OutputStream os) throws Exception {
+					final PdfRolesPMCommunesRapport document = new PdfRolesPMCommunesRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
@@ -395,6 +425,35 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(RolesOIDsRapport doc, OutputStream os) throws Exception {
 					final PdfRolesOIDsRapport document = new PdfRolesOIDsRapport(infraService);
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Genère le rapport (PDF) des rôles des contribuables PM du canton (pour l'OIPM, donc)
+	 * @param results le résultat de l'exécution du job de production des rôles pour l'OIPM
+	 * @param dateTraitement date du traitement
+	 * @param s status manager
+	 * @return le rapport
+	 */
+	@Override
+	public RolesOIPMRapport generateRapport(final ProduireRolesOIPMResults results, RegDate dateTraitement, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RolesOIPM" + dateTraitement.index();
+		final String description = String.format("Rapport des rôles pour l'OIPM.. Date de traitement = %s", RegDateHelper.dateToDisplayString(dateTraitement));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RolesOIPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesOIPMRapport>() {
+				@Override
+				public void writeDoc(RolesOIPMRapport doc, OutputStream os) throws Exception {
+					final PdfRolesOIPMRapport document = new PdfRolesOIPMRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

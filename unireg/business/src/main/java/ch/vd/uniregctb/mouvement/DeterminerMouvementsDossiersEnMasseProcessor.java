@@ -174,7 +174,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 		rapport.addContribuableInspecte();
 
-		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, rangesUtiles.rangeGlobal, true);
+		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, rangesUtiles.rangeGlobal);
 
 		// les sourciers purs n'ont pas de dossier ni d'OID de gestion (seuls les contribuables au rôle en ont un)
 		// donc pas de mouvement à programmer pour eux...

@@ -48,7 +48,7 @@ public class DocumentServiceImpl implements DocumentService {
 		docType.put(EnvoiDIsPPRapport.class.getSimpleName().toLowerCase(), EnvoiDIsPPRapport.class);
 		docType.put(MajoriteRapport.class.getSimpleName().toLowerCase(), MajoriteRapport.class);
 		docType.put(FusionDeCommunesRapport.class.getSimpleName().toLowerCase(), FusionDeCommunesRapport.class);
-		docType.put(RolesCommunesRapport.class.getSimpleName().toLowerCase(), RolesCommunesRapport.class);
+		docType.put(RolesCommunesPPRapport.class.getSimpleName().toLowerCase(), RolesCommunesPPRapport.class);
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {

@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("RolesOIDsRapport")
 public class RolesOIDsRapport extends Document {
 
-	private static final long serialVersionUID = 6732981841355264815L;
-
 	public RolesOIDsRapport() {
 	}
 

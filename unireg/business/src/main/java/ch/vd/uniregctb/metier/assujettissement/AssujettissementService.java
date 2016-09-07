@@ -16,7 +16,7 @@ public interface AssujettissementService {
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException;
 
@@ -25,8 +25,7 @@ public interface AssujettissementService {
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException
-	 *          en cas d'impossibilité de calculer l'assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
@@ -35,8 +34,7 @@ public interface AssujettissementService {
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException
-	 *          en cas d'impossibilité de calculer l'assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
@@ -48,7 +46,7 @@ public interface AssujettissementService {
 	 * @param ctb                    le contribuable dont on veut déterminer l'assujettissement
 	 * @param noOfsCommunesVaudoises les numéros OFS des communes vaudoises dont on veut le point de vue
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException;
 
@@ -59,7 +57,7 @@ public interface AssujettissementService {
 	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
 	 * @param annee        l'année correspondant à la période fiscale considérée (du 1er janvier au 31 décembre)
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException;
 
@@ -71,9 +69,17 @@ public interface AssujettissementService {
 	 *
 	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
 	 * @param range        la période considérée
-	 * @param collate      indique si on souhaite concaténer les assujettissement identique qui se suivent
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException;
+	List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range) throws AssujettissementException;
+
+	/**
+	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement découpées suivant les ranges donnés
+	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
+	 * @param splittingRanges les ranges correspondant aux dates de découpages souhaitées
+	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 */
+	List<Assujettissement> determine(Contribuable contribuable, List<DateRange> splittingRanges) throws AssujettissementException;
 }
