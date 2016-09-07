@@ -450,6 +450,10 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 					}
 				}
 				catch (AdresseException e) {
+					LOGGER.error(String.format("Erreur à la constitution de l'adresse mandataire de type 'général' du contribuable %s au %s",
+					                           FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+					                           RegDateHelper.dateToDisplayString(dateDebutNouveauMandat)),
+					             e);
 					tacheService.genereTacheControleDossier(entreprise, Motifs.MANDATAIRE);
 					addRemarque(entreprise, String.format("Impossible de créer une adresse mandataire à partir des données fournies dans la DI %d/%d : %s.",
 					                                      pf, noSequence,
