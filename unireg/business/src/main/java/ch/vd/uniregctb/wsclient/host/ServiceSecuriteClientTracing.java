@@ -16,7 +16,7 @@ import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, InitializingBean, DisposableBean {
 
-	public static final String SERVICE_NAME = "ServiceSecuriteClient";
+	public static final String SERVICE_NAME = "HostInterfacesSecurite";
 
 	private ServiceSecuriteClient target;
 
@@ -226,11 +226,15 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 
 	@Override
 	public void destroy() throws Exception {
-
+		if (statsService != null) {
+			statsService.unregisterService(SERVICE_NAME);
+		}
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
+		if (statsService != null) {
+			statsService.registerService(SERVICE_NAME, tracing);
+		}
 	}
 }

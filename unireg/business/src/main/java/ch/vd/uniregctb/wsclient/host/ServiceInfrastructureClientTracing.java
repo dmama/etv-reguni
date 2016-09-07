@@ -19,7 +19,7 @@ import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceInfrastructureClientTracing implements ServiceInfrastructureClient, InitializingBean, DisposableBean {
 
-	public static final String SERVICE_NAME = "ServiceInfrastructureClient";
+	public static final String SERVICE_NAME = "HostInterfacesInfra";
 
 	private ServiceInfrastructureClient target;
 
@@ -34,8 +34,6 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
 	}
-
-
 
 	@Override
 	public String ping() {
@@ -52,7 +50,6 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			tracing.end(time, t, "ping", null);
 		}
 	}
-
 
 	@Override
 	public CollectiviteAdministrative getCollectivite(final int noColAdm) throws ServiceInfrastructureException {
@@ -279,7 +276,6 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			tracing.end(time, t, "getInstitutionsFinancieres",null);
 		}
 	}
-
 
 	@Override
 	public void destroy() throws Exception {
