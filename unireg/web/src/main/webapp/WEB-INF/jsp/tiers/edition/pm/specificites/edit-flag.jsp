@@ -51,7 +51,7 @@
 				<tr>
 					<td width="25%">&nbsp;</td>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.sauver" />"></td>
-					<td width="25%"><unireg:buttonTo name="Retour" action="/flag-entreprise/edit-list.do" params="{pmId:${flag.pmId}}" method="GET"/></td>
+					<td width="25%"><unireg:buttonTo name="Retour" action="/flag-entreprise/edit-list.do" params="{pmId:${flag.pmId},group:'${group}'}" method="GET"/></td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>

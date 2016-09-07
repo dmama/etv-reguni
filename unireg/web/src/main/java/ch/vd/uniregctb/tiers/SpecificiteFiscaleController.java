@@ -623,12 +623,13 @@ public class SpecificiteFiscaleController {
 			throw new ObjectNotFoundException("Spécificité inconnue!");
 		}
 		checkDroitEcritureTiers(flag.getEntreprise());
-		return showEditFlag(new EditFlagEntrepriseView(flag), new FlagEntrepriseView(flag), model);
+		return showEditFlag(new EditFlagEntrepriseView(flag), new FlagEntrepriseView(flag), flag.getGroupe(), model);
 	}
 
-	private String showEditFlag(EditFlagEntrepriseView editView, FlagEntrepriseView view, Model model) {
+	private String showEditFlag(EditFlagEntrepriseView editView, FlagEntrepriseView view, GroupeFlagsEntreprise groupe, Model model) {
 		model.addAttribute("command", editView);
 		model.addAttribute("flag", view);
+		model.addAttribute("group", groupe);
 		return "tiers/edition/pm/specificites/edit-flag";
 	}
 
@@ -646,7 +647,7 @@ public class SpecificiteFiscaleController {
 		// traitement des cas d'erreur
 		if (bindingResult.hasErrors()) {
 			view.resetNonEditableValues(flag);
-			return showEditFlag(view, new FlagEntrepriseView(flag), model);
+			return showEditFlag(view, new FlagEntrepriseView(flag), flag.getGroupe(), model);
 		}
 
 		// pour le moment, on ne gère que la fermeture du flag
