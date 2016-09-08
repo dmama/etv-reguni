@@ -124,11 +124,14 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	private static final Comparator<InfoFor> COMPARATOR_OUVERTURE = new Comparator<InfoFor>() {
 		@Override
 		public int compare(InfoFor o1, InfoFor o2) {
-			int compare = NullDateBehavior.EARLIEST.compare(o1.dateOuverture, o2.dateOuverture);
+			int compare = NullDateBehavior.EARLIEST.compare(o1.dateDebut, o2.dateDebut);
 			if (compare == 0) {
 				compare = - Boolean.valueOf(o1.forPrincipal).compareTo(o2.forPrincipal);        // principal avant non-principal
 				if (compare == 0) {
 					compare = COMPARATOR_MOTIF_RATTACHEMENT.compare(o1.motifRattachement, o2.motifRattachement);
+					if (compare == 0) {
+						compare = NullDateBehavior.EARLIEST.compare(o1.dateOuvertureFor, o2.dateOuvertureFor);
+					}
 				}
 			}
 			return compare;
@@ -141,11 +144,14 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	private static final Comparator<InfoFor> COMPARATOR_FERMETURE = new Comparator<InfoFor>() {
 		@Override
 		public int compare(InfoFor o1, InfoFor o2) {
-			int compare = - NullDateBehavior.LATEST.compare(o1.dateFermeture, o2.dateFermeture);
+			int compare = - NullDateBehavior.LATEST.compare(o1.dateFin, o2.dateFin);
 			if (compare == 0) {
 				compare = - Boolean.valueOf(o1.forPrincipal).compareTo(o2.forPrincipal);        // principal avant non-principal
 				if (compare == 0) {
 					compare = COMPARATOR_MOTIF_RATTACHEMENT.compare(o1.motifRattachement, o2.motifRattachement);
+					if (compare == 0) {
+						compare = - NullDateBehavior.LATEST.compare(o1.dateFermetureFor, o2.dateFermetureFor);
+					}
 				}
 			}
 			return compare;
@@ -155,13 +161,16 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	private static final Comparator<InfoFor> COMPARATOR_GESTION = new Comparator<InfoFor>() {
 		@Override
 		public int compare(InfoFor o1, InfoFor o2) {
-			int compare = - NullDateBehavior.LATEST.compare(o1.dateFermeture, o2.dateFermeture);
+			int compare = - NullDateBehavior.LATEST.compare(o1.dateFin, o2.dateFin);
 			if (compare == 0) {
 				compare = - (o1.typeAssujettissement.ordinal() - o2.typeAssujettissement.ordinal());
 				if (compare == 0) {
 					compare = - Boolean.valueOf(o1.forPrincipal).compareTo(o2.forPrincipal);        // principal avant non-principal
 					if (compare == 0) {
 						compare = COMPARATOR_MOTIF_RATTACHEMENT.compare(o1.motifRattachement, o2.motifRattachement);
+						if (compare == 0) {
+							compare = - NullDateBehavior.LATEST.compare(o1.dateFermetureFor, o2.dateFermetureFor);
+						}
 					}
 				}
 			}
@@ -190,11 +199,11 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	 */
 	public Pair<RegDate, MotifFor> getInfosOuverture() {
 		final InfoFor forOuverture = getPremierForSelonComparateur(COMPARATOR_OUVERTURE);
-		if (forOuverture == null || forOuverture.dateOuverture == null) {
+		if (forOuverture == null || forOuverture.dateDebut == null) {
 			return null;
 		}
 		else {
-			return Pair.of(forOuverture.dateOuverture, forOuverture.motifOuverture);
+			return Pair.of(forOuverture.dateDebut, forOuverture.motifDebut);
 		}
 	}
 
@@ -203,11 +212,11 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	 */
 	public Pair<RegDate, MotifFor> getInfosFermeture() {
 		final InfoFor forFermeture = getPremierForSelonComparateur(COMPARATOR_FERMETURE);
-		if (forFermeture == null || forFermeture.dateFermeture == null) {
+		if (forFermeture == null || forFermeture.dateFin == null) {
 			return null;
 		}
 		else {
-			return Pair.of(forFermeture.dateFermeture, forFermeture.motifFermeture);
+			return Pair.of(forFermeture.dateFin, forFermeture.motifFin);
 		}
 	}
 

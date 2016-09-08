@@ -991,7 +991,7 @@ public class ProduireRolesProcessor {
 					throw new TraitementException();
 				}
 				else {
-					final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, type, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
+					final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, type, forFiscal);
 					rapport.digestInfoFor(infoFor, contribuable, assujettissement, assujettissement.getDateDebut().getOneDayBefore(), anneePeriode, ofsCommune, adresseService, tiersService);
 				}
 			}
@@ -1047,7 +1047,7 @@ public class ProduireRolesProcessor {
 	                                                             GroupementCommunes groupement, TypeContribuable typeCtbAnneePrecedente, ForFiscalRevenuFortune ff) {
 		final int anneePeriode = assujettissementPrecedent.getDateFin().getOneDayAfter().year();
 		final DebutFinFor debutFin = getInformationDebutFin(ff, groupement, anneePeriode, null, null);
-		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement(), ofsCommune);
+		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement(), ofsCommune, ff.getDateDebut(), ff.getDateFin());
 		rapport.digestInfoFor(infoFor, contribuable, null, assujettissementPrecedent.getDateFin(), anneePeriode, ofsCommune, adresseService, tiersService);
 	}
 

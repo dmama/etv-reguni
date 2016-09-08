@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.role;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
@@ -2121,6 +2125,60 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * Au début, on pensait que pour les entreprises vaudoises, les fors secondaires ne devait pas intervenir...
+	 * Et puis on est revenu sur cette décision (mail de PTF, 07.09.2016), donc maintenant, c
+	 */
+	@Test
+	public void testRolesOIPMEntrepriseVaudoiseAvecForSecondaires() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 6);
+		final RegDate dateAchat = date(2012, 8, 14);
+		final RegDate dateVente = date(2015, 2, 4);
+		final String ide = "CHE213456789";
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addIdentificationEntreprise(pm, ide);
+				addBouclement(pm, dateDebut, DayMonth.get(6, 30), 12);
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				addForSecondaire(pm, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesOIPMResults res = processor.runPourOfficePersonnesMorales(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(2, res.getNoOfsCommunesTraitees().size());      // Lausanne et Grandson
+
+		final Collection<InfoContribuablePM> data = res.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFS(), MockCommune.Grandson.getNoOFS()));
+		assertNotNull(data);
+		assertEquals(1, data.size());
+
+		{
+			final InfoContribuablePM info = data.iterator().next();
+			assertNotNull(info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(2015, 6, 30), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertEquals(ide, info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+	}
+
 	@Test
 	public void testFailliteAnneePrecedentBouclement() throws Exception {
 
@@ -2279,6 +2337,71 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	public void testRolesOIPMDeuxBouclementsDansAnnee() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 10);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);              // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+				addBouclement(pm, date(2015, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesOIPMResults res = processor.runPourOfficePersonnesMorales(2015, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(1, res.getNoOfsCommunesTraitees().size());      // juste Lausanne...
+
+		final Collection<InfoContribuablePM> data = res.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFS(), MockCommune.Morges.getNoOFS()));
+		assertNotNull(data);
+		assertEquals(2, data.size());       // les deux bouclements
+
+		final List<InfoContribuablePM> sortedData = new ArrayList<>(data);
+		Collections.sort(sortedData, new Comparator<InfoContribuablePM>() {
+			@Override
+			public int compare(InfoContribuablePM o1, InfoContribuablePM o2) {
+				return NullDateBehavior.LATEST.compare(o1.getDateBouclement(), o2.getDateBouclement());
+			}
+		});
+
+		{
+			final InfoContribuablePM info = sortedData.get(0);
+			assertNotNull(info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(2015, 3, 31), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+		{
+			final InfoContribuablePM info = sortedData.get(1);
+			assertNotNull(info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(2015, 12, 31), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+	}
+
+	@Test
 	public void testRolesPMDeuxBouclementsDansAnneeAvecDemenagementEntreDeux() throws Exception {
 
 		final RegDate dateDebut = date(2010, 5, 10);
@@ -2349,6 +2472,78 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertEquals((Integer) MockCommune.Morges.getNoOFS(), info12.getNoOfsForPrincipal());
 			assertEquals("Raison d'un jour dure toujours", info12.getRaisonSociale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info12.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testRolesOIPMDeuxBouclementsDansAnneeAvecDemenagementEntreDeux() throws Exception {
+
+		final RegDate dateDebut = date(2010, 5, 10);
+		final int anneeRoles = 2015;
+		final RegDate dateDemenagement = date(anneeRoles, 7, 18);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(3, 31), 12);                    // bouclements tous les 31.03 depuis 2011 jusqu'à 2015
+				addBouclement(pm, date(anneeRoles, 12, 1), DayMonth.get(12, 31), 12);     // dès 2015, bouclements au 31.12 -> 2 bouclements en 2015
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pm, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesOIPMResults res = processor.runPourOfficePersonnesMorales(anneeRoles, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(2, res.getNoOfsCommunesTraitees().size());      // Lausanne et Morges
+
+		final Collection<InfoContribuablePM> data = res.buildInfoPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFS(), MockCommune.Morges.getNoOFS()));
+		assertNotNull(data);
+		assertEquals(2, data.size());       // les deux bouclements
+
+		final List<InfoContribuablePM> sortedData = new ArrayList<>(data);
+		Collections.sort(sortedData, new Comparator<InfoContribuablePM>() {
+			@Override
+			public int compare(InfoContribuablePM o1, InfoContribuablePM o2) {
+				return NullDateBehavior.LATEST.compare(o1.getDateBouclement(), o2.getDateBouclement());
+			}
+		});
+
+		// avec le rôles pour l'OIPM, on se place au niveau cantonal global ; c'est ainsi que le rôle présenté pour
+		// la commune de Lausanne se poursuit dans la PF suivante (= à Morges, toujours dans le canton), et que le for
+		// présenté pour la commune de Morges débute déjà à la fondation de l'entreprise (= arrivée dans le canton...)
+
+		{
+			final InfoContribuablePM info = sortedData.get(0);
+			assertNotNull(info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(anneeRoles, 3, 31), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+		{
+			final InfoContribuablePM info = sortedData.get(1);
+			assertNotNull(info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Morges.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertEquals(date(anneeRoles, 12, 31), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Morges.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
 		}
 	}
 }

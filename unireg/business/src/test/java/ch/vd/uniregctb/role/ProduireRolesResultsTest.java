@@ -14,11 +14,13 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ProduireRolesResultsTest extends BusinessTest {
 
@@ -50,14 +52,14 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		final Contribuable ctb = addNonHabitantAvecAdresseCourierALausanne();
 		{
+			final ForFiscalSecondaire ffsRenens = new ForFiscalSecondaire(date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeRoles, 6, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 			final InfoFor infoForRenens = new InfoFor(InfoContribuable.TypeContribuable.HORS_CANTON,
-			                                    date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeRoles, 6, 1), MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF,
-			                                    false, MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Renens.getNoOFS());
+			                                          ffsRenens.getDateDebut(), ffsRenens.getMotifOuverture(), ffsRenens.getDateFin(), ffsRenens.getMotifFermeture(), InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, ffsRenens);
 			results.digestInfoFor(infoForRenens, ctb, null, date(anneeRoles - 1, 12, 31), anneeRoles, MockCommune.Renens.getNoOFS(), adresseService, tiersService);
 
+			final ForFiscalSecondaire ffsCheseaux = new ForFiscalSecondaire(date(anneeRoles, 10, 15), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.CheseauxSurLausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
 			final InfoFor infoForCheseaux = new InfoFor(InfoContribuable.TypeContribuable.HORS_CANTON,
-			                                    date(anneeRoles, 10, 15), MotifFor.DEBUT_EXPLOITATION, null, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF,
-			                                    false, MotifRattachement.ACTIVITE_INDEPENDANTE, MockCommune.CheseauxSurLausanne.getNoOFS());
+			                                            ffsCheseaux.getDateDebut(), ffsCheseaux.getMotifOuverture(), ffsCheseaux.getDateFin(), ffsCheseaux.getMotifFermeture(), InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, ffsCheseaux);
 			results.digestInfoFor(infoForCheseaux, ctb, null, date(anneeRoles - 1, 12, 31), anneeRoles, MockCommune.CheseauxSurLausanne.getNoOFS(), adresseService, tiersService);
 
 			Assert.assertTrue(results.getNoOfsCommunesTraitees().contains(MockCommune.Renens.getNoOFS()));
