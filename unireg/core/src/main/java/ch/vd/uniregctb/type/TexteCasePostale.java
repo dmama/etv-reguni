@@ -47,7 +47,7 @@ public enum TexteCasePostale {
 	 */
 	public static TexteCasePostale parse(String text) {
 		for (TexteCasePostale t : values()) {
-			if (t.name().equalsIgnoreCase(text)) {
+			if (t.name().equalsIgnoreCase(text) || t.formatWithoutNumber.equalsIgnoreCase(text)) {
 				return t;
 			}
 		}

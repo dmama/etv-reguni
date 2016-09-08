@@ -187,7 +187,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		if (poBoxNumber == null && StringUtils.isBlank(poBoxText)) {
 			return null;
 		}
-		return new CasePostale(TexteCasePostale.valueOf(poBoxText), toInteger(poBoxNumber));
+		return new CasePostale(TexteCasePostale.parse(poBoxText), toInteger(poBoxNumber));
 	}
 
 	@Nullable
