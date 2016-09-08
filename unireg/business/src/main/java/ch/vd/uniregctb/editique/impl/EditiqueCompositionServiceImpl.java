@@ -4,6 +4,7 @@ import javax.jms.JMSException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -218,7 +219,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(Set<ModeleFeuilleDocument> listFeuille) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
-		for (ModeleFeuilleDocument feuille : listFeuille) {
+		final List<ModeleFeuilleDocument> listeTriee = new ArrayList<>(listFeuille);
+		Collections.sort(listeTriee, new Comparator<ModeleFeuilleDocument>() {
+			@Override
+			public int compare(ModeleFeuilleDocument o1, ModeleFeuilleDocument o2) {
+				return o1.getIndex() - o2.getIndex();
+			}
+		});
+		for (ModeleFeuilleDocument feuille : listeTriee) {
 			final ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique(feuille, 1);
 			annexes.add(feuilleEditique);
 		}
