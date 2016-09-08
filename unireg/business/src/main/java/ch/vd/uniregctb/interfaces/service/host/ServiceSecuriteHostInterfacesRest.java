@@ -2,6 +2,8 @@ package ch.vd.uniregctb.interfaces.service.host;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
@@ -21,6 +23,7 @@ import ch.vd.uniregctb.security.IfoSecProfil;
 public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService {
 
 	private ServiceSecuriteClient client;
+	private final static  String MESSAGE_VISA_OPERATEUR_TERMINE = "Ce visa op.+rateur est termin.+\\.";
 
 
 	/**
@@ -95,13 +98,14 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	private static boolean isOperateurTermineException(ServiceSecuriteClientException e) {
 		final Exception root = getRootException(e);
 		if (root instanceof ServerWebApplicationException) {
-			if (root.getMessage().contains("Ce visa opérateur est terminé.")) {
+			final Pattern pattern = Pattern.compile(MESSAGE_VISA_OPERATEUR_TERMINE);
+			final Matcher matcher = pattern.matcher(root.getMessage());
+			if (matcher.find()) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 	/**
 	 * @return l'exception première à la racine de l'exception spécifiée.
 	 */
