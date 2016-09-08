@@ -81,7 +81,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="nomType">
 		<xs:restriction base="xs:token">
-			<xs:maxLength value="100" />
+			<xs:maxLength value="255" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sexeType">
