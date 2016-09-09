@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.role;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public abstract class Roles<ICTB extends InfoContribuable<ICTB>, ICOM extends In
 	 * @param nosOfsCommunes listes des numéros OFS des communes à considérer
 	 * @return les informations pour les contribuables agrégées pour l'ensemble des communes données
 	 */
-	public Collection<ICTB> buildInfosPourRegroupementCommunes(Collection<Integer> nosOfsCommunes) {
+	public List<ICTB> buildInfosPourRegroupementCommunes(Collection<Integer> nosOfsCommunes) {
 
 		final Map<Object, ICTB> map = new HashMap<>();
 
@@ -78,7 +80,10 @@ public abstract class Roles<ICTB extends InfoContribuable<ICTB>, ICOM extends In
 				}
 			}
 		}
-		return map.values();
+
+		final List<ICTB> values = new ArrayList<>(map.values());
+		Collections.sort(values);
+		return values;
 	}
 
 	/**

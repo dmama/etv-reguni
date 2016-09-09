@@ -2,7 +2,6 @@ package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -212,9 +211,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 
 		// filtrage des seules communes qui sont effectivement dans l'OID
 		final List<Integer> ofsCommunesDansOID = getListeCommunesDansOid(communes, results.noColOID);
-
-
-		final Collection<InfoContribuablePP> infoOid = results.buildInfoPourRegroupementCommunes(ofsCommunesDansOID);
+		final List<InfoContribuablePP> infoOid = results.buildInfoPourRegroupementCommunes(ofsCommunesDansOID);
 
 		// Résumé des types de contribuables
 		addEntete1("Résumé des types de contribuables trouvés");
@@ -240,10 +237,8 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 	/**
 	 * Utilisé par le traitement d'un OID complet
 	 */
-	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, Collection<InfoContribuablePP> infoOid, StatusManager status) {
-		final List<InfoContribuablePP> infos = getListeTriee(infoOid);
+	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, List<InfoContribuablePP> infos, StatusManager status) {
 		status.setMessage("Génération du rapport");
-
 		return traiteListeContribuablesPP(infos, nomsCommunes, new AccesCommune() {
 			@Override
 			public int getNoOfsCommune(InfoContribuable infoContribuable) {

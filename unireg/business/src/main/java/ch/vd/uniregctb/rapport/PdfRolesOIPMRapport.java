@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +95,7 @@ public class PdfRolesOIPMRapport extends PdfRolesRapport<ProduireRolesOIPMResult
 		}
 
 		// données aggrégées
-		final Collection<InfoContribuablePM> full = results.buildInfoPourRegroupementCommunes(results.getNoOfsCommunesTraitees());
+		final List<InfoContribuablePM> full = results.buildInfoPourRegroupementCommunes(results.getNoOfsCommunesTraitees());
 
 		// Résumé des types de contribuables
 		addEntete1("Résumé des types de contribuables trouvés");
@@ -124,8 +123,7 @@ public class PdfRolesOIPMRapport extends PdfRolesRapport<ProduireRolesOIPMResult
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, Collection<InfoContribuablePM> infoOid, StatusManager status) {
-		final List<InfoContribuablePM> infos = getListeTriee(infoOid);
+	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, List<InfoContribuablePM> infos, StatusManager status) {
 		status.setMessage("Génération du rapport");
 		return traiteListeContribuablesPM(infos, nomsCommunes, new AccesCommune() {
 			@Override

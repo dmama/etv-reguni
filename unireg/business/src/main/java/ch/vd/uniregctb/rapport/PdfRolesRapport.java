@@ -13,6 +13,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -162,19 +163,13 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	 * @param col la collection en entrée (son contenu sera recopié dans la liste triée)
 	 * @return une nouvelle instance de liste, triée par numéro de contribuable
 	 */
-	protected static <T extends InfoContribuable> List<T> getListeTriee(Collection<T> col) {
-
+	@Nullable
+	protected static <T extends InfoContribuable<T>> List<T> getListeTriee(Collection<T> col) {
 		if (col == null || col.isEmpty()) {
 			return null;
 		}
-
 		final List<T> triee = new ArrayList<>(col);
-		Collections.sort(triee, new Comparator<InfoContribuable>() {
-		    @Override
-		    public int compare(InfoContribuable o1, InfoContribuable o2) {
-		        return (int) (o1.noCtb - o2.noCtb);
-		    }
-		});
+		Collections.sort(triee);
 		return triee;
 	}
 

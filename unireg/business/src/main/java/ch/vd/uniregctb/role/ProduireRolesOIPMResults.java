@@ -41,7 +41,7 @@ public class ProduireRolesOIPMResults extends ProduireRolesResults<ProduireRoles
 		roles.addAll(rapport.roles);
 	}
 
-	public Collection<InfoContribuablePM> buildInfoPourRegroupementCommunes(Collection<Integer> noOfsCommunes) {
+	public List<InfoContribuablePM> buildInfoPourRegroupementCommunes(Collection<Integer> noOfsCommunes) {
 		return roles.buildInfosPourRegroupementCommunes(noOfsCommunes);
 	}
 

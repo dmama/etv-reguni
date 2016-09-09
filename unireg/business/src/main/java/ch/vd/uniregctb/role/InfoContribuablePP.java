@@ -3,6 +3,8 @@ package ch.vd.uniregctb.role;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -67,5 +69,10 @@ public class InfoContribuablePP extends InfoContribuable<InfoContribuablePP> {
 				nosAvs.add(tiersService.getNumeroAssureSocial(conjoint));
 			}
 		}
+	}
+
+	@Override
+	public int compareTo(@NotNull InfoContribuablePP o) {
+		return Long.compare(noCtb, o.noCtb);
 	}
 }

@@ -2,10 +2,12 @@ package ch.vd.uniregctb.role;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -83,6 +85,15 @@ public class InfoContribuablePM extends InfoContribuable<InfoContribuablePM> {
 	@Override
 	public InfoContribuablePM duplicate() {
 		return new InfoContribuablePM(this);
+	}
+
+	@Override
+	public int compareTo(@NotNull InfoContribuablePM o) {
+		int comparison = Long.compare(noCtb, o.noCtb);
+		if (comparison == 0) {
+			comparison = NullDateBehavior.LATEST.compare(dateBouclement, o.dateBouclement);
+		}
+		return comparison;
 	}
 
 	@Nullable

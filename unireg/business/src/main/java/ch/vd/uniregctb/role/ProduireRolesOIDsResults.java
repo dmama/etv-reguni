@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.role;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +48,7 @@ public class ProduireRolesOIDsResults extends ProduireRolesResults<ProduireRoles
 		roles.addAll(rapport.roles);
 	}
 
-	public Collection<InfoContribuablePP> buildInfoPourRegroupementCommunes(List<Integer> noOfsCommunes) {
+	public List<InfoContribuablePP> buildInfoPourRegroupementCommunes(List<Integer> noOfsCommunes) {
 		return roles.buildInfosPourRegroupementCommunes(noOfsCommunes);
 	}
 

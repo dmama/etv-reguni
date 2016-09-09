@@ -25,7 +25,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 /**
  * Informations sur un contribuable pour une commune et une période fiscale données
  */
-public abstract class InfoContribuable<T extends InfoContribuable<T>> implements Duplicable<T> {
+public abstract class InfoContribuable<T extends InfoContribuable<T>> implements Duplicable<T>, Comparable<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InfoContribuable.class);
 

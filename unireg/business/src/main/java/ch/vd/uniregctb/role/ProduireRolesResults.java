@@ -180,11 +180,11 @@ public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> ex
 
 	@Override
 	public void end() {
-		super.end();
-
 		// tri des erreurs et des contribuables ignorés
 		Collections.sort(ctbsEnErrors, new CtbComparator<Erreur>());
 		Collections.sort(ctbsIgnores, new CtbComparator<Ignore>());
+
+		super.end();
 	}
 
 	public abstract Set<Integer> getNoOfsCommunesTraitees();
