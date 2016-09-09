@@ -781,7 +781,15 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					final ForFiscalPrincipalPP ffpExistant = (ForFiscalPrincipalPP) forsAt.principal;
 					final ModeImposition modeImposition;
 					if (hasRoleAcquereurPropriete || !forsAt.secondaires.isEmpty()) {
-						modeImposition = ModeImposition.ORDINAIRE;
+						if (ffpExistant != null && ffpExistant.getModeImposition() == ModeImposition.SOURCE) {
+							modeImposition = ffpExistant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD ? ModeImposition.MIXTE_137_1 : ModeImposition.ORDINAIRE;
+						}
+						else if (ffpExistant != null) {
+							modeImposition = ffpExistant.getModeImposition();
+						}
+						else {
+							modeImposition = ModeImposition.ORDINAIRE;
+						}
 					}
 					else {
 						modeImposition = ffpExistant.getModeImposition();
@@ -794,9 +802,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 					final Pair<Integer, TypeAutoriteFiscale> newLocalisation = computeNewLocalisation(partiePrenante.getOfsCommune(), partiePrenante.getOfsPays());
 					if (ffpExistant != null) {
+						final MotifFor motifOuverture;
 						if (ffpExistant.getTypeAutoriteFiscale() != newLocalisation.getRight() || !ffpExistant.getNumeroOfsAutoriteFiscale().equals(newLocalisation.getLeft())) {
-							final MotifRattachement motifRattachement;
-							final MotifFor motifOuverture;
 							if (ffpExistant.getTypeAutoriteFiscale() != newLocalisation.getRight()) {
 								// changement de HS->HC ou HC->HS
 								motifOuverture = ffpExistant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? MotifFor.ARRIVEE_HS : MotifFor.DEPART_HS;
@@ -805,9 +812,17 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 								// on reste dans le même type d'autorité fiscale -> HC->HC ou HS->HS
 								motifOuverture = MotifFor.DEMENAGEMENT_VD;
 							}
-							motifRattachement = ffpExistant.getMotifRattachement();
+						}
+						else if (modeImposition != ffpExistant.getModeImposition()) {
+							motifOuverture = MotifFor.CHGT_MODE_IMPOSITION;
+						}
+						else {
+							motifOuverture = null;
+						}
+
+						if (motifOuverture != null) {
 							tiersService.closeForFiscalPrincipal(ffpExistant, dateActe.getOneDayBefore(), motifOuverture);
-							tiersService.openForFiscalPrincipal(assujetti, dateActe, motifRattachement, newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, motifOuverture);
+							tiersService.openForFiscalPrincipal(assujetti, dateActe, ffpExistant.getMotifRattachement(), newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, motifOuverture);
 						}
 					}
 					else {

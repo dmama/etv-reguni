@@ -67,6 +67,7 @@ public class MockLocalite implements Localite {
 	//
 
 	public static final MockLocalite Bale = new MockLocalite(2431, 4000, null, "Basel", MockCommune.Bale);
+	public static final MockLocalite Bern = new MockLocalite(1670, 3000, null, "Bern", MockCommune.Bern);
 	public static final MockLocalite Chur = new MockLocalite(3970, 7000, null, "Chur", MockCommune.Chur);
 	public static final MockLocalite Neuchatel = new MockLocalite(1254, 2000, null, "Neuchâtel", MockCommune.Neuchatel);
 	public static final MockLocalite Neuchatel1Cases = new MockLocalite(1269, 2001, 1, "Neuchâtel 1 Cases", MockCommune.Neuchatel);
