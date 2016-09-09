@@ -5502,7 +5502,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Remarque remarque = remarques.iterator().next();
 					Assert.assertNotNull(remarque);
 					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante (Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD).", remarque.getTexte());
+					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Mandataire bidon / Rue de la bonne arnaque 63e / 1020 / Renens VD.", remarque.getTexte());
 				}
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();
@@ -6007,6 +6007,133 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testChangementNoTelContactMandataireSurLien() throws Exception {
+
+		// besoin d'indexation des tiers manipulés ici
+		setWantIndexationTiers(true);
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2009, 7, 13);
+		final RegDate dateQuittance = date(annee + 1, 5, 18);
+		final String ideMandataire = "CHE429111243";
+		final String oldTelContact = "0219876543";
+		final String newTelContact = "0211234567";
+
+		final class Ids {
+			long idEntreprise;
+			long idMandataire;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee, 7, 5));
+				addEtatDeclarationRetournee(di, dateQuittance);
+
+				final Entreprise mandataire = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(mandataire, dateDebutEntreprise, null, "Au service de la 'hips communauté SA");
+				addFormeJuridique(mandataire, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+				final AdresseSuisse adresse = addAdresseSuisse(mandataire, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Geneve.AvenueGuiseppeMotta);        // servira de défaut pour l'adresse de représentation
+				adresse.setNumeroMaison("42");
+				addIdentificationEntreprise(mandataire, ideMandataire);
+
+				final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, null, true);
+				mandat.setNoTelephoneContact(oldTelContact);
+
+				final Ids ids = new Ids();
+				ids.idEntreprise = entreprise.getNumero();
+				ids.idMandataire = mandataire.getNumero();
+				return ids;
+			}
+		});
+
+		// sync pour s'assurer que les nouveaux tiers sont bien indexés avant de continuer
+		globalTiersIndexer.sync();
+
+		// réception des données de retour (même mandataire mais le numéro de téléphone de contact a changé)
+		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.FALSE, newTelContact);
+		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				final List<Mandat> mandats = new ArrayList<>();
+				for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+					if (ret instanceof Mandat) {
+						mandats.add((Mandat) ret);
+					}
+				}
+				Assert.assertEquals(2, mandats.size());
+				Collections.sort(mandats, new DateRangeComparator<>());
+				{
+					final Mandat mandat = mandats.get(0);
+					Assert.assertNotNull(mandat);
+					Assert.assertFalse(mandat.isAnnule());
+					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
+					Assert.assertEquals(date(annee - 1, 6, 30), mandat.getDateFin());
+					Assert.assertTrue(mandat.getWithCopy());
+					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+					Assert.assertNull(mandat.getNomPersonneContact());
+					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertEquals(oldTelContact, mandat.getNoTelephoneContact());
+				}
+				{
+					final Mandat mandat = mandats.get(1);
+					Assert.assertNotNull(mandat);
+					Assert.assertFalse(mandat.isAnnule());
+					Assert.assertEquals(date(annee - 1, 7, 1), mandat.getDateDebut());
+					Assert.assertNull(mandat.getDateFin());
+					Assert.assertTrue(mandat.getWithCopy());
+					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
+					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
+					Assert.assertNull(mandat.getNomPersonneContact());
+					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertEquals(newTelContact, mandat.getNoTelephoneContact());
+				}
+
+				final Set<AdresseMandataire> adresses = entreprise.getAdressesMandataires();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(0, adresses.size());
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(0, tachesControle.size());
+			}
+		});
+	}
+
+	@Test
 	public void testIndicationMandataireIdentiqueAExistant() throws Exception {
 
 		// besoin d'indexation des tiers manipulés ici
@@ -6172,7 +6299,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Chapi chapo", "Tralalo", "Chapo chapi", "Tralali", null, MockLocalite.Bussigny.getNPA().toString(), MockLocalite.Bussigny.getNom());
-		final InformationsMandataire infosMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, null);
+		final InformationsMandataire infosMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, "0211234567");
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 
 		// traitement de ces données
@@ -6223,7 +6350,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Remarque remarque = remarques.iterator().next();
 					Assert.assertNotNull(remarque);
 					Assert.assertFalse(remarque.isAnnule());
-					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante (Chapi chapo / Tralalo / Chapo chapi / Tralali / 1030 / Bussigny).", remarque.getTexte());
+					Assert.assertEquals("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI " + annee + "/1 n'ont pas pu être interprétées de manière concluante :\n- adresse : Chapi chapo / Tralalo / Chapo chapi / Tralali / 1030 / Bussigny\n- copie mandataire : avec\n- téléphone contact : 0211234567.", remarque.getTexte());
 				}
 
 				final TacheCriteria tacheCriteria = new TacheCriteria();

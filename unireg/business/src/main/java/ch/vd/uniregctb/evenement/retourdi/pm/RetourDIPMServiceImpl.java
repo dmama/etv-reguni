@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -264,6 +265,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final String[] lignesAdresseFournie;                // les 6 lignes de l'adresse telle que fournie sur la DI (retranscrites, quand-même...), optionelles
 		final String[] lignesAdresseMandataireFourni;       // les 6 lignes de l'adresse de représentation du mandataire reconnu depuis les données de la DI (IDE), optionnelles
 		final boolean avecCopieMandataireFourni;
+		final String noTelContactMandataireFourni;
 
 		// si on a un numéro IDE dans les données, on essaie de voir si on connait déjà le gulu
 		if (infosMandataire.isNumeroIdeMandataireUtilisable()) {
@@ -288,19 +290,27 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// flag "sans copie mandataire" dans la DI traduit ici par un "avec copie mandataire" (true par défaut)
 		avecCopieMandataireFourni = infosMandataire.getSansCopieMandataire() == null || !infosMandataire.getSansCopieMandataire();
 
+		// extraction du numéro de téléphone du contact, si fourni
+		noTelContactMandataireFourni = StringUtils.trimToNull(infosMandataire.getNoTelContact());
+
 		// reconstitution des lignes d'adresses fournies dans la déclaration
 		if (infosMandataire.getAdresse() != null) {
 			final AdresseRaisonSociale adresseFournie = infosMandataire.getAdresse();
 			raisonSocialeEtAdresseFournies = adresseFournie.split(infraService, tiersService, dateReference);
 			if (raisonSocialeEtAdresseFournies == null) {
 				tacheService.genereTacheControleDossier(entreprise, Motifs.MANDATAIRE);
-				addRemarque(entreprise, String.format("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI %d/%d n'ont pas pu être interprétées de manière concluante (%s).",
-				                                      pf, noSequence,
-				                                      adresseFournie.toDisplayString(infraService, adresseService, dateReference)));
 
 				// si un mandataire a été reconnu par son numéro IDE, on peut quand-même générer le lien même si aucune adresse supplémentaire n'a été donnée
 				if (mandataireFourni == null) {
+					addRemarque(entreprise, String.format("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI %d/%d n'ont pas pu être interprétées de manière concluante :\n%s.",
+					                                      pf, noSequence,
+					                                      infosMandataire.toDisplayString(infraService, adresseService, dateReference)));
 					return;
+				}
+				else {
+					addRemarque(entreprise, String.format("Les données d'adresse/raison sociale trouvées pour le mandataire dans la DI %d/%d n'ont pas pu être interprétées de manière concluante (%s).",
+					                                      pf, noSequence,
+					                                      adresseFournie.toDisplayString(infraService, adresseService, dateReference)));
 				}
 
 				lignesAdresseFournie = null;
@@ -378,6 +388,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final AdresseMandataire adresseMandataireConnue;    // l'adresse mandataire connue (optionnelle)
 		final String[] lignesAdresseConnue;                 // les 6 lignes de l'adresse issue du mandat ou de l'adresse mandataire connue (optionnelles)
 		final Boolean avecCopieMandataireConnu;
+		final String noTelContactMandataireConnu;
 
 		// y a-t-il déjà une information de mandat général présente ?
 		mandatConnu = findMandatGeneralActif(entreprise, dateDebutNouveauMandat);
@@ -388,16 +399,19 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				avecCopieMandataireConnu = mandatConnu.getWithCopy() != null && mandatConnu.getWithCopy();
 				final AdresseEnvoiDetaillee adresseMandataireActif = adresseService.getAdresseEnvoi(mandataireConnu, null, TypeAdresseFiscale.REPRESENTATION, false);
 				lignesAdresseConnue = adresseMandataireActif.getLignes();
+				noTelContactMandataireConnu = mandatConnu.getNoTelephoneContact();
 			}
 			else if (adresseMandataireConnue != null) {
 				avecCopieMandataireConnu = adresseMandataireConnue.isWithCopy();
 				final AdresseGenerique adresseGenerique = new AdresseMandataireAdapter(adresseMandataireConnue, infraService);
 				final AdresseEnvoiDetaillee adresseDetaillee = adresseService.buildAdresseEnvoi(adresseGenerique.getSource().getTiers(), adresseGenerique, dateReference);
 				lignesAdresseConnue = adresseDetaillee.getLignes();
+				noTelContactMandataireConnu = adresseMandataireConnue.getNoTelephoneContact();
 			}
 			else {
 				avecCopieMandataireConnu = null;
 				lignesAdresseConnue = null;
+				noTelContactMandataireConnu = null;
 			}
 		}
 		catch (AdresseException e) {
@@ -421,7 +435,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 		// la nouvelle adresse est l'adresse explicitement fournie ou, à défaut, l'adresse de représentation du mandataire fourni (pour peu qu'il soit effectivement fourni)
 		final String[] lignesNouvelleAdresse = lignesAdresseFournie != null ? lignesAdresseFournie : lignesAdresseMandataireFourni;
-		if (!areEquals(lignesAdresseConnue, lignesNouvelleAdresse) || (hasDonneesFournies && (avecCopieMandataireConnu == null || avecCopieMandataireConnu != avecCopieMandataireFourni))) {
+		if (!areEquals(lignesAdresseConnue, lignesNouvelleAdresse)
+				|| (hasDonneesFournies && (avecCopieMandataireConnu == null || avecCopieMandataireConnu != avecCopieMandataireFourni))
+				|| (noTelContactMandataireFourni != null && !Objects.equals(noTelContactMandataireFourni, noTelContactMandataireConnu))) {
 
 			// il y a quelque chose à faire...
 
@@ -429,6 +445,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			if (mandataireFourni != null && (lignesAdresseFournie == null || areEquals(lignesAdresseFournie, lignesAdresseMandataireFourni))) {
 				// c'est bien un lien qu'il faut faire...
 				final Mandat nouveauMandat = Mandat.general(dateDebutNouveauMandat, null, entreprise, mandataireFourni, avecCopieMandataireFourni);
+				nouveauMandat.setNoTelephoneContact(noTelContactMandataireFourni);
 
 				// s'il y avait une adresse/un mandat connu, il faut le fermer à la date de fin de l'exercice commercial qui précède celui de la DI retournée
 				fermerLienAdresseMandataire(entreprise, mandatConnu, adresseMandataireConnue, dateClotureMandatPrecedent);
@@ -448,6 +465,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 					if (complement != null && nouvelleAdresseMandataire.getComplement() == null) {
 						nouvelleAdresseMandataire.setComplement(complement);
 					}
+					nouvelleAdresseMandataire.setNoTelephoneContact(noTelContactMandataireFourni);
 				}
 				catch (AdresseException e) {
 					LOGGER.error(String.format("Erreur à la constitution de l'adresse mandataire de type 'général' du contribuable %s au %s",
