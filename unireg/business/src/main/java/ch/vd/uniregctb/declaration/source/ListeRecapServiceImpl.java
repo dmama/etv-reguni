@@ -159,13 +159,16 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 		lr.setModeleDocument(modDoc);
 
+		final RegDate today = RegDate.get();
+
 		final EtatDeclaration etat = new EtatDeclarationEmise();
-		etat.setDateObtention(RegDate.get());
+		etat.setDateObtention(today);
 		lr.addEtat(etat);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
-		delai.setDateTraitement(RegDate.get());
+		delai.setDateDemande(today);
+		delai.setDateTraitement(today);
 
 		// si la date de traitement est avant la fin de la période, alors le délai est 1 mois après la fin de la période
 		// sinon, le délai est un mois après l'émission

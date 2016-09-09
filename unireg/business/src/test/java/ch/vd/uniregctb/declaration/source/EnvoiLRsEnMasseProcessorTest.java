@@ -20,6 +20,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -261,6 +262,11 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 				Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
 				Assert.assertEquals(date(anneeReference, 4, 1), lr.getDateDebut());
 				Assert.assertEquals(date(anneeReference, 4, 30), lr.getDateFin());
+
+				final DelaiDeclaration delai = lr.getDernierDelaiAccorde();
+				Assert.assertNotNull(delai);
+				Assert.assertEquals(RegDate.get(), delai.getDateTraitement());
+				Assert.assertEquals(RegDate.get(), delai.getDateDemande());
 			}
 		});
 	}
