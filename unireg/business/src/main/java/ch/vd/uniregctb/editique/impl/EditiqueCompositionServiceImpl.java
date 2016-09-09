@@ -251,7 +251,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, buildDefaultAnnexes(declaration), false);
+		return imprimeDIOnline(declaration, buildDefaultAnnexes(declaration));
 	}
 
 	@Override
@@ -261,7 +261,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, annexes, true);
+		return imprimeDIOnline(declaration, annexes);
 	}
 
 	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
@@ -289,15 +289,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, false, description);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, annexes);
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		root.getDocument().add(document);
-		if (!isDuplicata && impressionOrignalDoubleExemplaire(typeDocument)) {
-			// 2 exemplaires pour les envois originaux APM
-			root.getDocument().add(document);
-		}
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
 
 		final String description = String.format("Document '%s %d' du contribuable %s",
@@ -336,21 +332,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, buildDefaultAnnexesForBatch(declaration));
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		root.getDocument().add(document);
-		if (impressionOrignalDoubleExemplaire(typeDocument)) {
-			root.getDocument().add(document);       // 2 exemplaires pour les envois originaux
-		}
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
-	}
-
-	/**
-	 * [SIFISC-19498] Les originaux de DI PM ne sont imprimés qu'en un seul exemplaire, alors que les originaux
-	 * de DI APM sont imprimés en deux exemplaires
-	 * @param typeDocument le type de document à imprimer en original
-	 * @return <code>true</code> si l'impression doit se faire en deux exemplaires
-	 */
-	private static boolean impressionOrignalDoubleExemplaire(TypeDocumentEditique typeDocument) {
-		return typeDocument == TypeDocumentEditique.DI_APM;
 	}
 
 	@Override
