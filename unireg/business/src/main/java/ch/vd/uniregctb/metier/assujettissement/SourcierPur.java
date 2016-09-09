@@ -14,8 +14,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class SourcierPur extends Sourcier {
 
-	public SourcierPur(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale);
+	public SourcierPur(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale, communeAnalyzer);
+	}
+
+	private SourcierPur(SourcierPur source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	public SourcierPur(SourcierPur courant, SourcierPur suivant) {
@@ -24,7 +28,7 @@ public class SourcierPur extends Sourcier {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new SourcierPur(getContribuable(), dateDebut, dateFin, motifDebut, motifFin, getTypeAutoriteFiscalePrincipale());
+		return new SourcierPur(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	@Override

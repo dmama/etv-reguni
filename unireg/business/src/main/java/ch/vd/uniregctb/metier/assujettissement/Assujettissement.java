@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
@@ -9,8 +11,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -27,15 +28,31 @@ public abstract class Assujettissement implements CollatableDateRange {
 	private MotifFor motifDebut;
 	private MotifFor motifFin;
 	private DecompositionFors fors;
+	private final AssujettissementSurCommuneAnalyzer communeAnalyzer;
+	private List<ForFiscalRevenuFortune> forsVaudoisDeterminantsPourCommunes;
 
-	protected Assujettissement(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+	protected Assujettissement(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.contribuable = contribuable;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.motifDebut = motifDebut;
 		this.motifFin = motifFin;
-		this.fors = null;
+		this.fors = null;                                   // lazy init
+		this.communeAnalyzer = communeAnalyzer;
+		this.forsVaudoisDeterminantsPourCommunes = null;    // lazy init
+	}
+
+	protected Assujettissement(Assujettissement source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		this.contribuable = source.getContribuable();
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.motifDebut = motifDebut;
+		this.motifFin = motifFin;
+		this.fors = null;                                   // lazy init
+		this.communeAnalyzer = source.communeAnalyzer;
+		this.forsVaudoisDeterminantsPourCommunes = null;    // lazy init
 	}
 
 	/**
@@ -55,6 +72,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 		this.motifFin = suivant.motifFin;
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.fors = null;
+		this.communeAnalyzer = courant.communeAnalyzer;
+		this.forsVaudoisDeterminantsPourCommunes = null;
 	}
 
 	public abstract Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin);
@@ -143,23 +162,20 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @return vrai si l'assujettissement est actif sur la commune considérée, faux sinon
 	 */
 	public boolean isActifSurCommune(int noOfsCommune) {
-
-		final DecompositionFors fors = getFors();
-
-		boolean actif = false;
-		final ForFiscalPrincipal ffp = (fors.principal != null ? fors.principal : fors.principauxDansLaPeriode.last());
-		if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getNumeroOfsAutoriteFiscale() == noOfsCommune) {
-			actif = getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		}
-		else if (!fors.secondairesDansLaPeriode.isEmpty()) {
-			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
-				if (ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffs.getNumeroOfsAutoriteFiscale() == noOfsCommune) {
-					actif = true;
-					break;
-				}
+		final List<ForFiscalRevenuFortune> forsDeterminants = getForsVaudoisDeterminantsPourCommunes();
+		for (ForFiscalRevenuFortune ff : forsDeterminants) {
+			if (ff.getNumeroOfsAutoriteFiscale() == noOfsCommune) {
+				return true;
 			}
 		}
-		return actif;
+		return false;
+	}
+
+	private List<ForFiscalRevenuFortune> getForsVaudoisDeterminantsPourCommunes() {
+		if (forsVaudoisDeterminantsPourCommunes == null) {
+			forsVaudoisDeterminantsPourCommunes = communeAnalyzer.getForsVaudoisDeterminantsPourCommunes(this);
+		}
+		return forsVaudoisDeterminantsPourCommunes;
 	}
 
 	/**

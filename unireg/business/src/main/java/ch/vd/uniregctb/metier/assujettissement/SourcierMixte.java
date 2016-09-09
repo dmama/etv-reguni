@@ -17,8 +17,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class SourcierMixte extends Sourcier {
 
-	public SourcierMixte(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale);
+	public SourcierMixte(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale, communeAnalyzer);
+	}
+
+	protected SourcierMixte(SourcierMixte source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	public SourcierMixte(SourcierMixte courant, SourcierMixte suivant) {

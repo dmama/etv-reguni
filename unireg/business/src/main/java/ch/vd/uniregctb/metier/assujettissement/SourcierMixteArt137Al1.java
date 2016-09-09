@@ -11,8 +11,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class SourcierMixteArt137Al1 extends SourcierMixte {
 
-	public SourcierMixteArt137Al1(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale);
+	public SourcierMixteArt137Al1(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale, communeAnalyzer);
+	}
+
+	private SourcierMixteArt137Al1(SourcierMixteArt137Al1 source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	public SourcierMixteArt137Al1(SourcierMixteArt137Al1 courant, SourcierMixteArt137Al1 suivant) {
@@ -21,7 +25,7 @@ public class SourcierMixteArt137Al1 extends SourcierMixte {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new SourcierMixteArt137Al1(getContribuable(), dateDebut, dateFin, motifDebut, motifFin, getTypeAutoriteFiscalePrincipale());
+		return new SourcierMixteArt137Al1(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	@Override

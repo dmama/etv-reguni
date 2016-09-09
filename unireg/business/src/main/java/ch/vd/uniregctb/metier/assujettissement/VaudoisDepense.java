@@ -14,8 +14,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class VaudoisDepense extends Assujettissement {
 
-	public VaudoisDepense(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
+	public VaudoisDepense(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, communeAnalyzer);
+	}
+
+	private VaudoisDepense(VaudoisDepense source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	private VaudoisDepense(VaudoisDepense courant, VaudoisDepense suivant) {
@@ -24,7 +28,7 @@ public class VaudoisDepense extends Assujettissement {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new VaudoisDepense(getContribuable(), dateDebut, dateFin, motifDebut, motifFin);
+		return new VaudoisDepense(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementPersonnesPhysiquesCalculator;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
@@ -731,15 +732,15 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 				final PersonnePhysique toto = addNonHabitant("Toto", "LaRapière", date(1973, 3, 21), Sexe.MASCULIN);
 				addForPrincipal(toto, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
-				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null)));
-				assertEquals(TypeContribuable.DEPENSE, ProduireRolesProcessor.getTypeContribuable(new VaudoisDepense(toto, null, null, null, null)));
-				assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al1(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-				assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al2(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-				assertEquals(TypeContribuable.HORS_CANTON, ProduireRolesProcessor.getTypeContribuable(new HorsCanton(toto, null, null, null, null)));
-				assertEquals(TypeContribuable.HORS_SUISSE, ProduireRolesProcessor.getTypeContribuable(new HorsSuisse(toto, null, null, null, null)));
-				assertEquals(TypeContribuable.SOURCE, ProduireRolesProcessor.getTypeContribuable(new SourcierPur(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-				assertNull(ProduireRolesProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null)));
+				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.DEPENSE, ProduireRolesProcessor.getTypeContribuable(new VaudoisDepense(toto, null, null, null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al1(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixteArt137Al2(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.HORS_CANTON, ProduireRolesProcessor.getTypeContribuable(new HorsCanton(toto, null, null, null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.HORS_SUISSE, ProduireRolesProcessor.getTypeContribuable(new HorsSuisse(toto, null, null, null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertEquals(TypeContribuable.SOURCE, ProduireRolesProcessor.getTypeContribuable(new SourcierPur(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
+				assertNull(ProduireRolesProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null, AssujettissementPersonnesPhysiquesCalculator.COMMUNE_ANALYZER)));
 			}
 		});
 	}
@@ -2544,6 +2545,56 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertEquals((Integer) MockCommune.Morges.getNoOFS(), info.getNoOfsForPrincipal());
 			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.getTafForPrincipal());
+		}
+	}
+
+	@Test
+	public void testDepartHCPM() throws Exception {
+		final RegDate dateDebut = date(2010, 5, 10);
+		final int anneeRoles = 2015;
+		final RegDate dateDemenagement = date(anneeRoles, 7, 18);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(pm, dateDebut, null, "Raison d'un jour dure toujours");
+				addFormeJuridique(pm, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(pm, dateDebut, DayMonth.get(12, 31), 12);                    // bouclements tous les 31.12 depuis 2010
+				addForPrincipal(pm, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEPART_HC, MockCommune.Lausanne);
+				addForPrincipal(pm, dateDemenagement, MotifFor.DEPART_HC, MockCommune.Neuchatel);
+				return pm.getNumero();
+			}
+		});
+
+		// rôles 2015 vaudois
+		final ProduireRolesPMCommunesResults res = processor.runPMPourToutesCommunes(anneeRoles, 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+		assertEquals(1, res.getNoOfsCommunesTraitees().size());      // Lausanne
+
+		final InfoCommunePM infoLausanne = res.getInfosCommunes().get(MockCommune.Lausanne.getNoOFS());
+		assertNotNull(infoLausanne);
+
+		final Collection<InfoContribuablePM> infos = infoLausanne.getInfosContribuables();
+		assertNotNull(infos);
+		assertEquals(1, infos.size());
+
+		{
+			final InfoContribuablePM info = infos.iterator().next();
+			assertNotNull(info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertEquals(date(anneeRoles, 12, 31), info.getDateBouclement());
+			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
+			assertNull(info.getNoIde());
+			assertEquals((Integer) MockCommune.Neuchatel.getNoOFS(), info.getNoOfsForPrincipal());
+			assertEquals("Raison d'un jour dure toujours", info.getRaisonSociale());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, info.getTafForPrincipal());
 		}
 	}
 }

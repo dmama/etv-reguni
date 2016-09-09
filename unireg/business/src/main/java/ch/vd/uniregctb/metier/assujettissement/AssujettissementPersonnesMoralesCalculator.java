@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
@@ -24,7 +25,9 @@ import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -74,6 +77,33 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	                                                                          MotifFor.REACTIVATION,
 	                                                                          MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE,
 	                                                                          MotifFor.DEBUT_EXPLOITATION);
+
+	/**
+	 * Détermine les fors fiscaux à prendre en compte pour la répartition sur les communes vaudoises
+	 */
+	public static final AssujettissementSurCommuneAnalyzer COMMUNE_ANALYZER = new AssujettissementSurCommuneAnalyzer() {
+		@Override
+		public List<ForFiscalRevenuFortune> getForsVaudoisDeterminantsPourCommunes(Assujettissement assujettissement) {
+			// pour l'assujettissement PM, les fors déterminants sont :
+			// - tous les fors secondaires dans la période
+			// - le dernier for principal vaudois de la période
+
+			final DecompositionFors fors = assujettissement.getFors();
+			final List<ForFiscalRevenuFortune> determinants = new ArrayList<>(1 + fors.secondairesDansLaPeriode.size());
+			for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(fors.principauxDansLaPeriode)) {
+				if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					determinants.add(ffp);
+					break;
+				}
+			}
+			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
+				if (ffs != null && ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					determinants.add(ffs);
+				}
+			}
+			return determinants;
+		}
+	};
 
 	/**
 	 * Calcul de l'assujettissement d'une personne morale d'après ses fors et ses exercices commerciaux
@@ -909,13 +939,13 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			final Assujettissement a;
 			switch (d.type) {
 			case Vaudois:
-				a = new VaudoisOrdinaire(ctb, d.getDateDebut(), d.getDateFin(), d.motifDebut, d.motifFin);
+				a = new VaudoisOrdinaire(ctb, d.getDateDebut(), d.getDateFin(), d.motifDebut, d.motifFin, COMMUNE_ANALYZER);
 				break;
 			case HorsCanton:
-				a = new HorsCanton(ctb, d.getDateDebut(), d.getDateFin(), d.motifDebut, d.motifFin);
+				a = new HorsCanton(ctb, d.getDateDebut(), d.getDateFin(), d.motifDebut, d.motifFin, COMMUNE_ANALYZER);
 				break;
 			case HorsSuisse:
-				a = new HorsSuisse(ctb, d.getDateDebut(), d.getDateFin(), d.motifDebut, d.motifFin);
+				a = new HorsSuisse(ctb, d.getDateDebut(), d.getDateFin(), d.motifDebut, d.motifFin, COMMUNE_ANALYZER);
 				break;
 			case NonAssujetti:
 				a = null;

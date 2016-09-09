@@ -14,8 +14,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class Indigent extends Assujettissement {
 
-	public Indigent(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
+	public Indigent(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, communeAnalyzer);
+	}
+
+	private Indigent(Indigent source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	private Indigent(Indigent courant, Indigent suivant) {
@@ -24,7 +28,7 @@ public class Indigent extends Assujettissement {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new Indigent(getContribuable(), dateDebut, dateFin, motifDebut, motifFin);
+		return new Indigent(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	@Override

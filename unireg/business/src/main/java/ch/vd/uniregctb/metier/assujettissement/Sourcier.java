@@ -17,9 +17,14 @@ public abstract class Sourcier extends Assujettissement {
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
 
 	protected Sourcier(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-	                   TypeAutoriteFiscale typeAutoriteFiscale) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
+	                   TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, communeAnalyzer);
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
+	}
+
+	protected Sourcier(Sourcier source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
+		this.typeAutoriteFiscale = source.typeAutoriteFiscale;
 	}
 
 	protected Sourcier(Sourcier courant, Sourcier suivant) {

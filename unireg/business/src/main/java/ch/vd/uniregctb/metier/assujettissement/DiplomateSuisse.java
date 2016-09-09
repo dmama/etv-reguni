@@ -14,8 +14,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class DiplomateSuisse extends Assujettissement {
 
-	public DiplomateSuisse(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
+	public DiplomateSuisse(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, communeAnalyzer);
+	}
+
+	private DiplomateSuisse(DiplomateSuisse source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	private DiplomateSuisse(DiplomateSuisse courant, DiplomateSuisse suivant) {
@@ -24,7 +28,7 @@ public class DiplomateSuisse extends Assujettissement {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new DiplomateSuisse(getContribuable(), dateDebut, dateFin, motifDebut, motifFin);
+		return new DiplomateSuisse(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	@Override

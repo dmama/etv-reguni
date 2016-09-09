@@ -34,6 +34,7 @@ import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementPersonnesMoralesCalculator;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
@@ -243,7 +244,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setAssujettissementService(new AssujettissementService() {
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
-				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null));
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
 			}
 
 			@Override
@@ -463,7 +464,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setAssujettissementService(new AssujettissementService() {
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
-				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null));
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
 			}
 
 			@Override
@@ -732,7 +733,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setAssujettissementService(new AssujettissementService() {
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
-				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null));
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
 			}
 
 			@Override

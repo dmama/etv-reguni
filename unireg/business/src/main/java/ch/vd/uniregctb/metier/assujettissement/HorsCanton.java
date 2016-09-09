@@ -14,8 +14,12 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class HorsCanton extends Assujettissement {
 
-	public HorsCanton(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
+	public HorsCanton(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, communeAnalyzer);
+	}
+
+	private HorsCanton(HorsCanton source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	private HorsCanton(HorsCanton courant, HorsCanton suivant) {
@@ -24,7 +28,7 @@ public class HorsCanton extends Assujettissement {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new HorsCanton(getContribuable(), dateDebut, dateFin, motifDebut, motifFin);
+		return new HorsCanton(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
 	@Override

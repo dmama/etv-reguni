@@ -28,6 +28,7 @@ import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -40,6 +41,28 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * Le calculateur d'assujettissement selon le régime des personnes physiques
  */
 public class AssujettissementPersonnesPhysiquesCalculator implements AssujettissementCalculator<ContribuableImpositionPersonnesPhysiques> {
+
+	public static final AssujettissementSurCommuneAnalyzer COMMUNE_ANALYZER = new AssujettissementSurCommuneAnalyzer() {
+		@Override
+		public List<ForFiscalRevenuFortune> getForsVaudoisDeterminantsPourCommunes(Assujettissement assujettissement) {
+			// pour l'assujettissement PP, les fors déterminants sont :
+			// - tous les fors secondaires de la période
+			// - le dernier for principal suisse de la période , s'il est vaudois
+
+			final DecompositionFors fors = assujettissement.getFors();
+			final List<ForFiscalRevenuFortune> determinants = new ArrayList<>(1 + fors.secondairesDansLaPeriode.size());
+			final ForFiscalPrincipal ffp = fors.principal != null ? fors.principal : fors.principauxDansLaPeriode.last();
+			if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				determinants.add(ffp);
+			}
+			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
+				if (ffs != null && ffs.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					determinants.add(ffs);
+				}
+			}
+			return determinants;
+		}
+	};
 
 	/**
 	 * Méthode principale pour la détermination des assujettissements d'un contribuable (PP).
@@ -185,7 +208,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 						continue;
 					}
 
-					list.add(new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut));
+					list.add(new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut, COMMUNE_ANALYZER));
 				}
 			}
 		}
@@ -1474,31 +1497,31 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			final Assujettissement assujettissement;
 			switch (a.type) {
 			case VaudoisOrdinaire:
-				assujettissement = new VaudoisOrdinaire(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				assujettissement = new VaudoisOrdinaire(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, COMMUNE_ANALYZER);
 				break;
 			case VaudoisDepense:
-				assujettissement = new VaudoisDepense(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				assujettissement = new VaudoisDepense(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, COMMUNE_ANALYZER);
 				break;
 			case Indigent:
-				assujettissement = new Indigent(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				assujettissement = new Indigent(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, COMMUNE_ANALYZER);
 				break;
 			case HorsCanton:
-				assujettissement = new HorsCanton(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				assujettissement = new HorsCanton(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, COMMUNE_ANALYZER);
 				break;
 			case HorsSuisse:
-				assujettissement = new HorsSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				assujettissement = new HorsSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, COMMUNE_ANALYZER);
 				break;
 			case SourcierPur:
-				assujettissement = new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+				assujettissement = new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut, COMMUNE_ANALYZER);
 				break;
 			case SourcierMixte1:
-				assujettissement = new SourcierMixteArt137Al1(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+				assujettissement = new SourcierMixteArt137Al1(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut, COMMUNE_ANALYZER);
 				break;
 			case SourcierMixte2:
-				assujettissement = new SourcierMixteArt137Al2(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+				assujettissement = new SourcierMixteArt137Al2(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut, COMMUNE_ANALYZER);
 				break;
 			case DiplomateSuisse:
-				assujettissement = new DiplomateSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				assujettissement = new DiplomateSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, COMMUNE_ANALYZER);
 				break;
 			case NonAssujetti:
 				assujettissement = null;
