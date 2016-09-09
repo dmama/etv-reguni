@@ -2,8 +2,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -23,10 +21,10 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public abstract class Assujettissement implements CollatableDateRange {
 
 	private final Contribuable contribuable;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private MotifFor motifDebut;
-	private MotifFor motifFin;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
+	private final MotifFor motifDebut;
+	private final MotifFor motifFin;
 	private DecompositionFors fors;
 	private final AssujettissementSurCommuneAnalyzer communeAnalyzer;
 	private List<ForFiscalRevenuFortune> forsVaudoisDeterminantsPourCommunes;
@@ -71,9 +69,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 		this.motifDebut = courant.motifDebut;
 		this.motifFin = suivant.motifFin;
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
-		this.fors = null;
+		this.fors = null;                                   // lazy init
 		this.communeAnalyzer = courant.communeAnalyzer;
-		this.forsVaudoisDeterminantsPourCommunes = null;
+		this.forsVaudoisDeterminantsPourCommunes = null;    // lazy init
 	}
 
 	public abstract Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin);
@@ -87,19 +85,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return dateDebut;
 	}
 
-	protected void setDateDebut(RegDate date) {
-		this.dateDebut = date;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
-	}
-
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
-	}
-
-	protected void setDateFin(RegDate date) {
-		this.dateFin = date;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 	}
 
 	@Override
@@ -113,19 +101,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return !departHSEtArriveeHC && !venteDernierImmeubleEtRachatAnneeSuivante && getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next);
 	}
 
-	protected void setMotifDebut(@Nullable MotifFor motifDebut) {
-		this.motifDebut = motifDebut;
-	}
-
 	/**
 	 * @return le motif de début de l'assujettissement
 	 */
 	public MotifFor getMotifFractDebut() {
 		return motifDebut;
-	}
-
-	protected void setMotifFin(@Nullable MotifFor motifFin) {
-		this.motifFin = motifFin;
 	}
 
 	/**
