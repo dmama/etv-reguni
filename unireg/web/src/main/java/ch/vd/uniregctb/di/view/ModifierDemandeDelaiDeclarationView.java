@@ -13,7 +13,7 @@ public class ModifierDemandeDelaiDeclarationView extends AbstractEditionDelaiDec
 	}
 
 	public ModifierDemandeDelaiDeclarationView(DelaiDeclaration delai, RegDate delaiAccordeAu) {
-		super((DeclarationImpotOrdinaire) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu);
+		super((DeclarationImpotOrdinaire) delai.getDeclaration(), delai.getDateDemande(), delaiAccordeAu, delai.getEtat());
 		this.idDelai = delai.getId();
 	}
 

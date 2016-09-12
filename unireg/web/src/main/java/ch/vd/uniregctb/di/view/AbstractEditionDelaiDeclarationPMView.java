@@ -20,12 +20,12 @@ public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEdit
 	public AbstractEditionDelaiDeclarationPMView() {
 	}
 
-	public AbstractEditionDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate dateDemande, RegDate delaiAccordeAu) {
+	public AbstractEditionDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDeclaration decision) {
 		super(di);
-		this.delaiAccordeAu = delaiAccordeAu;
 		this.dateDemande = dateDemande;
+		this.delaiAccordeAu = delaiAccordeAu;
+		this.decision = decision;
 		this.typeImpression = TypeImpression.BATCH;         // par défaut
-		this.decision = EtatDelaiDeclaration.DEMANDE;       // par défaut
 	}
 
 	public RegDate getDateDemande() {
