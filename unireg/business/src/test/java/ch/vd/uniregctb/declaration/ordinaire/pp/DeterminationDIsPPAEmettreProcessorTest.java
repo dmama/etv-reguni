@@ -337,14 +337,13 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		/*
 		 * Un fonctionnaire international ou un diplomate étranger en mission en Suisse possédant un immeuble dans le canton recoivent sont
 		 * assimilés à des contribuables vaudois et recoivent une DI normale.
+		 * [SIFISC-10826] catégorie maintenant HS
 		 */
 		{
 			PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
 			addForPrincipal(ramon, date(1968, 11, 3), null, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
-			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
-					MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(CategorieEnvoiDIPP.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
-					ramon, 2007, r));
+			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			assertDetails(CategorieEnvoiDIPP.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ramon, 2007, r));
 		}
 	}
 

@@ -686,7 +686,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(bruno, 2007)); // [UNIREG-1742] rattrapage de la DI normalement envoyée au moment du départ HS
 				assertEmpty(getTachesEnvoiDeclarationImpot(marc, 2007));
-				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon, 2007));
 
 				assertEmpty(paul.getDeclarationsDansPeriode(Declaration.class, 2007, false));
@@ -712,7 +712,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(3, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // erik, olrik + ramon
+				assertResults(2, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // erik, olrik + ramon
 				return null;
 			}
 		});
@@ -725,8 +725,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			           eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           olrik.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
-			           ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+			assertEmpty(ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
 		/*
@@ -815,7 +814,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(2, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // bruno + mitt
+				assertResults(3, service.envoyerDIsPPEnMasse(2007, CategorieEnvoiDIPP.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // bruno + mitt
 				return null;
 			}
 		});
@@ -832,6 +831,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
 			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           mitt.getDeclarationsDansPeriode(Declaration.class, 2007, false));
+
+			final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.mittId); // hors-suisse
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			           ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
 		/*
@@ -860,6 +863,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			assertEmpty(marc.getDeclarationsDansPeriode(Declaration.class, 2007, false)); // diplomate suisse: ne reçoit pas de déclaration
 		}
 
+		/**
+		 * Vérification des tâches d'envoi
+		 */
 		{
 			final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paulId); // depense
 			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId); // ordinaire
@@ -897,7 +903,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			assertEmpty(getTachesEnvoiDeclarationImpot(jacky, 2007));
 			assertEmpty(getTachesEnvoiDeclarationImpot(lionel, 2007));
 			assertEmpty(getTachesEnvoiDeclarationImpot(marc, 2007));
-			assertOneTache(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			assertOneTache(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 					TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(ramon, 2007));
 		}
 	}

@@ -373,7 +373,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			final ForFiscalPrincipal dernierPrincipal = assujettissement.getFors().principauxDansLaPeriode.last();
 			if (dernierPrincipal.getMotifRattachement() == MotifRattachement.DIPLOMATE_ETRANGER) {
 				// Fonctionnaire international ou diplomate étranger propriétaire d'immeuble dans le canton => déclaration ordinaire
-				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
