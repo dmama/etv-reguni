@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.uniregctb.common.NullableComparator;
 
 /**
  * Comparateur d'individu basé sur les relations (conjoints + filiations) de l'individu
@@ -19,7 +20,7 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 	private static final String CONJOINTS = "conjoints";
 	private static final String PARENTS = "parents";
 
-	private static final Comparator<RelationVersIndividu> RELATION_COMPARATOR = new IndividuComparisonHelper.NullableComparator<RelationVersIndividu>(true) {
+	private static final Comparator<RelationVersIndividu> RELATION_COMPARATOR = new NullableComparator<RelationVersIndividu>(true) {
 		@Override
 		protected int compareNonNull(@NotNull RelationVersIndividu o1, @NotNull RelationVersIndividu o2) {
 			int comparison = IndividuComparisonHelper.RANGE_COMPARATOR.compare(o1, o2);

@@ -12,13 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.uniregctb.common.NullableComparator;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseContactComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final String ATTRIBUTE = "adresse de contact";
 
-	private static final Comparator<Adresse> ADDRESS_COMPARATOR = new IndividuComparisonHelper.NullableComparator<Adresse>(true) {
+	private static final Comparator<Adresse> ADDRESS_COMPARATOR = new NullableComparator<Adresse>(true) {
 		@Override
 		protected int compareNonNull(@NotNull Adresse o1, @NotNull Adresse o2) {
 			// on n'est pas censé avoir plusieurs adresses de contact en même temps, donc une simple comparaison sur les dates devrait suffire

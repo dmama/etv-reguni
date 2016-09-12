@@ -16,6 +16,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.NullableComparator;
+import ch.vd.uniregctb.common.NullableDefaultComparator;
 
 /**
  * Classe qui regroupe quelques classes et méthodes utiles dans la comparaison d'invididus civils
@@ -25,54 +27,6 @@ public abstract class IndividuComparisonHelper {
 	private static final String APPARITION = "apparition";
 	private static final String DISPARITION = "disparition";
 
-	/**
-	 * Comparateur de données qui peuvent être nulles
-	 * @param <T> le type de la donnée
-	 */
-	public abstract static class NullableComparator<T> implements Comparator<T> {
-
-		private final boolean nullAtEnd;
-
-		public NullableComparator(boolean nullAtEnd) {
-			this.nullAtEnd = nullAtEnd;
-		}
-
-		@Override
-		public final int compare(T o1, T o2) {
-			if (o1 == o2) {
-				return 0;
-			}
-			else if (o1 == null) {
-				return nullAtEnd ? 1 : -1;
-			}
-			else if (o2 == null) {
-				return nullAtEnd ? -1 : 1;
-			}
-			else {
-				return compareNonNull(o1, o2);
-			}
-		}
-
-		protected abstract int compareNonNull(@NotNull T o1, @NotNull T o2);
-	}
-
-	/**
-	 * Comparateur de données qui peuvent être nulles, selon leur ordre naturel
-	 * @param <T> le type de donnée
-	 * @see Comparable
-	 */
-	public static class DefaultComparator<T extends Comparable<T>> extends NullableComparator<T> {
-
-		public DefaultComparator(boolean nullAtEnd) {
-			super(nullAtEnd);
-		}
-
-		@Override
-		protected int compareNonNull(@NotNull T o1, @NotNull T o2) {
-			return o1.compareTo(o2);
-		}
-	}
-
 	public static final Comparator<DateRange> RANGE_COMPARATOR = new NullableComparator<DateRange>(true) {
 		@Override
 		protected int compareNonNull(@NotNull DateRange o1, @NotNull DateRange o2) {
@@ -80,7 +34,7 @@ public abstract class IndividuComparisonHelper {
 		}
 	};
 
-	public static final Comparator<Integer> INTEGER_COMPARATOR = new DefaultComparator<>(true);
+	public static final Comparator<Integer> INTEGER_COMPARATOR = new NullableDefaultComparator<>(true);
 
 	/**
 	 * Interface de vérification d'égalité

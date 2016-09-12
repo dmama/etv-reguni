@@ -25,6 +25,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.uniregctb.common.NullableDefaultComparator;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
@@ -88,20 +89,25 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		regimeFiscal.setEntreprise(this);
 	}
 
+	private static final Comparator<RegimeFiscal.Portee> PORTEE_COMPARATOR = new NullableDefaultComparator<>(true);
+
+	private static final Comparator<RegimeFiscal> REGIME_FISCAL_COMPARATOR = new DateRangeComparator<RegimeFiscal>() {
+		@Override
+		public int compare(RegimeFiscal o1, RegimeFiscal o2) {
+			int comparison = super.compare(o1, o2);
+			if (comparison == 0) {
+				// [SIFISC-20655] Dans SuperGRA, il est tout-à-fait possible d'avoir des données invalides à trier, y compris donc des régimes fiscaux sans portée...
+				comparison = PORTEE_COMPARATOR.compare(o1.getPortee(), o2.getPortee());
+			}
+			return comparison;
+		}
+	};
+
 	@Transient
 	@NotNull
 	public List<RegimeFiscal> getRegimesFiscauxNonAnnulesTries() {
 		final List<RegimeFiscal> nonAnnules = AnnulableHelper.sansElementsAnnules(regimesFiscaux);
-		Collections.sort(nonAnnules, new DateRangeComparator<RegimeFiscal>() {
-			@Override
-			public int compare(RegimeFiscal o1, RegimeFiscal o2) {
-				int comparison = super.compare(o1, o2);
-				if (comparison == 0) {
-					comparison = o1.getPortee().compareTo(o2.getPortee());
-				}
-				return comparison;
-			}
-		});
+		Collections.sort(nonAnnules, REGIME_FISCAL_COMPARATOR);
 		return nonAnnules;
 	}
 
@@ -223,33 +229,36 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		af.setEntreprise(this);
 	}
 
+	private static final Comparator<Integer> INTEGER_COMPARATOR_NULLS_FIRST = new NullableDefaultComparator<>(false);
+
+	private static final Comparator<AllegementFiscal.TypeImpot> TYPE_IMPOT_COMPARATOR = new NullableDefaultComparator<>(true);
+
+	private static final Comparator<AllegementFiscal.TypeCollectivite> TYPE_COLLECTIVITE_COMPARATOR = new NullableDefaultComparator<>(true);
+
+	private static final Comparator<AllegementFiscal> ALLEGEMENT_FISCAL_COMPARATOR = new DateRangeComparator<AllegementFiscal>() {
+		@Override
+		public int compare(AllegementFiscal o1, AllegementFiscal o2) {
+			int comparison = super.compare(o1, o2);
+			if (comparison == 0) {
+				comparison = TYPE_IMPOT_COMPARATOR.compare(o1.getTypeImpot(), o2.getTypeImpot());
+				if (comparison == 0) {
+					comparison = TYPE_COLLECTIVITE_COMPARATOR.compare(o1.getTypeCollectivite(), o2.getTypeCollectivite());
+					if (comparison == 0 && o1.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE) {
+						final Integer ofsCommune1 = ((AllegementFiscalCommune) o1).getNoOfsCommune();
+						final Integer ofsCommune2 = ((AllegementFiscalCommune) o2).getNoOfsCommune();
+						comparison = INTEGER_COMPARATOR_NULLS_FIRST.compare(ofsCommune1, ofsCommune2);
+					}
+				}
+			}
+			return comparison;
+		}
+	};
+
 	@Transient
 	@NotNull
 	public List<AllegementFiscal> getAllegementsFiscauxNonAnnulesTries() {
 		final List<AllegementFiscal> nonAnnules = AnnulableHelper.sansElementsAnnules(allegementsFiscaux);
-		Collections.sort(nonAnnules, new DateRangeComparator<AllegementFiscal>() {
-			@Override
-			public int compare(AllegementFiscal o1, AllegementFiscal o2) {
-				int comparison = super.compare(o1, o2);
-				if (comparison == 0) {
-					comparison = o1.getTypeImpot().compareTo(o2.getTypeImpot());
-					if (comparison == 0) {
-						comparison = o1.getTypeCollectivite().compareTo(o2.getTypeCollectivite());
-						if (comparison == 0 && o1.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE) {
-							final Integer ofsCommune1 = ((AllegementFiscalCommune) o1).getNoOfsCommune();
-							final Integer ofsCommune2 = ((AllegementFiscalCommune) o2).getNoOfsCommune();
-							if (ofsCommune1 == null && ofsCommune2 != null) {
-								comparison = -1;
-							}
-							else if (ofsCommune1 != null) {
-								comparison = (ofsCommune2 == null ? 1 : Integer.compare(ofsCommune1, ofsCommune2));
-							}
-						}
-					}
-				}
-				return comparison;
-			}
-		});
+		Collections.sort(nonAnnules, ALLEGEMENT_FISCAL_COMPARATOR);
 		return nonAnnules;
 	}
 

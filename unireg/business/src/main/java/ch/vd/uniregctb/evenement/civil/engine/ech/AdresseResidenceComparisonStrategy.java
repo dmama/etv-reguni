@@ -13,6 +13,8 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.uniregctb.common.NullableComparator;
+import ch.vd.uniregctb.common.NullableDefaultComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -27,9 +29,9 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	private static final String LOCALISATION_PRECEDENTE = "localisation précédente";
 	private static final String LOCALISATION_SUIVANTE = "localisation suivante";
 
-	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new IndividuComparisonHelper.DefaultComparator<>(true);
+	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new NullableDefaultComparator<>(true);
 
-	private static final Comparator<Localisation> LOCALISATION_COMPARATOR = new IndividuComparisonHelper.NullableComparator<Localisation>(true) {
+	private static final Comparator<Localisation> LOCALISATION_COMPARATOR = new NullableComparator<Localisation>(true) {
 		@Override
 		protected int compareNonNull(@NotNull Localisation o1, @NotNull Localisation o2) {
 			int comparison = TYPE_LOCALISATION_COMPARATOR.compare(o1.getType(), o2.getType());
@@ -57,7 +59,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 		}
 	};
 
-	private final Comparator<Adresse> ADRESSE_COMPARATOR = new IndividuComparisonHelper.NullableComparator<Adresse>(true) {
+	private final Comparator<Adresse> ADRESSE_COMPARATOR = new NullableComparator<Adresse>(true) {
 		@Override
 		protected int compareNonNull(@NotNull Adresse o1, @NotNull Adresse o2) {
 			int comparison = Integer.signum(o1.getTypeAdresse().ordinal() - o2.getTypeAdresse().ordinal());

@@ -397,4 +397,18 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 			Assert.assertEquals(0, vr.warningsCount());
 		}
 	}
+
+	/**
+	 * [SIFISC-20655] Dans SuperGRA, la validation d'une entreprise pour laquelle on avait deux régimes fiscaux sans portée explosait avec une NPE...
+	 */
+	@Test
+	public void testMultiplesRegimesFiscauxSansPortee() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addRegimeFiscal(new RegimeFiscal(null, null, null, null));
+		entreprise.addRegimeFiscal(new RegimeFiscal(null, null, null, null));
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());      // ok, ce n'est pas valide, mais au moins cela n'explose plus...
+	}
 }
