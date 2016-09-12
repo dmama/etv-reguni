@@ -35,4 +35,17 @@ public class UtilisateurEditRestrictionView {
 	public void setSize(Integer size) {
 		this.size = size;
 	}
+
+	public int getNbDroitsNonAnnules() {
+		if (this.restrictions == null) {
+			return 0;
+		}
+		int compteur = 0;
+		for (DroitAccesUtilisateurView view : this.restrictions) {
+			if (!view.isAnnule()) {
+				++ compteur;
+			}
+		}
+		return compteur;
+	}
 }

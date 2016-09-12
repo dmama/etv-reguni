@@ -5,7 +5,7 @@ package ch.vd.uniregctb.extraction;
  */
 public abstract class ExtractionResult {
 
-	public static enum State {
+	public enum State {
 		NOT_RUN,
 		OK,
 		ERROR

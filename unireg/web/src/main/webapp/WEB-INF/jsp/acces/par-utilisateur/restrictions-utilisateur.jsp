@@ -187,7 +187,7 @@
 		</form:form>
 		<form:form action="exporter-restrictions.do" method="post" id="formExporter"  name="formExporter">
 		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../par-utilisateur.do';" />
-		<c:if test="${not empty command.restrictions}">
+		<c:if test="${not empty command.restrictions && command.nbDroitsNonAnnules > 0}">
 			<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
 			<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>
 		</c:if>

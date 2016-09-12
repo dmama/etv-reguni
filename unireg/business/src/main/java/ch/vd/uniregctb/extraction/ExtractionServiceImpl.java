@@ -500,6 +500,16 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	}
 
 	/**
+	 * Flux toujours vide
+	 */
+	private static class EmptyInputStream extends InputStream {
+		@Override
+		public int read() throws IOException {
+			return -1;
+		}
+	}
+
+	/**
 	 * Lancement d'un travail d'extraction par lots
 	 * @param extractor l'extracteur
 	 * @param action l'action spécifique pour le lancement de l'extracteur
@@ -516,20 +526,30 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 
 		final String mimeType = extractor.getMimeType();
 		final String filenameRadical = extractor.getFilenameRadical();
+
+		// Attention : c'est seulement en cas d'exception remontée qu'il faut fermer les flux !
+		// (en effet, et c'est pour cela que l'on ne peut pas utiliser le try-with-resource, la lecture
+		// des données dans le flux "is" est faite beaucoup plus tard...)
+
 		final TemporaryFile contentFile = extractor.getExtractionContent(rapportFinal);
-		try {
-			final InputStream is = new TemporaryFileInputStream(contentFile);
+		if (contentFile != null) {
 			try {
-				return new ExtractionResultOk(is, mimeType, filenameRadical, extractor.wasInterrupted());
+				final InputStream is = new TemporaryFileInputStream(contentFile);
+				try {
+					return new ExtractionResultOk(is, mimeType, filenameRadical, extractor.wasInterrupted());
+				}
+				catch (RuntimeException | Error e) {
+					is.close();
+					throw e;
+				}
 			}
-			catch (RuntimeException | Error e) {
-				is.close();
+			catch (RuntimeException | Error | IOException e) {
+				contentFile.close();
 				throw e;
 			}
 		}
-		catch (RuntimeException | Error | IOException e) {
-			contentFile.close();
-			throw e;
+		else {
+			return new ExtractionResultOk(new EmptyInputStream(), mimeType, filenameRadical, extractor.wasInterrupted());
 		}
 	}
 
