@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.extraction;
+package ch.vd.uniregctb.extraction.autrecommunaute;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
