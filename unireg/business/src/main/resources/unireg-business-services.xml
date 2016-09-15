@@ -281,6 +281,12 @@
 
 	<bean id="impressionRappelHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionRappelHelperImpl"/>
 
+	<bean id="impressionAutorisationRadiationRCHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionAutorisationRadiationRCHelperImpl"/>
+
+	<bean id="impressionDemandeBilanFinalHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionDemandeBilanFinalHelperImpl"/>
+
+	<bean id="impressionLettreLiquidationHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionLettreLiquidationHelperImpl"/>
+
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>
 

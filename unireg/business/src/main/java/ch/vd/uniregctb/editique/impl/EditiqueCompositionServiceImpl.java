@@ -45,9 +45,16 @@ import ch.vd.uniregctb.declaration.snc.ImpressionQuestionnaireSNCHelper;
 import ch.vd.uniregctb.declaration.snc.ImpressionRappelQuestionnaireSNCHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelper;
+import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
+import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
+import ch.vd.uniregctb.documentfiscal.ImpressionAutorisationRadiationRCHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionDemandeBilanFinalHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionLettreLiquidationHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionRappelHelper;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.documentfiscal.LettreLiquidation;
+import ch.vd.uniregctb.documentfiscal.Signataires;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -92,6 +99,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionRappelHelper impressionRappelHelper;
 	private ImpressionQuestionnaireSNCHelper impressionQSNCHelper;
 	private ImpressionRappelQuestionnaireSNCHelper impressionRappelQSNCHelper;
+	private ImpressionAutorisationRadiationRCHelper impressionAutorisationRadiationRCHelper;
+	private Signataires signatairesAutorisationRadiationRC;
+	private ImpressionDemandeBilanFinalHelper impressionDemandeBilanFinalHelper;
+	private ImpressionLettreLiquidationHelper impressionLettreLiquidationHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -175,6 +186,26 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionRappelQSNCHelper(ImpressionRappelQuestionnaireSNCHelper impressionRappelQSNCHelper) {
 		this.impressionRappelQSNCHelper = impressionRappelQSNCHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionAutorisationRadiationRCHelper(ImpressionAutorisationRadiationRCHelper impressionAutorisationRadiationRCHelper) {
+		this.impressionAutorisationRadiationRCHelper = impressionAutorisationRadiationRCHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setSignatairesAutorisationRadiationRC(Signataires signatairesAutorisationRadiationRC) {
+		this.signatairesAutorisationRadiationRC = signatairesAutorisationRadiationRC;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionDemandeBilanFinalHelper(ImpressionDemandeBilanFinalHelper impressionDemandeBilanFinalHelper) {
+		this.impressionDemandeBilanFinalHelper = impressionDemandeBilanFinalHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionLettreLiquidationHelper(ImpressionLettreLiquidationHelper impressionLettreLiquidationHelper) {
+		this.impressionLettreLiquidationHelper = impressionLettreLiquidationHelper;
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
@@ -673,6 +704,63 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String description = String.format("Rappel du questionnaire SNC %d du contribuable %s",
 		                                         questionnaire.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(questionnaire.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+	}
+
+	@Override
+	public EditiqueResultat imprimeAutorisationRadiationRCOnline(AutorisationRadiationRC lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionAutorisationRadiationRCHelper.buildDocument(lettre, dateTraitement, signatairesAutorisationRadiationRC, serviceSecurite);
+		final FichierImpression.Document copieMandataire = impressionAutorisationRadiationRCHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+		final TypeDocumentEditique typeDocument = impressionAutorisationRadiationRCHelper.getTypeDocumentEditique();
+		final String nomDocument = impressionAutorisationRadiationRCHelper.construitIdDocument(lettre);
+
+		// sauvegarde de la clé d'archivage
+		lettre.setCleArchivage(original.getInfoArchivage() != null ? original.getInfoArchivage().getIdDocument() : null);
+
+		final String description = String.format("Autorisation de radiation au RC de l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+	}
+
+	@Override
+	public EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionDemandeBilanFinalHelper.buildDocument(lettre, dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+		final TypeDocumentEditique typeDocument = impressionDemandeBilanFinalHelper.getTypeDocumentEditique();
+		final String nomDocument = impressionDemandeBilanFinalHelper.construitIdDocument(lettre);
+
+		// sauvegarde de la clé d'archivage
+		lettre.setCleArchivage(original.getInfoArchivage() != null ? original.getInfoArchivage().getIdDocument() : null);
+
+		final String description = String.format("Demande de bilan final de l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+	}
+
+	@Override
+	public EditiqueResultat imprimeLettreLiquidationOnline(LettreLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionLettreLiquidationHelper.buildDocument(lettre, dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionLettreLiquidationHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+		final TypeDocumentEditique typeDocument = impressionLettreLiquidationHelper.getTypeDocumentEditique();
+		final String nomDocument = impressionLettreLiquidationHelper.construitIdDocument(lettre);
+
+		// sauvegarde de la clé d'archivage
+		lettre.setCleArchivage(original.getInfoArchivage() != null ? original.getInfoArchivage().getIdDocument() : null);
+
+		final String description = String.format("Lettre type de liquidation pour l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
 	}
 }

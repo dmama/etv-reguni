@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl">
 		<property name="serviceDestinationImpression" value="${extprop.jms.queue.editique.output}" />
@@ -45,6 +46,25 @@
 		<property name="impressionRappelHelper" ref="impressionRappelHelper"/>
 		<property name="impressionQSNCHelper" ref="impressionQSNCHelper"/>
 		<property name="impressionRappelQSNCHelper" ref="impressionRappelQSNCHelper"/>
+		<property name="impressionAutorisationRadiationRCHelper" ref="impressionAutorisationRadiationRCHelper"/>
+		<property name="signatairesAutorisationRadiationRC" ref="signatairesAutorisationRadiation"/>
+		<property name="impressionDemandeBilanFinalHelper" ref="impressionDemandeBilanFinalHelper"/>
+		<property name="impressionLettreLiquidationHelper" ref="impressionLettreLiquidationHelper"/>
+	</bean>
+
+	<bean id="signatairesAutorisationRadiation" class="ch.vd.uniregctb.documentfiscal.Signataires">
+		<constructor-arg>
+			<util:list>
+				<bean class="ch.vd.uniregctb.documentfiscal.Signataires$VisaFonction">
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.1.visa}"/>
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.1.fonction}"/>
+				</bean>
+				<bean class="ch.vd.uniregctb.documentfiscal.Signataires$VisaFonction">
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.2.visa}"/>
+					<constructor-arg value="${extprop.signature.autorisation.radiation.rc.2.fonction}"/>
+				</bean>
+			</util:list>
+		</constructor-arg>
 	</bean>
 
 </beans>

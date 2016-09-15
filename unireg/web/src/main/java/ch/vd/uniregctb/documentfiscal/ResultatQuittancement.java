@@ -12,11 +12,11 @@ public class ResultatQuittancement {
 
 	private static final ResultatQuittancement OK = new ResultatQuittancement();
 	private static final ResultatQuittancement ENTREPRISE_INEXISTANTE = new ResultatQuittancement("Aucune entreprise connue avec le numéro %s.");
-	private static final Map<TypeAutreDocumentFiscal, ResultatQuittancement> RIEN_A_QUITTANCER = buildMapRienAQuittancer();
+	private static final Map<TypeAutreDocumentFiscalQuittanceable, ResultatQuittancement> RIEN_A_QUITTANCER = buildMapRienAQuittancer();
 
-	private static Map<TypeAutreDocumentFiscal, ResultatQuittancement> buildMapRienAQuittancer() {
-		final Map<TypeAutreDocumentFiscal, ResultatQuittancement> map = new EnumMap<>(TypeAutreDocumentFiscal.class);
-		for (TypeAutreDocumentFiscal type : TypeAutreDocumentFiscal.values()) {
+	private static Map<TypeAutreDocumentFiscalQuittanceable, ResultatQuittancement> buildMapRienAQuittancer() {
+		final Map<TypeAutreDocumentFiscalQuittanceable, ResultatQuittancement> map = new EnumMap<>(TypeAutreDocumentFiscalQuittanceable.class);
+		for (TypeAutreDocumentFiscalQuittanceable type : TypeAutreDocumentFiscalQuittanceable.values()) {
 			map.put(type, new ResultatQuittancement(String.format("Aucun document de type '%s' à quittancer pour l'entreprise %%s.", type.getDisplayName())));
 		}
 		return map;
@@ -42,7 +42,7 @@ public class ResultatQuittancement {
 	}
 
 	@NotNull
-	public static ResultatQuittancement rienAQuittancer(TypeAutreDocumentFiscal type) {
+	public static ResultatQuittancement rienAQuittancer(TypeAutreDocumentFiscalQuittanceable type) {
 		return RIEN_A_QUITTANCER.get(type);
 	}
 

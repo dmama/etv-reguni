@@ -54,7 +54,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(pm), pm);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(pm, RegDate.get(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final CTypeQuestSNC qsnc = buildDocumentQuestionnaire(questionnaire);
-			return new FichierImpression.Document(infoDocument, null, infoEnteteDocument, null, null, null, null, null, null, null, null, qsnc, null, null);
+			return new FichierImpression.Document(infoDocument, null, infoEnteteDocument, null, null, null, null, null, null, null, null, qsnc, null, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

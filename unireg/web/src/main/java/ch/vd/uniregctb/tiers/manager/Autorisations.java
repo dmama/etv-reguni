@@ -26,6 +26,7 @@ public class Autorisations {
 	private final boolean regimesFiscaux;
 	private final boolean allegementsFiscaux;
 	private final boolean flagsPM;
+	private final boolean autresDocumentsFiscaux;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des adresses est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des adresses est interdite.
@@ -83,6 +84,7 @@ public class Autorisations {
 		this.regimesFiscaux = false;
 		this.allegementsFiscaux = false;
 		this.flagsPM = false;
+		this.autresDocumentsFiscaux = false;
 
 		this.adresses = false;
 		this.adressesDomicile = false;
@@ -129,6 +131,7 @@ public class Autorisations {
 		this.regimesFiscaux = isAllowed(map, AutorisationManagerImpl.MODIF_REGIMES_FISCAUX);
 		this.allegementsFiscaux = isAllowed(map, AutorisationManagerImpl.MODIF_ALLEGEMENTS_FISCAUX);
 		this.flagsPM = isAllowed(map, AutorisationManagerImpl.MODIF_FLAGS_PM);
+		this.autresDocumentsFiscaux = isAllowed(map, AutorisationManagerImpl.MODIF_AUTRES_DOCS_FISCAUX);
 
 		this.adresses = isAllowed(map, AutorisationManagerImpl.MODIF_ADRESSE);
 		this.adressesDomicile = isAllowed(map, AutorisationManagerImpl.ADR_D);
@@ -174,7 +177,7 @@ public class Autorisations {
 				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
 				|| (mandats && (mandatsGeneraux || mandatsSpeciaux || mandatsTiers))
 				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
-				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || remarques;
+				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || autresDocumentsFiscaux || remarques;
 	}
 
 	public boolean isDonneesFiscales() {
@@ -301,6 +304,10 @@ public class Autorisations {
 		return flagsPM;
 	}
 
+	public boolean isAutresDocumentsFiscaux() {
+		return autresDocumentsFiscaux;
+	}
+
 	public boolean isMandats() {
 		return mandats;
 	}
@@ -332,6 +339,7 @@ public class Autorisations {
 				", regimesFiscaux=" + regimesFiscaux +
 				", allegementsFiscaux=" + allegementsFiscaux +
 				", flagsPM=" + flagsPM +
+				", autresDocumentsFiscaux=" + autresDocumentsFiscaux +
 				", decisionsAci=" + decisionsAci +
 				", forsSecondaires=" + forsSecondaires +
 				", forsAutresElementsImposables=" + forsAutresElementsImposables +

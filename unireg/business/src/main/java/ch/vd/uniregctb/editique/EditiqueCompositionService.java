@@ -19,7 +19,10 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
+import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
+import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.documentfiscal.LettreLiquidation;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -316,4 +319,34 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException en cas de problème
 	 */
 	void imprimeRappelLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException;
+
+	/**
+	 * Envoie à l'éditique une lettre d'autorisation de radiation du RC à imprimer localement
+	 * @param lettre la lettre d'autorisation
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @return le document imprimé, en quelque sorte...
+	 * @throws EditiqueException en cas de souci éditique
+	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 */
+	EditiqueResultat imprimeAutorisationRadiationRCOnline(AutorisationRadiationRC lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
+
+	/**
+	 * Envoie à l'éditique une lettre de demande de bilan final à imprimer localement
+	 * @param lettre la lettre de demande de bilan final
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @return le document imprimé, en quelque sorte...
+	 * @throws EditiqueException en cas de souci éditique
+	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 */
+	EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
+
+	/**
+	 * Envoie à l'éditique une lettre type de liquidation à imprimer localement
+	 * @param lettre la lettre
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @return le document imprimé, en quelque sorte...
+	 * @throws EditiqueException en cas de souci éditique
+	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 */
+	EditiqueResultat imprimeLettreLiquidationOnline(LettreLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
 }

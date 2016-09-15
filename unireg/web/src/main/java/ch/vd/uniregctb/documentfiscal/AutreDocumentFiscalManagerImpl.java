@@ -1,36 +1,56 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
 
-public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManager {
+public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManager, MessageSourceAware {
 
 	private TiersService tiersService;
+	private MessageSource messageSource;
+	private AutreDocumentFiscalService autreDocumentFiscalService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	public void setAutreDocumentFiscalService(AutreDocumentFiscalService autreDocumentFiscalService) {
+		this.autreDocumentFiscalService = autreDocumentFiscalService;
+	}
+
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	@Transactional(rollbackFor = Throwable.class)
 	@Override
 	public ResultatQuittancement quittanceLettreBienvenue(long noCtb, RegDate dateRetour) {
-		final Tiers tiers = tiersService.getTiers(noCtb);
-		if (tiers == null || !(tiers instanceof Entreprise)) {
+		final Entreprise entreprise;
+		try {
+			entreprise = getEntreprise(noCtb);
+		}
+		catch (TiersNotFoundException e) {
 			return ResultatQuittancement.entrepriseInexistante();
 		}
 
-		final Entreprise entreprise = (Entreprise) tiers;
 		final List<LettreBienvenue> lettresBienvenue = entreprise.getAutresDocumentsFiscaux(LettreBienvenue.class, true, false);
 		if (lettresBienvenue.isEmpty()) {
-			return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscal.LETTRE_BIENVENUE);
+			return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscalQuittanceable.LETTRE_BIENVENUE);
 		}
 
 		for (LettreBienvenue candidate : CollectionsUtils.revertedOrder(lettresBienvenue)) {
@@ -39,6 +59,48 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 				return ResultatQuittancement.ok();
 			}
 		}
-		return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscal.LETTRE_BIENVENUE);
+		return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscalQuittanceable.LETTRE_BIENVENUE);
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@Override
+	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb) {
+		final Entreprise entreprise = getEntreprise(noCtb);
+		final List<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux(AutreDocumentFiscal.class, true, true);
+		if (adfs.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
+		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
+			if (!(adf instanceof AutreDocumentFiscalAvecSuivi)) {
+				views.add(AutreDocumentFiscalViewFactory.buildView(adf, messageSource));
+			}
+		}
+		return views;
+	}
+
+	@NotNull
+	private Entreprise getEntreprise(long id) {
+		final Tiers tiers = tiersService.getTiers(id);
+		if (tiers == null || !(tiers instanceof Entreprise)) {
+			throw new TiersNotFoundException(id);
+		}
+		return (Entreprise) tiers;
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@Override
+	public EditiqueResultat createAndPrint(ImprimerAutreDocumentFiscalView view) throws AutreDocumentFiscalException {
+		final Entreprise entreprise = getEntreprise(view.getNoEntreprise());
+		switch (view.getTypeDocument()) {
+		case AUTORISATION_RADIATION:
+			return autreDocumentFiscalService.envoyerAutorisationRadiationRCOnline(entreprise, RegDate.get(), view.getDateReference());
+		case DEMANDE_BILAN_FINAL:
+			return autreDocumentFiscalService.envoyerDemandeBilanFinalOnline(entreprise, RegDate.get(), view.getPeriodeFiscale(), view.getDateReference());
+		case LETTRE_LIQUIDATION:
+			return autreDocumentFiscalService.envoyerLettreLiquidationOnline(entreprise, RegDate.get());
+		}
+		throw new IllegalArgumentException("Type de document non-supporté : " + view.getTypeDocument());
 	}
 }

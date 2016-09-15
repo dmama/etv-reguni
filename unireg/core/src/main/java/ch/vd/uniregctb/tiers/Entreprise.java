@@ -415,7 +415,13 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			Collections.sort(liste, new Comparator<T>() {
 				@Override
 				public int compare(T o1, T o2) {
-					return NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
+					int compare = NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
+					if (compare == 0) {
+						final long id1 = o1.getId() != null ? o1.getId() : Long.MAX_VALUE;
+						final long id2 = o2.getId() != null ? o2.getId() : Long.MAX_VALUE;
+						compare = Long.compare(id1, id2);
+					}
+					return compare;
 				}
 			});
 		}

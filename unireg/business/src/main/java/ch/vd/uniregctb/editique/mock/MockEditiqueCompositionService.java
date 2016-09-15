@@ -18,7 +18,10 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
+import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.documentfiscal.LettreLiquidation;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -162,6 +165,21 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException {
+		return dummyResultat();
+	}
+
+	@Override
+	public EditiqueResultat imprimeAutorisationRadiationRCOnline(AutorisationRadiationRC lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
+		return dummyResultat();
+	}
+
+	@Override
+	public EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
+		return dummyResultat();
+	}
+
+	@Override
+	public EditiqueResultat imprimeLettreLiquidationOnline(LettreLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 }

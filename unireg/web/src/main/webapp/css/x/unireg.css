@@ -475,3 +475,8 @@ table.conflicts td.conflict {
     font-weight:bold;
     background-color:yellow;
 }
+
+input.bigbutton {
+	font-size: 150%;
+	padding: 10px 20px;
+}

@@ -58,6 +58,7 @@ import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalViewFactory;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -663,7 +664,7 @@ public class TiersManager implements MessageSourceAware {
 			final List<AutreDocumentFiscalView> avecSuiviViews = new ArrayList<>(autresDocuments.size());
 			final List<AutreDocumentFiscalView> sansSuiviViews = new ArrayList<>(autresDocuments.size());
 			for (AutreDocumentFiscal document : autresDocuments) {
-				final AutreDocumentFiscalView view = AutreDocumentFiscalView.of(document, messageSource);
+				final AutreDocumentFiscalView view = AutreDocumentFiscalViewFactory.buildView(document, messageSource);
 				if (document instanceof AutreDocumentFiscalAvecSuivi) {
 					avecSuiviViews.add(view);
 				}
@@ -675,7 +676,11 @@ public class TiersManager implements MessageSourceAware {
 			final Comparator<AutreDocumentFiscalView> comparator = new Comparator<AutreDocumentFiscalView>() {
 				@Override
 				public int compare(AutreDocumentFiscalView o1, AutreDocumentFiscalView o2) {
-					return -NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
+					int compare = -NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
+					if (compare == 0) {
+						compare = -Long.compare(o1.getId(), o2.getId());
+					}
+					return compare;
 				}
 			};
 			Collections.sort(avecSuiviViews, comparator);

@@ -33,6 +33,7 @@ public interface ServiceInfrastructureRaw {
 	int noCEDI = 1012;
 	int noTuteurGeneral = 1013;
 	int noCAT = 1341;
+	int noRC = 999;
 
 	int noOfsSuisse = 8100;
 	int noPaysApatride = 8998;

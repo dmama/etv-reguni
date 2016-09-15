@@ -62,7 +62,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
 
-	public static final String VERSION_XSD = "16.6";
+	public static final String VERSION_XSD = "16.7";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
@@ -384,6 +384,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		                                      original.getLettreRappel(),
 		                                      original.getQuestSNC(),
 		                                      original.getQuestSNCRappel(),
+		                                      original.getDemandeBilanFinal(),
+		                                      original.getAutorisationRadiation(),
+		                                      original.getLettreLiquidation(),
 		                                      original.getInfoRoutage());
 	}
 

@@ -62,6 +62,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	private CollectiviteAdministrative aciOfficeImpotPersonnesMorales;
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
+	private CollectiviteAdministrative rc;
 	private Map<Integer, List<Localite>> allLocaliteCommune;
 
 	public ServiceInfrastructureImpl() {
@@ -297,6 +298,14 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			cat = rawService.getCollectivite(ServiceInfrastructureService.noCAT);
 		}
 		return cat;
+	}
+
+	@Override
+	public CollectiviteAdministrative getRC() throws ServiceInfrastructureException {
+		if (rc == null) {
+			rc = rawService.getCollectivite(ServiceInfrastructureService.noRC);
+		}
+		return rc;
 	}
 
 	@Override

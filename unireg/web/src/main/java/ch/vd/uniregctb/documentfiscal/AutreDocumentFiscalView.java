@@ -14,40 +14,26 @@ public class AutreDocumentFiscalView implements Annulable {
 	private final long tiersId;
 	private final TypeEtatAutreDocumentFiscal etat;
 	private final RegDate dateEnvoi;
-	private final RegDate dateRetour;
-	private final RegDate delaiRetour;
-	private final RegDate dateRappel;
 	private final String libelleTypeDocument;
 	private final String libelleSousType;
 	private final boolean annule;
 	private final boolean avecCopieConformeEnvoi;
-	private final boolean avecCopieConformeRappel;
 
-	public static AutreDocumentFiscalView of(AutreDocumentFiscal document, MessageSource messageSource) {
-		if (document == null) {
-			return null;
-		}
-		if (document instanceof LettreBienvenue) {
-			return new AutreDocumentFiscalView((LettreBienvenue) document, messageSource);
-		}
-		else {
-			throw new IllegalArgumentException("Type de document fiscal non-encore supporté : " + document.getClass().getName());
-		}
+	public AutreDocumentFiscalView(AutreDocumentFiscal doc, MessageSource messageSource, String typeKey, String subtypeKey) {
+		this(doc,
+		     typeKey != null ? messageSource.getMessage(typeKey, null, WebContextUtils.getDefaultLocale()) : StringUtils.EMPTY,
+		     subtypeKey != null ? messageSource.getMessage(subtypeKey, null, WebContextUtils.getDefaultLocale()) : StringUtils.EMPTY);
 	}
 
-	private AutreDocumentFiscalView(LettreBienvenue lettreBienvenue, MessageSource messageSource) {
-		this.id = lettreBienvenue.getId();
-		this.tiersId = lettreBienvenue.getEntreprise().getId();
-		this.etat = lettreBienvenue.getEtat();
-		this.dateEnvoi = lettreBienvenue.getDateEnvoi();
-		this.dateRetour = lettreBienvenue.getDateRetour();
-		this.delaiRetour = lettreBienvenue.getDelaiRetour();
-		this.dateRappel = lettreBienvenue.getDateRappel();
-		this.libelleTypeDocument = messageSource.getMessage("label.autre.document.fiscal.lettre.bienvenue", null, WebContextUtils.getDefaultLocale());
-		this.libelleSousType = messageSource.getMessage("label.autre.document.fiscal.lettre.bienvenue.type." + lettreBienvenue.getType(), null, WebContextUtils.getDefaultLocale());
-		this.annule = lettreBienvenue.isAnnule();
-		this.avecCopieConformeEnvoi = StringUtils.isNotBlank(lettreBienvenue.getCleArchivage());
-		this.avecCopieConformeRappel = StringUtils.isNotBlank(lettreBienvenue.getCleArchivageRappel()) && dateRappel != null;
+	public AutreDocumentFiscalView(AutreDocumentFiscal doc, String libelleType, String libelleSousType) {
+		this.id = doc.getId();
+		this.tiersId = doc.getEntreprise().getNumero();
+		this.etat = doc.getEtat();
+		this.dateEnvoi = doc.getDateEnvoi();
+		this.libelleTypeDocument = libelleType;
+		this.libelleSousType = libelleSousType;
+		this.annule = doc.isAnnule();
+		this.avecCopieConformeEnvoi = StringUtils.isNoneBlank(doc.getCleArchivage());
 	}
 
 	public long getId() {
@@ -66,18 +52,6 @@ public class AutreDocumentFiscalView implements Annulable {
 		return dateEnvoi;
 	}
 
-	public RegDate getDateRetour() {
-		return dateRetour;
-	}
-
-	public RegDate getDelaiRetour() {
-		return delaiRetour;
-	}
-
-	public RegDate getDateRappel() {
-		return dateRappel;
-	}
-
 	public String getLibelleTypeDocument() {
 		return libelleTypeDocument;
 	}
@@ -93,9 +67,5 @@ public class AutreDocumentFiscalView implements Annulable {
 
 	public boolean isAvecCopieConformeEnvoi() {
 		return avecCopieConformeEnvoi;
-	}
-
-	public boolean isAvecCopieConformeRappel() {
-		return avecCopieConformeRappel;
 	}
 }

@@ -7,8 +7,16 @@
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 	</bean>
 
+	<bean id="autreDocumentFiscalController" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalController">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+	</bean>
+
 	<bean id="autreDocumentFiscalManager" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManagerImpl">
 		<property name="tiersService" ref="tiersService"/>
+		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 	</bean>
 
 </beans>

@@ -36,6 +36,7 @@ public interface ServiceInfrastructureService {
 	int noCEDI = ServiceInfrastructureRaw.noCEDI;
 	int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
 	int noCAT = ServiceInfrastructureRaw.noCAT;
+	int noRC = ServiceInfrastructureRaw.noRC;
 
 	int noOfsSuisse = ServiceInfrastructureRaw.noOfsSuisse;
 	int noPaysApatride = ServiceInfrastructureRaw.noPaysApatride;
@@ -264,6 +265,12 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	CollectiviteAdministrative getCAT() throws ServiceInfrastructureException;
+
+	/**
+	 * @return la collectivite administrative du RC (= Registre du Commerce du canton de Vaud)
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	CollectiviteAdministrative getRC() throws ServiceInfrastructureException;
 
 	/**
 	 * @param oid l'id d'un office d'impôt

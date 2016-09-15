@@ -56,4 +56,33 @@ public interface AutreDocumentFiscalService {
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
 	void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException;
+
+	/**
+	 * Génération d'une nouvelle lettre d'autorisation de radiation du RC en impression locale
+	 * @param e entreprise concernée
+	 * @param dateTraitement date de traitement (= date d'envoi)
+	 * @param dateDemandeInitiale date de la demande initiale du RC
+	 * @return le document imprimé
+	 * @throws AutreDocumentFiscalException en cas de souci
+	 */
+	EditiqueResultat envoyerAutorisationRadiationRCOnline(Entreprise e, RegDate dateTraitement, RegDate dateDemandeInitiale) throws AutreDocumentFiscalException;
+
+	/**
+	 * Génération d'une nouvelle lettre de demande de bilan final en impression locale
+	 * @param e entreprise concernée
+	 * @param dateTraitement date de traitement (= date d'envoi)
+	 * @param dateRequisitionRadiation date de la réquisition de radiation du RC
+	 * @return le document imprimé
+	 * @throws AutreDocumentFiscalException en cas de souci
+	 */
+	EditiqueResultat envoyerDemandeBilanFinalOnline(Entreprise e, RegDate dateTraitement, int periodeFiscale, RegDate dateRequisitionRadiation) throws AutreDocumentFiscalException;
+
+	/**
+	 * Génération d'une nouvelle lettre type de liquidation en impression locale
+	 * @param e entreprise concernée
+	 * @param dateTraitement date de traitement (= date d'envoi)
+	 * @return le document imprimé
+	 * @throws AutreDocumentFiscalException en cas de souci
+	 */
+	EditiqueResultat envoyerLettreLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException;
 }

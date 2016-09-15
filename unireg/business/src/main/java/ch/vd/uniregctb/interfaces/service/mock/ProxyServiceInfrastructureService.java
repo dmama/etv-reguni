@@ -203,6 +203,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	public CollectiviteAdministrative getRC() throws ServiceInfrastructureException {
+		return target.getRC();
+	}
+
+	@Override
 	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
 		return target.getCommuneByAdresse(adresse, date);
 	}

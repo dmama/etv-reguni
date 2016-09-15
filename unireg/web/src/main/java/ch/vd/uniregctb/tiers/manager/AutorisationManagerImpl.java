@@ -59,6 +59,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_REGIMES_FISCAUX = "REGIMES_FISCAUX";
 	static final String MODIF_ALLEGEMENTS_FISCAUX = "ALLEGEMENTS_FISCAUX";
 	static final String MODIF_FLAGS_PM = "FLAGS_PM";
+	static final String MODIF_AUTRES_DOCS_FISCAUX = "AUTRES_DOCS";
 	static final String MODIF_IDE = "IDE";
 	static final String MODIF_MOUVEMENT = "MVT";
 	static final String FISCAL_FOR_PRINC = "FOR_PRINC";
@@ -406,6 +407,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(MODIF_REGIMES_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_FLAGS_PM, Boolean.FALSE);
+			map.put(MODIF_AUTRES_DOCS_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_REMARQUES, Boolean.FALSE);
 			map.put(MODIF_MANDATS, Boolean.FALSE);
 			return map;
@@ -646,6 +648,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM, visa, oid)) {
 				map.put(MODIF_FLAGS_PM, Boolean.TRUE);
+			}
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_LETTRE_LIQUIDATION)) {
+				map.put(MODIF_AUTRES_DOCS_FISCAUX, Boolean.TRUE);
 			}
 		}
 		else if (tiers instanceof Etablissement) {

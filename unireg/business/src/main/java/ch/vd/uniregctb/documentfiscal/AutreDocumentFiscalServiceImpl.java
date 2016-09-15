@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import javax.jms.JMSException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,9 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private static Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> buildTypesDocumentEnvoiInitial() {
 		final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> map = new HashMap<>();
 		map.put(LettreBienvenue.class, TypeDocumentEditique.LETTRE_BIENVENUE);
+		map.put(AutorisationRadiationRC.class, TypeDocumentEditique.AUTORISATION_RADIATION_RC);
+		map.put(DemandeBilanFinal.class, TypeDocumentEditique.DEMANDE_BILAN_FINAL);
+		map.put(LettreLiquidation.class, TypeDocumentEditique.LETTRE_LIQUIDATION);
 		return Collections.unmodifiableMap(map);
 	}
 
@@ -199,6 +203,57 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		}
 		catch (EditiqueException e) {
 			throw new AutreDocumentFiscalException(e);
+		}
+	}
+
+	@Override
+	public EditiqueResultat envoyerAutorisationRadiationRCOnline(Entreprise e, RegDate dateTraitement, RegDate dateDemandeInitiale) throws AutreDocumentFiscalException {
+		try {
+			final AutorisationRadiationRC lettre = new AutorisationRadiationRC();
+			lettre.setDateDemande(dateDemandeInitiale);
+			lettre.setDateEnvoi(dateTraitement);
+			lettre.setEntreprise(e);
+
+			final AutorisationRadiationRC saved = hibernateTemplate.merge(lettre);
+			e.addAutreDocumentFiscal(saved);
+			return editiqueCompositionService.imprimeAutorisationRadiationRCOnline(saved, dateTraitement);
+		}
+		catch (EditiqueException | JMSException ex) {
+			throw new AutreDocumentFiscalException(ex);
+		}
+	}
+
+	@Override
+	public EditiqueResultat envoyerDemandeBilanFinalOnline(Entreprise e, RegDate dateTraitement, int periodeFiscale, RegDate dateRequisitionRadiation) throws AutreDocumentFiscalException {
+		try {
+			final DemandeBilanFinal lettre = new DemandeBilanFinal();
+			lettre.setDateEnvoi(dateTraitement);
+			lettre.setDateRequisitionRadiation(dateRequisitionRadiation);
+			lettre.setPeriodeFiscale(periodeFiscale);
+			lettre.setEntreprise(e);
+
+			final DemandeBilanFinal saved = hibernateTemplate.merge(lettre);
+			e.addAutreDocumentFiscal(saved);
+			return editiqueCompositionService.imprimeDemandeBilanFinalOnline(saved, dateTraitement);
+		}
+		catch (EditiqueException | JMSException ex) {
+			throw new AutreDocumentFiscalException(ex);
+		}
+	}
+
+	@Override
+	public EditiqueResultat envoyerLettreLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException {
+		try {
+			final LettreLiquidation lettre = new LettreLiquidation();
+			lettre.setDateEnvoi(dateTraitement);
+			lettre.setEntreprise(e);
+
+			final LettreLiquidation saved = hibernateTemplate.merge(lettre);
+			e.addAutreDocumentFiscal(saved);
+			return editiqueCompositionService.imprimeLettreLiquidationOnline(saved, dateTraitement);
+		}
+		catch (EditiqueException | JMSException ex) {
+			throw new AutreDocumentFiscalException(ex);
 		}
 	}
 

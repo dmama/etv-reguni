@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.uniregctb.documentfiscal.TypeAutreDocumentFiscalEmettableManuellement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
@@ -115,6 +116,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeFlagEntreprise, String> mapTypesFlagEntreprise;
 	private Map<ParametrePeriodeFiscalePM.ReferencePourDelai, String> mapReferencesPourDelai;
 	private Map<TypeMandat, String> mapTypesMandat;
+	private Map<TypeAutreDocumentFiscalEmettableManuellement, String> mapTypesAutreDocumentFiscalEmettableManuellement;
 
 	private ServiceInfrastructureService infraService;
 
@@ -827,5 +829,15 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypesMandat = initMapEnum(ApplicationConfig.masterKeyTypeMandat, TypeMandat.class);
 		}
 		return mapTypesMandat;
+	}
+
+	/**
+	 * @return la map des types de document fiscal émettables manuellement
+	 */
+	public Map<TypeAutreDocumentFiscalEmettableManuellement, String> getTypesAutreDocumentFiscalEmettableManuellement() {
+		if (mapTypesAutreDocumentFiscalEmettableManuellement == null) {
+			mapTypesAutreDocumentFiscalEmettableManuellement = initMapEnum(ApplicationConfig.maskerKeyTypeAutreDocumentFiscalEmettableManuellement, TypeAutreDocumentFiscalEmettableManuellement.class);
+		}
+		return mapTypesAutreDocumentFiscalEmettableManuellement;
 	}
 }

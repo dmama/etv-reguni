@@ -22,12 +22,20 @@ public enum TypeDocumentEditique {
 
 	DI_PM("U1P1DIPM", null, "impressionDI"),
 	DI_APM("U1P2DIAP", null, "impressionDI"),
-	LETTRE_BIENVENUE("U1P3BIEN", "400", "lettreBienvenue"),
 	SOMMATION_DI_PM("U1P4SOMM", "401", "sommationDI"),
 	ACCORD_DELAI_PM("U1P5DLAI", "402", "accordDelai"),
 	REFUS_DELAI_PM("U1P6REFU", "403", "refusDelai"),
 	RAPPEL("U1P7RAPL", "404", "rappel"),
 	SURSIS("U1P8ADAS", "405", "sursis"),                 // ADAS = Accord de Délai Après Sommation
+
+	//
+	// Autres documents fiscaux
+	//
+
+	LETTRE_BIENVENUE("U1P3BIEN", "400", "lettreBienvenue"),
+	DEMANDE_BILAN_FINAL("U1P9BIFI", "411", "demandeBilanFinal"),
+	AUTORISATION_RADIATION_RC("U1PAARAD", "412", "autorisationRadiationRC"),
+	LETTRE_LIQUIDATION("U1PSLIQU", "413", "lettreLiquidation"),
 
 	//
 	// Autour des questionnaires SNC
