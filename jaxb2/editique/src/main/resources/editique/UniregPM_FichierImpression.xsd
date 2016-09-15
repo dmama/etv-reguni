@@ -81,6 +81,21 @@
                     <xs:documentation>Lettre De Relance Questionnaire SNC : CodDoc=U1PR, typDoc=CO</xs:documentation>
                 </xs:annotation>
             </xs:group>
+            <xs:group ref="demandeBilanFinal">
+                <xs:annotation>
+                    <xs:documentation>Demande de bilan final à la PM : CodDoc=U1P9, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:group ref="autorisationRadiation">
+                <xs:annotation>
+                    <xs:documentation>Autorisation de radiation : CodDoc=U1PA, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:group ref="lettreLiquidation">
+                <xs:annotation>
+                    <xs:documentation>Lettre type information sur liquidation : CodDoc=U1PS, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
         </xs:choice>
     </xs:group>
     <xs:group name="DI">
@@ -234,6 +249,76 @@
                 <xs:annotation>
                     <xs:documentation>U1PR</xs:documentation>
                 </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="demandeBilanFinal">
+        <xs:sequence>
+            <xs:element name="demandeBilanFinal">
+                <xs:annotation>
+                    <xs:documentation>U1P9</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="periodeFiscale" type="xs:gYear">
+                            <xs:annotation>
+                                <xs:documentation>AAAA</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateDemandeRequisition" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="autorisationRadiation">
+        <xs:sequence>
+            <xs:element name="autorisationRadiation">
+                <xs:annotation>
+                    <xs:documentation>U1PA</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="dateDemandeRadiation" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="raisonSociale" type="xs:string"/>
+                        <xs:element name="signatures">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="2" minOccurs="0" name="signature">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="signataire" type="xs:string"/>
+                                                <xs:element name="fonction" type="xs:string"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="lettreLiquidation">
+        <xs:sequence>
+            <xs:element name="lettreLiquidation">
+                <xs:annotation>
+                    <xs:documentation>U1PS</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="lettreLiquidation" type="STypeLettreLiquidation"/>
+                    </xs:sequence>
+                </xs:complexType>
             </xs:element>
         </xs:sequence>
     </xs:group>
@@ -902,7 +987,12 @@ U1P8ADASROUTE
     </xs:simpleType>
     <xs:simpleType name="STypeVersionXSD">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="16.6"/>
+            <xs:enumeration value="16.7"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="STypeLettreLiquidation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LettreLiquidation"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>
