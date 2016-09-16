@@ -169,6 +169,8 @@
 		Renommage type typSiegeEtAdministartionEffective en typSiegeEtAdministrationEffective
 		Suppression type swissAddressInformationType
 		Modification format contactMandataireTelephoneIndicatif/contactMandataireTelephoneNumero au profit d'une chaine de caractères pour prendre en compte les 0 en début de numéro: typTelephoneAttr
+		<!-- 13.09.2016 (zciedt) v1.25.6 -->
+		Correction du type typDecMax1_4Attr qui était configuré en typDecMax1_2
 		</xs:documentation>
 	</xs:annotation>
 	<!-- ELEMENT PRINCIPAL -->
@@ -2790,7 +2792,7 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 			</xs:element>
 			<xs:element name="documentJoint" type="xs:boolean" maxOccurs="1">
 				<xs:annotation>
-					<xs:documentation>ID2303-2305-2307-2309-2311-ID2312-2314-2316-2318-2320-2322-2324-2326</xs:documentation>
+					<xs:documentation>ID2302-2304-2306-2308-2310-ID2312-2314-2316-2318-2320-2322-2324-2326</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -3306,29 +3308,6 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 			<xs:element name="country" type="countryIdIso2Type" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-	<!--<xs:complexType name="swissAddressInformationType">
-		<xs:sequence>
-			<xs:element name="addressLine1" type="addressLineType" minOccurs="0"/>
-			<xs:element name="addressLine2" type="addressLineType" minOccurs="0"/>
-			<xs:sequence minOccurs="0">
-				<xs:element name="street" type="streetType" minOccurs="0"/>
-				<xs:element name="houseNumber" type="houseNumberType" minOccurs="0"/>
-				<xs:element name="dwellingNumber" type="dwellingNumberType" minOccurs="0"/>
-			</xs:sequence>
-			<xs:element name="locality" type="localityType" minOccurs="0"/>
-			<xs:element name="town" type="townType" minOccurs="0"/>
-			<xs:sequence minOccurs="0">
-				<xs:element name="swissZipCode" type="swissZipCodeType" minOccurs="0"/>
-				<xs:element name="swissZipCodeAddOn" type="swissZipCodeAddOnType" minOccurs="0"/>
-				<xs:element name="swissZipCodeId" type="swissZipCodeIdType" minOccurs="0"/>
-			</xs:sequence>
-			<xs:element name="country" minOccurs="0">
-				<xs:simpleType>
-					<xs:restriction base="countryIdIso2Type"/>
-				</xs:simpleType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>-->
 	<xs:complexType name="typSiegeEtAdministrationEffective">
 		<xs:choice>
 			<xs:element name="numeroOfsCommuneSuisse" type="typNumeroOfs"/>
@@ -3653,7 +3632,7 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 			<xs:enumeration value="PALIER"/>
 		</xs:restriction>
 	</xs:simpleType>
-		<xs:simpleType name="typTelephone">
+	<xs:simpleType name="typTelephone">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[0-9]+"/>
 		</xs:restriction>
@@ -3748,7 +3727,7 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 	</xs:complexType>
 	<xs:complexType name="typDecMax1_4Attr">
 		<xs:simpleContent>
-			<xs:extension base="typDecMax1_2">
+			<xs:extension base="typDecMax1_4">
 				<xs:attribute name="valide" type="xs:boolean" use="required"/>
 				<xs:attribute name="videoCode" type="xs:boolean" use="optional"/>
 			</xs:extension>
