@@ -143,7 +143,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 
 		etablissementView.setEnseigne(etablissement.getEnseigne());
-		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement, true)));
+		etablissementView.setDomiciles(getDomiciles(tiersService.getDomicilesEnActiviteSourceReelle(etablissement, true)));
 		etablissementView.setNoCantonal(etablissement.getNumeroEtablissement());
 		return etablissementView;
 	}
