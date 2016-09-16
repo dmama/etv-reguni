@@ -35,7 +35,7 @@ public enum TypeDocumentEditique {
 	LETTRE_BIENVENUE("U1P3BIEN", "400", "lettreBienvenue"),
 	DEMANDE_BILAN_FINAL("U1P9BIFI", "411", "demandeBilanFinal"),
 	AUTORISATION_RADIATION_RC("U1PAARAD", "412", "autorisationRadiationRC"),
-	LETTRE_LIQUIDATION("U1PSLIQU", "413", "lettreLiquidation"),
+	LETTRE_TYPE_INFO_LIQUIDATION("U1PSLIQU", "413", "lettreTypeInfoLiquidation"),
 
 	//
 	// Autour des questionnaires SNC

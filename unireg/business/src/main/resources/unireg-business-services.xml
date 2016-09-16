@@ -285,7 +285,7 @@
 
 	<bean id="impressionDemandeBilanFinalHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionDemandeBilanFinalHelperImpl"/>
 
-	<bean id="impressionLettreLiquidationHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionLettreLiquidationHelperImpl"/>
+	<bean id="impressionLettreTypeInfoLiquidationHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionLettreTypeInformationLiquidationHelperImpl"/>
 
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>

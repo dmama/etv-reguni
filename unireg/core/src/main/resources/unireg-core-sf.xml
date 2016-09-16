@@ -25,7 +25,7 @@
 		<value>ch.vd.uniregctb.documentfiscal.LettreBienvenue</value>
 		<value>ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC</value>
 		<value>ch.vd.uniregctb.documentfiscal.DemandeBilanFinal</value>
-		<value>ch.vd.uniregctb.documentfiscal.LettreLiquidation</value>
+		<value>ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation</value>
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence</value>

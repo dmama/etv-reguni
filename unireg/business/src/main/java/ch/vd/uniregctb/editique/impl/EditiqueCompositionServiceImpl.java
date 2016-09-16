@@ -50,10 +50,10 @@ import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.ImpressionAutorisationRadiationRCHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionDemandeBilanFinalHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
-import ch.vd.uniregctb.documentfiscal.ImpressionLettreLiquidationHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionLettreTypeInformationLiquidationHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionRappelHelper;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
-import ch.vd.uniregctb.documentfiscal.LettreLiquidation;
+import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.uniregctb.documentfiscal.Signataires;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -102,7 +102,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionAutorisationRadiationRCHelper impressionAutorisationRadiationRCHelper;
 	private Signataires signatairesAutorisationRadiationRC;
 	private ImpressionDemandeBilanFinalHelper impressionDemandeBilanFinalHelper;
-	private ImpressionLettreLiquidationHelper impressionLettreLiquidationHelper;
+	private ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -204,8 +204,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setImpressionLettreLiquidationHelper(ImpressionLettreLiquidationHelper impressionLettreLiquidationHelper) {
-		this.impressionLettreLiquidationHelper = impressionLettreLiquidationHelper;
+	public void setImpressionLettreTypeInformationLiquidationHelper(ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper) {
+		this.impressionLettreTypeInformationLiquidationHelper = impressionLettreTypeInformationLiquidationHelper;
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
@@ -738,12 +738,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeLettreLiquidationOnline(LettreLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeLettreTypeInformationLiquidationOnline(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionLettreLiquidationHelper.buildDocument(lettre, dateTraitement);
+		final FichierImpression.Document original = impressionLettreTypeInformationLiquidationHelper.buildDocument(lettre, dateTraitement);
 		root.getDocument().add(original);
-		final TypeDocumentEditique typeDocument = impressionLettreLiquidationHelper.getTypeDocumentEditique();
-		final String nomDocument = impressionLettreLiquidationHelper.construitIdDocument(lettre);
+		final TypeDocumentEditique typeDocument = impressionLettreTypeInformationLiquidationHelper.getTypeDocumentEditique();
+		final String nomDocument = impressionLettreTypeInformationLiquidationHelper.construitIdDocument(lettre);
 
 		// sauvegarde de la clé d'archivage
 		lettre.setCleArchivage(original.getInfoArchivage() != null ? original.getInfoArchivage().getIdDocument() : null);

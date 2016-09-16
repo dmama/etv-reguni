@@ -134,7 +134,7 @@
 							baseTable.find('tr.doc-bilfin :input:not(.dead)').prop("disabled", false);
 							baseTable.find('tr.doc-bilfin').show();
 							break;
-						case 'LETTRE_LIQUIDATION':
+						case 'LETTRE_TYPE_INFORMATION_LIQUIDATION':
 							baseTable.find('tr.doc-letliq :input').prop("disabled", false);
 							baseTable.find('tr.doc-letliq').show();
 							break;

@@ -50,7 +50,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		map.put(LettreBienvenue.class, TypeDocumentEditique.LETTRE_BIENVENUE);
 		map.put(AutorisationRadiationRC.class, TypeDocumentEditique.AUTORISATION_RADIATION_RC);
 		map.put(DemandeBilanFinal.class, TypeDocumentEditique.DEMANDE_BILAN_FINAL);
-		map.put(LettreLiquidation.class, TypeDocumentEditique.LETTRE_LIQUIDATION);
+		map.put(LettreTypeInformationLiquidation.class, TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION);
 		return Collections.unmodifiableMap(map);
 	}
 
@@ -242,15 +242,15 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
-	public EditiqueResultat envoyerLettreLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	public EditiqueResultat envoyerLettreTypeInformationLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException {
 		try {
-			final LettreLiquidation lettre = new LettreLiquidation();
+			final LettreTypeInformationLiquidation lettre = new LettreTypeInformationLiquidation();
 			lettre.setDateEnvoi(dateTraitement);
 			lettre.setEntreprise(e);
 
-			final LettreLiquidation saved = hibernateTemplate.merge(lettre);
+			final LettreTypeInformationLiquidation saved = hibernateTemplate.merge(lettre);
 			e.addAutreDocumentFiscal(saved);
-			return editiqueCompositionService.imprimeLettreLiquidationOnline(saved, dateTraitement);
+			return editiqueCompositionService.imprimeLettreTypeInformationLiquidationOnline(saved, dateTraitement);
 		}
 		catch (EditiqueException | JMSException ex) {
 			throw new AutreDocumentFiscalException(ex);

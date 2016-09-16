@@ -122,8 +122,8 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			return autreDocumentFiscalService.envoyerAutorisationRadiationRCOnline(entreprise, RegDate.get(), view.getDateReference());
 		case DEMANDE_BILAN_FINAL:
 			return autreDocumentFiscalService.envoyerDemandeBilanFinalOnline(entreprise, RegDate.get(), view.getPeriodeFiscale(), view.getDateReference());
-		case LETTRE_LIQUIDATION:
-			return autreDocumentFiscalService.envoyerLettreLiquidationOnline(entreprise, RegDate.get());
+		case LETTRE_TYPE_INFORMATION_LIQUIDATION:
+			return autreDocumentFiscalService.envoyerLettreTypeInformationLiquidationOnline(entreprise, RegDate.get());
 		}
 		throw new IllegalArgumentException("Type de document non-supporté : " + view.getTypeDocument());
 	}

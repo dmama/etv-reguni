@@ -649,7 +649,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM, visa, oid)) {
 				map.put(MODIF_FLAGS_PM, Boolean.TRUE);
 			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_LETTRE_LIQUIDATION)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_LETTRE_TYPE_INFO_LIQUIDATION)) {
 				map.put(MODIF_AUTRES_DOCS_FISCAUX, Boolean.TRUE);
 			}
 		}

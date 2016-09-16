@@ -49,7 +49,7 @@
 		<property name="impressionAutorisationRadiationRCHelper" ref="impressionAutorisationRadiationRCHelper"/>
 		<property name="signatairesAutorisationRadiationRC" ref="signatairesAutorisationRadiation"/>
 		<property name="impressionDemandeBilanFinalHelper" ref="impressionDemandeBilanFinalHelper"/>
-		<property name="impressionLettreLiquidationHelper" ref="impressionLettreLiquidationHelper"/>
+		<property name="impressionLettreTypeInformationLiquidationHelper" ref="impressionLettreTypeInfoLiquidationHelper"/>
 	</bean>
 
 	<bean id="signatairesAutorisationRadiation" class="ch.vd.uniregctb.documentfiscal.Signataires">

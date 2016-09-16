@@ -51,9 +51,9 @@ public abstract class AutreDocumentFiscalViewFactory {
 				                                   null);
 			}
 		});
-		addToMap(map, LettreLiquidation.class, new ViewFactory<LettreLiquidation>() {
+		addToMap(map, LettreTypeInformationLiquidation.class, new ViewFactory<LettreTypeInformationLiquidation>() {
 			@Override
-			public AutreDocumentFiscalView buildView(LettreLiquidation document, MessageSource messageSource) {
+			public AutreDocumentFiscalView buildView(LettreTypeInformationLiquidation document, MessageSource messageSource) {
 				return new AutreDocumentFiscalView(document,
 				                                   messageSource,
 				                                   "label.autre.document.fiscal.lettre.liquidation",

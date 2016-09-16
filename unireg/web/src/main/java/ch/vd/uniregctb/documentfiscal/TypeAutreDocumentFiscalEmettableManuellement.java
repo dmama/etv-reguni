@@ -19,5 +19,5 @@ public enum TypeAutreDocumentFiscalEmettableManuellement {
 	/**
 	 * Demande d'informations complémentaire au sujet de la liquidation d'une entreprise
 	 */
-	LETTRE_LIQUIDATION
+	LETTRE_TYPE_INFORMATION_LIQUIDATION
 }

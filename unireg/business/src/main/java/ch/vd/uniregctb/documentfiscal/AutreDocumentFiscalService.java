@@ -84,5 +84,5 @@ public interface AutreDocumentFiscalService {
 	 * @return le document imprimé
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
-	EditiqueResultat envoyerLettreLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException;
+	EditiqueResultat envoyerLettreTypeInformationLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException;
 }

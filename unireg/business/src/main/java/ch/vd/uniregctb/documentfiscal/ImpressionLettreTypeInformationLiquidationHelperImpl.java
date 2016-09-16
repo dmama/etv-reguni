@@ -22,17 +22,17 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 
-public class ImpressionLettreLiquidationHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionLettreLiquidationHelper {
+public class ImpressionLettreTypeInformationLiquidationHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionLettreTypeInformationLiquidationHelper {
 
-	private static final String CODE_DOCUMENT_LETTRE_LIQUIDATION = TypeDocumentEditique.LETTRE_LIQUIDATION.getCodeDocumentEditique().substring(0, 4);
+	private static final String CODE_DOCUMENT_LETTRE_TYPE_INFO_LIQUIDATION = TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION.getCodeDocumentEditique().substring(0, 4);
 
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {
-		return TypeDocumentEditique.LETTRE_LIQUIDATION;
+		return TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION;
 	}
 
 	@Override
-	public FichierImpression.Document buildDocument(LettreLiquidation lettre, RegDate dateTraitement) throws EditiqueException {
+	public FichierImpression.Document buildDocument(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException {
 		try {
 			final Entreprise entreprise = lettre.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
@@ -55,16 +55,16 @@ public class ImpressionLettreLiquidationHelperImpl extends EditiqueAbstractHelpe
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
-		infoDoc.setCodDoc(CODE_DOCUMENT_LETTRE_LIQUIDATION);
+		infoDoc.setCodDoc(CODE_DOCUMENT_LETTRE_TYPE_INFO_LIQUIDATION);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
-		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(TypeDocumentEditique.LETTRE_LIQUIDATION));
+		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION));
 		infoDoc.setTypDoc(TYPE_DOCUMENT_CO);
 
 		return infoDoc;
 	}
 
 	@Override
-	public String construitIdDocument(LettreLiquidation lettre) {
+	public String construitIdDocument(LettreTypeInformationLiquidation lettre) {
 		return String.format("LL %s %s",
 		                     StringUtils.leftPad(lettre.getEntreprise().getNumero().toString(), 9, '0'),
 		                     new SimpleDateFormat("yyyyMMddHHmmssSSS").format(lettre.getLogCreationDate()));
@@ -72,7 +72,7 @@ public class ImpressionLettreLiquidationHelperImpl extends EditiqueAbstractHelpe
 	}
 
 	@Override
-	public String construitCleArchivage(LettreLiquidation lettre) {
+	public String construitCleArchivage(LettreTypeInformationLiquidation lettre) {
 		return String.format("%s %s",
 		                     StringUtils.rightPad("Info liquidation", 19, ' '),
 		                     new SimpleDateFormat("MMddHHmmssSSS").format(lettre.getLogCreationDate())
