@@ -711,11 +711,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeAutorisationRadiationRCOnline(AutorisationRadiationRC lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionAutorisationRadiationRCHelper.buildDocument(lettre, dateTraitement, signatairesAutorisationRadiationRC, serviceSecurite);
-		final FichierImpression.Document copieMandataire = impressionAutorisationRadiationRCHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
 		root.getDocument().add(original);
-		if (copieMandataire != null) {
-			root.getDocument().add(copieMandataire);
-		}
 		final TypeDocumentEditique typeDocument = impressionAutorisationRadiationRCHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionAutorisationRadiationRCHelper.construitIdDocument(lettre);
 
@@ -730,11 +726,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionDemandeBilanFinalHelper.buildDocument(lettre, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
 		root.getDocument().add(original);
-		if (copieMandataire != null) {
-			root.getDocument().add(copieMandataire);
-		}
 		final TypeDocumentEditique typeDocument = impressionDemandeBilanFinalHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionDemandeBilanFinalHelper.construitIdDocument(lettre);
 
@@ -749,11 +741,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeLettreLiquidationOnline(LettreLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreLiquidationHelper.buildDocument(lettre, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionLettreLiquidationHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
 		root.getDocument().add(original);
-		if (copieMandataire != null) {
-			root.getDocument().add(copieMandataire);
-		}
 		final TypeDocumentEditique typeDocument = impressionLettreLiquidationHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLettreLiquidationHelper.construitIdDocument(lettre);
 

@@ -32,6 +32,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -111,6 +112,7 @@ public class AutreDocumentFiscalController {
 		model.addAttribute("documents", autreDocumentFiscalManager.getAutresDocumentsFiscauxSansSuivi(idEntreprise));
 		model.addAttribute("typesDocument", getTypesAutreDocumentFiscalEmettableManuellement());
 		model.addAttribute("print", view);
+		model.addAttribute("isRadieeRCOuDissoute", autreDocumentFiscalManager.hasAnyEtat(idEntreprise, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
 		return "tiers/edition/pm/autresdocs";
 	}
 

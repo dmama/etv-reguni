@@ -40,7 +40,7 @@
 								<table style="border: 0; margin-left: 15%; width: 85%;">
 									<tr>
 										<td width="20%;"><fmt:message key="label.autre.document.fiscal.date.requisition.radiation.rc"/>&nbsp;:</td>
-										<td width="40%;">
+										<td width="30%;">
 											<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 												<jsp:param name="path" value="dateReference" />
 												<jsp:param name="id" value="dateReferenceAutorisationRadiation" />
@@ -48,7 +48,17 @@
 											<span style="color: red;">*</span>
 										</td>
 										<td>
-											<button type="submit" name="print"><fmt:message key="label.bouton.imprimer"/></button>
+											<c:choose>
+												<c:when test="${isRadieeRCOuDissoute}">
+													<button type="button" name="print" disabled="disabled" class="dead"><fmt:message key="label.bouton.imprimer"/></button>
+													<span class="warn warning_icon" style="padding-left: 2em; margin-left: 2em;">
+														<fmt:message key="label.entreprise.deja.radiee.ou.dissoute"/>
+													</span>
+												</c:when>
+												<c:otherwise>
+													<button type="submit" name="print"><fmt:message key="label.bouton.imprimer"/></button>
+												</c:otherwise>
+											</c:choose>
 										</td>
 									</tr>
 								</table>
@@ -63,7 +73,7 @@
 								<table style="border: 0; margin-left: 15%; width: 85%;">
 									<tr>
 										<td width="20%;"><fmt:message key="label.autre.document.fiscal.date.requisition.radiation.rc"/>&nbsp;:</td>
-										<td width="40%;">
+										<td width="30%;">
 											<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 												<jsp:param name="path" value="dateReference" />
 												<jsp:param name="id" value="dateReferenceBilanFinal" />
@@ -71,7 +81,17 @@
 											<span style="color: red;">*</span>
 										</td>
 										<td rowspan="2">
-											<button type="submit" name="print"><fmt:message key="label.bouton.imprimer"/></button>
+											<c:choose>
+												<c:when test="${isRadieeRCOuDissoute}">
+													<button type="button" name="print" disabled="disabled" class="dead"><fmt:message key="label.bouton.imprimer"/></button>
+													<span class="warn warning_icon" style="padding-left: 2em; margin-left: 2em;">
+														<fmt:message key="label.entreprise.deja.radiee.ou.dissoute"/>
+													</span>
+												</c:when>
+												<c:otherwise>
+													<button type="submit" name="print"><fmt:message key="label.bouton.imprimer"/></button>
+												</c:otherwise>
+											</c:choose>
 										</td>
 									</tr>
 									<tr>
@@ -90,7 +110,7 @@
 					<!-- les spécificités du document d'information de liquidation -->
 					<tr class="doc-letliq" style="display: none;">
 						<td colspan="2">
-							<div style="margin-left: 66%; width: 34%; height: 2em;">
+							<div style="margin-left: 58%; width: 42%; height: 2em;">
 								<button type="submit" name="print"><fmt:message key="label.bouton.imprimer"/></button>
 							</div>
 						</td>
@@ -107,11 +127,11 @@
 						baseTable.find(':input').not('#newTypeDoc, :button').prop("disabled", true);
 						switch (type) {
 						case 'AUTORISATION_RADIATION':
-							baseTable.find('tr.doc-autrad :input').prop("disabled", false);
+							baseTable.find('tr.doc-autrad :input:not(.dead)').prop("disabled", false);
 							baseTable.find('tr.doc-autrad').show();
 							break;
 						case 'DEMANDE_BILAN_FINAL':
-							baseTable.find('tr.doc-bilfin :input').prop("disabled", false);
+							baseTable.find('tr.doc-bilfin :input:not(.dead)').prop("disabled", false);
 							baseTable.find('tr.doc-bilfin').show();
 							break;
 						case 'LETTRE_LIQUIDATION':

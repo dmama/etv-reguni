@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.documentfiscal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
@@ -14,9 +17,11 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManager, MessageSourceAware {
 
@@ -62,7 +67,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscalQuittanceable.LETTRE_BIENVENUE);
 	}
 
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@Override
 	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb) {
 		final Entreprise entreprise = getEntreprise(noCtb);
@@ -78,6 +83,25 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			}
 		}
 		return views;
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@Override
+	public boolean hasAnyEtat(long noCtb, TypeEtatEntreprise... types) {
+		if (types == null || types.length == 0) {
+			return false;
+		}
+		final Set<TypeEtatEntreprise> typesCherches = EnumSet.noneOf(TypeEtatEntreprise.class);
+		typesCherches.addAll(Arrays.asList(types));
+
+		final Entreprise entreprise = getEntreprise(noCtb);
+		final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
+		for (EtatEntreprise etat : etats) {
+			if (typesCherches.contains(etat.getType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@NotNull
