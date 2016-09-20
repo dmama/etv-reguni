@@ -445,15 +445,7 @@
 			<%-- Téléchargement décalé de document --%>
 			<%--@elvariable id="delayedDownloadId" type="java.util.UUID"--%>
 			<c:if test="${delayedDownloadId != null}">
-				<script type="application/javascript">
-					function DelayedDownload() {
-						window.location.assign('<c:url value="/delayed-download.do?url_memorize=false&id=${delayedDownloadId}"/>');
-					}
-					$(function() {
-						// Avec IE, il faut rendre asynchrone ce téléchargement afin que les CSS aient le temps d'agir...
-						setTimeout(DelayedDownload, 200);
-					});
-				</script>
+				<iframe id="delayedDownloadIFrame" style="display:none;" src="<c:url value='/delayed-download.do?url_memorize=false&id=${delayedDownloadId}'/>"></iframe>
 			</c:if>
 
 	</body>
