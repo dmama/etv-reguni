@@ -46,7 +46,7 @@ public class Job {
 
 	private static final String VISA = "[Rattrapage-mutations-mandataires-" + RegDateHelper.toIndexString(RegDate.get()) + "]";
 
-	private static final VersionDB CIBLE = VersionDB._16R2;
+	private static final VersionDB CIBLE = VersionDB._16R3;
 
 	private static final String SQL_FILE = "/tmp/rattrapage-auto-mandataires.sql";
 
