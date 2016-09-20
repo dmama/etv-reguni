@@ -1,0 +1,145 @@
+package ch.vd.uniregctb.entreprise.complexe;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.EnumSet;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
+import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
+import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.validation.ValidationService;
+
+@Controller
+@RequestMapping("/processuscomplexe/requisitionradiationrc")
+public class RequisitionRadiationRCController extends AbstractProcessusComplexeRechercheController {
+
+	private AutreDocumentFiscalService autreDocumentFiscalService;
+	private ValidationService validationService;
+	private RetourEditiqueControllerHelper retourEditiqueHelper;
+
+	public static final String CRITERIA_NAME = "RequisitionRadiationRCCriteria";
+
+	public void setAutreDocumentFiscalService(AutreDocumentFiscalService autreDocumentFiscalService) {
+		this.autreDocumentFiscalService = autreDocumentFiscalService;
+	}
+
+	public void setValidationService(ValidationService validationService) {
+		this.validationService = validationService;
+	}
+
+	public void setRetourEditiqueHelper(RetourEditiqueControllerHelper retourEditiqueHelper) {
+		this.retourEditiqueHelper = retourEditiqueHelper;
+	}
+
+	@Override
+	protected void checkDroitAcces() throws AccessDeniedException {
+		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de réquisition de radiation du RC d'une entreprise.",
+		                Role.REQUISITION_RADIATION_RC);
+	}
+
+	@Override
+	protected String getSearchCriteriaSessionName() {
+		return CRITERIA_NAME;
+	}
+
+	@Override
+	protected void fillCriteriaWithImplicitValues(TiersCriteriaView criteria) {
+		criteria.setTiersActif(Boolean.TRUE);
+		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
+		criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.DISSOUTE));
+	}
+
+	@Override
+	protected String getSearchResultViewPath() {
+		return "entreprise/requisitionradiationrc/list";
+	}
+
+	@RequestMapping(value = "/start.do", method = RequestMethod.GET)
+	public String showStart(Model model, @RequestParam("id") long idEntreprise) {
+		checkDroitAcces();
+		controllerUtils.checkAccesDossierEnEcriture(idEntreprise);
+		return showStart(model, new RequisitionRadiationRCView(idEntreprise));
+	}
+
+	private String showStart(Model model, FinActiviteView view) {
+		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		return "entreprise/requisitionradiationrc/start";
+	}
+
+	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
+	public String doFinActivite(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final RequisitionRadiationRCView view, BindingResult bindingResult) throws Exception {
+		checkDroitAcces();
+		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
+		if (bindingResult.hasErrors()) {
+			return showStart(model, view);
+		}
+		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
+
+		return doInTransaction(new TransactionHelper.ExceptionThrowingCallback<String, MetierServiceException>() {
+			@Override
+			public String execute(TransactionStatus status) throws MetierServiceException {
+				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+				metierService.finActivite(entreprise, view.getDateFinActivite(), view.getRemarque());
+
+				final String redirect = String.format("redirect:/tiers/visu.do?id=%d", view.getIdEntreprise());
+				if (!validationService.validate(entreprise).hasErrors() && view.isImprimerDemandeBilanFinal()) {
+					try {
+						final EditiqueResultat editique = autreDocumentFiscalService.envoyerDemandeBilanFinalOnline(entreprise, RegDate.get(), view.getPeriodeFiscale(), view.getDateFinActivite());
+
+						final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
+								new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
+									@Override
+									public String doJob(EditiqueResultatReroutageInbox resultat) {
+										return redirect;
+									}
+								};
+
+						final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
+							@Override
+							public String doJob(EditiqueResultatErreur resultat) {
+								Flash.error(EditiqueErrorHelper.getMessageErreurEditique(resultat));
+								return redirect;
+							}
+						};
+
+						return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(editique,
+						                                                              "demandeBilanFinal",
+						                                                              redirect,
+						                                                              inbox,
+						                                                              null,
+						                                                              erreur);
+					}
+					catch (AutreDocumentFiscalException | IOException e) {
+						throw new MetierServiceException(e);
+					}
+				}
+				else {
+					return redirect;
+				}
+			}
+		});
+	}
+}

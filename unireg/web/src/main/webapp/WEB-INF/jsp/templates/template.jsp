@@ -108,7 +108,7 @@
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE, ROLE_REINSCRIPTION_RC_ENTREPRISE">
+					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE, ROLE_REINSCRIPTION_RC_ENTREPRISE, ROLE_REQUISITION_RADIATION_RC">
 					<li><fmt:message key="label.action.processus.complexes.entreprises"/>
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
@@ -130,6 +130,9 @@
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/transfertpatrimoine/emettrice/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_REQUISITION_RADIATION_RC">
+								<li><a href="<c:url value="/processuscomplexe/requisitionradiationrc/list.do"/>"><fmt:message key="title.requisition.radiation.rc"/></a></li>
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_REINSCRIPTION_RC_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/reinscriptionrc/list.do"/>"><fmt:message key="title.reinscription.rc"/></a></li>

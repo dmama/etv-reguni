@@ -17,6 +17,7 @@ public class ProcessusComplexeValidator extends DelegatingValidator {
 		addSubValidator(ScissionEntrepriseView.class, new ScissionEntrepriseViewValidator());   // scission d'entreprise
 		addSubValidator(TransfertPatrimoineView.class, new TransfertPatrimoineViewValidator()); // transfert de patrimoine
 		addSubValidator(ReinscriptionRCView.class, new ReinscriptionRCViewValidator());         // ré-inscription au RC
+		addSubValidator(RequisitionRadiationRCView.class, new RequisitionRadiationRCViewValidator());   // réquisition de radiation du RC
 
 		addSubValidator(AnnulationDemenagementSiegeView.class, new AnnulationDemenagementSiegeViewValidator());     // annulation de déménagement de siège
 	}

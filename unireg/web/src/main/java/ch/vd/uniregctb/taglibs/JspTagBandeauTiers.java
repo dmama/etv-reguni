@@ -100,6 +100,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new RevoquerFaillite());
 		list.add(new DemenagerSiege());
 		list.add(new TerminerActivite());
+		list.add(new RequisitionRadiationRC());
 		list.add(new ReprendreActivitePartielle());
 		list.add(new ReinscriptionRegistreCommerce());
 		list.add(new AbsorberEntreprises());
@@ -1435,6 +1436,32 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/reinscriptionrc/start.do?id=";
+		}
+	}
+
+	private static class RequisitionRadiationRC implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.REQUISITION_RADIATION_RC);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& tiers.getForFiscalPrincipalAt(null) != null
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.DISSOUTE))
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Traiter la réquisition de radiation du RC";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/requisitionradiationrc/start.do?id=";
 		}
 	}
 }
