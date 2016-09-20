@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.common;
 
 import org.apache.commons.lang3.StringUtils;
 

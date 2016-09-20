@@ -3,8 +3,6 @@ package ch.vd.uniregctb.common;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import ch.vd.uniregctb.supergra.FlashMessage;
-
 /**
  * Classe utilitaire pour l'affichage des messages <i>flash</i> dans les contrôleurs web Spring 3.
  */

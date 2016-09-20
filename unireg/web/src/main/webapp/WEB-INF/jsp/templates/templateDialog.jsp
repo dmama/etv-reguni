@@ -21,7 +21,7 @@
 		</script>
 
 		<%-- Message flash --%>
-		<%--@elvariable id="flash" type="ch.vd.uniregctb.supergra.FlashMessage"--%>
+		<%--@elvariable id="flash" type="ch.vd.uniregctb.common.FlashMessage"--%>
 		<c:if test="${flash != null && flash.active}">
 			<div id="flashdisplay" class="<c:out value='${flash.displayClass}'/>"><c:out value="${flash.messageForDisplay}"/></div>
 			<c:if test="${flash.timeout > 0}">

@@ -7,8 +7,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-import ch.vd.uniregctb.supergra.FlashMessage;
-
 /**
  * Classe commune à tous les simple form controller utilisés dans Unireg.
  */
