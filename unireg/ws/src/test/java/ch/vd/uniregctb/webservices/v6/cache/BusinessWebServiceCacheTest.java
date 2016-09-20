@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.webservices.v6.cache;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -12,7 +15,14 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import ch.ech.ech0007.v4.CantonAbbreviation;
 import net.sf.ehcache.CacheManager;
@@ -254,12 +264,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		                                                   new InvocationHandler() {
 			                                                   @Override
 			                                                   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				                                                   List<Object[]> c = calls.get(method.getName());
-				                                                   if (c == null) {
-					                                                   c = new ArrayList<>();
-					                                                   calls.put(method.getName(), c);
+				                                                   synchronized (calls) {
+					                                                   List<Object[]> c = calls.get(method.getName());
+					                                                   if (c == null) {
+						                                                   c = new ArrayList<>();
+						                                                   calls.put(method.getName(), c);
+					                                                   }
+					                                                   c.add(args);
 				                                                   }
-				                                                   c.add(args);
 				                                                   return method.invoke(target, args);
 			                                                   }
 		                                                   });
@@ -1231,6 +1243,223 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNotNull(party);
 			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate()); // [SIFISC-5508] cette date était nulle avant la correction du bug
 			assertNull(party.getActivityEndDate());
+		}
+	}
+
+	/**
+	 * [SIFISC-20870] Problème vu en production, une java.util.ConcurrentModificationException qui saute pendant la sérialisation CXF de réponse du WS
+	 */
+	@Test
+	public void testConcurrentAccessGetParty() throws Exception {
+
+		// on va construire un contribuable avec toutes ses collections contenant quelque chose,
+		// puis on va interroger depuis plusieurs threads le contribuable, avec un nombre de parts aléatoire à chaque fois...
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				// Un tiers avec avec toutes les parties renseignées
+				final PersonnePhysique eric = addNonHabitant("Eric", "de Melniboné", date(1965, 4, 13), Sexe.MASCULIN);
+				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				eric.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+
+				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+
+				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+				situation.setDateDebut(date(1989, 5, 1));
+				situation.setNombreEnfants(0);
+				eric.addSituationFamille(situation);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2004);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di, date(2004, 1, 10));
+
+				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", TypeImmeuble.BIEN_FOND, GenrePropriete.COMMUNE, 923000, "1994", "1", date(1988, 3, 14), TypeMutation.ACHAT);
+
+				return eric.getNumero();
+			}
+		});
+
+		final Random rnd = new Random();
+		final ch.vd.unireg.ws.party.v6.ObjectFactory partyFactory = new ch.vd.unireg.ws.party.v6.ObjectFactory();
+		final JAXBContext jaxbContext = JAXBContext.newInstance(NaturalPerson.class);
+
+		// lien direct entre le cache et l'implémentation, sans tracing
+		cache.setTarget(getBean(BusinessWebService.class, "wsv6Business"));
+
+		// classe de tâche en parallèle...
+		final class Task implements Callable<Object> {
+
+			private final Set<PartyPart> parts = buildRandomPartSet();
+
+			/**
+			 * Construction d'un ensemble de parts prises au hasard
+			 */
+			private Set<PartyPart> buildRandomPartSet() {
+				final PartyPart[] all = PartyPart.values();
+				final int nb = 3;
+				final Set<PartyPart> set = EnumSet.noneOf(PartyPart.class);
+				for (int i = 0; i < nb ; ++ i) {
+					final int index = rnd.nextInt(all.length);
+					set.add(all[index]);
+				}
+				return set;
+			}
+
+			@Override
+			public Object call() throws Exception {
+				// récupération des données + sérialisation
+				final Party party = cache.getParty(userLogin, (int) id, parts);
+				final Marshaller marshaller = jaxbContext.createMarshaller();
+				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+					marshaller.marshal(partyFactory.createParty(party), out);
+				}
+				return null;
+			}
+		}
+
+		// quelques threads, quelques appels
+		final int nbThreads = 100;
+		final int nbCalls = 5000;
+
+		// executors
+		final ExecutorService executor = Executors.newFixedThreadPool(nbThreads);
+		try {
+			final ExecutorCompletionService<Object> completionService = new ExecutorCompletionService<>(executor);
+			for (int i = 0 ; i < nbCalls ; ++ i) {
+				completionService.submit(new Task());
+			}
+			executor.shutdown();
+			for (int i = 0 ; i < nbCalls ; ++ i) {
+				while (true) {
+					final Future<Object> future = completionService.poll(1, TimeUnit.SECONDS);
+					if (future != null) {
+						future.get();
+						break;
+					}
+				}
+			}
+		}
+		finally {
+			executor.shutdownNow();
+			while (!executor.isTerminated()) {
+				executor.awaitTermination(1, TimeUnit.SECONDS);
+			}
+		}
+	}
+
+	/**
+	 * [SIFISC-20870] Problème vu en production, une java.util.ConcurrentModificationException qui saute pendant la sérialisation CXF de réponse du WS
+	 */
+	@Test
+	public void testConcurrentAccessGetParties() throws Exception {
+
+		// on va construire un contribuable avec toutes ses collections contenant quelque chose,
+		// puis on va interroger depuis plusieurs threads le contribuable, avec un nombre de parts aléatoire à chaque fois...
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				// Un tiers avec avec toutes les parties renseignées
+				final PersonnePhysique eric = addNonHabitant("Eric", "de Melniboné", date(1965, 4, 13), Sexe.MASCULIN);
+				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				eric.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+
+				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
+				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
+
+				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
+				situation.setDateDebut(date(1989, 5, 1));
+				situation.setNombreEnfants(0);
+				eric.addSituationFamille(situation);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2004);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(di, date(2004, 1, 10));
+
+				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", TypeImmeuble.BIEN_FOND, GenrePropriete.COMMUNE, 923000, "1994", "1", date(1988, 3, 14), TypeMutation.ACHAT);
+
+				return eric.getNumero();
+			}
+		});
+
+		final Random rnd = new Random();
+		final JAXBContext jaxbContext = JAXBContext.newInstance(Parties.class);
+
+		// lien direct entre le cache et l'implémentation, sans tracing
+		cache.setTarget(getBean(BusinessWebService.class, "wsv6Business"));
+
+		// classe de tâche en parallèle...
+		final class Task implements Callable<Object> {
+
+			private final Set<PartyPart> parts = buildRandomPartSet();
+
+			/**
+			 * Construction d'un ensemble de parts prises au hasard
+			 */
+			private Set<PartyPart> buildRandomPartSet() {
+				final PartyPart[] all = PartyPart.values();
+				final int nb = 3;
+				final Set<PartyPart> set = EnumSet.noneOf(PartyPart.class);
+				for (int i = 0; i < nb ; ++ i) {
+					final int index = rnd.nextInt(all.length);
+					set.add(all[index]);
+				}
+				return set;
+			}
+
+			@Override
+			public Object call() throws Exception {
+				// récupération des données + sérialisation
+				final Parties parties = cache.getParties(userLogin, Collections.singletonList((int) id), parts);
+				final Marshaller marshaller = jaxbContext.createMarshaller();
+				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+					marshaller.marshal(parties, out);
+				}
+				return null;
+			}
+		}
+
+		// quelques threads, quelques appels
+		final int nbThreads = 100;
+		final int nbCalls = 5000;
+
+		// executors
+		final ExecutorService executor = Executors.newFixedThreadPool(nbThreads);
+		try {
+			final ExecutorCompletionService<Object> completionService = new ExecutorCompletionService<>(executor);
+			for (int i = 0 ; i < nbCalls ; ++ i) {
+				completionService.submit(new Task());
+			}
+			executor.shutdown();
+			for (int i = 0 ; i < nbCalls ; ++ i) {
+				while (true) {
+					final Future<Object> future = completionService.poll(1, TimeUnit.SECONDS);
+					if (future != null) {
+						future.get();
+						break;
+					}
+				}
+			}
+		}
+		finally {
+			executor.shutdownNow();
+			while (!executor.isTerminated()) {
+				executor.awaitTermination(1, TimeUnit.SECONDS);
+			}
 		}
 	}
 
