@@ -148,8 +148,8 @@ public class Job {
 		}
 		finally {
 			execService.shutdownNow();
-			while (!execService.awaitTermination(1, TimeUnit.SECONDS)) {
-				System.err.println("Attente de la fin des exécuteurs...");
+			while (!execService.isTerminated()) {
+				execService.awaitTermination(1, TimeUnit.SECONDS);
 			}
 		}
 	}
