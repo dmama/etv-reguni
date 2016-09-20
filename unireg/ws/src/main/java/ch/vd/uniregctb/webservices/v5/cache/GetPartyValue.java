@@ -46,15 +46,8 @@ final class GetPartyValue extends CacheValueWithParts<Party, PartyPart> implemen
 	 * @return les données d'entrée éventuellement tronquées à la partie gérable par le cache
 	 */
 	private static PartsAndValue buildPartsAndValue(Set<PartyPart> parts, Party value) {
-		final Set<PartyPart> notAllowedParts = getNonCacheablePartsIn(parts);
 		final Set<PartyPart> allowedParts = getCacheablePartsIn(parts);
-		final Party valueForCache;
-		if (!notAllowedParts.isEmpty()) {
-			valueForCache = PartyBuilder.clone(value, allowedParts);
-		}
-		else {
-			valueForCache = value;
-		}
+		final Party valueForCache = PartyBuilder.clone(value, allowedParts);
 		return new PartsAndValue(allowedParts, valueForCache);
 	}
 
