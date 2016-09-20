@@ -419,7 +419,7 @@ INPUT.readonly {
 	padding-left: 20px;
 }
 
-.action_error td.heading {
+.action_error td.heading, .error_icon {
 	background: url(error.gif) no-repeat;
 	padding-left: 20px;
 }	

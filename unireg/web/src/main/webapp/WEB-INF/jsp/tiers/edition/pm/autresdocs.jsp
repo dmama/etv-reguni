@@ -51,7 +51,7 @@
 											<c:choose>
 												<c:when test="${isRadieeRCOuDissoute}">
 													<button type="button" name="print" disabled="disabled" class="dead"><fmt:message key="label.bouton.imprimer"/></button>
-													<span class="warn warning_icon" style="padding-left: 2em; margin-left: 2em;">
+													<span class="error error_icon" style="padding-left: 2em; margin-left: 2em;">
 														<fmt:message key="label.entreprise.deja.radiee.ou.dissoute"/>
 													</span>
 												</c:when>
@@ -84,7 +84,7 @@
 											<c:choose>
 												<c:when test="${isRadieeRCOuDissoute}">
 													<button type="button" name="print" disabled="disabled" class="dead"><fmt:message key="label.bouton.imprimer"/></button>
-													<span class="warn warning_icon" style="padding-left: 2em; margin-left: 2em;">
+													<span class="error error_icon" style="padding-left: 2em; margin-left: 2em;">
 														<fmt:message key="label.entreprise.deja.radiee.ou.dissoute"/>
 													</span>
 												</c:when>
@@ -149,7 +149,6 @@
 						form.find(":button").prop("disabled", true);                        // le bouton "imprimer"
 						form.find(':input').prop("readOnly", true);                         // les textes en read-only
 						form.find('select option:not(:selected)').prop("disabled", true);   // la combo box (en éliminant les options non-choisies)
-						window.setTimeout(this.showRefreshOverlay, 1000);
 						return true;
 					}
 				};
@@ -181,9 +180,6 @@
 								&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
 								<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
 							</c:if>
-						</display:column>
-						<display:column class="action">
-							<%--<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>--%>
 						</display:column>
 					</display:table>
 				</c:when>
