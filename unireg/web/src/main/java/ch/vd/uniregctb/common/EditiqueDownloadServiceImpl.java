@@ -2,9 +2,11 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
@@ -60,6 +62,17 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 		 * @throws IOException en cas de problème
 		 */
 		void download(byte[] contenu, String mimeType, String filenameRadical, HttpServletResponse response) throws IOException;
+
+		/**
+		 * Remplit la réponse HTTP avec le document à charger
+		 * @param contenu le stream du contenu à télécharger
+		 * @param size (optionnelle) taille du contenu, en bytes
+		 * @param mimeType type de contenu
+		 * @param filenameRadical radical (sans l'extension) du nom de fichier présenté dans la réponse HTTP
+		 * @param response réponse à remplir
+		 * @throws IOException en cas de problème
+		 */
+		void download(InputStream contenu, @Nullable Integer size, String mimeType, String filenameRadical, HttpServletResponse response) throws IOException;
 	}
 
 	/**
@@ -78,6 +91,12 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 			final String filename = String.format("%s%s", filenameRadical, MimeTypeHelper.getFileExtensionForType(mimeType));
 			service.downloadAsFile(filename, contenu, response);
 		}
+
+		@Override
+		public void download(InputStream contenu, @Nullable Integer size, String mimeType, String filenameRadical, HttpServletResponse response) throws IOException {
+			final String filename = String.format("%s%s", filenameRadical, MimeTypeHelper.getFileExtensionForType(mimeType));
+			service.downloadAsFile(filename, contenu, size, response);
+		}
 	}
 
 	/**
@@ -93,6 +112,11 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 
 		@Override
 		public void download(byte[] contenu, String mimeType, String filenameRadical, HttpServletResponse response) throws IOException {
+			pclManager.openPclStream(response, filenameRadical, contenu);
+		}
+
+		@Override
+		public void download(InputStream contenu, @Nullable Integer size, String mimeType, String filenameRadical, HttpServletResponse response) throws IOException {
 			pclManager.openPclStream(response, filenameRadical, contenu);
 		}
 	}
@@ -111,5 +135,26 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 			downloader = defaultDownloader;
 		}
 		downloader.download(resultat.getDocument(), resultat.getContentType(), filenameRadical, response);
+	}
+
+	/**
+	 * Choix du downloader et activation
+	 * @param container résultat contenant un document à télécharger
+	 * @param response réponse HTTP à remplir avec le contenu du fichier
+	 * @throws IOException en cas de procblème
+	 */
+	@Override
+	public void download(TypedDataContainer container, HttpServletResponse response) throws IOException {
+		Downloader downloader = downloaders.get(container.getMimeType());
+		if (downloader == null) {
+			downloader = defaultDownloader;
+		}
+		if (container.getSize() > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Cannot download data which length does not fit into an int (" + container.getSize() + ")");
+		}
+
+		try (InputStream is = container.getContent()) {
+			downloader.download(is, (int) container.getSize(), container.getMimeType(), container.getFilenameRadical(), response);
+		}
 	}
 }

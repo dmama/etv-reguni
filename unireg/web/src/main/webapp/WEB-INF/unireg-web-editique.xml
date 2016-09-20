@@ -67,4 +67,9 @@
 		</constructor-arg>
 	</bean>
 
+	<bean id="delayedDocumentDownloadController" class="ch.vd.uniregctb.document.DelayedDocumentDownloadController">
+		<property name="delayedDownloadService" ref="delayedDownloadService"/>
+		<property name="editiqueDownloadService" ref="editiqueDownloadService"/>
+	</bean>
+
 </beans>

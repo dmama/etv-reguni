@@ -151,10 +151,6 @@
 						form.find('select option:not(:selected)').prop("disabled", true);   // la combo box (en éliminant les options non-choisies)
 						window.setTimeout(this.showRefreshOverlay, 1000);
 						return true;
-					},
-
-					showRefreshOverlay: function() {
-						$('#overlay-bgnd, #overlay-button').show("fade");
 					}
 				};
 
@@ -166,49 +162,39 @@
 
 		</fieldset>
 
-		<div style="position: relative;">
+		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
+		<fieldset>
+			<legend><span><fmt:message key="label.autres.documents.fiscaux.non.suivis"/></span></legend>
 
-			<%-- Un petit message comme quoi il faut rafraîchir l'affichage... --%>
-			<div style="position: absolute; left:0; top:0; bottom:0; right:0; opacity: 0.6; background: darkgrey; display: none;" id="overlay-bgnd"></div>
-			<div style="position: absolute; text-align: center; left: 0; right: 0; margin-top: 1em; z-index: 1; display: none;" id="overlay-button">
-				<unireg:buttonTo name="Rafraîchir" method="GET" action="/autresdocs/edit-list.do" params="{pmId:${pmId}}" button_class="bigbutton"/>
-			</div>
+			<c:choose>
+				<c:when test="${not empty documents}">
+					<display:table name="${documents}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
+						<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
+							${docFiscal.libelleTypeDocument}
+						</display:column>
+						<display:column sortable="true" titleKey="label.autre.document.fiscal.soustype.document">
+							${docFiscal.libelleSousType}
+						</display:column>
+						<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
+							<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
+							<c:if test="${docFiscal.avecCopieConformeEnvoi}">
+								&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
+								<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
+							</c:if>
+						</display:column>
+						<display:column class="action">
+							<%--<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>--%>
+						</display:column>
+					</display:table>
+				</c:when>
+				<c:otherwise>
+					<div style="padding-top: 1em; padding-bottom: 1em; padding-left: 1ex;">
+						<span style="font-style: italic;"><fmt:message key="label.autre.document.fiscal.liste.vide"/></span>
+					</div>
+				</c:otherwise>
+			</c:choose>
 
-			<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
-			<fieldset>
-				<legend><span><fmt:message key="label.autres.documents.fiscaux.non.suivis"/></span></legend>
-
-				<c:choose>
-					<c:when test="${not empty documents}">
-						<display:table name="${documents}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
-							<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
-								${docFiscal.libelleTypeDocument}
-							</display:column>
-							<display:column sortable="true" titleKey="label.autre.document.fiscal.soustype.document">
-								${docFiscal.libelleSousType}
-							</display:column>
-							<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
-								<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
-								<c:if test="${docFiscal.avecCopieConformeEnvoi}">
-									&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
-									<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
-								</c:if>
-							</display:column>
-							<display:column class="action">
-								<%--<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>--%>
-							</display:column>
-						</display:table>
-					</c:when>
-					<c:otherwise>
-						<div style="padding-top: 1em; padding-bottom: 1em; padding-left: 1ex;">
-							<span style="font-style: italic;"><fmt:message key="label.autre.document.fiscal.liste.vide"/></span>
-						</div>
-					</c:otherwise>
-				</c:choose>
-
-			</fieldset>
-
-		</div>
+		</fieldset>
 
 		<!-- Debut Bouton -->
 		<unireg:buttonTo name="Retour" action="/tiers/visu.do" params="{id:${pmId}}" method="GET"/>

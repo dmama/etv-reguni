@@ -165,6 +165,7 @@
 
 	<bean id="retourEditiqueControllerHelper" class="ch.vd.uniregctb.common.RetourEditiqueControllerHelperImpl">
 		<property name="downloadService" ref="editiqueDownloadService"/>
+		<property name="delayedDownloadService" ref="delayedDownloadService"/>
 	</bean>
 
 	<bean id="delaiController" class="ch.vd.uniregctb.delai.DelaiController">

@@ -2,10 +2,13 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
@@ -17,12 +20,18 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, RetourEditiqueControllerHelper {
 
 	private EditiqueDownloadService downloadService;
+	private DelayedDownloadService delayedDownloadService;
 
 	private MessageSource messageSource;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDownloadService(EditiqueDownloadService downloadService) {
 		this.downloadService = downloadService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDelayedDownloadService(DelayedDownloadService delayedDownloadService) {
+		this.delayedDownloadService = delayedDownloadService;
 	}
 
 	@Override
@@ -32,14 +41,55 @@ public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, R
 
 	@Override
 	public String traiteRetourEditique(@Nullable EditiqueResultat resultat,
-	                                   HttpServletResponse response,
-	                                   String filenameRadical,
+	                                   final HttpServletResponse response,
+	                                   final String filenameRadical,
 	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
 	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
 	                                   @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
+
+		final TraitementRetourEditique<EditiqueResultatDocument> print = new TraitementRetourEditique<EditiqueResultatDocument>() {
+			@Override
+			public String doJob(EditiqueResultatDocument resultat) throws IOException {
+				downloadService.download(resultat, filenameRadical, response);
+				return null;
+			}
+		};
+
+		return traiteRetourEditique(resultat, print, onReroutageInbox, onTimeout, onError);
+	}
+
+	@Override
+	public String traiteRetourEditiqueAfterRedirect(@Nullable EditiqueResultat resultat,
+	                                                final String filenameRadical,
+	                                                final String redirectInstruction,
+	                                                @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
+	                                                @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
+	                                                @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
+
+		final TraitementRetourEditique<EditiqueResultatDocument> print = new TraitementRetourEditique<EditiqueResultatDocument>() {
+			@Override
+			public String doJob(EditiqueResultatDocument resultat) throws IOException {
+				final UUID id = delayedDownloadService.putDocument(resultat, filenameRadical);
+
+				// on met dans la session l'identifiant du document stocké
+				final RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
+				attributes.setAttribute(DelayedDownloadService.SESSION_ATTRIBUTE_NAME, id, RequestAttributes.SCOPE_SESSION);
+
+				return redirectInstruction;
+			}
+		};
+
+		return traiteRetourEditique(resultat, print, onReroutageInbox, onTimeout, onError);
+	}
+
+	private String traiteRetourEditique(@Nullable EditiqueResultat resultat,
+	                                    TraitementRetourEditique<EditiqueResultatDocument> onDocument,
+	                                    @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
+	                                    @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
+	                                    @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
+
 		if (resultat instanceof EditiqueResultatDocument) {
-			downloadService.download((EditiqueResultatDocument) resultat, filenameRadical, response);
-			return null;
+			return onDocument.doJob((EditiqueResultatDocument) resultat);
 		}
 		else if (resultat instanceof EditiqueResultatReroutageInbox) {
 			final String msg = messageSource.getMessage(MESSAGE_REROUTAGE_INBOX, null, WebContextUtils.getDefaultLocale());

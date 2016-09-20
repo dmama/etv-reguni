@@ -20,4 +20,12 @@ public interface EditiqueDownloadService {
 	 */
 	void download(EditiqueResultatDocument resultat, String filenameRadical, HttpServletResponse response) throws IOException;
 
+	/**
+	 * Remplit la réponse HTTP avec le contenu du retour d'impression éditique
+	 * @param resultat résultat contenant un document à télécharger
+	 * @param response réponse HTTP à remplir avec le contenu du fichier
+	 * @throws java.io.IOException en cas de procblème
+	 */
+	void download(TypedDataContainer resultat, HttpServletResponse response) throws IOException;
+
 }

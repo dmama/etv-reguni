@@ -34,7 +34,13 @@ public class PrintPCLManagerImpl implements PrintPCLManager {
 	 */
 	@Override
 	public void openPclStream(HttpServletResponse response, String filenameRadical, byte[] pcl) throws IOException {
+		try (ByteArrayInputStream in = new ByteArrayInputStream(pcl)) {
+			openPclStream(response, filenameRadical, in);
+		}
+	}
 
+	@Override
+	public void openPclStream(HttpServletResponse response, String filenameRadical, InputStream in) throws IOException {
 		try (ServletOutputStream out = response.getOutputStream()) {
 			response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
@@ -46,10 +52,8 @@ public class PrintPCLManagerImpl implements PrintPCLManager {
 			response.setHeader("cache-control", "no-cache");
 			response.setHeader("Cache-control", "must-revalidate");
 
-			try (ByteArrayInputStream in = new ByteArrayInputStream(pcl)) {
-				copyToOutputStream(in, out);
-				out.flush();
-			}
+			copyToOutputStream(in, out);
+			out.flush();
 		}
 	}
 

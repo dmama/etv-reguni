@@ -11,4 +11,9 @@ public class MockEditiqueDownloadService implements EditiqueDownloadService {
 	public void download(EditiqueResultatDocument resultat, String filenameRadical, HttpServletResponse response) throws IOException {
 		// on ne fait rien, c'est un mock...
 	}
+
+	@Override
+	public void download(TypedDataContainer resultat, HttpServletResponse response) throws IOException {
+		// on ne fait rien, c'est un mock...
+	}
 }

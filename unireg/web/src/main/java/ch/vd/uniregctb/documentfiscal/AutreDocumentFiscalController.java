@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.documentfiscal;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.EnumMap;
@@ -117,8 +116,7 @@ public class AutreDocumentFiscalController {
 	}
 
 	@RequestMapping(value = "/print.do", method = RequestMethod.POST)
-	public String imprimerNouveauDocument(@Valid @ModelAttribute("print") final ImprimerAutreDocumentFiscalView view, BindingResult bindingResult,
-	                                      Model model, HttpServletResponse response) throws IOException {
+	public String imprimerNouveauDocument(@Valid @ModelAttribute("print") final ImprimerAutreDocumentFiscalView view, BindingResult bindingResult, Model model) throws IOException {
 		if (bindingResult.hasErrors()) {
 			return showEditList(model, view);
 		}
@@ -136,11 +134,13 @@ public class AutreDocumentFiscalController {
 			throw new ActionException("Impossible d'imprimer le document voulu", e);
 		}
 
+		final String redirect = String.format("redirect:/autresdocs/edit-list.do?pmId=%d", view.getNoEntreprise());
+
 		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
 				new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
 					@Override
 					public String doJob(EditiqueResultatReroutageInbox resultat) {
-						return "redirect:/autresdocs/edit-list.do?pmId=" + view.getNoEntreprise();
+						return redirect;
 					}
 				};
 
@@ -148,10 +148,15 @@ public class AutreDocumentFiscalController {
 			@Override
 			public String doJob(EditiqueResultatErreur resultat) {
 				Flash.error(EditiqueErrorHelper.getMessageErreurEditique(resultat));
-				return "redirect:/autresdocs/edit-list.do?pmId=" + view.getNoEntreprise();
+				return redirect;
 			}
 		};
 
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, view.getTypeDocument().name().toLowerCase(), inbox, null, erreur);
+		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
+		                                                                        view.getTypeDocument().name().toLowerCase(),
+		                                                                        redirect,
+		                                                                        inbox,
+		                                                                        null,
+		                                                                        erreur);
 	}
 }

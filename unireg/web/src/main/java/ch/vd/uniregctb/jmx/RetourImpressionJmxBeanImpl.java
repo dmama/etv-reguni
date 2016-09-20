@@ -11,6 +11,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.common.DelayedDownloadService;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
 import ch.vd.uniregctb.editique.RetourImpressionToInboxTrigger;
@@ -25,12 +26,17 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 	private static final String NEVER = "Never";
 
 	private EditiqueRetourImpressionStorageService storageService;
+	private DelayedDownloadService delayedDownloadService;
 
 	private int callerTimeout;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStorageService(EditiqueRetourImpressionStorageService storageService) {
 		this.storageService = storageService;
+	}
+
+	public void setDelayedDownloadService(DelayedDownloadService delayedDownloadService) {
+		this.delayedDownloadService = delayedDownloadService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -96,5 +102,11 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 			}
 		}
 		return logs;
+	}
+
+	@Override
+	@ManagedAttribute
+	public int getPendingDelayedDownloads() {
+		return delayedDownloadService.getPendingSize();
 	}
 }

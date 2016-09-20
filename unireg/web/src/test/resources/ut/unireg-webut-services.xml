@@ -20,6 +20,8 @@
 
 	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.MockEditiqueDownloadService"/>
 
+	<bean id="delayedDownloadService" class="ch.vd.uniregctb.common.MockDelayedDownloadService"/>
+
 	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
 
 	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationNotificationQueue"/>

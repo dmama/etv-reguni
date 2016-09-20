@@ -33,4 +33,6 @@
 		<property name="printPCLManager" ref="printPCLManager"/>
 	</bean>
 
+	<bean id="delayedDownloadService" class="ch.vd.uniregctb.common.DelayedDownloadServiceImpl"/>
+
 </beans>

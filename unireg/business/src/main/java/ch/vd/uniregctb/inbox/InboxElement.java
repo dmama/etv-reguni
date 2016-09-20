@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateHelper;
 
 /**
@@ -110,12 +112,12 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	 */
 	public void onDiscard() {
 		if (attachment != null) {
-			attachment.onDiscard();
+			attachment.close();
 		}
 	}
 
 	@Override
-	public int compareTo(InboxElement o) {
+	public int compareTo(@NotNull InboxElement o) {
 		return - this.incomingDate.compareTo(o.incomingDate);
 	}
 

@@ -3,16 +3,12 @@ package ch.vd.uniregctb.inbox;
 import java.io.IOException;
 import java.io.InputStream;
 
-import ch.vd.uniregctb.common.TempFileInputStreamProvider;
+import ch.vd.uniregctb.common.TypedDataContainer;
 
 /**
  * Attachement téléchargeable
  */
-public class InboxAttachment {
-
-	private final String mimeType;
-	private final TempFileInputStreamProvider contentProvider;
-	private final String filenameRadical;
+public class InboxAttachment extends TypedDataContainer {
 
 	/**
 	 * Attachement à un élément de la boîte de réception
@@ -23,31 +19,6 @@ public class InboxAttachment {
 	 * @throws IOException en cas de problème avec le flux
 	 */
 	public InboxAttachment(String mimeType, InputStream content, String filenameRadical) throws IOException {
-		this.mimeType = mimeType;
-		this.contentProvider = new TempFileInputStreamProvider("ur-inbox-elt-", content);
-		this.filenameRadical = filenameRadical;
-	}
-
-	public String getMimeType() {
-		return mimeType;
-	}
-
-	public InputStream getContent() throws IOException {
-		return contentProvider.getInputStream();
-	}
-
-	public String getFilenameRadical() {
-		return filenameRadical;
-	}
-
-	public long getSize() {
-		return contentProvider.getFileSize();
-	}
-
-	/**
-	 * Appelé lorsque l'élément est envoyé aux oubliettes (pour d'éventuels nettoyages)
-	 */
-	public void onDiscard() {
-		contentProvider.close();
+		super(mimeType, content, "ur-inbox-elt-", filenameRadical);
 	}
 }

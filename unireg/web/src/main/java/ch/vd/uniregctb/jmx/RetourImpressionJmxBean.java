@@ -29,4 +29,7 @@ public interface RetourImpressionJmxBean {
 
 	@ManagedAttribute(description = "Print jobs re-routed to the users inboxes and still not received")
 	List<String> getAwaitingInboxRedirection();
+
+	@ManagedAttribute(description = "Pending delayed downloads")
+	int getPendingDelayedDownloads();
 }

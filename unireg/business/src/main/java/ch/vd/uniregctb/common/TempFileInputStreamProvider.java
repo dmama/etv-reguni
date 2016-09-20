@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
  * Permet de fournir des flux de lecture sur le contenu d'un fichier temporaire (ce fichier sera détruit
  * au moment du {@link #close()})
  */
-public final class TempFileInputStreamProvider {
+public final class TempFileInputStreamProvider implements AutoCloseable {
 
 	private final TemporaryFile file;
 	private final long size;
