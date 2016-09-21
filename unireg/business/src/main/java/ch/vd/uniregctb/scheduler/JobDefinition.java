@@ -543,6 +543,22 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return getOptionalIntegerValue(params, parameterDefinition);
 	}
 
+	/**
+	 * Extrait la valeur d'un paramètre de type integer (positif), et retourne la.
+	 *
+	 * @param params les paramètres
+	 * @param key la clé du paramètre
+	 * @return la valeur entière du paramètre; ou <code>null</code> si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire, ou si aucun paramètre de ce nom n'a été défini
+	 */
+	protected final @Nullable Integer getOptionalPositiveIntegerValue(Map<String, Object> params, String key) {
+		final Integer value = getOptionalIntegerValue(params, key);
+		if (value != null && value < 0) {
+			throw new IllegalArgumentException(String.format("La valeur du paramètre %s doit être positive ou nulle", key));
+		}
+		return value;
+	}
+
 	private static @Nullable Integer getOptionalIntegerValue(Map<String, Object> params, JobParam paramDefinition) {
 		Assert.notNull(paramDefinition);
 		Integer value = null;

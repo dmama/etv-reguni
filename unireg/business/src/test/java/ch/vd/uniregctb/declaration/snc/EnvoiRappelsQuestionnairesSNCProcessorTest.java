@@ -61,11 +61,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addYears(1);
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null);
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
 		Assert.assertEquals(0, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		// vérification de l'état du questionnaire en base...
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -112,11 +113,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(4);      // avant le délai officiel (6 mois)
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null);
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
 		Assert.assertEquals(0, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		// vérification de l'état du questionnaire en base...
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -163,11 +165,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(6).addDays(4);      // avant le délai officiel + administratif (6 mois + 15 jours)
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null);
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(1, results.getIgnores().size());
 		Assert.assertEquals(0, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		final EnvoiRappelsQuestionnairesSNCResults.RappelIgnore ignore = results.getIgnores().get(0);
 		Assert.assertNotNull(ignore);
@@ -221,11 +224,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(7);      // après le délai
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null);
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
 		Assert.assertEquals(1, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		final EnvoiRappelsQuestionnairesSNCResults.RappelEmis emis = results.getRappelsEmis().get(0);
 		Assert.assertNotNull(emis);
@@ -287,11 +291,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(7);      // après le délai
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null);
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
 		Assert.assertEquals(2, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		{
 			final EnvoiRappelsQuestionnairesSNCResults.RappelEmis emis = results.getRappelsEmis().get(0);
@@ -374,11 +379,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(7);      // après le délai
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, 2, null);      // de toute façon, je n'en ai pas plus de deux...
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, 2, null);      // de toute façon, je n'en ai pas plus de deux...
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
 		Assert.assertEquals(2, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		{
 			final EnvoiRappelsQuestionnairesSNCResults.RappelEmis emis = results.getRappelsEmis().get(0);
@@ -461,11 +467,94 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(7);      // après le délai
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, 1, null);      // et pourtant, il y en a deux
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, 1, null);      // et pourtant, il y en a deux
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
 		Assert.assertEquals(1, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
+
+		{
+			final EnvoiRappelsQuestionnairesSNCResults.RappelEmis emis = results.getRappelsEmis().get(0);
+			Assert.assertNotNull(emis);
+			Assert.assertEquals(pm, emis.noCtb);
+			Assert.assertEquals(periode1, emis.pf);
+		}
+
+		// vérification de l'état du questionnaire en base...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+				Assert.assertNotNull(entreprise);
+
+				{
+					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode1, true);
+					Assert.assertNotNull(questionnaires);
+					Assert.assertEquals(1, questionnaires.size());
+
+					final QuestionnaireSNC questionnaire = questionnaires.get(0);
+					Assert.assertNotNull(questionnaire);
+					Assert.assertFalse(questionnaire.isAnnule());
+					Assert.assertEquals(2, questionnaire.getEtats().size());
+					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+				}
+				{
+					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
+					Assert.assertNotNull(questionnaires);
+					Assert.assertEquals(1, questionnaires.size());
+
+					final QuestionnaireSNC questionnaire = questionnaires.get(0);
+					Assert.assertNotNull(questionnaire);
+					Assert.assertFalse(questionnaire.isAnnule());
+					Assert.assertEquals(1, questionnaire.getEtats().size());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, questionnaire.getDernierEtat().getEtat());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testPlusieursQuestionnairesAvecPeriodeFiscaleExplicite() throws Exception {
+
+		final RegDate dateDebut = date(2008, 5, 1);
+		final int periode1 = 2014;
+		final int periode2 = 2015;
+
+		// mise en place fiscale
+		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+
+				{
+					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
+					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+					addEtatDeclarationEmise(questionnaire, RegDate.get());
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				}
+				{
+					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
+					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+					addEtatDeclarationEmise(questionnaire, RegDate.get());
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				}
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// lancement du processus de rappel
+		final RegDate dateTraitement = RegDate.get().addMonths(7);      // après le délai
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, periode1, 1, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getIgnores().size());
+		Assert.assertEquals(1, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		{
 			final EnvoiRappelsQuestionnairesSNCResults.RappelEmis emis = results.getRappelsEmis().get(0);
@@ -532,11 +621,12 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
 		// lancement du processus de rappel
 		final RegDate dateTraitement = RegDate.get().addMonths(7);      // après le délai
-		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null);
+		final EnvoiRappelsQuestionnairesSNCResults results = processor.run(dateTraitement, null, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(1, results.getIgnores().size());
 		Assert.assertEquals(0, results.getRappelsEmis().size());
+		Assert.assertFalse(results.wasInterrupted());
 
 		final EnvoiRappelsQuestionnairesSNCResults.RappelIgnore ignore = results.getIgnores().get(0);
 		Assert.assertNotNull(ignore);

@@ -138,9 +138,9 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	public EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
+	public EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer periodeFiscale, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
 		final EnvoiRappelsQuestionnairesSNCProcessor processor = new EnvoiRappelsQuestionnairesSNCProcessor(transactionManager, hibernateTemplate, questionnaireSNCDAO, delaisService, this);
-		return processor.run(dateTraitement, nbMaxEnvois, statusManager);
+		return processor.run(dateTraitement, periodeFiscale, nbMaxEnvois, statusManager);
 	}
 
 	@NotNull

@@ -37,10 +37,11 @@ public interface QuestionnaireSNCService {
 
 	/**
 	 * @param dateTraitement la date de traitement
+	 * @param periodeFiscale si présent, la période fiscale des questionnaires candidats au rappel
 	 * @param statusManager status manager
 	 * @return un résumé des actions accomplies
 	 */
-	EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException;
+	EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer periodeFiscale, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException;
 
 	/**
 	 * @param entreprise une entreprise

@@ -39,6 +39,7 @@ public class PdfEnvoiRappelsQuestionnairesSNCRapport extends PdfRapport {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+					table.addLigne("Période fiscale :", results.getPeriodeFiscale() == null ? "Toutes" : String.valueOf(results.getPeriodeFiscale()));
 					table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "Pas de max" : String.valueOf(results.getNbMaxEnvois()));
 				}
 			});

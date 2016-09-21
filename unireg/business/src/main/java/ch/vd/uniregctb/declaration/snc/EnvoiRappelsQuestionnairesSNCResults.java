@@ -18,11 +18,13 @@ public class EnvoiRappelsQuestionnairesSNCResults extends AbstractJobResults<Ide
 
 	private final RegDate dateTraitement;
 	private final Integer nbMaxEnvois;
+	private final Integer periodeFiscale;
 
 	private boolean interrupted = false;
 
-	public EnvoiRappelsQuestionnairesSNCResults(RegDate dateTraitement, @Nullable Integer nbMaxEnvois) {
+	public EnvoiRappelsQuestionnairesSNCResults(RegDate dateTraitement, @Nullable Integer periodeFiscale, @Nullable Integer nbMaxEnvois) {
 		this.dateTraitement = dateTraitement;
+		this.periodeFiscale = periodeFiscale;
 		this.nbMaxEnvois = nbMaxEnvois;
 	}
 
@@ -154,6 +156,11 @@ public class EnvoiRappelsQuestionnairesSNCResults extends AbstractJobResults<Ide
 
 	public RegDate getDateTraitement() {
 		return dateTraitement;
+	}
+
+	@Nullable
+	public Integer getPeriodeFiscale() {
+		return periodeFiscale;
 	}
 
 	@Nullable

@@ -22,6 +22,7 @@ public class EnvoiRappelsQuestionnairesSNCJob extends JobDefinition {
 	private static final String NAME = "EnvoiRappelsQuestionnairesSNCJob";
 
 	private static final String PARAM_MAX_RAPPELS = "NB_MAX_RAPPELS";
+	private static final String PERIODE_FISCALE = "PERIODE";
 
 	private RapportService rapportService;
 	private QuestionnaireSNCService questionnaireService;
@@ -32,6 +33,14 @@ public class EnvoiRappelsQuestionnairesSNCJob extends JobDefinition {
 			final JobParam param = new JobParam();
 			param.setDescription("Nombre maximal de rappels émis (0 ou vide = pas de limite)");
 			param.setName(PARAM_MAX_RAPPELS);
+			param.setMandatory(false);
+			param.setType(new JobParamInteger());
+			addParameterDefinition(param, null);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Période fiscale");
+			param.setName(PERIODE_FISCALE);
 			param.setMandatory(false);
 			param.setType(new JobParamInteger());
 			addParameterDefinition(param, null);
@@ -63,10 +72,11 @@ public class EnvoiRappelsQuestionnairesSNCJob extends JobDefinition {
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final Integer nbMaxRappels = getOptionalIntegerValue(params, PARAM_MAX_RAPPELS);
+		final Integer periodeFiscale = getOptionalPositiveIntegerValue(params, PERIODE_FISCALE);
 		final RegDate dateTraitement = getDateTraitement(params);
 
 		final StatusManager statusManager = getStatusManager();
-		final EnvoiRappelsQuestionnairesSNCResults results = questionnaireService.envoiRappelsQuestionnairesSNCEnMasse(dateTraitement, nbMaxRappels, statusManager);
+		final EnvoiRappelsQuestionnairesSNCResults results = questionnaireService.envoiRappelsQuestionnairesSNCEnMasse(dateTraitement, periodeFiscale, nbMaxRappels, statusManager);
 
 		final EnvoiRappelsQuestionnairesSNCRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);

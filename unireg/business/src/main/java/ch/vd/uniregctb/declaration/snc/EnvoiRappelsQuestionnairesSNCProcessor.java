@@ -68,17 +68,17 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 		this.qsncService = qsncService;
 	}
 
-	public EnvoiRappelsQuestionnairesSNCResults run(final RegDate dateTraitement, @Nullable final Integer nbMaxEnvois, @Nullable StatusManager s) {
+	public EnvoiRappelsQuestionnairesSNCResults run(final RegDate dateTraitement, @Nullable final Integer periodeFiscale, @Nullable final Integer nbMaxEnvois, @Nullable StatusManager s) {
 		final StatusManager status = s != null ? s : new LoggingStatusManager(LOGGER);
 		final int limite = nbMaxEnvois == null || nbMaxEnvois <= 0 ? 0 : nbMaxEnvois;
 
 		status.setMessage("Identification des questionnaires concernés...");
 
 		// récupération des identifiants des questionnaires à rappeler
-		final List<IdentifiantDeclaration> ids = getQuestionnairesARappeler(dateTraitement);
+		final List<IdentifiantDeclaration> ids = getQuestionnairesARappeler(dateTraitement, periodeFiscale);
 
 		// traitement
-		final EnvoiRappelsQuestionnairesSNCResults rapportFinal = new EnvoiRappelsQuestionnairesSNCResults(dateTraitement, nbMaxEnvois);
+		final EnvoiRappelsQuestionnairesSNCResults rapportFinal = new EnvoiRappelsQuestionnairesSNCResults(dateTraitement, periodeFiscale, nbMaxEnvois);
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiRappelsQuestionnairesSNCResults> template = new BatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EnvoiRappelsQuestionnairesSNCResults>() {
@@ -104,7 +104,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 
 			@Override
 			public EnvoiRappelsQuestionnairesSNCResults createSubRapport() {
-				return new EnvoiRappelsQuestionnairesSNCResults(dateTraitement, nbMaxEnvois);
+				return new EnvoiRappelsQuestionnairesSNCResults(dateTraitement, periodeFiscale, nbMaxEnvois);
 			}
 		}, progressMonitor);
 
@@ -163,7 +163,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 	 * que ce n'est pas un cas métier, nous sommes obligés de le faire ici car la migration des données de SIMPA a parfois ajouté de tels états "ECHUE"
 	 * justement pour empêcher le rappel de vieux questionnaires...
 	 */
-	private List<IdentifiantDeclaration> getQuestionnairesARappeler(final RegDate dateTraitement) {
+	private List<IdentifiantDeclaration> getQuestionnairesARappeler(final RegDate dateTraitement, @Nullable final Integer periodeFiscale) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
@@ -176,6 +176,9 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 						final StringBuilder b = new StringBuilder();
 						b.append("SELECT qsnc.id, qsnc.tiers.id FROM QuestionnaireSNC AS qsnc");
 						b.append(" WHERE qsnc.annulationDate IS NULL");
+						if (periodeFiscale != null) {
+							b.append(" AND qsnc.periode.annee = :pf");
+						}
 						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
 						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE qsnc.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue, EtatDeclarationEchue))");
 						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE qsnc.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
@@ -184,6 +187,9 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 						final String sql = b.toString();
 						final Query query = session.createQuery(sql);
 						query.setParameter("dateLimite", dateTraitement);
+						if (periodeFiscale != null) {
+							query.setParameter("pf", periodeFiscale);
+						}
 						//noinspection unchecked
 						return query.list();
 					}
