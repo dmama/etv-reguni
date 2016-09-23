@@ -884,6 +884,11 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		}
 	}
 
+	protected static boolean isMixte2Vaudois(ForFiscalPrincipalContext<ForFiscalPrincipalPP> ctxt) {
+		final ForFiscalPrincipalPP ffp = ctxt.getCurrent();
+		return ffp != null && ffp.getModeImposition() == ModeImposition.MIXTE_137_2 && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+	}
+
 	/**
 	 * Extrait de la collection donnée tous les fors dont la date de début est dans la PF donnée
 	 * @param pf période fiscale qui nous intéresse
@@ -1002,10 +1007,12 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		final RegDate debut = current.getDateDebut();
 
 		final RegDate adebut;
-		if (isDepartOuArriveeHorsSuisse(previous, current) && (!isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) || isDepartHCApresArriveHSMemeAnnee(forPrincipal))) {
+		if (isDepartOuArriveeHorsSuisse(previous, current)
+				&& (!isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) || (isDepartHCApresArriveHSMemeAnnee(forPrincipal) && !isMixte2Vaudois(forPrincipal.slideToPrevious())))) {
 			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement depuis le début de l'année
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			// [SIFISC-14388] le cas d'une arrivée HS de mixte 2 doit fractionner à l'arrivée, même en cas de départ HC ensuite dans la même année
 			adebut = getDernier1Janvier(debut);
 		}
 		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && current.getMotifOuverture() == MotifFor.DEPART_HC) {
@@ -1048,10 +1055,12 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		if (fin == null) {
 			afin = null;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && (!isDepartDepuisOuArriveeVersVaud(forPrincipal) || isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext()))) {
-			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement jusqu'au 31 décembre précédant
+		else if (isDepartOuArriveeHorsSuisse(current, next)
+				&& (!isDepartDepuisOuArriveeVersVaud(forPrincipal) || (isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext()) && !isMixte2Vaudois(forPrincipal.slideToNext())))) {
+			// cas du départ/arrivée HS depuis hors-canton : on ignore le fractionnement est on applique l'assujettissement jusqu'au 31 décembre précédent
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			// [SIFISC-14388] le cas d'une arrivée HS de mixte 2 doit fractionner à l'arrivée, même en cas de départ HC ensuite dans la même année
 			afin = getDernier31Decembre(fin);
 		}
 		else if (isArriveeHCApresDepartHSMemeAnnee(current) && !roleSourcierPur(current)) {

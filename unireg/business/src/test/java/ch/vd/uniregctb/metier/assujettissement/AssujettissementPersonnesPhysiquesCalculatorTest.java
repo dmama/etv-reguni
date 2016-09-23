@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -4754,6 +4755,135 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertEquals(noOfsCommunesActives.size(), nbActives);
 		}
 	}
+
+	/**
+	 * [SIFISC-14388] Cas d'un mixte 2 arrivé HS dans une PF et reparti HC dans la même PF : son assujettissement devrait commencer
+	 * à son arrivée HS, pas au 01.01 systématiquement...
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testMixte2ArriveHSetRepartiHCDansMemeAnnee() throws Exception {
+
+		final int annee = 2014;
+		final RegDate arriveeHS = date(annee, 3, 20);
+		final RegDate departHC = date(annee, 6, 4);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+
+		final List<Assujettissement> ass = determine(pp);
+		assertNotNull(ass);
+		assertEquals(2, ass.size());
+
+		assertSourcierMixteArt137Al2(arriveeHS, departHC.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(0));
+		assertSourcierPur(departHC.getLastDayOfTheMonth().getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, ass.get(1));
+	}
+
+	/**
+	 * [SIFISC-14388] Cas d'un mixte 1 arrivé HS dans une PF et reparti HC dans la même PF : son assujettissement devrait commencer
+	 * à son arrivée HS, pas au 01.01 systématiquement...
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testMixte1ArriveHSetRepartiHCDansMemeAnnee() throws Exception {
+
+		final int annee = 2014;
+		final RegDate arriveeHS = date(annee, 3, 20);
+		final RegDate departHC = date(annee, 6, 4);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+
+		final List<Assujettissement> ass = determine(pp);
+		assertNotNull(ass);
+		assertEquals(2, ass.size());
+
+		assertSourcierPur(arriveeHS, departHC, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(0));
+		assertSourcierPur(departHC.getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, ass.get(1));
+	}
+
+	/**
+	 * [SIFISC-14388] Cas d'un mixte 2 arrivé HS dans une PF et reparti HC dans la même PF, avec achat d'immeuble (mixte 2 ???) avant son arrivée HS (toujours
+	 * dans la même PF): son assujettissement devrait commencer à la date d'achat, pas au 01.01 systématiquement...
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testMixte2AchatImmeublePuisArriveHSetRepartiHCDansMemeAnnee() throws Exception {
+
+		final int annee = 2014;
+		final RegDate achat = date(annee, 1, 15);
+		final RegDate arriveeHS = date(annee, 3, 20);
+		final RegDate departHC = date(annee, 6, 4);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, achat, null, arriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+
+		final List<Assujettissement> ass = determine(pp);
+		assertNotNull(ass);
+		assertEquals(3, ass.size());
+
+		assertHorsSuisse(achat, arriveeHS.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, ass.get(0));
+		assertSourcierMixteArt137Al2(arriveeHS, departHC.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(1));
+		assertHorsCanton(departHC.getLastDayOfTheMonth().getOneDayAfter(), null, MotifFor.DEPART_HC, null, ass.get(2));
+	}
+
+	/**
+	 * [SIFISC-14388] Cas d'un mixte 1 arrivé HS dans une PF et reparti HC dans la même PF, avec achat d'immeuble avant son arrivée HS (toujours
+	 * dans la même PF): son assujettissement devrait commencer à la date d'achat, pas au 01.01 systématiquement...
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testMixte1AchatImmeublePuisArriveHSetRepartiHCDansMemeAnnee() throws Exception {
+
+		final int annee = 2014;
+		final RegDate achat = date(annee, 1, 15);
+		final RegDate arriveeHS = date(annee, 3, 20);
+		final RegDate departHC = date(annee, 6, 4);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, achat, null, arriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+
+		final List<Assujettissement> ass = determine(pp);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+
+		assertHorsCanton(achat, null, MotifFor.ACHAT_IMMOBILIER, null, ass.get(0));
+	}
+
+	/**
+	 * [SIFISC-14388] Cas d'un ordinaire arrivé HS dans une PF et reparti HC dans la même PF, avec achat d'immeuble avant son arrivée HS (toujours
+	 * dans la même PF): son assujettissement devrait commencer à la date d'achat, pas au 01.01 systématiquement...
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testOrdinaireAchatImmeublePuisArriveHSetRepartiHCDansMemeAnnee() throws Exception {
+
+		final int annee = 2014;
+		final RegDate achat = date(annee, 1, 15);
+		final RegDate arriveeHS = date(annee, 3, 20);
+		final RegDate departHC = date(annee, 6, 4);
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		addForPrincipal(pp, achat, null, arriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+		addForPrincipal(pp, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.ORDINAIRE);
+		addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+
+		final List<Assujettissement> ass = determine(pp);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+
+		assertHorsCanton(achat, null, MotifFor.ACHAT_IMMOBILIER, null, ass.get(0));
+	}
+
 //
 //	@Test
 //	public void testPasseAuRoleDansLAnneeEtLeReste() throws Exception {

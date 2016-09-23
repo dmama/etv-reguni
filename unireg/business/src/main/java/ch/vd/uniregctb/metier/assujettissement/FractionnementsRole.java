@@ -34,12 +34,13 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
-		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(previous, current) &&
-				AssujettissementPersonnesPhysiquesCalculator.isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) &&
-				!AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee(forPrincipal)) {
+		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(previous, current)
+				&& AssujettissementPersonnesPhysiquesCalculator.isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious())
+				&& (!AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee(forPrincipal) || AssujettissementPersonnesPhysiquesCalculator.isMixte2Vaudois(forPrincipal))) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			// [SIFISC-14388] le cas d'une arrivée HS de mixte 2 doit fractionner à l'arrivée, même en cas de départ HC ensuite dans la même année
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
 		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && current.getModeImposition().isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
@@ -69,12 +70,13 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
-		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(current, next) &&
-				AssujettissementPersonnesPhysiquesCalculator.isDepartDepuisOuArriveeVersVaud(forPrincipal) &&
-				!AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext())) {
+		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(current, next)
+				&& AssujettissementPersonnesPhysiquesCalculator.isDepartDepuisOuArriveeVersVaud(forPrincipal)
+				&& (!AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext()) || AssujettissementPersonnesPhysiquesCalculator.isMixte2Vaudois(forPrincipal.slideToNext()))) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
+			// [SIFISC-14388] le cas d'une arrivée HS de mixte 2 doit fractionner à l'arrivée, même en cas de départ HC ensuite dans la même année
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
 		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.MIXTE_137_2) {
