@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -257,7 +258,7 @@ public class PerfsThread extends Thread {
 				++tiersCount;
 
 				if (LOGGER.isTraceEnabled()) {
-					long ping = delta / ch.vd.uniregctb.webservices.tiers2.perfs.PerfsClient.NANO_TO_MILLI;
+					final long ping = TimeUnit.NANOSECONDS.toMillis(delta);
 					if (tiers != null) {
 						LOGGER.trace("Récupéré le tiers n°" + id + " de type " + tiers.getClass().getSimpleName() + " (" + ping + " ms)");
 					}
@@ -300,7 +301,7 @@ public class PerfsThread extends Thread {
 				tiersCount += (tiers == null ? 0 : tiers.size());
 
 				if (LOGGER.isTraceEnabled()) {
-					long ping = delta / PerfsClient.NANO_TO_MILLI;
+					final long ping = TimeUnit.NANOSECONDS.toMillis(delta);
 					if (tiers != null) {
 						LOGGER.trace("Récupéré " + tiers.size() + " tiers (" + ping + " ms)");
 					}

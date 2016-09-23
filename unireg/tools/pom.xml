@@ -28,11 +28,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>uniregctb-wsclient-tiers2</artifactId>
-			<version>2.16.3</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
 		</dependency>
