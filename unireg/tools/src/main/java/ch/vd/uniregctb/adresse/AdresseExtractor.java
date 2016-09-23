@@ -13,13 +13,13 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.ws.parties.v1.Entry;
-import ch.vd.unireg.ws.parties.v1.Parties;
-import ch.vd.unireg.xml.party.address.v2.Address;
-import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
-import ch.vd.unireg.xml.party.v3.Party;
-import ch.vd.unireg.xml.party.v3.PartyPart;
-import ch.vd.uniregctb.utils.WebServiceV5Helper;
+import ch.vd.unireg.ws.parties.v7.Entry;
+import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.xml.party.address.v3.Address;
+import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
+import ch.vd.unireg.xml.party.v5.Party;
+import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.uniregctb.utils.WebServiceV7Helper;
 
 /**
  * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des tiers
@@ -28,17 +28,17 @@ import ch.vd.uniregctb.utils.WebServiceV5Helper;
 public class AdresseExtractor {
 
 	// INTEGRATION
-//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/v5";
+//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/v7";
 //	private static final String userWebService = "unireg";
 //	private static final String pwdWebService = "unireg_1014";
 
 	// PRE-PRODUCTION
-	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/v5";
+	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/v7";
 	private static final String userWebService = "web-it";
 	private static final String pwdWebService = "unireg_1014";
 
 	// PRODUCTION
-//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/v5";
+//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/v7";
 //	private static final String userWebService = "se renseigner...";
 //	private static final String pwdWebService = "se renseigner...";
 
@@ -93,7 +93,7 @@ public class AdresseExtractor {
 		try {
 			for (List<Integer> lot : lots) {
 				try {
-					final Parties parties = WebServiceV5Helper.getParties(urlWebService, userWebService, pwdWebService, userId, oid, lot, parts);
+					final Parties parties = WebServiceV7Helper.getParties(urlWebService, userWebService, pwdWebService, userId, oid, lot, parts);
 					for (Entry entry : parties.getEntries()) {
 						final Party party = entry.getParty();
 						dumpTiers(party, entry.getPartyNo(), entry.getError(), ps);
@@ -103,7 +103,7 @@ public class AdresseExtractor {
 					// problème... on essaie un par un
 					for (Integer id : lot) {
 						try {
-							final Party indivResult = WebServiceV5Helper.getParty(urlWebService, userWebService, pwdWebService, userId, oid, id, parts);
+							final Party indivResult = WebServiceV7Helper.getParty(urlWebService, userWebService, pwdWebService, userId, oid, id, parts);
 							dumpTiers(indivResult, id, null, ps);
 						}
 						catch (Exception e1) {
@@ -134,11 +134,11 @@ public class AdresseExtractor {
 				}
 			}
 
-			if (adrEnvoi == null) {
+			if (adrEnvoi == null || adrEnvoi.getPostAddress() == null) {
 				System.err.println(String.format("%d n'a pas d'adresse d'envoi", tiersNumber));
 			}
 			else {
-				final FormattedAddress adr = adrEnvoi.getFormattedAddress();
+				final FormattedAddress adr = adrEnvoi.getPostAddress().getFormattedAddress();
 				ps.println(String.format("%d;%s;%s;%s;%s;%s;%s", tiersNumber,
 				                         StringUtils.trimToEmpty(adr.getLine1()),
 				                         StringUtils.trimToEmpty(adr.getLine2()),
