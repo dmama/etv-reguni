@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.fors;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +16,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -24,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -31,10 +36,12 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
@@ -42,8 +49,10 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1485,6 +1494,232 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertEquals(date(2005, 10, 31), ffaei.getDateFin());
 				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffaei.getNumeroOfsAutoriteFiscale().intValue());
 				assertEquals(MotifFor.FUSION_COMMUNES, ffaei.getMotifFermeture()); // le motif doit avoir changé
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18594] allongement de la période de validité des régimes fiscaux à l'ajout d'un nouveau for sur une entreprise
+	 */
+	@Test
+	public void testRallongementRegimeFiscalNouveauForEntreprise() throws Exception {
+
+		final RegDate dateDebutInitiale = date(2015, 5, 12);
+		final RegDate dateDebutNouvelle = date(2015, 3, 1);
+
+		final long pmId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise, dateDebutInitiale, null, FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(entreprise, dateDebutInitiale, null, "Tralala SA");
+				addRegimeFiscalCH(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				return entreprise.getNumero();
+			}
+		});
+
+		// mise-à-jour du motif de fermeture d'un for secondaire
+		request.addParameter("tiersId", Long.toString(pmId));
+		request.addParameter("dateDebut", RegDateHelper.dateToDisplayString(dateDebutNouvelle));
+		request.addParameter("motifDebut", MotifFor.DEBUT_EXPLOITATION.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.ChateauDoex.getNoOFS()));
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
+		request.addParameter("genreImpot", GenreImpot.BENEFICE_CAPITAL.name());
+		request.addParameter("motifRattachement", MotifRattachement.DOMICILE.name());
+		request.setRequestURI("/fors/principal/add.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif de fermeture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				assertNotNull(entreprise);
+				final ForsParType fors = entreprise.getForsParType(false);
+				assertEquals(1, fors.principauxPM.size());
+
+				// on vérifie l'existence du for principal
+				final ForFiscalPrincipalPM ffp = fors.principauxPM.get(0);
+				assertNotNull(ffp);
+				assertEquals(dateDebutNouvelle, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+				assertNull(ffp.getMotifFermeture());
+
+				// et la modification des régimes fiscaux
+				final Set<RegimeFiscal> tousRegimes = entreprise.getRegimesFiscaux();
+				final List<RegimeFiscal> regimesVD = new ArrayList<>(tousRegimes.size());
+				final List<RegimeFiscal> regimesCH = new ArrayList<>(tousRegimes.size());
+				for (RegimeFiscal rf : tousRegimes) {
+					if (rf.getPortee() == RegimeFiscal.Portee.VD) {
+						regimesVD.add(rf);
+					}
+					else if (rf.getPortee() == RegimeFiscal.Portee.CH) {
+						regimesCH.add(rf);
+					}
+					else {
+						Assert.fail("Portée inconnue : " + rf.getPortee());
+					}
+				}
+				final Comparator<RegimeFiscal> comparateur = new DateRangeComparator<>();
+				Collections.sort(regimesCH, comparateur);
+				Collections.sort(regimesVD, comparateur);
+				Assert.assertEquals(2, regimesCH.size());
+				Assert.assertEquals(2, regimesVD.size());
+				{
+					final RegimeFiscal rf = regimesCH.get(0);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebutNouvelle, rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = regimesCH.get(1);
+					Assert.assertTrue(rf.isAnnule());
+					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = regimesVD.get(0);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebutNouvelle, rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = regimesVD.get(1);
+					Assert.assertTrue(rf.isAnnule());
+					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18594] allongement de la période de validité des régimes fiscaux à l'ajout d'un nouveau for sur une entreprise
+	 */
+	@Test
+	public void testRallongementRegimeFiscalNouveauForEntrepriseLimitee2009() throws Exception {
+
+		final RegDate dateDebutInitiale = date(2015, 5, 12);
+		final RegDate dateDebutNouvelle = date(2004, 3, 1);
+
+		final long pmId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise, dateDebutInitiale, null, FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(entreprise, dateDebutInitiale, null, "Tralala SA");
+				addRegimeFiscalCH(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebutInitiale, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				return entreprise.getNumero();
+			}
+		});
+
+		// mise-à-jour du motif de fermeture d'un for secondaire
+		request.addParameter("tiersId", Long.toString(pmId));
+		request.addParameter("dateDebut", RegDateHelper.dateToDisplayString(dateDebutNouvelle));
+		request.addParameter("motifDebut", MotifFor.DEBUT_EXPLOITATION.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.ChateauDoex.getNoOFS()));
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
+		request.addParameter("genreImpot", GenreImpot.BENEFICE_CAPITAL.name());
+		request.addParameter("motifRattachement", MotifRattachement.DOMICILE.name());
+		request.setRequestURI("/fors/principal/add.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif de fermeture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				assertNotNull(entreprise);
+				final ForsParType fors = entreprise.getForsParType(false);
+				assertEquals(1, fors.principauxPM.size());
+
+				// on vérifie l'existence du for principal
+				final ForFiscalPrincipalPM ffp = fors.principauxPM.get(0);
+				assertNotNull(ffp);
+				assertEquals(dateDebutNouvelle, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+				assertNull(ffp.getMotifFermeture());
+
+				// et la modification des régimes fiscaux
+				final Set<RegimeFiscal> tousRegimes = entreprise.getRegimesFiscaux();
+				final List<RegimeFiscal> regimesVD = new ArrayList<>(tousRegimes.size());
+				final List<RegimeFiscal> regimesCH = new ArrayList<>(tousRegimes.size());
+				for (RegimeFiscal rf : tousRegimes) {
+					if (rf.getPortee() == RegimeFiscal.Portee.VD) {
+						regimesVD.add(rf);
+					}
+					else if (rf.getPortee() == RegimeFiscal.Portee.CH) {
+						regimesCH.add(rf);
+					}
+					else {
+						Assert.fail("Portée inconnue : " + rf.getPortee());
+					}
+				}
+				final Comparator<RegimeFiscal> comparateur = new DateRangeComparator<>();
+				Collections.sort(regimesCH, comparateur);
+				Collections.sort(regimesVD, comparateur);
+				Assert.assertEquals(2, regimesCH.size());
+				Assert.assertEquals(2, regimesVD.size());
+				{
+					final RegimeFiscal rf = regimesCH.get(0);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(date(2009, 1, 1), rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = regimesCH.get(1);
+					Assert.assertTrue(rf.isAnnule());
+					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = regimesVD.get(0);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(date(2009, 1, 1), rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = regimesVD.get(1);
+					Assert.assertTrue(rf.isAnnule());
+					Assert.assertEquals(dateDebutInitiale, rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
+				}
 			}
 		});
 	}

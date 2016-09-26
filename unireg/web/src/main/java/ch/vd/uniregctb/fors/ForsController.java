@@ -2,6 +2,7 @@ package ch.vd.uniregctb.fors;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ApplicationConfig;
@@ -51,6 +54,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -344,6 +348,35 @@ public class ForsController {
 			                                      view.getMotifRattachement(), view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getModeImposition());
 		}
 		else if (ctb instanceof ContribuableImpositionPersonnesMorales) {
+
+			// [SIFISC-18594] si le nouveau for (IBC) est antérieur à tous les régimes fiscaux de l'entreprise, alors il faut
+			// agrandir la couverture de ces régimes fiscaux pour couvrir ce nouveau for
+			if (ctb instanceof Entreprise && view.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
+				final Entreprise entreprise = (Entreprise) ctb;
+				final List<RegimeFiscal> vd = entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD);
+				final List<RegimeFiscal> ch = entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.CH);
+				if (!vd.isEmpty() && !ch.isEmpty()) {
+
+					// on limite la zone de couverture agrandie à la période effectivement prise en compte par le validateur
+					final DateRange zoneCouvertureValidee = new DateRangeHelper.Range(RegDate.get(paramService.getPremierePeriodeFiscalePersonnesMorales(), 1, 1), null);
+
+					// commes les régimes fiscaux sont triés, seuls les tous premiers de chaque portée sont intéressants
+					for (RegimeFiscal rf : Arrays.asList(vd.get(0), ch.get(0))) {
+						if (view.getDateDebut().isBefore(rf.getDateDebut())) {
+							final DateRange nouvelleCouvertureTheorique = new DateRangeHelper.Range(view.getDateDebut(), rf.getDateDebut().getOneDayBefore());
+							final DateRange nouvelleCouverture = DateRangeHelper.intersection(nouvelleCouvertureTheorique, zoneCouvertureValidee);
+							if (nouvelleCouverture != null) {
+								// ce régime fiscal doit être rallongé vers le passé
+								final RegimeFiscal rallonge = rf.duplicate();
+								rallonge.setDateDebut(nouvelleCouverture.getDateDebut());
+								rf.setAnnule(true);
+								entreprise.addRegimeFiscal(rallonge);
+							}
+						}
+					}
+				}
+			}
+
 			newFor = tiersService.addForPrincipal((ContribuableImpositionPersonnesMorales) ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(),
 			                                      view.getMotifRattachement(), view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getGenreImpot());
 		}
@@ -383,7 +416,7 @@ public class ForsController {
 			throw new ObjectNotFoundException("Le for principal avec l'id = " + view.getId() + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
+		final Autorisations auth = getAutorisations(ffp.getTiers());
 		if (!auth.isForsPrincipaux()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
