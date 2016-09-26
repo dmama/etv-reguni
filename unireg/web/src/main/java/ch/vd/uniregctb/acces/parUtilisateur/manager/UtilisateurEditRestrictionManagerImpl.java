@@ -272,9 +272,9 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 					b.append("DATE_FIN").append(CsvHelper.COMMA);
 
 					b.append("NUMERO_CTB").append(CsvHelper.COMMA);
-					b.append("PRENOM_NOM").append(CsvHelper.COMMA);
+					b.append("NOM_RAISON_SOCIALE").append(CsvHelper.COMMA);
 					b.append("LOCALITE").append(CsvHelper.COMMA);
-					b.append("DATE_NAISSANCE");
+					b.append("DATE_NAISSANCE_INSC_RC");
 				}
 
 				@Override
