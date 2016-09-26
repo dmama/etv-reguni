@@ -2001,6 +2001,7 @@
     <column>LOG_MUSER</column>
     <column>INTITULE_FEUILLE</column>
     <column>NO_CADEV</column>
+    <column>PRINCIPAL</column>
     <column>MODELE_ID</column>
     <row>
       <value>59</value>
@@ -2012,6 +2013,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>58</value>
     </row>
     <row>
@@ -2024,6 +2026,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>58</value>
     </row>
     <row>
@@ -2036,6 +2039,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>58</value>
     </row>
     <row>
@@ -2048,6 +2052,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>58</value>
     </row>
     <row>
@@ -2060,6 +2065,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>63</value>
     </row>
     <row>
@@ -2072,6 +2078,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>65</value>
     </row>
     <row>
@@ -2084,6 +2091,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>67</value>
     </row>
     <row>
@@ -2096,6 +2104,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>70</value>
     </row>
     <row>
@@ -2108,6 +2117,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>70</value>
     </row>
     <row>
@@ -2120,6 +2130,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>70</value>
     </row>
     <row>
@@ -2132,6 +2143,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>70</value>
     </row>
     <row>
@@ -2144,6 +2156,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>75</value>
     </row>
     <row>
@@ -2156,6 +2169,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>77</value>
     </row>
     <row>
@@ -2168,6 +2182,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>79</value>
     </row>
     <row>
@@ -2180,6 +2195,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>82</value>
     </row>
     <row>
@@ -2192,6 +2208,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>82</value>
     </row>
     <row>
@@ -2204,6 +2221,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>82</value>
     </row>
     <row>
@@ -2216,6 +2234,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>82</value>
     </row>
     <row>
@@ -2228,6 +2247,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>87</value>
     </row>
     <row>
@@ -2240,6 +2260,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>89</value>
     </row>
     <row>
@@ -2252,6 +2273,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>91</value>
     </row>
     <row>
@@ -2264,6 +2286,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>94</value>
     </row>
     <row>
@@ -2276,6 +2299,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>94</value>
     </row>
     <row>
@@ -2288,6 +2312,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>94</value>
     </row>
     <row>
@@ -2300,6 +2325,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>94</value>
     </row>
     <row>
@@ -2312,6 +2338,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>99</value>
     </row>
     <row>
@@ -2324,6 +2351,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>101</value>
     </row>
     <row>
@@ -2336,6 +2364,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>103</value>
     </row>
     <row>
@@ -2348,6 +2377,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>106</value>
     </row>
     <row>
@@ -2360,6 +2390,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>106</value>
     </row>
     <row>
@@ -2372,6 +2403,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>106</value>
     </row>
     <row>
@@ -2384,6 +2416,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>106</value>
     </row>
     <row>
@@ -2396,6 +2429,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>111</value>
     </row>
     <row>
@@ -2408,6 +2442,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>113</value>
     </row>
     <row>
@@ -2420,6 +2455,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>115</value>
     </row>
     <row>
@@ -2432,6 +2468,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>118</value>
     </row>
     <row>
@@ -2444,6 +2481,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>118</value>
     </row>
     <row>
@@ -2456,6 +2494,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>118</value>
     </row>
     <row>
@@ -2468,6 +2507,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>118</value>
     </row>
     <row>
@@ -2480,6 +2520,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>123</value>
     </row>
     <row>
@@ -2492,6 +2533,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>125</value>
     </row>
     <row>
@@ -2504,6 +2546,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>127</value>
     </row>
     <row>
@@ -2516,6 +2559,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>130</value>
     </row>
     <row>
@@ -2528,6 +2572,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>130</value>
     </row>
     <row>
@@ -2540,6 +2585,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>130</value>
     </row>
     <row>
@@ -2552,6 +2598,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>130</value>
     </row>
     <row>
@@ -2564,6 +2611,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>135</value>
     </row>
     <row>
@@ -2576,6 +2624,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>137</value>
     </row>
     <row>
@@ -2588,6 +2637,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>139</value>
     </row>
     <row>
@@ -2600,6 +2650,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>142</value>
     </row>
     <row>
@@ -2612,6 +2663,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>142</value>
     </row>
     <row>
@@ -2624,6 +2676,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>142</value>
     </row>
     <row>
@@ -2636,6 +2689,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>142</value>
     </row>
     <row>
@@ -2648,6 +2702,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>147</value>
     </row>
     <row>
@@ -2660,6 +2715,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>149</value>
     </row>
     <row>
@@ -2672,6 +2728,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>151</value>
     </row>
     <row>
@@ -2684,6 +2741,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>154</value>
     </row>
     <row>
@@ -2696,6 +2754,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>154</value>
     </row>
     <row>
@@ -2708,6 +2767,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>154</value>
     </row>
     <row>
@@ -2720,6 +2780,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>154</value>
     </row>
     <row>
@@ -2732,6 +2793,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>159</value>
     </row>
     <row>
@@ -2744,6 +2806,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>161</value>
     </row>
     <row>
@@ -2756,6 +2819,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>163</value>
     </row>
     <row>
@@ -2768,6 +2832,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>166</value>
     </row>
     <row>
@@ -2780,6 +2845,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>166</value>
     </row>
     <row>
@@ -2792,6 +2858,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>166</value>
     </row>
     <row>
@@ -2804,6 +2871,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>166</value>
     </row>
     <row>
@@ -2816,6 +2884,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>172</value>
     </row>
     <row>
@@ -2828,6 +2897,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>174</value>
     </row>
     <row>
@@ -2840,6 +2910,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>176</value>
     </row>
     <row>
@@ -2852,6 +2923,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>179</value>
     </row>
     <row>
@@ -2864,6 +2936,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>179</value>
     </row>
     <row>
@@ -2876,6 +2949,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>179</value>
     </row>
     <row>
@@ -2888,6 +2962,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>179</value>
     </row>
     <row>
@@ -2900,6 +2975,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Vaud Tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>185</value>
     </row>
     <row>
@@ -2912,6 +2988,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>187</value>
     </row>
     <row>
@@ -2924,6 +3001,7 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[Déclaration Hors canton immeuble]]></value>
       <value>200</value>
+      <value>1</value>
       <value>189</value>
     </row>
     <row>
@@ -2936,6 +3014,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876967</value>
     </row>
     <row>
@@ -2948,6 +3027,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876967</value>
     </row>
     <row>
@@ -2960,6 +3040,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876967</value>
     </row>
     <row>
@@ -2972,6 +3053,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876967</value>
     </row>
     <row>
@@ -2984,6 +3066,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876968</value>
     </row>
     <row>
@@ -2996,6 +3079,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876968</value>
     </row>
     <row>
@@ -3008,6 +3092,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876968</value>
     </row>
     <row>
@@ -3020,6 +3105,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876968</value>
     </row>
     <row>
@@ -3032,6 +3118,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876969</value>
     </row>
     <row>
@@ -3044,6 +3131,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876969</value>
     </row>
     <row>
@@ -3056,6 +3144,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876969</value>
     </row>
     <row>
@@ -3068,6 +3157,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876969</value>
     </row>
     <row>
@@ -3080,6 +3170,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876970</value>
     </row>
     <row>
@@ -3092,6 +3183,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876970</value>
     </row>
     <row>
@@ -3104,6 +3196,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876970</value>
     </row>
     <row>
@@ -3116,6 +3209,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876970</value>
     </row>
     <row>
@@ -3128,6 +3222,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876971</value>
     </row>
     <row>
@@ -3140,6 +3235,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876971</value>
     </row>
     <row>
@@ -3152,6 +3248,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876971</value>
     </row>
     <row>
@@ -3164,6 +3261,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876971</value>
     </row>
     <row>
@@ -3176,6 +3274,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876972</value>
     </row>
     <row>
@@ -3188,6 +3287,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876972</value>
     </row>
     <row>
@@ -3200,6 +3300,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876972</value>
     </row>
     <row>
@@ -3212,6 +3313,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876972</value>
     </row>
     <row>
@@ -3224,6 +3326,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876973</value>
     </row>
     <row>
@@ -3236,6 +3339,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876973</value>
     </row>
     <row>
@@ -3248,6 +3352,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876973</value>
     </row>
     <row>
@@ -3260,6 +3365,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876973</value>
     </row>
     <row>
@@ -3272,6 +3378,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876974</value>
     </row>
     <row>
@@ -3284,6 +3391,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876974</value>
     </row>
     <row>
@@ -3296,6 +3404,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876974</value>
     </row>
     <row>
@@ -3308,6 +3417,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876974</value>
     </row>
     <row>
@@ -3320,6 +3430,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
+      <value>0</value>
       <value>19876974</value>
     </row>
     <row>
@@ -3332,6 +3443,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876975</value>
     </row>
     <row>
@@ -3344,6 +3456,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876975</value>
     </row>
     <row>
@@ -3356,6 +3469,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876975</value>
     </row>
     <row>
@@ -3368,6 +3482,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876975</value>
     </row>
     <row>
@@ -3380,6 +3495,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876976</value>
     </row>
     <row>
@@ -3392,6 +3508,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876976</value>
     </row>
     <row>
@@ -3404,6 +3521,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876976</value>
     </row>
     <row>
@@ -3416,6 +3534,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
+      <value>0</value>
       <value>19876976</value>
     </row>
     <row>
@@ -3428,6 +3547,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876976</value>
     </row>
     <row>
@@ -3440,6 +3560,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>19876977</value>
     </row>
     <row>
@@ -3452,6 +3573,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>19876977</value>
     </row>
     <row>
@@ -3464,6 +3586,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Déclaration complète]]></value>
       <value>210</value>
+      <value>1</value>
       <value>19876977</value>
     </row>
     <row>
@@ -3476,6 +3599,7 @@
       <value>schema-3.4</value>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>19876977</value>
     </row>
   </table>

@@ -754,6 +754,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		feuille.setNoCADEV(modele.getNoCADEV());
 		feuille.setNoFormulaireACI(modele.getNoFormulaireACI());
 		feuille.setIntituleFeuille(modele.getDescription());
+		feuille.setPrincipal(modele.isPrincipal());
 		feuille.setModeleDocument(modeleDoc);
 		feuille = merge(feuille);
 		return feuille;

@@ -442,6 +442,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		mfd.setNoCADEV(modeleFeuille.getNoCADEV());
 		mfd.setNoFormulaireACI(modeleFeuille.getNoFormulaireACI());
 		mfd.setIntituleFeuille(modeleFeuille.getDescription());
+		mfd.setPrincipal(modeleFeuille.isPrincipal());
 		md.addModeleFeuilleDocument(mfd);
 	}
 

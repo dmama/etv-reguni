@@ -8,6 +8,7 @@ public class ModeleFeuilleDocumentEditique {
 	private int nombreFeuilles;
 	private int noCADEV;
 	private Integer noFormulaireACI;
+	private boolean principal;
 
 	public ModeleFeuilleDocumentEditique() {
 	}
@@ -16,6 +17,7 @@ public class ModeleFeuilleDocumentEditique {
 		this.intituleFeuille = modele.getIntituleFeuille();
 		this.noCADEV = modele.getNoCADEV();
 		this.noFormulaireACI = modele.getNoFormulaireACI();
+		this.principal = modele.isPrincipal();
 		this.nombreFeuilles = nombreFeuilles;
 	}
 
@@ -49,5 +51,13 @@ public class ModeleFeuilleDocumentEditique {
 
 	public void setNoFormulaireACI(Integer noFormulaireACI) {
 		this.noFormulaireACI = noFormulaireACI;
+	}
+
+	public boolean isPrincipal() {
+		return principal;
+	}
+
+	public void setPrincipal(boolean principal) {
+		this.principal = principal;
 	}
 }

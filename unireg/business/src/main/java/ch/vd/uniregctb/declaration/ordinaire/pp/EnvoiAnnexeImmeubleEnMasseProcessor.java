@@ -75,6 +75,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			modeleAnnexeImmeuble.setIntituleFeuille(ModeleFeuille.ANNEXE_320.getDescription());
 			modeleAnnexeImmeuble.setNoCADEV(ModeleFeuille.ANNEXE_320.getNoCADEV());
 			modeleAnnexeImmeuble.setNoFormulaireACI(ModeleFeuille.ANNEXE_320.getNoFormulaireACI());
+			modeleAnnexeImmeuble.setPrincipal(ModeleFeuille.ANNEXE_320.isPrincipal());
 
 			setAnnexeImmeuble = new HashSet<>();
 			setAnnexeImmeuble.add(modeleAnnexeImmeuble);

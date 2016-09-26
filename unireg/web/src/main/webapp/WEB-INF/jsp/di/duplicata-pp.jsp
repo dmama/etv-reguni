@@ -37,12 +37,17 @@
                         <c:forEach items="${modele.modelesFeuilles}" var="feuille" varStatus="statusFeuille">
                             <tr class="odd">
                                 <td width="10%">&nbsp;</td>
-                                <td width="45%">${feuille.intituleFeuille}&nbsp;:</td>
+                                <td width="45%"><c:out value="${feuille.intituleFeuille}"/>&nbsp;:</td>
                                 <td width="45%" style="padding-bottom:4px">
                                     <form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nombreFeuilles"
                                                 cssClass="document-type-${modele.typeDocument}" size="2" maxlength="1"/>
                                     <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].intituleFeuille"/>
                                     <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].noCADEV"/>
+                                    <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].noFormulaireACI"/>
+                                    <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].principal"/>
+                                    <c:if test="${feuille.principal && fn:length(modele.modelesFeuilles) > 1}">
+                                        <span class="info_icon" style="margin-left: 1em;" title="Feuillet principal"></span>
+                                    </c:if>
                                 </td>
                             </tr>
                         </c:forEach>

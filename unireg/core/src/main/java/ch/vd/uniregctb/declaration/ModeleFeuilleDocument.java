@@ -28,6 +28,23 @@ public class ModeleFeuilleDocument extends HibernateEntity {
 	 */
 	private Integer index;
 
+	/**
+	 * Booléen qui indique si la feuille est la feuille principale d'un groupe
+	 */
+	private boolean principal;
+
+	public ModeleFeuilleDocument() {
+	}
+
+	public ModeleFeuilleDocument(ModeleFeuilleDocument source, ModeleDocument modeleDoc) {
+		this.intituleFeuille = source.intituleFeuille;
+		this.modeleDocument = modeleDoc;
+		this.noCADEV = source.noCADEV;
+		this.noFormulaireACI = source.noFormulaireACI;
+		this.index = source.index;
+		this.principal = source.principal;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -88,5 +105,14 @@ public class ModeleFeuilleDocument extends HibernateEntity {
 
 	public void setIndex(Integer index) {
 		this.index = index;
+	}
+
+	@Column(name = "PRINCIPAL")
+	public boolean isPrincipal() {
+		return principal;
+	}
+
+	public void setPrincipal(boolean principal) {
+		this.principal = principal;
 	}
 }

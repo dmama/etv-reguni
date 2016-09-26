@@ -9399,6 +9399,7 @@
     <column>SORT_INDEX</column>
     <column>INTITULE_FEUILLE</column>
     <column>NO_CADEV</column>
+    <column>PRINCIPAL</column>
     <column>MODELE_ID</column>
     <row>
       <value>1</value>
@@ -9412,6 +9413,7 @@
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
       <value>1</value>
+      <value>1</value>
     </row>
     <row>
       <value>2</value>
@@ -9424,6 +9426,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>1</value>
     </row>
     <row>
@@ -9437,6 +9440,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>1</value>
     </row>
     <row>
@@ -9450,6 +9454,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>1</value>
     </row>
     <row>
@@ -9463,6 +9468,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>2</value>
     </row>
     <row>
@@ -9476,6 +9482,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>3</value>
     </row>
     <row>
@@ -9489,6 +9496,7 @@
       <null/>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>3</value>
     </row>
     <row>
@@ -9502,6 +9510,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
+      <value>1</value>
       <value>4</value>
     </row>
     <row>
@@ -9515,6 +9524,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>5</value>
     </row>
     <row>
@@ -9528,6 +9538,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>5</value>
     </row>
     <row>
@@ -9541,6 +9552,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>5</value>
     </row>
     <row>
@@ -9554,6 +9566,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>5</value>
     </row>
     <row>
@@ -9567,6 +9580,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>6</value>
     </row>
     <row>
@@ -9580,6 +9594,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>7</value>
     </row>
     <row>
@@ -9593,6 +9608,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>7</value>
     </row>
     <row>
@@ -9606,6 +9622,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>7</value>
     </row>
     <row>
@@ -9619,6 +9636,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>7</value>
     </row>
     <row>
@@ -9632,6 +9650,7 @@
       <null/>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>7</value>
     </row>
     <row>
@@ -9645,6 +9664,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
+      <value>1</value>
       <value>8</value>
     </row>
     <row>
@@ -9658,6 +9678,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>9</value>
     </row>
     <row>
@@ -9671,6 +9692,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>9</value>
     </row>
     <row>
@@ -9684,6 +9706,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>9</value>
     </row>
     <row>
@@ -9697,6 +9720,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>9</value>
     </row>
     <row>
@@ -9710,6 +9734,7 @@
       <null/>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
+      <value>0</value>
       <value>9</value>
     </row>
     <row>
@@ -9723,6 +9748,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>10</value>
     </row>
     <row>
@@ -9736,6 +9762,7 @@
       <null/>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>11</value>
     </row>
     <row>
@@ -9749,6 +9776,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
+      <value>1</value>
       <value>12</value>
     </row>
     <row>
@@ -9762,6 +9790,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>37888053</value>
     </row>
     <row>
@@ -9775,6 +9804,7 @@
       <null/>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>37888055</value>
     </row>
     <row>
@@ -9788,6 +9818,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>37888058</value>
     </row>
     <row>
@@ -9801,6 +9832,7 @@
       <null/>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
+      <value>0</value>
       <value>37888058</value>
     </row>
     <row>
@@ -9814,6 +9846,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>37888058</value>
     </row>
     <row>
@@ -9827,6 +9860,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>37888058</value>
     </row>
     <row>
@@ -9840,6 +9874,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>37888058</value>
     </row>
     <row>
@@ -9853,6 +9888,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
+      <value>1</value>
       <value>37888064</value>
     </row>
     <row>
@@ -9866,6 +9902,7 @@
       <null/>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>37888072</value>
     </row>
     <row>
@@ -9879,6 +9916,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>37888074</value>
     </row>
     <row>
@@ -9892,6 +9930,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>37888074</value>
     </row>
     <row>
@@ -9905,6 +9944,7 @@
       <null/>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
+      <value>0</value>
       <value>37888074</value>
     </row>
     <row>
@@ -9918,6 +9958,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>37888074</value>
     </row>
     <row>
@@ -9931,6 +9972,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>37888074</value>
     </row>
     <row>
@@ -9944,6 +9986,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
+      <value>1</value>
       <value>37888081</value>
     </row>
     <row>
@@ -9957,6 +10000,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>37888083</value>
     </row>
     <row>
@@ -9970,6 +10014,7 @@
       <null/>
       <value><![CDATA[Annexe 4 et 5]]></value>
       <value>240</value>
+      <value>0</value>
       <value>37888091</value>
     </row>
     <row>
@@ -9983,6 +10028,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot standard]]></value>
       <value>210</value>
+      <value>1</value>
       <value>37888091</value>
     </row>
     <row>
@@ -9996,6 +10042,7 @@
       <null/>
       <value><![CDATA[Annexe 2 et 3]]></value>
       <value>230</value>
+      <value>0</value>
       <value>37888091</value>
     </row>
     <row>
@@ -10009,6 +10056,7 @@
       <null/>
       <value><![CDATA[Annexe 1]]></value>
       <value>220</value>
+      <value>0</value>
       <value>37888091</value>
     </row>
     <row>
@@ -10022,6 +10070,7 @@
       <null/>
       <value><![CDATA[Annexe 1-1]]></value>
       <value>310</value>
+      <value>0</value>
       <value>37888091</value>
     </row>
     <row>
@@ -10035,6 +10084,7 @@
       <null/>
       <value><![CDATA[Annexe dépense]]></value>
       <value>270</value>
+      <value>1</value>
       <value>37888098</value>
     </row>
     <row>
@@ -10048,6 +10098,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot vaud tax]]></value>
       <value>250</value>
+      <value>1</value>
       <value>37888100</value>
     </row>
     <row>
@@ -10061,6 +10112,7 @@
       <null/>
       <value><![CDATA[Déclaration d'impot HC]]></value>
       <value>200</value>
+      <value>1</value>
       <value>37888102</value>
     </row>
   </table>

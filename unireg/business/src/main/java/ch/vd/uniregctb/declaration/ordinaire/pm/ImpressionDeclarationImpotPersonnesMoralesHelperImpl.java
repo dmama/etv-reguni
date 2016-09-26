@@ -138,16 +138,17 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	@Override
 	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		try {
+			final boolean hasFeuilletPrincipal = hasFeuilletPrincipal(annexes);;
 			final FichierImpression.Document document = new FichierImpression.Document();
 			if (GroupeTypesDocumentBatchLocal.DI_PM.hasType(declaration.getTypeDeclaration())) {
 				final CTypeDeclarationImpotPM dipm = new CTypeDeclarationImpotPM();
-				fillDocumentDI(dipm, declaration);
+				fillDocumentDI(dipm, declaration, hasFeuilletPrincipal);
 				fillAnnexesDIPM(dipm, declaration, annexes);
 				document.setDeclarationImpot(dipm);
 			}
 			else if (GroupeTypesDocumentBatchLocal.DI_APM.hasType(declaration.getTypeDeclaration())) {
 				final CTypeDeclarationImpotAPM diapm = new CTypeDeclarationImpotAPM();
-				fillDocumentDI(diapm, declaration);
+				fillDocumentDI(diapm, declaration, hasFeuilletPrincipal);
 				fillAnnexesDIAPM(diapm, declaration, annexes);
 				document.setDeclarationImpotAPM(diapm);
 			}
@@ -165,6 +166,18 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
+	}
+
+	private static boolean hasFeuilletPrincipal(List<ModeleFeuilleDocumentEditique> annexes) {
+		if (annexes == null || annexes.isEmpty()) {
+			return false;
+		}
+		for (ModeleFeuilleDocumentEditique feuille : annexes) {
+			if (feuille.isPrincipal() && feuille.getNombreFeuilles() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void fillAnnexesDIPM(CTypeDeclarationImpotPM document, DeclarationImpotOrdinairePM di, List<ModeleFeuilleDocumentEditique> annexes) throws AdresseException, DonneesCivilesException, EditiqueException {
@@ -295,7 +308,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		return new CTypeAdresse(Collections.singletonList(tiersService.getDerniereRaisonSociale(entreprise)));
 	}
 
-	private void fillDocumentDI(CTypeDeclarationImpot di, DeclarationImpotOrdinairePM declaration) throws AdresseException, DonneesCivilesException, EditiqueException {
+	private void fillDocumentDI(CTypeDeclarationImpot di, DeclarationImpotOrdinairePM declaration, boolean hasFeuilletPrincipal) throws AdresseException, DonneesCivilesException, EditiqueException {
 		final Entreprise pm = (Entreprise) declaration.getTiers();
 
 		remplirSiegeEtAdministrationEffective(di, pm, declaration.getDateFin());
@@ -306,7 +319,10 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 
 		if (declaration.getCodeSegment() != null) {
 			final int codeSegment = declaration.getCodeSegment();
-			di.setCodeFlyer(Integer.toString(codeSegment));     // aujourd'hui, c'est la même valeur
+			if (hasFeuilletPrincipal) {
+				// [SIFISC-19244] on ne met pas de code flyer si la fourre principale de la déclaration n'est pas dans les annexes imprimées
+				di.setCodeFlyer(Integer.toString(codeSegment));     // aujourd'hui, c'est la même valeur que le code segment
+			}
 			di.setCodeRoutage(buildCodeRoutage(codeSegment));
 		}
 

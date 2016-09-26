@@ -580,6 +580,7 @@ public class TestData {
 		mfd0.setLogModifDate(new Timestamp(1199142000000L));
 		mfd0.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
 		mfd0.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
+		mfd0.setPrincipal(ModeleFeuille.ANNEXE_210.isPrincipal());
 		md0.addModeleFeuilleDocument(mfd0);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -589,6 +590,7 @@ public class TestData {
 		mfd1.setLogModifDate(new Timestamp(1199142000000L));
 		mfd1.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
 		mfd1.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
+		mfd1.setPrincipal(ModeleFeuille.ANNEXE_220.isPrincipal());
 		md0.addModeleFeuilleDocument(mfd1);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -598,6 +600,7 @@ public class TestData {
 		mfd2.setLogModifDate(new Timestamp(1199142000000L));
 		mfd2.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
 		mfd2.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
+		mfd2.setPrincipal(ModeleFeuille.ANNEXE_230.isPrincipal());
 		md0.addModeleFeuilleDocument(mfd2);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -607,6 +610,7 @@ public class TestData {
 		mfd3.setLogModifDate(new Timestamp(1199142000000L));
 		mfd3.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
 		mfd3.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
+		mfd3.setPrincipal(ModeleFeuille.ANNEXE_240.isPrincipal());
 		md0.addModeleFeuilleDocument(mfd3);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -616,6 +620,7 @@ public class TestData {
 		mfd4.setLogModifDate(new Timestamp(1199142000000L));
 		mfd4.setNoCADEV(ModeleFeuille.ANNEXE_250.getNoCADEV());
 		mfd4.setNoFormulaireACI(ModeleFeuille.ANNEXE_250.getNoFormulaireACI());
+		mfd4.setPrincipal(ModeleFeuille.ANNEXE_250.isPrincipal());
 		md2.addModeleFeuilleDocument(mfd4);
 		md2 = hibernateTemplate.merge(md2);
 
@@ -625,6 +630,7 @@ public class TestData {
 		mfd5.setLogModifDate(new Timestamp(1199142000000L));
 		mfd5.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
 		mfd5.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
+		mfd5.setPrincipal(ModeleFeuille.ANNEXE_210.isPrincipal());
 		md3.addModeleFeuilleDocument(mfd5);
 		md3 = hibernateTemplate.merge(md3);
 
@@ -634,6 +640,7 @@ public class TestData {
 		mfd6.setLogModifDate(new Timestamp(1199142000000L));
 		mfd6.setNoCADEV(ModeleFeuille.ANNEXE_270.getNoCADEV());
 		mfd6.setNoFormulaireACI(ModeleFeuille.ANNEXE_270.getNoFormulaireACI());
+		mfd6.setPrincipal(ModeleFeuille.ANNEXE_270.isPrincipal());
 		md3.addModeleFeuilleDocument(mfd6);
 		md3 = hibernateTemplate.merge(md3);
 
@@ -643,6 +650,7 @@ public class TestData {
 		mfd7.setLogModifDate(new Timestamp(1199142000000L));
 		mfd7.setNoCADEV(ModeleFeuille.ANNEXE_200.getNoCADEV());
 		mfd7.setNoFormulaireACI(ModeleFeuille.ANNEXE_200.getNoFormulaireACI());
+		mfd7.setPrincipal(ModeleFeuille.ANNEXE_200.isPrincipal());
 		md4.addModeleFeuilleDocument(mfd7);
 		md4 = hibernateTemplate.merge(md4);
 
@@ -652,6 +660,7 @@ public class TestData {
 		mfd8.setLogModifDate(new Timestamp(1199142000000L));
 		mfd8.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
 		mfd8.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
+		mfd8.setPrincipal(ModeleFeuille.ANNEXE_210.isPrincipal());
 		md5.addModeleFeuilleDocument(mfd8);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -661,6 +670,7 @@ public class TestData {
 		mfd9.setLogModifDate(new Timestamp(1199142000000L));
 		mfd9.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
 		mfd9.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
+		mfd9.setPrincipal(ModeleFeuille.ANNEXE_220.isPrincipal());
 		md5.addModeleFeuilleDocument(mfd9);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -670,6 +680,7 @@ public class TestData {
 		mfd10.setLogModifDate(new Timestamp(1199142000000L));
 		mfd10.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
 		mfd10.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
+		mfd10.setPrincipal(ModeleFeuille.ANNEXE_230.isPrincipal());
 		md5.addModeleFeuilleDocument(mfd10);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -679,6 +690,7 @@ public class TestData {
 		mfd11.setLogModifDate(new Timestamp(1199142000000L));
 		mfd11.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
 		mfd11.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
+		mfd11.setPrincipal(ModeleFeuille.ANNEXE_240.isPrincipal());
 		md5.addModeleFeuilleDocument(mfd11);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -688,6 +700,7 @@ public class TestData {
 		mfd12.setLogModifDate(new Timestamp(1199142000000L));
 		mfd12.setNoCADEV(ModeleFeuille.ANNEXE_250.getNoCADEV());
 		mfd12.setNoFormulaireACI(ModeleFeuille.ANNEXE_250.getNoFormulaireACI());
+		mfd12.setPrincipal(ModeleFeuille.ANNEXE_250.isPrincipal());
 		md7.addModeleFeuilleDocument(mfd12);
 		md7 = hibernateTemplate.merge(md7);
 
@@ -697,6 +710,7 @@ public class TestData {
 		mfd13.setLogModifDate(new Timestamp(1199142000000L));
 		mfd13.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
 		mfd13.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
+		mfd13.setPrincipal(ModeleFeuille.ANNEXE_210.isPrincipal());
 		md8.addModeleFeuilleDocument(mfd13);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -706,6 +720,7 @@ public class TestData {
 		mfd14.setLogModifDate(new Timestamp(1199142000000L));
 		mfd14.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
 		mfd14.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
+		mfd14.setPrincipal(ModeleFeuille.ANNEXE_220.isPrincipal());
 		md8.addModeleFeuilleDocument(mfd14);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -715,6 +730,7 @@ public class TestData {
 		mfd15.setLogModifDate(new Timestamp(1199142000000L));
 		mfd15.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
 		mfd15.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
+		mfd15.setPrincipal(ModeleFeuille.ANNEXE_230.isPrincipal());
 		md8.addModeleFeuilleDocument(mfd15);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -724,6 +740,7 @@ public class TestData {
 		mfd16.setLogModifDate(new Timestamp(1199142000000L));
 		mfd16.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
 		mfd16.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
+		mfd16.setPrincipal(ModeleFeuille.ANNEXE_240.isPrincipal());
 		md8.addModeleFeuilleDocument(mfd16);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -733,6 +750,7 @@ public class TestData {
 		mfd17.setLogModifDate(new Timestamp(1199142000000L));
 		mfd17.setNoCADEV(ModeleFeuille.ANNEXE_270.getNoCADEV());
 		mfd17.setNoFormulaireACI(ModeleFeuille.ANNEXE_270.getNoFormulaireACI());
+		mfd17.setPrincipal(ModeleFeuille.ANNEXE_270.isPrincipal());
 		md8.addModeleFeuilleDocument(mfd17);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -742,6 +760,7 @@ public class TestData {
 		mfd18.setLogModifDate(new Timestamp(1199142000000L));
 		mfd18.setNoCADEV(ModeleFeuille.ANNEXE_200.getNoCADEV());
 		mfd18.setNoFormulaireACI(ModeleFeuille.ANNEXE_200.getNoFormulaireACI());
+		mfd18.setPrincipal(ModeleFeuille.ANNEXE_200.isPrincipal());
 		md9.addModeleFeuilleDocument(mfd18);
 		md9 = hibernateTemplate.merge(md9);
 
@@ -751,6 +770,7 @@ public class TestData {
 		mfd19.setLogModifDate(new Timestamp(1199142000000L));
 		mfd19.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
 		mfd19.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
+		mfd19.setPrincipal(ModeleFeuille.ANNEXE_210.isPrincipal());
 		md10.addModeleFeuilleDocument(mfd19);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -760,6 +780,7 @@ public class TestData {
 		mfd20.setLogModifDate(new Timestamp(1199142000000L));
 		mfd20.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
 		mfd20.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
+		mfd20.setPrincipal(ModeleFeuille.ANNEXE_220.isPrincipal());
 		md10.addModeleFeuilleDocument(mfd20);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -769,6 +790,7 @@ public class TestData {
 		mfd21.setLogModifDate(new Timestamp(1199142000000L));
 		mfd21.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
 		mfd21.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
+		mfd21.setPrincipal(ModeleFeuille.ANNEXE_230.isPrincipal());
 		md10.addModeleFeuilleDocument(mfd21);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -778,6 +800,7 @@ public class TestData {
 		mfd22.setLogModifDate(new Timestamp(1199142000000L));
 		mfd22.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
 		mfd22.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
+		mfd22.setPrincipal(ModeleFeuille.ANNEXE_240.isPrincipal());
 		md10.addModeleFeuilleDocument(mfd22);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -787,6 +810,7 @@ public class TestData {
 		mfd23.setLogModifDate(new Timestamp(1199142000000L));
 		mfd23.setNoCADEV(ModeleFeuille.ANNEXE_310.getNoCADEV());
 		mfd23.setNoFormulaireACI(ModeleFeuille.ANNEXE_310.getNoFormulaireACI());
+		mfd23.setPrincipal(ModeleFeuille.ANNEXE_310.isPrincipal());
 		md10.addModeleFeuilleDocument(mfd23);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -796,6 +820,7 @@ public class TestData {
 		mfd24.setLogModifDate(new Timestamp(1199142000000L));
 		mfd24.setNoCADEV(ModeleFeuille.ANNEXE_250.getNoCADEV());
 		mfd24.setNoFormulaireACI(ModeleFeuille.ANNEXE_250.getNoFormulaireACI());
+		mfd24.setPrincipal(ModeleFeuille.ANNEXE_250.isPrincipal());
 		md12.addModeleFeuilleDocument(mfd24);
 		md12 = hibernateTemplate.merge(md12);
 
@@ -805,6 +830,7 @@ public class TestData {
 		mfd25.setLogModifDate(new Timestamp(1199142000000L));
 		mfd25.setNoCADEV(ModeleFeuille.ANNEXE_270.getNoCADEV());
 		mfd25.setNoFormulaireACI(ModeleFeuille.ANNEXE_270.getNoFormulaireACI());
+		mfd25.setPrincipal(ModeleFeuille.ANNEXE_270.isPrincipal());
 		md13.addModeleFeuilleDocument(mfd25);
 		md13 = hibernateTemplate.merge(md13);
 
@@ -814,6 +840,7 @@ public class TestData {
 		mfd26.setLogModifDate(new Timestamp(1199142000000L));
 		mfd26.setNoCADEV(ModeleFeuille.ANNEXE_200.getNoCADEV());
 		mfd26.setNoFormulaireACI(ModeleFeuille.ANNEXE_200.getNoFormulaireACI());
+		mfd26.setPrincipal(ModeleFeuille.ANNEXE_200.isPrincipal());
 		md14.addModeleFeuilleDocument(mfd26);
 		md14 = hibernateTemplate.merge(md14);
 

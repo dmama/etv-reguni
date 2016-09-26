@@ -417,7 +417,12 @@
 										<td class="colonneFeuille">${periodeSelectionnee.annee}</td>
 										<td class="colonneFeuille">${feuille.noCADEV}</td>
 										<td class="colonneFeuille">${feuille.noFormulaireACI}</td>
-										<td class="colonneFeuille">${feuille.intituleFeuille}</td>
+										<td class="colonneFeuille">
+											<c:out value="${feuille.intituleFeuille}"/>
+											<c:if test="${feuille.principal}">
+												<span class="info_icon" style="margin-left: 1em;" title="Feuillet principal"></span>
+											</c:if>
+										</td>
 										<td class="colonneFeuille">
 											<c:if test="${not empty error_feuille[feuille.id]}">
 												<span class="error">${error_feuille[feuille.id]}</span>

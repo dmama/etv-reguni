@@ -118,11 +118,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 			// Copie des modeles de feuille de document
 			final Set<ModeleFeuilleDocument> setModeleFeuilleDocument = new HashSet<>(md.getModelesFeuilleDocument().size());
 			for(ModeleFeuilleDocument mfd : md.getModelesFeuilleDocument()) {
-				final ModeleFeuilleDocument newMfd = new ModeleFeuilleDocument();
-				newMfd.setModeleDocument(newMd);
-				newMfd.setIntituleFeuille(mfd.getIntituleFeuille());
-				newMfd.setNoCADEV(mfd.getNoCADEV());
-				newMfd.setNoFormulaireACI(mfd.getNoFormulaireACI());
+				final ModeleFeuilleDocument newMfd = new ModeleFeuilleDocument(mfd, newMd);
 				setModeleFeuilleDocument.add(newMfd);
 			}
 			newMd.setModelesFeuilleDocument(setModeleFeuilleDocument);
