@@ -45,10 +45,6 @@ public class TicketServiceImpl implements TicketService {
 	 */
 	private final Map<Long, Object> tickets = new HashMap<>();
 
-	private static long getCurrentTimeMillis() {
-		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
-	}
-
 	@NotNull
 	@Override
 	public Ticket getTicket(Object key, long timeout) throws TicketTimeoutException, InterruptedException {
@@ -56,13 +52,21 @@ public class TicketServiceImpl implements TicketService {
 			throw new NullPointerException("key");
 		}
 
-		final long start = getCurrentTimeMillis();
+		final long timeoutNano = TimeUnit.MILLISECONDS.toNanos(timeout);
+		final long start = System.nanoTime();
+
 		synchronized (heldKeys) {
 			while (heldKeys.contains(key)) {
 				// attendons le temps qu'on peut pour voir si la ressource se libère
-				final long now = getCurrentTimeMillis();
-				if (timeout == 0 || timeout - (now - start) > 0) {
-					heldKeys.wait(timeout == 0 ? 0 : timeout - (now - start));
+				final long now = System.nanoTime();
+				if (timeout == 0) {
+					heldKeys.wait(timeout);
+				}
+				else if (timeoutNano - (now - start) > 0) {
+					// conversion nano-secondes -> millisecondes. Attention ! On perd en précision et on risque de tomber sur un résultat
+					// de 0 ms qui veut dire 'attente infinie' : on s'assure donc que l'attente minimale soit de 1 ms au minimum.
+					final long waitMillis = Math.max(TimeUnit.NANOSECONDS.toMillis(timeoutNano - (now - start)), 1);
+					heldKeys.wait(waitMillis);
 				}
 				else {
 					// trop tard...
