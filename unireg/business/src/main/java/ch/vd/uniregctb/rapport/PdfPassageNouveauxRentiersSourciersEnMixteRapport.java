@@ -97,12 +97,14 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Traite>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("NO_CTB");
+				b.append("NO_CTB").append(COMMA);
+				b.append("DATE_OUVERTURE");
 			}
 
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, PassageNouveauxRentiersSourciersEnMixteResults.Traite elt) {
-				b.append(elt.noCtb);
+				b.append(elt.noCtb).append(COMMA);
+				b.append(elt.dateOuverture);
 				return true;
 			}
 		});

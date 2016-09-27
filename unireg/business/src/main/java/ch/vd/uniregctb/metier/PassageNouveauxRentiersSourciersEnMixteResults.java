@@ -31,7 +31,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -43,12 +43,14 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	public static class Traite {
 
 		public final Long noCtb;
+		public final RegDate dateOuverture;
 
-		public Traite(long noCtb) {
+		public Traite(long noCtb, RegDate dateOuverture) {
 			this.noCtb = noCtb;
+			this.dateOuverture = dateOuverture;
 		}
-
 	}
+
 	public static class Erreur {
 
 		public final Long noCtb;
@@ -125,7 +127,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 		}
 	}
 
-	public void addSourcierConverti(Long numeroSourcier) {
-		sourciersConvertis.add(new Traite(numeroSourcier));
+	public void addSourcierConverti(Long numeroSourcier, RegDate dateOuvertureFor) {
+		sourciersConvertis.add(new Traite(numeroSourcier, dateOuvertureFor));
 	}
 }

@@ -276,7 +276,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		tiersService.openForFiscalPrincipal(contribuable, dateRentier, dernierForFiscalPrincipal.getMotifRattachement(), dernierForFiscalPrincipal.getNumeroOfsAutoriteFiscale(),
 				dernierForFiscalPrincipal.getTypeAutoriteFiscale(), ModeImposition.MIXTE_137_1, MotifFor.CHGT_MODE_IMPOSITION);
 		LOGGER.info("ouverture du for mixte pour le contribuable [" + contribuable.getNumero() +"]");
-		r.addSourcierConverti(contribuable.getNumero());
+		r.addSourcierConverti(contribuable.getNumero(), dateRentier);
 
 		// [SIFISC-8177] flag pour ne pas y revenir
 		sourcier.setRentierSourcierPasseAuRole(Boolean.TRUE);

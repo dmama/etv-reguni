@@ -274,6 +274,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 			final PassageNouveauxRentiersSourciersEnMixteResults.Traite converti = res.sourciersConvertis.get(0);
 			Assert.assertNotNull(converti);
 			Assert.assertEquals((Long) ppId, converti.noCtb);
+			Assert.assertEquals(dateNaissance.addYears(getAgeRentierFemme(paramAppService)), converti.dateOuverture);
 
 			// vérification des fors
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
