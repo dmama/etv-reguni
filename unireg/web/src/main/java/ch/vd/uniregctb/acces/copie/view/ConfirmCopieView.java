@@ -13,6 +13,8 @@ public class ConfirmCopieView {
 
 	private List<DroitAccesUtilisateurView> droitsAccesView;
 
+	private int size;
+
 	public UtilisateurView getUtilisateurReferenceView() {
 		return utilisateurReferenceView;
 	}
@@ -35,5 +37,13 @@ public class ConfirmCopieView {
 
 	public void setDroitsAccesView(List<DroitAccesUtilisateurView> droitsAccesView) {
 		this.droitsAccesView = droitsAccesView;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
 	}
 }

@@ -16,6 +16,7 @@ public class BaseDroitAccesDossierView {
 	private final String prenomNom;
 	private final String localite;
 	private final RegDate dateNaissance;
+	private final String erreur;
 
 	public BaseDroitAccesDossierView(Contribuable ctb, TiersService tiersService, AdresseService adresseService) throws AdresseException {
 		this.numeroCTB = ctb.getNumero();
@@ -38,6 +39,16 @@ public class BaseDroitAccesDossierView {
 		else {
 			this.dateNaissance = null;
 		}
+
+		this.erreur = null;
+	}
+
+	public BaseDroitAccesDossierView(Contribuable ctb, Exception e) {
+		this.numeroCTB = ctb.getNumero();
+		this.prenomNom = null;
+		this.localite = null;
+		this.dateNaissance = null;
+		this.erreur = e.getMessage();
 	}
 
 	public Long getNumeroCTB() {
@@ -54,5 +65,9 @@ public class BaseDroitAccesDossierView {
 
 	public RegDate getDateNaissance() {
 		return dateNaissance;
+	}
+
+	public String getErreur() {
+		return erreur;
 	}
 }

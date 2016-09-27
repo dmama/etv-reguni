@@ -34,39 +34,54 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
-		final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationHistory(noOrganisation);
-		if (received == null) {
-			return null;
+		try {
+			final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationHistory(noOrganisation);
+			if (received == null) {
+				return null;
+			}
+			sanityCheck(noOrganisation, received.getCantonalId());
+			return RCEntOrganisationHelper.get(received, infraService);
 		}
-		sanityCheck(noOrganisation, received.getCantonalId());
-		return RCEntOrganisationHelper.get(received, infraService);
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
+		}
 	}
 
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getLocation(noSite);
-		if (received == null) {
-			return null;
+		try {
+			final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getLocation(noSite);
+			if (received == null) {
+				return null;
+			}
+			return received.getCantonalId();
 		}
-		return received.getCantonalId();
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
+		}
 	}
 
 	@Override
 	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
-		final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationByNoIde(noide, null);
-		if (received == null) {
-			return null;
-		}
+		try {
+			final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationByNoIde(noide, null);
+			if (received == null) {
+				return null;
+			}
 
-		for (ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation location : received.getLocationData()) {
-			final List<DateRangeHelper.Ranged<String>> candidatsIde = location.getIdentifiers().get(OrganisationConstants.CLE_IDE);
-			if (candidatsIde != null) {
-				for (DateRangeHelper.Ranged<String> candidatIde : candidatsIde) {
-					if (noide != null && noide.equals(candidatIde.getPayload())) {
-						return new Identifiers(received.getCantonalId(), location.getCantonalId());
+			for (ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation location : received.getLocationData()) {
+				final List<DateRangeHelper.Ranged<String>> candidatsIde = location.getIdentifiers().get(OrganisationConstants.CLE_IDE);
+				if (candidatsIde != null) {
+					for (DateRangeHelper.Ranged<String> candidatIde : candidatsIde) {
+						if (noide != null && noide.equals(candidatIde.getPayload())) {
+							return new Identifiers(received.getCantonalId(), location.getCantonalId());
+						}
 					}
 				}
 			}
+		}
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
 		}
 
 		// super bizarre... on nous renvoie des données mais ces données ne contiennent pas l'information recherchée...
@@ -76,27 +91,32 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
-		final Map<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> received = adapter.getOrganisationEvent(noEvenement);
-		if (received == null || received.isEmpty()) {
-			return Collections.emptyMap();
-		}
-		final Map<Long, ServiceOrganisationEvent> result = new HashMap<>(received.size());
-		for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> orgEntry : received.entrySet()) {
-			final OrganisationEvent organisationEvent = orgEntry.getValue();
-			final ServiceOrganisationEvent serviceOrganisationEvent = new ServiceOrganisationEvent(
-					organisationEvent.getEventNumber(),
-			        organisationEvent.getTargetLocationId(),
-					RCEntOrganisationHelper.get(organisationEvent.getPseudoHistory(), infraService)
-			);
-			serviceOrganisationEvent.setNumeroEntreeJournalRC(organisationEvent.getCommercialRegisterEntryNumber());
-			serviceOrganisationEvent.setDateEntreeJournalRC(organisationEvent.getCommercialRegisterEntryDate());
-			if (!StringUtils.isEmpty(organisationEvent.getDocumentNumberFOSC())) {
-				serviceOrganisationEvent.setNumeroDocumentFOSC(Long.parseLong(organisationEvent.getDocumentNumberFOSC()));
+		try {
+			final Map<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> received = adapter.getOrganisationEvent(noEvenement);
+			if (received == null || received.isEmpty()) {
+				return Collections.emptyMap();
 			}
-			serviceOrganisationEvent.setDatePublicationFOSC(organisationEvent.getPublicationDateFOSC());
-			result.put(orgEntry.getKey(), serviceOrganisationEvent);
+			final Map<Long, ServiceOrganisationEvent> result = new HashMap<>(received.size());
+			for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> orgEntry : received.entrySet()) {
+				final OrganisationEvent organisationEvent = orgEntry.getValue();
+				final ServiceOrganisationEvent serviceOrganisationEvent = new ServiceOrganisationEvent(
+						organisationEvent.getEventNumber(),
+						organisationEvent.getTargetLocationId(),
+						RCEntOrganisationHelper.get(organisationEvent.getPseudoHistory(), infraService)
+				);
+				serviceOrganisationEvent.setNumeroEntreeJournalRC(organisationEvent.getCommercialRegisterEntryNumber());
+				serviceOrganisationEvent.setDateEntreeJournalRC(organisationEvent.getCommercialRegisterEntryDate());
+				if (!StringUtils.isEmpty(organisationEvent.getDocumentNumberFOSC())) {
+					serviceOrganisationEvent.setNumeroDocumentFOSC(Long.parseLong(organisationEvent.getDocumentNumberFOSC()));
+				}
+				serviceOrganisationEvent.setDatePublicationFOSC(organisationEvent.getPublicationDateFOSC());
+				result.put(orgEntry.getKey(), serviceOrganisationEvent);
+			}
+			return result;
 		}
-		return result;
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
+		}
 	}
 
 	@Override

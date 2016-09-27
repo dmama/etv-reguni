@@ -161,7 +161,14 @@
 					<unireg:regdate regdate="${restriction.dateFin}" format="dd.MM.yyyy"/>
 				</display:column>
 				<display:column sortable ="false" titleKey="label.nom.raison">
-					<c:out value="${restriction.prenomNom}" />
+					<c:choose>
+						<c:when test="${restriction.erreur != null}">
+							<span class="erreur"><c:out value="${restriction.erreur}"/></span>
+						</c:when>
+						<c:otherwise>
+							<c:out value="${restriction.prenomNom}" />
+						</c:otherwise>
+					</c:choose>
 				</display:column>
 				<display:column sortable ="false" titleKey="label.localite">
 					<c:out value="${restriction.localite}" />

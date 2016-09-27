@@ -515,11 +515,13 @@ public class DroitAccesController {
 	@RequestMapping(value = "/copie-transfert/confirm.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String getConfirmCopieTransfert(Model model,
+	                                       HttpServletRequest request,
 	                                       @RequestParam(value = NO_OPERATEUR_REFERENCE) long noOperateurReference,
 	                                       @RequestParam(value = NO_OPERATEUR_DESTINATION) long noOperateurDestination,
 	                                       @RequestParam(value = TYPE_OPERATION) TypeOperation typeOperation) throws Exception {
 
-		final ConfirmCopieView view = copieManager.get(noOperateurReference, noOperateurDestination);
+		final WebParamPagination pagination = new WebParamPagination(request, "restriction", 25, "id", true);
+		final ConfirmCopieView view = copieManager.get(noOperateurReference, noOperateurDestination, pagination);
 		model.addAttribute(COMMAND, view);
 		model.addAttribute(NO_OPERATEUR_REFERENCE, noOperateurReference);
 		model.addAttribute(NO_OPERATEUR_DESTINATION, noOperateurDestination);

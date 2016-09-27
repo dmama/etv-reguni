@@ -4,26 +4,33 @@
 <fieldset>
 	<legend><span><fmt:message key="label.caracteristiques.acces" /></span></legend>
 		<display:table
-				name="command.droitsAccesView" id="restriction" pagesize="10" sort="list"
-				requestURI="${url}"
+				name="command.droitsAccesView" id="restriction" pagesize="25" sort="external"
+				requestURI="${url}" partialList="true" size="command.size"
 				class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		
-			<display:column sortable ="true" titleKey="label.type.restriction">
+			<display:column sortable="false" titleKey="label.type.restriction">
 				<fmt:message key="option.type.droit.acces.${restriction.type}"  />
 			</display:column>			
-			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numeroCTB">
+			<display:column sortable="false" titleKey="label.numero.contribuable" sortProperty="numeroCTB">
 				<unireg:numCTB numero="${restriction.numeroCTB}" />
 			</display:column>
-			<display:column sortable ="true" titleKey="label.nom.raison">
-				<c:out value="${restriction.prenomNom}" />
+			<display:column sortable="false" titleKey="label.nom.raison">
+				<c:choose>
+					<c:when test="${restriction.erreur != null}">
+						<span class="erreur"><c:out value="${restriction.erreur}"/></span>
+					</c:when>
+					<c:otherwise>
+						<c:out value="${restriction.prenomNom}" />
+					</c:otherwise>
+				</c:choose>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.localite">
+			<display:column sortable="false" titleKey="label.localite">
 				<c:out value="${restriction.localite}" />
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissance">
+			<display:column sortable="false" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissance">
 				<unireg:date date="${restriction.dateNaissance}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.lecture.seule">
+			<display:column sortable="false" titleKey="label.lecture.seule">
 				<input type="checkbox" name="lectureSeule" value="true"
 				       <c:if test="${restriction.lectureSeule}">checked </c:if> disabled="disabled" />
 			</display:column>

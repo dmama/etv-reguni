@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
@@ -19,6 +23,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -40,6 +45,8 @@ import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 
 public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRestrictionManager {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(UtilisateurEditRestrictionManagerImpl.class);
 
 	private UtilisateurManager utilisateurManager;
 	private TiersGeneralManager tiersGeneralManager;
@@ -110,8 +117,15 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		final List<DroitAccesUtilisateurView> views = new ArrayList<>();
 		final List<DroitAcces> restrictions = droitAccesDAO.getDroitsAcces(noIndividuOperateur, pagination);
 		for (DroitAcces droitAcces : restrictions) {
-			final DroitAccesUtilisateurView droitAccesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
-			views.add(droitAccesView);
+			try {
+				final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
+				views.add(view);
+			}
+			catch (ServiceOrganisationException | ServiceCivilException e) {
+				LOGGER.warn("Exception lors de la récupération des données du contribuable protégé " + FormatNumeroHelper.numeroCTBToDisplay(droitAcces.getTiers().getNumero()) + ".", e);
+				final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, e);
+				views.add(view);
+			}
 		}
 		utilisateurEditRestrictionView.setRestrictions(views);
 		utilisateurEditRestrictionView.setSize(droitAccesDAO.getDroitAccesCount(noIndividuOperateur));
@@ -217,8 +231,15 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 			for (Long idDroitAcces : batch) {
 				DroitAcces droitAcces = droitAccesDAO.get(idDroitAcces);
 				if (!droitAcces.isAnnule()) {
-					DroitAccesUtilisateurView accesView = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
-					infos.add(accesView);
+					try {
+						final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, tiersService, adresseService);
+						infos.add(view);
+					}
+					catch (ServiceOrganisationException | ServiceCivilException e) {
+						LOGGER.warn("Exception lors de la récupération des données du contribuable protégé " + FormatNumeroHelper.numeroCTBToDisplay(droitAcces.getTiers().getNumero()) + ".", e);
+						final DroitAccesUtilisateurView view = new DroitAccesUtilisateurView(droitAcces, e);
+						infos.add(view);
+					}
 				}
 
 			}

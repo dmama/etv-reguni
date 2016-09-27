@@ -8,6 +8,7 @@ import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
 import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 
 public interface CopieDroitAccesManager {
@@ -20,7 +21,7 @@ public interface CopieDroitAccesManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException;
+	ConfirmCopieView get(long noOperateurReference, long noOperateurDestination, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Copie les droits d'un utilisateur vers un autre

@@ -28,6 +28,16 @@ public class DroitAccesUtilisateurView extends BaseDroitAccesDossierView impleme
 		this.niveau = droit.getNiveau();
 	}
 
+	public DroitAccesUtilisateurView(DroitAcces droit, Exception erreur) {
+		super(droit.getTiers(), erreur);
+		this.id = droit.getId();
+		this.annule = droit.isAnnule();
+		this.dateDebut = droit.getDateDebut();
+		this.dateFin = droit.getDateFin();
+		this.type = droit.getType();
+		this.niveau = droit.getNiveau();
+	}
+
 	public Long getId() {
 		return id;
 	}
