@@ -136,11 +136,11 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 	 * @return une URL vers la copie temporaire du fichier d'entrée
 	 * @throws java.io.IOException en cas d'impossiblité de créer le fichier temporaire
 	 */
-	private synchronized URL createTempFile(String filename, URL filepath) throws IOException {
+	synchronized URL createTempFile(String filename, URL filepath) throws IOException {
 
 		// On gère le cas des sous-répertoires dans le nom de fichier
 		File parent = tempDir;
-		int sep = filename.lastIndexOf(File.separatorChar);
+		int sep = filename.lastIndexOf("/");    // le forward-slash est utilisé dans tous les cas (même sous Windows)
 		if (sep >= 0) {
 			parent = new File(tempDir, filename.substring(0, sep));
 			filename = filename.substring(sep + 1);
