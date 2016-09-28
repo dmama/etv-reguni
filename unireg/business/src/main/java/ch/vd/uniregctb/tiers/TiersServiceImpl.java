@@ -6325,8 +6325,8 @@ public class TiersServiceImpl implements TiersService {
 	@Nullable
 	@Override
 	public String getNumeroIDE(@NotNull Entreprise entreprise) {
-		final Organisation org = getOrganisation(entreprise);
-		if (org != null) {
+		if (entreprise.isConnueAuCivil()) {
+			final Organisation org = getOrganisation(entreprise);
 			final List<DateRanged<String>> liste = org.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
 				Collections.sort(liste, new DateRangeComparator<DateRanged<String>>());
@@ -6335,18 +6335,19 @@ public class TiersServiceImpl implements TiersService {
 					return last.getPayload();
 				}
 			}
-		}
-		Set<IdentificationEntreprise> identificationEntreprises = entreprise.getIdentificationsEntreprise();
-		if (identificationEntreprises != null && ! identificationEntreprises.isEmpty()) {
-			List<IdentificationEntreprise> ident = AnnulableHelper.sansElementsAnnules(identificationEntreprises);
+		} else {
+			Set<IdentificationEntreprise> identificationEntreprises = entreprise.getIdentificationsEntreprise();
+			if (identificationEntreprises != null && !identificationEntreprises.isEmpty()) {
+				List<IdentificationEntreprise> ident = AnnulableHelper.sansElementsAnnules(identificationEntreprises);
 
-			Collections.sort(ident, new Comparator<IdentificationEntreprise>() {
-				@Override
-				public int compare(IdentificationEntreprise o1, IdentificationEntreprise o2) {
-					return o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
-				}
-			});
-			return CollectionsUtils.getLastElement(ident).getNumeroIde();
+				Collections.sort(ident, new Comparator<IdentificationEntreprise>() {
+					@Override
+					public int compare(IdentificationEntreprise o1, IdentificationEntreprise o2) {
+						return o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
+					}
+				});
+				return CollectionsUtils.getLastElement(ident).getNumeroIde();
+			}
 		}
 		return null;
 	}
