@@ -1,5 +1,7 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import javax.xml.bind.JAXBElement;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0023.v3.ListOfNoticeRequest;
 
 /**
  * Classe de tests utilitaires permettant de vérifier rapidement le bon fonctionnement du
@@ -19,18 +22,20 @@ public class RcEntClientImplTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-0.xsd",
-			"eVD-0023-3-0.xsd",
-			"eVD-0024-3-0.xsd"
+			"eVD-0022-3-2.xsd",
+			"eVD-0023-3-2.xsd",
+			"eVD-0024-3-2.xsd"
 	};
 
-	private static final String BASE_URL = "http://slv2737v.etat-de-vaud.ch:8040/services";
+	private static final String BASE_URL = "http://rp-ws-va.etat-de-vaud.ch/registres/int-rcent/services";
 	private static final String ORGANISATION_PATH = "/v3/organisation/CT.VD.PARTY";
 	private static final String ORGANISATIONS_OF_NOTICE_PATH = "/v3/organisationsOfNotice";
 
 	// Organisation cible pour les tests. Une seule suffit.
 	private static final long NO100983251 = 100983251L;
 	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
+	private static final String NOTICE_REQUEST_VALIDATE_PATH = "/v3/noticeRequestValidate";
+	private static final String NOTICE_REQUEST_LIST_PATH = "/v3/noticeRequestList";
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,6 +66,8 @@ public class RcEntClientImplTest {
 		client.setBaseUrl(BASE_URL);
 		client.setOrganisationPath(ORGANISATION_PATH);
 		client.setOrganisationsOfNoticePath(ORGANISATIONS_OF_NOTICE_PATH);
+		client.setNoticeRequestValidatePath(NOTICE_REQUEST_VALIDATE_PATH);
+		client.setNoticeRequestListPath(NOTICE_REQUEST_LIST_PATH);
 		if (validating) {
 			client.setSchemasLocations(Arrays.asList(RCENT_SCHEMA));
 			client.setValidationEnabled(true);

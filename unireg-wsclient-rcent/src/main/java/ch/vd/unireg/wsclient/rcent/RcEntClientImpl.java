@@ -20,8 +20,12 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0004.v3.Errors;
+import ch.vd.evd0022.v3.NoticeRequest;
+import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0023.v3.ListOfNoticeRequest;
+import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -31,6 +35,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RcEntClientImpl.class);
 
+	JAXBContext jaxbContext;
+
 	private Unmarshaller errorunmarshaller;
 
 	private final WebClientPool wcPool = new WebClientPool();
@@ -39,6 +45,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	private String organisationsOfNoticePath = "organisationsOfNotice";
 	private String pingPath = "infrastructure/ping";
 	private String findByNoIDEPath = "organisation/CH.IDE";
+	private String noticeRequestValidatePath = "noticeRequestValidate/";
+	private String noticeRequestListPath = "noticeRequestList";
 
 	public void setBaseUrl(String url) {
 		this.wcPool.setBaseUrl(url);
@@ -68,6 +76,14 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 		this.findByNoIDEPath = findByNoIDEPath;
 	}
 
+	public void setNoticeRequestValidatePath(String noticeRequestValidatePath) {
+		this.noticeRequestValidatePath = noticeRequestValidatePath;
+	}
+
+	public void setNoticeRequestListPath(String noticeRequestListPath) {
+		this.noticeRequestListPath = noticeRequestListPath;
+	}
+
 	public void setValidationEnabled(boolean enableValidation) {
 		this.wcPool.setEnableValidation(enableValidation);
 	}
@@ -82,6 +98,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 		final JAXBContext jc = JAXBContext.newInstance(Errors.class);
 		errorunmarshaller = jc.createUnmarshaller();
+
+		jaxbContext = JAXBContext.newInstance(ch.vd.evd0023.v3.ObjectFactory.class);
 	}
 
 	@Override
@@ -145,6 +163,60 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 		}
 	}
 
+	@Override
+	public NoticeRequestReport validateNoticeRequest(NoticeRequest noticeRequest) throws RcEntClientException {
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
+		try {
+			wc.path(noticeRequestValidatePath);
+
+			try {
+				final Response response = wc.post(new ObjectFactory().createNoticeRequest(noticeRequest));
+				if (response.getStatus() >= 400) {
+					throw new ServerWebApplicationException(response);
+				}
+
+				final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+				//noinspection unchecked
+				final JAXBElement<NoticeRequestReport> data = (JAXBElement<NoticeRequestReport>) unmarshaller.unmarshal((InputStream) response.getEntity());
+				return data.getValue();
+			}
+			catch (ServerWebApplicationException e) {
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
+			}
+			catch (JAXBException e) {
+				throw new RcEntClientException("Erreur lors du parsing de la réponse xml", e);
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
+		}
+	}
+
+	@Nullable
+	@Override
+	public ListOfNoticeRequest getNoticeRequest(String noticeRequestId) throws RcEntClientException {
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
+		try {
+			wc.path(noticeRequestListPath);
+
+			if (noticeRequestId == null) {
+				throw new IllegalArgumentException("L'identifiant de la demande d'annonce doit être fourni.");
+			}
+			wc.query("noticeRequestId", noticeRequestId);
+
+			try {
+				return wc.get(ListOfNoticeRequest.class);
+			}
+			catch (ServerWebApplicationException e) {
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
+		}
+	}
+
 	@Nullable
 	protected List<RcEntClientErrorMessage> parseErrors(String message) {
 		try {
@@ -178,7 +250,6 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 					throw new ServerWebApplicationException(response);
 				}
 
-				final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.evd0023.v3.ObjectFactory.class);
 				final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
 				//noinspection unchecked

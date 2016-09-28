@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.evd0022.v3.NoticeRequest;
+import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.registre.base.date.RegDate;
 
 /**
@@ -62,6 +65,24 @@ public interface RcEntClient {
 	 */
 	@Nullable
 	OrganisationData getOrganisationByNoIDE(String noide, RegDate referenceDate, boolean withHistory) throws RcEntClientException;
+
+	/**
+	 * Méthode à appeler pour valider le contenu d'une demande d'annonce. Cette validation est obligatoire en préalable à
+	 * l'envoi de la demande proprement dite via l'esb.
+	 *
+	 * @param noticeRequest la demande d'annonce à valider
+	 * @return un rapport de demande d'annonce contenant éventuellement une liste d'erreurs
+	 * @throws RcEntClientException en cas de problème
+	 */
+	NoticeRequestReport validateNoticeRequest(NoticeRequest noticeRequest) throws RcEntClientException;
+
+	/**
+	 * Récupère une demande d'annonce, par son numéro.
+	 * @param noticeRequestId le numéro
+	 * @return la demande d'annonce
+	 * @throws RcEntClientException en cas de problème
+	 */
+	ListOfNoticeRequest getNoticeRequest(String noticeRequestId) throws RcEntClientException;
 
 	/**
 	 * Envoi un message de ping dans le tuyau, afin de s'assurer que RCEnt est bien là...
