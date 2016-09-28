@@ -6272,7 +6272,12 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final long numeroOrganisation = entreprise.getNumeroEntreprise();
-		return serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
+		final Organisation organisationHistory = serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
+		if (organisationHistory == null || numeroOrganisation != organisationHistory.getNumeroOrganisation()) {
+			// Sérieux problème d'appariement avec le registre civil.
+			throw new OrganisationNotFoundException(entreprise);
+		}
+		return organisationHistory;
 	}
 
 	@Override
@@ -6291,7 +6296,14 @@ public class TiersServiceImpl implements TiersService {
 	public SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
 		Organisation organisation = getOrganisationPourEtablissement(etablissement);
 		if (organisation != null) {
-			return organisation.getSiteForNo(etablissement.getNumeroEtablissement());
+			final SiteOrganisation siteForNo = organisation.getSiteForNo(etablissement.getNumeroEtablissement());
+			if (siteForNo == null) {
+				// Sérieux problème d'appariement avec le registre civil.
+				throw new SiteOrganisationNotFoundException(etablissement);
+			}
+			Assert.isEqual(etablissement.getNumeroEtablissement(), siteForNo.getNumeroSite());
+
+			return siteForNo;
 		}
 		return null;
 	}

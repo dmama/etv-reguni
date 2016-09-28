@@ -2127,7 +2127,8 @@ public interface TiersService {
 
 	/**
 	 * Renvoie le dernier numéro IDE associé à une entreprise dans le registre civil ou fiscal.
-	 * Le registre civil est prépondérant.
+	 * Si l'entreprise est associée au registre civil, c'est le numéro rapporté par ce dernier qui est retourné.
+	 * Sinon, c'est le numéro trouvé dans le registre fiscal qui est renvoyé.
 	 *
      * @param entreprise une entreprise fiscale
      * @return le dernier numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
