@@ -27,6 +27,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -135,9 +137,11 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -239,6 +243,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -277,6 +282,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				throw new UnsupportedOperationException();
 			}
 		});
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -366,9 +372,11 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -459,6 +467,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -497,6 +506,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				throw new UnsupportedOperationException();
 			}
 		});
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -594,6 +604,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -632,6 +643,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				throw new UnsupportedOperationException();
 			}
 		});
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -728,6 +740,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -766,6 +779,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				throw new UnsupportedOperationException();
 			}
 		});
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 

@@ -11,6 +11,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 
 public class EvenementOrganisationContext {
 
@@ -24,6 +25,7 @@ public class EvenementOrganisationContext {
 	private final AdresseService adresseService;
 	private final EvenementFiscalService evenementFiscalService;
 	private final AssujettissementService assujettissementService;
+	private final AppariementService appariementService;
 	private final ParametreAppService parametreAppService;
 
 	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO) {
@@ -37,12 +39,13 @@ public class EvenementOrganisationContext {
 		this.adresseService = null;
 		this.evenementFiscalService = null;
 		this.assujettissementService = null;
+		this.appariementService = null;
 		this.parametreAppService = null;
 	}
 
 	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
 	                             MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,  AssujettissementService assujettissementService,
-	                                    ParametreAppService parametreAppService) {
+	                                    AppariementService appariementService, ParametreAppService parametreAppService) {
 		this.serviceOrganisation = serviceOrganisation;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -53,6 +56,7 @@ public class EvenementOrganisationContext {
 		this.adresseService = adresseService;
 		this.evenementFiscalService = evenementFiscalService;
 		this.assujettissementService = assujettissementService;
+		this.appariementService = appariementService;
 		this.parametreAppService = parametreAppService;
 	}
 
@@ -94,6 +98,10 @@ public class EvenementOrganisationContext {
 
 	public AssujettissementService getAssujettissementService() {
 		return assujettissementService;
+	}
+
+	public AppariementService getAppariementService() {
+		return appariementService;
 	}
 
 	public ParametreAppService getParametreAppService() {

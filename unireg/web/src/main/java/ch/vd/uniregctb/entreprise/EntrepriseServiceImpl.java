@@ -6,10 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
@@ -127,12 +129,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			etablissementView.setRaisonSociale(site.getNom(null));
 
-			final List<DateRanged<String>> noIdeList = site.getNumeroIDE();
-			if (noIdeList != null && noIdeList.size() > 0) {
-				final DateRanged<String> noIdeRange = noIdeList.get(0);
-				if (noIdeRange != null) {
-					etablissementView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
-				}
+			final String noIde = site.getNumeroIDE(RegDate.get());
+			if (StringUtils.isNotBlank(noIde)) {
+				etablissementView.setNumerosIDE(Collections.singletonList(noIde));
 			}
 		}
 		else {

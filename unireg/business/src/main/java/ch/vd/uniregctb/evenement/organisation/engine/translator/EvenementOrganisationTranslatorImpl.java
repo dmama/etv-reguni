@@ -27,6 +27,8 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
@@ -63,6 +65,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.inscription.InscriptionStr
 import ch.vd.uniregctb.evenement.organisation.interne.radiation.RadiationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.raisonsociale.RaisonSocialeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.reinscription.ReinscriptionStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.retour.annonce.RetourAnnonceIDE;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -74,6 +77,7 @@ import ch.vd.uniregctb.metier.RattachementOrganisationResult;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PlusieursEntreprisesAvecMemeNumeroOrganisationException;
@@ -81,6 +85,7 @@ import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 
 /**
  * TODO: triple check everything
@@ -118,10 +123,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private TiersService tiersService;
 	private MetierServicePM metierServicePM;
 	private AdresseService adresseService;
+	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 	private GlobalTiersIndexer indexer;
 	private IdentificationContribuableService identCtbService;
 	private EvenementFiscalService evenementFiscalService;
 	private AssujettissementService assujettissementService;
+	private AppariementService appariementService;
 	private ParametreAppService parametreAppService;
 	private boolean useOrganisationsOfNotice;
 	private EvenementOrganisationCappingLevelProvider cappingLevelProvider;
@@ -143,7 +150,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		context = new EvenementOrganisationContext(serviceOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
-		                                           evenementFiscalService, assujettissementService, parametreAppService);
+		                                           evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 
 		// Construction des stratégies
 		strategies = new ArrayList<>();
@@ -235,8 +242,33 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			return new TraitementManuel(event, organisation, null, context, options, e.getMessage());
 		}
 
+		// Flag d'activation de l'application des stratégies de découverte de mutations.
+		boolean evaluateStrategies = true;
+
+		/* Cas spécial: on reçoit le retour d'une annonce à l'IDE. Il faut rechercher l'entreprise et apparier si c'est une création. */
+		final Long noAnnonceIDE = event.getNoAnnonceIDE();
+		if (noAnnonceIDE != null) {
+			final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);
+			final Etablissement etablissement = referenceAnnonceIDE.getEtablissement();
+
+			/* On utilise la date de l'événement comme référence, mais quid si l'association entreprise <-> etablissement avait changé entretemps? */
+			entreprise = tiersService.getEntreprise(etablissement, event.getDateEvenement());
+			if (entreprise == null) {
+				throw new EvenementOrganisationException(
+						String.format(
+								"Fatal: Impossible de traiter l'événement de retour d'annonce IDE n°%d: impossible de retrouver l'entreprise pour l'annonce IDE %d (établissement n°%s)! " +
+										"Le rapport entre tiers a peut être changé depuis?",
+								event.getNoEvenement(), noAnnonceIDE, FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumeroEtablissement())
+						)
+				);
+			}
+
+			evenements.add(new RetourAnnonceIDE(event, organisation, entreprise, context, options, serviceOrganisationService.getAnnonceIDE(noAnnonceIDE), referenceAnnonceIDE));
+			// Pas question de traiter normallement, on connait déjà les changements.
+			evaluateStrategies = false;
+		}
 		/* L'entreprise est retrouvé grâce au numéro cantonal. Pas de doute possible. */
-		if (entreprise != null) {
+		else if (entreprise != null) {
 			final String message = String.format("Entreprise n°%s (%s%s) identifiée sur la base du numéro civil %d (numéro cantonal).",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 			                                     raisonSocialeCivile,
@@ -344,13 +376,16 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		/* Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données. */
 		final List<EvenementOrganisationInterne> resultatEvaluationStrategies = new ArrayList<>();
-		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			final EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
-			if (e != null) {
-				if (e instanceof MessageSuiviPreExecution || e instanceof MessageWarningPreExectution) {
-					evenements.add(e);
-				} else {
-					resultatEvaluationStrategies.add(e);
+		if (evaluateStrategies) {
+			for (EvenementOrganisationTranslationStrategy strategy : strategies) {
+				final EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
+				if (e != null) {
+					if (e instanceof MessageSuiviPreExecution || e instanceof MessageWarningPreExectution) {
+						evenements.add(e);
+					}
+					else {
+						resultatEvaluationStrategies.add(e);
+					}
 				}
 			}
 		}
@@ -529,6 +564,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
+	public void setReferenceAnnonceIDEDAO(ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO) {
+		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIndexer(GlobalTiersIndexer indexer) {
 		this.indexer = indexer;
 	}
@@ -546,6 +586,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAppariementService(AppariementService appariementService) {
+		this.appariementService = appariementService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -25,6 +25,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NullableDefaultComparator;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
@@ -56,6 +57,21 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Set<FlagEntreprise> flags;
 	private RegDate dateDebutPremierExerciceCommercial;
 	private Set<AutreDocumentFiscal> autresDocumentsFiscaux;
+
+	/**
+	 * Texte libre permettant d'indiquer le secteur d'activité dans lequel opère l'entreprise (Demandé par l'IDE pour l'annonce).
+	 */
+	private String secteurActivite;
+
+	/**
+	 * Flag signalant qu'il faut réévaluer l'envoi éventuel d'une annonce de l'entreprise au registre IDE.
+	 */
+	private boolean ideDirty;
+
+	/**
+	 * Flag permettant de désactiver l'envoi d'annonce au registre IDE pour cette entreprise
+	 */
+	private boolean ideDesactive;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -393,6 +409,34 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		}
 		this.autresDocumentsFiscaux.add(document);
 		document.setEntreprise(this);
+	}
+
+
+	@Column(name = "SECTEUR_ACTIVITE", length = LengthConstants.TIERS_SECTEUR_ACTIVITE)
+	public String getSecteurActivite() {
+		return secteurActivite;
+	}
+
+	public void setSecteurActivite(String secteurActivite) {
+		this.secteurActivite = secteurActivite;
+	}
+
+	@Column(name = "IDE_DIRTY")
+	public boolean isIdeDirty() {
+		return ideDirty;
+	}
+
+	public void setIdeDirty(boolean ideDirty) {
+		this.ideDirty = ideDirty;
+	}
+
+	@Column(name = "IDE_DESACTIVE")
+	public boolean isIdeDesactive() {
+		return ideDesactive;
+	}
+
+	public void setIdeDesactive(boolean ideDesactive) {
+		this.ideDesactive = ideDesactive;
 	}
 
 	@NotNull

@@ -1,15 +1,23 @@
-package ch.vd.uniregctb.evenement.organisation;
+package ch.vd.uniregctb.evenement;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ech.ech0097.v2.NamedOrganisationId;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import ch.vd.evd0022.v3.Notice;
 import ch.vd.evd0022.v3.NoticeOrganisation;
+import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.TypeOfNotice;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -25,43 +33,81 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
  *
  * @author Raphaël Marmier, 2015-08-03
  */
-public class EvenementOrganisationConversionHelper {
+public class RCEntApiHelper {
 
 	/*
 		Configuration des schémas applicables pour le décodage des annonces RCEnt
     */
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-1.xsd",
-			"eVD-0023-3-1.xsd",
-			"eVD-0024-3-1.xsd"
+			"eVD-0022-3-2.xsd",
+			"eVD-0023-3-2.xsd",
+			"eVD-0024-3-2.xsd"
 	};
 
 	public static Resource[] getRCEntSchemaClassPathResource() {
-		Resource[] ar = new Resource[EvenementOrganisationConversionHelper.RCENT_SCHEMA.length];
-		for (int i = 0; i < EvenementOrganisationConversionHelper.RCENT_SCHEMA.length; i++) {
-			ar[i] = new ClassPathResource(EvenementOrganisationConversionHelper.RCENT_SCHEMA[i]);
+		Resource[] ar = new Resource[RCEntApiHelper.RCENT_SCHEMA.length];
+		for (int i = 0; i < RCEntApiHelper.RCENT_SCHEMA.length; i++) {
+			ar[i] = new ClassPathResource(RCEntApiHelper.RCENT_SCHEMA[i]);
 		}
 		return ar;
 	}
 
-	public static List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) {
+	public static Source[] getRCEntClasspathSources() throws IOException {
+		final Source[] sources = new Source[RCENT_SCHEMA.length];
+		for (int i = 0, pathLength = RCENT_SCHEMA.length; i < pathLength; i++) {
+			final String path = RCENT_SCHEMA[i];
+			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
+		}
+		return sources;
+	}
+
+
+	public static List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) throws EvenementOrganisationException {
 		List<EvenementOrganisation> evts = new ArrayList<>();
 		Notice notice = message.getNotice();
 		final long noEvenement = notice.getNoticeId().longValue();
 		final TypeEvenementOrganisation type = convertTypeOfNotice(notice.getTypeOfNotice());
 		final RegDate noticeDate = notice.getNoticeDate();
+		final Long noAnnonceIDE = extractNoAnnonceIDE(notice);
+
 		final List<NoticeOrganisation> organisation = message.getOrganisation();
 		for (NoticeOrganisation org : organisation) {
-			evts.add(new EvenementOrganisation(
+			final EvenementOrganisation e = new EvenementOrganisation(
 					noEvenement,
 					type,
 					noticeDate,
 					org.getOrganisation().getCantonalId().longValue(),
 					EtatEvenementOrganisation.A_TRAITER
-			));
+			);
+			e.setNoAnnonceIDE(noAnnonceIDE);
+			evts.add(e);
 		}
 		return evts;
+	}
+
+	/**
+	 * Extraire le numéro de l'annonce IDE si l'événement rapporte un changement issu d'une annonce à l'IDE émise par Unireg.
+	 *
+	 * @param notice l'événement RCEnt.
+	 * @return le numéro d'annonce, ou null si l'événement ne contient pas de référence à une annonce émise par Unireg.
+	 * @throws EvenementOrganisationException en cas d'incohérence dans la référence.
+	 */
+	protected static Long extractNoAnnonceIDE(Notice notice) throws EvenementOrganisationException {
+		final NoticeRequestIdentification noticeRequestIdent = notice.getNoticeRequest();
+		if (noticeRequestIdent != null) {
+			final String applicationId = noticeRequestIdent.getReportingApplication().getId();
+			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
+			if (ModeleAnnonceIDERCEnt.NO_IDE_SERVICE_IDE.getValeur().equals(ideSource.getOrganisationId()) && ModeleAnnonceIDERCEnt.NO_APPLICATION_UNIREG.equals(applicationId)) {
+				final String noticeRequestId = noticeRequestIdent.getNoticeRequestId();
+				if (noticeRequestId != null) {
+					return Long.parseLong(noticeRequestId);
+				} else {
+					throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est réputé issu d'une annonce IDE d'Unireg, mais le numéro d'annonce n'est pas inclu!", notice.getNoticeId().longValue()));
+				}
+			}
+		}
+		return null;
 	}
 
 	public static TypeEvenementOrganisation convertTypeOfNotice(TypeOfNotice typeOfNotice) {

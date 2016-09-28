@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -65,6 +67,25 @@ public interface ServiceOrganisationService {
 	 * @throws ServiceOrganisationException en cas de souci
 	 */
 	AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
+
+	/**
+	 * Obtenir le contenu et le statut d'une annonce à l'IDE.
+	 *
+	 * Attention: RCEnt ne connait pas nécessairement une annonce qu'on lui a envoyé, du fait du caractère asynchrone de la
+	 * transmition par l'esb.
+	 *
+	 * @param numero le numéro de l'annonce recherchée
+	 * @return l'annonce IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
+	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
+	 */
+	AnnonceIDE getAnnonceIDE(Long numero);
+
+	/**
+	 * Demander la validation d'une annonce IDE par le registre civil avant l'envoi.
+	 * @param annonceIDE l'annonce candidate
+	 * @return le statut résultant contenant les éventuelles erreurs rapportées par le service civil.
+	 */
+	ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE annonceIDE);
 
 	@NotNull
 	String createOrganisationDescription(Organisation organisation, RegDate date);

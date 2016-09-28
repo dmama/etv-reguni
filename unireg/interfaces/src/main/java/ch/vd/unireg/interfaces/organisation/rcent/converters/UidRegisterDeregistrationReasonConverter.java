@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.evd0022.v3.UidDeregistrationReason;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 
-public class UidRegisterRaisonDeRadiationRegistreIDEConverter extends BaseEnumConverter<UidDeregistrationReason, RaisonDeRadiationRegistreIDE> {
+public class UidRegisterDeregistrationReasonConverter extends BaseEnumConverter<UidDeregistrationReason, RaisonDeRadiationRegistreIDE> {
 	@Override
 	@NotNull
 	protected RaisonDeRadiationRegistreIDE convert(@NotNull UidDeregistrationReason value) {

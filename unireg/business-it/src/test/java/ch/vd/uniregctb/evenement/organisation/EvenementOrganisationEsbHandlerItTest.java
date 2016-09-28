@@ -24,6 +24,7 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.evenement.RCEntApiHelper;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -207,7 +208,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			Assert.assertEquals("type " + type, 0, evenementsExploses.size());
 
 
-			final EvenementOrganisation recu = EvenementOrganisationConversionHelper.createEvenement(evenementsIgnores.get(0)).get(0);
+			final EvenementOrganisation recu = RCEntApiHelper.createEvenement(evenementsIgnores.get(0)).get(0);
 			Assert.assertNotNull("type " + type, recu);
 			Assert.assertEquals("type " + type, (long) noEvenement, recu.getNoEvenement());
 			Assert.assertEquals("type " + type, dateEvenement, recu.getDateEvenement());

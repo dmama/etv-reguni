@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	<!-- Section annonce à l'IDE -->
+
+	<bean id="annonceIDEService" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEServiceImpl">
+		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
+		<property name="annonceIDESender" ref="annonceIDESender" />
+	</bean>
+
+	<bean id="serviceIDEService" class="ch.vd.uniregctb.evenement.ide.ServiceIDEServiceImpl">
+		<property name="tiersService" ref="tiersService" />
+		<property name="annonceIDEService" ref="annonceIDEService" />
+		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+	</bean>
+
+</beans>

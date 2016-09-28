@@ -6897,4 +6897,110 @@ public class TiersServiceImpl implements TiersService {
 		}
 		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNumeroOfsAutoriteFiscale(), etablissement));
 	}
+
+	@Override
+	public Entreprise getEntreprise(Etablissement etablissement, RegDate date) {
+		final RegDate notreDate = date == null ? RegDate.get() : date;
+
+		final RapportEntreTiers rapportEntreTiers = etablissement.getRapportObjetValidAt(notreDate, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+		return (Entreprise) getTiers(rapportEntreTiers.getSujetId());
+	}
+
+	@Override
+	public void apparier(Entreprise entreprise, Organisation organisation) {
+		final List<DateRanged<FormeLegale>> formesLegales = organisation.getFormeLegale();
+		final RegDate debutCivil = formesLegales.isEmpty() ? RegDate.get() : formesLegales.get(0).getDateDebut();
+		final RegDate finFiscale = debutCivil.getOneDayBefore();
+
+		// mise à jour du numéro cantonal
+		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
+		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
+
+		fermeSurchargesCiviles(entreprise, finFiscale);
+	}
+
+	@Override
+	public void fermeSurchargesCiviles(Entreprise entreprise, RegDate finFiscale) {
+		// on stoppe les raisons sociales fiscales à la veille de la date de début, si celle-ci a un sens...
+		final List<RaisonSocialeFiscaleEntreprise> raisonSocialeFiscaleEntreprises = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		for (RaisonSocialeFiscaleEntreprise raisonSocialeFiscaleEntreprise : raisonSocialeFiscaleEntreprises) {
+			if (RegDateHelper.isBefore(finFiscale, raisonSocialeFiscaleEntreprise.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				raisonSocialeFiscaleEntreprise.setAnnule(true);
+			}
+			else if (raisonSocialeFiscaleEntreprise.getDateFin() == null) {
+				raisonSocialeFiscaleEntreprise.setDateFin(finFiscale);
+			}
+			else if (RegDateHelper.isBefore(finFiscale, raisonSocialeFiscaleEntreprise.getDateFin(), NullDateBehavior.LATEST)) {
+				final RaisonSocialeFiscaleEntreprise nouvelleRaisonSociale = raisonSocialeFiscaleEntreprise.duplicate();
+				raisonSocialeFiscaleEntreprise.setAnnule(true);
+				nouvelleRaisonSociale.setDateFin(finFiscale);
+				entreprise.addDonneeCivile(nouvelleRaisonSociale);
+			}
+		}
+		// on stoppe les formesLegales fiscales à la veille de la date de début, si celle-ci a un sens...
+		final List<FormeJuridiqueFiscaleEntreprise> formeJuridiqueFiscaleEntreprises = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		for (FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise : formeJuridiqueFiscaleEntreprises) {
+			if (RegDateHelper.isBefore(finFiscale, formeJuridiqueFiscaleEntreprise.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				formeJuridiqueFiscaleEntreprise.setAnnule(true);
+			}
+			else if (formeJuridiqueFiscaleEntreprise.getDateFin() == null) {
+				formeJuridiqueFiscaleEntreprise.setDateFin(finFiscale);
+			}
+			else if (RegDateHelper.isBefore(finFiscale, formeJuridiqueFiscaleEntreprise.getDateFin(), NullDateBehavior.LATEST)) {
+				final FormeJuridiqueFiscaleEntreprise nouvelleFormeJuridique = formeJuridiqueFiscaleEntreprise.duplicate();
+				formeJuridiqueFiscaleEntreprise.setAnnule(true);
+				nouvelleFormeJuridique.setDateFin(finFiscale);
+				entreprise.addDonneeCivile(nouvelleFormeJuridique);
+			}
+		}
+		// on stoppe les formesLegales fiscaux à la veille de la date de début, si celle-ci a un sens...
+		final List<CapitalFiscalEntreprise> capitalFiscalEntreprises = entreprise.getCapitauxNonAnnulesTries();
+		for (CapitalFiscalEntreprise capitalFiscalEntreprise : capitalFiscalEntreprises) {
+			if (RegDateHelper.isBefore(finFiscale, capitalFiscalEntreprise.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				capitalFiscalEntreprise.setAnnule(true);
+			}
+			else if (capitalFiscalEntreprise.getDateFin() == null) {
+				capitalFiscalEntreprise.setDateFin(finFiscale);
+			}
+			else if (RegDateHelper.isBefore(finFiscale, capitalFiscalEntreprise.getDateFin(), NullDateBehavior.LATEST)) {
+				final CapitalFiscalEntreprise nouvelleRaisonSociale = capitalFiscalEntreprise.duplicate();
+				capitalFiscalEntreprise.setAnnule(true);
+				nouvelleRaisonSociale.setDateFin(finFiscale);
+				entreprise.addDonneeCivile(nouvelleRaisonSociale);
+			}
+		}
+	}
+
+	@Override
+	public void apparier(Etablissement etablissement, SiteOrganisation site) {
+		final List<Domicile> domiciles = site.getDomicilesEnActivite();
+		final RegDate debutCivil = domiciles.isEmpty() ? RegDate.get() : domiciles.get(0).getDateDebut();
+		final RegDate finFiscale = debutCivil.getOneDayBefore();
+
+		// mise à jour du numéro cantonal
+		etablissement.setNumeroEtablissement(site.getNumeroSite());
+		etablissement.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
+
+		fermeSurchargesCiviles(etablissement, finFiscale);
+	}
+
+	@Override
+	public void fermeSurchargesCiviles(Etablissement etablissement, RegDate finFiscale) {
+		// on stoppe les domiciles fiscaux à la veille de la date de début, si celle-ci a un sens...
+		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
+		for (DomicileEtablissement domicileFiscal : domicilesFiscaux) {
+			if (RegDateHelper.isBefore(finFiscale, domicileFiscal.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				domicileFiscal.setAnnule(true);
+			}
+			else if (domicileFiscal.getDateFin() == null) {
+				domicileFiscal.setDateFin(finFiscale);
+			}
+			else if (RegDateHelper.isBefore(finFiscale, domicileFiscal.getDateFin(), NullDateBehavior.LATEST)) {
+				final DomicileEtablissement nouveauDomicile = domicileFiscal.duplicate();
+				domicileFiscal.setAnnule(true);
+				nouveauDomicile.setDateFin(finFiscale);
+				etablissement.addDomicile(nouveauDomicile);
+			}
+		}
+	}
 }

@@ -9,6 +9,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -67,6 +69,16 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	@Override
 	public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
 		return service.getAdressesSiteOrganisationHisto(noSite);
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(Long numero) {
+		return target.getAnnonceIDE(numero);
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE annonceIDE) {
+		return target.validerAnnonceIDE(annonceIDE);
 	}
 
 	@NotNull

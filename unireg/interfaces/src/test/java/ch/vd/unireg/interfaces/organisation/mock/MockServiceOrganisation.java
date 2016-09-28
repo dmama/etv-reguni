@@ -6,12 +6,15 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -28,6 +31,8 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	 * Map des organisations par numéro
 	 */
 	private final Map<Long, MockOrganisation> organisationMap = new HashMap<>();
+	private Map<Long, AnnonceIDE> annoncesIDE = new HashMap<>();
+	private Map<ModeleAnnonceIDE.Contenu, ModeleAnnonceIDE.Statut> annoncesIDEValidations = new HashMap<>();
 
 	/**
 	 * Cette méthode initialise le mock en fonction des données voulues.
@@ -78,6 +83,26 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 
 	protected void addOrganisation(MockOrganisation organisation) {
 		organisationMap.put(organisation.getNumeroOrganisation(), organisation);
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(long numero) {
+		return annoncesIDE.get(numero);
+	}
+
+	protected void addAnnonceIDE(AnnonceIDE annonce) {
+		annoncesIDE.put(annonce.getNumero(), annonce);
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) {
+		final ModeleAnnonceIDE.Statut statut = annoncesIDEValidations.get(modele.getContenu());
+		Assert.notNull(statut, "Objet statut introuvable pour l'objet modèle passé. Le statut à renvoyer pour un modèle d'annonce précis doit être configuré au début du test. La comparaison se base sur ModeleAnnonceIDE.Contenu.");
+		return statut;
+	}
+
+	public void addStatutAnnonceIDEAttentu(ModeleAnnonceIDE modele, AnnonceIDE.Statut statut) {
+		annoncesIDEValidations.put(modele.getContenu(), statut);
 	}
 
 	@Override
@@ -139,6 +164,5 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		pm.addAdresse(adresse);
 		return adresse;
 	}
-
 
 }

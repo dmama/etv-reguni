@@ -24,7 +24,7 @@ public abstract class LengthConstants {
 	public static final int TIERS_CANTON_ORIGINE = 2;
 	public static final int TIERS_NOM_PRENOMS_PARENT = 100;
 	public static final int TIERS_TOUS_PRENOMS = 100;
-
+	public static final int TIERS_SECTEUR_ACTIVITE = 1024;
 	public static final int IDENTPERSONNE_IDENTIFIANT = 13;
 	public static final int IDENTPERSONNE_CATEGORIE = 10;
 	public static final int IDENT_DEMANDE_TYPE = 30;
@@ -80,12 +80,12 @@ public abstract class LengthConstants {
 
 	public static final int EVTORGANISATION_ETAT = 10;
 	public static final int EVTORGANISATION_TYPE = 120;
-	public static final int EVTORGANISATION_IDENTITEEMETTEUR = 5;
-	public static final int EVTORGANISATION_REFDATAEMETTEUR = 255;
 	public static final int EVTORGANISATION_COMMENT = 255;
 
 	public static final int EVTORGANISATIONERREUR_TYPE = 7;
 	public static final int EVTORGANISATIONERREUR_MESSAGE = 1024;
+
+	public static final int REFANNONCEIDE_BUSINESS_ID = 64;
 
 	public static final int EVTEXTERNE_ETAT = 10;
 	public static final int EVTEXTERNE_QLR_TYPE = 13;

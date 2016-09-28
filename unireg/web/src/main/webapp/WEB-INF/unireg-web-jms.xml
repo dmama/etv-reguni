@@ -100,6 +100,8 @@
 				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-3-2.xsd</value>
 				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
+				<value>classpath:eVD-0022-3-2.xsd</value><!-- RCEnt entités -->
+				<value>classpath:eVD-0024-3-2.xsd</value><!-- RCEnt interface asynchrone -->
 			</list>
 		</property>
 	</bean>

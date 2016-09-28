@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 
-public class RaisonDeDissolutionRCConverter extends BaseEnumConverter<DissolutionReason, RaisonDeDissolutionRC> {
+public class DissolutionReasonRCConverter extends BaseEnumConverter<DissolutionReason, RaisonDeDissolutionRC> {
 
 	@Override
 	@NotNull

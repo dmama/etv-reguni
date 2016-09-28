@@ -4,6 +4,7 @@ import java.util.Date;
 
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.uniregctb.evenement.ide.AnnonceIDEService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
@@ -16,6 +17,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	protected ProxyServiceCivil serviceCivil;
 	protected ProxyServiceOrganisation serviceOrganisation;
 	protected ProxyServiceInfrastructureService serviceInfra;
+	protected AnnonceIDEService annonceIDEService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -24,6 +26,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		serviceInfra.setUpDefault();
+		annonceIDEService = getBean(AnnonceIDEService.class, "annonceIDEService");
 
 		super.runOnSetUp();
 	}

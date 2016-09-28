@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 
 public abstract class AbstractEvenementOrganisationInterneTest extends BusinessTest {
 
@@ -31,6 +32,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	protected DataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
 	protected AssujettissementService assujettissementService;
+	protected AppariementService appariementService;
 	protected EvenementOrganisationOptions options;
 	protected ParametreAppService parametreAppService;
 
@@ -43,11 +45,12 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		dataEventService = getBean(DataEventService.class, "dataEventService");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+		appariementService = getBean(AppariementService.class, "appariementService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		eventSender.count = 0;
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementOrganisationContext(serviceOrganisation, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, parametreAppService);
+		context = new EvenementOrganisationContext(serviceOrganisation, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 		options = buildOptions();
 	}
 

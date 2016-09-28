@@ -111,6 +111,9 @@ public class OrganisationRCEntTest {
 												.build()
 
 								)
+								.withRee(
+										new DonneesREERCEnt(null, null)
+								)
 								.build())
 				.addDonneesSite(
 						new SiteOrganisationBuilder(101072656L)
@@ -159,6 +162,9 @@ public class OrganisationRCEntTest {
 												)
 												.build()
 
+								)
+								.withRee(
+										new DonneesREERCEnt(null, null)
 								)
 								.build())
 				.addDonneesSite(
@@ -216,6 +222,9 @@ public class OrganisationRCEntTest {
 												)
 												.build()
 
+								)
+								.withRee(
+										new DonneesREERCEnt(null, null)
 								)
 								.build())
 				.build();

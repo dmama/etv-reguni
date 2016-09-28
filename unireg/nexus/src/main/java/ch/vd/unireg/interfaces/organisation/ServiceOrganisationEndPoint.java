@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
@@ -59,6 +61,28 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 		loadMeter.start(new MethodCallDescriptor("getOrganisationByNoIde", "noide", noide));
 		try {
 			return target.getOrganisationByNoIde(noide);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) throws ServiceOrganisationException {
+		loadMeter.start(new MethodCallDescriptor("validerAnnonceIDE", "modele", modele));
+		try {
+			return target.validerAnnonceIDE(modele);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
+		loadMeter.start(new MethodCallDescriptor("getAnnonceIDE", "numero", numero));
+		try {
+			return target.getAnnonceIDE(numero);
 		}
 		finally {
 			loadMeter.end();

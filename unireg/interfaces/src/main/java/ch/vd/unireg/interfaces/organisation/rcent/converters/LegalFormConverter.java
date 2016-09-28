@@ -10,7 +10,7 @@ public class LegalFormConverter extends BaseEnumConverter<LegalForm, FormeLegale
 
 	@Override
 	@NotNull
-	protected FormeLegale convert(@NotNull LegalForm value) {
+	public FormeLegale convert(@NotNull LegalForm value) {
 		switch (value) {
 		case N_0101_ENTREPRISE_INDIVIDUELLE:
 			return FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE;

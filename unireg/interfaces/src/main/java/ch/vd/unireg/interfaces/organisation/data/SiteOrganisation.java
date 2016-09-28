@@ -26,6 +26,8 @@ public interface SiteOrganisation {
 	 */
 	List<DateRanged<String>> getNumeroIDE();
 
+	String getNumeroIDE(RegDate date);
+
 	/**
 	 * @return les données historisées en provenance du registre IDE
 	 */

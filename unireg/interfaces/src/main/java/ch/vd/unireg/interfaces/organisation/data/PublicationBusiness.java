@@ -15,6 +15,8 @@ import ch.vd.registre.base.date.RegDateHelper;
  */
 public class PublicationBusiness implements Serializable, DateRange {
 
+	private static final long serialVersionUID = 8011593550198411983L;
+
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 

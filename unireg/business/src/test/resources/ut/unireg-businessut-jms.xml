@@ -37,6 +37,8 @@
 
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
 
+	<bean id="annonceIDESender" class="ch.vd.uniregctb.evenement.ide.MockAnnonceIDESender"/>
+
 	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender"/>
 	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPMSender"/>
 

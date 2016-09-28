@@ -69,6 +69,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -182,6 +184,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected JdbcTemplate jdbcTemplate;
 	protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	protected DescriptiveSessionFactoryBean sessionFactoryBean;
+	protected ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 	protected HibernateTemplate hibernateTemplate;
 	protected Dialect dialect;
 	protected TiersDAO tiersDAO;
@@ -204,6 +207,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		dialect = getBean(Dialect.class, "hibernateDialect");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		referenceAnnonceIDEDAO = getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO");
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 
 		truncateDatabase();
@@ -1183,6 +1187,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Etablissement addEtablissement() {
 		final Etablissement etb = new Etablissement();
 		return merge(etb);
+	}
+
+	protected ReferenceAnnonceIDE addReferenceAnnonceIDE(String msgBusinessId, Etablissement etablissement) {
+		final ReferenceAnnonceIDE referenceAnnonceIDE = new ReferenceAnnonceIDE(msgBusinessId, etablissement);
+		return merge(referenceAnnonceIDE);
 	}
 
 	protected ActiviteEconomique addLienActiviteEconomique(Contribuable ctb, Etablissement etablissement, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {

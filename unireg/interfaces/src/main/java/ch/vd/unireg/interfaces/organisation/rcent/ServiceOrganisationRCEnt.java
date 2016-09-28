@@ -1,17 +1,25 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.evd0022.v3.NoticeRequest;
+import ch.vd.evd0022.v3.NoticeRequestReport;
+import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -106,7 +114,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 				);
 				serviceOrganisationEvent.setNumeroEntreeJournalRC(organisationEvent.getCommercialRegisterEntryNumber());
 				serviceOrganisationEvent.setDateEntreeJournalRC(organisationEvent.getCommercialRegisterEntryDate());
-				if (!StringUtils.isEmpty(organisationEvent.getDocumentNumberFOSC())) {
+				if (!StringUtils.isBlank(organisationEvent.getDocumentNumberFOSC())) {
 					serviceOrganisationEvent.setNumeroDocumentFOSC(Long.parseLong(organisationEvent.getDocumentNumberFOSC()));
 				}
 				serviceOrganisationEvent.setDatePublicationFOSC(organisationEvent.getPublicationDateFOSC());
@@ -116,6 +124,55 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		}
 		catch (RcEntClientException e) {
 			throw new ServiceOrganisationException(e);
+		}
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
+		final ListOfNoticeRequest noticeRequests = client.getNoticeRequest(String.valueOf(numero));
+		if (noticeRequests == null || noticeRequests.getNumberOfResults() == 0) {
+			return null;
+		} else if (noticeRequests.getNumberOfResults() > 2) {
+			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
+		}
+		return (AnnonceIDE) RCEntAnnonceIDEHelper.get(noticeRequests.getResults().get(0));
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) throws ServiceOrganisationException {
+		Assert.notNull(modele, "Modèle d'annonce à valider manquant!");
+
+		final NoticeRequest noticeRequest = RCEntAnnonceIDEHelper.buildNoticeRequest(modele);
+		final NoticeRequestReport noticeReport = client.validateNoticeRequest(noticeRequest);
+		if (noticeReport == null || noticeReport.getNoticeRequest() == null) {
+			final ModeleAnnonceIDE.Contenu contenu = modele.getContenu();
+			throw new ServiceOrganisationException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
+		}
+		final ModeleAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.get(noticeReport).getStatut();
+		cleanErreurs(statut);
+		return statut;
+	}
+
+	/**
+	 * Enlever les erreurs vides qui existent comme décrit dans SIREF-9354 même lorsqu'il n'y a pas d'erreur. Les erreurs
+	 * sont enlevée <strong>directement</strong> de la liste qui compose le statut.
+	 *
+	 * @param statut l'objet statut
+	 */
+	private void cleanErreurs(ModeleAnnonceIDE.Statut statut) {
+		if (statut != null) {
+			final List<Pair<String, String>> erreurs = statut.getErreurs();
+			if (erreurs != null && !erreurs.isEmpty()) {
+				final List<Pair<String, String>> aEnlever = new ArrayList<>(erreurs.size());
+				for (Pair<String, String> erreur : erreurs) {
+					if (StringUtils.isBlank(erreur.getFirst()) && StringUtils.isBlank(erreur.getSecond())) {
+						aEnlever.add(erreur);
+					}
+				}
+				for (Pair<String, String> erreur : aEnlever) {
+					erreurs.remove(erreur);
+				}
+			}
 		}
 	}
 

@@ -38,7 +38,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 		super.runOnSetUp();
 		final Dialect dialect = getBean(Dialect.class, "hibernateDialect");
 		final AppariementService appariementService = getBean(AppariementService.class, "appariementService");
-		processor = new AppariementEtablissementsSecondairesProcessor(transactionManager, hibernateTemplate, appariementService, dialect);
+		processor = new AppariementEtablissementsSecondairesProcessor(transactionManager, hibernateTemplate, appariementService, tiersService, dialect);
 	}
 
 	@Test

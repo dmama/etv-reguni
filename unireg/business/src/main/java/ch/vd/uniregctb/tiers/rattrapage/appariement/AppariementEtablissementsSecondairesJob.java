@@ -21,6 +21,7 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class AppariementEtablissementsSecondairesJob extends JobDefinition {
 
@@ -33,6 +34,7 @@ public class AppariementEtablissementsSecondairesJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private AppariementService appariementService;
+	private TiersService tiersService;
 	private Dialect dbDialect;
 	private RapportService rapportService;
 
@@ -46,6 +48,10 @@ public class AppariementEtablissementsSecondairesJob extends JobDefinition {
 
 	public void setAppariementService(AppariementService appariementService) {
 		this.appariementService = appariementService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	public void setDbDialect(Dialect dbDialect) {
@@ -95,7 +101,7 @@ public class AppariementEtablissementsSecondairesJob extends JobDefinition {
 
 		// tentatives d'appariements
 		final StatusManager statusManager = getStatusManager();
-		final AppariementEtablissementsSecondairesProcessor processor = new AppariementEtablissementsSecondairesProcessor(transactionManager, hibernateTemplate, appariementService, dbDialect);
+		final AppariementEtablissementsSecondairesProcessor processor = new AppariementEtablissementsSecondairesProcessor(transactionManager, hibernateTemplate, appariementService, tiersService, dbDialect);
 		final AppariementEtablissementsSecondairesResults results;
 		if (ids == null) {
 			results = processor.run(nbThreads, simulation, statusManager);

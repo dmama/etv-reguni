@@ -273,6 +273,38 @@ public interface TiersService {
      */
     TypeRegimeFiscal getTypeRegimeFiscalParDefault(CategorieEntreprise categorieEntreprise);
 
+	Entreprise getEntreprise(Etablissement etablissement, RegDate date);
+
+	/**
+	 * Associe une entreprise à une organisation civile. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
+	 * et supprime le numéro IDE du registre fiscal.
+	 * @param entreprise
+	 * @param organisation
+	 */
+	void apparier(Entreprise entreprise, Organisation organisation);
+
+	/**
+	 * Associe un établissement à un site du registre civil. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
+	 * et supprime le numéro IDE du registre fiscal.
+	 * @param etablissement l'établissement à apparier
+	 * @param site le site cible de l'appariement
+	 */
+	void apparier(Etablissement etablissement, SiteOrganisation site);
+
+	/**
+	 * Ferme ou annule les surcharges civiles à la date fournie.
+	 * @param entreprise l'entreprise visée
+	 * @param finFiscale la date du dernier jour des données fiscales (la veille du début des données civiles)
+	 */
+	void fermeSurchargesCiviles(Entreprise entreprise, RegDate finFiscale);
+
+	/**
+	 * Ferme ou annule les surcharges civiles à la date fournie.
+	 * @param etablissement l'établissement visé
+	 * @param finFiscale la date du dernier jour des données fiscales (la veille du début des données civiles)
+	 */
+	void fermeSurchargesCiviles(Etablissement etablissement, RegDate finFiscale);
+
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,
 		CHANGE_EN_HABITANT,

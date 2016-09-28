@@ -12,8 +12,10 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -103,6 +105,16 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		final List<Adresse> adresses =  site.getAdresses();
 
 		return getAdressesCivilesHistoriques(adresses);
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(Long numero) {
+		return target.getAnnonceIDE(numero);
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE annonceIDE) {
+		return target.validerAnnonceIDE(annonceIDE);
 	}
 
 	@Override

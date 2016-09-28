@@ -98,6 +98,7 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 								.build()
 
 				)
+				.withRee(new DonneesREERCEnt(null, null))
 				.build();
 
 		Assert.isTrue(builder.isSuccursale(date(2016, 3, 23)));
@@ -180,6 +181,7 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 								.build()
 
 				)
+				.withRee(new DonneesREERCEnt(null, null))
 				.build();
 
 		Assert.isFalse(builder.isSuccursale(date(2016, 3, 23)));

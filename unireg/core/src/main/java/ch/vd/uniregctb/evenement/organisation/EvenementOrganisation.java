@@ -54,6 +54,12 @@ public class EvenementOrganisation extends HibernateEntity {
 	 */
 	private long noOrganisation;
 
+	/**
+	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeRequest:noticeRequestId
+	 * Le numéro de l'annonce à l'IDE à l'origine de l'événement, si cette annonce provient d'Unireg.
+	 */
+	private Long noAnnonceIDE;
+
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
 	private String commentaireTraitement;
@@ -157,6 +163,15 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public void setNoOrganisation(long noOrganisation) {
 		this.noOrganisation = noOrganisation;
+	}
+
+	public Long getNoAnnonceIDE() {
+		return noAnnonceIDE;
+	}
+
+	@Column(name = "NO_ANNONCE_IDE")
+	public void setNoAnnonceIDE(Long noAnnonceIDE) {
+		this.noAnnonceIDE = noAnnonceIDE;
 	}
 
 	/**

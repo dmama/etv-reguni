@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="annonceIDESender" class="ch.vd.uniregctb.evenement.ide.AnnonceIDESenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtAnnonceIDE}" />
+		<property name="serviceReplyTo" value="${extprop.jms.queue.evtRapportAnnonceIDE}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDemandeAnnonceIDE.enabled}" />
+	</bean>
+
+	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="noticeReportEventJmsHandler"/>
+	</bean>
+
+	<bean id="noticeReportEventJmsHandler" class="ch.vd.uniregctb.evenement.ide.NoticeReportEventJmsHandler">
+		<property name="annonceIDEService" ref="annonceIDEService" />
+	</bean>
+
+	<bean id="evenementRapportAnnonceIDEJmsEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtRapportAnnonceIDE}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtRapportAnnonceIDE.consumers}"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evenementRapportAnnonceIDEJmsListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRapportAnnonceIDE.enabled}" />
+		<property name="description" value="Réception d’événements RCEnt de rapport de statut sur les demandes d'annonce à l'IDE."/>
+	</bean>
+
+</beans>

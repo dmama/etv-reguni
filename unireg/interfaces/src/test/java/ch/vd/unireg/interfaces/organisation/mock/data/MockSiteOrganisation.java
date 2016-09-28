@@ -161,6 +161,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public String getNumeroIDE(RegDate date) {
+		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+	}
+
+	@Override
 	public MockDonneesRegistreIDE getDonneesRegistreIDE() {
 		return donneesRegistreIDE;
 	}

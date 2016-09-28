@@ -5,7 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
@@ -20,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
-import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.Notice;
@@ -35,6 +33,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.evenement.RCEntApiHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -212,9 +211,9 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	@NotNull
 	private List<EvenementOrganisation> createEvenementOrganisation(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
-			return EvenementOrganisationConversionHelper.createEvenement(message);
+			return RCEntApiHelper.createEvenement(message);
 		}
-		catch (RuntimeException e) {
+		catch (EvenementOrganisationException | RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
 	}
@@ -316,18 +315,9 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources(EvenementOrganisationConversionHelper.RCENT_SCHEMA);
+			final Source[] source = RCEntApiHelper.getRCEntClasspathSources();
 			schemaCache = sf.newSchema(source);
 		}
-	}
-
-	private static Source[] getClasspathSources(String... pathes) throws IOException {
-		final Source[] sources = new Source[pathes.length];
-		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
-			final String path = pathes[i];
-			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
-		}
-		return sources;
 	}
 
 	@Override
@@ -340,7 +330,6 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		stop();
 		callback.run();
 	}
-
 
 	@Override
 	public void start() {

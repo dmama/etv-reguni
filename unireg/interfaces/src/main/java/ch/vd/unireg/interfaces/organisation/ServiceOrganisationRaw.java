@@ -3,6 +3,8 @@ package ch.vd.unireg.interfaces.organisation;
 import java.io.Serializable;
 import java.util.Map;
 
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 
@@ -63,6 +65,29 @@ public interface ServiceOrganisationRaw {
 	 * @throws ServiceOrganisationException
 	 */
 	Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException;
+
+
+	/**
+	 * <p>
+	 *     Faire contrôler la validité d'un modèle d'annonce par le registre civil avant de l'envoyer. Cette étape est obligatoire.
+	 * </p>
+	 *
+	 * @param modele le modèle de l'annonce.
+	 * @return le statut résultant avec les erreurs éventuelles ajouté par le registre civil.
+	 */
+	ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) throws ServiceOrganisationException;
+
+	/**
+	 * Obtenir le contenu et le statut d'une annonce à l'IDE.
+	 *
+	 * Il faut garder à l'esprit que RCEnt peut ne pas connaître une annonce qui lui a été adressé via l'esb, de par
+	 * le caractère asynchrone de ce genre d'envoi.
+	 *
+	 * @param numero le numéro de l'annonce recherchée
+	 * @return l'annonce IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
+	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
+	 */
+	AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException;
 
 	/**
 	 * Méthode qui permet de tester que le service organisation répond bien. Cette méthode est insensible aux caches.

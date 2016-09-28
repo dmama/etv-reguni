@@ -14,24 +14,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
@@ -46,12 +40,15 @@ public class AppariementEtablissementsSecondairesProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final AppariementService appariementService;
+	private final TiersService tiersService;
 	private final Dialect dbDialect;
 
-	public AppariementEtablissementsSecondairesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, AppariementService appariementService, Dialect dbDialect) {
+	public AppariementEtablissementsSecondairesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
+	                                                     AppariementService appariementService, TiersService tiersService, Dialect dbDialect) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.appariementService = appariementService;
+		this.tiersService = tiersService;
 		this.dbDialect = dbDialect;
 	}
 
@@ -110,7 +107,7 @@ public class AppariementEtablissementsSecondairesProcessor {
 		if (!appariements.isEmpty()) {
 			if (!simulation) {
 				for (CandidatAppariement appariement : appariements) {
-					apparier(appariement.getEtablissement(), appariement.getSite());
+					tiersService.apparier(appariement.getEtablissement(), appariement.getSite());
 				}
 			}
 			pushToRapport(entreprise, appariements, rapport);
@@ -128,32 +125,6 @@ public class AppariementEtablissementsSecondairesProcessor {
 				break;
 			default:
 				throw new IllegalArgumentException("Type de critère décisif inconnu : " + appariement.getCritere());
-			}
-		}
-	}
-
-	private void apparier(Etablissement etablissement, SiteOrganisation site) {
-		final List<Domicile> domiciles = site.getDomicilesEnActivite();
-		final RegDate debutCivil = domiciles.isEmpty() ? RegDate.get() : domiciles.get(0).getDateDebut();
-		final RegDate finFiscale = debutCivil.getOneDayBefore();
-
-		// mise à jour du numéro cantonal
-		etablissement.setNumeroEtablissement(site.getNumeroSite());
-
-		// on stoppe les domiciles fiscaux à la veille de la date de début, si celle-ci a un sens...
-		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
-		for (DomicileEtablissement domicileFiscal : domicilesFiscaux) {
-			if (RegDateHelper.isBefore(finFiscale, domicileFiscal.getDateDebut(), NullDateBehavior.EARLIEST)) {
-				domicileFiscal.setAnnule(true);
-			}
-			else if (domicileFiscal.getDateFin() == null) {
-				domicileFiscal.setDateFin(finFiscale);
-			}
-			else if (RegDateHelper.isBefore(finFiscale, domicileFiscal.getDateFin(), NullDateBehavior.LATEST)) {
-				final DomicileEtablissement nouveauDomicile = domicileFiscal.duplicate();
-				domicileFiscal.setAnnule(true);
-				nouveauDomicile.setDateFin(finFiscale);
-				etablissement.addDomicile(nouveauDomicile);
 			}
 		}
 	}

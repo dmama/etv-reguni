@@ -26,6 +26,7 @@
 			classpath*:/unireg-business-evtcivil.xml,
 			classpath*:/unireg-business-evtorganisation.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
+			classpath*:/unireg-business-annonce-ide.xml,
 			classpath*:/unireg-business-jobs4webit.xml,
 			/WEB-INF/unireg-web-*.xml
 		</param-value>

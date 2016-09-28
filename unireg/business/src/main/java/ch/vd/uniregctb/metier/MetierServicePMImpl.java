@@ -189,6 +189,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		// Rapprochement de l'entreprise
 		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
+		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 		final RaisonSocialeFiscaleEntreprise raisonSociale = RangeUtil.getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date);
 		if (raisonSociale != null && raisonSociale.getDateFin() == null) {
@@ -227,6 +228,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 		final DomicileEtablissement domicile = RangeUtil.getAssertLast(sortedDomiciles, date);
 
 		etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
+		etablissementPrincipal.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
+
 		tiersService.closeDomicileEtablissement(domicile, date.getOneDayBefore());
 		result.addEtablissementRattache(etablissementPrincipal);
 
@@ -290,6 +293,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 			// On a suffisament de certitudes pour rattacher l'établissement au site
 			etablissementForKey.setNumeroEtablissement(siteForKey.getNumeroSite());
+			etablissementForKey.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
 			// Il faut ventiler les participant dans les bonnes listes
 			etablissementsNonEncoreRattaches.remove(etablissementForKey);

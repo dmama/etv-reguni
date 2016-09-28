@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
@@ -29,9 +30,22 @@ import org.xml.sax.SAXException;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.TypeOfLocation;
+import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.evd0023.v3.ObjectFactory;
+import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -43,13 +57,15 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-1.xsd",
-			"eVD-0023-3-1.xsd",
-			"eVD-0024-3-1.xsd"
+			"eVD-0022-3-2.xsd",
+			"eVD-0023-3-2.xsd",
+			"eVD-0024-3-2.xsd"
 	};
 
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
 	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
+	private static final String BASE_PATH_VALIDER_ANNONCE_IDE = "/noticeRequestValidate/";
+	private static final String BASE_PATH_ANNONCE_IDE = "/noticeRequestList";
 
 	// Organisation cible sur RCEnt
 	private static final long ID_BCV = 101544776L;
@@ -69,6 +85,9 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final long ID_BOMACO = 101636326L;
 	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
 	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-bomaco-history.xml";
+
+	// Annonce IDE sur RCEnt
+	private static final long ID_ANNONCE = 301L;
 
 	private String baseUrl;
 
@@ -196,6 +215,84 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
+	@Test
+	public void testDirectGetAnnonceIDE() throws Exception {
+		String url = baseUrl + BASE_PATH_ANNONCE_IDE + "?noticeRequestId=" + ID_ANNONCE;
+		String xml = getUrlContent(url);
+		final ListOfNoticeRequest listOfNoticeRequest = (ListOfNoticeRequest) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
+
+		Assert.assertNotNull(listOfNoticeRequest);
+		Assert.assertEquals(1, listOfNoticeRequest.getNumberOfResults());
+
+	}
+
+	@Test
+	public void testRCEntClientGetAnnonceIDE() throws Exception {
+		final RcEntClient client = createRCEntClient(true);
+		final ListOfNoticeRequest listOfNoticeRequest = client.getNoticeRequest(String.valueOf(ID_ANNONCE));
+
+		Assert.assertNotNull(listOfNoticeRequest);
+		Assert.assertEquals(1, listOfNoticeRequest.getNumberOfResults());
+	}
+
+	@Test
+	public void testGetAnnonceIDE() throws Exception {
+		final AnnonceIDE annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+
+		Assert.assertNotNull(annonceIDE);
+		Assert.assertEquals(301L, annonceIDE.getNumero().longValue());
+	}
+
+	@Test
+	public void testValidateAnnonceIDE() throws ParseException {
+		final AnnonceIDE annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+//		final Date fixedTime = df.parse("2016-09-13T10:05:48");
+//		final AnnonceIDEModele.Statut statut = service.validerAnnonceIDE(new AnnonceIDERCEnt(null, TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL));
+		Assert.assertEquals(StatutAnnonce.TRANSMIS, annonceIDE.getStatut().getStatut());
+		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(annonceIDE);
+
+		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
+		Assert.assertEquals(0, statut.getErreurs().size());
+	}
+
+
+	@Test
+	public void testValidateModeleAnnonceIDE() throws ParseException {
+
+		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
+				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, 1201, "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				                              null, null);
+		ModeleAnnonceIDERCEnt modele = RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		                                                                                 null, null, null, null, null, null,
+		                                                                                 "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", adresse);
+		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
+
+		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
+		Assert.assertEquals(0, statut.getErreurs().size());
+	}
+
+	@Test
+	public void testValidateAnnonceIDEPourrie() throws ParseException {
+		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null));
+
+		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		// TODO: check le contenu
+	}
+
+	@Test
+	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
+		ModeleAnnonceIDERCEnt modele = RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		                                                                                 new NumeroIDE("CHE999999998"), null, null, null, null, null,
+		                                                                                 "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", null);
+		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
+
+		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		// TODO: check le contenu
+	}
+
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {
 		RcEntClientImpl client = new RcEntClientImpl();
 		client.setUsername(username);
@@ -203,6 +300,8 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		client.setBaseUrl(baseUrl);
 		client.setOrganisationPath(BASE_PATH_ORGANISATION);
 		client.setOrganisationsOfNoticePath(BASE_PATH_ORGANISATIONS_OF_NOTICE);
+		client.setNoticeRequestValidatePath(BASE_PATH_VALIDER_ANNONCE_IDE);
+		client.setNoticeRequestListPath(BASE_PATH_ANNONCE_IDE);
 		if (validating) {
 			client.setSchemasLocations(Arrays.asList(RCENT_SCHEMA));
 			client.setValidationEnabled(true);

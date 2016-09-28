@@ -18,6 +18,8 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.cache.CacheHelper;
@@ -292,6 +294,16 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	@Override
 	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
 		return target.getOrganisationEvent(noEvenement);
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(long numero) {
+		return target.getAnnonceIDE(numero);
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) {
+		return target.validerAnnonceIDE(modele);
 	}
 
 	@Override

@@ -98,6 +98,8 @@ drop table ALLEGEMENT_FISCAL cascade constraints;
 
 drop table AUTRE_DOCUMENT_FISCAL cascade constraints;
 
+drop table REFERENCE_ANNONCE_IDE cascade constraints;s
+
 drop table TIERS cascade constraints;
 
 

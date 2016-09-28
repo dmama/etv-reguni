@@ -9,6 +9,7 @@ public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_EVT_CIVIL = "classpath:unireg-business-evtcivil.xml";
 	public static final String UNIREG_BUSINESS_EVT_ORGANISATION = "classpath:unireg-business-evtorganisation.xml";
 	public static final String UNIREG_BUSINESS_EVT_FISCAL= "classpath:unireg-business-evtfiscal.xml";
+	public static final String UNIREG_BUSINESS_ANNONCE_IDE = "classpath:unireg-business-annonce-ide.xml";
 	public static final String UNIREG_BUSINESS_JOBS = "classpath:unireg-business-jobs.xml";
 	public static final String UNIREG_BUSINESS_UT_CACHE = "classpath:ut/unireg-businessut-cache.xml";
 	public static final String UNIREG_BUSINESS_UT_EVT_ORGANISATION = "classpath:ut/unireg-businessut-evtorganisation.xml";

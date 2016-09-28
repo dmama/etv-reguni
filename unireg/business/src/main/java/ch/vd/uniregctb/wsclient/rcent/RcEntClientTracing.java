@@ -3,8 +3,11 @@ package ch.vd.uniregctb.wsclient.rcent;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.evd0022.v3.NoticeRequest;
+import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
@@ -128,6 +131,66 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 				@Override
 				public String toString() {
 					return String.format("ide=%s, referenceDate=%s, withHistory=%s", noide, ServiceTracing.toString(referenceDate), withHistory);
+				}
+			});
+		}
+	}
+
+	@Override
+	public NoticeRequestReport validateNoticeRequest(final NoticeRequest noticeRequest) throws RcEntClientException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final NoticeRequestReport data = target.validateNoticeRequest(noticeRequest);
+			if (data != null) {
+				items = 1;
+			}
+			return data;
+		}
+		catch (RcEntClientException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "validateNoticeRequest", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("noticeRequest=%s", noticeRequest.getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
+				}
+			});
+		}
+	}
+
+	@Override
+	public ListOfNoticeRequest getNoticeRequest(final String id) throws RcEntClientException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final ListOfNoticeRequest data = target.getNoticeRequest(id);
+			if (data != null && data.getNumberOfResults() != 0) {
+				items = data.getNumberOfResults();
+			}
+			return data;
+		}
+		catch (RcEntClientException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getNoticeRequest", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%s", id);
 				}
 			});
 		}

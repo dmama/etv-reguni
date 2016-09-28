@@ -5,7 +5,8 @@ import java.util.Map;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.stats.ServiceTracing;
@@ -57,7 +58,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return organisation;
 		}
-		catch (ServiceCivilException e) {
+		catch (ServiceOrganisationException e) {
 			t = e;
 			throw e;
 		}
@@ -87,7 +88,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return noOrganisation;
 		}
-		catch (ServiceCivilException e) {
+		catch (ServiceOrganisationException e) {
 			t = e;
 			throw e;
 		}
@@ -117,7 +118,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return ids;
 		}
-		catch (ServiceCivilException e) {
+		catch (ServiceOrganisationException e) {
 			t = e;
 			throw e;
 		}
@@ -147,7 +148,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return organisations;
 		}
-		catch (ServiceCivilException e) {
+		catch (ServiceOrganisationException e) {
 			t = e;
 			throw e;
 		}
@@ -160,6 +161,67 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 				@Override
 				public String toString() {
 					return String.format("noEvenement=%d", noEvenement);
+				}
+			});
+		}
+	}
+
+	@Override
+	public AnnonceIDE getAnnonceIDE(final long numero) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final AnnonceIDE annonceIDE = target.getAnnonceIDE(numero);
+			if (annonceIDE != null) {
+				items = 1;
+			}
+			return annonceIDE;
+		}
+		catch (ServiceOrganisationException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getAnnonceIDE", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("noAnnonceIDE=%d", numero);
+				}
+			});
+		}
+	}
+
+	@Override
+	public ModeleAnnonceIDE.Statut validerAnnonceIDE(final ModeleAnnonceIDE modele) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final AnnonceIDE.Statut annonceIDEStatut = target.validerAnnonceIDE(modele);
+			if (annonceIDEStatut != null) {
+				items = 1;
+			}
+			return annonceIDEStatut;
+		}
+		catch (ServiceOrganisationException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "validerAnnonceIDE", items, new Object() {
+				@Override
+				public String toString() {
+					final ModeleAnnonceIDE.Contenu contenu = modele.getContenu();
+					return String.format("nomEntreprise=%s", contenu == null ? "" : contenu.getNom());
 				}
 			});
 		}

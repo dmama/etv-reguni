@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
 
 /**
@@ -53,9 +56,9 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	                             List<DateRanged<FormeLegale>> formeLegale,
 	                             List<Domicile> domicile,
 	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
-	                             DonneesRC rc,
-	                             DonneesRegistreIDE ide,
-	                             DonneesREE ree,
+	                             @NotNull DonneesRC rc,
+	                             @NotNull DonneesRegistreIDE ide,
+	                             @NotNull DonneesREE ree,
 	                             Map<RegDate, List<PublicationBusiness>> publications,
 	                             List<DateRanged<Long>> ideRemplacePar,
 	                             List<DateRanged<Long>> ideEnRemplacementDe,
@@ -77,6 +80,9 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.typeDeSite = typeDeSite;
 		this.domicile = domicile;
 		this.fonction = fonction;
+		Assert.notNull(this.rc);
+		Assert.notNull(this.ide);
+		Assert.notNull(this.ree);
 	}
 
 	@Override
@@ -92,6 +98,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
 		return numeroIDE;
+	}
+
+	@Override
+	public String getNumeroIDE(RegDate date) {
+		return OrganisationHelper.valueForDate(numeroIDE, date);
 	}
 
 	@Override
