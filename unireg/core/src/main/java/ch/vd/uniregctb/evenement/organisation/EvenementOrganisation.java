@@ -165,11 +165,11 @@ public class EvenementOrganisation extends HibernateEntity {
 		this.noOrganisation = noOrganisation;
 	}
 
+	@Column(name = "NO_ANNONCE_IDE")
 	public Long getNoAnnonceIDE() {
 		return noAnnonceIDE;
 	}
 
-	@Column(name = "NO_ANNONCE_IDE")
 	public void setNoAnnonceIDE(Long noAnnonceIDE) {
 		this.noAnnonceIDE = noAnnonceIDE;
 	}
