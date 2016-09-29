@@ -249,6 +249,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 //		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
 //		final Date fixedTime = df.parse("2016-09-13T10:05:48");
 //		final AnnonceIDEModele.Statut statut = service.validerAnnonceIDE(new AnnonceIDERCEnt(null, TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL));
+		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(StatutAnnonce.TRANSMIS, annonceIDE.getStatut().getStatut());
 		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(annonceIDE);
 
