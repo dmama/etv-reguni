@@ -4400,6 +4400,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (en particulier, pas de mandataire)
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4427,7 +4428,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(mandat);
 				Assert.assertFalse(mandat.isAnnule());
 				Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-				Assert.assertEquals(date(annee - 1, 12, 31), mandat.getDateFin());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
 		});
@@ -4439,6 +4440,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
+		final RegDate dateTraitement = RegDate.get();
 
 		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -4466,7 +4468,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
 				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				addMandatGeneral(entreprise, mandataire, date(annee, 1, 1), null, true);        // sera annulé
+				addMandatGeneral(entreprise, mandataire, dateTraitement, null, true);        // sera annulé
 
 				return entreprise.getNumero();
 			}
@@ -4500,7 +4502,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final Mandat mandat = mandats.get(0);
 				Assert.assertNotNull(mandat);
 				Assert.assertTrue(mandat.isAnnule());
-				Assert.assertEquals(date(annee, 1, 1), mandat.getDateDebut());
+				Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 				Assert.assertNull(mandat.getDateFin());
 				Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 			}
@@ -4513,6 +4515,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
+		final RegDate dateTraitement = RegDate.get();
 
 		final class Ids {
 			long idEntreprise;
@@ -4545,7 +4548,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
 				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, date(annee, 5, 3), true);
+				final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, dateTraitement, true);
 				mandat.setNomPersonneContact("Bertarello");
 				mandat.setPrenomPersonneContact("Alfonso");
 				mandat.setNoTelephoneContact("0525551247");
@@ -4588,7 +4591,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(date(annee - 1, 12, 31), mandat.getDateFin());
+					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
 					Assert.assertEquals("Bertarello", mandat.getNomPersonneContact());
@@ -4600,7 +4603,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(mandat);
 					Assert.assertTrue(mandat.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(date(annee, 5, 3), mandat.getDateFin());
+					Assert.assertEquals(dateTraitement, mandat.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
 					Assert.assertEquals("Bertarello", mandat.getNomPersonneContact());
@@ -4648,6 +4651,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (en particulier, pas de mandataire)
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, null);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4679,7 +4683,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(adresse);
 				Assert.assertFalse(adresse.isAnnule());
 				Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-				Assert.assertEquals(date(annee - 1, 12, 31), adresse.getDateFin());
+				Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
 				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 			}
 		});
@@ -4691,6 +4695,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
+		final RegDate dateTraitement = RegDate.get();
 
 		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -4714,7 +4719,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addActiviteEconomique(entreprise, etb, dateDebutEntreprise, null, true);
 				addDomicileEtablissement(etb, dateDebutEntreprise, null, MockCommune.Cossonay);
 
-				addAdresseMandataireSuisse(entreprise, date(annee, 1, 1), null, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);     // sera annulée
+				addAdresseMandataireSuisse(entreprise, dateTraitement, null, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);     // sera annulée
 
 				return entreprise.getNumero();
 			}
@@ -4752,7 +4757,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final AdresseMandataire adresse = adresses.iterator().next();
 				Assert.assertNotNull(adresse);
 				Assert.assertTrue(adresse.isAnnule());
-				Assert.assertEquals(date(annee, 1, 1), adresse.getDateDebut());
+				Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 				Assert.assertNull(adresse.getDateFin());
 				Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 			}
@@ -4765,6 +4770,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final int annee = 2015;
 		final RegDate dateDebutEntreprise = date(2010, 2, 1);
 		final RegDate dateQuittance = date(annee + 1, 5, 13);
+		final RegDate dateTraitement = RegDate.get();
 
 		final Long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -4792,7 +4798,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRaisonSociale(mandataire, date(1950, 4, 2), null, "Mandataire à toute heure SA");
 				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
-				addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, date(annee, 5, 3), TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);
+				addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, dateTraitement, TypeMandat.GENERAL, "Pour vous servir SA", MockRue.Geneve.AvenueGuiseppeMotta);
 
 				return entreprise.getNumero();
 			}
@@ -4834,7 +4840,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(adresse);
 					Assert.assertFalse(adresse.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-					Assert.assertEquals(date(annee - 1, 12, 31), adresse.getDateFin());
+					Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 				}
 				{
@@ -4842,7 +4848,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(adresse);
 					Assert.assertTrue(adresse.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-					Assert.assertEquals(date(annee, 5, 3), adresse.getDateFin());
+					Assert.assertEquals(dateTraitement, adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 				}
 			}
@@ -4903,6 +4909,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (en particulier, mandataire identifié par son numéro IDE)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -4930,7 +4937,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(date(annee, 1, 1), mandat.getDateDebut());
+					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
@@ -5013,6 +5020,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Avenue Guiseppe Motta 42", null, null, null, null, MockLocalite.Geneve.getNPA().toString(), MockLocalite.Geneve.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5040,7 +5048,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(date(annee, 1, 1), mandat.getDateDebut());
+					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
@@ -5122,6 +5130,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Voltastrasse 42", null, null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5154,7 +5163,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(adresse);
 					Assert.assertFalse(adresse.isAnnule());
 					Assert.assertTrue(adresse.isWithCopy());
-					Assert.assertEquals(date(annee, 1, 1), adresse.getDateDebut());
+					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 					Assert.assertNull(adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 					Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
@@ -5234,6 +5243,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5266,7 +5276,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(adresse);
 					Assert.assertFalse(adresse.isAnnule());
 					Assert.assertTrue(adresse.isWithCopy());
-					Assert.assertEquals(date(annee, 1, 1), adresse.getDateDebut());
+					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 					Assert.assertNull(adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 					Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
@@ -5346,6 +5356,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5373,7 +5384,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(date(annee, 1, 1), mandat.getDateDebut());
+					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
@@ -5694,6 +5705,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, Boolean.TRUE, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5722,7 +5734,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(date(annee - 1, 6, 30), mandat.getDateFin());
+					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertNull(mandat.getNomPersonneContact());
@@ -5738,7 +5750,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(adresse);
 					Assert.assertFalse(adresse.isAnnule());
 					Assert.assertFalse(adresse.isWithCopy());
-					Assert.assertEquals(date(annee - 1, 7, 1), adresse.getDateDebut());
+					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 					Assert.assertNull(adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 					Assert.assertEquals("Freundlicherweise AG", adresse.getNomDestinataire());
@@ -5813,6 +5825,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (nouveau mandataire)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.FALSE, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5840,7 +5853,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(date(annee - 1, 7, 1), mandat.getDateDebut());
+					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
@@ -5858,7 +5871,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertFalse(adresse.isAnnule());
 					Assert.assertFalse(adresse.isWithCopy());
 					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
-					Assert.assertEquals(date(annee - 1, 6, 30), adresse.getDateFin());
+					Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
 					Assert.assertEquals("Chapi chapo", adresse.getNomDestinataire());
 					Assert.assertNull(adresse.getComplement());
@@ -5938,6 +5951,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (même mandataire mais le flag "sans copie" est coché)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.TRUE, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -5967,7 +5981,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(date(annee - 1, 6, 30), mandat.getDateFin());
+					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
@@ -5979,7 +5993,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Mandat mandat = mandats.get(1);
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(date(annee - 1, 7, 1), mandat.getDateDebut());
+					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertFalse(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
@@ -6065,6 +6079,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour (même mandataire mais le numéro de téléphone de contact a changé)
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, null, Boolean.FALSE, newTelContact);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
+		final RegDate dateTraitement = RegDate.get();
 
 		// traitement de ces données
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -6094,7 +6109,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
 					Assert.assertEquals(dateDebutEntreprise, mandat.getDateDebut());
-					Assert.assertEquals(date(annee - 1, 6, 30), mandat.getDateFin());
+					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
@@ -6106,7 +6121,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Mandat mandat = mandats.get(1);
 					Assert.assertNotNull(mandat);
 					Assert.assertFalse(mandat.isAnnule());
-					Assert.assertEquals(date(annee - 1, 7, 1), mandat.getDateDebut());
+					Assert.assertEquals(dateTraitement, mandat.getDateDebut());
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());

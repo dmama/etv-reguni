@@ -226,26 +226,25 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final InformationsMandataire infosMandataire = retour.getMandataire();
 		if (infosMandataire != null && infosMandataire.isNotEmpty()) {
 			// ah ah... il y a quelque chose...
-			traiterInformationsMandataire(entreprise, declarationIdentifiee.getDateFinExerciceCommercial(), retour.getPf(), retour.getNoSequence(), infosMandataire);
+			traiterInformationsMandataire(entreprise, retour.getPf(), retour.getNoSequence(), infosMandataire);
 		}
 		else {
 			// pas d'information fournie -> on stoppe l'éventuel mandat général en cours
-			fermerMandatGeneralActif(entreprise, declarationIdentifiee.getDateFinExerciceCommercial(), retour.getPf(), retour.getNoSequence());
+			fermerMandatGeneralActif(entreprise, retour.getPf(), retour.getNoSequence());
 		}
    	}
 
 	/**
 	 * Traitement des informations de mandataire général présentes dans la déclaration retournée
 	 * @param entreprise entreprise ciblée
-	 * @param finExerciceCommercial fin de l'exercice commercial concerné par la DI dont on a les informations de mandataire
 	 * @param pf période fiscale initiale (= à l'envoi) de la DI
 	 * @param noSequence numéro de séquence initial (= à l'envoi) de la DI dans sa période fiscale (initiale)
 	 * @param infosMandataire informations extraites de la DI
 	 */
-	private void traiterInformationsMandataire(Entreprise entreprise, RegDate finExerciceCommercial, int pf, int noSequence, @NotNull InformationsMandataire infosMandataire) {
+	private void traiterInformationsMandataire(Entreprise entreprise, int pf, int noSequence, @NotNull InformationsMandataire infosMandataire) {
 
 		final RegDate dateReference = getDateQuittancementDerniereDeclarationRetournee(entreprise);
-		final RegDate dateClotureMandatPrecedent = findDateClotureMandat(entreprise, finExerciceCommercial);
+		final RegDate dateClotureMandatPrecedent = findDateClotureMandat();
 		if (dateClotureMandatPrecedent == null) {
 			// on ne sait pas vraiment à partir de quand ouvrir le nouveau mandat
 			tacheService.genereTacheControleDossier(entreprise, Motifs.MANDATAIRE);
@@ -575,12 +574,11 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * Ferme le mandat général (quelle que soit sa forme - lien ou simple adresse) actif à la veille
 	 * de la date de début de la période d'imposition de la DI retournée
 	 * @param entreprise entreprise concernée
-	 * @param finExerciceCommercialSansMandataire date de fin de l'exercice commercial pour lequel le mandataire a éventuellement disparu
 	 * @param pf période fiscale de la déclaration
 	 * @param noSequence numéro de séquence de la déclaration dans sa période fiscale
 	 */
-	private void fermerMandatGeneralActif(Entreprise entreprise, RegDate finExerciceCommercialSansMandataire, int pf, int noSequence) {
-		final RegDate dateClotureSouhaitee = findDateClotureMandat(entreprise, finExerciceCommercialSansMandataire);
+	private void fermerMandatGeneralActif(Entreprise entreprise, int pf, int noSequence) {
+		final RegDate dateClotureSouhaitee = findDateClotureMandat();
 		if (dateClotureSouhaitee == null) {
 			// s'il y a un mandat actif maintenant (= un mandat dont on est certain qu'il devrait être fermé), on laisse un message
 			if (findMandatGeneralActif(entreprise, null) != null || findAdresseMandataireGeneraleActive(entreprise, null) != null) {
@@ -647,25 +645,12 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	}
 
 	/**
-	 * @param entreprise entreprise concernée
-	 * @param finExerciceCommercialAvecMandataireDifferent date de fin de l'exercice commercial pour lequel le mandataire a éventuellement changé
-	 * @return la veille de la date de début de l'exercice commercial de la DI, où <code>null</code> si un tel exercice commercial n'existe pas...
+	 * @return la veille de la date du jour
 	 */
 	@Nullable
-	private RegDate findDateClotureMandat(Entreprise entreprise, RegDate finExerciceCommercialAvecMandataireDifferent) {
-
-		// On ne peut pas faire confiance aux dates dans la DI elle-même, car celles-ci ont pu être modifiées par
-		// un changement dans la date de fin de l'exercice commercial plus tôt dans le traitement...
-		// Solution -> on recalcule les exercices commerciaux (les bouclements sont à jour), on retrouve le bon et on prend la veille de la date de début
-
-		final List<ExerciceCommercial> excomms = tiersService.getExercicesCommerciaux(entreprise);
-		final ExerciceCommercial excomm = DateRangeHelper.rangeAt(excomms, finExerciceCommercialAvecMandataireDifferent);
-		if (excomm != null) {
-			return excomm.getDateDebut().getOneDayBefore();
-		}
-		else {
-			return null;
-		}
+	private RegDate findDateClotureMandat() {
+		// [SIFISC-21206] la date en question est _toujours_ la veille de la date de réception du message de retour de la DI
+		return RegDate.get().getOneDayBefore();
 	}
 
 	/**
