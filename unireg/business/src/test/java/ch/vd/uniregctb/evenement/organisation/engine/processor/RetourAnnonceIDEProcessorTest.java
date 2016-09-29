@@ -193,5 +193,4 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 		                             }
 		);
 	}
-
 }

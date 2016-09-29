@@ -166,6 +166,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	@Column(name = "NO_ANNONCE_IDE")
+	@ForeignKey(name="FK_EV_ORG_REFANNIDE_ID")
 	public Long getNoAnnonceIDE() {
 		return noAnnonceIDE;
 	}
