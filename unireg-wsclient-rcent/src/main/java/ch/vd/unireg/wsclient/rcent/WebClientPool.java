@@ -10,6 +10,7 @@ import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
+import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 import org.apache.cxf.transport.http.HTTPConduit;
@@ -42,7 +43,13 @@ public class WebClientPool {
 				prov.setSchemaLocations(schemasLocations);
 			}
 
-			return WebClient.create(baseUrl, Collections.singletonList(prov), null);
+			final WebClient client = WebClient.create(baseUrl, Collections.singletonList(prov), null);
+
+			// on ajoute un intercepteur d'URL pour enrichir les messages en cas d'erreur
+			final ClientConfiguration config = WebClient.getConfig(client);
+			config.getOutInterceptors().add(new URLKeeperInterceptor());
+
+			return client;
 		}
 
 		@Override

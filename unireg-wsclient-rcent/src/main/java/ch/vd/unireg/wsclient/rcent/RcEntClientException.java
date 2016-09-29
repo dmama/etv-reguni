@@ -9,6 +9,12 @@ import org.jetbrains.annotations.Nullable;
 public class RcEntClientException extends RuntimeException {
 
 	/**
+	 * L'URL appelée par l'appel en erreur.
+	 */
+	@Nullable
+	private final String url;
+
+	/**
 	 * Ce lien est transient : comme ça, dans le log de l'application avant éventuelle sérialisation, on le voit,
 	 * mais il n'est pas transmis plus loin (au travers d'un appel SpringRemoting, par exemple)
 	 */
@@ -37,6 +43,7 @@ public class RcEntClientException extends RuntimeException {
 	 */
 	protected RcEntClientException(String shortMessage, Throwable cause) {
 		super(shortMessage);
+		this.url = URLKeeperInterceptor.getLastUrl();
 		this.cause = cause;
 		this.errors = null;
 	}
@@ -81,5 +88,10 @@ public class RcEntClientException extends RuntimeException {
 			return Collections.emptyList();
 		}
 		return errors;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " (when calling " + url + ")";
 	}
 }
