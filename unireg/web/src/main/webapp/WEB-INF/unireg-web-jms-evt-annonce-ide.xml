@@ -5,7 +5,7 @@
 	<bean id="annonceIDESender" class="ch.vd.uniregctb.evenement.ide.AnnonceIDESenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtAnnonceIDE}" />
+		<property name="serviceDestination" value="${extprop.jms.queue.evtDemandeAnnonceIDE}" />
 		<property name="serviceReplyTo" value="${extprop.jms.queue.evtRapportAnnonceIDE}" />
 		<property name="enabled" value="${extprop.jms.queue.evtDemandeAnnonceIDE.enabled}" />
 	</bean>
