@@ -46,6 +46,7 @@ import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
+import ch.vd.uniregctb.adapter.rcent.model.RCRegistrationData;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -401,11 +402,12 @@ public class RCEntAdapterTest {
 		final List<DateRangeHelper.Ranged<String>> locationName = organisation.getLocationData().get(0).getName();
 		assertEquals("Bomaco Sàrl en liquidation", locationName.get(0).getPayload());
 
-		final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getRegistrationStatus();
-		assertEquals(CommercialRegisterStatus.ACTIF, locationRcEntryStatus.get(0).getPayload());
-
-		final List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getRegistrationDate();
-		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
+		final List<DateRangeHelper.Ranged<RCRegistrationData>> locationRcRegistrationData = organisation.getLocationData().get(0).getRc().getRegistrationData();
+		assertEquals(1, locationRcRegistrationData.size());
+		final RCRegistrationData rcRegistration = locationRcRegistrationData.get(0).getPayload();
+		assertNotNull(rcRegistration);
+		assertEquals(CommercialRegisterStatus.ACTIF, rcRegistration.getRegistrationStatus());
+		assertEquals(RegDate.get(2007, 4, 16), rcRegistration.getChRegistrationDate());
 
 		// JDE 27.01.2016 : déconnecté l'interprétation des fonctions qui pêtait dès qu'une même personne avait plusieurs fonctions à un moment donné
 		final Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> locationFunctions = organisation.getLocationData().get(0).getFunction();
@@ -439,10 +441,11 @@ public class RCEntAdapterTest {
 		assertNull(locationName.get(0).getDateFin());
 		assertEquals("Agades AG", locationName.get(0).getPayload());
 
-		final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
-		assertNotNull(rcStatus);
-		assertEquals(CommercialRegisterStatus.RADIE, rcStatus.get(0).getPayload());
-
+		final List<DateRangeHelper.Ranged<RCRegistrationData>> locationRcRegistrationData = organisation.getLocationData().get(0).getRc().getRegistrationData();
+		assertEquals(1, locationRcRegistrationData.size());
+		final RCRegistrationData rcRegistration = locationRcRegistrationData.get(0).getPayload();
+		assertNotNull(rcRegistration);
+		assertEquals(CommercialRegisterStatus.RADIE, rcRegistration.getRegistrationStatus());
 	}
 
 	@Test
@@ -512,10 +515,11 @@ public class RCEntAdapterTest {
 			assertEquals(LegalForm.N_0106_SOCIETE_ANONYME, legalFormRanged.getPayload());
 		}
 
-		final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
-		assertNotNull(rcStatus);
-		assertEquals(CommercialRegisterStatus.ACTIF, rcStatus.get(0).getPayload());
-
+		final List<DateRangeHelper.Ranged<RCRegistrationData>> locationRcRegistrationData = organisation.getLocationData().get(0).getRc().getRegistrationData();
+		assertEquals(1, locationRcRegistrationData.size());
+		final RCRegistrationData rcRegistration = locationRcRegistrationData.get(0).getPayload();
+		assertNotNull(rcRegistration);
+		assertEquals(CommercialRegisterStatus.ACTIF, rcRegistration.getRegistrationStatus());
 	}
 
 	@Test
@@ -542,9 +546,11 @@ public class RCEntAdapterTest {
 			assertNull(locationName.get(0).getDateFin());
 			assertEquals("Sedaga SA", locationName.get(0).getPayload());
 
-			final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
-			assertNotNull(rcStatus);
-			assertEquals(CommercialRegisterStatus.RADIE, rcStatus.get(0).getPayload());
+			final List<DateRangeHelper.Ranged<RCRegistrationData>> locationRcRegistrationData = organisation.getLocationData().get(0).getRc().getRegistrationData();
+			assertEquals(1, locationRcRegistrationData.size());
+			final RCRegistrationData rcRegistration = locationRcRegistrationData.get(0).getPayload();
+			assertNotNull(rcRegistration);
+			assertEquals(CommercialRegisterStatus.RADIE, rcRegistration.getRegistrationStatus());
 		}
 
 		{
@@ -572,9 +578,11 @@ public class RCEntAdapterTest {
 				assertEquals(LegalForm.N_0106_SOCIETE_ANONYME, legalFormRanged.getPayload());
 			}
 
-			final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
-			assertNotNull(rcStatus);
-			assertEquals(CommercialRegisterStatus.ACTIF, rcStatus.get(0).getPayload());
+			final List<DateRangeHelper.Ranged<RCRegistrationData>> locationRcRegistrationData = organisation.getLocationData().get(0).getRc().getRegistrationData();
+			assertEquals(1, locationRcRegistrationData.size());
+			final RCRegistrationData rcRegistration = locationRcRegistrationData.get(0).getPayload();
+			assertNotNull(rcRegistration);
+			assertEquals(CommercialRegisterStatus.ACTIF, rcRegistration.getRegistrationStatus());
 		}
 	}
 

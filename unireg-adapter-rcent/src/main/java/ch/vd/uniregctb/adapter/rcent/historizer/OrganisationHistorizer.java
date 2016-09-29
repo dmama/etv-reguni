@@ -6,17 +6,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ch.ech.ech0097.v2.NamedOrganisationId;
 
 import ch.vd.evd0022.v3.Address;
-import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
-import ch.vd.evd0022.v3.CommercialRegisterStatus;
-import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.evd0022.v3.LegalForm;
 import ch.vd.evd0022.v3.Organisation;
@@ -34,16 +32,17 @@ import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueDataCollecto
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueIndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.SingleValueIndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.AdresseEqualator;
+import ch.vd.uniregctb.adapter.rcent.historizer.equalator.BURRegistrationDataEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.BusinessPublicationEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.CapitalEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.NamedOrganisationIdEqualator;
+import ch.vd.uniregctb.adapter.rcent.historizer.equalator.RCRegistrationDataEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesLegalesExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.BURRegistrationDataExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationAdditionalNameExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurRegistrationDateExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurStatusExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferFromExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferToExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBusinessPublicationExtractor;
@@ -52,21 +51,18 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationLegalFormExtra
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationMunicipalityExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationNamesExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcByLawsDateExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcDeregistrationDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcPurposeExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcRegistrationDateExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcVdDeregistrationDateExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcVdRegistrationDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationTypeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationUidInReplacementOfExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationUidReplacedByExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationsExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RCCapitalExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RcStatusExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RcVdDissolutionReasonExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RCRegistrationDataExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidDeregistrationReasonExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidKindOfUidEntityExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidRegistrationStatusExtractor;
+import ch.vd.uniregctb.adapter.rcent.model.BurRegistrationData;
+import ch.vd.uniregctb.adapter.rcent.model.RCRegistrationData;
 
 public class OrganisationHistorizer {
 
@@ -89,11 +85,11 @@ public class OrganisationHistorizer {
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
 		final ListDataCollector<Organisation, NamedOrganisationId> organisationIdentifiersCollector = new MultiValueDataCollector<>(o -> o.getIdentifier().stream(),
 		                                                                                                                            new NamedOrganisationIdEqualator(),
-		                                                                                                                            java.util.function.Function.identity()
+		                                                                                                                            Function.identity()
 		);
 		final ListDataCollector<Organisation, BigInteger> locationsCollector = new MultiValueDataCollector<>(new LocationsExtractor(),
 		                                                                                                     Equalator.DEFAULT,
-		                                                                                                     java.util.function.Function.identity()
+		                                                                                                     Function.identity()
 		);
 
 
@@ -120,7 +116,7 @@ public class OrganisationHistorizer {
 		);
 		final IndexedDataCollector<Organisation, BusinessPublication, BigInteger> locationBusinessPublicationCollector = new MultiValueIndexedDataCollector<>(new LocationBusinessPublicationExtractor(),
 		                                                                                                                                                      new BusinessPublicationEqualator(),
-		                                                                                                                                                      java.util.function.Function.identity()
+		                                                                                                                                                      Function.identity()
 		);
 		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationUidReplacedByCollector = new SingleValueIndexedDataCollector<>(new LocationUidReplacedByExtractor(),
 		                                                                                                                                        Equalator.DEFAULT
@@ -129,7 +125,7 @@ public class OrganisationHistorizer {
 		                                                                                                                                             Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationBurTransferToCollector = new SingleValueIndexedDataCollector<>(new LocationBurTransferToExtractor(),
-		                                                                                                                                       Equalator.DEFAULT
+		                                                                                                                                        Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationBurTransferFromCollector = new SingleValueIndexedDataCollector<>(new LocationBurTransferFromExtractor(),
 		                                                                                                                                         Equalator.DEFAULT
@@ -137,35 +133,20 @@ public class OrganisationHistorizer {
 
 		// RC
 
-		final IndexedDataCollector<Organisation, CommercialRegisterStatus, BigInteger> locationRcStatusCollector = new SingleValueIndexedDataCollector<>(new RcStatusExtractor(),
-		                                                                                                                                                 Equalator.DEFAULT
-		);
-		final IndexedDataCollector<Organisation, DissolutionReason, BigInteger> locationRcVdDissolutionReasonCollector = new SingleValueIndexedDataCollector<>(new RcVdDissolutionReasonExtractor(),
-		                                                                                                                                                       Equalator.DEFAULT
-		);
-		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcEntryDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcRegistrationDateExtractor(),
-		                                                                                                                                   Equalator.DEFAULT
-		);
-		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcVdEntryDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcVdRegistrationDateExtractor(),
-		                                                                                                                                     Equalator.DEFAULT
-		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcLegalAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
 		                                                                                                                                      ADDRESS_EQUALATOR
 		);
 		final IndexedDataCollector<Organisation, Capital, BigInteger> locationRcCapitalCollector = new SingleValueIndexedDataCollector<>(new RCCapitalExtractor(),
-		                                                                                                                                      new CapitalEqualator()
+		                                                                                                                                 new CapitalEqualator()
+		);
+		final IndexedDataCollector<Organisation, RCRegistrationData, BigInteger> locationRcRegistrationDataCollector = new SingleValueIndexedDataCollector<>(new RCRegistrationDataExtractor(),
+		                                                                                                                                                     new RCRegistrationDataEqualator()
 		);
 		final IndexedDataCollector<Organisation, String, BigInteger> locationRcPurposeCollector = new SingleValueIndexedDataCollector<>(new LocationRcPurposeExtractor(),
 		                                                                                                                                Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcByLawsDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcByLawsDateExtractor(),
 		                                                                                                                                    Equalator.DEFAULT
-		);
-		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcCancellationDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcDeregistrationDateExtractor(),
-		                                                                                                                                          Equalator.DEFAULT
-		);
-		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcVdCancellationDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcVdDeregistrationDateExtractor(),
-		                                                                                                                                            Equalator.DEFAULT
 		);
 
 		// IDE
@@ -187,11 +168,8 @@ public class OrganisationHistorizer {
 		);
 
 		// REE
-		final IndexedDataCollector<Organisation, BurLocalUnitStatus, BigInteger> locationBurStatusCollector = new SingleValueIndexedDataCollector<>(new LocationBurStatusExtractor(),
-		                                                                                                                                            Equalator.DEFAULT
-		);
-		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationBurRegistrationDateCollector = new SingleValueIndexedDataCollector<>(new LocationBurRegistrationDateExtractor(),
-		                                                                                                                                     Equalator.DEFAULT
+		final IndexedDataCollector<Organisation, BurRegistrationData, BigInteger> locationBurRegistrationDataCollector = new SingleValueIndexedDataCollector<>(new BURRegistrationDataExtractor(),
+		                                                                                                                                                       new BURRegistrationDataEqualator()
 		);
 
 
@@ -211,12 +189,7 @@ public class OrganisationHistorizer {
 		                                                    locationBurTransferToCollector,
 		                                                    locationBurTransferFromCollector,
 
-		                                                    locationRcStatusCollector,
-		                                                    locationRcVdDissolutionReasonCollector,
-		                                                    locationRcEntryDateCollector,
-		                                                    locationRcVdEntryDateCollector,
-		                                                    locationRcCancellationDateCollector,
-		                                                    locationRcVdCancellationDateCollector,
+		                                                    locationRcRegistrationDataCollector,
 		                                                    locationRcLegalAddressCollector,
 		                                                    locationRcByLawsDateCollector,
 		                                                    locationRcPurposeCollector,
@@ -228,16 +201,16 @@ public class OrganisationHistorizer {
 		                                                    locationPostalBoxUidAddressCollector,
 		                                                    locationUidRegisterLiquidationReason,
 
-		                                                    locationBurStatusCollector,
-		                                                    locationBurRegistrationDateCollector
+		                                                    locationBurRegistrationDataCollector
 
 		));
 
 		// Données non historisées
 		//Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = new HashMap<>();
 		final Map.Entry<RegDate, Organisation> lastSnapshot = organisationMap.entrySet().stream()
-				.max(Comparator.comparing(Map.Entry::getKey)).orElse(null);
-		Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = lastSnapshot.getValue().getOrganisationLocation().stream()
+				.max(Comparator.comparing(Map.Entry::getKey))
+				.orElse(null);
+		final Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = lastSnapshot.getValue().getOrganisationLocation().stream()
 				.filter(l -> l.getCommercialRegisterData() != null)
 				.filter(l -> l.getCommercialRegisterData().getDiaryEntry() != null && ! l.getCommercialRegisterData().getDiaryEntry().isEmpty())
 				.collect(Collectors.toMap(OrganisationLocation::getCantonalId, l -> l.getCommercialRegisterData().getDiaryEntry()));
@@ -245,7 +218,7 @@ public class OrganisationHistorizer {
 		// Composition des
 		// Etablissement
 
-		OrganisationLocationBuilder locationBuilder = new OrganisationLocationBuilder(
+		final OrganisationLocationBuilder locationBuilder = new OrganisationLocationBuilder(
 				locationIdentifiersCollector.getCollectedData(),
 				locationNamesCollector.getCollectedData(),
 				locationAdditionalNameCollector.getCollectedData(),
@@ -260,15 +233,10 @@ public class OrganisationHistorizer {
 				locationUidInReplacementOfCollector.getCollectedData(),
 
 				locationRcLegalAddressCollector.getCollectedData(),
-				locationRcStatusCollector.getCollectedData(),
-				locationRcVdDissolutionReasonCollector.getCollectedData(),
-				locationRcEntryDateCollector.getCollectedData(),
-				locationRcVdEntryDateCollector.getCollectedData(),
+				locationRcRegistrationDataCollector.getCollectedData(),
 				locationRcCapitalCollector.getCollectedData(),
 				locationRcPurposeCollector.getCollectedData(),
 				locationRcByLawsDateCollector.getCollectedData(),
-				locationRcCancellationDateCollector.getCollectedData(),
-				locationRcVdCancellationDateCollector.getCollectedData(),
 
 				diaryEntries,
 				locationUidStatus.getCollectedData(),
@@ -277,12 +245,11 @@ public class OrganisationHistorizer {
 				locationPostalBoxUidAddressCollector.getCollectedData(),
 				locationUidRegisterLiquidationReason.getCollectedData(),
 
-				locationBurStatusCollector.getCollectedData(),
-				locationBurRegistrationDateCollector.getCollectedData()
+				locationBurRegistrationDataCollector.getCollectedData()
 		);
 
 		// Entreprise / Organisation
-		OrganisationBuilder orgaBuilder = new OrganisationBuilder(
+		final OrganisationBuilder orgaBuilder = new OrganisationBuilder(
 				organisationMap.entrySet().stream().findFirst().get().getValue().getCantonalId(),
 				organisationIdentifiersCollector.getCollectedData(),
 				locationsCollector.getCollectedData(),

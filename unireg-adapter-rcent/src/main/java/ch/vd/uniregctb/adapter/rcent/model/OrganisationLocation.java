@@ -6,12 +6,9 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.Address;
-import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
-import ch.vd.evd0022.v3.CommercialRegisterStatus;
-import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.evd0022.v3.LegalForm;
 import ch.vd.evd0022.v3.TypeOfLocation;
@@ -170,39 +167,28 @@ public class OrganisationLocation {
 	}
 
 	public static class RCEntRCData {
-		private final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> registrationStatus;
-		private final List<DateRangeHelper.Ranged<DissolutionReason>> vdDissolutionReason;
+
+		private final List<DateRangeHelper.Ranged<RCRegistrationData>> registrationData;
 		private final List<DateRangeHelper.Ranged<Capital>> capital;
 		private final List<DateRangeHelper.Ranged<Address>> legalAddress;
-		private final List<DateRangeHelper.Ranged<RegDate>> registrationDate;
-		private final List<DateRangeHelper.Ranged<RegDate>> vDRegistrationDate;
 		private final List<DateRangeHelper.Ranged<String>> purpose;
 		private final List<DateRangeHelper.Ranged<RegDate>> byLawsDate;
-		private final List<DateRangeHelper.Ranged<RegDate>> deregistrationDate;
-		private final List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate;
 		private final List<CommercialRegisterDiaryEntry> diaryEntries;
 
-		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> registrationStatus,
-		                   List<DateRangeHelper.Ranged<DissolutionReason>> vdDissolutionReason,
+		public RCEntRCData(List<DateRangeHelper.Ranged<RCRegistrationData>> registrationData,
 		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress,
-		                   List<DateRangeHelper.Ranged<RegDate>> registrationDate, List<DateRangeHelper.Ranged<RegDate>> vDRegistrationDate,
 		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate,
-		                   List<DateRangeHelper.Ranged<RegDate>> deregistrationDate, List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate, List<CommercialRegisterDiaryEntry> diaryEntries) {
-			this.registrationStatus = registrationStatus;
-			this.vdDissolutionReason = vdDissolutionReason;
+		                   List<CommercialRegisterDiaryEntry> diaryEntries) {
+			this.registrationData = registrationData;
 			this.capital = capital;
 			this.legalAddress = legalAddress;
-			this.registrationDate = registrationDate;
-			this.vDRegistrationDate = vDRegistrationDate;
 			this.purpose = purpose;
 			this.byLawsDate = byLawsDate;
-			this.deregistrationDate = deregistrationDate;
-			this.vDDeregistrationDate = vDDeregistrationDate;
 			this.diaryEntries = diaryEntries;
 		}
 
-		public List<DateRangeHelper.Ranged<DissolutionReason>> getVdDissolutionReason() {
-			return vdDissolutionReason;
+		public List<DateRangeHelper.Ranged<RCRegistrationData>> getRegistrationData() {
+			return registrationData;
 		}
 
 		public List<DateRangeHelper.Ranged<Capital>> getCapital() {
@@ -213,32 +199,12 @@ public class OrganisationLocation {
 			return legalAddress;
 		}
 
-		public List<DateRangeHelper.Ranged<CommercialRegisterStatus>> getRegistrationStatus() {
-			return registrationStatus;
-		}
-
-		public List<DateRangeHelper.Ranged<RegDate>> getRegistrationDate() {
-			return registrationDate;
-		}
-
-		public List<DateRangeHelper.Ranged<RegDate>> getVdRegistrationDate() {
-			return vDRegistrationDate;
-		}
-
 		public List<DateRangeHelper.Ranged<String>> getPurpose() {
 			return purpose;
 		}
 
 		public List<DateRangeHelper.Ranged<RegDate>> getByLawsDate() {
 			return byLawsDate;
-		}
-
-		public List<DateRangeHelper.Ranged<RegDate>> getDeregistrationDate() {
-			return deregistrationDate;
-		}
-
-		public List<DateRangeHelper.Ranged<RegDate>> getVdDeregistrationDate() {
-			return vDDeregistrationDate;
 		}
 
 		public List<CommercialRegisterDiaryEntry> getDiaryEntries() {
@@ -286,20 +252,14 @@ public class OrganisationLocation {
 	}
 
 	public static class RCEntBURData {
-		private final List<DateRangeHelper.Ranged<BurLocalUnitStatus>> burLocalUnitStatus;
-		private final List<DateRangeHelper.Ranged<RegDate>> burRegistrationDate;
+		private final List<DateRangeHelper.Ranged<BurRegistrationData>> registrationData;
 
-		public RCEntBURData(List<DateRangeHelper.Ranged<BurLocalUnitStatus>> burLocalUnitStatus, List<DateRangeHelper.Ranged<RegDate>> burRegistrationDate) {
-			this.burLocalUnitStatus = burLocalUnitStatus;
-			this.burRegistrationDate = burRegistrationDate;
+		public RCEntBURData(List<DateRangeHelper.Ranged<BurRegistrationData>> registrationData) {
+			this.registrationData = registrationData;
 		}
 
-		public List<DateRangeHelper.Ranged<BurLocalUnitStatus>> getBurLocalUnitStatus() {
-			return burLocalUnitStatus;
-		}
-
-		public List<DateRangeHelper.Ranged<RegDate>> getBurRegistrationDate() {
-			return burRegistrationDate;
+		public List<DateRangeHelper.Ranged<BurRegistrationData>> getRegistrationData() {
+			return registrationData;
 		}
 	}
 }
