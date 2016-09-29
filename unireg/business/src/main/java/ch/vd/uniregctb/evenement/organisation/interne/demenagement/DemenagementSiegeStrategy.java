@@ -97,7 +97,6 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 				         1. être en train de déménager HC (et HS?)
 				         2. conserver son siège au même domicile
 				   - L'entreprise est nouvelle et n'existait pas dans Unireg, mais elle a été créé avec le bouton "créer tiers associé".
-				   - L'entreprise est nouvelle, a été créée à la main et a fait l'objet d'une annonce à l'IDE. L'événement en cours est le retour de cette annonce.
 
 				   Au vue de ce qui précède, on vérifie que les conditions suivantes ne sont PAS réalisées:
 				   - Le siège précédant est vaudois et le nouveau siège l'est aussi.
@@ -124,19 +123,9 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 				final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise);
 				final DateRanged<Etablissement> etablissementPreexistant = DateRangeHelper.rangeAt(etablissementsPrincipauxEntreprise, newnessThresholdDate);
 				if (etablissementPreexistant == null) {
-					if (event.getNoAnnonceIDE() == null) {
-						return new TraitementManuel(event, organisation, entreprise, context, options,
-						                            String.format(
-								                            "Données RCEnt insuffisantes pour déterminer la situation de l'entreprise (une seule photo) alors qu'une entreprise est déjà présente dans Unireg depuis moins de %d jours. Entreprise créée à la main?",
-								                            OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC));
-					} else {
-						LOGGER.info(
-								String.format("Pas de déménagement pour l'entreprise n°%s connue d'Unireg mais inconnue de RCEnt: elle a été annoncée par Unireg à l'IDE via l'annonce n°%s.",
-						                             organisation.getNumeroOrganisation(), event.getNoAnnonceIDE()
-								)
-						);
-						return null; // L'entreprise que l'on vient d'annoncer à l'IDE est nouvelle. Il n'y a rien à faire.
-					}
+					return new TraitementManuel(event, organisation, entreprise, context, options,
+					                            String.format("Données RCEnt insuffisantes pour déterminer la situation de l'entreprise (une seule photo) alors qu'une entreprise est déjà présente dans Unireg depuis moins de %d jours. Entreprise créée à la main?",
+					                                          OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC));
 				}
 
 				try {
