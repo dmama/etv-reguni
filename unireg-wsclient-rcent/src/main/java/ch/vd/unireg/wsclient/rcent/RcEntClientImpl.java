@@ -256,7 +256,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				return new PageImpl<>(list.getResults(), pageable, (long) list.getTotalNumberOfResults());
 			}
 			catch (ServerWebApplicationException e) {
-				throw new RcEntClientException(e, parseErrors(e.getMessage()));
+				final List<RcEntClientErrorMessage> errors = parseErrors(e.getMessage());
+				throw new RcEntClientException(e, errors);
 			}
 		}
 		finally {
@@ -290,7 +291,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			return messages;
 		}
 		catch (JAXBException | RuntimeException e) {
-			LOGGER.error("Impossible de parser le message d'erreur revenu en tant que eVD-0004", e);
+			LOGGER.trace("Impossible de parser le message d'erreur revenu en tant que eVD-0004", e);
 			return null;
 		}
 	}
