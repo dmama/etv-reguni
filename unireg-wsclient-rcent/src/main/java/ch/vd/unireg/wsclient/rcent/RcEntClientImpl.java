@@ -13,10 +13,15 @@ import java.util.List;
 
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0004.v3.Errors;
@@ -214,6 +219,60 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 		}
 		finally {
 			wcPool.returnClient(wc);
+		}
+	}
+
+	@Override
+	public Page<NoticeRequestReport> findNotices(@NotNull RcEntNoticeQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws RcEntClientException {
+
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
+		try {
+			// on construit la requête
+			wc.path(noticeRequestListPath);
+
+			addParam(wc, "noticeRequestId", query.getNoticeId());
+			addParam(wc, "typeOfNoticeRequest", query.getType());
+			addParam(wc, "status", query.getStatus());
+			addParam(wc, "cantonalId", query.getCantonalId());
+			addParam(wc, "userId", query.getUserId());
+			addParam(wc, "name", query.getName());
+			addParam(wc, "dateFrom", query.getDateFrom());
+			addParam(wc, "dateTo", query.getDateTo());
+			addParam(wc, "contains", query.getContainsForName());
+			if (order != null) {
+				addParam(wc, "orderBy", order.getProperty());
+				addParam(wc, "order", order.getDirection());
+			}
+			wc.query("numberOfResultsPerPage", resultsPerPage);
+			wc.query("page", pageNumber);
+
+			try {
+				// on fait l'appel
+				final ListOfNoticeRequest list = wc.get(ListOfNoticeRequest.class);
+
+				// on retourne les résultats
+				final Sort sort = (order == null ? null : new Sort(order));
+				final PageRequest pageable = new PageRequest(pageNumber - 1, resultsPerPage, sort);
+				return new PageImpl<>(list.getResults(), pageable, (long) list.getTotalNumberOfResults());
+			}
+			catch (ServerWebApplicationException e) {
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
+		}
+	}
+
+	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable Object value) {
+		if (value != null) {
+			wc.query(name, value);
+		}
+	}
+
+	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable RegDate value) {
+		if (value != null) {
+			wc.query(name, RegDateHelper.dateToDisplayString(value));
 		}
 	}
 

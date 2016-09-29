@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.wsclient.rcent;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
@@ -11,6 +15,7 @@ import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
+import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
@@ -191,6 +196,36 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 				@Override
 				public String toString() {
 					return String.format("id=%s", id);
+				}
+			});
+		}
+	}
+
+	@Override
+	public Page<NoticeRequestReport> findNotices(@NotNull final RcEntNoticeQuery query, @Nullable final Sort.Order order, final int pageNumber, final int resultsPerPage) throws RcEntClientException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final Page<NoticeRequestReport> page = target.findNotices(query, order, pageNumber, resultsPerPage);
+			if (page != null && page.getNumberOfElements() != 0) {
+				items = page.getNumberOfElements();
+			}
+			return page;
+		}
+		catch (RcEntClientException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getNoticeRequest", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("query=%s, order=%s, pageNumber=%d, resultsPerPage=%d", query, order, pageNumber, resultsPerPage);
 				}
 			});
 		}
