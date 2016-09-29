@@ -53,6 +53,8 @@
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
+    <column>IDE_DIRTY</column>
+    <column>IDE_DESACTIVE</column>
     <row>
       <value>Entreprise</value>
       <value>27769</value>
@@ -106,6 +108,8 @@
       <null/>
       <null/>
       <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>DebiteurPrestationImposable</value>
