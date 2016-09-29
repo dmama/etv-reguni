@@ -6276,7 +6276,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final long numeroOrganisation = entreprise.getNumeroEntreprise();
 		final Organisation organisationHistory = serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
-		if (organisationHistory == null || numeroOrganisation != organisationHistory.getNumeroOrganisation()) {
+		if (organisationHistory == null) {
 			// Sérieux problème d'appariement avec le registre civil.
 			throw new OrganisationNotFoundException(entreprise);
 		}
