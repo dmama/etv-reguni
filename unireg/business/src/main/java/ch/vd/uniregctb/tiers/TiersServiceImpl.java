@@ -6910,6 +6910,17 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public Etablissement getEtablissementPrincipal(Entreprise entreprise, RegDate date) {
+		final RegDate notreDate = date == null ? RegDate.get() : date;
+
+		final RapportEntreTiers rapportEntreTiers = entreprise.getActiviteEconomiquePrincipaleValidAt(notreDate);
+		if (rapportEntreTiers == null) {
+			return null;
+		}
+		return (Etablissement) getTiers(rapportEntreTiers.getObjetId());
+	}
+
+	@Override
 	public void apparier(Entreprise entreprise, Organisation organisation) {
 		final List<DateRanged<FormeLegale>> formesLegales = organisation.getFormeLegale();
 		final RegDate debutCivil = formesLegales.isEmpty() ? RegDate.get() : formesLegales.get(0).getDateDebut();

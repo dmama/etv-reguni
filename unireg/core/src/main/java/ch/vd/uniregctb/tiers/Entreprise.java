@@ -188,6 +188,19 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@Transient
+	public ActiviteEconomique getActiviteEconomiquePrincipaleValidAt(RegDate date) {
+		for (RapportEntreTiers ret : getRapportsSujet()) {
+			if (ret instanceof ActiviteEconomique && ret.isValidAt(date)) {
+				ActiviteEconomique ae = (ActiviteEconomique) ret;
+				if (ae.isPrincipal()) {
+					return ae;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Transient
 	@NotNull
 	public List<RaisonSocialeFiscaleEntreprise> getRaisonsSocialesNonAnnuleesTriees() {
 		return extractDonneesCiviles(RaisonSocialeFiscaleEntreprise.class, false, true);

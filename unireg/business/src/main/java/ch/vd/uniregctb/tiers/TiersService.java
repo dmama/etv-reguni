@@ -276,6 +276,13 @@ public interface TiersService {
 	Entreprise getEntreprise(Etablissement etablissement, RegDate date);
 
 	/**
+	 * @param entreprise l'entreprise concernée
+	 * @param date la date
+	 * @return l'établissement principal à la date mentionnée, ou <code>null</code> s'il y en a aucun à cette date.
+	 */
+	Etablissement getEtablissementPrincipal(Entreprise entreprise, RegDate date);
+
+	/**
 	 * Associe une entreprise à une organisation civile. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
 	 * et supprime le numéro IDE du registre fiscal.
 	 * @param entreprise
