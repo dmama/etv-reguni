@@ -131,13 +131,13 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertEquals(TypeAnnonce.CREATION, annonceIDE.getType());
 				assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeDeSite());
 
-				assertEquals(null, annonceIDE.getNoIde());
-				assertEquals(null, annonceIDE.getNoIdeRemplacant());
-				assertEquals(null, annonceIDE.getNoIdeEtablissementPrincipal());
+				assertNull(annonceIDE.getNoIde());
+				assertNull(annonceIDE.getNoIdeRemplacant());
+				assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
 
-				assertEquals(null, annonceIDE.getRaisonDeRadiation());
+				assertNull(annonceIDE.getRaisonDeRadiation());
 
-				assertEquals(null, annonceIDE.getCommentaire());
+				assertNull(annonceIDE.getCommentaire());
 
 				final ModeleAnnonceIDE.Statut statut = annonceIDE.getStatut();
 				assertNull(statut);
@@ -150,19 +150,19 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final ModeleAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
 				assertNotNull(informationOrganisation);
-				assertEquals(null, informationOrganisation.getNumeroOrganisation());
-				assertEquals(null, informationOrganisation.getNumeroSite());
-				assertEquals(null, informationOrganisation.getNumeroSiteRemplacant());
+				assertNull(informationOrganisation.getNumeroOrganisation());
+				assertNull(informationOrganisation.getNumeroSite());
+				assertNull(informationOrganisation.getNumeroSiteRemplacant());
 
 				final ModeleAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
-				assertEquals(null, utilisateur.getUserId());
-				assertEquals(null, utilisateur.getTelephone());
+				assertNull(utilisateur.getUserId());
+				assertNull(utilisateur.getTelephone());
 
 				final ModeleAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
 				assertNotNull(contenu);
 				assertEquals("Syntruc Asso", contenu.getNom());
-				assertEquals(null, contenu.getNomAdditionnel());
+				assertNull(contenu.getNomAdditionnel());
 				assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
 				assertEquals("Fabrication d'objets synthétiques", contenu.getSecteurActivite());
 
@@ -170,12 +170,12 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertNotNull(adresse);
 				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
 				assertEquals("1", adresse.getNumero());
-				assertEquals(null, adresse.getNumeroAppartement());
+				assertNull(adresse.getNumeroAppartement());
 				assertEquals(1020, adresse.getNpa().intValue());
 				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
 
-				assertEquals(null, adresse.getNumeroCasePostale());
-				assertEquals(null, adresse.getTexteCasePostale());
+				assertNull(adresse.getNumeroCasePostale());
+				assertNull(adresse.getTexteCasePostale());
 
 				final AdresseAnnonceIDE.Pays pays = adresse.getPays();
 				assertNotNull(pays);
@@ -203,7 +203,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 6), null, "Rienavoir Asso"); // Changement de nom, il y avait une erreur.
 				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
-				addIdentificationEntreprise(entreprise, "CHE999999998");
+				addIdentificationEntreprise(entreprise, "CHE999999996");
 
 				entreprise.setSecteurActivite("Fabrication d'objets synthétiques");
 
@@ -249,7 +249,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				// Annonce existante
 				AnnonceIDERCEnt annonce =
 						RCEntAnnonceIDEHelper.createAnnonceIDERCEnt(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                            new NumeroIDE("CHE999999998"), null, null, null, null, null,
+						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            RCEntAnnonceIDEHelper
 								                                            .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
@@ -260,7 +260,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				// Validation
 				ModeleAnnonceIDERCEnt modele =
 						RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                                  new NumeroIDE("CHE999999998"), null, null, null, null, null,
+						                                                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                                  "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                                  RCEntAnnonceIDEHelper
 								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
@@ -306,13 +306,13 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final NumeroIDE noIde = annonceIDE.getNoIde();
 				assertNotNull(noIde);
-				assertEquals("CHE999999998", noIde.getValeur());
-				assertEquals(null, annonceIDE.getNoIdeRemplacant());
-				assertEquals(null, annonceIDE.getNoIdeEtablissementPrincipal());
+				assertEquals("CHE999999996", noIde.getValeur());
+				assertNull(annonceIDE.getNoIdeRemplacant());
+				assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
 
-				assertEquals(null, annonceIDE.getRaisonDeRadiation());
+				assertNull(annonceIDE.getRaisonDeRadiation());
 
-				assertEquals(null, annonceIDE.getCommentaire());
+				assertNull(annonceIDE.getCommentaire());
 
 				final ModeleAnnonceIDE.Statut statut = annonceIDE.getStatut();
 				assertNull(statut);
@@ -325,19 +325,19 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final ModeleAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
 				assertNotNull(informationOrganisation);
-				assertEquals(null, informationOrganisation.getNumeroOrganisation());
-				assertEquals(null, informationOrganisation.getNumeroSite());
-				assertEquals(null, informationOrganisation.getNumeroSiteRemplacant());
+				assertNull(informationOrganisation.getNumeroOrganisation());
+				assertNull(informationOrganisation.getNumeroSite());
+				assertNull(informationOrganisation.getNumeroSiteRemplacant());
 
 				final ModeleAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
-				assertEquals(null, utilisateur.getUserId());
-				assertEquals(null, utilisateur.getTelephone());
+				assertNull(utilisateur.getUserId());
+				assertNull(utilisateur.getTelephone());
 
 				final ModeleAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
 				assertNotNull(contenu);
 				assertEquals("Rienavoir Asso", contenu.getNom());
-				assertEquals(null, contenu.getNomAdditionnel());
+				assertNull(contenu.getNomAdditionnel());
 				assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
 				assertEquals("Fabrication d'objets synthétiques", contenu.getSecteurActivite());
 
@@ -345,12 +345,12 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertNotNull(adresse);
 				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
 				assertEquals("1", adresse.getNumero());
-				assertEquals(null, adresse.getNumeroAppartement());
+				assertNull(adresse.getNumeroAppartement());
 				assertEquals(1020, adresse.getNpa().intValue());
 				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
 
-				assertEquals(null, adresse.getNumeroCasePostale());
-				assertEquals(null, adresse.getTexteCasePostale());
+				assertNull(adresse.getNumeroCasePostale());
+				assertNull(adresse.getTexteCasePostale());
 
 				final AdresseAnnonceIDE.Pays pays = adresse.getPays();
 				assertNotNull(pays);
