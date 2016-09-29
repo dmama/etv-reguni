@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -151,7 +152,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER:
 			return false;
 		case IDE_NOUVELLE_INSCRIPTION:
-			return !organisation.isInscritAuRC(date) || nouveauAuRc(organisation, date);
+			return !organisation.isConnueInscriteAuRC(date) || nouveauAuRc(organisation, date);
 		case IDE_MUTATION:
 			return false;
 		case IDE_RADIATION:
@@ -171,7 +172,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		case RCPERS_CORRECTION_DONNEES:
 			return false;
 		case REE_NOUVELLE_INSCRIPTION:
-			return !organisation.isInscritAuRC(date) || nouveauAuRc(organisation, date);
+			return !organisation.isConnueInscriteAuRC(date) || nouveauAuRc(organisation, date);
 		case REE_MUTATION:
 			return false;
 		case REE_SUPPRESSION:
@@ -191,11 +192,12 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	 * @return Vrai si ... voir le code.
 	 */
 	private static boolean nouveauAuRc(Organisation organisation, RegDate date) throws EvenementOrganisationException {
-		if (organisation.isInscritAuRC(date)) {
+		if (organisation.isConnueInscriteAuRC(date)) {
 			final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(date).getPayload();
 			/* Les données avec lesquelles on travaille */
-			final RegDate dateInscriptionCh = sitePrincipal.getDonneesRC().getDateInscription(date);
-			final RegDate dateInscriptionVd = sitePrincipal.getDonneesRC().getDateInscriptionVd(date);
+			final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(date);
+			final RegDate dateInscriptionCh = inscriptionRC != null ? inscriptionRC.getDateInscriptionCH() : null;
+			final RegDate dateInscriptionVd = inscriptionRC != null ? inscriptionRC.getDateInscriptionVD() : null;
 
 			/* On travaille selon le postulat que toute date d'inscription éloignée de plus d'un certain nombre de jour (seuil) de la date d'événement
 			   indique que l'entreprise est pré-existante et qu'il n'y a donc pas de création à la date fournie. */
@@ -243,7 +245,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
 		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
 		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		final boolean inscritAuRC = organisation.isInscritAuRC(dateEvenement);
+		final boolean inscritAuRC = organisation.isInscriteAuRC(dateEvenement);
 		final RegDate dateInscriptionRCVd;
 		final RegDate dateInscriptionRC;
 		final RegDate dateDeCreation;

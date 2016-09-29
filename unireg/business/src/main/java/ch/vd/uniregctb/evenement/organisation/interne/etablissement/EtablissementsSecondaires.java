@@ -76,7 +76,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			RegDate dateFermeture = dateApres;
 
 			/* Si l'établissement est inscrit au RC, c'est la date de radiation du RC qui nous intéresse. A certaines conditions. */
-			if (siteQuiFerme.isInscritAuRC(dateApres)) {
+			if (siteQuiFerme.isConnuInscritAuRC(dateApres)) {
 				RegDate dateRadiation = siteQuiFerme.getDateRadiationRC(dateApres); // Vaudois ou HC, il doit être radié au niveau global.
 
 				// exception APM
@@ -116,7 +116,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			final Etablissement etablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(aCreer.getNumeroSite());
 			if (etablissement == null) {
 				RegDate dateCreation = dateApres;
-				if (aCreer.isInscritAuRC(dateApres)) {
+				if (aCreer.isConnuInscritAuRC(dateApres)) {
 					final RegDate dateInscriptionRCVd = aCreer.getDateInscriptionRCVd(dateApres);
 					if (dateInscriptionRCVd != null) {
 						dateCreation = dateInscriptionRCVd;
@@ -223,7 +223,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			final SiteOrganisation site = demenagement.getSite();
 
 			RegDate dateDemenagement = null;
-			if (site.isInscritAuRC(getDateEvt()) && !site.isRadieDuRC(getDateEvt())) {
+			if (site.isConnuInscritAuRC(getDateEvt()) && !site.isRadieDuRC(getDateEvt())) {
 				final List<EntreeJournalRC> entreesJournal = site.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 				if (entreesJournal.isEmpty()) {
 					throw new EvenementOrganisationException(

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -58,7 +59,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 			final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
 
-			final boolean enCoursDeRadiationRC = sitePrincipalAvant.isInscritAuRC(dateAvant) && !sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
+			final boolean enCoursDeRadiationRC = sitePrincipalAvant.isConnuInscritAuRC(dateAvant) && !sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
 
 			final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
 			if (categorieEntreprise == null) {
@@ -69,7 +70,8 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 			}
 
 			if (enCoursDeRadiationRC) {
-				final RegDate dateRadiation = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+				final InscriptionRC inscriptionRC = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+				final RegDate dateRadiation = inscriptionRC != null ? inscriptionRC.getDateRadiationCH() : null;
 				if (dateRadiation == null) {
 					return new TraitementManuel(event, organisation, entreprise, context, options,
 					                            String.format("Traitement manuel requis: l'entreprise n°%s est radiée du RC mais la date de radiation est introuvable!",

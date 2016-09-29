@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -497,13 +498,17 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
+				final RegDate dateInscription = date(2010, 6, 24);
+				final RegDate dateRadiationVD = date(2015, 6, 21);
 				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateInscription,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
+				final MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS());
-				site.getDonneesRC().changeDateRadiationVd(RegDate.get(2015, 6, 24), RegDate.get(2015, 6, 21));
+				site.getDonneesRC().changeInscription(date(2015, 6, 24), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                                           dateInscription, dateRadiationVD,
+				                                                                           dateInscription, null));
 				addOrganisation(org);
 
 			}
@@ -764,10 +769,12 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(), StatusInscriptionRC.ACTIF,  date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
+				final MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
-				MockDonneesRC rc = site.getDonneesRC();
-				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2015, 6, 20));
+				final MockDonneesRC rc = site.getDonneesRC();
+				rc.changeInscription(date(2015, 6, 24), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                          date(2015, 6, 20), null,
+				                                                          date(2010, 6, 24), null));
 				addOrganisation(org);
 
 			}
@@ -906,9 +913,11 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS(), StatusInscriptionRC.ACTIF,  date(2010, 6, 24),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				MockDonneesRC rc = site.getDonneesRC();
-				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2015, 6, 20));
+				final MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
+				final MockDonneesRC rc = site.getDonneesRC();
+				rc.changeInscription(date(2015, 6, 24), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                          date(2015, 6, 20), null,
+				                                                          date(2010, 6, 24), null));
 				addOrganisation(org);
 			}
 		});
@@ -1050,10 +1059,11 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS(), null,  null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				MockDonneesRC rc = site.getDonneesRC();
-				rc.changeStatusInscription(RegDate.get(2015, 6, 24), StatusInscriptionRC.ACTIF);
-				rc.changeDateInscription(RegDate.get(2015, 6, 24), date(2010, 6, 24));
+				final MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
+				final MockDonneesRC rc = site.getDonneesRC();
+				rc.changeInscription(date(2015, 6, 24), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                          null, null,
+				                                                          date(2010, 6, 24), null));
 				addOrganisation(org);
 			}
 		});
@@ -1227,9 +1237,11 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        StatusInscriptionRC.ACTIF, date(2010, 6, 1),
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				MockDonneesRC rc = site.getDonneesRC();
-				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2015, 6, 20));
+				final MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
+				final MockDonneesRC rc = site.getDonneesRC();
+				rc.changeInscription(date(2015, 6, 24), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                          date(2015, 6, 24), null,
+				                                                          date(2010, 6, 1), null));
 				addOrganisation(org);
 			}
 		});

@@ -13,33 +13,21 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class DonneesREERCEnt implements DonneesREE, Serializable {
 
-	private static final long serialVersionUID = -6332558068487594901L;
+	private static final long serialVersionUID = 3097868283486480371L;
 
-	private final List<DateRanged<StatusREE>> statusREE;
-	private final List<DateRanged<RegDate>> dateInscriptionREE;
+	private final List<DateRanged<InscriptionREE>> inscription;
 
-	public DonneesREERCEnt(List<DateRanged<StatusREE>> statusREE,
-	                       List<DateRanged<RegDate>> dateInscriptionREE) {
-		this.statusREE = statusREE;
-		this.dateInscriptionREE = dateInscriptionREE;
-	}
-
-	public List<DateRanged<StatusREE>> getStatusREE() {
-		return statusREE;
+	public DonneesREERCEnt(List<DateRanged<InscriptionREE>> inscription) {
+		this.inscription = inscription;
 	}
 
 	@Override
-	public StatusREE getStatusREE(RegDate date) {
-		return OrganisationHelper.valueForDate(statusREE, date);
-	}
-
-
-	public List<DateRanged<RegDate>> getDateInscriptionREE() {
-		return dateInscriptionREE;
+	public List<DateRanged<InscriptionREE>> getInscriptionREE() {
+		return inscription;
 	}
 
 	@Override
-	public RegDate getDateInscriptionREE(RegDate date) {
-		return OrganisationHelper.valueForDate(dateInscriptionREE, date);
+	public InscriptionREE getInscriptionREE(RegDate date) {
+		return OrganisationHelper.valueForDate(inscription, date);
 	}
 }

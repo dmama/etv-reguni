@@ -9,12 +9,7 @@ import ch.vd.registre.base.date.RegDate;
  */
 public interface DonneesREE {
 
+	List<DateRanged<InscriptionREE>> getInscriptionREE();
 
-	List<DateRanged<StatusREE>> getStatusREE();
-
-	StatusREE getStatusREE(RegDate date);
-
-	List<DateRanged<RegDate>> getDateInscriptionREE();
-
-	RegDate getDateInscriptionREE(RegDate date);
+	InscriptionREE getInscriptionREE(RegDate date);
 }

@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -324,9 +326,10 @@ public abstract class OrganisationHelper {
 		if (entrees == null || entrees.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<EntreeJournalRC> entreesPourDate = new ArrayList<>();
+		final List<EntreeJournalRC> entreesPourDate = new ArrayList<>();
+		final RegDate dateEffective = defaultDate(date);
 		for (EntreeJournalRC entreeJournalRC : entrees) {
-			if (entreeJournalRC.getPublicationFOSC().getDate().equals(defaultDate(date))) {
+			if (entreeJournalRC.getPublicationFOSC().getDate() == dateEffective) {
 				entreesPourDate.add(entreeJournalRC);
 			}
 		}
@@ -352,10 +355,30 @@ public abstract class OrganisationHelper {
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isInscritAuRC(Organisation organisation, RegDate date) {
+	public static boolean isInscriteAuRC(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+
+		// il n'y a aucun site principal avant la date de chargement initial de RCEnt... mais parfois, la date demandée est elle-même
+		// antérieure à cette date de chargement, il faut donc ruser un peu et regarder les dates...
+		for (DateRanged<SiteOrganisation> sitePrincipal : organisation.getSitePrincipaux()) {
+			if (isInscritAuRC(sitePrincipal.getPayload(), dateEffective)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Une organisation est "connue comme inscrite au RC" à une date si la donnée de l'inscription RC connue à cette date existe et la décrit comme inscrite
+	 * (au sens de <i>possède une inscription</i>, quelle qu'elle soit)
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on se pose la question
+	 * @return true si connue comme inscrite, false sinon
+	 */
+	public static boolean isConnueInscriteAuRC(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
 		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
-		return sitePrincipal != null && isInscritAuRC(sitePrincipal.getPayload(), dateEffective);
+		return sitePrincipal != null && isConnuInscritAuRC(sitePrincipal.getPayload(), dateEffective);
 	}
 
 	/**
@@ -367,11 +390,42 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isInscritAuRC(SiteOrganisation site, RegDate date) {
 		final DonneesRC donneesRC = site.getDonneesRC();
-		if (donneesRC == null) {
+		if (donneesRC == null || donneesRC.getInscription() == null) {
 			return false;
 		}
-		final StatusInscriptionRC statusInscription = donneesRC.getStatusInscription(defaultDate(date));
-		return statusInscription != null && !(statusInscription == StatusInscriptionRC.NON_INSCRIT || statusInscription == StatusInscriptionRC.INCONNU);
+
+		// il n'y a aucune donnée civile avant la date de chargement initial de RCEnt... mais parfois, la date demandée est elle-même
+		// antérieure à cette date de chargement, il faut donc ruser un peu et regarder les dates...
+		final RegDate dateEffective = defaultDate(date);
+		for (DateRanged<InscriptionRC> inscription : donneesRC.getInscription()) {
+			final InscriptionRC inscriptionData = inscription.getPayload();
+			if (inscriptionData.isInscrit()) {
+				// une entreprise qui a un jour une inscription valide dans un RC sera considérée comme toujours
+				// inscrite (pas forcément active, cependant, mais inscrite en tout cas) après la date d'inscription
+				if (RegDateHelper.isBeforeOrEqual(inscriptionData.getDateInscriptionVD(), dateEffective, NullDateBehavior.LATEST)
+						|| RegDateHelper.isBeforeOrEqual(inscriptionData.getDateInscriptionCH(), dateEffective, NullDateBehavior.LATEST)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Un établissement est "connu comme inscrit au RC" à une date si la donnée de l'inscription RC connue à cette date existe et le décrit comme inscrit
+	 * (au sens de <i>possède une inscription</i>, quelle qu'elle soit)
+	 * @param site le site
+	 * @param date la date pour laquelle on se pose la question
+	 * @return true si connue comme inscrite, false sinon
+	 */
+	public static boolean isConnuInscritAuRC(SiteOrganisation site, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DonneesRC donneesRC = site.getDonneesRC();
+		if (donneesRC == null || donneesRC.getInscription() == null) {
+			return false;
+		}
+		final InscriptionRC inscriptionConnue = donneesRC.getInscription(dateEffective);
+		return inscriptionConnue != null && inscriptionConnue.isInscrit();
 	}
 
 	/**
@@ -381,7 +435,7 @@ public abstract class OrganisationHelper {
 	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isInscritIDE(Organisation organisation, RegDate date) {
+	public static boolean isInscriteIDE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
 		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
 		return sitePrincipal != null && isInscritIDE(sitePrincipal.getPayload(), dateEffective);
@@ -410,7 +464,7 @@ public abstract class OrganisationHelper {
 	 * @param date la date pour laquelle on veut connaitre la situation au REE
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isInscritREE(Organisation organisation, RegDate date) {
+	public static boolean isInscriteREE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
 		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
 		return sitePrincipal != null && isInscritREE(sitePrincipal.getPayload(), dateEffective);
@@ -428,11 +482,32 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isInscritREE(SiteOrganisation site, RegDate date) {
 		final DonneesREE donneesREE = site.getDonneesREE();
-		if (donneesREE == null) {
+		if (donneesREE == null || donneesREE.getInscriptionREE() == null) {
 			return false;
 		}
-		final StatusREE statusREE = donneesREE.getStatusREE(defaultDate(date));
-		return statusREE != null;
+
+		// il n'y a aucune donnée civile avant la date de chargement initial de RCEnt... mais parfois, la date demandée est elle-même
+		// antérieure à cette date de chargement, il faut donc ruser un peu et regarder les dates...
+		final RegDate dateEffective = defaultDate(date);
+		for (DateRanged<InscriptionREE> inscription : donneesREE.getInscriptionREE()) {
+			final InscriptionREE inscriptionData = inscription.getPayload();
+			if (inscriptionData.getStatus() != null && RegDateHelper.isBeforeOrEqual(inscriptionData.getDateInscription(), dateEffective, NullDateBehavior.LATEST)) {
+				// une entreprise qui a un jour une inscription valide au REE sera considérée comme toujours
+				// inscrite (pas forcément active, cependant, mais inscrite en tout cas) après la date d'inscription
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isConnuInscritREE(SiteOrganisation site, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DonneesREE donneesREE = site.getDonneesREE();
+		if (donneesREE == null || donneesREE.getInscriptionREE() == null) {
+			return false;
+		}
+		final InscriptionREE inscription = donneesREE.getInscriptionREE(dateEffective);
+		return inscription != null && inscription.getStatus() != null && RegDateHelper.isBeforeOrEqual(inscription.getDateInscription(), dateEffective, NullDateBehavior.LATEST);
 	}
 
 	/**
@@ -444,7 +519,7 @@ public abstract class OrganisationHelper {
 	 * @return
 	 */
 	public static boolean isSuccursale(SiteOrganisation site, RegDate date) {
-		return site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isInscritAuRC(site, date) && !isRadieDuRC(site, date);
+		return site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isConnuInscritAuRC(site, date) && !isRadieDuRC(site, date);
 	}
 
 	/**
@@ -454,7 +529,7 @@ public abstract class OrganisationHelper {
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
 	 * @return true si inscrite, false sinon
 	 */
-	public static boolean isRadieDuRC(Organisation organisation, RegDate date) {
+	public static boolean isRadieeDuRC(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
 		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
 		return sitePrincipal != null && isRadieDuRC(sitePrincipal.getPayload(), dateEffective);
@@ -469,13 +544,13 @@ public abstract class OrganisationHelper {
 	 * @return true si actif, false sinon
 	 */
 	public static boolean isActif(SiteOrganisation site, RegDate date) {
-		if (isInscritAuRC(site, date) && !isRadieDuRC(site, date)) {
+		if (isConnuInscritAuRC(site, date) && !isRadieDuRC(site, date)) {
 			return true;
 		}
 		else if (isInscritIDE(site, date) && !isRadieIDE(site, date)) {
 			return true;
 		}
-		else if (isInscritREE(site, date) && !isRadieREE(site, date)) {
+		else if (isConnuInscritREE(site, date) && !isRadieREE(site, date)) {
 			return true;
 		}
 		return false;
@@ -490,10 +565,8 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isRadieDuRC(SiteOrganisation site, RegDate date) {
 		final DonneesRC donneesRC = site.getDonneesRC();
-		if (donneesRC != null && donneesRC.getStatusInscription() != null && ! donneesRC.getStatusInscription().isEmpty()) {
-			return donneesRC.getStatusInscription(defaultDate(date)) == StatusInscriptionRC.RADIE;
-		}
-		return false;
+		final InscriptionRC inscription = donneesRC.getInscription(defaultDate(date));
+		return inscription != null && inscription.getStatus() == StatusInscriptionRC.RADIE;
 	}
 
 	/**
@@ -503,7 +576,7 @@ public abstract class OrganisationHelper {
 	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
 	 * @return true si radié, false sinon
 	 */
-	public static boolean isRadieIDE(Organisation organisation, RegDate date) {
+	public static boolean isRadieeIDE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
 		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
 		return sitePrincipal != null && isRadieIDE(sitePrincipal.getPayload(), dateEffective);
@@ -559,10 +632,11 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isRadieREE(SiteOrganisation site, RegDate date) {
 		final DonneesREE donneesREE = site.getDonneesREE();
-		if (donneesREE != null && donneesREE.getStatusREE() != null && ! donneesREE.getStatusREE().isEmpty()) {
-			final RegDate dateEffective = defaultDate(date);
-			final StatusREE statusREE = donneesREE.getStatusREE(dateEffective);
-			return (statusREE == StatusREE.RADIE || statusREE == statusREE.TRANSFERE);
+		if (donneesREE != null) {
+			final InscriptionREE inscription = donneesREE.getInscriptionREE(defaultDate(date));
+			if (inscription != null) {
+				return inscription.getStatus() == StatusREE.RADIE || inscription.getStatus() == StatusREE.TRANSFERE;
+			}
 		}
 		return false;
 	}
@@ -675,19 +749,27 @@ public abstract class OrganisationHelper {
 	 * @return la période où le site a été en activité (sous forme de liste, mais il ne devrait y en avoir qu'une)
 	 */
 	public static List<DateRange> activite (SiteOrganisation site) {
-		RegDate dateCreation = site.getNom().get(0).getDateDebut();
-		final List<DateRanged<RegDate>> datesInscription = site.getDonneesRC().getDateInscription();
-		if (datesInscription != null && !datesInscription.isEmpty()) {
-			RegDate dateInscription = datesInscription.get(0).getPayload();
-			if (dateInscription.isBefore(dateCreation)) {
-				dateCreation = dateInscription; // L'inscription RC peut être survenue plus tard. Cas des APM.
+
+		// trouvons la première information d'inscription
+		InscriptionRC first = null;
+		final List<DateRanged<InscriptionRC>> inscriptions = site.getDonneesRC().getInscription();
+		for (DateRanged<InscriptionRC> inscription : inscriptions) {
+			if (inscription.getPayload().isInscrit()) {
+				first = inscription.getPayload();
+				break;
 			}
-		} else {
-			/* Cas de la date RC vide quand la date RC VD est renseignée. Impossible de déterminer quoi que ce soit dans ce cas. */
-			final List<DateRanged<RegDate>> datesInscriptionVd = site.getDonneesRC().getDateInscriptionVd();
-			if (datesInscriptionVd != null && !datesInscriptionVd.isEmpty()) {
-				throw new RuntimeException(String.format("Impossible de trouver la date d'inscription au RC pour le site %s", site.getNumeroSite()));
-			}
+		}
+
+		final RegDate dateCreation;
+		if (first == null) {
+			dateCreation = site.getNom().get(0).getDateDebut();
+		}
+		else if (first.getDateInscriptionVD() != null && first.getDateInscriptionCH() == null) {
+			// Cas de la date RC vide quand la date RC VD est renseignée. Impossible de déterminer quoi que ce soit dans ce cas
+			throw new RuntimeException(String.format("Impossible de trouver la date d'inscription au RC pour le site %s", site.getNumeroSite()));
+		}
+		else {
+			dateCreation = RegDateHelper.minimum(site.getNom().get(0).getDateDebut(), first.getDateInscriptionCH(), NullDateBehavior.LATEST);
 		}
 
 		/* Une période théorique d'activité continue non terminée. */

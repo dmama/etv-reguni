@@ -56,9 +56,8 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 										                  .build()
 								)
 
-								.addStatusInscription(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusInscriptionRC.ACTIF)
-								.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.EN_LIQUIDATION)
-
+								.addInscription(date(2015, 4, 29), date(2015, 9, 30), new InscriptionRC(StatusInscriptionRC.ACTIF, null, date(2015, 4, 29), null, date(2015, 4, 29), null))
+								.addInscription(date(2015, 10, 1), null, new InscriptionRC(StatusInscriptionRC.EN_LIQUIDATION, null, date(2015, 4, 29), null, date(2015, 4, 29), null))
 
 								.addCapital(new CapitalBuilder()
 										            .withDateDebut(RegDate.get(2015, 4, 29))
@@ -98,7 +97,7 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 								.build()
 
 				)
-				.withRee(new DonneesREERCEnt(null, null))
+				.withRee(new DonneesREERCEnt(null))
 				.build();
 
 		Assert.isTrue(builder.isSuccursale(date(2016, 3, 23)));
@@ -137,11 +136,9 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 										                  .build()
 								)
 
-								.addStatusInscription(RegDate.get(2015, 4, 29), RegDate.get(2015, 7, 31), StatusInscriptionRC.ACTIF)
-								.addStatusInscription(RegDate.get(2015, 8, 1), RegDate.get(2015, 9, 30), StatusInscriptionRC.EN_LIQUIDATION)
-								.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.RADIE)
-
-								.addDateRadiation(new DateRanged<>(RegDate.get(2015, 10, 1), null, RegDate.get(2015, 9, 28)))
+								.addInscription(date(2015, 4, 29), date(2015, 7, 31), new InscriptionRC(StatusInscriptionRC.ACTIF, null, date(2015, 5, 30), null, date(2015, 5, 30), null))
+								.addInscription(date(2015, 8, 1), date(2015, 9, 30), new InscriptionRC(StatusInscriptionRC.EN_LIQUIDATION, null, date(2015, 5, 30), null, date(2015, 5, 30), null))
+								.addInscription(date(2015, 10, 1), null, new InscriptionRC(StatusInscriptionRC.RADIE, null, date(2015, 5, 30), date(2015, 9, 28), date(2015, 5, 30), date(2015, 9, 28)))
 
 								.addCapital(new CapitalBuilder()
 										            .withDateDebut(RegDate.get(2015, 4, 29))
@@ -181,7 +178,7 @@ public class SiteOrganisationTest extends WithoutSpringTest {
 								.build()
 
 				)
-				.withRee(new DonneesREERCEnt(null, null))
+				.withRee(new DonneesREERCEnt(null))
 				.build();
 
 		Assert.isFalse(builder.isSuccursale(date(2016, 3, 23)));

@@ -166,7 +166,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 	private boolean isActifAuRC(Entreprise entreprise, RegDate date) {
 		final Organisation organisation = tiersService.getOrganisation(entreprise);
-		return organisation != null && OrganisationHelper.isInscritAuRC(organisation, date) && !OrganisationHelper.isRadieDuRC(organisation, date);
+		return organisation != null && OrganisationHelper.isInscriteAuRC(organisation, date) && !OrganisationHelper.isRadieeDuRC(organisation, date);
 	}
 
 	@Override

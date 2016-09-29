@@ -11,8 +11,6 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -78,18 +76,16 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 			// Entreprises qui n'existent qu'au REE (ou autre registre non utile à la fiscalité)
 			if (organisation.getNumeroIDE(dateEvenement) == null) {
-				final StatusInscriptionRC statusInscriptionRC = sitePrincipal.getDonneesRC().getStatusInscription(dateEvenement);
-				final StatusRegistreIDE statusRegistreIDE = sitePrincipal.getDonneesRegistreIDE().getStatus(dateEvenement);
 				final String message;
 
-				if (organisation.isInscritAuRC(dateEvenement)) {
+				if (organisation.isInscriteAuRC(dateEvenement)) {
 					message = String.format("Numéro IDE manquant pour l'organisation %s (civil: n°%d), domiciliée à %s, pourtant inscrite au RC. Impossible de continuer.",
 					                                     organisation.getNom(dateEvenement),
 					                                     organisation.getNumeroOrganisation(),
 					                                     getCommuneDomicile(sitePrincipal, dateEvenement, context).getNomOfficielAvecCanton()
 					);
 				}
-				else if (organisation.isInscritIDE(dateEvenement)) {
+				else if (organisation.isInscriteIDE(dateEvenement)) {
 					message = String.format("Numéro IDE manquant pour l'organisation %s (civil: n°%d), domiciliée à %s, pourtant inscrite à l'IDE. Impossible de continuer.",
 					                                     organisation.getNom(dateEvenement),
 					                                     organisation.getNumeroOrganisation(),

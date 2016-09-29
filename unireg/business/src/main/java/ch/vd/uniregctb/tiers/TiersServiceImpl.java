@@ -62,6 +62,7 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -397,15 +398,17 @@ public class TiersServiceImpl implements TiersService {
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
 		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvt).getPayload();
 
-		final RegDate dateInscriptionVd = sitePrincipal.getDonneesRC().getDateInscriptionVd(dateEvt);
+		final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(dateEvt);
+		final RegDate dateInscriptionVd = inscriptionRC != null ? inscriptionRC.getDateInscriptionVD() : null;
 		if (dateInscriptionVd != null && dateInscriptionVd.isAfter(dateEvt.addDays(- OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 			dateCreation = dateInscriptionVd.getOneDayAfter();
-		} else {
+		}
+		else {
 			dateCreation = dateEvt.getOneDayAfter();
 		}
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
-		if (organisation.isInscritAuRC(dateCreation)) {
+		if (organisation.isInscriteAuRC(dateCreation)) {
 			changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
 		} else {
 			changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
@@ -6736,7 +6739,7 @@ public class TiersServiceImpl implements TiersService {
 	public boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference) {
 		final Organisation organisation = getOrganisation(entreprise);
 		if (organisation != null) {
-			return OrganisationHelper.isInscritAuRC(organisation, dateReference);
+			return organisation.isInscriteAuRC(dateReference);
 		}
 		else {
 			final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
@@ -6753,7 +6756,7 @@ public class TiersServiceImpl implements TiersService {
 	public boolean hasInscriptionActiveRC(@NotNull Entreprise entreprise, RegDate dateReference) {
 		final Organisation organisation = getOrganisation(entreprise);
 		if (organisation != null) {
-			return OrganisationHelper.isInscritAuRC(organisation, dateReference) && !OrganisationHelper.isRadieDuRC(organisation, dateReference);
+			return organisation.isInscriteAuRC(dateReference) && !organisation.isRadieeDuRC(dateReference);
 		}
 		else {
 			final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();

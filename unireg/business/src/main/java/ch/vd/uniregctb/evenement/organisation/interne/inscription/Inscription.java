@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -54,14 +55,25 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 		if (sitePrincipalAvantRange != null) {
 			sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			statusInscriptionAvant = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
-			dateInscriptionAvant = sitePrincipalAvant.getDonneesRC().getDateInscription(dateAvant);
-			dateRadiationAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
+			final InscriptionRC inscriptionAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
+			if (inscriptionAvant != null) {
+				statusInscriptionAvant = inscriptionAvant.getStatus();
+				dateInscriptionAvant = inscriptionAvant.getDateInscriptionCH();
+				dateRadiationAvant = inscriptionAvant.getDateRadiationCH();
+			}
 		}
 
-		statusInscriptionApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
-		dateInscriptionApres = sitePrincipalApres.getDonneesRC().getDateInscription(dateApres);
-		dateRadiationApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+		final InscriptionRC inscriptionApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+		if (inscriptionApres != null) {
+			statusInscriptionApres = inscriptionApres.getStatus();
+			dateInscriptionApres = inscriptionApres.getDateInscriptionCH();
+			dateRadiationApres = inscriptionApres.getDateRadiationCH();
+		}
+		else {
+			statusInscriptionApres = null;
+			dateInscriptionApres = null;
+			dateRadiationApres = null;
+		}
 	}
 
 	@Override
@@ -73,7 +85,7 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscale.");
+		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscal.");
 		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
 	}
 
@@ -91,7 +103,7 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 		// Vérifier qu'on est bien en présence d'une inscription
 		Assert.state(statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION);
-		Assert.state(!getOrganisation().isInscritAuRC(dateAvant));
+		Assert.state(!getOrganisation().isConnueInscriteAuRC(dateAvant));
 		Assert.isNull(dateRadiationApres, "Date de radiation présente après l'annonce. Nous ne sommes pas en présence d'une inscription.");
 		Assert.isNull(dateRadiationAvant, "Date de radiation présente avant l'annonce. Nous ne sommes pas en présence d'une inscription mais d'une réinscription.");
 	}

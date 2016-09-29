@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -65,10 +65,11 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
 			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-			final DonneesRC donneesRC = sitePrincipalAvant.getDonneesRC();
-			final RegDate dateRadiationRCApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
-			final StatusInscriptionRC statusInscriptionAvant = donneesRC.getStatusInscription(dateAvant);
-			final StatusInscriptionRC statusInscriptionApres = donneesRC.getStatusInscription(dateApres);
+			final InscriptionRC rcAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
+			final InscriptionRC rcApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+			final RegDate dateRadiationRCApres = rcApres != null ? rcApres.getDateRadiationCH() : null;
+			final StatusInscriptionRC statusInscriptionAvant = rcAvant != null ? rcAvant.getStatus() : null;
+			final StatusInscriptionRC statusInscriptionApres = rcApres != null ? rcApres.getStatus() : null;
 
 			if (statusInscriptionAvant == StatusInscriptionRC.RADIE && (statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION)) {
 				LOGGER.info(String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).%s",

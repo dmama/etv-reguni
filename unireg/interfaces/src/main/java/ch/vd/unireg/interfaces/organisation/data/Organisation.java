@@ -103,24 +103,29 @@ public interface Organisation {
 	SiteOrganisation getSiteForNo(Long noSite);
 
 	/**
-	 * @return true si l'organisation est inscrite au RC à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @return true si l'organisation est inscrite au RC à une date donnée (= quel que soit l'état de l'inscription). Si la date est nulle, la date du jour est utilisée.
 	 */
-	boolean isInscritAuRC(RegDate date);
+	boolean isInscriteAuRC(RegDate date);
+
+	/**
+	 * @return <code>true</code> si les données connues à la date fournies présentent l'organisation comme inscrite au RC (quel que soit l'état de l'inscription)
+	 */
+	boolean isConnueInscriteAuRC(RegDate date);
 
 	/**
 	 * @return true si l'organisation est radiée au RC à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
-	boolean isRadieDuRC(RegDate date);
+	boolean isRadieeDuRC(RegDate date);
 
 	/**
 	 * @return true si l'organisation est inscrite à l'IDE à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
-	boolean isInscritIDE(RegDate date);
+	boolean isInscriteIDE(RegDate date);
 
 	/**
 	 * @return true si l'organisation est radiée de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
-	boolean isRadieIDE(RegDate date);
+	boolean isRadieeIDE(RegDate date);
 
 	/**
 	 * @return true si l'organisation possède son siège principal sur Vaud à une date donnée. Si la date est nulle, la date du jour est utilisée.

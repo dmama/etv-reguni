@@ -15,33 +15,13 @@ public interface DonneesRC {
 
 	List<Capital> getCapital();
 
-	List<DateRanged<StatusInscriptionRC>> getStatusInscription();
+	List<DateRanged<InscriptionRC>> getInscription();
 
-	List<DateRanged<RaisonDeDissolutionRC>> getRaisonDeDissolutionVd();
-
-	StatusInscriptionRC getStatusInscription(RegDate date);
-
-	RaisonDeDissolutionRC getRaisonDeDissolutionVd(RegDate date);
-
-	List<DateRanged<RegDate>> getDateInscription();
-
-	RegDate getDateInscription(RegDate date);
-
-	List<DateRanged<RegDate>> getDateInscriptionVd();
-
-	RegDate getDateInscriptionVd(RegDate date);
+	InscriptionRC getInscription(RegDate date);
 
 	List<DateRanged<String>> getButs();
 
 	List<DateRanged<RegDate>> getDateStatuts();
-
-	List<DateRanged<RegDate>> getDateRadiation();
-
-	RegDate getDateRadiation(RegDate date);
-
-	List<DateRanged<RegDate>> getDateRadiationVd();
-
-	RegDate getDateRadiationVd(RegDate date);
 
 	List<EntreeJournalRC> getEntreesJournal();
 

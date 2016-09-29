@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -47,11 +48,14 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
 		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		statusInscriptionAvant = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
-		statusInscriptionApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
+		final InscriptionRC inscriptionAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
+		final InscriptionRC inscriptionApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
 
-		dateRadiationAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
-		dateRadiationApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+		statusInscriptionAvant = inscriptionAvant != null ? inscriptionAvant.getStatus() : null;
+		statusInscriptionApres = inscriptionApres != null ? inscriptionApres.getStatus() : null;
+
+		dateRadiationAvant = inscriptionAvant != null ? inscriptionAvant.getDateRadiationCH() : null;
+		dateRadiationApres = inscriptionApres != null ? inscriptionApres.getDateRadiationCH() : null;
 	}
 
 	@Override

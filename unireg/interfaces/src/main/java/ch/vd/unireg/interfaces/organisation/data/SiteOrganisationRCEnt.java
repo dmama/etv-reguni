@@ -177,22 +177,26 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscription(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateInscriptionCH() : null;
 	}
 
 	@Override
 	public RegDate getDateInscriptionRCVd(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscriptionVd(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateInscriptionVD() : null;
 	}
 
 	@Override
 	public RegDate getDateRadiationRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateRadiation(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateRadiationCH() : null;
 	}
 
 	@Override
 	public RegDate getDateRadiationRCVd(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateRadiationVd(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateRadiationVD() : null;
 	}
 
 	@Override
@@ -257,6 +261,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	@Override
 	public boolean isInscritAuRC(RegDate date) {
 		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	@Override
+	public boolean isConnuInscritAuRC(RegDate date) {
+		return OrganisationHelper.isConnuInscritAuRC(this, date);
 	}
 
 	@Override

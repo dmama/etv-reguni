@@ -69,9 +69,8 @@ public class OrganisationRCEntTest {
 														                  .build()
 												)
 
-												.addStatusInscription(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusInscriptionRC.ACTIF)
-												.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.EN_LIQUIDATION)
-
+												.addInscription(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), new InscriptionRC(StatusInscriptionRC.ACTIF, null, RegDate.get(2015, 4, 29), null, RegDate.get(2015, 4, 29), null))
+												.addInscription(RegDate.get(2015, 10, 1), null, new InscriptionRC(StatusInscriptionRC.EN_LIQUIDATION, null, RegDate.get(2015, 4, 29), null, RegDate.get(2015, 4, 29), null))
 
 												.addCapital(new CapitalBuilder()
 														            .withDateDebut(RegDate.get(2015, 4, 29))
@@ -112,7 +111,7 @@ public class OrganisationRCEntTest {
 
 								)
 								.withRee(
-										new DonneesREERCEnt(null, null)
+										new DonneesREERCEnt(null)
 								)
 								.build())
 				.addDonneesSite(
@@ -141,8 +140,8 @@ public class OrganisationRCEntTest {
 														                  .build()
 												)
 
-												.addStatusInscription(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusInscriptionRC.ACTIF)
-												.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.EN_LIQUIDATION)
+												.addInscription(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), new InscriptionRC(StatusInscriptionRC.ACTIF, null, RegDate.get(2015, 4, 29), null, RegDate.get(2015, 4, 29), null))
+												.addInscription(RegDate.get(2015, 10, 1), null, new InscriptionRC(StatusInscriptionRC.EN_LIQUIDATION, null, RegDate.get(2015, 4, 29), null, RegDate.get(2015, 4, 29), null))
 
 												.build()
 								)
@@ -164,7 +163,7 @@ public class OrganisationRCEntTest {
 
 								)
 								.withRee(
-										new DonneesREERCEnt(null, null)
+										new DonneesREERCEnt(null)
 								)
 								.build())
 				.addDonneesSite(
@@ -193,8 +192,8 @@ public class OrganisationRCEntTest {
 														                  .build()
 												)
 
-												.addStatusInscription(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), StatusInscriptionRC.ACTIF)
-												.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.EN_LIQUIDATION)
+												.addInscription(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), new InscriptionRC(StatusInscriptionRC.ACTIF, null, RegDate.get(2015, 5, 30), null, RegDate.get(2015, 5, 30), null))
+												.addInscription(RegDate.get(2015, 10, 1), null, new InscriptionRC(StatusInscriptionRC.EN_LIQUIDATION, null, RegDate.get(2015, 5, 30), null, RegDate.get(2015, 5, 30), null))
 
 												.addCapital(new CapitalBuilder()
 														            .withDateDebut(RegDate.get(2015, 5, 30))
@@ -224,7 +223,7 @@ public class OrganisationRCEntTest {
 
 								)
 								.withRee(
-										new DonneesREERCEnt(null, null)
+										new DonneesREERCEnt(null)
 								)
 								.build())
 				.build();

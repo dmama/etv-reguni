@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -52,23 +53,22 @@ public class InscriptionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		RegDate dateInscriptionRCAvant = null;
-		RegDate dateRadiationRCAvant = null;
-
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null && !organisation.isInscritAuRC(dateAvant)) {
+		if (sitePrincipalAvantRange != null) {
+			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
+			final InscriptionRC inscriptionAvant = sitePrincipalAvant.getDonneesRC().getInscription(dateAvant);
+			if (inscriptionAvant == null || !inscriptionAvant.isInscrit()) {
+				final RegDate dateInscriptionRCAvant = inscriptionAvant != null ? inscriptionAvant.getDateInscriptionCH() : null;
+				final RegDate dateRadiationRCAvant = inscriptionAvant != null ? inscriptionAvant.getDateRadiationCH() : null;
 
-			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-			dateInscriptionRCAvant = sitePrincipalAvant.getDonneesRC().getDateInscription(dateAvant);
-			dateRadiationRCAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
-			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+				final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+				final InscriptionRC inscriptionApres = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
+				final RegDate dateInscriptionRCApres = inscriptionApres != null ? inscriptionApres.getDateInscriptionCH() : null;
 
-			final RegDate dateInscriptionRCApres = sitePrincipalApres.getDonneesRC().getDateInscription(dateApres);
-
-
-			if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {
-				LOGGER.info(String.format("Inscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation()));
-				return new Inscription(event, organisation, entreprise, context, options);
+				if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {
+					LOGGER.info(String.format("Inscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation()));
+					return new Inscription(event, organisation, entreprise, context, options);
+				}
 			}
 		}
 		LOGGER.info("Pas d'inscription au RC de l'entreprise.");

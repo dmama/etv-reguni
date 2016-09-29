@@ -180,7 +180,7 @@ public class RCEntHelper {
 	 * @return Une nouvelle Map de listes de données Unireg.
 	 */
 	public static <K, U, R extends DateRange> Map<K, List<R>>  convertAndMapDerange(Map<K, List<DateRangeHelper.Ranged<U>>> rcEntDrListMap,
-	                                                              Converter<? super DateRangeHelper.Ranged<U>, ? extends R> flatMapper) {
+	                                                                                Converter<? super DateRangeHelper.Ranged<U>, ? extends R> flatMapper) {
 		if (rcEntDrListMap == null) {
 			return null;
 		}

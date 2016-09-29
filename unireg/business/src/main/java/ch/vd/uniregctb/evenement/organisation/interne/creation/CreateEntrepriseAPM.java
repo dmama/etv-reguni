@@ -46,7 +46,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		 SIFISC-19723 Pour éviter les doublons lors de la mauvaise identification d'APM créées à la main par l'ACI et simultanément enregistrée par SiTi,
 		 pas de création automatique des APM, sauf lorsque l'inscription provient du RC, qui dans ce cas est nécessairement l'institution émettrice.
 		  */
-		if (getOrganisation().isInscritAuRC(getDateEvt())) {
+		if (getOrganisation().isInscriteAuRC(getDateEvt())) {
 			super.doHandle(warnings, suivis);
 
 			MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());

@@ -16,6 +16,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionREE;
 import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -227,8 +229,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                 MockCommune.Aubonne.getNoOFS(), null, null,
 				                                                                                 null, null, null);
 				final MockDonneesREE donneesREE = nouveauSiteSecondaire.getDonneesREE();
-				donneesREE.changeStatus(date(2015, 7, 4), StatusREE.ACTIF);
-				donneesREE.changeDateInscriptionREE(date(2015, 7, 4), date(2015, 7, 1));
+				donneesREE.changeInscriptionREE(date(2015, 7, 4), new InscriptionREE(StatusREE.ACTIF, date(2015, 7, 1)));
 				addOrganisation(org);
 
 			}
@@ -899,8 +900,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                 MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
 				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995");
 				final MockDonneesRC donneesRC = nouveauSiteSecondaire.getDonneesRC();
-				donneesRC.changeStatusInscription(date(2015, 7, 8), StatusInscriptionRC.RADIE);
-				donneesRC.changeDateRadiation(date(2015, 7, 8), date(2015, 7, 5));
+				donneesRC.changeInscription(date(2015, 7, 8), new InscriptionRC(StatusInscriptionRC.RADIE, null,
+				                                                                date(2010, 6, 23), null,
+				                                                                date(2010, 6, 23), date(2015, 7, 5)));
 				final MockDonneesRegistreIDE donneesRegistreIDE = nouveauSiteSecondaire.getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(date(2015, 7, 8), StatusRegistreIDE.RADIE);
 
@@ -1336,8 +1338,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                 FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                 MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
 				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999995");
-				nouveauSiteSecondaire2.getDonneesRC().changeStatusInscription(date(2015, 7, 10), StatusInscriptionRC.RADIE);
-				nouveauSiteSecondaire2.getDonneesRC().changeDateRadiation(date(2015, 7, 10), date(2015, 7, 8));
+				nouveauSiteSecondaire2.getDonneesRC().changeInscription(date(2015, 7, 10), new InscriptionRC(StatusInscriptionRC.RADIE, null,
+				                                                                                             date(2010, 6, 23), null,
+				                                                                                             date(2010, 6, 23), date(2015, 7, 8)));
 				nouveauSiteSecondaire2.getDonneesRegistreIDE().changeStatus(date(2015, 7, 10), StatusRegistreIDE.RADIE);
 				MockSiteOrganisation nouveauSiteSecondaire3 = MockSiteOrganisationFactory.addSite(noSite3, org, date(2015, 7, 8), null, "Synergy Distribution Lausanne SA",
 				                                                                                  FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
@@ -1854,7 +1857,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                 FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_HC,
 				                                                                                 MockCommune.Zurich.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
 				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-				nouveauSiteSecondaire.getDonneesRC().changeDateInscriptionVd(date(2015, 7, 5), date(2015, 7, 2));
+				nouveauSiteSecondaire.getDonneesRC().changeInscription(date(2015, 7, 5), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                                                           date(2015, 7, 2), null,
+				                                                                                           date(2010, 6, 23), null));
 				nouveauSiteSecondaire.changeDomicile(date(2015, 7, 5), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.CheseauxSurLausanne.getNoOFS());
 				addOrganisation(org);
 
@@ -1997,7 +2002,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                 FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                 MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
 				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
-				nouveauSiteSecondaire.getDonneesRC().changeDateRadiationVd(date(2015, 7, 5), date(2015, 7, 2));
+				nouveauSiteSecondaire.getDonneesRC().changeInscription(date(2015, 7, 5), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                                                           date(2010, 6, 23), date(2015, 7, 2),
+				                                                                                           date(2010, 6, 23), null));
 				nouveauSiteSecondaire.changeDomicile(date(2015, 7, 5), TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS());
 				addOrganisation(org);
 
@@ -2147,8 +2154,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                  FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                  MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
 				                                                                                  StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
-				nouveauSiteSecondaire2.getDonneesRC().changeStatusInscription(date(2015, 7, 10), StatusInscriptionRC.RADIE);
-				nouveauSiteSecondaire2.getDonneesRC().changeDateRadiation(date(2015, 7, 10), date(2015, 7, 8));
+				nouveauSiteSecondaire2.getDonneesRC().changeInscription(date(2015, 7, 10), new InscriptionRC(StatusInscriptionRC.RADIE, null,
+				                                                                                             date(2010, 6, 23), null,
+				                                                                                             date(2010, 6, 23), date(2015, 7, 8)));
 				nouveauSiteSecondaire2.getDonneesRegistreIDE().changeStatus(date(2015, 7, 10), StatusRegistreIDE.RADIE);
 				MockSiteOrganisation nouveauSiteSecondaire3 = MockSiteOrganisationFactory.addSite(noSite3, org, date(2015, 7, 8), null, "Synergy Distribution Lausanne SA",
 				                                                                                  FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
@@ -2350,8 +2358,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                                                                                  FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                  MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 23),
 				                                                                                  StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999997");
-				nouveauSiteSecondaire2.getDonneesRC().changeStatusInscription(date(2015, 7, 7), StatusInscriptionRC.RADIE);
-				nouveauSiteSecondaire2.getDonneesRC().changeDateRadiation(date(2015, 7, 7), date(2015, 7, 4));
+				nouveauSiteSecondaire2.getDonneesRC().changeInscription(date(2015, 7, 7), new InscriptionRC(StatusInscriptionRC.RADIE, null,
+				                                                                                            date(2010, 6, 23), null,
+				                                                                                            date(2010, 6, 23), date(2015, 7, 4)));
 				nouveauSiteSecondaire2.getDonneesRegistreIDE().changeStatus(date(2015, 7, 7), StatusRegistreIDE.RADIE);
 				sitesSecondaires.add(nouveauSiteSecondaire2);
 				MockSiteOrganisation nouveauSiteSecondaire3 = MockSiteOrganisationFactory.addSite(noSite3, org, date(2010, 6, 26), null, "Synergy Distribution Aubonne SA",

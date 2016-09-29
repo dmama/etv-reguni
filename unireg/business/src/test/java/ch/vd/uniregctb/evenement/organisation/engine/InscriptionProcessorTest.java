@@ -10,6 +10,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
@@ -64,14 +65,15 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				MockOrganisation organisation =
+				final MockOrganisation organisation =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association Synergy", date(2010, 6, 24), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", null, null);
-				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.changeStatusInscription(date(2015, 7, 8), StatusInscriptionRC.ACTIF);
-				rc.changeDateInscription(date(2015, 7, 8), date(2015, 7, 5));
+				final MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				rc.changeInscription(date(2015, 7, 8), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                         null, null,
+				                                                         date(2015, 7, 5), null));
 				addOrganisation(organisation);
 			}
 		});
@@ -130,7 +132,7 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscale.",
+				                             Assert.assertEquals("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscal.",
 				                                                 evt.getErreurs().get(2).getMessage());
 
 				                             return null;
@@ -150,13 +152,15 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				MockOrganisation organisation =
+				final MockOrganisation organisation =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association Synergy", date(2010, 6, 24), null, FormeLegale.N_0109_ASSOCIATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, null,
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996", null, null);
-				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.changeDateInscription(date(2015, 7, 8), date(2015, 7, 5));
+				final MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				rc.changeInscription(date(2015, 7, 8), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+				                                                         null, null,
+				                                                         date(2015, 7, 5), null));
 				addOrganisation(organisation);
 			}
 		});

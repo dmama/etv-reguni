@@ -78,7 +78,7 @@ public class CreateEntreprisePM extends CreateEntreprise {
 			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateEvt())));
 		}
 
-		if (!inscritAuRC()) {
+		if (!inscriteAuRC()) {
 			erreurs.addErreur("Inscription au RC manquante.");
 		}
 	}

@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.AnnulableHelper;
@@ -72,16 +73,19 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 
-			List<DateRanged<String>> nomsAdditionnels = organisation.getNomAdditionnel();
+			final List<DateRanged<String>> nomsAdditionnels = organisation.getNomAdditionnel();
 			Collections.sort(nomsAdditionnels, new DateRangeComparator<>());
 			entrepriseView.setNomsAdditionnels(nomsAdditionnels);
 
 			final DonneesRC donneesRC = organisation.getSitePrincipal(null).getPayload().getDonneesRC();
-			entrepriseView.setDateInscriptionRC(getLastElementPayload(donneesRC.getDateInscription()));
-			entrepriseView.setDateInscriptionRCVD(getLastElementPayload(donneesRC.getDateInscriptionVd()));
-			entrepriseView.setStatusRC(donneesRC.getStatusInscription(null));
-			entrepriseView.setDateRadiationRCVD(getLastElementPayload(donneesRC.getDateRadiationVd()));
-			entrepriseView.setDateRadiationRC(getLastElementPayload(donneesRC.getDateRadiation()));
+			final InscriptionRC inscriptionRC = getLastElementPayload(donneesRC.getInscription());
+			if (inscriptionRC != null) {
+				entrepriseView.setDateInscriptionRC(inscriptionRC.getDateInscriptionCH());
+				entrepriseView.setDateInscriptionRCVD(inscriptionRC.getDateInscriptionVD());
+				entrepriseView.setStatusRC(inscriptionRC.getStatus());
+				entrepriseView.setDateRadiationRCVD(inscriptionRC.getDateRadiationVD());
+				entrepriseView.setDateRadiationRC(inscriptionRC.getDateRadiationCH());
+			}
 
 			final DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
 			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1

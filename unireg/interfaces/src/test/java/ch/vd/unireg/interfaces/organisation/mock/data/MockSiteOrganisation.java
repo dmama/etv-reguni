@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -237,22 +238,26 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscription(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateInscriptionCH() : null;
 	}
 
 	@Override
 	public RegDate getDateInscriptionRCVd(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscriptionVd(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateInscriptionVD() : null;
 	}
 
 	@Override
 	public RegDate getDateRadiationRC(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateRadiation(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateRadiationCH() : null;
 	}
 
 	@Override
 	public RegDate getDateRadiationRCVd(RegDate date) {
-		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateRadiationVd(), date);
+		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
+		return inscription != null ? inscription.getDateRadiationVD() : null;
 	}
 
 	@Override
@@ -298,6 +303,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	@Override
 	public boolean isInscritAuRC(RegDate date) {
 		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	@Override
+	public boolean isConnuInscritAuRC(RegDate date) {
+		return OrganisationHelper.isConnuInscritAuRC(this, date);
 	}
 
 	@Override

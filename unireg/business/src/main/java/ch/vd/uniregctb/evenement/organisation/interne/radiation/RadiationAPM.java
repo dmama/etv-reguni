@@ -73,7 +73,7 @@ public class RadiationAPM extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		Assert.isTrue(getOrganisation().isRadieDuRC(dateApres), "L'organisation n'est pas radiée du RC!");
+		Assert.isTrue(getOrganisation().isRadieeDuRC(dateApres), "L'organisation n'est pas radiée du RC!");
 		Assert.notNull(dateRadiation, "Date de radiation introuvable!");
 
 		Assert.isTrue(categorieEntreprise == CategorieEntreprise.APM, String.format("Mauvaise catégorie d'entreprise: %s (erreur de programmation).", categorieEntreprise.getLibelle()));

@@ -457,9 +457,10 @@ public abstract class EvenementOrganisationInterne {
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
-		if (organisation.isInscritAuRC(getDateEvt())) {
+		if (organisation.isInscriteAuRC(getDateEvt())) {
 			changeEtatEntreprise(entreprise, TypeEtatEntreprise.INSCRITE_RC, dateDebut, suivis);
-		} else {
+		}
+		else {
 			changeEtatEntreprise(entreprise, TypeEtatEntreprise.FONDEE, dateDebut, suivis);
 		}
 	}

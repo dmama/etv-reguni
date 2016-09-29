@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -54,12 +55,14 @@ public class LiquidationStrategy extends AbstractOrganisationStrategy {
 		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
 
 		final Map<RegDate, List<PublicationBusiness>> publications = sitePrincipal.getPublications();
-		final StatusInscriptionRC statusInscription = sitePrincipal.getDonneesRC().getStatusInscription(dateApres);
+		final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(dateApres);
+		final StatusInscriptionRC statusInscription = inscriptionRC != null ? inscriptionRC.getStatus() : null;
 		final StatusRegistreIDE statusRegistreIDE = sitePrincipal.getDonneesRegistreIDE().getStatus(dateApres);
 
-		if (statusInscription == StatusInscriptionRC.EN_LIQUIDATION &&
-				statusRegistreIDE == StatusRegistreIDE.RADIE &&
-				publications != null && !publications.isEmpty()) {
+		if (statusInscription == StatusInscriptionRC.EN_LIQUIDATION
+				&& statusRegistreIDE == StatusRegistreIDE.RADIE
+				&& publications != null
+				&& !publications.isEmpty()) {
 
 			for (PublicationBusiness publication : publications.get(event.getDateEvenement())) {
 				if (publication.getTypeDeLiquidation() != null) {

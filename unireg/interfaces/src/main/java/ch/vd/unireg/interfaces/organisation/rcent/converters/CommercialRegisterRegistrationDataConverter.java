@@ -20,7 +20,7 @@ public class CommercialRegisterRegistrationDataConverter extends BaseConverter<R
 		                         rcRegistrationData.getVdRegistrationDate(),
 		                         rcRegistrationData.getVdDeregistrationDate(),
 		                         rcRegistrationData.getChRegistrationDate(),
-		                         rcRegistrationData.getChRegistrationDate());
+		                         rcRegistrationData.getChDeregistrationDate());
 	}
 
 	@Nullable

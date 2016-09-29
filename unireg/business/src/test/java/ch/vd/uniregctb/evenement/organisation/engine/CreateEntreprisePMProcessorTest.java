@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -685,8 +686,10 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
-		rc.changeDateInscriptionVd(date(2015, 6, 26), date(2015, 6, 20));
+		final MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
+		rc.changeInscription(date(2015, 6, 26), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+		                                                          date(2015, 6, 20), null,
+		                                                          date(2015, 6, 24), null));
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -814,8 +817,10 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
-		MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
-		rc.changeDateInscriptionVd(date(2012, 4, 16), date(2012, 4, 12));
+		final MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
+		rc.changeInscription(date(2012, 4, 16), new InscriptionRC(StatusInscriptionRC.ACTIF, null,
+		                                                          date(2012, 4, 12), null,
+		                                                          date(2010, 6, 24), null));
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
@@ -81,9 +82,7 @@ public abstract class MockSiteOrganisationFactory {
 
 		final MockDonneesRC donneesRC = new MockDonneesRC();
 		if (statusInscriptionRC != null) {
-			donneesRC.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
-			donneesRC.addDateInscription(dateDebut, dateFin, dateInscriptionRC);
-			donneesRC.addDateInscriptionVd(dateDebut, dateFin, dateInscriptionRC);
+			donneesRC.addInscription(dateDebut, dateFin, new InscriptionRC(statusInscriptionRC, null, dateInscriptionRC, null, dateInscriptionRC, null));
 			if (capitalAmount != null) {
 				donneesRC.addCapital(dateDebut,
 				                     dateFin,

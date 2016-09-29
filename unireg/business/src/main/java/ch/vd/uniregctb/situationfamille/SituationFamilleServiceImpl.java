@@ -316,7 +316,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	}
 
 	/**
-	 * Récupère la situation de famille du contribuable donné dans le registre fiscale et construit une vue de sa situation de famille à
+	 * Récupère la situation de famille du contribuable donné dans le registre fiscal et construit une vue de sa situation de famille à
 	 * partir de ça. 2 listes sont construites la première contient les situatiosn valides et la deuxième les situations annulées.
 	 *
 	 * @param contribuable

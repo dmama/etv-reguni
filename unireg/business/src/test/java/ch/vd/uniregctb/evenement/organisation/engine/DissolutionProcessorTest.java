@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -64,7 +65,9 @@ public class DissolutionProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.changeRaisonDeDissolutionVd(date(2015, 6, 26), RaisonDeDissolutionRC.FAILLITE);
+				rc.changeInscription(date(2015, 6, 26), new InscriptionRC(StatusInscriptionRC.EN_LIQUIDATION, RaisonDeDissolutionRC.FAILLITE,
+				                                                          date(2010, 6, 24), null,
+				                                                          date(2010, 6, 24), null));
 				addOrganisation(organisation);
 
 			}

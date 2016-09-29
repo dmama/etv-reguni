@@ -223,32 +223,37 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 * Indique si un l'organisation est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean isInscritAuRC(RegDate date) {
-		return OrganisationHelper.isInscritAuRC(this, date);
+	public boolean isInscriteAuRC(RegDate date) {
+		return OrganisationHelper.isInscriteAuRC(this, date);
+	}
+
+	@Override
+	public boolean isConnueInscriteAuRC(RegDate date) {
+		return OrganisationHelper.isConnueInscriteAuRC(this, date);
 	}
 
 	/**
 	 * Indique si un l'organisation est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean isRadieDuRC(RegDate date) {
-		return OrganisationHelper.isRadieDuRC(this, date);
+	public boolean isRadieeDuRC(RegDate date) {
+		return OrganisationHelper.isRadieeDuRC(this, date);
 	}
 
 	/**
 	 * Indique si un l'organisation est inscrite à l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean isInscritIDE(RegDate date) {
-		return OrganisationHelper.isInscritIDE(this, date);
+	public boolean isInscriteIDE(RegDate date) {
+		return OrganisationHelper.isInscriteIDE(this, date);
 	}
 
 	/**
 	 * Indique si un l'organisation est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean isRadieIDE(RegDate date) {
-		return OrganisationHelper.isRadieIDE(this, date);
+	public boolean isRadieeIDE(RegDate date) {
+		return OrganisationHelper.isRadieeIDE(this, date);
 	}
 
 	/**

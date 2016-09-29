@@ -36,7 +36,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
 			motifFor = MotifFor.DEPART_HC;
-			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
+			if (getSitePrincipalApres().isConnuInscritAuRC(getDateApres())) {
 				final RegDate dateRadiationRCVd = getSitePrincipalApres().getDateRadiationRCVd(getDateApres());
 				if (dateRadiationRCVd == null) {
 					throw new EvenementOrganisationException("Date de radiation au registre vaudois du commerce introuvable pour l'établissement principal en partance.");
@@ -49,7 +49,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			motifFor = MotifFor.ARRIVEE_HC;
-			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
+			if (getSitePrincipalApres().isConnuInscritAuRC(getDateApres())) {
 				final RegDate dateInscriptionRCVd = getSitePrincipalApres().getDateInscriptionRCVd(getDateApres());
 				if (dateInscriptionRCVd == null) {
 					throw new EvenementOrganisationException("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal en arrivée.");

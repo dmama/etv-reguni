@@ -97,7 +97,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// SIFISC-19700: Contrôle que la date d'inscription au RC rapportée par RCEnt correspond à celle de l'entrée de journal au RC. (il y a eu des erreurs de transcription au RC!)
-		if (isCreation() && getOrganisation().isInscritAuRC(getDateEvt())) {
+		if (isCreation() && getOrganisation().isInscriteAuRC(getDateEvt())) {
 			final List<EntreeJournalRC> entreesJournalPourDatePublication = sitePrincipal.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 			/*
 			 On part du principe que lors d'une inscription d'une nouvelle entreprise au RC, on a une et une seule publication FOSC portant sur une entrée de journal.
@@ -185,7 +185,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		// Vérifier la présence des autres données nécessaires ?
 	}
 
-	protected boolean inscritAuRC() {
-		return OrganisationHelper.isInscritAuRC(getOrganisation(), getDateEvt());
+	protected boolean inscriteAuRC() {
+		return getOrganisation().isInscriteAuRC(getDateEvt());
 	}
 }

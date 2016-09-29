@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -48,7 +49,8 @@ public class DissolutionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 
 		final DonneesRC donneesRC = organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC();
-		RaisonDeDissolutionRC raisonDeDissolution = donneesRC.getRaisonDeDissolutionVd(dateApres);
+		final InscriptionRC inscriptionRC = donneesRC.getInscription(dateApres);
+		final RaisonDeDissolutionRC raisonDeDissolution = inscriptionRC != null ? inscriptionRC.getRaisonDissolutionVD() : null;
 		if (raisonDeDissolution != null) {
 			switch (raisonDeDissolution) {
 			case FUSION:
