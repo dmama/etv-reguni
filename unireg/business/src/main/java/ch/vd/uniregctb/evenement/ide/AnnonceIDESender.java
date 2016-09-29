@@ -7,8 +7,6 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
  */
 public interface AnnonceIDESender {
 
-	String VERSION_ATTRIBUTE = "evenementVersion";
-
 	/**
 	 * @param annonce l'annonce à expédier
 	 * @param msgBusinessId la businessId à assigner au message ESB
