@@ -40,7 +40,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RcEntClientImpl.class);
 
-	JAXBContext jaxbContext;
+	private JAXBContext jaxbContext;
 
 	private Unmarshaller errorunmarshaller;
 
@@ -50,7 +50,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	private String organisationsOfNoticePath = "organisationsOfNotice";
 	private String pingPath = "infrastructure/ping";
 	private String findByNoIDEPath = "organisation/CH.IDE";
-	private String noticeRequestValidatePath = "noticeRequestValidate/";
+	private String noticeRequestValidatePath = "noticeRequestValidate/"; // Le '/' supplémentaire est nécessaire au bon fonctionnement de l'appel.
 	private String noticeRequestListPath = "noticeRequestList";
 
 	public void setBaseUrl(String url) {
