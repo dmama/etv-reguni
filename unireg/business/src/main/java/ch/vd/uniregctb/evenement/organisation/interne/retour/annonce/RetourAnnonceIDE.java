@@ -57,15 +57,14 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	public RetourAnnonceIDE(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                        EvenementOrganisationContext context,
 	                        EvenementOrganisationOptions options,
-	                        AnnonceIDE annonceIDE,
-	                        ReferenceAnnonceIDE referenceAnnonceIDE) throws EvenementOrganisationException {
+	                        AnnonceIDE annonceIDE) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
 		this.annonceIDE = annonceIDE;
-		this.referenceAnnonceIDE = referenceAnnonceIDE;
+		this.referenceAnnonceIDE = evenement.getReferenceAnnonceIDE();
 
 		sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
 		etablissementPrincipal = referenceAnnonceIDE.getEtablissement();

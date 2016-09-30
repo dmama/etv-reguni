@@ -22,9 +22,11 @@ import org.springframework.context.SmartLifecycle;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.Notice;
+import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0024.v3.ObjectFactory;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfNoticeConverter;
@@ -34,9 +36,12 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.RCEntApiHelper;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
+import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
@@ -51,6 +56,8 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 
 	private Schema schemaCache;
 	private JAXBContext jaxbContext;
+
+	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 
 	private EvenementOrganisationReceptionHandler receptionHandler;
 	private Set<TypeEvenementOrganisation> ignoredEventTypes;
@@ -211,12 +218,44 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	@NotNull
 	private List<EvenementOrganisation> createEvenementOrganisation(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
-			return RCEntApiHelper.createEvenement(message);
+			return createEvenement(message);
 		}
 		catch (EvenementOrganisationException | RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
 	}
+
+	public List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) throws EvenementOrganisationException, EvenementOrganisationEsbException {
+		List<EvenementOrganisation> evts = new ArrayList<>();
+		Notice notice = message.getNotice();
+		final long noEvenement = notice.getNoticeId().longValue();
+		final TypeEvenementOrganisation type = RCEntApiHelper.convertTypeOfNotice(notice.getTypeOfNotice());
+		final RegDate noticeDate = notice.getNoticeDate();
+		final Long noAnnonceIDE = RCEntApiHelper.extractNoAnnonceIDE(notice);
+
+		final List<NoticeOrganisation> organisation = message.getOrganisation();
+		for (NoticeOrganisation org : organisation) {
+			final EvenementOrganisation e = new EvenementOrganisation(
+					noEvenement,
+					type,
+					noticeDate,
+					org.getOrganisation().getCantonalId().longValue(),
+					EtatEvenementOrganisation.A_TRAITER
+			);
+			// On a un retour d'annonce IDE. Il faut rechercher sa référence et l'attacher à l'événement.
+			if (noAnnonceIDE != null) {
+				final ReferenceAnnonceIDE referencesAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);
+				if (referencesAnnonceIDE == null) {
+					final String msg = String.format("Impossible de trouver la référence en base pour le numéro d'annonce IDE %d indiqué dans l'événement RCEnt.", noAnnonceIDE);
+					throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, msg);
+				}
+				e.setReferenceAnnonceIDE(referencesAnnonceIDE);
+			}
+			evts.add(e);
+		}
+		return evts;
+	}
+
 
 	/*
 	 On valide sur le message brut car il peut y avoir NullPointerException à la création de l'instance de l'événement.
@@ -364,5 +403,9 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		}
 
 		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+	}
+
+	public void setReferenceAnnonceIDEDAO(ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO) {
+		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
 	}
 }

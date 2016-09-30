@@ -145,7 +145,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2016, 9, 5), A_TRAITER);
-				event.setNoAnnonceIDE(idReferenceAnnonce);
+				event.setReferenceAnnonceIDE(referenceAnnonceIDEDAO.get(idReferenceAnnonce));
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

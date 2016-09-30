@@ -3,22 +3,16 @@ package ch.vd.uniregctb.evenement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import ch.ech.ech0097.v2.NamedOrganisationId;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import ch.vd.evd0022.v3.Notice;
-import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.TypeOfNotice;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
@@ -62,30 +56,6 @@ public class RCEntApiHelper {
 		return sources;
 	}
 
-
-	public static List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) throws EvenementOrganisationException {
-		List<EvenementOrganisation> evts = new ArrayList<>();
-		Notice notice = message.getNotice();
-		final long noEvenement = notice.getNoticeId().longValue();
-		final TypeEvenementOrganisation type = convertTypeOfNotice(notice.getTypeOfNotice());
-		final RegDate noticeDate = notice.getNoticeDate();
-		final Long noAnnonceIDE = extractNoAnnonceIDE(notice);
-
-		final List<NoticeOrganisation> organisation = message.getOrganisation();
-		for (NoticeOrganisation org : organisation) {
-			final EvenementOrganisation e = new EvenementOrganisation(
-					noEvenement,
-					type,
-					noticeDate,
-					org.getOrganisation().getCantonalId().longValue(),
-					EtatEvenementOrganisation.A_TRAITER
-			);
-			e.setNoAnnonceIDE(noAnnonceIDE);
-			evts.add(e);
-		}
-		return evts;
-	}
-
 	/**
 	 * Extraire le numéro de l'annonce IDE si l'événement rapporte un changement issu d'une annonce à l'IDE émise par Unireg.
 	 *
@@ -93,7 +63,7 @@ public class RCEntApiHelper {
 	 * @return le numéro d'annonce, ou null si l'événement ne contient pas de référence à une annonce émise par Unireg.
 	 * @throws EvenementOrganisationException en cas d'incohérence dans la référence.
 	 */
-	protected static Long extractNoAnnonceIDE(Notice notice) throws EvenementOrganisationException {
+	public static Long extractNoAnnonceIDE(Notice notice) throws EvenementOrganisationException {
 		final NoticeRequestIdentification noticeRequestIdent = notice.getNoticeRequest();
 		if (noticeRequestIdent != null) {
 			final String applicationId = noticeRequestIdent.getReportingApplication().getId();

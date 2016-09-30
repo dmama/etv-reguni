@@ -246,9 +246,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		boolean evaluateStrategies = true;
 
 		/* Cas spécial: on reçoit le retour d'une annonce à l'IDE. Il faut rechercher l'entreprise et apparier si c'est une création. */
-		final Long noAnnonceIDE = event.getNoAnnonceIDE();
-		if (noAnnonceIDE != null) {
-			final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);
+		final ReferenceAnnonceIDE referenceAnnonceIDE = event.getReferenceAnnonceIDE();
+		if (referenceAnnonceIDE != null) {
+			final Long noAnnonceIDE = referenceAnnonceIDE.getId();
 			final Etablissement etablissement = referenceAnnonceIDE.getEtablissement();
 
 			/* On utilise la date de l'événement comme référence, mais quid si l'association entreprise <-> etablissement avait changé entretemps? */
@@ -263,7 +263,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				);
 			}
 
-			evenements.add(new RetourAnnonceIDE(event, organisation, entreprise, context, options, serviceOrganisationService.getAnnonceIDE(noAnnonceIDE), referenceAnnonceIDE));
+			evenements.add(new RetourAnnonceIDE(event, organisation, entreprise, context, options, serviceOrganisationService.getAnnonceIDE(noAnnonceIDE)));
 			// Pas question de traiter normallement, on connait déjà les changements.
 			evaluateStrategies = false;
 		}

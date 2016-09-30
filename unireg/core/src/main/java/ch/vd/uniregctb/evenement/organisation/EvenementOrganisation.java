@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -37,28 +39,26 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	private long id;
 	/**
-	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeId
+	 * Identifiant de l'annonce (noticeId de la norme)
 	 */
 	private long noEvenement;
 	/**
-	 * ch.vd.evd0024.v3:noticeRoot:notice:typeOfNotice
+	 * Type de l'annonce
 	 */
 	private TypeEvenementOrganisation type;
 	/**
-	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeDate
+	 * Date de l'annonce (noticeDate de la norme)
 	 */
 	private RegDate dateEvenement;
 	/**
-	 * ch.vd.evd0024.v3:noticeRoot:notice:organisation[0]:Organisation:cantonalId
-	 * Il peut y avoir plusieurs organisations, mais on ne prend que la première
+	 * Identifiant cantonal de l'organisation dans le registre civil des entreprises
 	 */
 	private long noOrganisation;
 
 	/**
-	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeRequest:noticeRequestId
-	 * Le numéro de l'annonce à l'IDE à l'origine de l'événement, si cette annonce provient d'Unireg.
+	 * La référence à l'annonce IDE émise par Unireg et dont ce message découle.
 	 */
-	private Long noAnnonceIDE;
+	private ReferenceAnnonceIDE referenceAnnonceIDE;
 
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
@@ -165,14 +165,15 @@ public class EvenementOrganisation extends HibernateEntity {
 		this.noOrganisation = noOrganisation;
 	}
 
-	@Column(name = "NO_ANNONCE_IDE")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "NO_ANNONCE_IDE")
 	@ForeignKey(name="FK_EV_ORG_REFANNIDE_ID")
-	public Long getNoAnnonceIDE() {
-		return noAnnonceIDE;
+	public ReferenceAnnonceIDE getReferenceAnnonceIDE() {
+		return referenceAnnonceIDE;
 	}
 
-	public void setNoAnnonceIDE(Long noAnnonceIDE) {
-		this.noAnnonceIDE = noAnnonceIDE;
+	public void setReferenceAnnonceIDE(ReferenceAnnonceIDE referenceAnnonceIDE) {
+		this.referenceAnnonceIDE = referenceAnnonceIDE;
 	}
 
 	/**

@@ -16,6 +16,7 @@
 			<set>
 			</set>
 		</property>
+		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
 	</bean>
 
 	<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
