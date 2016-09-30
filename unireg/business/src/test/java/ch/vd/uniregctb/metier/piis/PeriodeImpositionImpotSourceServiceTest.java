@@ -6511,4 +6511,106 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-21190] cas d'une personne à la source dont l'arrivée hors canton se fait directement au premier janvier avec un for
+	 * hors-canton source précédent -> ça pêtait en NPE
+	 */
+	@Test
+	public void testForSourcePileFinAnneeAvecArriveeHC() throws Exception {
+
+		final long noIndividu = 4651543L;
+		final RegDate dateArriveeHS = date(2012, 1, 1);
+		final RegDate dateDebutRapportTravail = date(2012, 8, 12);
+		final RegDate dateArriveeHC = date(2014, 1, 1);
+		final RegDate dateMariage = date(2015, 9, 13);
+		final RegDate dateDepart = date(2015, 12, 31);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArriveeHS, MotifFor.ARRIVEE_HS, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, dateDebutRapportTravail, dateDepart, false);
+
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des piis
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(4, piis.size());
+
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton(MockCommune.Bern.getSigleCanton()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(2012, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2012, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton(MockCommune.Bern.getSigleCanton()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(2013, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2013, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(2014, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2014, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(3);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getVaud(), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(2015, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2015, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
 }

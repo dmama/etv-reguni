@@ -196,7 +196,7 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					final RegDate dateFraction = current.getDateFin().getLastDayOfTheMonth().getOneDayAfter();
 					fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateFin(), dateFraction), null, motifEffectif);
 				}
-				else if (motifEffectif == MotifFor.ARRIVEE_HC) {
+				else if (motifEffectif == MotifFor.ARRIVEE_HC && next != null) {
 					// [SIFISC-18817] on revient ;
 					// - au premier jour du mois de la même année suivant le passage au rôle s'il y en a eu un dans l'année avant l'arrivée HC
 					// - au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
