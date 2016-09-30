@@ -37,9 +37,9 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
 		try {
-			List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative> res = new ArrayList<>();
+			List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur> res = new ArrayList<>();
 			final List collectivitesUtilisateurCommunicationTier = serviceSecurite.getCollectivitesUtilisateurCommunicationTier(visaOperateur);
 			for (Object o : collectivitesUtilisateurCommunicationTier) {
 				res.add(CollectiviteAdministrativeImpl.get((CollectiviteAdministrative)o));

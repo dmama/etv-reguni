@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
@@ -164,8 +165,8 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
-		final List<CollectiviteAdministrative>  resultat;
+	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
+		final List<CollectiviteAdministrativeUtilisateur>  resultat;
 		final KeyGetCollectivitesUtilisateurVisaOperateur key = new KeyGetCollectivitesUtilisateurVisaOperateur(visaOperateur);
 		final Element element = cache.get(key);
 		if (element == null) {
@@ -173,7 +174,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 			cache.put(new Element(key, resultat));
 		}
 		else {
-			resultat = (List<CollectiviteAdministrative>) element.getObjectValue();
+			resultat = (List<CollectiviteAdministrativeUtilisateur>) element.getObjectValue();
 		}
 
 		return resultat;

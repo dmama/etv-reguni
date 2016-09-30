@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
@@ -28,7 +28,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	protected abstract void init();
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
+	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
 		return null;
 	}
 

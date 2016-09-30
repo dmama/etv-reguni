@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
@@ -33,12 +33,12 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) {
+	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(final String visaOperateur) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final List<CollectiviteAdministrative> list = target.getCollectivitesUtilisateur(visaOperateur);
+			final List<CollectiviteAdministrativeUtilisateur> list = target.getCollectivitesUtilisateur(visaOperateur);
 			items = list == null ? 0 : list.size();
 			return list;
 		}

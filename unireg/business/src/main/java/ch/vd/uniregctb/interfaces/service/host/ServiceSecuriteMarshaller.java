@@ -2,12 +2,13 @@ package ch.vd.uniregctb.interfaces.service.host;
 
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.IfoSecProfil;
 
 public class ServiceSecuriteMarshaller implements ServiceSecuriteService {
+
 	private ServiceSecuriteService ejbClient;
 	private ServiceSecuriteService restClient;
 	private boolean modeRest;
@@ -24,43 +25,35 @@ public class ServiceSecuriteMarshaller implements ServiceSecuriteService {
 		this.modeRest = modeRest;
 	}
 
+	/**
+	 * @return le client effectivement à utiliser
+	 */
+	private ServiceSecuriteService getClient() {
+		return modeRest ? restClient : ejbClient;
+	}
+
 	@Override
-	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(String visaOperateur) {
-		if (modeRest) {
-			return restClient.getCollectivitesUtilisateur(visaOperateur);
-		}
-		return ejbClient.getCollectivitesUtilisateur(visaOperateur);
+	public List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur) {
+		return getClient().getCollectivitesUtilisateur(visaOperateur);
 	}
 
 	@Override
 	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
-		if (modeRest) {
-			return restClient.getProfileUtilisateur(visaOperateur,codeCollectivite);
-		}
-		return ejbClient.getProfileUtilisateur(visaOperateur,codeCollectivite);
+		return getClient().getProfileUtilisateur(visaOperateur, codeCollectivite);
 	}
 
 	@Override
 	public List<Operateur> getUtilisateurs(List<TypeCollectivite> typesCollectivite) {
-		if (modeRest) {
-			return restClient.getUtilisateurs(typesCollectivite);
-		}
-		return ejbClient.getUtilisateurs(typesCollectivite);
+		return getClient().getUtilisateurs(typesCollectivite);
 	}
 
 	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
-		if (modeRest) {
-			return restClient.getOperateur(individuNoTechnique);
-		}
-		return ejbClient.getOperateur(individuNoTechnique);
+		return getClient().getOperateur(individuNoTechnique);
 	}
 
 	@Override
 	public Operateur getOperateur(String visa) {
-		if (modeRest) {
-			return restClient.getOperateur(visa);
-		}
-		return ejbClient.getOperateur(visa);
+		return getClient().getOperateur(visa);
 	}
 }

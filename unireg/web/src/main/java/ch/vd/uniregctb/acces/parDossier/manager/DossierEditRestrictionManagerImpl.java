@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView;
 import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -96,7 +97,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 
 				String officeImpot;
 				try {
-					final List<CollectiviteAdministrative> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
+					final List<CollectiviteAdministrativeUtilisateur> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
 					final StringRenderer<CollectiviteAdministrative> nomsCourts = new StringRenderer<CollectiviteAdministrative>() {
 						@Override
 						public String toString(CollectiviteAdministrative ca) {

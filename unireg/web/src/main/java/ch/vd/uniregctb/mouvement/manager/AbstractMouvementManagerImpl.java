@@ -22,6 +22,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -310,7 +311,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			final NomPrenom nomPrenomOperateur = new NomPrenom(operateur.getNom(), operateur.getPrenom());
 			nomUtilisateur = nomPrenomOperateur.getNomPrenom();
 			visaOperateur = operateur.getCode();
-			final List<CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
+			final List<CollectiviteAdministrativeUtilisateur> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
 			if (collectivites != null && collectivites.size() > 0) {
 				final CollectiviteAdministrative collectivite = collectivites.get(0);
 				final IfoSecProfil profileUtilisateur = serviceSecuriteService.getProfileUtilisateur(visaOperateur, collectivite.getNoColAdm());

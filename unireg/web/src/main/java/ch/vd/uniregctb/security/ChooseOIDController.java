@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.UrlEncodedQueryString;
@@ -30,7 +31,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 @Controller
 public class ChooseOIDController {
 
-	private static final String IS_ACTIVE = "O";
 	private ServiceSecuriteService serviceSecurite;
 
 	@RequestMapping(value = "/chooseOID.do", method = RequestMethod.GET)
@@ -61,27 +61,16 @@ public class ChooseOIDController {
 	/**
 	 * @return les offices d'impôt autorisés pour l'utilisateur courant
 	 */
-	private List<CollectiviteAdministrative> getOfficesImpot() {
+	private List<CollectiviteAdministrativeUtilisateur> getOfficesImpot() {
 		// [SIFISC-2078] Tri des collectivités administratives affichées par ordre alphabétique du nom
-		List<CollectiviteAdministrative> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+		List<CollectiviteAdministrativeUtilisateur> list = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 		if (list != null && list.size() > 1) {
 			// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
 			list = new ArrayList<>(list);
 			Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
 				@Override
 				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
-					// [SIFISC-4003] Les collectivités actives sont affichées en premier
-					final boolean active1 = o1.isValide();
-					final boolean active2 = o2.isValide();
-					if (active1 && !active2) {
-						return -1;
-					}
-					else if (!active1 && active2) {
-						return 1;
-					}
-					else {
-						return o1.getNomCourt().compareTo(o2.getNomCourt());
-					}
+					return o1.getNomCourt().compareTo(o2.getNomCourt());
 				}
 			});
 		}
