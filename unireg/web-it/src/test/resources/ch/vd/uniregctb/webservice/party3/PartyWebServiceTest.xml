@@ -53,6 +53,8 @@
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
+    <column>IDE_DIRTY</column>
+    <column>IDE_DESACTIVE</column>
     <row>
       <value>Entreprise</value>
       <value>312</value>
@@ -106,6 +108,10 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>Entreprise</value>
@@ -160,6 +166,10 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -209,6 +219,8 @@
       <value>0</value>
       <null/>
       <value><![CDATA[Tummers-De Wit Wouter]]></value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -268,6 +280,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -319,6 +333,8 @@
       <null/>
       <null/>
       <value>122937</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -376,6 +392,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -427,6 +445,8 @@
       <null/>
       <null/>
       <value>171324</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -484,6 +504,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -535,6 +557,8 @@
       <null/>
       <null/>
       <value>946284</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -592,6 +616,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -614,6 +640,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -700,6 +728,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -751,6 +781,8 @@
       <null/>
       <null/>
       <value>1013955</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -808,6 +840,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -824,6 +858,8 @@
       <null/>
       <value>0</value>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -916,6 +952,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -967,6 +1005,8 @@
       <null/>
       <null/>
       <value>333908</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1024,6 +1064,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>DebiteurPrestationImposable</value>
@@ -1064,6 +1106,8 @@
       <value>MENSUEL</value>
       <value>1</value>
       <value>1</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1132,6 +1176,8 @@
       <value>8212</value>
       <value>Andrea</value>
       <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>Entreprise</value>
@@ -1186,6 +1232,8 @@
       <null/>
       <null/>
       <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>AutreCommunaute</value>
@@ -1214,6 +1262,8 @@
       <null/>
       <value>ASS</value>
       <value><![CDATA[Communaute XYZ]]></value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1294,6 +1344,8 @@
       <value>8100</value>
       <value>Michel</value>
       <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -1348,6 +1400,8 @@
       <null/>
       <value>Delano</value>
       <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -1399,6 +1453,8 @@
       <null/>
       <null/>
       <value>674417</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1456,6 +1512,8 @@
       <null/>
       <value>Jean</value>
       <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -1472,6 +1530,8 @@
       <null/>
       <value>0</value>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1564,6 +1624,8 @@
       <null/>
       <value>Alfred</value>
       <value>MASCULIN</value>
+      <null/>
+      <null/>
     </row>
   </table>
   <table name="SITUATION_FAMILLE">

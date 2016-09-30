@@ -12,12 +12,16 @@
     <column>NH_SEXE</column>
     <column>DATE_DECES</column>
     <column>PP_HABITANT</column>
+    <column>IDE_DIRTY</column>
+    <column>IDE_DESACTIVE</column>
     <row>
       <value>2008-01-01</value>
       <value>8901</value>
       <value>MenageCommun</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -37,6 +41,8 @@
       <value>MASCULIN</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -50,6 +56,8 @@
       <value>FEMININ</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -63,6 +71,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -76,6 +86,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -89,6 +101,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -96,6 +110,8 @@
       <value>DebiteurPrestationImposable</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -115,6 +131,10 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
   </table>
   <table name="FOR_FISCAL">

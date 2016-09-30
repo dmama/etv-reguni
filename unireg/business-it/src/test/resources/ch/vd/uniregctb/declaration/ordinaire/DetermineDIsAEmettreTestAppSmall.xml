@@ -29,6 +29,8 @@
     <column>TITULAIRE_COMPTE_BANCAIRE</column>
     <column>NUMERO_TEL_PORTABLE</column>
     <column>COMPLEMENT_NOM</column>
+    <column>IDE_DIRTY</column>
+    <column>IDE_DESACTIVE</column>
     <row>
       <value>2008-01-01</value>
       <value>12600004</value>
@@ -58,6 +60,8 @@
       <none/>
       <none/>
       <none/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -85,6 +89,8 @@
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -118,6 +124,8 @@
       <value><![CDATA[ERIC MONTAGNY]]></value>
       <value>0219663999</value>
       <value>Chopard</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -148,6 +156,8 @@
       <none/>
       <none/>
       <none/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -178,6 +188,8 @@
       <null/>
       <null/>
       <value><![CDATA[Café du Commerce]]></value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -208,6 +220,8 @@
       <value><![CDATA[Lederet Michel]]></value>
       <value>0764537812</value>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -215,6 +229,8 @@
       <value>Habitant</value>
       <value>0</value>
       <value>327706</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -268,6 +284,8 @@
       <value><![CDATA[Pascaline Descloux]]></value>
       <value>0792348732</value>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -275,6 +293,8 @@
       <value>Habitant</value>
       <value>1</value>
       <value>333905</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -328,6 +348,8 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -357,6 +379,8 @@
       <value>0</value>
       <value><![CDATA[ERIC MONTAGNY]]></value>
       <value>0219663999</value>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -388,6 +412,10 @@
       <null/>
       <null/>
       <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -418,6 +446,8 @@
       <value><![CDATA[ERIC MONTAGNY]]></value>
       <value>0219663999</value>
       <value>Chopard</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -448,6 +478,8 @@
       <null/>
       <value>Chopard</value>
       <none/>
+      <null/>
+      <null/>
     </row>
   </table>
   <table name="IDENTIFICATION_PERSONNE">

@@ -30,6 +30,8 @@
     <column>COMPLEMENT_NOM</column>
     <column>DATE_DECES</column>
     <column>PP_HABITANT</column>
+    <column>IDE_DIRTY</column>
+    <column>IDE_DESACTIVE</column>
     <row>
       <value>2008-01-01</value>
       <value>12600004</value>
@@ -59,6 +61,8 @@
       <none/>
       <none/>
       <none/>
+      <null/>
+      <null/>
       <null/>
     </row>
     <row>
@@ -91,6 +95,8 @@
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -122,6 +128,8 @@
       <value>Chopard</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -153,6 +161,8 @@
       <none/>
       <none/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -182,6 +192,8 @@
       <null/>
       <null/>
       <value><![CDATA[Café du Commerce]]></value>
+      <null/>
+      <null/>
       <null/>
       <null/>
     </row>
@@ -215,6 +227,8 @@
       <null/>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -246,6 +260,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -277,6 +293,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -308,6 +326,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -339,6 +359,8 @@
       <null/>
       <null/>
       <value>1</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -367,6 +389,8 @@
       <value>0</value>
       <value><![CDATA[ERIC MONTAGNY]]></value>
       <value>0219663999</value>
+      <null/>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -401,6 +425,8 @@
       <null/>
       <null/>
       <null/>
+      <value>0</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -432,6 +458,8 @@
       <value>Chopard</value>
       <null/>
       <value>0</value>
+      <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -461,6 +489,8 @@
       <null/>
       <value>Chopard</value>
       <none/>
+      <null/>
+      <null/>
       <null/>
       <null/>
     </row>

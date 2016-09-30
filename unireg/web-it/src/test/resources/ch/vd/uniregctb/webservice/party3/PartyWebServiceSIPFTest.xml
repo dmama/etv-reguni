@@ -51,6 +51,8 @@
 		<column>NH_NO_OFS_NATIONALITE</column>
 		<column>NH_PRENOM</column>
 		<column>NH_SEXE</column>
+		<column>IDE_DIRTY</column>
+		<column>IDE_DESACTIVE</column>
 		<row>
 			<value>Entreprise</value>
 			<value>37</value>
@@ -102,6 +104,8 @@
 			<null />
 			<null />
 			<null />
+			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>Entreprise</value>
@@ -154,6 +158,8 @@
 			<null />
 			<null />
 			<null />
+			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>Entreprise</value>
@@ -206,6 +212,8 @@
 			<null />
 			<null />
 			<null />
+			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>Entreprise</value>
@@ -229,6 +237,8 @@
 			<null />
 			<null />
 			<value>Alfonso Rodriguez</value>
+			<null />
+			<null />
 			<null />
 			<null />
 			<null />
@@ -310,6 +320,8 @@
 			<null />
 			<null />
 			<null />
+			<value>0</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>Etablissement</value>
@@ -326,6 +338,8 @@
 			<null />
 			<value>0</value>
 			<value>1</value>
+			<null />
+			<null />
 			<null />
 			<null />
 			<null />
