@@ -106,6 +106,7 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 			m.setBusinessUser(principal);
 			m.setServiceDestination(serviceDestination);
 			m.setServiceReplyTo(serviceReplyTo);
+			m.setContext("demandeAnnonceIDE");
 			m.setBody(doc);
 
 			if (outputQueue != null) {
