@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.EvenementDocumentSortantSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="enabled" value="${extprop.jms.queue.notification.document.sortant.enabled}"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.notification.document.sortant}"/>
+	</bean>
+
+</beans>

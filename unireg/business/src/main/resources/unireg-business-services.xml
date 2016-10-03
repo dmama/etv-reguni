@@ -226,6 +226,10 @@
 
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->
 
+	<bean id="evenementDocumentSortantService" class="ch.vd.uniregctb.evenement.docsortant.EvenementDocumentSortantServiceImpl">
+		<property name="sender" ref="evenementDocumentSortantSender"/>
+	</bean>
+
 	<!-- Helper éditique par rapport aux vieux documents xmlbeans -->
 	<bean id="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper" abstract="true">
 		<property name="adresseService" ref="adresseService" />

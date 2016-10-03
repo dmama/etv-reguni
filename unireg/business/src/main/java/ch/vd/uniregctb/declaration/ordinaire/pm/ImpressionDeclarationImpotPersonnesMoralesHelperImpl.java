@@ -49,6 +49,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -138,6 +139,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	@Override
 	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		try {
+			final TypeDocumentEditique typeDocumentEditique;
 			final boolean hasFeuilletPrincipal = hasFeuilletPrincipal(annexes);;
 			final FichierImpression.Document document = new FichierImpression.Document();
 			if (GroupeTypesDocumentBatchLocal.DI_PM.hasType(declaration.getTypeDeclaration())) {
@@ -145,18 +147,24 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 				fillDocumentDI(dipm, declaration, hasFeuilletPrincipal);
 				fillAnnexesDIPM(dipm, declaration, annexes);
 				document.setDeclarationImpot(dipm);
+				typeDocumentEditique = TypeDocumentEditique.DI_PM;
 			}
 			else if (GroupeTypesDocumentBatchLocal.DI_APM.hasType(declaration.getTypeDeclaration())) {
 				final CTypeDeclarationImpotAPM diapm = new CTypeDeclarationImpotAPM();
 				fillDocumentDI(diapm, declaration, hasFeuilletPrincipal);
 				fillAnnexesDIAPM(diapm, declaration, annexes);
 				document.setDeclarationImpotAPM(diapm);
+				typeDocumentEditique = TypeDocumentEditique.DI_APM;
 			}
 			else {
 				throw new IllegalArgumentException("Type de document non-supporté dans les DI des personnes morales : " + declaration.getTypeDeclaration());
 			}
-			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(declaration.getTiers())));
-			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration.getTiers(), declaration.getDateExpedition(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
+			final ContribuableImpositionPersonnesMorales pm = declaration.getTiers();
+			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(pm)));
+			document.setInfoEnteteDocument(buildInfoEnteteDocument(pm, declaration.getDateExpedition(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
+			if (hasFeuilletPrincipal) {
+				document.setInfoArchivage(buildInfoArchivage(typeDocumentEditique, construitCleArchivageDocument(declaration), pm.getNumero(), RegDate.get()));
+			}
 			document.setInfoRoutage(null);
 			return document;
 		}
@@ -339,4 +347,17 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	private static String buildCodeRoutage(int codeSegment) {
 		return String.format("%02d-%d", ServiceInfrastructureService.noOIPM, codeSegment);
 	}
+
+	private static String construitCleArchivageDocument(DeclarationImpotOrdinairePM declaration) {
+		return String.format(
+				"%s%s %s %s",
+				declaration.getPeriode().getAnnee().toString(),
+				StringUtils.leftPad(declaration.getNumero().toString(), 2, '0'),
+				StringUtils.rightPad("DI entreprise", 19, ' '),
+				new SimpleDateFormat("MMddHHmmssSSS").format(
+						DateHelper.getCurrentDate()
+				)
+		);
+	}
+
 }

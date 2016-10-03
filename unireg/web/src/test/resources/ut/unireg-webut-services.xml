@@ -8,6 +8,8 @@
 
 	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.uniregctb.evenement.di.MockEvenementLiberationDeclarationImpotSender"/>
 
+	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
+
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
 
 	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>

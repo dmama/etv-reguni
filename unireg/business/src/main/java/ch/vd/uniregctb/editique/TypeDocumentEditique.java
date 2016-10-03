@@ -20,8 +20,8 @@ public enum TypeDocumentEditique {
 	// Autour des déclarations d'impôt des personnes morales
 	//
 
-	DI_PM("U1P1DIPM", null, "impressionDI"),
-	DI_APM("U1P2DIAP", null, "impressionDI"),
+	DI_PM("U1P1DIPM", "408", "impressionDI"),
+	DI_APM("U1P2DIAP", "409", "impressionDI"),
 	SOMMATION_DI_PM("U1P4SOMM", "401", "sommationDI"),
 	ACCORD_DELAI_PM("U1P5DLAI", "402", "accordDelai"),
 	REFUS_DELAI_PM("U1P6REFU", "403", "refusDelai"),

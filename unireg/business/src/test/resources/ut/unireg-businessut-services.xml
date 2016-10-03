@@ -66,4 +66,6 @@
 		<constructor-arg ref="fileGlobalMessageIdentificationIndexDirectory" />
 	</bean>
 
+	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
+
 </beans>

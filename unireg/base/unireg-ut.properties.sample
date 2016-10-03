@@ -78,6 +78,7 @@ testprop.jms.queue.evtRapportAnnonceIDE.enabled=false
 testprop.jms.queue.evtRapportAnnonceIDE.consumers=1
 testprop.jms.queue.rapportTravail.service=unireg.test.rapportTravailService-${testprop.jdbc.username}
 testprop.jms.queue.reqdes=unireg.test.reqdes-${testprop.jdbc.username}
+testprop.jms.queue.notification.document.sortant=unireg.test.indexerDocumentSortantDPerm-${testprop.jdbc.username}
 
 testprop.jms.error.queue=taoadmin.message.erreur
 

@@ -136,4 +136,11 @@
 
 	<alias alias="esbMessageValidator" name="esbMessageValidatorTracing"/>
 
+	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.EvenementDocumentSortantSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="enabled" value="true"/>
+		<property name="serviceDestination" value="${testprop.jms.queue.notification.document.sortant}"/>
+	</bean>
+
 </beans>

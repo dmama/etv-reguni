@@ -16,4 +16,6 @@
 	<bean id="impressionConfirmationDelaiPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionConfirmationDelaiPPHelper" />
 	<bean id="impressionRappelQSNCHelper" class="ch.vd.uniregctb.declaration.snc.MockImpressionRappelQuestionnaireSNCHelper"/>
 
+	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
+
 </beans>
