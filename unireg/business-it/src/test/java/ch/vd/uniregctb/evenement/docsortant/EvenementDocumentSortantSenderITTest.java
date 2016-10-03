@@ -24,7 +24,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
-public class EvenementDocumentSortandSenderITTest extends EvenementTest {
+public class EvenementDocumentSortantSenderITTest extends EvenementTest {
 
 	private String OUTPUT_QUEUE;
 	private EvenementDocumentSortantSenderImpl sender;
