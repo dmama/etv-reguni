@@ -12,9 +12,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
@@ -48,33 +48,33 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, 1020, "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
-		final ModeleAnnonceIDERCEnt annonce =
-				RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
-				                                                  "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce);
+		final AnnonceIDEData annonce =
+				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
+				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce);
 
 		// l'établissement
 		final Etablissement etablissement = new Etablissement();
 		etablissement.setNumero(1L);
 
 		// "emission" de l'annonce
-		final AnnonceIDERCEnt annonceIDERCEnt = annonceIDEService.emettreAnnonceIDE(annonce, etablissement);
+		final AnnonceIDE annonceIDE = annonceIDEService.emettreAnnonceIDE(annonce, etablissement);
 
 		// Vérification
-		Assert.assertNotNull(annonceIDERCEnt);
-		Assert.assertEquals(numeroAttendu, annonceIDERCEnt.getNumero().longValue());
-		Assert.assertTrue(annonce != annonceIDERCEnt);
-		Assert.assertEquals(annonce.getType(), annonceIDERCEnt.getType());
-		Assert.assertEquals(annonce.getDateAnnonce(), annonceIDERCEnt.getDateAnnonce());
-		Assert.assertEquals(annonce.getNoIde(), annonceIDERCEnt.getNoIde());
-		Assert.assertEquals(annonce.getNoIdeRemplacant(), annonceIDERCEnt.getNoIdeRemplacant());
-		Assert.assertEquals(annonce.getNoIdeEtablissementPrincipal(), annonceIDERCEnt.getNoIdeEtablissementPrincipal());
-		Assert.assertEquals(annonce.getRaisonDeRadiation(), annonceIDERCEnt.getRaisonDeRadiation());
-		Assert.assertEquals(annonce.getTypeDeSite(), annonceIDERCEnt.getTypeDeSite());
-		Assert.assertEquals(annonce.getCommentaire(), annonceIDERCEnt.getCommentaire());
-		Assert.assertEquals(annonce.getStatut(), annonceIDERCEnt.getStatut());
-		Assert.assertEquals(annonce.getUtilisateur(), annonceIDERCEnt.getUtilisateur());
-		Assert.assertEquals(annonce.getInformationOrganisation(), annonceIDERCEnt.getInformationOrganisation());
-		Assert.assertEquals(annonce.getContenu(), annonceIDERCEnt.getContenu());
+		Assert.assertNotNull(annonceIDE);
+		Assert.assertEquals(numeroAttendu, annonceIDE.getNumero().longValue());
+		Assert.assertTrue(annonce != annonceIDE);
+		Assert.assertEquals(annonce.getType(), annonceIDE.getType());
+		Assert.assertEquals(annonce.getDateAnnonce(), annonceIDE.getDateAnnonce());
+		Assert.assertEquals(annonce.getNoIde(), annonceIDE.getNoIde());
+		Assert.assertEquals(annonce.getNoIdeRemplacant(), annonceIDE.getNoIdeRemplacant());
+		Assert.assertEquals(annonce.getNoIdeEtablissementPrincipal(), annonceIDE.getNoIdeEtablissementPrincipal());
+		Assert.assertEquals(annonce.getRaisonDeRadiation(), annonceIDE.getRaisonDeRadiation());
+		Assert.assertEquals(annonce.getTypeDeSite(), annonceIDE.getTypeDeSite());
+		Assert.assertEquals(annonce.getCommentaire(), annonceIDE.getCommentaire());
+		Assert.assertEquals(annonce.getStatut(), annonceIDE.getStatut());
+		Assert.assertEquals(annonce.getUtilisateur(), annonceIDE.getUtilisateur());
+		Assert.assertEquals(annonce.getInformationOrganisation(), annonceIDE.getInformationOrganisation());
+		Assert.assertEquals(annonce.getContenu(), annonceIDE.getContenu());
 
 		Assert.assertEquals(1, mockReferenceAnnonceIDEDAO.getTableReference().size());
 		final ReferenceAnnonceIDE referenceAnnonceIDE = mockReferenceAnnonceIDEDAO.getTableReference().get(0);

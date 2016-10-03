@@ -11,7 +11,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
@@ -115,12 +115,12 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 			@Override
 			protected void init() {
 				// Annonce existante
-				AnnonceIDERCEnt annonce =
+				AnnonceIDE annonce =
 						RCEntAnnonceIDEHelper
-								.createAnnonceIDERCEnt(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-								                       new NumeroIDE("CHE999999996"), null, null, null, null, null,
-								                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-								                       RCEntAnnonceIDEHelper
+								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+								                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
+								                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
+								                  RCEntAnnonceIDEHelper
 										                       .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
 										                                                     MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
 										                                                     null, null, null));

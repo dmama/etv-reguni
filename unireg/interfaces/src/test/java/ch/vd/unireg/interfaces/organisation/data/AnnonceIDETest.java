@@ -24,9 +24,9 @@ public class AnnonceIDETest extends WithoutSpringTest {
 				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, 1020, "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
-		final AnnonceIDERCEnt annonce1 =
-				RCEntAnnonceIDEHelper.createAnnonceIDERCEnt(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
-				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce1);
+		final AnnonceIDE annonce1 =
+				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
+				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce1);
 
 
 		// l'annonce modèle
@@ -34,9 +34,9 @@ public class AnnonceIDETest extends WithoutSpringTest {
 				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, 1020, "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
-		final AnnonceIDERCEnt annonce2 =
-				RCEntAnnonceIDEHelper.createAnnonceIDERCEnt(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
-				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce2);
+		final AnnonceIDE annonce2 =
+				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
+				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce2);
 
 		Assert.assertEquals(annonce2, annonce1);
 	}

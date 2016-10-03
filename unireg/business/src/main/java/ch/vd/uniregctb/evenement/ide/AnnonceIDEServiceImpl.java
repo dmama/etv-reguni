@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.Etablissement;
 
@@ -26,7 +26,7 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 	}
 
 	@Override
-	public AnnonceIDERCEnt emettreAnnonceIDE(ModeleAnnonceIDE modele, Etablissement etablissement) {
+	public AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE modele, Etablissement etablissement) {
 
 		Assert.notNull(modele, "Le modèle de la demande d'annonce doit être fournie.");
 		Assert.notNull(etablissement, "L'établissement concerné par l'annonce doit être fournie.");
@@ -38,7 +38,7 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 		final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.save(tmpReferenceAnnonceIDE);
 
 		// Créer la véritable annonce, avec son numéro cette fois.
-		final AnnonceIDERCEnt annonceIDE = new AnnonceIDERCEnt(referenceAnnonceIDE.getId(), modele, null);
+		final AnnonceIDE annonceIDE = new AnnonceIDE(referenceAnnonceIDE.getId(), modele, null);
 
 		// Générer le businessId et le sauver avec la référence
 		final String msgBusinessId = generateBusinessId(referenceAnnonceIDE);

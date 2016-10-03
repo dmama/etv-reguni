@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.ide;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.uniregctb.tiers.Etablissement;
 
 /**
@@ -16,6 +16,6 @@ public interface AnnonceIDEService {
 	 * @param etablissement l'établissement concerné par l'annonce à l'IDE
 	 * @return l'annonce telle qu'expédiée, avec son numéro (attention, un nouvel objet est retourné)
 	 */
-	AnnonceIDERCEnt emettreAnnonceIDE(ModeleAnnonceIDE modele, Etablissement etablissement);
+	AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE modele, Etablissement etablissement);
 
 }

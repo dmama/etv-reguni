@@ -19,8 +19,8 @@ import org.xml.sax.SAXException;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -104,16 +104,16 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 		NoticeRequestReport message = decodeNoticeRequestReport(xml);
 
-		final ModeleAnnonceIDE recue;
+		final BaseAnnonceIDE recue;
 		// En lieu et place d'une pénible validation, pour attrapper les NPE en cas de champs métiers pas correctement remplis par RCEnt.
 		try {
 			recue = RCEntAnnonceIDEHelper.get(message);
 		} catch (RuntimeException e) {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e); // Avec les amitiés de la baronne
 		}
-		AnnonceIDE annonce;
-		if (recue instanceof AnnonceIDE) {
-			annonce = (AnnonceIDE) recue;
+		AnnonceIDEEnvoyee annonce;
+		if (recue instanceof AnnonceIDEEnvoyee) {
+			annonce = (AnnonceIDEEnvoyee) recue;
 		} else {
 			Audit.error(String.format("Arrivée innattendue d'un événement de rapport d'annonce IDE pourtant sur modèle (avec un dummy id) (%s du %s), no IDE %s%s, statut %s le %s.",
 			                          recue.getType(),

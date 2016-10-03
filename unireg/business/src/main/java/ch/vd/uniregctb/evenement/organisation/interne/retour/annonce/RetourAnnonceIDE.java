@@ -9,9 +9,9 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -47,7 +47,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private final AnnonceIDE annonceIDE;
+	private final AnnonceIDEEnvoyee annonceIDE;
 	private final ReferenceAnnonceIDE referenceAnnonceIDE;
 
 	private final SiteOrganisation sitePrincipal;
@@ -57,7 +57,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	public RetourAnnonceIDE(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                        EvenementOrganisationContext context,
 	                        EvenementOrganisationOptions options,
-	                        AnnonceIDE annonceIDE) throws EvenementOrganisationException {
+	                        AnnonceIDEEnvoyee annonceIDE) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
@@ -124,7 +124,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		final RaisonSocialeHisto raisonSocialeHisto = RangeUtil.getAssertLast(raisonsSociales, getDateApres());
 		if (raisonSocialeHisto != null) {
 			final String raisonSociale = raisonSocialeHisto.getRaisonSociale();
-			final ModeleAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+			final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
 			if (contenu != null && !raisonSociale.equals(contenu.getNom())) {
 				warnings.addWarning(
 						String.format("La raison sociale [%s] présente dans le registre civil est differente de celle annoncée [%s] à l'IDE par Unireg. " +
@@ -138,7 +138,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		final FormeLegaleHisto formeLegaleHisto = RangeUtil.getAssertLast(formeLegaleHistos, getDateApres());
 		if (formeLegaleHisto != null) {
 			final FormeLegale formeLegale = formeLegaleHisto.getFormeLegale();
-			final ModeleAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+			final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
 			if (contenu != null && !(formeLegale == contenu.getFormeLegale())) {
 				warnings.addWarning(
 						String.format("La forme juridique [%s] présente dans le registre civil est differente de celle annoncée [%s] à l'IDE par Unireg. " +
@@ -205,7 +205,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		return dateApres;
 	}
 
-	public AnnonceIDE getAnnonceIDE() {
+	public AnnonceIDEEnvoyee getAnnonceIDE() {
 		return annonceIDE;
 	}
 }

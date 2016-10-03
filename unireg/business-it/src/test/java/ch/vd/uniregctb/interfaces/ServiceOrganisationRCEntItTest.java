@@ -36,12 +36,13 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
@@ -237,7 +238,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testGetAnnonceIDE() throws Exception {
-		final AnnonceIDE annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
 
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(301L, annonceIDE.getNumero().longValue());
@@ -245,13 +246,13 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testValidateAnnonceIDE() throws ParseException {
-		final AnnonceIDE annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
 //		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
 //		final Date fixedTime = df.parse("2016-09-13T10:05:48");
 //		final AnnonceIDEModele.Statut statut = service.validerAnnonceIDE(new AnnonceIDERCEnt(null, TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL));
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(StatutAnnonce.TRANSMIS, annonceIDE.getStatut().getStatut());
-		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(annonceIDE);
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(annonceIDE);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
@@ -260,15 +261,15 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 
 	@Test
-	public void testValidateModeleAnnonceIDE() throws ParseException {
+	public void testValidateProtoAnnonceIDE() throws ParseException {
 
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
 				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, 1201, "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
-		ModeleAnnonceIDERCEnt modele = RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-		                                                                                 null, null, null, null, null, null,
-		                                                                                 "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", adresse);
-		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
+		AnnonceIDEData modele = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		                                                                    null, null, null, null, null, null,
+		                                                                    "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", adresse);
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
@@ -277,7 +278,8 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testValidateAnnonceIDEPourrie() throws ParseException {
-		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null));
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
+		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		// TODO: check le contenu
@@ -285,13 +287,13 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
-		ModeleAnnonceIDERCEnt modele = RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-		                                                                                 new NumeroIDE("CHE999999998"), null, null, null, null, null,
-		                                                                                 "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", null);
-		final ModeleAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
+		AnnonceIDEData modele = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		                                                                    new NumeroIDE("CHE999999998"), null, null, null, null, null,
+		                                                                    "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", null);
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
-		// TODO: check le contenu
+		// TODO: Meilleurs contrôle du contenu quand les messages retournés auront été réparés
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {

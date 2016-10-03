@@ -17,7 +17,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
@@ -74,7 +74,7 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 	}
 
 	@Override
-	public void sendEvent(AnnonceIDE annonce, String msgBusinessId) throws AnnonceIDEException {
+	public void sendEvent(AnnonceIDEEnvoyee annonce, String msgBusinessId) throws AnnonceIDEException {
 		if (annonce == null) {
 			throw new IllegalArgumentException("Contenu de l'annonce manquant.");
 		} else if (annonce.getNumero() == null) {

@@ -16,10 +16,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
@@ -85,16 +85,16 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				// Annonce existante
 
 				// Validation
-				ModeleAnnonceIDERCEnt modele =
-						RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                                  null, null, null, null, null, null,
-						                                                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                                  RCEntAnnonceIDEHelper
+				AnnonceIDEData modele =
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                            null, null, null, null, null, null,
+						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
+						                                            RCEntAnnonceIDEHelper
 								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 								                                                                                MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 								                                                                                null, null));
 
-				AnnonceIDE.Statut statut = new ModeleAnnonceIDERCEnt.StatutRCEnt(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
+				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
 				this.addStatutAnnonceIDEAttentu(modele, statut);
 
 			}
@@ -103,11 +103,11 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDE annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDE>() {
+		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
 			@Override
-			public AnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
+			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
 				try {
-					return (AnnonceIDE) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise), false);
+					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				} catch (Exception e) {
 					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
 					return null;
@@ -139,27 +139,27 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				assertNull(annonceIDE.getCommentaire());
 
-				final ModeleAnnonceIDE.Statut statut = annonceIDE.getStatut();
+				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
 				assertNull(statut);
 
-				final ModeleAnnonceIDE.ServiceIDE serviceIDE = annonceIDE.getServiceIDE();
-				assertNotNull(serviceIDE);
-				assertEquals(ModeleAnnonceIDERCEnt.NO_IDE_SERVICE_IDE, serviceIDE.getNoIdeServiceIDE());
-				assertEquals(ModeleAnnonceIDERCEnt.NO_APPLICATION_UNIREG, serviceIDE.getApplicationId());
-				assertEquals(ModeleAnnonceIDERCEnt.NOM_APPLICATION_UNIREG, serviceIDE.getApplicationName());
+				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
+				assertNotNull(infoServiceIDEObligEtendues);
+				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
+				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
+				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
-				final ModeleAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
+				final BaseAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
 				assertNotNull(informationOrganisation);
 				assertNull(informationOrganisation.getNumeroOrganisation());
 				assertNull(informationOrganisation.getNumeroSite());
 				assertNull(informationOrganisation.getNumeroSiteRemplacant());
 
-				final ModeleAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
+				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
 				assertNull(utilisateur.getUserId());
 				assertNull(utilisateur.getTelephone());
 
-				final ModeleAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
 				assertNotNull(contenu);
 				assertEquals("Syntruc Asso", contenu.getNom());
 				assertNull(contenu.getNomAdditionnel());
@@ -247,27 +247,27 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			protected void init() {
 
 				// Annonce existante
-				AnnonceIDERCEnt annonce =
-						RCEntAnnonceIDEHelper.createAnnonceIDERCEnt(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
-						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                            RCEntAnnonceIDEHelper
+				AnnonceIDE annonce =
+						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                       new NumeroIDE("CHE999999996"), null, null, null, null, null,
+						                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
+						                                       RCEntAnnonceIDEHelper
 								                                            .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
 								                                                                          MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
 								                                                                          null, null, null));
 				this.addAnnonceIDE(annonce);
 
 				// Validation
-				ModeleAnnonceIDERCEnt modele =
-						RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
-						                                                  "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                                  RCEntAnnonceIDEHelper
+				AnnonceIDEData modele =
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
+						                                            "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
+						                                            RCEntAnnonceIDEHelper
 								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
 								                                                                                MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
 								                                                                                null, null, null));
 
-				AnnonceIDE.Statut statut = new ModeleAnnonceIDERCEnt.StatutRCEnt(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 6, 11, 0, 1), new ArrayList<Pair<String, String>>());
+				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 6, 11, 0, 1), new ArrayList<Pair<String, String>>());
 				this.addStatutAnnonceIDEAttentu(modele, statut);
 
 			}
@@ -276,11 +276,11 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDE annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDE>() {
+		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
 			@Override
-			public AnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
+			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
 				try {
-					return (AnnonceIDE) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise), false);
+					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				} catch (Exception e) {
 					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
 					return null;
@@ -314,27 +314,27 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				assertNull(annonceIDE.getCommentaire());
 
-				final ModeleAnnonceIDE.Statut statut = annonceIDE.getStatut();
+				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
 				assertNull(statut);
 
-				final ModeleAnnonceIDE.ServiceIDE serviceIDE = annonceIDE.getServiceIDE();
-				assertNotNull(serviceIDE);
-				assertEquals(ModeleAnnonceIDERCEnt.NO_IDE_SERVICE_IDE, serviceIDE.getNoIdeServiceIDE());
-				assertEquals(ModeleAnnonceIDERCEnt.NO_APPLICATION_UNIREG, serviceIDE.getApplicationId());
-				assertEquals(ModeleAnnonceIDERCEnt.NOM_APPLICATION_UNIREG, serviceIDE.getApplicationName());
+				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
+				assertNotNull(infoServiceIDEObligEtendues);
+				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
+				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
+				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
-				final ModeleAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
+				final BaseAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
 				assertNotNull(informationOrganisation);
 				assertNull(informationOrganisation.getNumeroOrganisation());
 				assertNull(informationOrganisation.getNumeroSite());
 				assertNull(informationOrganisation.getNumeroSiteRemplacant());
 
-				final ModeleAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
+				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
 				assertNull(utilisateur.getUserId());
 				assertNull(utilisateur.getTelephone());
 
-				final ModeleAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
 				assertNotNull(contenu);
 				assertEquals("Rienavoir Asso", contenu.getNom());
 				assertNull(contenu.getNomAdditionnel());

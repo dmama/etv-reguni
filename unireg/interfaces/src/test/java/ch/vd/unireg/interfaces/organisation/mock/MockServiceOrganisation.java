@@ -12,9 +12,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -31,8 +31,8 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	 * Map des organisations par numéro
 	 */
 	private final Map<Long, MockOrganisation> organisationMap = new HashMap<>();
-	private Map<Long, AnnonceIDE> annoncesIDE = new HashMap<>();
-	private Map<ModeleAnnonceIDE.Contenu, ModeleAnnonceIDE.Statut> annoncesIDEValidations = new HashMap<>();
+	private Map<Long, AnnonceIDEEnvoyee> annoncesIDE = new HashMap<>();
+	private Map<BaseAnnonceIDE.Contenu, BaseAnnonceIDE.Statut> annoncesIDEValidations = new HashMap<>();
 
 	/**
 	 * Cette méthode initialise le mock en fonction des données voulues.
@@ -86,22 +86,22 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	}
 
 	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) {
+	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) {
 		return annoncesIDE.get(numero);
 	}
 
-	protected void addAnnonceIDE(AnnonceIDE annonce) {
+	protected void addAnnonceIDE(AnnonceIDEEnvoyee annonce) {
 		annoncesIDE.put(annonce.getNumero(), annonce);
 	}
 
 	@Override
-	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) {
-		final ModeleAnnonceIDE.Statut statut = annoncesIDEValidations.get(modele.getContenu());
-		Assert.notNull(statut, "Objet statut introuvable pour l'objet modèle passé. Le statut à renvoyer pour un modèle d'annonce précis doit être configuré au début du test. La comparaison se base sur ModeleAnnonceIDE.Contenu.");
+	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) {
+		final BaseAnnonceIDE.Statut statut = annoncesIDEValidations.get(modele.getContenu());
+		Assert.notNull(statut, "Objet statut introuvable pour l'objet modèle passé. Le statut à renvoyer pour un modèle d'annonce précis doit être configuré au début du test. La comparaison se base sur ProtoAnnonceIDE.Contenu.");
 		return statut;
 	}
 
-	public void addStatutAnnonceIDEAttentu(ModeleAnnonceIDE modele, AnnonceIDE.Statut statut) {
+	public void addStatutAnnonceIDEAttentu(BaseAnnonceIDE modele, AnnonceIDEEnvoyee.Statut statut) {
 		annoncesIDEValidations.put(modele.getContenu(), statut);
 	}
 

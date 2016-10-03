@@ -12,24 +12,15 @@ import ch.vd.registre.base.utils.Pair;
 /**
  * @author Raphaël Marmier, 2016-09-09, <raphael.marmier@vd.ch>
  */
-public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
+public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 	private static final long serialVersionUID = -7064921061708627093L;
-
-	/*
-		Identification du service IDE et d'Unireg:
-		- Numéro IDE du "service IDE" selon Art. 3c LIDE
-		- Identification de l'application dans RCEnt
-	 */
-	public static final NumeroIDE NO_IDE_SERVICE_IDE = new NumeroIDE("999999996");
-	public static final String NO_APPLICATION_UNIREG = "2";
-	public static final String NOM_APPLICATION_UNIREG = "UNIREG";
 
 	private TypeAnnonce type;
 	private Date dateAnnonce;
 
 	private Utilisateur utilisateur;
-	private ServiceIDE serviceIDE = new ServiceIDERCEnt(NO_IDE_SERVICE_IDE, NO_APPLICATION_UNIREG, NOM_APPLICATION_UNIREG); // Identifiant de service IDE en dur.
+	private InfoServiceIDEObligEtendues infoServiceIDEObligEtendues;
 
 	private Statut statut;
 
@@ -67,7 +58,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 	private String commentaire;
 
 	/**
-	 * Informations ayant trait à l'identification de l'entreprise dans le régistre cantonal (RCEnt)
+	 * Informations ayant trait à l'identification de l'entreprise dans le régistre cantonal
 	 */
 	private InformationOrganisation informationOrganisation;
 
@@ -78,7 +69,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 	private Contenu contenu;
 
 
-	public ModeleAnnonceIDERCEnt(TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut) {
+	public AnnonceIDEData(TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut, InfoServiceIDEObligEtendues infoServiceIDEObligEtendues) {
 		this.type = type;
 		this.dateAnnonce = dateAnnonce;
 		this.utilisateur = utilisateur;
@@ -86,18 +77,20 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		if (statut != null) {
 			this.statut = statut;
 		} else {
-			new StatutRCEnt(StatutAnnonce.A_TRANSMETTRE, dateAnnonce, Collections.<Pair<String,String>>emptyList());
+			new StatutImpl(StatutAnnonce.A_TRANSMETTRE, dateAnnonce, Collections.<Pair<String,String>>emptyList());
 		}
+		this.infoServiceIDEObligEtendues = infoServiceIDEObligEtendues;
 	}
 
-	public ModeleAnnonceIDERCEnt(ModeleAnnonceIDE modele, @Nullable Statut statut) {
-		this(modele.getType(), modele.getDateAnnonce(), modele.getUtilisateur(), modele.getTypeDeSite(), statut == null ? modele.getStatut() : statut);
+	public AnnonceIDEData(BaseAnnonceIDE modele, @Nullable Statut statut) {
+		this(modele.getType(), modele.getDateAnnonce(), modele.getUtilisateur(), modele.getTypeDeSite(), statut == null ? modele.getStatut() : statut, modele.getInfoServiceIDEObligEtendues());
 		this.informationOrganisation = modele.getInformationOrganisation();
 		this.noIde = modele.getNoIde();
 		this.noIdeRemplacant = modele.getNoIdeRemplacant();
 		this.noIdeEtablissementPrincipal = modele.getNoIdeEtablissementPrincipal();
 		this.raisonDeRadiation = modele.getRaisonDeRadiation();
 		this.commentaire = modele.getCommentaire();
+		this.infoServiceIDEObligEtendues = modele.getInfoServiceIDEObligEtendues();
 		this.contenu = modele.getContenu();
 	}
 
@@ -117,9 +110,8 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		return utilisateur;
 	}
 
-	@Override
-	public ServiceIDE getServiceIDE() {
-		return serviceIDE;
+	public InfoServiceIDEObligEtendues getInfoServiceIDEObligEtendues() {
+		return infoServiceIDEObligEtendues;
 	}
 
 	@Nullable
@@ -208,12 +200,12 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		final ModeleAnnonceIDERCEnt that = (ModeleAnnonceIDERCEnt) o;
+		final AnnonceIDEData that = (AnnonceIDEData) o;
 
 		if (getType() != that.getType()) return false;
 		if (getDateAnnonce() != null ? !getDateAnnonce().equals(that.getDateAnnonce()) : that.getDateAnnonce() != null) return false;
 		if (getUtilisateur() != null ? !getUtilisateur().equals(that.getUtilisateur()) : that.getUtilisateur() != null) return false;
-		if (getServiceIDE() != null ? !getServiceIDE().equals(that.getServiceIDE()) : that.getServiceIDE() != null) return false;
+		if (getInfoServiceIDEObligEtendues() != null ? !getInfoServiceIDEObligEtendues().equals(that.getInfoServiceIDEObligEtendues()) : that.getInfoServiceIDEObligEtendues() != null) return false;
 		if (getStatut() != null ? !getStatut().equals(that.getStatut()) : that.getStatut() != null) return false;
 		if (getTypeDeSite() != that.getTypeDeSite()) return false;
 		if (getNoIde() != null ? !getNoIde().equals(that.getNoIde()) : that.getNoIde() != null) return false;
@@ -231,7 +223,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		int result = getType() != null ? getType().hashCode() : 0;
 		result = 31 * result + (getDateAnnonce() != null ? getDateAnnonce().hashCode() : 0);
 		result = 31 * result + (getUtilisateur() != null ? getUtilisateur().hashCode() : 0);
-		result = 31 * result + (getServiceIDE() != null ? getServiceIDE().hashCode() : 0);
+		result = 31 * result + (getInfoServiceIDEObligEtendues() != null ? getInfoServiceIDEObligEtendues().hashCode() : 0);
 		result = 31 * result + (getStatut() != null ? getStatut().hashCode() : 0);
 		result = 31 * result + (getTypeDeSite() != null ? getTypeDeSite().hashCode() : 0);
 		result = 31 * result + (getNoIde() != null ? getNoIde().hashCode() : 0);
@@ -244,14 +236,14 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		return result;
 	}
 
-	public static class UtilisateurRCEnt implements Utilisateur, Serializable {
+	public static class UtilisateurImpl implements Utilisateur, Serializable {
 
 		private static final long serialVersionUID = 8322026940101939155L;
 
 		private String userId;
 		private String telephone;
 
-		public UtilisateurRCEnt(String userId, @Nullable String telephone) {
+		public UtilisateurImpl(String userId, @Nullable String telephone) {
 			this.userId = userId;
 			this.telephone = telephone;
 		}
@@ -280,7 +272,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final UtilisateurRCEnt that = (UtilisateurRCEnt) o;
+			final UtilisateurImpl that = (UtilisateurImpl) o;
 
 			if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) return false;
 			return getTelephone() != null ? getTelephone().equals(that.getTelephone()) : that.getTelephone() == null;
@@ -295,22 +287,22 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		}
 	}
 
-	public static class ServiceIDERCEnt implements ServiceIDE, Serializable {
+	public static class InfoServiceIDEObligEtenduesImpl implements InfoServiceIDEObligEtendues, Serializable {
 
 		private static final long serialVersionUID = -1663517686746298723L;
 
-		NumeroIDE noIdeServiceIDE;
+		NumeroIDE noIdeServiceIDEObligEtendues;
 		String applicationId;
 		String applicationName;
 
-		public ServiceIDERCEnt(NumeroIDE noIdeServiceIDE, String applicationId, String applicationName) {
-			this.noIdeServiceIDE = noIdeServiceIDE;
+		public InfoServiceIDEObligEtenduesImpl(NumeroIDE noIdeServiceIDEObligEtendues, String applicationId, String applicationName) {
+			this.noIdeServiceIDEObligEtendues = noIdeServiceIDEObligEtendues;
 			this.applicationId = applicationId;
 			this.applicationName = applicationName;
 		}
 
-		public NumeroIDE getNoIdeServiceIDE() {
-			return noIdeServiceIDE;
+		public NumeroIDE getNoIdeServiceIDEObligEtendues() {
+			return noIdeServiceIDEObligEtendues;
 		}
 
 		@Override
@@ -328,9 +320,9 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final ServiceIDERCEnt that = (ServiceIDERCEnt) o;
+			final InfoServiceIDEObligEtenduesImpl that = (InfoServiceIDEObligEtenduesImpl) o;
 
-			if (getNoIdeServiceIDE() != null ? !getNoIdeServiceIDE().equals(that.getNoIdeServiceIDE()) : that.getNoIdeServiceIDE() != null) return false;
+			if (getNoIdeServiceIDEObligEtendues() != null ? !getNoIdeServiceIDEObligEtendues().equals(that.getNoIdeServiceIDEObligEtendues()) : that.getNoIdeServiceIDEObligEtendues() != null) return false;
 			if (getApplicationId() != null ? !getApplicationId().equals(that.getApplicationId()) : that.getApplicationId() != null) return false;
 			return getApplicationName() != null ? getApplicationName().equals(that.getApplicationName()) : that.getApplicationName() == null;
 
@@ -338,14 +330,14 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 
 		@Override
 		public int hashCode() {
-			int result = getNoIdeServiceIDE() != null ? getNoIdeServiceIDE().hashCode() : 0;
+			int result = getNoIdeServiceIDEObligEtendues() != null ? getNoIdeServiceIDEObligEtendues().hashCode() : 0;
 			result = 31 * result + (getApplicationId() != null ? getApplicationId().hashCode() : 0);
 			result = 31 * result + (getApplicationName() != null ? getApplicationName().hashCode() : 0);
 			return result;
 		}
 	}
 
-	public static class StatutRCEnt implements Statut, Serializable {
+	public static class StatutImpl implements Statut, Serializable {
 
 		private static final long serialVersionUID = 6395078590109220344L;
 
@@ -353,7 +345,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		private Date dateStatut;
 		private List<Pair<String, String>> erreurs;
 
-		public StatutRCEnt(StatutAnnonce statut, Date dateStatut, List<Pair<String, String>> erreurs) {
+		public StatutImpl(StatutAnnonce statut, Date dateStatut, List<Pair<String, String>> erreurs) {
 			this.statut = statut;
 			this.dateStatut = dateStatut;
 			this.erreurs = erreurs;
@@ -379,7 +371,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final StatutRCEnt that = (StatutRCEnt) o;
+			final StatutImpl that = (StatutImpl) o;
 
 			if (getStatut() != that.getStatut()) return false;
 			if (getDateStatut() != null ? !getDateStatut().equals(that.getDateStatut()) : that.getDateStatut() != null) return false;
@@ -396,7 +388,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		}
 	}
 
-	public static class InformationOrganisationRCEnt implements InformationOrganisation, Serializable {
+	public static class InformationOrganisationImpl implements InformationOrganisation, Serializable {
 
 		private static final long serialVersionUID = -5539575958482798119L;
 
@@ -417,9 +409,9 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 		@Nullable
 		private Long numeroSiteRemplacant;
 
-		public InformationOrganisationRCEnt() {}
+		public InformationOrganisationImpl() {}
 
-		public InformationOrganisationRCEnt(Long numeroSite, @Nullable Long numeroOrganisation, @Nullable Long numeroSiteRemplacant) {
+		public InformationOrganisationImpl(Long numeroSite, @Nullable Long numeroOrganisation, @Nullable Long numeroSiteRemplacant) {
 			this.numeroSite = numeroSite;
 			this.numeroOrganisation = numeroOrganisation;
 			this.numeroSiteRemplacant = numeroSiteRemplacant;
@@ -447,7 +439,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final InformationOrganisationRCEnt that = (InformationOrganisationRCEnt) o;
+			final InformationOrganisationImpl that = (InformationOrganisationImpl) o;
 
 			if (getNumeroSite() != null ? !getNumeroSite().equals(that.getNumeroSite()) : that.getNumeroSite() != null) return false;
 			if (getNumeroOrganisation() != null ? !getNumeroOrganisation().equals(that.getNumeroOrganisation()) : that.getNumeroOrganisation() != null) return false;
@@ -465,7 +457,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 	}
 
 
-	public static class ContenuRCEnt implements Contenu, Serializable {
+	public static class ContenuImpl implements Contenu, Serializable {
 
 		private static final long serialVersionUID = 369138522853706176L;
 
@@ -525,7 +517,7 @@ public class ModeleAnnonceIDERCEnt implements ModeleAnnonceIDE, Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final ContenuRCEnt that = (ContenuRCEnt) o;
+			final ContenuImpl that = (ContenuImpl) o;
 
 			if (getNom() != null ? !getNom().equals(that.getNom()) : that.getNom() != null) return false;
 			if (getNomAdditionnel() != null ? !getNomAdditionnel().equals(that.getNomAdditionnel()) : that.getNomAdditionnel() != null) return false;

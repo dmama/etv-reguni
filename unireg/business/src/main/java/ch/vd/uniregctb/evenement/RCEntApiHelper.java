@@ -11,7 +11,7 @@ import org.springframework.core.io.Resource;
 import ch.vd.evd0022.v3.Notice;
 import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.TypeOfNotice;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -68,7 +68,7 @@ public class RCEntApiHelper {
 		if (noticeRequestIdent != null) {
 			final String applicationId = noticeRequestIdent.getReportingApplication().getId();
 			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
-			if (ModeleAnnonceIDERCEnt.NO_IDE_SERVICE_IDE.getValeur().equals(ideSource.getOrganisationId()) && ModeleAnnonceIDERCEnt.NO_APPLICATION_UNIREG.equals(applicationId)) {
+			if (RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
 				final String noticeRequestId = noticeRequestIdent.getNoticeRequestId();
 				if (noticeRequestId != null) {
 					return Long.parseLong(noticeRequestId);

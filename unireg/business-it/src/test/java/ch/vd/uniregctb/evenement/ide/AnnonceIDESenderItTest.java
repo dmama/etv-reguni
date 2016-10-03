@@ -8,10 +8,12 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.RCEntApiHelper;
@@ -65,14 +67,15 @@ public class AnnonceIDESenderItTest extends EvenementTest {
 		try {
 			clearQueue(OUTPUT_QUEUE);
 
-			final AnnonceIDERCEnt
-					annonceIDERCEnt = new AnnonceIDERCEnt(123456L, TypeAnnonce.CREATION, RegDate.get(2016, 8, 19).asJavaDate(), new AnnonceIDERCEnt.UtilisateurRCEnt("c4zem2", null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null);
-			annonceIDERCEnt.setCommentaire("Ceci est une annonce de test.");
-			final AnnonceIDERCEnt.ContenuRCEnt contenu = new AnnonceIDERCEnt.ContenuRCEnt();
+			final AnnonceIDE
+					annonceIDE = new AnnonceIDE(123456L, TypeAnnonce.CREATION, RegDate.get(2016, 8, 19).asJavaDate(), new AnnonceIDEData.UtilisateurImpl("c4zem2", null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
+					                            new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG));
+			annonceIDE.setCommentaire("Ceci est une annonce de test.");
+			final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();
 			contenu.setNom("Synergy SA");
 			contenu.setFormeLegale(FormeLegale.N_0109_ASSOCIATION);
 
-			sender.sendEvent(annonceIDERCEnt, "businessIdDeTestAnnonceIDE");
+			sender.sendEvent(annonceIDE, "businessIdDeTestAnnonceIDE");
 			assertTextMessage(OUTPUT_QUEUE, EXPECTED);
 		}
 		finally {

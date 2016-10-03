@@ -10,9 +10,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -72,12 +72,12 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public AnnonceIDE getAnnonceIDE(Long numero) {
+		public AnnonceIDEEnvoyee getAnnonceIDE(Long numero) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE annonceIDE) {
+		public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) {
 			return null;
 		}
 

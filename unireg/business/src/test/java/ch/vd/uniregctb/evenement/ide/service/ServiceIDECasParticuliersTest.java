@@ -12,10 +12,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
@@ -110,16 +110,16 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 				// Annonce existante
 
 				// Validation
-				ModeleAnnonceIDERCEnt modele =
-						RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                                  null, null, null, null, null, null,
-						                                                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                                  RCEntAnnonceIDEHelper
+				AnnonceIDEData modele =
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                            null, null, null, null, null, null,
+						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
+						                                            RCEntAnnonceIDEHelper
 								                                            .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 								                                                                          MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 								                                                                          null, null));
 
-				AnnonceIDE.Statut statut = new ModeleAnnonceIDERCEnt.StatutRCEnt(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
+				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
 				this.addStatutAnnonceIDEAttentu(modele, statut);
 
 			}
@@ -128,11 +128,11 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDE annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDE>() {
+		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
 			@Override
-			public AnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
+			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
 				try {
-					serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise), false);
+					serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				}
 				catch (ServiceIDEException e) {
 					assertEquals("Une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
@@ -200,18 +200,18 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final ModeleAnnonceIDE modeleAnnonceIDE = doInNewTransactionAndSession(new TransactionCallback<ModeleAnnonceIDE>() {
+		final BaseAnnonceIDE baseAnnonceIDE = doInNewTransactionAndSession(new TransactionCallback<BaseAnnonceIDE>() {
 			@Override
-			public ModeleAnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
+			public BaseAnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
 				try {
-					return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise), false);
+					return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				} catch (Exception e) {
 					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
 				}
 				return null;
 			}
 		});
-		assertNull(modeleAnnonceIDE);
+		assertNull(baseAnnonceIDE);
 	}
 
 
@@ -276,19 +276,17 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 		// Exécute la synchronisation IDE
 		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
 		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final ModeleAnnonceIDE modeleAnnonceIDE = doInNewTransactionAndSession(new TransactionCallback<ModeleAnnonceIDE>() {
+		final BaseAnnonceIDE baseAnnonceIDE = doInNewTransactionAndSession(new TransactionCallback<BaseAnnonceIDE>() {
 			@Override
-			public ModeleAnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
+			public BaseAnnonceIDE doInTransaction(TransactionStatus transactionStatus) {
 				try {
-					return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise), false);
+					return serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				} catch (Exception e) {
 					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
 				}
 				return null;
 			}
 		});
-		assertNull(modeleAnnonceIDE);
+		assertNull(baseAnnonceIDE);
 	}
-
-
 }

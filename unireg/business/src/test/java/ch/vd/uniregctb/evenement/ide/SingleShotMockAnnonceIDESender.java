@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.ide;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 
 /**
  * Mock sender à un coup
@@ -9,11 +9,11 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 public class SingleShotMockAnnonceIDESender implements AnnonceIDESender {
 
 	private boolean used = false;
-	private AnnonceIDE annonceEnvoyee;
+	private AnnonceIDEEnvoyee annonceEnvoyee;
 	private String msgBusinessIdUtilisee;
 
 	@Override
-	public void sendEvent(AnnonceIDE annonce, String msgBusinessId) throws AnnonceIDEException {
+	public void sendEvent(AnnonceIDEEnvoyee annonce, String msgBusinessId) throws AnnonceIDEException {
 		if (isUsed()) {
 			throw new RuntimeException("Une annonce IDE a déjà été expédiée avec ce mock sender de test spécialement prévu pour n'en permettre qu'une seule.");
 		}
@@ -27,7 +27,7 @@ public class SingleShotMockAnnonceIDESender implements AnnonceIDESender {
 		return used;
 	}
 
-	public AnnonceIDE getAnnonceEnvoyee() {
+	public AnnonceIDEEnvoyee getAnnonceEnvoyee() {
 		return annonceEnvoyee;
 	}
 

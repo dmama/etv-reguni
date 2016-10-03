@@ -3,8 +3,8 @@ package ch.vd.unireg.interfaces.organisation;
 import java.io.Serializable;
 import java.util.Map;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 
@@ -75,7 +75,7 @@ public interface ServiceOrganisationRaw {
 	 * @param modele le modèle de l'annonce.
 	 * @return le statut résultant avec les erreurs éventuelles ajouté par le registre civil.
 	 */
-	ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) throws ServiceOrganisationException;
+	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceOrganisationException;
 
 	/**
 	 * Obtenir le contenu et le statut d'une annonce à l'IDE.
@@ -87,7 +87,7 @@ public interface ServiceOrganisationRaw {
 	 * @return l'annonce IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
-	AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException;
+	AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException;
 
 	/**
 	 * Méthode qui permet de tester que le service organisation répond bien. Cette méthode est insensible aux caches.

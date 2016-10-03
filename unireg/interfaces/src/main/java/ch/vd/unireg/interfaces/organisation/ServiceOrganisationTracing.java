@@ -5,8 +5,8 @@ import java.util.Map;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.stats.ServiceTracing;
@@ -167,12 +167,12 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 	}
 
 	@Override
-	public AnnonceIDE getAnnonceIDE(final long numero) {
+	public AnnonceIDEEnvoyee getAnnonceIDE(final long numero) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final AnnonceIDE annonceIDE = target.getAnnonceIDE(numero);
+			final AnnonceIDEEnvoyee annonceIDE = target.getAnnonceIDE(numero);
 			if (annonceIDE != null) {
 				items = 1;
 			}
@@ -197,12 +197,12 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 	}
 
 	@Override
-	public ModeleAnnonceIDE.Statut validerAnnonceIDE(final ModeleAnnonceIDE modele) {
+	public BaseAnnonceIDE.Statut validerAnnonceIDE(final BaseAnnonceIDE modele) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final AnnonceIDE.Statut annonceIDEStatut = target.validerAnnonceIDE(modele);
+			final AnnonceIDEEnvoyee.Statut annonceIDEStatut = target.validerAnnonceIDE(modele);
 			if (annonceIDEStatut != null) {
 				items = 1;
 			}
@@ -220,7 +220,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			tracing.end(time, t, "validerAnnonceIDE", items, new Object() {
 				@Override
 				public String toString() {
-					final ModeleAnnonceIDE.Contenu contenu = modele.getContenu();
+					final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
 					return String.format("nomEntreprise=%s", contenu == null ? "" : contenu.getNom());
 				}
 			});

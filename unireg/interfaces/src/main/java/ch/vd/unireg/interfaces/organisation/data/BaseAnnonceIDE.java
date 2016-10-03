@@ -10,7 +10,7 @@ import ch.vd.registre.base.utils.Pair;
 /**
  * @author Raphaël Marmier, 2016-09-09, <raphael.marmier@vd.ch>
  */
-public interface ModeleAnnonceIDE {
+public interface BaseAnnonceIDE {
 
 	TypeAnnonce getType();
 
@@ -27,7 +27,7 @@ public interface ModeleAnnonceIDE {
 	/**
 	 * @return Le service IDE au nom duquel on fait l'annonce, avec l'application utilisée.
 	 */
-	ServiceIDE getServiceIDE();
+	InfoServiceIDEObligEtendues getInfoServiceIDEObligEtendues();
 
 	/**
 	 * @return le dernier statut actuel de l'annonce
@@ -125,12 +125,12 @@ public interface ModeleAnnonceIDE {
 		String getTelephone();
 	}
 
-	interface ServiceIDE {
+	interface InfoServiceIDEObligEtendues {
 
 		/**
 		 * @return le numéro IDE du service IDE
 		 */
-		NumeroIDE getNoIdeServiceIDE();
+		NumeroIDE getNoIdeServiceIDEObligEtendues();
 
 		/**
 		 * @return l'identifiant de l'application utilisée pour faire la demande d'annonce.

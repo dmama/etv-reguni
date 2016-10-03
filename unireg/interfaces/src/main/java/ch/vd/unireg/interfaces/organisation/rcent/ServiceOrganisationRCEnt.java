@@ -18,8 +18,8 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -128,27 +128,27 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	}
 
 	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
+	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException {
 		final ListOfNoticeRequest noticeRequests = client.getNoticeRequest(String.valueOf(numero));
 		if (noticeRequests == null || noticeRequests.getNumberOfResults() == 0) {
 			return null;
 		} else if (noticeRequests.getNumberOfResults() > 2) {
 			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
 		}
-		return (AnnonceIDE) RCEntAnnonceIDEHelper.get(noticeRequests.getResults().get(0));
+		return (AnnonceIDEEnvoyee) RCEntAnnonceIDEHelper.get(noticeRequests.getResults().get(0));
 	}
 
 	@Override
-	public ModeleAnnonceIDE.Statut validerAnnonceIDE(ModeleAnnonceIDE modele) throws ServiceOrganisationException {
+	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceOrganisationException {
 		Assert.notNull(modele, "Modèle d'annonce à valider manquant!");
 
 		final NoticeRequest noticeRequest = RCEntAnnonceIDEHelper.buildNoticeRequest(modele);
 		final NoticeRequestReport noticeReport = client.validateNoticeRequest(noticeRequest);
 		if (noticeReport == null || noticeReport.getNoticeRequest() == null) {
-			final ModeleAnnonceIDE.Contenu contenu = modele.getContenu();
+			final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
 			throw new ServiceOrganisationException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
 		}
-		final ModeleAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.get(noticeReport).getStatut();
+		final BaseAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.get(noticeReport).getStatut();
 		cleanErreurs(statut);
 		return statut;
 	}
@@ -159,7 +159,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	 *
 	 * @param statut l'objet statut
 	 */
-	private void cleanErreurs(ModeleAnnonceIDE.Statut statut) {
+	private void cleanErreurs(BaseAnnonceIDE.Statut statut) {
 		if (statut != null) {
 			final List<Pair<String, String>> erreurs = statut.getErreurs();
 			if (erreurs != null && !erreurs.isEmpty()) {

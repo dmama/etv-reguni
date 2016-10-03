@@ -26,11 +26,12 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
@@ -49,6 +50,15 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterDeregist
  * @author Raphaël Marmier, 2016-08-23, <raphael.marmier@vd.ch>
  */
 public class RCEntAnnonceIDEHelper {
+
+	/*
+		Identification du service IDE et d'Unireg:
+		- Numéro IDE du "service IDE" selon Art. 3c LIDE
+		- Identification de l'application dans RCEnt
+	*/
+	public static final NumeroIDE NO_IDE_SERVICE_IDE = new NumeroIDE("999999996");
+	public static final String NO_APPLICATION_UNIREG = "2";
+	public static final String NOM_APPLICATION_UNIREG = "UNIREG";
 
 	private final static TypeOfNoticeRequestConverter TYPE_OF_NOTICE_CONVERTER = new TypeOfNoticeRequestConverter();
 	public static final NoticeRequestStatusCodeConverter NOTICE_REQUEST_STATUS_CONVERTER = new NoticeRequestStatusCodeConverter();
@@ -71,7 +81,7 @@ public class RCEntAnnonceIDEHelper {
 	 * @param noticeRequest la demande d'annonce RCEnt en entrée.
 	 * @return une annonce ou un modèle d'annonce IDE.
 	 */
-	public static ModeleAnnonceIDE get(NoticeRequest noticeRequest) {
+	public static BaseAnnonceIDE get(NoticeRequest noticeRequest) {
 		final NoticeRequestHeader noticeHeader = noticeRequest.getNoticeRequestHeader();
 		final NoticeRequestIdentification noticeIdent = noticeHeader.getNoticeRequestIdentification();
 		final NoticeRequestBody noticeBody = noticeRequest.getNoticeRequestBody();
@@ -129,30 +139,30 @@ public class RCEntAnnonceIDEHelper {
 		}
 
 		if (numero == null) {
-			return createModeleAnnonceIDERCEnt(typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
-			                                   noIdeEtablissementPrincipal,
-			                                   numeroSite,
-			                                   numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse);
-		} else {
-			return createAnnonceIDERCEnt(numero, typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
+			return createProtoAnnonceIDE(typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
 			                             noIdeEtablissementPrincipal,
 			                             numeroSite,
 			                             numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse);
+		} else {
+			return createAnnonceIDE(numero, typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
+			                        noIdeEtablissementPrincipal,
+			                        numeroSite,
+			                        numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse);
 		}
 	}
 
 	@NotNull
-	public static NoticeRequest buildNoticeRequest(ModeleAnnonceIDE modele) {
+	public static NoticeRequest buildNoticeRequest(BaseAnnonceIDE modele) {
 		return doBuildNoticeRequest(modele);
 	}
 
 	@NotNull
-	public static NoticeRequest buildNoticeRequest(AnnonceIDE annonce) {
+	public static NoticeRequest buildNoticeRequest(AnnonceIDEEnvoyee annonce) {
 		return doBuildNoticeRequest(annonce);
 	}
 
 	@NotNull
-	private static NoticeRequest doBuildNoticeRequest(ModeleAnnonceIDE modele) {
+	private static NoticeRequest doBuildNoticeRequest(BaseAnnonceIDE modele) {
 
 		final NoticeRequestHeader header = new NoticeRequestHeader();
 		final NoticeRequestIdentification identification = new NoticeRequestIdentification();
@@ -163,17 +173,18 @@ public class RCEntAnnonceIDEHelper {
 		identification.setTypeOfNoticeRequest(type == null ? null : TYPE_ANNONCE_CONVERTER.convert(type));
 
 		identification.setNoticeRequestId(DUMMY_TEMPLATE_ID);
-		if (modele instanceof AnnonceIDE) {
-			final Long numero = ((AnnonceIDE) modele).getNumero();
+		if (modele instanceof AnnonceIDEEnvoyee) {
+			final Long numero = ((AnnonceIDEEnvoyee) modele).getNumero();
 			identification.setNoticeRequestId(numero == null ? DUMMY_TEMPLATE_ID : numero.toString());
 		}
 		identification.setNoticeRequestDateTime(modele.getDateAnnonce());
 
-		final ModeleAnnonceIDE.ServiceIDE serviceIDE = modele.getServiceIDE();
-		identification.setReportingApplication( serviceIDE == null ? null : new RequestApplication(serviceIDE.getApplicationId(), serviceIDE.getApplicationName()));
-		identification.setIDESource( serviceIDE == null ? null : new NamedOrganisationId("CH.IDE", serviceIDE.getNoIdeServiceIDE().getValeur()));
+		final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = modele.getInfoServiceIDEObligEtendues();
+		identification.setReportingApplication(infoServiceIDEObligEtendues == null ? null : new RequestApplication(infoServiceIDEObligEtendues.getApplicationId(), infoServiceIDEObligEtendues
+				.getApplicationName()));
+		identification.setIDESource(infoServiceIDEObligEtendues == null ? null : new NamedOrganisationId("CH.IDE", infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues().getValeur()));
 
-		final ModeleAnnonceIDE.Utilisateur utilisateur = modele.getUtilisateur();
+		final BaseAnnonceIDE.Utilisateur utilisateur = modele.getUtilisateur();
 		header.setUserId(utilisateur == null ? null :utilisateur.getUserId());
 		header.setUserPhoneNumber(utilisateur == null ? null :utilisateur.getTelephone());
 		header.setComment(modele.getCommentaire());
@@ -189,7 +200,7 @@ public class RCEntAnnonceIDEHelper {
 		final RaisonDeRadiationRegistreIDE raisonDeRadiation = modele.getRaisonDeRadiation();
 		body.setDeregistrationReason(raisonDeRadiation == null ? null : RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER.convert(raisonDeRadiation));
 
-		final AnnonceIDE.InformationOrganisation informationOrganisation = modele.getInformationOrganisation();
+		final AnnonceIDEEnvoyee.InformationOrganisation informationOrganisation = modele.getInformationOrganisation();
 		if (informationOrganisation != null) {
 			final Long numeroSite = informationOrganisation.getNumeroSite();
 			body.setCantonalId(numeroSite == null ? null : BigInteger.valueOf(numeroSite));
@@ -199,7 +210,7 @@ public class RCEntAnnonceIDEHelper {
 			body.setHeadquarterCantonalId(numeroOrganisation == null ? null : BigInteger.valueOf(numeroOrganisation));
 		}
 
-		final AnnonceIDE.Contenu contenu = modele.getContenu();
+		final AnnonceIDEEnvoyee.Contenu contenu = modele.getContenu();
 		if (contenu != null) {
 
 			body.setName(contenu.getNom());
@@ -226,47 +237,49 @@ public class RCEntAnnonceIDEHelper {
 	}
 
 	@NotNull
-	public static AnnonceIDERCEnt createAnnonceIDERCEnt(Long numero, TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
-	                                                    RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
-	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse) {
+	public static AnnonceIDE createAnnonceIDE(Long numero, TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
+	                                          RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
+	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
+	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse) {
 		Assert.notNull(numero, "Une annonce IDE ne peut pas avoir un numéro vide.");
 
-		final AnnonceIDERCEnt.UtilisateurRCEnt utilisateur = new AnnonceIDERCEnt.UtilisateurRCEnt(userId, telephone);
+		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
 
-		final AnnonceIDERCEnt annonceIDERCEnt = new AnnonceIDERCEnt(numero,
-		                                                            typeAnnonce,
-		                                                            dateAnnonce,
-		                                                            utilisateur,
-		                                                            typeDeSite,
-		                                                            null
+		final AnnonceIDE annonceIDE = new AnnonceIDE(numero,
+		                                             typeAnnonce,
+		                                             dateAnnonce,
+		                                             utilisateur,
+		                                             typeDeSite,
+		                                             null,
+		                                             new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)
 		);
 		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel,
-		                      formeLegale, secteurActivite, adresse, annonceIDERCEnt);
-		return annonceIDERCEnt;
+		                      formeLegale, secteurActivite, adresse, annonceIDE);
+		return annonceIDE;
 	}
 
 	@NotNull
-	public static ModeleAnnonceIDERCEnt createModeleAnnonceIDERCEnt(TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
-	                                                                RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                                                NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
-	                                                                FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse) {
-		final AnnonceIDERCEnt.UtilisateurRCEnt utilisateur = new AnnonceIDERCEnt.UtilisateurRCEnt(userId, telephone);
+	public static ProtoAnnonceIDE createProtoAnnonceIDE(TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
+	                                                    RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
+	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
+	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse) {
+		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
 
-		final ModeleAnnonceIDERCEnt annonceIDEModeleRCEnt = new ModeleAnnonceIDERCEnt(typeAnnonce,
-		                                                                              dateAnnonce,
-		                                                                              utilisateur,
-		                                                                              typeDeSite,
-		                                                                              null
+		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(typeAnnonce,
+		                                                            dateAnnonce,
+		                                                            utilisateur,
+		                                                            typeDeSite,
+		                                                            null,
+		                                                            new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)
 		);
 		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel,
-		                      formeLegale, secteurActivite, adresse, annonceIDEModeleRCEnt);
-		return annonceIDEModeleRCEnt;
+		                      formeLegale, secteurActivite, adresse, protoAnnonceIDE);
+		return protoAnnonceIDE;
 	}
 
 	private static void fillDetailsAnnonceIDE(RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
 	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
-	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, ModeleAnnonceIDERCEnt annonceIDEModeleRCEnt) {
+	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData annonceIDEModeleRCEnt) {
 		annonceIDEModeleRCEnt.setRaisonDeRadiation(raisonDeRadiationRegistreIDE);
 		annonceIDEModeleRCEnt.setCommentaire(commentaire);
 
@@ -276,15 +289,15 @@ public class RCEntAnnonceIDEHelper {
 		annonceIDEModeleRCEnt.setNoIdeEtablissementPrincipal(noIdeEtablissementPrincipal);
 
 		// RCEnt meta data
-		final AnnonceIDERCEnt.InformationOrganisationRCEnt informationOrganisationRCEnt = new AnnonceIDERCEnt.InformationOrganisationRCEnt(
+		final AnnonceIDEData.InformationOrganisationImpl informationOrganisationImpl = new AnnonceIDEData.InformationOrganisationImpl(
 				numeroSite,
 				numeroOrganisation,
 				numeroSiteRemplacant
 		);
-		annonceIDEModeleRCEnt.setInformationOrganisation(informationOrganisationRCEnt);
+		annonceIDEModeleRCEnt.setInformationOrganisation(informationOrganisationImpl);
 
 		// Contenu
-		final AnnonceIDERCEnt.ContenuRCEnt contenu = new AnnonceIDERCEnt.ContenuRCEnt();
+		final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();
 		contenu.setNom(nom);
 		contenu.setNomAdditionnel(nomAdditionnel);
 		contenu.setFormeLegale(formeLegale);
@@ -312,16 +325,16 @@ public class RCEntAnnonceIDEHelper {
 		return adresse;
 	}
 
-	public static ModeleAnnonceIDERCEnt get(NoticeRequestReport noticeReport) {
-		final ModeleAnnonceIDERCEnt annonceIDERCEnt = (ModeleAnnonceIDERCEnt) get(noticeReport.getNoticeRequest());
+	public static ProtoAnnonceIDE get(NoticeRequestReport noticeReport) {
+		final AnnonceIDEData annonceIDERCEnt = (AnnonceIDEData) get(noticeReport.getNoticeRequest());
 
 		final NoticeRequestStatus noticeStatus = noticeReport.getNoticeRequestStatus();
-		final ModeleAnnonceIDERCEnt.StatutRCEnt statut = new ModeleAnnonceIDERCEnt.StatutRCEnt(NOTICE_REQUEST_STATUS_CONVERTER.apply(noticeStatus.getNoticeRequestStatusCode()),
-		                                                                                       noticeStatus.getNoticeRequestStatusDate(),
-		                                                                                       convertErrors(noticeReport)
+		final AnnonceIDEData.StatutImpl statut = new AnnonceIDEData.StatutImpl(NOTICE_REQUEST_STATUS_CONVERTER.apply(noticeStatus.getNoticeRequestStatusCode()),
+		                                                                       noticeStatus.getNoticeRequestStatusDate(),
+		                                                                       convertErrors(noticeReport)
 		);
 
-		return new ModeleAnnonceIDERCEnt(annonceIDERCEnt, statut);
+		return new ProtoAnnonceIDE(annonceIDERCEnt, statut);
 	}
 
 	private static List<Pair<String, String>> convertErrors(NoticeRequestReport noticeReport) {

@@ -15,13 +15,13 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ModeleAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
@@ -89,7 +89,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	}
 
 	@Override
-	public boolean isServiceEtendu(Entreprise entreprise, RegDate date) {
+	public boolean isServiceIDEObligEtendues(Entreprise entreprise, RegDate date) {
 
 		final FormeLegaleHisto formeLegaleHisto = getFormeLegale(entreprise, date);
 		final FormeLegale formeLegale = formeLegaleHisto == null ? null : formeLegaleHisto.getFormeLegale();
@@ -168,35 +168,47 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	}
 
 	@Override
-	public ModeleAnnonceIDE synchroniseIDE(Entreprise entreprise, boolean validateOnly) throws ServiceIDEException {
-		Assert.notNull(entreprise, "Impossible de synchroniser l'IDE sans une entreprise!");
+	public AnnonceIDEEnvoyee synchroniseIDE(Entreprise entreprise) throws ServiceIDEException {
+		final RegDate date = RegDate.get(); // On agit en terme du présent
+		final ProtoAnnonceIDE protoAnnonceIDE = evalueSynchronisationIDE(entreprise, date);
+		if (protoAnnonceIDE != null) {
+			return annonceIDEService.emettreAnnonceIDE(protoAnnonceIDE, tiersService.getEtablissementPrincipal(entreprise, date));
+		}
+		else {
+			return null;
+		}
+	}
 
-		// On agit en terme du présent
-		final RegDate notreDate = RegDate.get();
+	@Override
+	public ProtoAnnonceIDE simuleSynchronisationIDE(Entreprise entreprise) throws ServiceIDEException {
+		final RegDate date = RegDate.get(); // On agit en terme du présent
+		return evalueSynchronisationIDE(entreprise, date);
+	}
+
+	private ProtoAnnonceIDE evalueSynchronisationIDE(Entreprise entreprise, RegDate date) throws ServiceIDEException {
+		Assert.notNull(entreprise, "Impossible de synchroniser l'IDE sans une entreprise!");
 
 		LOGGER.info(String.format("Annonce des changements sur l'entreprise n°%s à l'IDE, s'il y a lieu. Seul l'établissement principal est supporté.", entreprise.getNumero()));
 
-		// Obtenir l'établissement principal:
-		final Etablissement etablissement = tiersService.getEtablissementPrincipal(entreprise, notreDate);
+		final Etablissement etablissement = tiersService.getEtablissementPrincipal(entreprise, date);
 
 		Assert.notNull(etablissement,
 		               String.format("Aucun établissement trouvé pour l'entreprise n°%s en date d'aujourd'hui (%s)!",
 		                             FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-		                             RegDateHelper.dateToDisplayString(notreDate)
+		                             RegDateHelper.dateToDisplayString(date)
 		               )
 		);
 
-		ModeleAnnonceIDE resultat = null;
-		if (isServiceEtendu(entreprise, notreDate)) {
+		if (isServiceIDEObligEtendues(entreprise, date)) {
 
 			final Organisation organisation = tiersService.getOrganisation(entreprise);
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			if (site != null) {
-				Assert.isTrue(site.getTypeDeSite(notreDate) == TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+				Assert.isTrue(site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_PRINCIPAL,
 				              String.format("Le site apparié à l'établissement n°%s n'est pas un établissement principal.", etablissement.getNumero()));
 			}
 
-			final StatusRegistreIDE statusRegistreIDE = site == null ? null : site.getDonneesRegistreIDE().getStatus(notreDate);
+			final StatusRegistreIDE statusRegistreIDE = site == null ? null : site.getDonneesRegistreIDE().getStatus(date);
 			final String numeroIDEFiscalEntreprise = getNumeroIDEFiscalActuel(entreprise);
 			final String numeroIDEFiscalEtablissement = getNumeroIDEFiscalActuel(etablissement);
 
@@ -210,7 +222,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					Déterminer le type d'annonce et le numéro IDE
 				 */
 			if (site != null) {
-				final String numeroIDESite = site.getNumeroIDE(notreDate);
+				final String numeroIDESite = site.getNumeroIDE(date);
 				if (numeroIDESite != null) {
 					/*
 							Etablissement connnu de RCEnt pour être à l'IDE
@@ -281,10 +293,9 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				}
 			}
 
-			final RaisonSocialeHisto raisonsSocialeHisto = getRaisonSociale(entreprise, notreDate);
-			final FormeLegaleHisto formeLegaleHisto = getFormeLegale(entreprise, notreDate);
-//				final DomicileHisto siege = getSiege(entreprise, notreDate);
-			final AdresseGenerique adresseGenerique = getAdresse(entreprise, notreDate);
+			final RaisonSocialeHisto raisonsSocialeHisto = getRaisonSociale(entreprise, date);
+			final FormeLegaleHisto formeLegaleHisto = getFormeLegale(entreprise, date);
+			final AdresseGenerique adresseGenerique = getAdresse(entreprise, date);
 			final String secteurActiviteActuel = entreprise.getSecteurActivite();
 
 			if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
@@ -320,26 +331,26 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 			final String raisonSocialeActuelle = raisonsSocialeHisto.getRaisonSociale();
 			final FormeLegale formeLegaleActuelle = formeLegaleHisto.getFormeLegale();
-			final AdresseAnnonceIDERCEnt adresseActuelle = getAdresseAnnonceIDERCEnt(adresseGenerique, notreDate);
+			final AdresseAnnonceIDERCEnt adresseActuelle = getAdresseAnnonceIDERCEnt(adresseGenerique, date);
 
-			ModeleAnnonceIDERCEnt modeleActuel =
-					RCEntAnnonceIDEHelper.createModeleAnnonceIDERCEnt(typeAnnonce, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, raisonDeRadiationRegistreIDE, null,
-					                                                  noIde == null ? null : new NumeroIDE(noIde), null, null, etablissement.getNumeroEtablissement(), entreprise.getNumeroEntreprise(), null,
-					                                                  raisonSocialeActuelle, null, formeLegaleActuelle, secteurActiviteActuel, adresseActuelle);
+			ProtoAnnonceIDE protoActuel =
+					RCEntAnnonceIDEHelper.createProtoAnnonceIDE(typeAnnonce, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, raisonDeRadiationRegistreIDE, null,
+					                                            noIde == null ? null : new NumeroIDE(noIde), null, null, etablissement.getNumeroEtablissement(), entreprise.getNumeroEntreprise(), null,
+					                                            raisonSocialeActuelle, null, formeLegaleActuelle, secteurActiviteActuel, adresseActuelle);
 
 
 			// Qu'a-t'on déjà envoyé? Doit-on renvoyer?
 			final ReferenceAnnonceIDE lastReferenceAnnonceIDE = referenceAnnonceIDEDAO.getLastReferenceAnnonceIDE(etablissement.getNumero());
 			if (lastReferenceAnnonceIDE != null) {
-				final AnnonceIDE derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(lastReferenceAnnonceIDE.getId());
+				final AnnonceIDEEnvoyee derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(lastReferenceAnnonceIDE.getId());
 
 				if (derniereAnnonceEmise != null) {
 					// Gestion minimaliste de la radiation.
-					if (modeleActuel.getType() == TypeAnnonce.RADIATION && derniereAnnonceEmise.getType() == TypeAnnonce.RADIATION) {
+					if (protoActuel.getType() == TypeAnnonce.RADIATION && derniereAnnonceEmise.getType() == TypeAnnonce.RADIATION) {
 						return null;
 					}
 					// Contenu identique, on ne renvoie pas.
-					if (modeleActuel.getContenu() != null && modeleActuel.getContenu().equals(derniereAnnonceEmise.getContenu())) {
+					if (protoActuel.getContenu() != null && protoActuel.getContenu().equals(derniereAnnonceEmise.getContenu())) {
 						return null;
 					}
 				} else {
@@ -382,21 +393,16 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			// - Aucune annonce ne sera envoyée pour le seul changement dans la description du secteur d'activité, car il n'est pas surchargé et on n'a pas moyen de savoir s'il est changé.
 			// - La détection de radiation émise fonctionne à minima et échoue si
 
-			validerAnnonceIDE(modeleActuel);
-
-			if (!validateOnly) {
-				resultat = annonceIDEService.emettreAnnonceIDE(modeleActuel, etablissement);
-			} else {
-				resultat = modeleActuel;
-			}
+			validerAnnonceIDE(protoActuel);
+			return protoActuel;
 		}
-		return resultat;
+		return null;
 	}
 
 
 	@Override
-	public void validerAnnonceIDE(ModeleAnnonceIDE modele) throws ServiceIDEException {
-		final ModeleAnnonceIDE.Statut statut = serviceOrganisation.validerAnnonceIDE(modele);
+	public void validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceIDEException {
+		final BaseAnnonceIDE.Statut statut = serviceOrganisation.validerAnnonceIDE(modele);
 
 		// Workaround du SIREF-9364, où le statut est "sans erreur" même lorsqu'il y en a.
 		if (statut.getErreurs() != null && !statut.getErreurs().isEmpty()) {
