@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.dbutils.QueryFragment;
@@ -17,6 +18,7 @@ public class ParamPagination implements Serializable {
 
 	private static final Pattern FIELD_ALLOWED_CHARS = Pattern.compile("^[a-zA-Z0-9_.]+$");
 
+	@NotNull
 	private final ParamSorting sorting;
 
 	public ParamPagination(int numeroPage, int taillePage, String champ, boolean sensAscending) {
@@ -33,6 +35,9 @@ public class ParamPagination implements Serializable {
 
 	private final int taillePage;
 
+	/**
+	 * @return le numéro de la page (1-based)
+	 */
 	public int getNumeroPage() {
 		return this.numeroPage;
 	}
@@ -51,6 +56,7 @@ public class ParamPagination implements Serializable {
 		return sorting.isAscending();
 	}
 
+	@NotNull
 	public ParamSorting getSorting() {
 		return this.sorting;
 	}

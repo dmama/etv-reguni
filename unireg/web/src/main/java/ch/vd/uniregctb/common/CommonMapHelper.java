@@ -11,11 +11,26 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 
 import ch.vd.uniregctb.type.RestrictedAccess;
 
-public class CommonMapHelper extends ApplicationObjectSupport {
+public class CommonMapHelper {
+
+	private MessageSourceAccessor messageSourceAccessor;
+
+	public void setMessageSourceAccessor(MessageSource messageSource) {
+		this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
+	}
+
+	public void setMessageSourceAccessor(MessageSourceAccessor messageSource) {
+		this.messageSourceAccessor = messageSource;
+	}
+
+	protected MessageSourceAccessor getMessageSourceAccessor() {
+		return messageSourceAccessor;
+	}
 
 	/**
 	 * Transforme une énumération en map indexée par enum et dont les valeurs sont les descriptions pour l'utilisateur

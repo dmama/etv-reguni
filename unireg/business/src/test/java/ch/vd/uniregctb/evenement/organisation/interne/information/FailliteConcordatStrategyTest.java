@@ -1,25 +1,14 @@
 package ch.vd.uniregctb.evenement.organisation.interne.information;
 
-import java.util.Map;
-
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
@@ -30,8 +19,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -45,47 +33,7 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 
-	private static class MockServiceOrganisationService implements ServiceOrganisationService {
-		@Override
-		public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public AnnonceIDEEnvoyee getAnnonceIDE(Long numero) {
-			throw new UnsupportedOperationException();
-		}
-
-		@NotNull
-		@Override
-		public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
+	private final MockServiceOrganisationService serviceOrganisation = new MockServiceOrganisationService() {
 
 		@Override
 		public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) {
@@ -97,11 +45,11 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 		public String createOrganisationDescription(Organisation organisation, RegDate date) {
 			return "UT: Org no 1L.";
 		}
-	}
+	};
 
 	private final FailliteConcordatStrategy strategy = new FailliteConcordatStrategy();
 
-	private final EvenementOrganisationContext context = new EvenementOrganisationContext(new MockServiceOrganisationService(), null, null);
+	private final EvenementOrganisationContext context = new EvenementOrganisationContext(serviceOrganisation, null, null);
 
 	private final EvenementOrganisationOptions options = new EvenementOrganisationOptions();
 

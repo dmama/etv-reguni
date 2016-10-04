@@ -2,8 +2,6 @@ package ch.vd.uniregctb.annonceIDE;
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
@@ -26,9 +24,6 @@ public class AnnonceIDEQueryView {
 	private Boolean containsForName;
 
 	// les options de recherche
-	private String sortProperty;
-	private Sort.Direction sortDirection;
-	private int pageNumber;
 	private int resultsPerPage;
 
 	public Long getNoticeId() {
@@ -101,30 +96,6 @@ public class AnnonceIDEQueryView {
 
 	public void setContainsForName(Boolean containsForName) {
 		this.containsForName = containsForName;
-	}
-
-	public String getSortProperty() {
-		return sortProperty;
-	}
-
-	public void setSortProperty(String sortProperty) {
-		this.sortProperty = sortProperty;
-	}
-
-	public Sort.Direction getSortDirection() {
-		return sortDirection;
-	}
-
-	public void setSortDirection(Sort.Direction sortDirection) {
-		this.sortDirection = sortDirection;
-	}
-
-	public int getPageNumber() {
-		return pageNumber;
-	}
-
-	public void setPageNumber(int pageNumber) {
-		this.pageNumber = pageNumber;
 	}
 
 	public int getResultsPerPage() {
