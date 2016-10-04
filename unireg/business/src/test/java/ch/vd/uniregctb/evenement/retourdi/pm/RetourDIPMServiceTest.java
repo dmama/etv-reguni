@@ -6383,4 +6383,68 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testAdresseStructureeEntrepriseAvecContactMaisFlagAdresseModifieeFalse() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2009, 8, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 18);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee, 7, 5));
+				addEtatDeclarationRetournee(di, dateQuittance);
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(0, tachesControle.size());
+			}
+		});
+	}
 }

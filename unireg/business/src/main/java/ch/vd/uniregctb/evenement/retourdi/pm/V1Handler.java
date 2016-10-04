@@ -80,7 +80,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 	}
 
 	@Nullable
-	private InformationsEntreprise extractInformationsEntreprise(InformationPersonneMoraleModifiee info) {
+	protected InformationsEntreprise extractInformationsEntreprise(InformationPersonneMoraleModifiee info) {
 		if (info == null) {
 			return null;
 		}
@@ -135,17 +135,12 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			return brutte.isEmpty() ? null : brutte;
 		}
 
-		// structurée non-indiquée comme modifiée, et on nous demande de faire attention...
-		if (seulementAdresseModifiee && !isTrue(structuree.isAdresseModifee())) {
-			return null;
-		}
-
-		// données du destinataire d'abord...
+		// [SIFISC-21192] données du destinataire d'abord... (même si le flag "seulementAdresseModifiée" n'est pas levé)
 		final DestinataireAdresse destinataire = extractDestinataire(structuree);
 
-		// puis les données de base
+		// structurée non-indiquée comme modifiée, et on nous demande de faire attention...
 		final AddressInformation ai = structuree.getAddressInformation();
-		if (ai == null) {
+		if ((seulementAdresseModifiee && !isTrue(structuree.isAdresseModifee())) || ai == null) {
 			if (destinataire == null) {
 				return null;
 			}
@@ -233,7 +228,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 	}
 
 	@Nullable
-	private InformationsMandataire extractInformationsMandataire(InformationMandataire info) {
+	protected InformationsMandataire extractInformationsMandataire(InformationMandataire info) {
 		if (info == null) {
 			return null;
 		}
