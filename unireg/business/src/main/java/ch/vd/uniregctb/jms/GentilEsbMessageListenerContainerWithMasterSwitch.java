@@ -2,10 +2,11 @@ package ch.vd.uniregctb.jms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jms.JmsException;
 
-public class JmxAwareMasterSwitchableEsbMessageEndpointManager extends JmxAwareEsbMessageEndpointManager {
+public class GentilEsbMessageListenerContainerWithMasterSwitch extends GentilEsbMessageListenerContainer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JmxAwareMasterSwitchableEsbMessageEndpointManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GentilEsbMessageListenerContainerWithMasterSwitch.class);
 
 	private boolean masterSwitch;
 
@@ -14,7 +15,7 @@ public class JmxAwareMasterSwitchableEsbMessageEndpointManager extends JmxAwareE
 	}
 
 	@Override
-	public void start() {
+	public void start() throws JmsException {
 		if (masterSwitch) {
 			super.start();
 		}

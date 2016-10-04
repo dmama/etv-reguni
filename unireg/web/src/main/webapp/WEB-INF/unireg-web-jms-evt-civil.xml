@@ -7,8 +7,12 @@
 
 	<!-- Traitements de masse -->
 
-	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtCivilEchMasseEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtCivilEchMasse}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtCivilEchMasse.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchMasse.enabled}" />
+		<property name="description" value="Consommation en masse des evenements civils provenant de RcPers" />
 	</bean>
 
 	<bean id="evtCivilEchMasseEsbHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
@@ -23,47 +27,18 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-	<bean id="evtCivilEchMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtCivilEchMasse}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.evtCivilEchMasse.consumers}"/>
-				<property name="maxMessagesPerSessions" value="100"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evtCivilEchMasseListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchMasse.enabled}" />
-		<property name="description" value="Consommation en masse des evenements civils provenant de RcPers" />
-	</bean>
-
 	<!-- Traitements "manuels" -->
 
-	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtCivilEchIndividuelEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtCivilEchIndividuel}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtCivilEchIndividuel.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchIndividuel.enabled}" />
+		<property name="description" value="Consommation  prioritaire et au goute à goute des evenements civils provenant de RcPers" />
 	</bean>
 
 	<bean id="evtCivilEchIndividuelEsbHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchEsbHandler" parent="evtCivilEchEsbHandler">
 		<property name="processingMode" value="MANUAL"/>
-	</bean>
-
-	<bean id="evtCivilEchIndividuelEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtCivilEchIndividuel}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.evtCivilEchIndividuel.consumers}"/>
-				<property name="maxMessagesPerSessions" value="10"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evtCivilEchIndividuelListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchIndividuel.enabled}" />
-		<property name="description" value="Consommation  prioritaire et au goute à goute des evenements civils provenant de RcPers" />
 	</bean>
 
 	<!-- Parties communes -->

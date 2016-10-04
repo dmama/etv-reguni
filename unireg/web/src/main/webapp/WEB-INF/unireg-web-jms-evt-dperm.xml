@@ -5,24 +5,12 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="evenementIntegrationMetierEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtIntegrationMetierDPerm}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementIntegrationMetierListener" />
-		<property name="transactionManager" ref="transactionManager"/>
+	<bean id="evenementIntegrationMetierListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="evenementIntegrationMetierDispatchingEsbHandler" />
+		<property name="destinationName" value="${extprop.jms.queue.evtIntegrationMetierDPerm}"/>
+		<property name="concurrentConsumers" value="1"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtIntegrationMetierDPerm.enabled}" />
 		<property name="description" value="Réception des évènements d'intégration métier en provenance du DPerm (dégrèvements ICI...)"/>
-	</bean>
-
-	<bean id="evenementIntegrationMetierListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
-		<property name="handler" ref="evenementIntegrationMetierDispatchingEsbHandler" />
 	</bean>
 
 	<bean id="evenementIntegrationMetierDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.EvenementNamespaceDispatchingEsbHandler">

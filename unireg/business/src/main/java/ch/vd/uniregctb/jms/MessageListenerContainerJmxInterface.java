@@ -5,7 +5,7 @@ package ch.vd.uniregctb.jms;
  * sur une instance de {@link ch.vd.technical.esb.jms.EsbMessageEndpointManager}
  */
 @SuppressWarnings({"UnusedDeclaration"})
-public interface MessageEndpointManagerJmxInterface {
+public interface MessageListenerContainerJmxInterface {
 
 	/**
 	 * @return le nom de la queue connectée aux listeners de ce container
@@ -37,4 +37,18 @@ public interface MessageEndpointManagerJmxInterface {
 	 */
 	int getMessagesWithBusinessError();
 
+	/**
+	 * Ouverture de vanne
+	 */
+	void start();
+
+	/**
+	 * Fermeture de vanne
+	 */
+	void stop();
+
+	/**
+	 * @return <code>true</code> si la vanne est ouverte
+	 */
+	boolean isRunning();
 }

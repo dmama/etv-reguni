@@ -3,27 +3,16 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean name="evenementEditiqueListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean name="evenementEditiqueListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementEditiqueEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.editique.input}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="true"/>
+		<property name="description" value="Retour des demandes d'impression faites à l'éditique"/>
 	</bean>
 
 	<bean name="evenementEditiqueEsbHandler" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler">
 		<property name="storageService" ref="retourImpressionStorageService"/>
-	</bean>
-
-	<bean id="evenementEditiqueEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.editique.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementEditiqueListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="description" value="Retour des demandes d'impression faites à l'éditique"/>
 	</bean>
 
 </beans>

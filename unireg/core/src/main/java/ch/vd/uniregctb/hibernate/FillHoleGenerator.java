@@ -1,37 +1,26 @@
 package ch.vd.uniregctb.hibernate;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.cfg.NamingStrategy;
-import org.hibernate.cfg.ObjectNameNormalizer;
-import org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator;
-import org.hibernate.cfg.naming.NamingStrategyDelegator;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.jdbc.LobCreationContext;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.PersistentIdentifierGenerator;
-import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.type.Type;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 
 public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentifierGenerator, Configurable {
-
-	//private static final Logger LOGGER = LoggerFactory.getLogger(FillHoleGenerator.class);
 
 	private final String tableName;
 	private final String seqName;
@@ -40,7 +29,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 
 	private String[] sqlDrop;
 	private String[] sqlCreate;
-	private SequenceStyleGenerator generator;
+	private LongSequence generator;
 
 
 	public FillHoleGenerator(String name, String seqName, int minId, int maxId) {
@@ -52,64 +41,59 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 
 	@Override
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
-		final ObjectNameNormalizer norm = new ObjectNameNormalizer() {
-			@Override
-			protected boolean isUseQuotedIdentifiersGlobally() {
-				return false;
+		generator = new LongSequence(seqName, dialect);
+		sqlDrop = dialect.getDropSequenceStrings(seqName);
+		sqlCreate = dialect.getCreateSequenceStrings(seqName, minId, 1);
+	}
+
+	private static final class LongSequence {
+
+		private final String sql;
+
+		public LongSequence(String seqName, Dialect dialect) {
+			this.sql = dialect.getSequenceNextValString(seqName);
+		}
+
+		public long next(Connection connection) throws SQLException {
+			try (PreparedStatement st = connection.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+				if (rs.next()) {
+					return rs.getLong(1);
+				}
+				throw new RuntimeException("La requête " + sql + " n'a renvoyé aucun résultat !");
 			}
-
-			@Override
-			protected NamingStrategyDelegator getNamingStrategyDelegator() {
-				return new ImprovedNamingStrategyDelegator();
-			}
-
-			@Override
-			protected NamingStrategy getNamingStrategy() {
-				return null;
-			}
-		};
-		final Properties properties = new Properties();
-		properties.putAll(params);
-		properties.put(SequenceStyleGenerator.SEQUENCE_PARAM, seqName);
-		properties.put(SequenceStyleGenerator.INITIAL_PARAM, String.valueOf(minId));
-		properties.put(SequenceStyleGenerator.IDENTIFIER_NORMALIZER, norm);
-
-		generator = new SequenceStyleGenerator();
-		generator.configure(type, properties, dialect);
-
-		sqlDrop = generator.sqlDropStrings(dialect);
-		sqlCreate = generator.sqlCreateStrings(dialect);
+		}
 	}
 
 	@Override
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
-
-		//return randomNumber(session, object);
-		return holeNumber(session, object);
+		return session.execute(new LobCreationContext.Callback<Serializable>() {
+			@Override
+			public Serializable executeOnConnection(Connection connection) throws SQLException {
+				return holeNumber(connection);
+			}
+		});
 	}
 
-//	private Long randomNumber(SessionImplementor session, Object object) {
-//		Integer i = 10000000 + new Random().nextInt(80000000);
-//		return i.longValue();
-//	}
-
-	private Long holeNumber(SessionImplementor session, Object object) {
-
-		Long firstId = (Long) generator.generate(session, object);
+	private long getFirstId(Connection session) throws SQLException {
+		long firstId = generator.next(session);
 		if (firstId == minId) {
-			firstId = (Long) generator.generate(session, object);
+			firstId = generator.next(session);
 		}
+		return firstId;
+	}
 
-		Long foundId = null;
-		try (Statement stat = session.connection().createStatement()) {
+	private Long holeNumber(Connection connection) throws SQLException {
 
-			// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
-			final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
-					+ " UNION select NO_CONTRIBUABLE from MIGREG_ERROR WHERE NO_CONTRIBUABLE >= " + firstId + " ORDER BY numero";
+		final long firstId = getFirstId(connection);
 
+		// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
+		final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
+				+ " UNION select NO_CONTRIBUABLE from MIGREG_ERROR WHERE NO_CONTRIBUABLE >= " + firstId + " ORDER BY numero";
+
+		long foundId = firstId;
+		try (Statement stat = connection.createStatement()) {
 			ResultSet rs = stat.executeQuery(query);
 			try {
-				foundId = firstId;
 				while (rs.next()) {
 					final int noCurrent = rs.getInt(1);
 					final boolean inUse = (noCurrent == foundId);
@@ -120,13 +104,13 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 					}
 
 					// Prends le prochain ID dans la sequence
-					foundId = (Long) generator.generate(session, object);
+					foundId = generator.next(connection);
 
 					// Si le numero est trop grand, on wrap
 					if (foundId > maxId) {
 						rs.close();
-						dropAndCreateSequence(session);
-						foundId = (Long) generator.generate(session, object);
+						dropAndCreateSequence(connection);
+						foundId = generator.next(connection);
 						rs = stat.executeQuery("SELECT numero FROM " + tableName + " WHERE numero >= " + foundId + " ORDER BY numero");
 					}
 				}
@@ -139,16 +123,12 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 			throw new RuntimeException(e);
 		}
 
-		Assert.isTrue(foundId != null);
-		final int l = foundId.intValue();
-		if (l < minId || l > maxId) {
-			final String message = String.format(
-					"L'Id généré [%d] pour l'object de type %s n'est pas dans la plage de validité spécifiée [%d -> %d]", l, object
-							.getClass().getSimpleName(), minId, maxId);
+		if (foundId < minId || foundId > maxId) {
+			final String message = String.format("L'Id généré [%d] n'est pas dans la plage de validité spécifiée [%d -> %d]", foundId, minId, maxId);
 			Assert.fail(message);
 		}
 
-		return (long) l;
+		return foundId;
 	}
 
 	@Override
@@ -156,84 +136,30 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		return seqName;
 	}
 
-	private void dropAndCreateSequence(SessionImplementor session) {
+	private void dropAndCreateSequence(Connection connection) throws SQLException {
 		for (String sql : sqlDrop) {
-			executeSql(session, sql);
+			executeSql(connection, sql);
 		}
 		for (String sql : sqlCreate) {
-			executeSql(session, sql);
+			executeSql(connection, sql);
 		}
 	}
 
-	private void executeSql(SessionImplementor session, String sql) {
-		try {
-			try (PreparedStatement st = session.connection().prepareStatement(sql)) {
-				// Rien a faire en cas d'erreur, true => return ResultSet, false => update ou delete
-				st.execute();
-			}
-		}
-		catch (SQLException sqle) {
-			throw session.getFactory().getSQLExceptionConverter().convert(sqle, "could not get next sequence value", sql);
+	private void executeSql(Connection connection, String sql) throws SQLException {
+		try (PreparedStatement st = connection.prepareStatement(sql)) {
+			// Rien a faire en cas d'erreur, true => return ResultSet, false => update ou delete
+			st.execute();
 		}
 	}
 
 	@Override
 	public String[] sqlCreateStrings(Dialect dialect) throws HibernateException {
-		return generator.sqlCreateStrings(dialect);
+		return dialect.getCreateSequenceStrings(seqName, minId, 1);
 	}
 
 	@Override
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
-		return generator.sqlDropStrings(dialect);
+		return dialect.getDropSequenceStrings(seqName);
 	}
-	
-	/**
-	 * Un petit programme qui retrouve le premier numero de tiers disponible pour un ctb en prod.
-	 * 
-	 * @param args
-	 */
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) {
-		
-		DriverManagerDataSource ds = new DriverManagerDataSource();
-		ds.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-		ds.setUrl("jdbc:oracle:thin:@sso0211p.etat-de-vaud.ch:1525:FURP");
-		ds.setUsername("dsi_read");
-		ds.setPassword("dsi_read_1014");
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-		jdbcTemplate.setFetchSize(1000);
-		jdbcTemplate.setMaxRows(1000);
-		
-		int indexDebut = ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID + 1;
-		int noTiers = indexDebut;
-		
-		while ( noTiers < ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID ) {
-		
-			List res = jdbcTemplate.queryForList(
-					" select numero n" +
-					" from unireg.TIERS " +
-					" where numero >= " + indexDebut +
-					" union " +
-					" select no_contribuable n " +
-					" from unireg.MIGREG_ERROR " +
-					" where no_contribuable >= " + indexDebut +
-					" order by n");
-			
-			
-			for (Object row : res) {
-				if (((BigDecimal)((Map)row).get("n")).intValue() > noTiers) {
-					System.out.println("Prochain numero disponible : " + noTiers);
-					System.exit(0);
-				}
-				noTiers++;
-			}
-			indexDebut = noTiers;
-			
-		}
-		System.out.println("Aucun numero disponible...");
-		System.exit(1);
-	}
-	
-	
 
 }

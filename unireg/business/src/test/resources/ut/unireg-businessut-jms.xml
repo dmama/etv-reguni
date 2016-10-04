@@ -8,28 +8,15 @@
 		<property name="start" value="true" />
 	</bean>
 
-	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">
-		<property name="connectionFactory">
+	<bean id="jmsConnectionFactory" class="com.atomikos.jms.AtomikosConnectionFactoryBean">
+		<property name="uniqueResourceName" value="jms-web"/>
+		<property name="maxPoolSize" value="20"/>
+		<property name="xaConnectionFactory">
 			<bean class="org.apache.activemq.ActiveMQXAConnectionFactory">
 				<property name="brokerURL" value="vm://localhost" />
 				<property name="userName" value="smx" />
 				<property name="password" value="smx" />
 			</bean>
-		</property>
-		<property name="maxConnections" value="20"/>
-		<property name="transactionManager" ref="transactionManager" />
-	</bean>
-
-	<bean id="jmsResourceAdapter" class="org.springframework.jca.support.ResourceAdapterFactoryBean">
-		<property name="resourceAdapter">
-			<bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-				<property name="serverUrl" value="vm://localhost" />
-				<property name="userName" value="smx" />
-				<property name="password" value="smx" />
-			</bean>
-		</property>
-		<property name="workManager">
-			<bean class="org.springframework.jca.work.SimpleTaskWorkManager"/>
 		</property>
 	</bean>
 

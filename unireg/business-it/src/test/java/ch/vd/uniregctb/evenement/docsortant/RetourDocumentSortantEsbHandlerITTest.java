@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -24,7 +23,6 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -63,17 +61,12 @@ public class RetourDocumentSortantEsbHandlerITTest extends EvenementTest {
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.afterPropertiesSet();
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-
 		buildEsbMessageValidator(new Resource[]{
 				new ClassPathResource("/event/dperm/typeSimpleDPerm-1.xsd"),
 				new ClassPathResource("/event/docsortant/quittanceRepElec-3.xsd")
 		});
 
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, handler);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

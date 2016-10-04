@@ -651,7 +651,7 @@
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<cxf.version>2.6.0.fuse-71-047</cxf.version>
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
-		<jencks.version>2.2</jencks.version>
+		<atomikos.version>4.0.4</atomikos.version>
 		<jackson.version>1.9.13</jackson.version>
 		<wsparty3.version>3.8</wsparty3.version>
 		<wsparty4.version>4.1</wsparty4.version>
@@ -674,7 +674,7 @@
 		<oracle.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
 		<oracle.hibernate.query.substitutions>true 1, false 0</oracle.hibernate.query.substitutions>
 
-		<postgresql.version>9.3-1102-jdbc4</postgresql.version>
+		<postgresql.version>42.1.1</postgresql.version>
 		<postgresql.jdbc.driverClassName>org.postgresql.Driver</postgresql.jdbc.driverClassName>
 		<postgresql.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.PostgreSQL83Dialect</postgresql.hibernate.dialect>
 		<postgresql.hibernate.query.substitutions/>

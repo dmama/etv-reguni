@@ -40,7 +40,7 @@
 		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsEndpointManager"/>
+				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsListener"/>
 			</map>
 		</property>
 	</bean>
@@ -49,7 +49,7 @@
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
+				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
 			</list>
 		</property>
 	</bean>

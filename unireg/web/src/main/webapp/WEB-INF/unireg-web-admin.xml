@@ -36,26 +36,26 @@
 
 		<property name="jmxManager">
 			<util:map>
-				<entry key="evenementsCivilsMasse" value-ref="evtCivilEchMasseEndpointManager"/>
-				<entry key="evenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
-				<entry key="retourImpression" value-ref="evenementEditiqueEndpointManager"/>
-				<entry key="evenementsExternes" value-ref="evenementExterneEndpointManager"/>
-				<entry key="evenementsCedi" value-ref="evenementRetourDiEndpointManager"/>
-				<entry key="identification" value-ref="jmsIdentCtbEndpointManager"/>
-				<entry key="identificationOnline" value-ref="jmsIdentCtbEndpointManagerOnline"/>
-				<entry key="evenementsIAM" value-ref="evenementIAMEndpointManager"/>
-				<entry key="partyRequests" value-ref="partyRequestEndpointManager"/>
-				<entry key="rapportTravailRequests" value-ref="rapportTravailRequestEndpointManager"/>
-				<entry key="evenementsDeclaration" value-ref="evenementDeclarationEndpointManager"/>
-				<entry key="evenementsEfacture" value-ref="evenementEfactureEndpointManager"/>
-				<entry key="evenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
-				<entry key="evenementsImportRf" value-ref="evtRFImportEventEndpointManager"/>
-				<entry key="reqDes" value-ref="reqdesEventEndpointManager"/>
-				<entry key="evenementOrganisation" value-ref="evtOrganisationEndpointManager"/>
-				<entry key="rapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>
-				<entry key="evenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFEndpointManager"/>
-				<entry key="retourQuittancementAnnonceDocumentSortant" value-ref="retourDocumentSortantEndpointManager"/>
-				<entry key="evenementsIntegrationMetier" value-ref="evenementIntegrationMetierEndpointManager"/>
+				<entry key="evenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>
+				<entry key="evenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelListener"/>
+				<entry key="retourImpression" value-ref="evenementEditiqueListener"/>
+				<entry key="evenementsExternes" value-ref="evenementExterneListener"/>
+				<entry key="evenementsRetourDI" value-ref="evenementRetourDiListener"/>
+				<entry key="identification" value-ref="identCtbMessageListener"/>
+				<entry key="identificationOnline" value-ref="identCtbMessageListenerOnline"/>
+				<entry key="evenementsIAM" value-ref="evenementIamListener"/>
+				<entry key="partyRequests" value-ref="partyRequestListener"/>
+				<entry key="rapportTravailRequests" value-ref="rapportTravailRequestListener"/>
+				<entry key="evenementsDeclaration" value-ref="evenementDeclarationListener"/>
+				<entry key="evenementsEfacture" value-ref="evenementEfactureListener"/>
+				<entry key="evenementsEfactureResponse" value-ref="eFactureResponseListener"/>
+				<entry key="evenementsImportRf" value-ref="evtRFImportEventListener"/>
+				<entry key="reqDes" value-ref="reqdesEventListener"/>
+				<entry key="evenementOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="rapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
+				<entry key="evenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
+				<entry key="retourQuittancementAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>
+				<entry key="evenementsIntegrationMetier" value-ref="evenementIntegrationMetierListener"/>
 			</util:map>
 		</property>
 	</bean>

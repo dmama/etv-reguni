@@ -5,8 +5,12 @@
 
 	<!-- Evénements du Registre Foncier -->
 
-	<bean id="evtRFImportEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evtRFImportEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtRFImportEventEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtRfImport}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRfImport.enabled}"/>
+		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>
 	</bean>
 
 	<bean id="evtRFImportEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportEsbHandler">
@@ -15,26 +19,14 @@
 		<property name="serviceImportRF" ref="serviceImportRF"/>
 	</bean>
 
-	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtRfImport}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evtRFImportEventListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtRfImport.enabled}"/>
-		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>
-	</bean>
-
 	<!-- Evénements d'identification manuelle pour les rapprochements propriétaires -->
 
-	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtIdentificationRapprochementRFEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtRapprochementTiersRF}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRapprochementTiersRF.enabled}"/>
+		<property name="description" value="Réception des événements d'identification manuelle des rapprochements 'propriétaire'"/>
 	</bean>
 
 	<bean id="evtIdentificationRapprochementRFEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementIdentificationRapprochementProprietaireEsbHandler">
@@ -46,21 +38,5 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
 	</bean>
-
-	<bean id="evtIdentificationRapprochementRFEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtRapprochementTiersRF}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evtIdentificationRapprochementRFListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtRapprochementTiersRF.enabled}"/>
-		<property name="description" value="Réception des événements d'identification manuelle des rapprochements 'propriétaire'"/>
-	</bean>
-
+	
 </beans>

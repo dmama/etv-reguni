@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.datasource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import javax.sql.XADataSource;
+
+import oracle.jdbc.xa.client.OracleXADataSource;
+import org.postgresql.xa.PGXADataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -8,7 +11,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Bean spécialisé qui instancie dynamiquement à une datasource Oracle ou PostgreSQL en fonction du profile Jdbc.
  */
-public class DynamicDataSource implements FactoryBean, InitializingBean, DisposableBean {
+public class DynamicDataSource implements FactoryBean<XADataSource>, InitializingBean, DisposableBean {
 
 	private String jdbcProfile;
 
@@ -22,16 +25,16 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 	private String postgresqlUsername;
 	private String postgresqlPassword;
 
-	private BasicDataSource instance;
+	private XADataSource instance;
 
 	@Override
-	public Object getObject() throws Exception {
+	public XADataSource getObject() throws Exception {
 		return instance;
 	}
 
 	@Override
-	public Class getObjectType() {
-		return BasicDataSource.class;
+	public Class<?> getObjectType() {
+		return XADataSource.class;
 	}
 
 	@Override
@@ -43,24 +46,18 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 	public void afterPropertiesSet() throws Exception {
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {
-			final UniregDataSource i = new UniregDataSource();
-			i.setDriverClassName(oracleDriverClassName);
-			i.setUrl(oracleUrl);
-			i.setUsername(oracleUsername);
-			i.setPassword(oraclePassword);
-			i.setInitialSize(1);
-			i.setMaxTotal(1);
-			instance = i;
+			final OracleXADataSource ds = new OracleXADataSource();
+			ds.setURL(oracleUrl);
+			ds.setUser(oracleUsername);
+			ds.setPassword(oraclePassword);
+			instance = ds;
 		}
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
-			final BasicDataSource i = new BasicDataSource();
-			i.setDriverClassName(postgresqlDriverClassName);
-			i.setUrl(postgresqlUrl);
-			i.setUsername(postgresqlUsername);
-			i.setPassword(postgresqlPassword);
-			i.setInitialSize(1);
-			i.setMaxTotal(1);
-			instance = i;
+			final PGXADataSource ds = new PGXADataSource();
+			ds.setUrl(postgresqlUrl);
+			ds.setUser(postgresqlUsername);
+			ds.setPassword(postgresqlPassword);
+			instance = ds;
 		}
 		else {
 			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
@@ -73,9 +70,6 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 
 	@Override
 	public void destroy() throws Exception {
-		if (instance != null) {
-			instance.close();
-		}
 		if (instance instanceof DisposableBean) {
 			((DisposableBean) instance).destroy();
 		}

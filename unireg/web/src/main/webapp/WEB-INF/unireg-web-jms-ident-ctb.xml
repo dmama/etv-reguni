@@ -46,47 +46,22 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<!-- Demandes d'identification de contribuable, cannal "normal" -->
+	<!-- Demandes d'identification de contribuable, canal "normal" -->
 
-	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="identCtbMessageDispatcher"/>
-	</bean>
-
-	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter" />
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.ident.ctb.input}" />
-				<property name="destinationType" value="javax.jms.Queue" />
-				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.consumers}" />
-				<property name="maxMessagesPerSessions" value="10" />
-			</bean>
-		</property>
-		<property name="messageListener" ref="identCtbMessageListener" />
-		<property name="transactionManager" ref="transactionManager" />
+		<property name="destinationName" value="${extprop.jms.queue.ident.ctb.input}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.ident.ctb.consumers}"/>
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
 		<property name="description" value="Reception en masse des demandes d'identification de contribuable"/>
 	</bean>
 
-	<!-- Demandes d'identification de contribuable, cannal prioritaire (= online) -->
-	<!-- Le listener est également dupliqué afin de séparer les statistiques d'événements reçus au niveau JMX -->
+	<!-- Demandes d'identification de contribuable, canal prioritaire (= online) -->
 
-	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="identCtbMessageDispatcher"/>
-	</bean>
-
-	<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter" />
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.ident.ctb.online.input}" />
-				<property name="destinationType" value="javax.jms.Queue" />
-				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.online.consumers}" />
-				<property name="maxMessagesPerSessions" value="10" />
-			</bean>
-		</property>
-		<property name="messageListener" ref="identCtbMessageListenerOnline" />
-		<property name="transactionManager" ref="transactionManager" />
+		<property name="destinationName" value="${extprop.jms.queue.ident.ctb.online.input}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.ident.ctb.online.consumers}"/>
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.online.enabled}" />
 		<property name="description" value="Reception avec une priorité de traitement élevée des demandes d'identification de contribuable"/>
 	</bean>

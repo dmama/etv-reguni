@@ -67,6 +67,15 @@
 		<level value="ERROR" />
 	</logger>
 
+	<!-- Suppress warnings from atomikos' JdbcConnecionProxyHelper -->
+	<logger name="com.atomikos.jdbc.JdbcConnectionProxyHelper">
+		<level value="ERROR" />
+	</logger>
+	<!-- Suppress warnings from atomikos' InterruptedExceptionHelper -->
+	<logger name="com.atomikos.thread.InterruptedExceptionHelper">
+		<level value="ERROR" />
+	</logger>
+
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />

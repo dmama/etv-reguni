@@ -24,11 +24,6 @@ public class CommonMapHelper {
 		this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
 	}
 
-	// pour le testing
-	public void setMessageSourceAccessor(MessageSourceAccessor messageSource) {
-		this.messageSourceAccessor = messageSource;
-	}
-
 	protected MessageSourceAccessor getMessageSourceAccessor() {
 		return messageSourceAccessor;
 	}

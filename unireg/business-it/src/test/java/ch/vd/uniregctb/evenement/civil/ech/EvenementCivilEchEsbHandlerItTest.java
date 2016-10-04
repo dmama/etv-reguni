@@ -7,21 +7,15 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jms.connection.JmsTransactionManager;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -45,24 +39,10 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 	                                                                                        TypeEvenementCivilEch.CORR_DONNEES_UPI,
 	                                                                                        TypeEvenementCivilEch.ANNULATION_DONNEES_UPI);
 
-	@Before
-	public void setup() throws Exception {
+	public void setUp() throws Exception {
+		super.setUp();
 
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtCivilEch");
-
-		final RaftEsbStore esbStore = new RaftEsbStore();
-		esbStore.setEndpoint("TestRaftStore");
-
-		esbTemplate = new EsbJmsTemplate();
-		esbTemplate.setConnectionFactory(jmsConnectionFactory);
-		esbTemplate.setEsbStore(esbStore);
-		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.setApplication("unireg");
-		esbTemplate.setDomain("fiscalite");
-		esbTemplate.setSessionTransacted(true);
-		if (esbTemplate instanceof InitializingBean) {
-			((InitializingBean) esbTemplate).afterPropertiesSet();
-		}
 
 		clearQueue(INPUT_QUEUE);
 
@@ -113,12 +93,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 		esbHandler.setReceptionHandler(receptionHandler);
 		esbHandler.afterPropertiesSet();
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-		listener.setHandler(esbHandler);
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, esbHandler);
 
 		sender = new EvenementCivilEchSenderImpl();
 		sender.setEsbTemplate(esbTemplate);

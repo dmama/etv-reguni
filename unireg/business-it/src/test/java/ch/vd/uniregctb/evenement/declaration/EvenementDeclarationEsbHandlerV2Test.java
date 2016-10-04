@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -25,7 +24,6 @@ import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -67,17 +65,12 @@ public class EvenementDeclarationEsbHandlerV2Test extends EvenementTest {
 		handler = new EvenementDeclarationEsbHandlerV2();
 		handler.setHibernateTemplate(hibernateTemplate);
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-
 		buildEsbMessageValidator(new Resource[]{
 				new ClassPathResource("/event/declaration/declaration-event-2.xsd"),
 				new ClassPathResource("/event/declaration/declaration-ack-2.xsd")
 		});
 
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, handler);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

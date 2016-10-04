@@ -7,22 +7,17 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -35,21 +30,10 @@ public class EvenementDeclarationEsbHandlerV1Test extends EvenementTest {
 	private String INPUT_QUEUE;
 	private EvenementDeclarationEsbHandlerV1 handler;
 
-	@Before
 	public void setUp() throws Exception {
+		super.setUp();
 
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtDeclaration");
-
-		final RaftEsbStore esbStore = new RaftEsbStore();
-		esbStore.setEndpoint("TestRaftStore");
-
-		esbTemplate = new EsbJmsTemplate();
-		esbTemplate.setConnectionFactory(jmsConnectionFactory);
-		esbTemplate.setEsbStore(esbStore);
-		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.setApplication("unireg");
-		esbTemplate.setDomain("fiscalite");
-		esbTemplate.setSessionTransacted(true);
 
 		clearQueue(INPUT_QUEUE);
 
@@ -64,18 +48,13 @@ public class EvenementDeclarationEsbHandlerV1Test extends EvenementTest {
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.afterPropertiesSet();
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
+		initListenerContainer(INPUT_QUEUE, handler);
 
 		buildEsbMessageValidator(new Resource[]{
 				new ClassPathResource("unireg-common-1.xsd"),
 				new ClassPathResource("/event/di/evenementDeclarationImpot-input-1.xsd"),
 				new ClassPathResource("/event/di/evenementDeclarationImpot-common-1.xsd")
 		});
-
-		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

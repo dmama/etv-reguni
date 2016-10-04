@@ -10,7 +10,6 @@ import org.hibernate.internal.SessionImpl;
 import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
@@ -42,8 +41,8 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 
 	private void resetSequence() throws Exception {
 
-		String[] drops = generator.sqlDropStrings(dialect);
-		String[] creates = generator.sqlCreateStrings(dialect);
+		final String[] drops = generator.sqlDropStrings(dialect);
+		final String[] creates = generator.sqlCreateStrings(dialect);
 
 		try (Connection con = rawDataSource.getConnection()) {
 			for (String d : drops) {
@@ -61,8 +60,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGenerateEmptyDb() {
+	public void testGenerateEmptyDb() throws Exception {
 		assertEquals(firstId + 1, nextId().longValue());
 		assertEquals(firstId + 2, nextId().longValue());
 		assertEquals(firstId + 3, nextId().longValue());
@@ -71,7 +69,6 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGeneratePartialFilledDb() throws Exception {
 		addIds(firstId + 1, firstId + 2, firstId + 5);
 
@@ -83,7 +80,6 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecErreursMigration1() throws Exception {
 		addIds(firstId + 1, firstId + 2, firstId + 5, firstId + 20);
 		addErrorIds(firstId + 7, firstId + 9);
@@ -99,7 +95,6 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * [UNIREG-726] vérifie que les ids des ctbs non-migrés ne puisse pas être utilisés pour de nouveaux ctbs
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecErreursMigration2() throws Exception {
 		addIds(firstId + 4, firstId + 5, firstId + 6, firstId + 7, firstId + 8, firstId + 10, firstId + 12);
 		addErrorIds(firstId + 1, firstId + 2, firstId + 3, firstId + 9);
@@ -112,7 +107,6 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecUniquementErreursMigration() throws Exception {
 		addErrorIds(firstId + 4, firstId + 5, firstId + 7);
 
@@ -127,7 +121,6 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	 * Cas particulier où l'id d'un ctb non-migré est <b>plus grand</b> que le plus grand id des ctb migrés.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGenerateAvecErreursMigrationCasParticulier() throws Exception {
 		addIds(firstId + 1, firstId + 2, firstId + 5);
 		addErrorIds(firstId + 7, firstId + 9);
@@ -184,13 +177,13 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		});
 	}
 
-	private Long nextId() {
-		final SessionImpl session = (SessionImpl) sessionFactory.openSession();
-		try {
-			return (Long) generator.generate(session, new PersonnePhysique());
-		}
-		finally {
-			session.close();
-		}
+	private Long nextId() throws Exception {
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final SessionImpl session = (SessionImpl) sessionFactory.getCurrentSession();
+				return (Long) generator.generate(session, new PersonnePhysique());
+			}
+		});
 	}
 }

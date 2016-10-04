@@ -30,22 +30,10 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="identCtbMessageListenerAutomatique" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="identCtbMessageListenerAutomatique" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="identificationContribuableRequestHandler" />
-	</bean>
-
-	<bean id="jmsIdentCtbEndpointManagerAutomatique" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${testprop.jms.queue.ident.ctb.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="identCtbMessageListenerAutomatique" />
-		<property name="transactionManager" ref="transactionManager" />
+		<property name="destinationName" value="${testprop.jms.queue.ident.ctb.input}"/>
+		<property name="concurrentConsumers" value="1"/>
 		<property name="autoStartup" value="true" />
 	</bean>
 

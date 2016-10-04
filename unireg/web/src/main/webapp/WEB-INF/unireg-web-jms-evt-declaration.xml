@@ -14,8 +14,12 @@
 		</property>
 	</bean>
 
-	<bean id="evenementDeclarationListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evenementDeclarationListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementDeclarationDispatchingEsbHandler" />
+		<property name="destinationName" value="${extprop.jms.queue.evtDeclaration.input}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.input.enabled}" />
+		<property name="description" value="Réception des évènements de quittance des DI electroniques"/>
 	</bean>
 
 	<bean id="evenementDeclarationEsbHandlerV1" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationEsbHandlerV1">
@@ -38,22 +42,6 @@
 		<property name="qsncService" ref="qsncService"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="validationService" ref="validationService"/>
-	</bean>
-
-	<bean id="evenementDeclarationEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtDeclaration.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementDeclarationListener" />
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.input.enabled}" />
-		<property name="description" value="Réception des évènements de quittance des DI electroniques"/>
 	</bean>
 
 	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSenderImpl">

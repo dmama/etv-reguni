@@ -6,9 +6,12 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="partyRequestDispatchingEsbHandler"/>
 		<property name="esbErrorHandler" ref="partyRequestErrorCollector"/>
+		<property name="destinationName" value="${testprop.jms.queue.party.service}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="true" />
 	</bean>
 
 	<bean id="partyRequestErrorCollector" class="ch.vd.uniregctb.jms.EsbBusinessErrorCollector"/>
@@ -73,23 +76,6 @@
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
-	</bean>
-
-	<!-- le point d'entrée principal du partyService asynchrone -->
-
-	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${testprop.jms.queue.party.service}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="partyRequestListener" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="autoStartup" value="true" />
 	</bean>
 
 	<!-- les handlers spécifiques -->

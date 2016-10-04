@@ -2,29 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementEfactureHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtEfacture.input}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.input.enabled}" />
+		<property name="description" value="Réception des événements d’inscription/ de désinscription de contribuable à la e-Facture"/>
 	</bean>
 
 	<bean id="evenementEfactureHandler" class="ch.vd.uniregctb.efacture.EFactureMessageHandler">
 		<property name="handler" ref="efactureEventHandler"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-	</bean>
-
-	<bean id="evenementEfactureEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtEfacture.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementEfactureListener" />
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.input.enabled}" />
-		<property name="description" value="Réception des événements d’inscription/ de désinscription de contribuable à la e-Facture"/>
 	</bean>
 
 	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.EFactureMessageSenderImpl">
@@ -35,24 +23,12 @@
 		<property name="serviceReplyTo" value="${extprop.jms.queue.evtEfacture.input.reponse}" />
 	</bean>
 
-	<bean id="evenementEfactureResponseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtEfacture.input.reponse}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="eFactureResponseListener" />
-		<property name="transactionManager" ref="transactionManager"/>
+	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
+		<property name="handler" ref="eFactureResponseHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtEfacture.input.reponse}"/>
+		<property name="concurrentConsumers" value="1"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.output.enabled}" />
 		<property name="description" value="Réception d’événements de notification E-facture comme les réponses à une demande d'inscription"/>
-	</bean>
-
-	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
-		<property name="handler" ref="eFactureResponseHandler"/>
 	</bean>
 
 	<bean id="eFactureResponseHandler" class="ch.vd.uniregctb.efacture.EFactureResponseHandler">

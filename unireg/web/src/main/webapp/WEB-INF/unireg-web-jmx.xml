@@ -45,26 +45,26 @@
 		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsMasse" value-ref="evtCivilEchMasseEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRetourDI" value-ref="evenementRetourDiEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="jmsIdentCtbEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=IdentificationOnline" value-ref="jmsIdentCtbEndpointManagerOnline"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIAMEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportTravailRequests" value-ref="rapportTravailRequestEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfacture" value-ref="evenementEfactureEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourQuittanceAnnonceDocumentSortant" value-ref="retourDocumentSortantEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIntegrationMetier" value-ref="evenementIntegrationMetierEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRetourDI" value-ref="evenementRetourDiListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="identCtbMessageListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=IdentificationOnline" value-ref="identCtbMessageListenerOnline"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIamListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportTravailRequests" value-ref="rapportTravailRequestListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfacture" value-ref="evenementEfactureListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourQuittanceAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIntegrationMetier" value-ref="evenementIntegrationMetierListener"/>
 			</map>
 		</property>
 	</bean>
@@ -73,7 +73,7 @@
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
+				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
 			</list>
 		</property>
 	</bean>

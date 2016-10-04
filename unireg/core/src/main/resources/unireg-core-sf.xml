@@ -306,9 +306,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties" ref="hibernateProperties" />
 		<property name="entityInterceptor" ref="chainingInterceptor" />
-		<property name="jtaTransactionManager">
-			<bean factory-bean="jtaTransactionManager" factory-method="getTransactionManager"/>
-		</property>
+		<property name="jtaTransactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="chainingInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ChainingInterceptor" />
@@ -319,7 +317,7 @@
 
 	<bean id="modificationInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor">
 		<property name="chainingInterceptor" ref="chainingInterceptor" />
-		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionManager" ref="userTransactionManager" />
 	</bean>
 
 	<bean id="fakeInterceptorHibernate" class="ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor" />

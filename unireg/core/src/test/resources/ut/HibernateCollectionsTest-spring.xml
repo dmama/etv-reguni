@@ -17,8 +17,6 @@
 		</property>
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties" ref="hibernateProperties" />
-		<property name="jtaTransactionManager">
-			<bean factory-bean="jtaTransactionManager" factory-method="getTransactionManager"/>
-		</property>
+		<property name="jtaTransactionManager" ref="transactionManager"/>
 	</bean>
 </beans>

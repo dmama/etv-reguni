@@ -11,7 +11,7 @@
 		<property name="domain" value="fiscalite"/>
 	</bean>
 
-	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener">
+	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="esbErrorHandler" ref="esbErrorHandler"/>

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.editique;
 
-import javax.resource.spi.ResourceAdapter;
 import java.util.Collections;
 
 import org.junit.Ignore;
@@ -11,7 +10,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -22,13 +20,11 @@ import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
 import ch.vd.uniregctb.editique.impl.LegacyEditiqueHelperImpl;
-import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
+import ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -52,7 +48,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 
 	private EditiqueCompositionServiceImpl composition;
 	private EditiqueRetourImpressionStorageServiceImpl storageService;
-	private EsbMessageEndpointManager manager;
+	private GentilEsbMessageListenerContainer listener;
 	private static final int RECEIVE_TIMEOUT = 60;
 
 	@Override
@@ -84,13 +80,12 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final EvenementEditiqueEsbHandler handler = new EvenementEditiqueEsbHandler();
 		handler.setStorageService(storageService);
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
+		listener = new GentilEsbMessageListenerContainer();
 		listener.setEsbTemplate(esbTemplate);
 		listener.setTransactionManager(transactionManager);
 		listener.setHandler(handler);
-
-		final ResourceAdapter resourceAdapter = getBean(ResourceAdapter.class, "jmsResourceAdapter");
-		manager = EvenementHelper.initEndpointManager(resourceAdapter, INPUT_QUEUE, listener);
+		listener.setDestinationName(INPUT_QUEUE);
+		listener.afterPropertiesSet();
 
 		final EditiqueServiceImpl service = new EditiqueServiceImpl();
 		service.setSender(sender);
@@ -117,7 +112,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 	@Override
 	public void onTearDown() throws Exception {
 		AuthenticationHelper.popPrincipal();
-		manager.destroy();
+		listener.destroy();
 		storageService.destroy();
 		super.onTearDown();
 	}
@@ -130,7 +125,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final PersonnePhysique jose = addNonHabitant("José", "Papenddrum", date(1972, 3, 4), Sexe.MASCULIN);
 		addForPrincipal(jose, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Renens);
 
-		final EditiqueResultat resultat = composition.imprimeNouveauxDossiers(Collections.singletonList((Contribuable) jose));
+		final EditiqueResultat resultat = composition.imprimeNouveauxDossiers(Collections.singletonList(jose));
 		assertNotNull("Aucun document reçu en retour après " + RECEIVE_TIMEOUT + " secondes", resultat);
 		assertInstanceOf(EditiqueResultatDocument.class, resultat);
 		assertEquals("application/pdf", ((EditiqueResultatDocument) resultat).getContentType());

@@ -9,21 +9,16 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
 import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,31 +34,15 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 
 	private static final String DI_ID = "2004 01 062901707 20100817145346417";
 
-	@Before
 	public void setUp() throws Exception {
+		super.setUp();
 
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.editique.input");
-
-		final RaftEsbStore esbStore = new RaftEsbStore();
-		esbStore.setEndpoint("TestRaftStore");
-
-		esbTemplate = new EsbJmsTemplate();
-		esbTemplate.setConnectionFactory(jmsConnectionFactory);
-		esbTemplate.setEsbStore(esbStore);
-		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.setApplication("unireg");
-		esbTemplate.setDomain("fiscalite");
 
 		clearQueue(INPUT_QUEUE);
 
 		handler = new EvenementEditiqueEsbHandler();
-
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
-		listener.setEsbTemplate(esbTemplate);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, handler);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

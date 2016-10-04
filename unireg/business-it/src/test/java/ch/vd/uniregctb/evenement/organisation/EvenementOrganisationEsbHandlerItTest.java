@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jms.connection.JmsTransactionManager;
 
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0022.v3.TypeOfNotice;
@@ -26,7 +25,6 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -116,12 +114,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		esbHandler.setReceptionHandler(receptionHandler);
 		esbHandler.afterPropertiesSet();
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-		listener.setHandler(esbHandler);
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, esbHandler);
 
 		sender = new EvenementOrganisationSenderImpl();
 		sender.setEsbTemplate(esbTemplate);

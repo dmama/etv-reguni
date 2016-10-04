@@ -5,8 +5,12 @@
 
 	<!-- Evénements Organisation -->
 
-	<bean id="evtOrganisationListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evtOrganisationListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evtOrganisationEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtOrganisation}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtOrganisation.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
+		<property name="description" value="Réception des évènements en masse provenant du registre des entreprises"/>
 	</bean>
 
 	<bean id="evtOrganisationEsbHandler" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationEsbHandler">
@@ -17,22 +21,6 @@
 			</set>
 		</property>
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
-	</bean>
-
-	<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtOrganisation}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.evtOrganisation.consumers}"/>
-				<property name="maxMessagesPerSessions" value="100"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evtOrganisationListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
-		<property name="description" value="Réception des évènements en masse provenant du registre des entreprises"/>
 	</bean>
 
 	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueueImpl">

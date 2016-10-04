@@ -150,7 +150,7 @@
 	  <appender-ref ref="SERVICE_TRACING"/>
 	</category>
 	
-	<category name="ch.vd.uniregctb.transaction.TransactionManager" additivity="false">
+	<category name="ch.vd.uniregctb.transaction.TracingTransactionManager" additivity="false">
 		<priority value="WARN"/>
 		<appender-ref ref="SERVICE_TRACING"/>
 	</category>

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import javax.transaction.TransactionManager;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +39,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private ModificationInterceptor parent;
 	private SessionFactory sessionFactory;
 	private GlobalTiersIndexer indexer;
-	private TransactionManager transactionManager;
+	private PlatformTransactionManager transactionManager;
 	private Dialect dialect;
 
 	private final ThreadLocal<HashSet<Long>> modifiedEntities = ThreadLocal.withInitial(HashSet::new);
@@ -162,7 +161,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 			LOGGER.debug("Passage à dirty des tiers = " + Arrays.toString(ids.toArray()));
 		}
 
-		final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
 		template.execute(new TransactionCallback<Object>() {
@@ -220,7 +219,8 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		this.parent = parent;
 	}
 
-	public void setTransactionManager(TransactionManager transactionManager) {
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 

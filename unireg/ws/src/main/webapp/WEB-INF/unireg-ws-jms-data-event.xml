@@ -3,30 +3,18 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="dataEventJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="dataEventJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="dataEventJmsHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.db.event.input}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.db.event.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.db.event.enabled}" />
+		<property name="internal" value="true" /> <!-- [UNIREG-3242] utilisation d'une queue interne -->
 	</bean>
 
 	<bean id="dataEventJmsHandler" class="ch.vd.uniregctb.data.DataEventJmsHandler">
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="evenementFiscalSender" ref="evenementFiscalSender"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-	</bean>
-
-	<bean id="dataEventJmsEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.db.event.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.db.event.consumers}"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="dataEventJmsListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="internal" value="true" /> <!-- [UNIREG-3242] utilisation d'une queue interne -->
-		<property name="autoStartup" value="${extprop.jms.queue.db.event.enabled}" />
 	</bean>
 
 </beans>

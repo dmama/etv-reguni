@@ -2,26 +2,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="evtCivilEchMasseEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evtCivilEchIndividuelEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="entrepriseEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementEditiqueEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementExterneEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementRetourDiEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementIAMEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementDeclarationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementEfactureEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementEfactureResponseEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementRapportAnnonceIDEJmsEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evtIdentificationRapprochementRFEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="retourDocumentSortantEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
-	<bean id="evenementIntegrationMetierEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="entrepriseEventListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementEditiqueListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementExterneListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementIamListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementDeclarationListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evtOrganisationListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evtRFImportEventListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="retourDocumentSortantListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
+	<bean id="evenementIntegrationMetierListener" class="ch.vd.uniregctb.jms.MockMessageListenerContainer"/>
 
 </beans>

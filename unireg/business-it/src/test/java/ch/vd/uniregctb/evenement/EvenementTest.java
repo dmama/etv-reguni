@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
 import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -10,15 +9,21 @@ import java.util.regex.Pattern;
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
+import org.junit.Before;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.springframework.jms.connection.JmsTransactionManager;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
+import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.jms.EsbBusinessErrorHandler;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +42,7 @@ public abstract class EvenementTest {
 	protected UniregProperties uniregProperties;
 	protected ConnectionFactory jmsConnectionFactory;
 	protected ActiveMQResourceAdapter resourceAdapter;
-	protected EsbMessageEndpointManager manager;
+	protected GentilEsbMessageListenerContainer listener;
 
 	protected EvenementTest() {
 		EvenementHelper.initLog4j();
@@ -46,21 +51,47 @@ public abstract class EvenementTest {
 		resourceAdapter = EvenementHelper.initResourceAdapter(uniregProperties);
 	}
 
+	@Before
+	public void setUp() throws Exception {
+		final RaftEsbStore esbStore = new RaftEsbStore();
+		esbStore.setEndpoint("TestRaftStore");
+
+		esbTemplate = new EsbJmsTemplate();
+		esbTemplate.setConnectionFactory(jmsConnectionFactory);
+		esbTemplate.setEsbStore(esbStore);
+		esbTemplate.setReceiveTimeout(200);
+		esbTemplate.setApplication("unireg");
+		esbTemplate.setDomain("fiscalite");
+		esbTemplate.setSessionTransacted(true);
+		if (esbTemplate instanceof InitializingBean) {
+			((InitializingBean) esbTemplate).afterPropertiesSet();
+		}
+	}
+
 	@After
 	public void tearDown() {
-		if (manager != null) {
-			manager.destroy();
-			manager = null;
-		}
 		esbValidator = null;
+		if (listener != null) {
+			listener.destroy();
+		}
 	}
 
 	protected void buildEsbMessageValidator(Resource[] sources) throws Exception {
 		esbValidator = BusinessItTest.buildEsbMessageValidator(sources);
 	}
 
-	protected void initEndpointManager(String queueName, MessageListener listener) {
-		manager = EvenementHelper.initEndpointManager(resourceAdapter, queueName, listener);
+	protected void initListenerContainer(String queueName, EsbMessageHandler handler, EsbBusinessErrorHandler errorHandler) {
+		listener = new GentilEsbMessageListenerContainer();
+		listener.setHandler(handler);
+		listener.setEsbErrorHandler(errorHandler);
+		listener.setEsbTemplate(esbTemplate);
+		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setDestinationName(queueName);
+		listener.afterPropertiesSet();
+	}
+
+	protected void initListenerContainer(String queueName, EsbMessageHandler handler) {
+		initListenerContainer(queueName, handler, null);
 	}
 
 	protected void clearQueue(String queueName) throws Exception {

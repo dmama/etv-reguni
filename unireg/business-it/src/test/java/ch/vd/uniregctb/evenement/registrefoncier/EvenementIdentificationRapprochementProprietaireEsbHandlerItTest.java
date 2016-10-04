@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jms.connection.JmsTransactionManager;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -20,7 +19,6 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
 
 public class EvenementIdentificationRapprochementProprietaireEsbHandlerItTest extends EvenementTest {
@@ -75,12 +73,7 @@ public class EvenementIdentificationRapprochementProprietaireEsbHandlerItTest ex
 		esbHandler.setHibernateTemplate(hibernateTemplate);
 		esbHandler.setHandler(handler);
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-		listener.setHandler(esbHandler);
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, esbHandler);
 	}
 
 	private void sendIdentificationReponse(String queueName, String businessUser, long noContribuable, @Nullable Map<String, String> headers) throws Exception {

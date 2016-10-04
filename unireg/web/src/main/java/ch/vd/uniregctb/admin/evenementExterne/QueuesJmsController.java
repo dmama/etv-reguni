@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.admin.evenementExterne;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.EncodingFixHelper;
-import ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager;
+import ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -25,7 +24,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 public class QueuesJmsController {
 
 	private SecurityProviderInterface securityProvider;
-	private Map<String, JmxAwareEsbMessageEndpointManager> jmxManager;
+	private Map<String, MessageListenerContainerJmxInterface> jmxManager;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
@@ -33,7 +32,7 @@ public class QueuesJmsController {
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void setJmxManager(Map<String, JmxAwareEsbMessageEndpointManager> jmxManager) {
+	public void setJmxManager(Map<String, MessageListenerContainerJmxInterface> jmxManager) {
 		this.jmxManager = jmxManager;
 	}
 
@@ -44,17 +43,12 @@ public class QueuesJmsController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
-		final List<Map.Entry<String, JmxAwareEsbMessageEndpointManager>> sortedEntries = new ArrayList<>(jmxManager.entrySet());
-		Collections.sort(sortedEntries, new Comparator<Map.Entry<String, JmxAwareEsbMessageEndpointManager>>() {
-			@Override
-			public int compare(Map.Entry<String, JmxAwareEsbMessageEndpointManager> o1, Map.Entry<String, JmxAwareEsbMessageEndpointManager> o2) {
-				return o1.getValue().getDestinationName().compareTo(o2.getValue().getDestinationName());
-			}
-		});
+		final List<Map.Entry<String, MessageListenerContainerJmxInterface>> sortedEntries = new ArrayList<>(jmxManager.entrySet());
+		sortedEntries.sort(Comparator.comparing(entry -> entry.getValue().getDestinationName()));
 
 		final List<QueuesJmsView> list = new ArrayList<>(sortedEntries.size());
-		for (Map.Entry<String, JmxAwareEsbMessageEndpointManager> entry : sortedEntries) {
-			final JmxAwareEsbMessageEndpointManager messageEndpointManager = entry.getValue();
+		for (Map.Entry<String, MessageListenerContainerJmxInterface> entry : sortedEntries) {
+			final MessageListenerContainerJmxInterface messageEndpointManager = entry.getValue();
 			final QueuesJmsView queuesJmsView = new QueuesJmsView(entry.getKey(),
 			                                                      messageEndpointManager.getDestinationName(),
 			                                                      messageEndpointManager.getDescription(),

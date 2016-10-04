@@ -10,29 +10,17 @@
 		<property name="enabled" value="${extprop.jms.queue.evtDemandeAnnonceIDE.enabled}" />
 	</bean>
 
-	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evenementRapportAnnonceIDEJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="noticeReportEventJmsHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtRapportAnnonceIDE}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.evtRapportAnnonceIDE.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRapportAnnonceIDE.enabled}" />
+		<property name="description" value="Réception d’événements RCEnt de rapport de statut sur les demandes d'annonce à l'IDE."/>
 	</bean>
 
 	<bean id="noticeReportEventJmsHandler" class="ch.vd.uniregctb.evenement.ide.NoticeReportEventJmsHandler">
 		<property name="reponseIDEProcessor" ref="reponseIDEProcessor" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
-	</bean>
-
-	<bean id="evenementRapportAnnonceIDEJmsEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtRapportAnnonceIDE}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.evtRapportAnnonceIDE.consumers}"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementRapportAnnonceIDEJmsListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtRapportAnnonceIDE.enabled}" />
-		<property name="description" value="Réception d’événements RCEnt de rapport de statut sur les demandes d'annonce à l'IDE."/>
 	</bean>
 
 </beans>

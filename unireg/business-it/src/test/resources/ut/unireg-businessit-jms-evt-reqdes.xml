@@ -3,8 +3,11 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="reqdesEventHandler"/>
+		<property name="destinationName" value="${testprop.jms.queue.reqdes}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="true" />
 	</bean>
 
 	<bean id="reqdesEventHandler" class="ch.vd.uniregctb.evenement.reqdes.reception.ReqDesEventHandler">
@@ -13,21 +16,6 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="processor" ref="reqdesEventProcessor"/>
-	</bean>
-
-	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${testprop.jms.queue.reqdes}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="reqdesEventListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="true" />
 	</bean>
 
 	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>

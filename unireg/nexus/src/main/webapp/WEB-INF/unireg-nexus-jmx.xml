@@ -46,7 +46,7 @@
 		<property name="managedInterfaces">
 			<list>
 				<value>org.springframework.context.Lifecycle</value>
-				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
+				<value>ch.vd.uniregctb.jms.MessageListenerContainerJmxInterface</value>
 			</list>
 		</property>
 	</bean>

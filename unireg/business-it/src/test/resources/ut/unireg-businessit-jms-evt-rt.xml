@@ -16,22 +16,10 @@
 		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
 	</bean>
 
-	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="rapportTravailRequestEsbHandler" />
-	</bean>
-
-	<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${testprop.jms.queue.rapportTravail.service}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="rapportTravailRequestListener" />
-		<property name="transactionManager" ref="transactionManager" />
+		<property name="destinationName" value="${testprop.jms.queue.rapportTravail.service}"/>
+		<property name="concurrentConsumers" value="1"/>
 		<property name="autoStartup" value="true" />
 	</bean>
 

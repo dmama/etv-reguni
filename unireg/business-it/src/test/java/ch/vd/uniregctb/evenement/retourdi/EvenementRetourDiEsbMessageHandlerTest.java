@@ -37,7 +37,6 @@ import ch.vd.uniregctb.evenement.retourdi.pp.V3Handler;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -80,11 +79,6 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler = new EvenementRetourDiEsbMessageHandler();
 		esbHandler.setHibernateTemplate(hibernateTemplate);
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(esbHandler);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-
 		buildEsbMessageValidator(new Resource[]{
 				new ClassPathResource("event/taxation/DossierElectronique-1-0.xsd"),
 				new ClassPathResource("event/taxation/DossierElectronique-2-0.xsd"),
@@ -98,7 +92,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				new ClassPathResource("event/taxation/DeclarationIBC-2.xsd"),
 		});
 
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, esbHandler);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

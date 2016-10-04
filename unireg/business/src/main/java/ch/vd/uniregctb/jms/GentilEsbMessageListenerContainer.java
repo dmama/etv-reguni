@@ -10,10 +10,13 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jms.JmsException;
 import org.w3c.dom.Document;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.jms.EsbMessageListener;
+import ch.vd.technical.esb.jms.EsbMessageListenerContainer;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
@@ -23,9 +26,9 @@ import ch.vd.uniregctb.stats.LoadDetail;
  * Classe d'entrée des messages JMS de l'ESB dans Unireg, et qui loggue les appels et les
  * temps de traitement
  */
-public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener implements InitializingBean, DetailedLoadMonitorable, MonitorableMessageListener {
+public class GentilEsbMessageListenerContainer extends EsbMessageListenerContainer implements InitializingBean, DetailedLoadMonitorable, MessageListenerContainerJmxInterface {
 
-	private static final Logger APP_LOGGER = LoggerFactory.getLogger(GentilEsbMessageEndpointListener.class);
+	private static final Logger APP_LOGGER = LoggerFactory.getLogger(GentilEsbMessageListenerContainer.class);
 	private static final Logger JMS_LOGGER = LoggerFactory.getLogger("unireg.jms");
 
 	private static final StringRenderer<EsbMessage> RENDERER = new StringRenderer<EsbMessage>() {
@@ -77,12 +80,18 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	private final AtomicInteger nbMessagesEnException = new AtomicInteger(0);
 	private final AtomicInteger nbMessagesEnErreur = new AtomicInteger(0);
 
+	private EsbJmsTemplate esbTemplate;
 	private EsbMessageHandler handler;
 	private EsbBusinessErrorHandler esbErrorHandler;
 	private EsbMessageTracingFactoryImpl esbMessageTracingFactory;
+	private String description;
 
 	public void setHandler(EsbMessageHandler handler) {
 		this.handler = handler;
+	}
+
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
+		this.esbTemplate = esbTemplate;
 	}
 
 	public void setEsbErrorHandler(EsbBusinessErrorHandler esbErrorHandler) {
@@ -93,8 +102,11 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		this.esbMessageTracingFactory = esbMessageTracingFactory;
 	}
 
-	@Override
-	public void onEsbMessage(EsbMessage msg) {
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	private void onEsbMessage(EsbMessage msg) {
 		final EsbMessage message = esbMessageTracingFactory != null ? esbMessageTracingFactory.wrap(msg) : msg;
 		final Instant start = loadMeter.start(message);
 		Throwable t = null;
@@ -140,7 +152,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	/**
 	 * Appel du handler
 	 * @param message message à traiter
-	 * @throws EsbBusinessException en cas de problème métier à envoyer en queue d'erreur
+	 * @throws ch.vd.uniregctb.jms.EsbBusinessException en cas de problème métier à envoyer en queue d'erreur
 	 * @throws Exception en cas de souci... causera un renvoi en DLQ
 	 */
 	private void handle(EsbMessage message) throws Exception {
@@ -160,14 +172,33 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
+	protected void validateConfiguration() {
+		super.validateConfiguration();
 		if (handler == null) {
 			throw new IllegalArgumentException("Handler must be set");
 		}
 		if (esbErrorHandler == null) {
 			throw new IllegalArgumentException("EsbErrorHandler must be set");
 		}
+		if (esbTemplate == null) {
+			throw new IllegalArgumentException("EsbTemplate must be set");
+		}
+	}
+
+	@Override
+	public void initialize() {
+
+		// l'arrivée d'un message appellera la méthode onEsbMessage(EsbMessage)
+		final EsbMessageListener messageListener = new EsbMessageListener() {
+			@Override
+			public void onEsbMessage(EsbMessage message) throws Exception {
+				GentilEsbMessageListenerContainer.this.onEsbMessage(message);
+			}
+		};
+		messageListener.setEsbTemplate(esbTemplate);
+
+		setMessageListener(messageListener);
+		super.initialize();
 	}
 
 	@Override
@@ -181,17 +212,38 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	}
 
 	@Override
-	public int getNombreMessagesRecus() {
+	public void start() throws JmsException {
+		super.start();
+		if (APP_LOGGER.isInfoEnabled()) {
+			APP_LOGGER.info(String.format("Ecoute sur la queue '%s' démarrée", getDestinationName()));
+		}
+	}
+
+	@Override
+	public void stop() throws JmsException {
+		super.stop();
+		if (APP_LOGGER.isInfoEnabled()) {
+			APP_LOGGER.info(String.format("Ecoute sur la queue '%s' arrêtée", getDestinationName()));
+		}
+	}
+
+	@Override
+	public int getReceivedMessages() {
 		return nbMessagesRecus.intValue();
 	}
 
 	@Override
-	public int getNombreMessagesRenvoyesEnErreur() {
+	public int getMessagesWithException() {
+		return nbMessagesEnException.intValue();
+	}
+
+	@Override
+	public int getMessagesWithBusinessError() {
 		return nbMessagesEnErreur.intValue();
 	}
 
 	@Override
-	public int getNombreMessagesRenvoyesEnException() {
-		return nbMessagesEnException.intValue();
+	public String getDescription() {
+		return description;
 	}
 }

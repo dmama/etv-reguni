@@ -11,8 +11,12 @@
 		<property name="queueRetour" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
 	</bean>
 
-	<bean id="retourDocumentSortantListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="retourDocumentSortantListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="retourDocumentSortantEsbHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.notification.document.sortant.reponse.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.notification.document.sortant.reponse.enabled}" />
+		<property name="description" value="Réponses aux annonces des documents sortants (avec identifiant d'indexation DPerm)"/>
 	</bean>
 
 	<bean id="retourDocumentSortantEsbHandler" class="ch.vd.uniregctb.evenement.docsortant.RetourDocumentSortantEsbHandler">
@@ -23,22 +27,6 @@
 	<bean id="retourDocumentSortantHandler" class="ch.vd.uniregctb.evenement.docsortant.RetourDocumentSortantHandlerImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="documentEFactureDAO" ref="documentEFactureDAO"/>
-	</bean>
-
-	<bean id="retourDocumentSortantEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.notification.document.sortant.reponse.consumers}"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="retourDocumentSortantListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.notification.document.sortant.reponse.enabled}" />
-		<property name="description" value="Réponses aux annonces des documents sortants (avec identifiant d'indexation DPerm)"/>
 	</bean>
 
 </beans>

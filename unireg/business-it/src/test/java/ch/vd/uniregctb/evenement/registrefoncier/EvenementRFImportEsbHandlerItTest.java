@@ -7,7 +7,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jms.connection.JmsTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -18,7 +17,6 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierImportService;
 import ch.vd.uniregctb.transaction.MockTxSyncManager;
 
@@ -75,12 +73,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		handler.setTxSyncManager(new MockTxSyncManager());
 		handler.setServiceImportRF(serviceImportRF);
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-		listener.setHandler(handler);
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, handler);
 	}
 
 	private void sendRfMessage(String queueName, String raftUrl, String dateValeur, @Nullable String typeImport) throws Exception {

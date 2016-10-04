@@ -3,8 +3,13 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="reqdesEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainerWithMasterSwitch" parent="esbMessageListener">
 		<property name="handler" ref="reqdesEventHandler"/>
+		<property name="destinationName" value="${extprop.jms.queue.reqdes.event.input}"/>
+		<property name="concurrentConsumers" value="${extprop.jms.queue.reqdes.event.consumers}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}" />
+		<property name="masterSwitch" value="${extprop.reqdes.enabled}"/>
+		<property name="description" value="Réception des évènements de l'application notaires eReqDes"/>
 	</bean>
 
 	<bean id="reqdesEventHandler" class="ch.vd.uniregctb.evenement.reqdes.reception.ReqDesEventHandler">
@@ -13,23 +18,6 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="processor" ref="reqdesEventProcessor"/>
-	</bean>
-
-	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareMasterSwitchableEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.reqdes.event.input}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.reqdes.event.consumers}"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="reqdesEventListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}"/>
-		<property name="masterSwitch" value="${extprop.reqdes.enabled}"/>
-		<property name="description" value="Réception des évènements de l'application notaires eReqDes"/>
 	</bean>
 
 	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessorImpl">

@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
@@ -46,7 +45,6 @@ import ch.vd.uniregctb.evenement.degrevement.EvenementIntegrationMetierDegreveme
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -113,12 +111,7 @@ public class EvenementIntegrationMetierEsbHandlerV5ITTest extends EvenementTest 
 		handler.setHandlers(Collections.singletonMap(ch.vd.dperm.xml.common.v1.TypeDocument.DEM_DEGREV, degrevHandler));
 		handler.afterPropertiesSet();
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, handler);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

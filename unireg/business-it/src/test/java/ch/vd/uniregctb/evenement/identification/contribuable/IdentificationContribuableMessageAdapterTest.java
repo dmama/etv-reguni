@@ -8,19 +8,15 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
@@ -30,7 +26,6 @@ import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessErrorHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
@@ -75,22 +70,11 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		}
 	}
 
-	@Before
 	public void setUp() throws Exception {
+		super.setUp();
 
 		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.input");
 		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.output");
-
-		final RaftEsbStore esbStore = new RaftEsbStore();
-		esbStore.setEndpoint("TestRaftStore");
-
-		esbTemplate = new EsbJmsTemplate();
-		esbTemplate.setConnectionFactory(jmsConnectionFactory);
-		esbTemplate.setEsbStore(esbStore);
-		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.setApplication("unireg");
-		esbTemplate.setDomain("fiscalite");
-		esbTemplate.setSessionTransacted(true);
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
@@ -112,13 +96,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		myErrorHandler = new MyErrorHandler();
 
-		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
-		listener.setHandler(handler);
-		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		listener.setEsbTemplate(esbTemplate);
-		listener.setEsbErrorHandler(myErrorHandler);
-
-		initEndpointManager(INPUT_QUEUE, listener);
+		initListenerContainer(INPUT_QUEUE, handler, myErrorHandler);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

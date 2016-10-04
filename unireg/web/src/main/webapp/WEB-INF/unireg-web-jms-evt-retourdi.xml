@@ -4,24 +4,12 @@
 
 	<!-- Point d'entrée JMS -->
 
-	<bean id="evenementRetourDiEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
-		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
-		<property name="activationSpec">
-			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtCedi}"/>
-				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
-				<property name="maxMessagesPerSessions" value="1"/>
-			</bean>
-		</property>
-		<property name="messageListener" ref="evenementRetourDiListener"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
-		<property name="description" value="Réception des messages JMS contenant les informations issues du scan des DIs"/>
-	</bean>
-
-	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementRetourDiHandler" />
+		<property name="destinationName" value="${extprop.jms.queue.evtIAM}"/>
+		<property name="concurrentConsumers" value="1"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtIAM.enabled}" />
+		<property name="description" value="Réception des messages JMS contenant les informations issues du scan des DIs"/>
 	</bean>
 
 	<!-- Dispatching des différents formats supportés -->
