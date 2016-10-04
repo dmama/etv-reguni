@@ -41,7 +41,7 @@ public enum TypeDocumentEditique {
 	// Autour des questionnaires SNC
 	//
 
-	QSNC("U1PQQSNC", null, "impressionQSNC"),
+	QSNC("U1PQQSNC", "407", "impressionQSNC"),
 	RAPPEL_SQNC("U1PRQSNC", "406", "rappelQSNC"),
 
 	//

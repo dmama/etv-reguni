@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeAffranchissement;
+import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.CTypeQuestSNC;
@@ -52,9 +53,10 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 		try {
 			final Entreprise pm = (Entreprise) questionnaire.getTiers();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(pm), pm);
+			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(TypeDocumentEditique.QSNC, construitCleArchivageDocument(questionnaire), pm.getNumero(), RegDate.get());
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(pm, RegDate.get(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final CTypeQuestSNC qsnc = buildDocumentQuestionnaire(questionnaire);
-			return new FichierImpression.Document(infoDocument, null, infoEnteteDocument, null, null, null, null, null, null, null, null, qsnc, null, null, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, qsnc, null, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -153,5 +155,17 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 		                     questionnaire.getNumero(),
 		                     questionnaire.getPeriode().getAnnee(),
 		                     new SimpleDateFormat("MMddHHmmssSSS").format(DateHelper.getCurrentDate()));
+	}
+
+	private static String construitCleArchivageDocument(QuestionnaireSNC questionnaire) {
+		return String.format(
+				"%s%s %s %s",
+				questionnaire.getPeriode().getAnnee().toString(),
+				StringUtils.leftPad(questionnaire.getNumero().toString(), 2, '0'),
+				StringUtils.rightPad("Questionnaire SNC", 19, ' '),
+				new SimpleDateFormat("MMddHHmmssSSS").format(
+						DateHelper.getCurrentDate()
+				)
+		);
 	}
 }

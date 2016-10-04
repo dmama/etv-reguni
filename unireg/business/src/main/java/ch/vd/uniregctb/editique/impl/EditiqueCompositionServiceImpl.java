@@ -614,6 +614,28 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return Pair.of(resultat, cleArchivage);
 	}
 
+	private void envoieNotificationLettreDecisionDelai(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
+		if (infoArchivage != null)  {
+			final EtatDelaiDeclaration etatDelai = delai.getEtat();
+			switch (etatDelai) {
+			case ACCORDE:
+				if (delai.isSursis()) {
+					evenementDocumentSortantService.signaleSursis(di, infoArchivage, local);
+				}
+				else {
+					evenementDocumentSortantService.signaleAccordDelai(di, infoArchivage, local);
+				}
+				break;
+			case REFUSE:
+				evenementDocumentSortantService.signaleRefusDelai(di, infoArchivage, local);
+				break;
+			default:
+				// rien à faire
+				break;
+			}
+		}
+	}
+
 	@Override
 	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
 		final ImpressionLettreDecisionDelaiPMHelperParams params = new ImpressionLettreDecisionDelaiPMHelperParams(di, delai);
@@ -628,26 +650,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			root.getDocument().add(copieMandataire);
 		}
 
-		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
-		if (infoArchivage != null)  {
-			final EtatDelaiDeclaration etatDelai = delai.getEtat();
-			switch (etatDelai) {
-			case ACCORDE:
-				if (delai.isSursis()) {
-					evenementDocumentSortantService.signaleSursis(di, infoArchivage, true);
-				}
-				else {
-					evenementDocumentSortantService.signaleAccordDelai(di, infoArchivage, true);
-				}
-				break;
-			case REFUSE:
-				evenementDocumentSortantService.signaleRefusDelai(di, infoArchivage, true);
-				break;
-			default:
-				// rien à faire
-				break;
-			}
-		}
+		envoieNotificationLettreDecisionDelai(di, delai, original.getInfoArchivage(), true);
+
 		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
 		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, params.getDescriptionDocument());
 		return Pair.of(resultat, cleArchivage);
@@ -667,26 +671,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			root.getDocument().add(copieMandataire);
 		}
 
-		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
-		if (infoArchivage != null)  {
-			final EtatDelaiDeclaration etatDelai = delai.getEtat();
-			switch (etatDelai) {
-			case ACCORDE:
-				if (delai.isSursis()) {
-					evenementDocumentSortantService.signaleSursis(di, infoArchivage, false);
-				}
-				else {
-					evenementDocumentSortantService.signaleAccordDelai(di, infoArchivage, false);
-				}
-				break;
-			case REFUSE:
-				evenementDocumentSortantService.signaleRefusDelai(di, infoArchivage, false);
-				break;
-			default:
-				// rien à faire
-				break;
-			}
-		}
+		envoieNotificationLettreDecisionDelai(di, delai, original.getInfoArchivage(), false);
 
 		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
@@ -727,6 +712,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionQSNCHelper.buildDocument(questionnaire);
 		root.getDocument().add(document);
+
+		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, true);
+		}
+
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
 		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false);
@@ -737,6 +728,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionQSNCHelper.buildDocument(questionnaire);
 		root.getDocument().add(document);
+
+		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, true);
+		}
+
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
 		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
 
@@ -752,6 +749,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionQSNCHelper.buildDocument(questionnaire);
 		root.getDocument().add(document);
+
+		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, false);
+		}
+
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
 		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
