@@ -347,7 +347,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		                                         declaration.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null, description);
 	}
 
 	@Override
@@ -385,7 +385,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	@Override
@@ -436,7 +436,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 //			evenementDocumentSortantService.signaleSommationDeclarationImpot(declaration, infoArchivage, false);
 //		}
 
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
 	}
 
 	@Override
@@ -456,7 +456,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String nomDocument = impressionSommationDIPMHelper.construitIdDocument(declaration);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	@Override
@@ -493,11 +493,16 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			root.getDocument().add(copieMandataire);
 		}
 
+		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleSommationDeclarationImpot(declaration, infoArchivage, true);
+		}
+
 		final String nomDocument = impressionSommationDIPMHelper.construitIdDocument(declaration);
 		final String description = String.format("Sommation de la déclaration d'impôt %d du contribuable %s",
 		                                         declaration.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, infoArchivage != null, description);
 	}
 
 	@Override
@@ -520,7 +525,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	@Override
@@ -543,7 +548,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String nomDocument = impressionRappelHelper.construitIdDocument(lettre);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	/**
@@ -653,7 +658,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		envoieNotificationLettreDecisionDelai(di, delai, original.getInfoArchivage(), true);
 
 		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
-		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, params.getDescriptionDocument());
+		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, original.getInfoArchivage() != null, params.getDescriptionDocument());
 		return Pair.of(resultat, cleArchivage);
 	}
 
@@ -674,7 +679,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		envoieNotificationLettreDecisionDelai(di, delai, original.getInfoArchivage(), false);
 
 		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, original.getInfoArchivage() != null);
 		return cleArchivage;
 	}
 
@@ -720,7 +725,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
 		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null);
 	}
 
 	@Override
@@ -741,7 +746,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		                                         questionnaire.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(questionnaire.getTiers().getNumero()));
 
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null, description);
 	}
 
 	@Override
@@ -757,7 +762,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
 		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	@Override
@@ -777,7 +782,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final TypeDocumentEditique typeDocument = impressionRappelQSNCHelper.getTypeDocumentEditique(questionnaire);
 		final String nomDocument = impressionRappelQSNCHelper.getIdDocument(questionnaire);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	@Override
@@ -801,7 +806,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String description = String.format("Rappel du questionnaire SNC %d du contribuable %s",
 		                                         questionnaire.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(questionnaire.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, infoArchivage != null, description);
 	}
 
 	@Override
@@ -820,7 +825,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String description = String.format("Autorisation de radiation au RC de l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, infoArchivage != null, description);
 	}
 
 	@Override
@@ -839,7 +844,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String description = String.format("Demande de bilan final de l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, infoArchivage != null, description);
 	}
 
 	@Override
@@ -858,6 +863,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String description = String.format("Lettre type de liquidation pour l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, infoArchivage != null, description);
 	}
 }
