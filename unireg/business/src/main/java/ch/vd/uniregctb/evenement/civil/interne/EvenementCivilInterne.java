@@ -422,17 +422,45 @@ public abstract class EvenementCivilInterne {
 	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
 	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
-	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @param modeImposition           le mode d'imposition du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipalPP openForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
-	                                                    TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
-	                                                    MotifFor motifOuverture, ModeImposition modeImposition) {
-		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+	                                                      TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
+	                                                      MotifFor motifOuverture, ModeImposition modeImposition) {
+		if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && motifOuverture == null) {
+			throw new IllegalArgumentException("Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+		}
 		return getService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture);
+	}
+
+	/**
+	 * Ouvre un nouveau for fiscal principal déjà fermé.
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
+	 * @param rattachement             le motif de rattachement du nouveau for
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
+	 * @param dateFermeture            la date à laquelle le nouveau for est fermé
+	 * @param motifFermeture           le motif de fermeture du nouveau for
+	 * @return le nouveau for fiscal principal
+	 */
+	protected ForFiscalPrincipalPP openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
+	                                                              TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
+	                                                              MotifFor motifOuverture, ModeImposition modeImposition, RegDate dateFermeture, MotifFor motifFermeture) {
+		if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && motifOuverture == null) {
+			throw new IllegalArgumentException("Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+		}
+		else if (motifFermeture == null || dateFermeture == null) {
+			throw new IllegalArgumentException("Le motif de fermeture et la date de fermeture sont tous deux obligatoires sur un for fiscal principal fermé");
+		}
+		return getService().openAndCloseForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFermeture, motifFermeture);
 	}
 
 	/**
@@ -457,7 +485,29 @@ public abstract class EvenementCivilInterne {
 
 		// On ne ferme et ouvre les fors que si nécessaire
 		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale) || typeAutorite != forFiscalPrincipal.getTypeAutoriteFiscale()) {
-			closeForFiscalPrincipal(contribuable, dateChangement.getOneDayBefore(), motifFermetureOuverture);
+
+			// on va fermer ou annuler le for principal courant
+			if (dateChangement == forFiscalPrincipal.getDateDebut()) {
+				// annulation
+				forFiscalPrincipal.setAnnule(true);
+				context.getEvenementFiscalService().publierEvenementFiscalAnnulationFor(forFiscalPrincipal);
+
+				// s'il y avait un for principal avant, qui se fermait avec un motif différent du motif que l'on veut utiliser maintenant, il faut l'annuler
+				// et le remplacer également
+				final ForFiscalPrincipalPP forPrecedent = contribuable.getForFiscalPrincipalAt(forFiscalPrincipal.getDateDebut().getOneDayBefore());
+				if (forPrecedent != null && forPrecedent.getMotifFermeture() != motifFermetureOuverture) {
+					forPrecedent.setAnnule(true);
+					context.getEvenementFiscalService().publierEvenementFiscalAnnulationFor(forPrecedent);
+					openAndCloseForFiscalPrincipal(contribuable, forPrecedent.getDateDebut(), forPrecedent.getTypeAutoriteFiscale(),
+					                               forPrecedent.getNumeroOfsAutoriteFiscale(), forPrecedent.getMotifRattachement(), forPrecedent.getMotifOuverture(),
+					                               forPrecedent.getModeImposition(), forPrecedent.getDateFin(), motifFermetureOuverture);
+				}
+			}
+			else {
+				// fermeture
+				closeForFiscalPrincipal(contribuable, dateChangement.getOneDayBefore(), motifFermetureOuverture);
+			}
+
 			if (modeImposition == null) {
 				modeImposition = forFiscalPrincipal.getModeImposition();
 			}
