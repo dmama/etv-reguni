@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
+import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
+import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
@@ -117,6 +119,8 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<ParametrePeriodeFiscalePM.ReferencePourDelai, String> mapReferencesPourDelai;
 	private Map<TypeMandat, String> mapTypesMandat;
 	private Map<TypeAutreDocumentFiscalEmettableManuellement, String> mapTypesAutreDocumentFiscalEmettableManuellement;
+	private Map<TypeAnnonce, String> mapTypeAnnonce;
+	private Map<StatutAnnonce, String> mapStatutAnnonce;
 
 	private ServiceInfrastructureService infraService;
 
@@ -839,5 +843,19 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypesAutreDocumentFiscalEmettableManuellement = initMapEnum(ApplicationConfig.maskerKeyTypeAutreDocumentFiscalEmettableManuellement, TypeAutreDocumentFiscalEmettableManuellement.class);
 		}
 		return mapTypesAutreDocumentFiscalEmettableManuellement;
+	}
+
+	public Map<TypeAnnonce, String> getTypeAnnonce() {
+		if (mapTypeAnnonce == null) {
+			mapTypeAnnonce = initMapEnum("option.type.annonce.", TypeAnnonce.class);
+		}
+		return mapTypeAnnonce;
+	}
+
+	public Map<StatutAnnonce, String> getStatutAnnonce() {
+		if (mapStatutAnnonce == null) {
+			mapStatutAnnonce = initMapEnum("option.statut.annonce.", StatutAnnonce.class);
+		}
+		return mapStatutAnnonce;
 	}
 }

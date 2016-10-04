@@ -62,6 +62,18 @@
 		</attribute>
 	</tag>
 	<tag>
+		<description>display a formatted cantonal id</description>
+		<name>cantonalId</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagCantonalId</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>formatted or unformatted input cantonal id</description>
+			<name>cantonalId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	<tag>
 		<description>display date</description>
 		<name>date</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDate</tag-class>

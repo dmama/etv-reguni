@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,7 +17,9 @@ import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 /**
  * Critères de recherche sur les demandes d'annonce à l'IDE.
  */
-public class AnnonceIDEQuery {
+public class AnnonceIDEQuery implements Serializable {
+
+	private static final long serialVersionUID = -4449007097340120358L;
 
 	private Long noticeId;
 	private TypeAnnonce type;

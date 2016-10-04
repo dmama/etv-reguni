@@ -70,6 +70,19 @@ public class FormatNumeroHelper {
 	}
 
 	/**
+	 * Formatte un numéro cantonal (e.g. '100565926' => '100-565-926') pour l'affichage aux utilisateurs
+	 * @param numero un numéro cantonal déjà formatté ou non
+	 * @return un numéro cantonal formatté
+	 */
+	public static String formatCantonalId(String numero) {
+		numero = removeSpaceAndDash(numero);
+		if (Pattern.matches("[0-9]{9}", numero)) {
+			return numero.replaceAll("([0-9]{3})([0-9]{3})([0-9]{3})", "$1-$2-$3");
+		}
+		return numero;
+	}
+
+	/**
 	 *
 	 * Format Nouveau Numero AVS
 	 *

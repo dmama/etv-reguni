@@ -142,4 +142,12 @@ public class FormatNumeroHelperTest extends WithoutSpringTest {
 		assertEquals("CHE-123.456.789", FormatNumeroHelper.formatNumIDE("CHE-123..45.6789"));
 		assertEquals("CHE-789.456.123", FormatNumeroHelper.formatNumIDE("CHE/789-456-123"));
 	}
+
+	@Test
+	public void testFormatCantonalId() throws Exception {
+		assertEquals("", FormatNumeroHelper.formatCantonalId(null));
+		assertEquals("blabla", FormatNumeroHelper.formatCantonalId("blabla"));
+		assertEquals("100-565-926", FormatNumeroHelper.formatCantonalId("100565926"));
+		assertEquals("100-565-926", FormatNumeroHelper.formatCantonalId("100-565-926"));
+	}
 }

@@ -5,12 +5,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.jetbrains.annotations.NotNull;
@@ -223,7 +225,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	}
 
 	@Override
-	public Page<NoticeRequestReport> findNotices(@NotNull RcEntNoticeQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws RcEntClientException {
+	public Page<NoticeRequestReport> findNotices(@NotNull RcEntNoticeQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws
+			RcEntClientException {
 
 		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
 		try {
@@ -267,6 +270,12 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable Object value) {
 		if (value != null) {
+			wc.query(name, value);
+		}
+	}
+
+	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable String value) {
+		if (StringUtils.isNotBlank(value)) {
 			wc.query(name, value);
 		}
 	}

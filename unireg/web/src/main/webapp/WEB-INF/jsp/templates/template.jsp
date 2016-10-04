@@ -63,6 +63,9 @@
 
 					</authz:authorize>
 
+					<!-- TODO (msi) implémenter la sécurité et définir le bon endroit pour placer le lien dans le menu -->
+					<li><a href="<c:url value='/annonceIDE/find.do'/>"><fmt:message key="title.suivi.demandes.menu"/></a></li>
+
 					<authz:authorize var="creation" access="hasAnyRole('ROLE_CREATE_NONHAB', 'ROLE_CREATE_AC', 'ROLE_CREATE_ENTREPRISE')"/>
 					<authz:authorize var="modifpp" access="hasAnyRole('ROLE_MODIF_VD_ORD', 'ROLE_MODIF_VD_SOURC', 'ROLE_MODIF_HC_HS', 'ROLE_MODIF_HAB_DEBPUR', 'ROLE_MODIF_NONHAB_DEBPUR')"/>
 					<authz:authorize var="annultiers" access="hasRole('ROLE_ANNUL_TIERS') and (${modifpp} or hasRole('ROLE_MODIF_PM'))"/>
