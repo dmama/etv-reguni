@@ -2515,6 +2515,35 @@ var Inbox = {
 
 //===================================================
 
+var Annonce = {
+
+	/**
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de l'annonce dont l'id est passé en paramètre.
+	 * @param idDemande l'id de l'annonce
+	 */
+	open_details: function(idDemande) {
+
+		var dialog = Dialog.create_dialog_div('visu-annonce-dialog');
+
+		// charge le contenu de la boîte de dialogue
+		dialog.load(App.curl('/annonceIDE/visu.do?id='+ idDemande + '&' + new Date().getTime()));
+
+		dialog.dialog({
+			title: "Détails de l'annonce n°" + idDemande,
+			height: 600,
+			width: 800,
+			modal: true,
+			buttons: {
+				Ok: function() {
+					dialog.dialog("close");
+				}
+			}
+		});
+	}
+};
+
+//===================================================
+
 var Decl = {
 	/**
 	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de la déclaration d'impôt ordinaire (DI) dont l'id est passé en paramètre.

@@ -142,6 +142,9 @@
 				<display:column titleKey="label.utilisateur.annonce" >
 					${annonce.utilisateur.userId}
 				</display:column>
+				<display:column style="action">
+					<a href="#" class="detail" title="Détails de l'annonce" onclick="Annonce.open_details(<c:out value="${annonce.numero}"/>, true); return false;">&nbsp;</a>
+				</display:column>
 			</display:table>
 
 		</form:form>

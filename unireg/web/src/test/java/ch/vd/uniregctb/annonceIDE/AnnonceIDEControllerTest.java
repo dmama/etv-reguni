@@ -2,6 +2,7 @@ package ch.vd.uniregctb.annonceIDE;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,22 +18,29 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.util.NestedServletException;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.MockMessageSource;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -136,4 +144,132 @@ public class AnnonceIDEControllerTest {
 		}
 	}
 
+	/**
+	 * Ce test vérifie que le contrôleur lève bien une exception si on lui demande d'afficher une annonce qui n'existe pas.
+	 */
+	@Test
+	public void testVisuObjectNotFound() throws Exception {
+
+		// on service organisation qui ne trouve aucun annonce
+		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
+			@Nullable
+			@Override
+			public AnnonceIDE getAnnonceIDE(Long numero) {
+				return null;
+			}
+		};
+
+		// on crée le contrôleur et le mock MVC
+		final AnnonceIDEController controller = new AnnonceIDEController();
+		controller.setOrganisationService(organisationService);
+
+		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// on fait l'appel
+		try {
+			m.perform(get("/annonceIDE/visu.do").param("id", "2"));
+			fail();
+		}
+		catch (NestedServletException e) {
+			final ObjectNotFoundException cause = (ObjectNotFoundException) e.getCause();
+			assertEquals("Aucune demande ne correspond à l'identifiant 2", cause.getMessage());
+		}
+	}
+
+	/**
+	 * Ce test vérifie que le contrôleur affiche bien une annonce qui existe.
+	 */
+	@Test
+	public void testVisu() throws Exception {
+
+		final Date dateAnnonce = DateHelper.getDate(2000, 1, 1);
+
+		// on service organisation qui retourne une annonce
+		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
+			@Nullable
+			@Override
+			public AnnonceIDE getAnnonceIDE(Long numero) {
+				final AnnonceIDEData.UtilisateurImpl testuser = new AnnonceIDEData.UtilisateurImpl("testuser", null);
+				final AnnonceIDE annonce = new AnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, testuser, TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+				                                          new AnnonceIDEData.StatutImpl(StatutAnnonce.ACCEPTE_IDE, DateHelper.getDate(2000, 1, 3), null), SERVICE_UNIREG);
+				annonce.setNoIde(NumeroIDE.valueOf(333111333));
+				annonce.setNoIdeRemplacant(NumeroIDE.valueOf(222000555));
+				annonce.setNoIdeEtablissementPrincipal(NumeroIDE.valueOf(999444777));
+				annonce.setCommentaire("Que voilà un joli commentaire !");
+
+				annonce.setInformationOrganisation(new AnnonceIDEData.InformationOrganisationImpl(22334455L, 22334466L, 11003355L));
+
+				final AdresseAnnonceIDERCEnt adresse = new AdresseAnnonceIDERCEnt();
+				adresse.setRue("chemin de la date qui glisse");
+				adresse.setNumero("23bis");
+				adresse.setTexteCasePostale("Case postale jolie");
+				adresse.setNumeroCasePostale(101);
+				adresse.setNpa(1020);
+				adresse.setVille("Renens");
+
+				final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();
+				contenu.setNom("Ma petite entreprise");
+				contenu.setNomAdditionnel("et quand même vachement importante");
+				contenu.setFormeLegale(FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
+				contenu.setSecteurActivite("Fourrage pour chef de projet");
+				contenu.setAdresse(adresse);
+				annonce.setContenu(contenu);
+
+				return annonce;
+			}
+		};
+
+		// on crée le contrôleur et le mock MVC
+		final AnnonceIDEController controller = new AnnonceIDEController();
+		controller.setOrganisationService(organisationService);
+
+		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// on fait l'appel
+		final ResultActions resActions = m.perform(get("/annonceIDE/visu.do").param("id", "1"));
+		resActions.andExpect(status().isOk());
+
+		final MvcResult result = resActions.andReturn();
+		assertNotNull(result);
+		final Map<String, Object> model = result.getModelAndView().getModel();
+
+		// on vérifie que l'annonce est bien affichée
+		final AnnonceIDEView annonce = (AnnonceIDEView) model.get("annonce");
+		assertNotNull(annonce);
+
+		assertEquals(Long.valueOf(1L), annonce.getNumero());
+		assertEquals(TypeAnnonce.CREATION, annonce.getType());
+		assertEquals(dateAnnonce, annonce.getDateAnnonce());
+		assertEquals("testuser", annonce.getUtilisateur().getUserId());
+		assertEquals("UNIREG", annonce.getServiceIDE().getApplicationName());
+		assertEquals(StatutAnnonce.ACCEPTE_IDE, annonce.getStatut().getStatut());
+		assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonce.getTypeDeSite());
+		assertEquals("CHE-333.111.333", annonce.getNoIde());
+		assertEquals("CHE-222.000.555", annonce.getNoIdeRemplacant());
+		assertEquals("CHE-999.444.777", annonce.getNoIdeEtablissementPrincipal());
+		assertNull(annonce.getRaisonDeRadiation());
+		assertEquals("Que voilà un joli commentaire !", annonce.getCommentaire());
+
+		final InformationOrganisationView info = annonce.getInformationOrganisation();
+		assertEquals(Long.valueOf(22334455L), info.getNumeroSite());
+		assertEquals(Long.valueOf(22334466L), info.getNumeroOrganisation());
+		assertEquals(Long.valueOf(11003355L), info.getNumeroSiteRemplacant());
+
+		final ContenuView contenu = annonce.getContenu();
+		assertEquals("Ma petite entreprise", contenu.getNom());
+		assertEquals("et quand même vachement importante", contenu.getNomAdditionnel());
+		assertEquals(FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE, contenu.getFormeLegale());
+		assertEquals("Fourrage pour chef de projet", contenu.getSecteurActivite());
+
+		final AdresseAnnonceIDEView adresse = contenu.getAdresse();
+		assertNull(adresse.getEgid());
+		assertEquals("chemin de la date qui glisse", adresse.getRue());
+		assertEquals("23bis", adresse.getNumero());
+		assertNull(adresse.getNumeroAppartement());
+		assertEquals("Case postale jolie", adresse.getTexteCasePostale());
+		assertEquals(Integer.valueOf(101), adresse.getNumeroCasePostale());
+		assertEquals(Integer.valueOf(1020), adresse.getNpa());
+		assertEquals("Renens", adresse.getVille());
+		assertNull(adresse.getPays());
+	}
 }

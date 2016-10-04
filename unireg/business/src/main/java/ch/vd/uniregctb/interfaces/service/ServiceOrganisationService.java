@@ -83,6 +83,7 @@ public interface ServiceOrganisationService {
 	 * @return l'annonce IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
+	@Nullable
 	AnnonceIDEEnvoyee getAnnonceIDE(Long numero);
 
 	/**

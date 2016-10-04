@@ -5,7 +5,7 @@ import java.util.Date;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
@@ -34,7 +34,7 @@ public class AnnonceIDEView {
 	public AnnonceIDEView() {
 	}
 
-	public AnnonceIDEView(@NotNull AnnonceIDE annonce) {
+	public AnnonceIDEView(@NotNull AnnonceIDEEnvoyee annonce) {
 		this.numero = annonce.getNumero();
 		this.type = annonce.getType();
 		this.dateAnnonce = annonce.getDateAnnonce();

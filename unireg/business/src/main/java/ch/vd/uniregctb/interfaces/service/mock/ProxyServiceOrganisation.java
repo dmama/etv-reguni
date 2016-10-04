@@ -76,6 +76,7 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 		return service.getAdressesSiteOrganisationHisto(noSite);
 	}
 
+	@Nullable
 	@Override
 	public AnnonceIDEEnvoyee getAnnonceIDE(Long numero) {
 		return target.getAnnonceIDE(numero);

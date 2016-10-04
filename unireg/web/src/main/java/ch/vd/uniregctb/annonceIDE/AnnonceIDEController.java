@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -81,5 +84,24 @@ public class AnnonceIDEController {
 		model.addAttribute("noticeStatuts", tiersMapHelper.getStatutAnnonce());
 
 		return "annonceIDE/find";
+	}
+
+	/**
+	 * Affiche les détails d'une annonce.
+	 */
+	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
+	public String visu(@RequestParam Long id, Model model) {
+
+		// on effectue la recherche
+		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id);
+		if (annonce == null) {
+			throw new ObjectNotFoundException("Aucune demande ne correspond à l'identifiant " + id);
+		}
+
+		// on adapte les annonces
+		final AnnonceIDEView view = new AnnonceIDEView(annonce);
+		model.addAttribute("annonce", view);
+
+		return "annonceIDE/visu";
 	}
 }

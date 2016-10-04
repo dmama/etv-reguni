@@ -136,6 +136,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		}
 	}
 
+	@Nullable
 	@Override
 	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException {
 		final ListOfNoticeRequest noticeRequests = client.getNoticeRequest(String.valueOf(numero));

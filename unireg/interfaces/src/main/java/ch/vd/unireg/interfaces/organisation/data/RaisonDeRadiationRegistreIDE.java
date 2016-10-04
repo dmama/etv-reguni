@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 public enum RaisonDeRadiationRegistreIDE {
-
 	AUTRE,
 	FUSION_ABSORPTION,
 	FUSION_COMBINAISON,

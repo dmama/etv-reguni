@@ -1513,6 +1513,19 @@
 	</tag>
 
 	<tag>
+		<description>Affiche une adresse de demande d'annonce IDE sur plusieurs lignes</description>
+		<name>adresseAnnonce</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagAdresseAnnonce</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>l'adresse d'une demande d'annonce</description>
+			<name>adresse</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<description>Affiche la combo des liens d'inter-opérabilité d'un tiers</description>
 		<name>interoperabilite</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagInteroperabilite</tag-class>
