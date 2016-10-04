@@ -60,6 +60,7 @@
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>
 			</map>
 		</property>
 	</bean>
