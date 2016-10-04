@@ -65,7 +65,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.AUTORISATION_RADIATION_RC,
 		                       autorisation.getEntreprise(),
 		                       local,
-		                       null,
+		                       autorisation.getDateEnvoi().year(),        // année de l'envoi du courrier
 		                       null,
 		                       infoArchivage);
 	}
@@ -76,7 +76,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.LETTRE_TYPE_INFO_LIQUIDATION,
 		                       lettre.getEntreprise(),
 		                       local,
-		                       null,
+		                       lettre.getDateEnvoi().year(),        // année de l'envoi du courrier
 		                       null,
 		                       infoArchivage);
 	}
@@ -189,7 +189,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TYPE_LETTRE_BIENVENUE_SORTANTE.get(lettre.getType()),
 		                       lettre.getEntreprise(),
 		                       local,
-		                       null,
+		                       lettre.getDateEnvoi().year(),        // date de l'envoi du courrier
 		                       null,
 		                       infoArchivage);
 	}
@@ -200,7 +200,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.RAPPEL_LETTRE_BIENVENUE,
 		                       lettre.getEntreprise(),
 		                       local,
-		                       null,
+		                       lettre.getDateEnvoi().year(),        // date de l'envoi du courrier
 		                       null,
 		                       infoArchivage);
 	}

@@ -61,7 +61,7 @@ public class EvenementDocumentSortantSenderITTest extends EvenementTest {
 		sender.afterPropertiesSet();
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEnvoiEvenement() throws Exception {
 
 		AuthenticationHelper.pushPrincipal("EvenementDocumentSortantSenderITTest");
