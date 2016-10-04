@@ -3,7 +3,14 @@ package ch.vd.unireg.interfaces.organisation;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -88,6 +95,18 @@ public interface ServiceOrganisationRaw {
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException;
+
+	/**
+	 * Recherche des demandes d'annonces à l'IDE.
+	 *
+	 * @param query          les critères de recherche des annonces
+	 * @param order          l'ordre de tri demandé pour les résultats
+	 * @param pageNumber     le numéro de page demandée (0-based)
+	 * @param resultsPerPage le nombre d'éléments par page
+	 * @return une page avec les annonces correspondantes
+	 */
+	@NotNull
+	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException;
 
 	/**
 	 * Méthode qui permet de tester que le service organisation répond bien. Cette méthode est insensible aux caches.

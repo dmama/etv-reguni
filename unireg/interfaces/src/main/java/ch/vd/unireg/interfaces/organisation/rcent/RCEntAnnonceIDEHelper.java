@@ -40,6 +40,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.LegalFormConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.NoticeRequestAddressConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.NoticeRequestStatusCodeConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.RaisonDeRadiationRegistreIDEConverter;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.StatutAnnonceConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeAnnonceConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeDeSiteConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfLocationConverter;
@@ -67,7 +68,8 @@ public class RCEntAnnonceIDEHelper {
 	public static final NoticeRequestAddressConverter ADDRESS_CONVERTER = new NoticeRequestAddressConverter();
 	public static final UidRegisterDeregistrationReasonConverter UID_REGISTER_DEREGISTRATION_REASON_CONVERTER = new UidRegisterDeregistrationReasonConverter();
 
-	private static final TypeAnnonceConverter TYPE_ANNONCE_CONVERTER = new TypeAnnonceConverter();
+	public static final StatutAnnonceConverter STATUS_ANNONCE_CONVERTER = new StatutAnnonceConverter();
+	public static final TypeAnnonceConverter TYPE_ANNONCE_CONVERTER = new TypeAnnonceConverter();
 	private static final TypeDeSiteConverter TYPE_DE_SITE_CONVERTER = new TypeDeSiteConverter();
 	private static final RaisonDeRadiationRegistreIDEConverter RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER = new RaisonDeRadiationRegistreIDEConverter();
 	private static final FormeLegaleConverter FORME_LEGALE_CONVERTER = new FormeLegaleConverter();

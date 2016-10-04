@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0022.v3.NoticeRequestStatus;
+import ch.vd.evd0022.v3.NoticeRequestStatusCode;
 import ch.vd.evd0022.v3.TypeOfNoticeRequest;
 import ch.vd.registre.base.date.RegDate;
 
@@ -17,7 +17,7 @@ public class RcEntNoticeQuery {
 
 	private Long noticeId;
 	private TypeOfNoticeRequest type;
-	private NoticeRequestStatus[] status;
+	private NoticeRequestStatusCode[] status;
 	private Long cantonalId;
 	private String userId;
 	private String name;
@@ -43,7 +43,7 @@ public class RcEntNoticeQuery {
 	 * @return le ou les critères de recherche sur le statut de la demande d'annonce
 	 */
 	@Nullable
-	public NoticeRequestStatus[] getStatus() {
+	public NoticeRequestStatusCode[] getStatus() {
 		return status == null ? null : status.clone();
 	}
 
@@ -97,7 +97,7 @@ public class RcEntNoticeQuery {
 		this.type = type;
 	}
 
-	public void setStatus(NoticeRequestStatus[] status) {
+	public void setStatus(NoticeRequestStatusCode[] status) {
 		this.status = status == null ? null : status.clone();
 	}
 

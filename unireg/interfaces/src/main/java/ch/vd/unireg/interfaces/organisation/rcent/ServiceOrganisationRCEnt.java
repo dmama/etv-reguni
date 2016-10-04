@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
@@ -18,10 +24,13 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
@@ -135,7 +144,35 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		} else if (noticeRequests.getNumberOfResults() > 2) {
 			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
 		}
+		// FIXME (raphaël) ce cast est interdit !
 		return (AnnonceIDEEnvoyee) RCEntAnnonceIDEHelper.get(noticeRequests.getResults().get(0));
+	}
+
+	@NotNull
+	@Override
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+
+		final Sort sort = (order == null ? null : new Sort(order));
+		final PageRequest pageable = new PageRequest(pageNumber, resultsPerPage, sort);
+
+		// on fait la requête au client
+		final Page<NoticeRequestReport> notices = client.findNotices(query.toFindNoticeQuery(), order, pageNumber + 1, resultsPerPage);
+		if (notices == null) {
+			return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList(), pageable, 0);
+		}
+		else {
+			// on adapte les réponses
+			final List<AnnonceIDE> annonces = new ArrayList<>(notices.getNumberOfElements());
+			for (NoticeRequestReport n : notices.getContent()) {
+				final ProtoAnnonceIDE modele = RCEntAnnonceIDEHelper.get(n);
+
+				// FIXME (msi) hack pour transformer un modèle en annonce. A corriger quand Raphaël aura committé son cleanup
+				final long numero = Long.parseLong(n.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
+				final AnnonceIDE a = new AnnonceIDE(numero, modele, modele.getStatut());
+				annonces.add(a);
+			}
+			return new PageImpl<AnnonceIDE>(annonces, pageable, notices.getTotalElements());
+		}
 	}
 
 	@Override

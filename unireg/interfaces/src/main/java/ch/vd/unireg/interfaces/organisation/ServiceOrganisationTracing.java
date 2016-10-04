@@ -2,10 +2,16 @@ package ch.vd.unireg.interfaces.organisation;
 
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -191,6 +197,37 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 				@Override
 				public String toString() {
 					return String.format("noAnnonceIDE=%d", numero);
+				}
+			});
+		}
+	}
+
+	@NotNull
+	@Override
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull final AnnonceIDEQuery query, @Nullable final Sort.Order order, final int pageNumber, final int resultsPerPage) throws ServiceOrganisationException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final Page<AnnonceIDE> page = target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
+			if (page != null) {
+				items = page.getNumberOfElements();
+			}
+			return page;
+		}
+		catch (ServiceOrganisationException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "findAnnoncesIDE", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("query=%s, order=%s, pageNumber=%d, resultsPerPage=%d", query, order, pageNumber, resultsPerPage);
 				}
 			});
 		}

@@ -3,11 +3,16 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -79,6 +84,18 @@ public interface ServiceOrganisationService {
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	AnnonceIDEEnvoyee getAnnonceIDE(Long numero);
+
+	/**
+	 * Recherche des demandes d'annonces à l'IDE.
+	 *
+	 * @param query          les critères de recherche des annonces
+	 * @param order          l'ordre de tri demandé pour les résultats
+	 * @param pageNumber     le numéro de page demandée (0-based)
+	 * @param resultsPerPage le nombre d'éléments par page
+	 * @return une page avec les annonces correspondantes
+	 */
+	@NotNull
+	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException;
 
 	/**
 	 * Demander la validation d'une annonce IDE par le registre civil avant l'envoi.

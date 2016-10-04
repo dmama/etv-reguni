@@ -3,8 +3,15 @@ package ch.vd.unireg.interfaces.organisation;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -83,6 +90,18 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 		loadMeter.start(new MethodCallDescriptor("getAnnonceIDE", "numero", numero));
 		try {
 			return target.getAnnonceIDE(numero);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@NotNull
+	@Override
+	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+		loadMeter.start(new MethodCallDescriptor("findAnnoncesIDE", "query", query, "order", order, "pageNumber", pageNumber));
+		try {
+			return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 		}
 		finally {
 			loadMeter.end();
