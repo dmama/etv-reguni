@@ -31,6 +31,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
@@ -147,6 +148,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -291,6 +293,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 		});
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -385,6 +388,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -518,6 +522,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 		});
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -658,6 +663,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 		});
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -797,6 +803,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 			}
 		});
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 

@@ -30,15 +30,22 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisation, Long> implements EvenementOrganisationDAO {
 
 	private static final Set<EtatEvenementOrganisation> ETATS_NON_TRAITES;
+	private static final Set<EtatEvenementOrganisation> ETATS_TRAITES;
 
 	static {
-		final Set<EtatEvenementOrganisation> etats = EnumSet.noneOf(EtatEvenementOrganisation.class);
+		final Set<EtatEvenementOrganisation> etatsNonTraites = EnumSet.noneOf(EtatEvenementOrganisation.class);
+		final Set<EtatEvenementOrganisation> etatsTraitesSucces = EnumSet.noneOf(EtatEvenementOrganisation.class);
 		for (EtatEvenementOrganisation etat : EtatEvenementOrganisation.values()) {
-			if (!etat.isTraite()) {
-				etats.add(etat);
+			if (etat.isTraite()) {
+				if (etat != EtatEvenementOrganisation.FORCE) {
+					etatsTraitesSucces.add(etat);
+				}
+			} else {
+				etatsNonTraites.add(etat);
 			}
 		}
-		ETATS_NON_TRAITES = Collections.unmodifiableSet(etats);
+		ETATS_NON_TRAITES = Collections.unmodifiableSet(etatsNonTraites);
+		ETATS_TRAITES = Collections.unmodifiableSet(etatsTraitesSucces);
 	}
 
 	public EvenementOrganisationDAOImpl() {
@@ -48,6 +55,12 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 	@Override
 	public List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation) {
 		return getEvenementsOrganisationNonTraites(Collections.singletonList(noOrganisation), true);
+
+	}
+
+	@Override
+	public List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation) {
+		return getEvenementsOrganisationTraitesSucces(Collections.singletonList(noOrganisation), true);
 
 	}
 
@@ -64,6 +77,20 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		query.add(Restrictions.in("noOrganisation", nosOrganisation));
 		if (nonTraitesSeulement) {
 			query.add(Restrictions.in("etat", ETATS_NON_TRAITES));
+		}
+		query.addOrder(Order.asc("dateEvenement"));
+		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		return query.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(Collection<Long> nosOrganisation, boolean nonTraitesSeulement) {
+		//final String hql = "from EvenementOrganisation as ec where ec.annulationDate is null and ec.noOrganisation in (:nosOrganisation)" + (nonTraitesSeulement ? " and ec.etat in (:etats)" : StringUtils.EMPTY);
+		Criteria query = getCurrentSession().createCriteria(EvenementOrganisation.class, "eo");
+		query.add(Restrictions.isNull("annulationDate"));
+		query.add(Restrictions.in("noOrganisation", nosOrganisation));
+		if (nonTraitesSeulement) {
+			query.add(Restrictions.in("etat", ETATS_TRAITES));
 		}
 		query.addOrder(Order.asc("dateEvenement"));
 		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

@@ -23,6 +23,8 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 
 	private static final String DB_UNIT_DATA_FILE = "EvenementOrganisationDAOTest.xml";
 
+	public static final long NO_ORGANISATION = 123454321L;
+
 	EvenementOrganisationDAO dao;
 
 	public EvenementOrganisationDAOTest() throws Exception {
@@ -44,7 +46,7 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 
 		List<EvenementOrganisation> list = dao.getAll();
 		assertNotNull(list);
-		assertEquals(2, list.size());
+		assertEquals(4, list.size());
 	}
 
 
@@ -61,7 +63,7 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 
 		// Evt
 		EvenementOrganisation evt = list.get(0);
-		assertEquals(123454321L, evt.getNoOrganisation());
+		assertEquals(NO_ORGANISATION, evt.getNoOrganisation());
 	}
 
 	/**
@@ -73,13 +75,30 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 	public void testFindPaginationNull() throws Exception {
 
 		EvenementOrganisationCriteria evenementCriteria = new EvenementOrganisationCriteria();
-		evenementCriteria.setType(TypeEvenementOrganisation.FOSC_DISSOLUTION_ENTREPRISE);
+		evenementCriteria.setType(TypeEvenementOrganisation.FOSC_AUTRE_MUTATION);
 		List<EvenementOrganisation> list = dao.find(evenementCriteria, null);
 		assertNotNull(list);
-		assertEquals(1, list.size());
+		assertEquals(3, list.size());
 
 		// Evt
 		EvenementOrganisation evt = list.get(0);
-		assertEquals(123454321L, evt.getNoOrganisation());
+		assertEquals(NO_ORGANISATION, evt.getNoOrganisation());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetEvenementsOrganisationNonTraites() {
+		final List<EvenementOrganisation> evtsSucces = dao.getEvenementsOrganisationNonTraites(NO_ORGANISATION);
+		assertEquals(2, evtsSucces.size());
+		assertEquals(19003L, evtsSucces.get(0).getNoEvenement());
+		assertEquals(19004L, evtsSucces.get(1).getNoEvenement());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetEvenementsOrganisationTraitesSucces() {
+		final List<EvenementOrganisation> evtsSucces = dao.getEvenementsOrganisationTraitesSucces(NO_ORGANISATION);
+		assertEquals(1, evtsSucces.size());
+		assertEquals(19002L, evtsSucces.get(0).getNoEvenement());
 	}
 }

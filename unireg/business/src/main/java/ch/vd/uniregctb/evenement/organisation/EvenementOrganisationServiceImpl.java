@@ -68,6 +68,11 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationNonTraites(noOrganisation));
 	}
 
+	@Override
+	public List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation) {
+		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationTraitesSucces(noOrganisation));
+	}
+
 	private List<EvenementOrganisation> arrangeAndSort(List<EvenementOrganisation> evts) {
 		if (evts != null && evts.size() > 0) {
 			Collections.sort(evts, EVT_ORGANISATION_COMPARATOR);

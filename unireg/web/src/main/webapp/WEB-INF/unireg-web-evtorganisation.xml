@@ -20,6 +20,7 @@
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="evenementOrganisationService" ref="evtOrganisationService" />
 		<property name="appariementService" ref="appariementService" />
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>

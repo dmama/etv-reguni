@@ -14,14 +14,32 @@
       <value>19001</value>
       <value>FOSC_NOUVELLE_ENTREPRISE</value>
       <value>20100501</value>
-      <value>TRAITE</value>
+      <value>FORCE</value>
       <value>123454321</value>
     </row>
     <row>
       <value>2015-05-04</value>
       <value>2</value>
       <value>19002</value>
-      <value>FOSC_DISSOLUTION_ENTREPRISE</value>
+      <value>FOSC_AUTRE_MUTATION</value>
+      <value>20150501</value>
+      <value>TRAITE</value>
+      <value>123454321</value>
+    </row>
+    <row>
+      <value>2010-05-04</value>
+      <value>3</value>
+      <value>19003</value>
+      <value>FOSC_AUTRE_MUTATION</value>
+      <value>20100501</value>
+      <value>EN_ERREUR</value>
+      <value>123454321</value>
+    </row>
+    <row>
+      <value>2015-05-04</value>
+      <value>4</value>
+      <value>19004</value>
+      <value>FOSC_AUTRE_MUTATION</value>
       <value>20150501</value>
       <value>A_TRAITER</value>
       <value>123454321</value>

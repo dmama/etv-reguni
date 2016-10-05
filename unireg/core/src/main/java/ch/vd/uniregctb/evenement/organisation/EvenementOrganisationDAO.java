@@ -23,6 +23,13 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation);
 
 	/**
+	 * Renvoie l'ensemble des événements déjà traités avec succès (i.e. dont l'état est final) pour l'organisation donnée
+	 * @param noOrganisation numéro de l'organisation sur laquelle les événements doivent être recherchés
+	 * @return une liste des événements liés à l'organisation donnée et dont l'état est final (ordre non garanti)
+	 */
+	List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation);
+
+	/**
 	 * Renvoie l'ensemble des événements pour l'organisation donnée
 	 * @param noOrganisation numéro de l'organisation sur lequel les événements doivent être recherchés
 	 * @return une liste des événements liés à l'organisation donnée et (ordre non garanti)

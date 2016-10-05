@@ -25,6 +25,7 @@ import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
@@ -107,6 +108,7 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.setCappingLevelProvider(new EvenementOrganisationCappingLevelProvider() {

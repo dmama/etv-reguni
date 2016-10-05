@@ -18,7 +18,9 @@ public interface EvenementOrganisationService {
 
     List<EvenementOrganisation> getEvenementsNonTraitesOrganisation(long noOrganisation);
 
-    /**
+	List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation);
+
+	/**
      *
      * @param id id de l'événement à retrouver
      *

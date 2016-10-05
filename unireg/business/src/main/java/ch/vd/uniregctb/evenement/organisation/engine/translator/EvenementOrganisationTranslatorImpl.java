@@ -35,6 +35,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelP
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.interne.CappingAVerifier;
 import ch.vd.uniregctb.evenement.organisation.interne.CappingEnErreur;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
@@ -128,6 +129,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private IdentificationContribuableService identCtbService;
 	private EvenementFiscalService evenementFiscalService;
 	private AssujettissementService assujettissementService;
+	private EvenementOrganisationService evenementOrganisationService;
 	private AppariementService appariementService;
 	private ParametreAppService parametreAppService;
 	private boolean useOrganisationsOfNotice;
@@ -225,6 +227,21 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprises (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
+
+		// Protection contre les événements dans le passé.
+		final List<EvenementOrganisation> evenementsOrganisationTraitesSucces = evenementOrganisationService.getEvenementsOrganisationTraitesSucces(organisation.getNumeroOrganisation());
+		if (evenementsOrganisationTraitesSucces != null && !evenementsOrganisationTraitesSucces.isEmpty()) {
+			final EvenementOrganisation dernierEvenementTraiteSucces = CollectionsUtils.getLastElement(evenementsOrganisationTraitesSucces);
+			if (event.getDateEvenement().isBefore(dernierEvenementTraiteSucces.getDateEvenement())) {
+				throw new EvenementOrganisationException(
+						String.format(
+								"L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement traité avec succès pour cette organisation! " +
+										"Traitement automatique impossible.",
+								event.getNoEvenement(), organisation.getNumeroOrganisation(),
+								RegDateHelper.dateToDisplayString(event.getDateEvenement()), RegDateHelper.dateToDisplayString(dernierEvenementTraiteSucces.getDateEvenement()))
+				);
+			}
+		}
 
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
 		Audit.info(event.getNoEvenement(), String.format("Organisation trouvée: %s", organisationDescription));
@@ -586,6 +603,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementOrganisationService(EvenementOrganisationService evenementOrganisationService) {
+		this.evenementOrganisationService = evenementOrganisationService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

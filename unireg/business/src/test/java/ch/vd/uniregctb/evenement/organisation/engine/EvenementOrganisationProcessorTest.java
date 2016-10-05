@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelP
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
 import ch.vd.uniregctb.evenement.organisation.interne.CappingAVerifier;
@@ -63,6 +65,8 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.EN_ERREUR;
+import static ch.vd.uniregctb.type.EtatEvenementOrganisation.TRAITE;
+import static ch.vd.uniregctb.type.TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
 import static ch.vd.uniregctb.type.TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_FAILLITE;
 
 /**
@@ -138,6 +142,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -216,6 +221,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.setCappingLevelProvider(new EvenementOrganisationCappingLevelProvider() {
@@ -307,6 +313,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.setCappingLevelProvider(new EvenementOrganisationCappingLevelProvider() {
@@ -412,6 +419,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -688,6 +696,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -825,6 +834,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -987,6 +997,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -1098,6 +1109,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -1198,6 +1210,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -1304,6 +1317,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -1409,6 +1423,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
@@ -1446,4 +1461,95 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		                             }
 		);
 	}
+
+	@Test(timeout = 10000L)
+	public void testProtectionContreEvenementDansLePasse() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", date(2000, 1, 1), null, FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne));
+			}
+		});
+
+		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				return entreprise.getNumero();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		final SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		final EvenementOrganisation event1 = createEvent(99999L, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 8, 18), TRAITE);
+		final EvenementOrganisation event2 = createEvent(noEvenement, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 6, 24), A_TRAITER);
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				hibernateTemplate.merge(event1);
+				return hibernateTemplate.merge(event2).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(1, listEvtInterne.size());
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+
+				                             final List<EvenementOrganisationErreur> messages = evt.getErreurs();
+				                             Assert.assertNotNull(messages);
+				                             Assert.assertEquals(1, messages.size());
+				                             Assert.assertEquals(
+						                             String.format(
+								                             "L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement traité avec succès pour cette organisation! " +
+										                             "Traitement automatique impossible.",
+								                             noEvenement, noOrganisation,
+								                             RegDateHelper.dateToDisplayString(date(2015, 6, 24)), RegDateHelper.dateToDisplayString(date(2015, 8, 18))),
+						                             messages.get(0).getMessage());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
 }
