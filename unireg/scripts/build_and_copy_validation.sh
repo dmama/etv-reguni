@@ -12,12 +12,6 @@ while [[ ! "$DEPOSANT" =~ ^[a-zA-Z0-9]+$ ]]; do
 	read -p "Hexagramme du déposant : " DEPOSANT
 done
 
-# On fait l'update au début pour le numéro de version
-svn update unireg
-if [ $? != 0 ]; then
-	echo "!!! Erreur lors du svn update"
-	exit 1
-fi
 
 #########
 # Version

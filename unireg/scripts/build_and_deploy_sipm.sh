@@ -18,7 +18,7 @@ echo "Deploy only: $DEPLOY_ONLY"
 
 
 if [ $DEPLOY_ONLY == 0 ]; then
-	svn update unireg
+	git pull
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du svn update" >&2
