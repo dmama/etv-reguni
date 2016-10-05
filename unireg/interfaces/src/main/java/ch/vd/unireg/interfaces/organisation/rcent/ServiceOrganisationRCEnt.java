@@ -30,7 +30,6 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
-import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
@@ -145,8 +144,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		} else if (noticeRequests.getNumberOfResults() > 2) {
 			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
 		}
-		// FIXME (raphaël) ce cast est interdit !
-		return (AnnonceIDEEnvoyee) RCEntAnnonceIDEHelper.get(noticeRequests.getResults().get(0));
+		return RCEntAnnonceIDEHelper.buildAnnonceIDE(noticeRequests.getResults().get(0));
 	}
 
 	@NotNull
@@ -165,11 +163,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 			// on adapte les réponses
 			final List<AnnonceIDE> annonces = new ArrayList<>(notices.getNumberOfElements());
 			for (NoticeRequestReport n : notices.getContent()) {
-				final ProtoAnnonceIDE modele = RCEntAnnonceIDEHelper.get(n);
-
-				// FIXME (msi) hack pour transformer un modèle en annonce. A corriger quand Raphaël aura committé son cleanup
-				final long numero = Long.parseLong(n.getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
-				final AnnonceIDE a = new AnnonceIDE(numero, modele, modele.getStatut());
+				final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
 				annonces.add(a);
 			}
 			return new PageImpl<AnnonceIDE>(annonces, pageable, notices.getTotalElements());
@@ -186,7 +180,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 			final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
 			throw new ServiceOrganisationException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
 		}
-		final BaseAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.get(noticeReport).getStatut();
+		final BaseAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.buildProtoAnnonceIDE(noticeReport).getStatut();
 		cleanErreurs(statut);
 		return statut;
 	}

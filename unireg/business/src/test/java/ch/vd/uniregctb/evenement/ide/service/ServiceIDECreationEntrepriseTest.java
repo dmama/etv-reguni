@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
@@ -92,7 +93,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 						                                            RCEntAnnonceIDEHelper
 								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 								                                                                                MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
-								                                                                                null, null));
+								                                                                                null, null), null);
 
 				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
 				this.addStatutAnnonceIDEAttentu(modele, statut);
@@ -246,15 +247,17 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			@Override
 			protected void init() {
 
+				final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
+						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
+						                              MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
+						                              null, null, null);
+
 				// Annonce existante
 				AnnonceIDE annonce =
 						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                       new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                       RCEntAnnonceIDEHelper
-								                                            .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
-								                                                                          MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
-								                                                                          null, null, null));
+						                                       adresse, null);
 				this.addAnnonceIDE(annonce);
 
 				// Validation
@@ -262,10 +265,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                            "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                            RCEntAnnonceIDEHelper
-								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
-								                                                                                MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
-								                                                                                null, null, null));
+						                                            adresse, null);
 
 				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 6, 11, 0, 1), new ArrayList<Pair<String, String>>());
 				this.addStatutAnnonceIDEAttentu(modele, statut);

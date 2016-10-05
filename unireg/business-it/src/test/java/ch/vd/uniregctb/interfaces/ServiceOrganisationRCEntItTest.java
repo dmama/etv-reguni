@@ -268,7 +268,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 				                              null, null);
 		AnnonceIDEData modele = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    null, null, null, null, null, null,
-		                                                                    "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", adresse);
+		                                                                    "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", adresse, null);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
@@ -289,7 +289,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
 		AnnonceIDEData modele = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    new NumeroIDE("CHE999999998"), null, null, null, null, null,
-		                                                                    "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", null);
+		                                                                    "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques", null, null);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(modele);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);

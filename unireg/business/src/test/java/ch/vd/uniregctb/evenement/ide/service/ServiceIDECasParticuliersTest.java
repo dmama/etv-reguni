@@ -117,7 +117,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 						                                            RCEntAnnonceIDEHelper
 								                                            .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 								                                                                          MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
-								                                                                          null, null));
+								                                                                          null, null), null);
 
 				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
 				this.addStatutAnnonceIDEAttentu(modele, statut);

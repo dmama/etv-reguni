@@ -26,7 +26,7 @@ public class AnnonceIDETest extends WithoutSpringTest {
 
 		final AnnonceIDE annonce1 =
 				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
-				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce1);
+				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce1, null);
 
 
 		// l'annonce modèle
@@ -36,7 +36,7 @@ public class AnnonceIDETest extends WithoutSpringTest {
 
 		final AnnonceIDE annonce2 =
 				RCEntAnnonceIDEHelper.createAnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
-				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce2);
+				                                       "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce2, null);
 
 		Assert.assertEquals(annonce2, annonce1);
 	}

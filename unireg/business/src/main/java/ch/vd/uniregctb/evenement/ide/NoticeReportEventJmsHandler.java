@@ -107,7 +107,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 		final BaseAnnonceIDE recue;
 		// En lieu et place d'une pénible validation, pour attrapper les NPE en cas de champs métiers pas correctement remplis par RCEnt.
 		try {
-			recue = RCEntAnnonceIDEHelper.get(message);
+			recue = RCEntAnnonceIDEHelper.buildAnnonceIDE(message);
 		} catch (RuntimeException e) {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e); // Avec les amitiés de la baronne
 		}
