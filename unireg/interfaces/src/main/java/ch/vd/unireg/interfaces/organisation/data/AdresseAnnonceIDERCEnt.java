@@ -166,7 +166,10 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 	}
 
 
-	public static class PaysRCEnt implements AdresseAnnonceIDE.Pays{
+	public static class PaysRCEnt implements AdresseAnnonceIDE.Pays, Serializable {
+
+		private static final long serialVersionUID = 710711448241742510L;
+
 		protected Integer noOfs;
 		protected String codeISO2;
 		protected String nomCourt;
