@@ -36,13 +36,31 @@
       <value>123454321</value>
     </row>
     <row>
-      <value>2015-05-04</value>
+      <value>2010-05-04</value>
       <value>4</value>
       <value>19004</value>
       <value>FOSC_AUTRE_MUTATION</value>
       <value>20150501</value>
       <value>A_TRAITER</value>
       <value>123454321</value>
+    </row>
+    <row>
+      <value>2010-09-08</value>
+      <value>5</value>
+      <value>20001</value>
+      <value>FOSC_NOUVELLE_ENTREPRISE</value>
+      <value>20150908</value>
+      <value>A_TRAITER</value>
+      <value>98989898</value>
+    </row>
+    <row>
+      <value>2010-09-09</value>
+      <value>6</value>
+      <value>20002</value>
+      <value>FOSC_AUTRE_MUTATION</value>
+      <value>20150909</value>
+      <value>A_TRAITER</value>
+      <value>98989898</value>
     </row>
   </table>
 </dataset>

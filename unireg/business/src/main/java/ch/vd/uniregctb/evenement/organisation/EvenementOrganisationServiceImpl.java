@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -69,9 +70,10 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 	}
 
 	@Override
-	public List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation) {
-		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationTraitesSucces(noOrganisation));
+	public List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date) {
+		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationApresDate(noOrganisation, date));
 	}
+
 
 	private List<EvenementOrganisation> arrangeAndSort(List<EvenementOrganisation> evts) {
 		if (evts != null && evts.size() > 0) {

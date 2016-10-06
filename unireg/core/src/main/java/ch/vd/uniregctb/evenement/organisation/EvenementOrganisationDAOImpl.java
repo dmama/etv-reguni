@@ -59,12 +59,6 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 	}
 
 	@Override
-	public List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation) {
-		return getEvenementsOrganisationTraitesSucces(Collections.singletonList(noOrganisation), true);
-
-	}
-
-	@Override
 	public List<EvenementOrganisation> getEvenementsOrganisation(long noOrganisation) {
 		return getEvenementsOrganisationNonTraites(Collections.singletonList(noOrganisation), false);
 	}
@@ -84,22 +78,6 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(Collection<Long> nosOrganisation, boolean nonTraitesSeulement) {
-		//final String hql = "from EvenementOrganisation as ec where ec.annulationDate is null and ec.noOrganisation in (:nosOrganisation)" + (nonTraitesSeulement ? " and ec.etat in (:etats)" : StringUtils.EMPTY);
-		Criteria query = getCurrentSession().createCriteria(EvenementOrganisation.class, "eo");
-		query.add(Restrictions.isNull("annulationDate"));
-		query.add(Restrictions.in("noOrganisation", nosOrganisation));
-		if (nonTraitesSeulement) {
-			query.add(Restrictions.in("etat", ETATS_TRAITES));
-		}
-		query.addOrder(Order.asc("dateEvenement"));
-		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		return query.list();
-	}
-
-
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementOrganisation> getEvenementsOrganisationARelancer() {
 		// final String hql = "from EvenementOrganisation as ec where ec.annulationDate is null and ec.etat = :etat";
@@ -107,6 +85,15 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		query.add(Restrictions.isNull("annulationDate"));
 		query.add(Restrictions.eq("etat", EtatEvenementOrganisation.A_TRAITER));
 		return query.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date) {
+		final EvenementOrganisationCriteria<TypeEvenementOrganisation> criteria = new EvenementOrganisationCriteria<>();
+		criteria.setNumeroOrganisation(noOrganisation);
+		criteria.setRegDateEvenementDebut(date.getOneDayAfter());
+		return find(criteria, null);
 	}
 
 	@SuppressWarnings("unchecked")

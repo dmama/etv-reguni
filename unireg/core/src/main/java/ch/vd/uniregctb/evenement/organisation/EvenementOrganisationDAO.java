@@ -6,6 +6,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -23,13 +24,6 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation);
 
 	/**
-	 * Renvoie l'ensemble des événements déjà traités avec succès (i.e. dont l'état est final) pour l'organisation donnée
-	 * @param noOrganisation numéro de l'organisation sur laquelle les événements doivent être recherchés
-	 * @return une liste des événements liés à l'organisation donnée et dont l'état est final (ordre non garanti)
-	 */
-	List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation);
-
-	/**
 	 * Renvoie l'ensemble des événements pour l'organisation donnée
 	 * @param noOrganisation numéro de l'organisation sur lequel les événements doivent être recherchés
 	 * @return une liste des événements liés à l'organisation donnée et (ordre non garanti)
@@ -41,6 +35,9 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	 * @return la liste des événements organisation à relancer
 	 */
 	List<EvenementOrganisation> getEvenementsOrganisationARelancer();
+
+	@SuppressWarnings("unchecked")
+	List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date);
 
 	/**
 	 * @return l'ensemble des identifiants des organisations pour lesquels il existe au moins un événement dans l'état {@link EtatEvenementOrganisation#EN_ATTENTE EN_ATTENTE}

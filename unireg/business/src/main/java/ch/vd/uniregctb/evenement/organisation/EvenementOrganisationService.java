@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -18,7 +19,7 @@ public interface EvenementOrganisationService {
 
     List<EvenementOrganisation> getEvenementsNonTraitesOrganisation(long noOrganisation);
 
-	List<EvenementOrganisation> getEvenementsOrganisationTraitesSucces(long noOrganisation);
+	List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date);
 
 	/**
      *

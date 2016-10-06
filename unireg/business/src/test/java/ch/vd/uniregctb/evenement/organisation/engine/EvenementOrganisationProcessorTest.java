@@ -1541,7 +1541,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             Assert.assertEquals(1, messages.size());
 				                             Assert.assertEquals(
 						                             String.format(
-								                             "L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement traité avec succès pour cette organisation! " +
+								                             "L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement reçu pour cette organisation! " +
 										                             "Traitement automatique impossible.",
 								                             noEvenement, noOrganisation,
 								                             RegDateHelper.dateToDisplayString(date(2015, 6, 24)), RegDateHelper.dateToDisplayString(date(2015, 8, 18))),

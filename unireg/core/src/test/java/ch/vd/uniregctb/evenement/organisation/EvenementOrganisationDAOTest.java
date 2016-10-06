@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.evenement.organisation;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +25,6 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 	private static final String DAO_NAME = "evenementOrganisationDAO";
 
 	private static final String DB_UNIT_DATA_FILE = "EvenementOrganisationDAOTest.xml";
-
-	public static final long NO_ORGANISATION = 123454321L;
 
 	EvenementOrganisationDAO dao;
 
@@ -46,7 +47,7 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 
 		List<EvenementOrganisation> list = dao.getAll();
 		assertNotNull(list);
-		assertEquals(4, list.size());
+		assertEquals(6, list.size());
 	}
 
 
@@ -59,11 +60,11 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 		ParamPagination pagination = new ParamPagination(1, 50, "dateEvenement", true);
 		List<EvenementOrganisation> list = dao.find(evenementCriteria, pagination);
 		assertNotNull(list);
-		assertEquals(1, list.size());
+		assertEquals(2, list.size());
 
 		// Evt
 		EvenementOrganisation evt = list.get(0);
-		assertEquals(NO_ORGANISATION, evt.getNoOrganisation());
+		assertEquals(123454321L, evt.getNoOrganisation());
 	}
 
 	/**
@@ -78,17 +79,17 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 		evenementCriteria.setType(TypeEvenementOrganisation.FOSC_AUTRE_MUTATION);
 		List<EvenementOrganisation> list = dao.find(evenementCriteria, null);
 		assertNotNull(list);
-		assertEquals(3, list.size());
+		assertEquals(4, list.size());
 
 		// Evt
 		EvenementOrganisation evt = list.get(0);
-		assertEquals(NO_ORGANISATION, evt.getNoOrganisation());
+		assertEquals(123454321L, evt.getNoOrganisation());
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEvenementsOrganisationNonTraites() {
-		final List<EvenementOrganisation> evtsSucces = dao.getEvenementsOrganisationNonTraites(NO_ORGANISATION);
+		final List<EvenementOrganisation> evtsSucces = dao.getEvenementsOrganisationNonTraites(123454321L);
 		assertEquals(2, evtsSucces.size());
 		assertEquals(19003L, evtsSucces.get(0).getNoEvenement());
 		assertEquals(19004L, evtsSucces.get(1).getNoEvenement());
@@ -96,9 +97,34 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testGetEvenementsOrganisationTraitesSucces() {
-		final List<EvenementOrganisation> evtsSucces = dao.getEvenementsOrganisationTraitesSucces(NO_ORGANISATION);
-		assertEquals(1, evtsSucces.size());
-		assertEquals(19002L, evtsSucces.get(0).getNoEvenement());
+	public void testGetEvenementsOrganisationApresDate() {
+		{
+			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDate(98989898L, date(2015, 9, 7));
+			Collections.sort(evts, getByIdEvtOrganisationComparator());
+			assertEquals(2, evts.size());
+			assertEquals(20001L, evts.get(0).getNoEvenement());
+			assertEquals(20002L, evts.get(1).getNoEvenement());
+		}
+		{
+			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDate(98989898L, date(2015, 9, 8));
+			Collections.sort(evts, getByIdEvtOrganisationComparator());
+			assertEquals(1, evts.size());
+			assertEquals(20002L, evts.get(0).getNoEvenement());
+		}
+		{
+			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDate(98989898L, date(2015, 9, 9));
+			Collections.sort(evts, getByIdEvtOrganisationComparator());
+			assertEquals(0, evts.size());
+		}
+	}
+
+	@NotNull
+	protected Comparator<EvenementOrganisation> getByIdEvtOrganisationComparator() {
+		return new Comparator<EvenementOrganisation>() {
+			@Override
+			public int compare(EvenementOrganisation o1, EvenementOrganisation o2) {
+				return Long.compare(o1.getId(), o2.getId());
+			}
+		};
 	}
 }

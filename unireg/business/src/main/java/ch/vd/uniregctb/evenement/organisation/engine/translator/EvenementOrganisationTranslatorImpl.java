@@ -229,18 +229,16 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		sanityCheck(event, organisation);
 
 		// Protection contre les événements dans le passé.
-		final List<EvenementOrganisation> evenementsOrganisationTraitesSucces = evenementOrganisationService.getEvenementsOrganisationTraitesSucces(organisation.getNumeroOrganisation());
-		if (evenementsOrganisationTraitesSucces != null && !evenementsOrganisationTraitesSucces.isEmpty()) {
-			final EvenementOrganisation dernierEvenementTraiteSucces = CollectionsUtils.getLastElement(evenementsOrganisationTraitesSucces);
-			if (event.getDateEvenement().isBefore(dernierEvenementTraiteSucces.getDateEvenement())) {
-				throw new EvenementOrganisationException(
-						String.format(
-								"L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement traité avec succès pour cette organisation! " +
-										"Traitement automatique impossible.",
-								event.getNoEvenement(), organisation.getNumeroOrganisation(),
-								RegDateHelper.dateToDisplayString(event.getDateEvenement()), RegDateHelper.dateToDisplayString(dernierEvenementTraiteSucces.getDateEvenement()))
-				);
-			}
+		final List<EvenementOrganisation> evenementsOrganisationApresDate = evenementOrganisationService.getEvenementsOrganisationApresDate(organisation.getNumeroOrganisation(), event.getDateEvenement());
+		if (evenementsOrganisationApresDate != null && !evenementsOrganisationApresDate.isEmpty()) {
+			final EvenementOrganisation dernierEvenementRecu = CollectionsUtils.getLastElement(evenementsOrganisationApresDate);
+			throw new EvenementOrganisationException(
+					String.format(
+							"L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement reçu pour cette organisation! " +
+									"Traitement automatique impossible.",
+							event.getNoEvenement(), organisation.getNumeroOrganisation(),
+							RegDateHelper.dateToDisplayString(event.getDateEvenement()), RegDateHelper.dateToDisplayString(dernierEvenementRecu.getDateEvenement()))
+			);
 		}
 
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
