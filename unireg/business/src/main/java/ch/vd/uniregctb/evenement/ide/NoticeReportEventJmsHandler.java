@@ -20,7 +20,6 @@ import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -62,7 +61,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 		final String businessId = message.getBusinessId();
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Réception d'un message JMS événement rapport d'annonce IDE {businessId='%s'}", businessId));
+			LOGGER.info(String.format("Réception d'un message JMS événement rapport d'annonce à l'IDE {businessId='%s'}", businessId));
 		}
 		final long start = System.nanoTime();
 		try {
@@ -84,7 +83,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 		finally {
 			if (LOGGER.isInfoEnabled()) {
 				final long end = System.nanoTime();
-				LOGGER.info(String.format("Réception du message JMS événement rapport d'annonce IDE {businessId='%s'} traitée en %d ms", businessId, TimeUnit.NANOSECONDS.toMillis(end - start)));
+				LOGGER.info(String.format("Réception du message JMS événement rapport d'annonce à l'IDE {businessId='%s'} traitée en %d ms", businessId, TimeUnit.NANOSECONDS.toMillis(end - start)));
 			}
 			AuthenticationHelper.popPrincipal();
 		}
@@ -104,31 +103,16 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 		NoticeRequestReport message = decodeNoticeRequestReport(xml);
 
-		final BaseAnnonceIDE recue;
+		final AnnonceIDEEnvoyee annonce;
 		// En lieu et place d'une pénible validation, pour attrapper les NPE en cas de champs métiers pas correctement remplis par RCEnt.
 		try {
-			recue = RCEntAnnonceIDEHelper.buildAnnonceIDE(message);
+			annonce = RCEntAnnonceIDEHelper.buildAnnonceIDE(message);
 		} catch (RuntimeException e) {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e); // Avec les amitiés de la baronne
 		}
-		AnnonceIDEEnvoyee annonce;
-		if (recue instanceof AnnonceIDEEnvoyee) {
-			annonce = (AnnonceIDEEnvoyee) recue;
-		} else {
-			Audit.error(String.format("Arrivée innattendue d'un événement de rapport d'annonce IDE pourtant sur modèle (avec un dummy id) (%s du %s), no IDE %s%s, statut %s le %s.",
-			                          recue.getType(),
-			                          recue.getDateAnnonce() == null ? null : DateHelper.dateTimeToDisplayString(recue.getDateAnnonce()),
-			                          recue.getNoIde(),
-			                          recue.getNoIdeRemplacant() == null ? "" : ", no IDE remplacant " + recue.getNoIdeRemplacant(),
-			                          recue.getStatut() == null ? null : recue.getStatut().getStatut(),
-			                          recue.getStatut() == null ? null : DateHelper.dateTimeToDisplayString(recue.getStatut().getDateStatut())
-			           )
-			);
-			throw new IllegalStateException("Réception d'un rapport de demande d'annonce sur une annonce modèle (avec un dummy id).");
-		}
 
 		Audit.info(annonce.getNumero(),
-		           String.format("Arrivée de l'événement de rapport d'annonce IDE %d (%s du %s), no IDE %s%s, statut %s le %s.",
+		           String.format("Arrivée de l'événement de rapport d'annonce à l'IDE %d (%s du %s), no IDE %s%s, statut %s le %s.",
 		                         annonce.getNumero(),
 		                         annonce.getType(),
 		                         annonce.getDateAnnonce() == null ? null : DateHelper.dateTimeToDisplayString(annonce.getDateAnnonce()),
@@ -146,7 +130,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 			// Rejet IDE avec numéro IDE -> supprimer l'ancien numéro IDE et sauver le numéro IDE temporaire
 		}
 		catch (RuntimeException e) {
-			Audit.error(annonce.getNumero(), String.format("Erreur au cours du traitement de l'événement de rapport d'annonce IDE %d:", annonce.getNumero()));
+			Audit.error(annonce.getNumero(), String.format("Erreur au cours du traitement de l'événement de rapport d'annonce à l'IDE %d:", annonce.getNumero()));
 			throw e;
 		}
 	}

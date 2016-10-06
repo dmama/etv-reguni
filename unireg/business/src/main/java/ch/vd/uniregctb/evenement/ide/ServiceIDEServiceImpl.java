@@ -406,14 +406,14 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 		// Workaround du SIREF-9364, où le statut est "sans erreur" même lorsqu'il y en a.
 		if (statut.getErreurs() != null && !statut.getErreurs().isEmpty()) {
-			throw new AnnonceIDEValidationException("Le modèle d'annonce IDE a échoué à la validation (il y a des erreurs).", statut.getErreurs());
+			throw new AnnonceIDEValidationException("Le modèle d'annonce à l'IDE a échoué à la validation (il y a des erreurs).", statut.getErreurs());
 		}
 
 		switch (statut.getStatut()) {
 		case VALIDATION_SANS_ERREUR:
 			break;
 		case REJET_RCENT:
-			throw new AnnonceIDEValidationException("Le modèle d'annonce IDE a échoué à la validation.", statut.getErreurs());
+			throw new AnnonceIDEValidationException("Le modèle d'annonce à l'IDE a échoué à la validation.", statut.getErreurs());
 		default:
 			throw new ServiceIDEException(String.format("Statut d'annonce inattendu retourné par le service de validation du registre civil: %s", statut.getStatut()));
 		}

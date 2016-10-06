@@ -271,7 +271,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			if (entreprise == null) {
 				throw new EvenementOrganisationException(
 						String.format(
-								"Fatal: Impossible de traiter l'événement de retour d'annonce IDE n°%d: impossible de retrouver l'entreprise pour l'annonce IDE %d (établissement n°%s)! " +
+								"Fatal: Impossible de traiter l'événement de retour d'annonce à l'IDE n°%d: impossible de retrouver l'entreprise pour l'annonce à l'IDE %d (établissement n°%s)! " +
 										"Le rapport entre tiers a peut être changé depuis?",
 								event.getNoEvenement(), noAnnonceIDE, FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumeroEtablissement())
 						)

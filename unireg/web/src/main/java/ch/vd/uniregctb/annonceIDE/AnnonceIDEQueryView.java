@@ -8,7 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 
 /**
- * Vue web qui contient les paramètres de recherche pour les annonces IDE.
+ * Vue web qui contient les paramètres de recherche pour les annonces à l'IDE.
  */
 public class AnnonceIDEQueryView {
 

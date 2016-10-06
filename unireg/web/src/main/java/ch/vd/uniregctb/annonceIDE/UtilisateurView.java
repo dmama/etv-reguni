@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 
 /**
- * Vue web des informations concernant l'annonceur d'une annonce IDE.
+ * Vue web des informations concernant l'annonceur d'une annonce à l'IDE.
  */
 public class UtilisateurView {
 

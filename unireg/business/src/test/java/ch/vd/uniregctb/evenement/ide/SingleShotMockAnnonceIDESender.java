@@ -15,7 +15,7 @@ public class SingleShotMockAnnonceIDESender implements AnnonceIDESender {
 	@Override
 	public void sendEvent(AnnonceIDEEnvoyee annonce, String msgBusinessId) throws AnnonceIDEException {
 		if (isUsed()) {
-			throw new RuntimeException("Une annonce IDE a déjà été expédiée avec ce mock sender de test spécialement prévu pour n'en permettre qu'une seule.");
+			throw new RuntimeException("Une annonce à l'IDE a déjà été expédiée avec ce mock sender de test spécialement prévu pour n'en permettre qu'une seule.");
 		}
 
 		this.annonceEnvoyee = annonce;

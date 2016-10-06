@@ -12,7 +12,7 @@ import org.springframework.web.util.HtmlUtils;
 import ch.vd.uniregctb.annonceIDE.AdresseAnnonceIDEView;
 
 /**
- * Tag JSP qui permet d'afficher une adresse de demande d'annonce IDE sur plusieurs lignes
+ * Tag JSP qui permet d'afficher une adresse de demande d'annonce à l'IDE sur plusieurs lignes
  */
 public class JspTagAdresseAnnonce extends BodyTagSupport {
 

@@ -6,7 +6,7 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 
 /**
- * Vue web des informations concernant l'application utilisée par l'annonceur d'une annonce IDE.
+ * Vue web des informations concernant l'application utilisée par l'annonceur d'une annonce à l'IDE.
  */
 public class ServiceIDEView {
 

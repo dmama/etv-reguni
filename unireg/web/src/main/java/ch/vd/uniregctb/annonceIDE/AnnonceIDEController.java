@@ -32,7 +32,7 @@ import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
- * Contrôleur qui permet le suivi des annonces IDE.
+ * Contrôleur qui permet le suivi des annonces à l'IDE.
  */
 @Controller
 @RequestMapping(value = "/annonceIDE")

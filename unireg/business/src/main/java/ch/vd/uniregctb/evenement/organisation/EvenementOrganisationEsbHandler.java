@@ -242,11 +242,11 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 					org.getOrganisation().getCantonalId().longValue(),
 					EtatEvenementOrganisation.A_TRAITER
 			);
-			// On a un retour d'annonce IDE. Il faut rechercher sa référence et l'attacher à l'événement.
+			// On a un retour d'annonce à l'IDE. Il faut rechercher sa référence et l'attacher à l'événement.
 			if (noAnnonceIDE != null) {
 				final ReferenceAnnonceIDE referencesAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);
 				if (referencesAnnonceIDE == null) {
-					final String msg = String.format("Impossible de trouver la référence en base pour le numéro d'annonce IDE %d indiqué dans l'événement RCEnt.", noAnnonceIDE);
+					final String msg = String.format("Impossible de trouver la référence en base pour le numéro d'annonce à l'IDE %d indiqué dans l'événement RCEnt.", noAnnonceIDE);
 					throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, msg);
 				}
 				e.setReferenceAnnonceIDE(referencesAnnonceIDE);

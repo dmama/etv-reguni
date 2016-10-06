@@ -10,7 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 
 /**
- * Vue web du statut d'une annonce IDE.
+ * Vue web du statut d'une annonce à l'IDE.
  */
 public class StatutView {
 	private StatutAnnonce statut;

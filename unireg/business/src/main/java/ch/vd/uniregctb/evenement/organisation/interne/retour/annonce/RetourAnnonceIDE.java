@@ -36,7 +36,7 @@ import ch.vd.uniregctb.tiers.rattrapage.appariement.CandidatAppariement;
 import ch.vd.uniregctb.utils.RangeUtil;
 
 /**
- * Traitement du retour d'annonce IDE. C'est-à-dire de l'annonce IDE dont l'origine est notre propre annonce.
+ * Traitement du retour d'annonce à l'IDE. C'est-à-dire de l'annonce à l'IDE dont l'origine est notre propre annonce.
  *
  * @author Raphaël Marmier, 2016-09-22
  */
@@ -72,7 +72,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public String describe() {
-		return "Retour d'annonce IDE";
+		return "Retour d'annonce à l'IDE";
 	}
 
 	@Override
@@ -192,7 +192,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
 		Assert.notNull(getEntreprise());
 
-		// Vérifier qu'on a bien une annonce IDE
+		// Vérifier qu'on a bien une annonce à l'IDE
 		Assert.notNull(annonceIDE);
 
 	}

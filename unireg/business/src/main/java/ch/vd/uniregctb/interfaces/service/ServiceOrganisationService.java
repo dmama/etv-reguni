@@ -80,7 +80,7 @@ public interface ServiceOrganisationService {
 	 * transmition par l'esb.
 	 *
 	 * @param numero le numéro de l'annonce recherchée
-	 * @return l'annonce IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
+	 * @return l'annonce à l'IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	@Nullable
@@ -99,7 +99,7 @@ public interface ServiceOrganisationService {
 	Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException;
 
 	/**
-	 * Demander la validation d'une annonce IDE par le registre civil avant l'envoi.
+	 * Demander la validation d'une annonce à l'IDE par le registre civil avant l'envoi.
 	 * @param annonceIDE l'annonce candidate
 	 * @return le statut résultant contenant les éventuelles erreurs rapportées par le service civil.
 	 */

@@ -56,7 +56,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	private long noOrganisation;
 
 	/**
-	 * La référence à l'annonce IDE émise par Unireg et dont ce message découle.
+	 * La référence à l'annonce à l'IDE émise par Unireg et dont ce message découle.
 	 */
 	private ReferenceAnnonceIDE referenceAnnonceIDE;
 

@@ -102,7 +102,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 			}
 		});
 
-		// Mise en place annonce IDE RCEnt
+		// Mise en place annonce à l'IDE RCEnt
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
@@ -187,7 +187,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 			}
 		});
 
-		// Mise en place annonce IDE RCEnt
+		// Mise en place annonce à l'IDE RCEnt
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
@@ -258,7 +258,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 			}
 		});
 
-		// Mise en place annonce IDE RCEnt
+		// Mise en place annonce à l'IDE RCEnt
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy Assoc", date(2016, 9, 8), null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2016, 9, 5),
 		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");

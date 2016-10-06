@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 
 /**
- * Vue web des informations sur les établissements concernés par une annonce IDE.
+ * Vue web des informations sur les établissements concernés par une annonce à l'IDE.
  */
 public class InformationOrganisationView {
 	private Long numeroSite;

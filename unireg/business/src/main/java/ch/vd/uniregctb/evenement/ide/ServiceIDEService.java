@@ -33,7 +33,7 @@ public interface ServiceIDEService {
 	 *     pris en charge).
 	 * </p>
 	 * @param entreprise l'entreprise ciblé
-	 * @return l'annonce IDE envoyée, le modèle d'annonce en cas de validation seule, ou null si aucune annonce n'a besoin d'etre émise.
+	 * @return l'annonce à l'IDE envoyée, le modèle d'annonce en cas de validation seule, ou null si aucune annonce n'a besoin d'etre émise.
 	 * @throws ServiceIDEException en cas d'erreur non récupérable.
 	 * @throws AnnonceIDEValidationException en cas d'echec de la validation effectuée avant tout envoi. L'exception contient la liste des erreurs rencontrées.
 	 */
@@ -44,7 +44,7 @@ public interface ServiceIDEService {
 	 *     Vérifier s'il faut envoyer une annonce à l'IDE pour une entreprise, mais seulement à fin de validation, sans expédier d'annonce.
 	 * </p>
 	 * @param entreprise l'entreprise ciblé
-	 * @return le modèle de l'annonce IDE qui serait envoyée, ou null si aucune annonce n'a besoin d'etre émise.
+	 * @return le modèle de l'annonce à l'IDE qui serait envoyée, ou null si aucune annonce n'a besoin d'etre émise.
 	 * @throws ServiceIDEException en cas d'erreur non récupérable.
 	 * @throws AnnonceIDEValidationException en cas d'echec de la validation effectuée avant tout envoi. L'exception contient la liste des erreurs rencontrées.
 	 */

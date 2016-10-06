@@ -57,7 +57,7 @@ public class RCEntApiHelper {
 	}
 
 	/**
-	 * Extraire le numéro de l'annonce IDE si l'événement rapporte un changement issu d'une annonce à l'IDE émise par Unireg.
+	 * Extraire le numéro de l'annonce à l'IDE si l'événement rapporte un changement issu d'une annonce à l'IDE émise par Unireg.
 	 *
 	 * @param notice l'événement RCEnt.
 	 * @return le numéro d'annonce, ou null si l'événement ne contient pas de référence à une annonce émise par Unireg.
@@ -73,7 +73,7 @@ public class RCEntApiHelper {
 				if (noticeRequestId != null) {
 					return Long.parseLong(noticeRequestId);
 				} else {
-					throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est réputé issu d'une annonce IDE d'Unireg, mais le numéro d'annonce n'est pas inclu!", notice.getNoticeId().longValue()));
+					throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est réputé issu d'une annonce à l'IDE d'Unireg, mais le numéro d'annonce n'est pas inclu!", notice.getNoticeId().longValue()));
 				}
 			}
 		}

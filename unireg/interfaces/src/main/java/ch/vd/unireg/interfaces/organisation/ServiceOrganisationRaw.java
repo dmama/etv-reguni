@@ -91,7 +91,7 @@ public interface ServiceOrganisationRaw {
 	 * le caractère asynchrone de ce genre d'envoi.
 	 *
 	 * @param numero le numéro de l'annonce recherchée
-	 * @return l'annonce IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
+	 * @return l'annonce à l'IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	@Nullable

@@ -82,11 +82,11 @@ public class RCEntAnnonceIDEHelper {
 	private static final String DUMMY_TEMPLATE_ID = "dummy_template_id";
 
 	/**
-	 * Converti une demande d'annonce IDE de RCEnt en annonce IDE ou en modèle d'annonce IDE (sans numéro), en fonction de la présence ou non
+	 * Converti une demande d'annonce à l'IDE de RCEnt en annonce à l'IDE ou en modèle d'annonce à l'IDE (sans numéro), en fonction de la présence ou non
 	 * d'un numéro.
 	 *
 	 * @param noticeRequest la demande d'annonce RCEnt en entrée.
-	 * @return une annonce ou un modèle d'annonce IDE.
+	 * @return une annonce ou un modèle d'annonce à l'IDE.
 	 */
 	private static BaseAnnonceIDE buildBaseAnnonceIDE(@NotNull NoticeRequestReport noticeReport) {
 
@@ -262,7 +262,7 @@ public class RCEntAnnonceIDEHelper {
 	                                          RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
 	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
-		Assert.notNull(numero, "Une annonce IDE ne peut pas avoir un numéro vide.");
+		Assert.notNull(numero, "Une annonce à l'IDE ne peut pas avoir un numéro vide.");
 
 		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
 
@@ -350,7 +350,7 @@ public class RCEntAnnonceIDEHelper {
 
 		final BaseAnnonceIDE annonce = buildBaseAnnonceIDE(noticeReport);
 		if (!(annonce instanceof ProtoAnnonceIDE)) {
-			throw new IllegalArgumentException("Le rapport spécifié contient un numéro de demande : il ne s'agit pas d'une proto-demande !");
+			throw new IllegalArgumentException("Le rapport spécifié contient un numéro d'annonce à l'IDE : il ne s'agit pas d'une proto-annonce !");
 		}
 		return (ProtoAnnonceIDE) annonce;
 	}
@@ -359,7 +359,7 @@ public class RCEntAnnonceIDEHelper {
 
 		final BaseAnnonceIDE annonce = buildBaseAnnonceIDE(noticeReport);
 		if (!(annonce instanceof AnnonceIDE)) {
-			throw new IllegalArgumentException("Le rapport spécifié ne contient pas de numéro de demande : il ne s'agit pas d'une demande !");
+			throw new IllegalArgumentException("Le rapport spécifié ne contient pas de numéro d'annonce à l'IDE : il ne s'agit pas d'une annonce émise par Unireg !");
 		}
 		return (AnnonceIDE) annonce;
 	}

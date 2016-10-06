@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
 
 /**
- * Vue web d'une adresse d'annonce IDE.
+ * Vue web d'une adresse d'annonce à l'IDE.
  */
 public class AdresseAnnonceIDEView {
 

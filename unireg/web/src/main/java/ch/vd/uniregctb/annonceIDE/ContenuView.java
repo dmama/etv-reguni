@@ -7,7 +7,7 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 
 /**
- * Vue web du contenu du annonce IDE.
+ * Vue web du contenu du annonce à l'IDE.
  */
 public class ContenuView {
 	private String nom;

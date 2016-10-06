@@ -87,7 +87,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
 	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-bomaco-history.xml";
 
-	// Annonce IDE sur RCEnt
+	// annonce à l'IDE sur RCEnt
 	private static final long ID_ANNONCE = 301L;
 
 	private String baseUrl;

@@ -12,7 +12,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
 /**
- * Vue web d'une annonce IDE.
+ * Vue web d'une annonce à l'IDE.
  */
 public class AnnonceIDEView {
 

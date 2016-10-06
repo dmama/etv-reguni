@@ -84,7 +84,7 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 		}
 
 		if (!enabled) {
-			LOGGER.info(String.format("Evénements d'annonce IDE désactivés : l'événement n°%d n'est pas envoyé.", annonce.getNumero()));
+			LOGGER.info(String.format("Evénements d'annonce à l'IDE désactivés : l'événement n°%d n'est pas envoyé.", annonce.getNumero()));
 			return;
 		}
 
@@ -117,7 +117,7 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 			esbTemplate.send(m);
 		}
 		catch (Exception e) {
-			final String message = "Exception lors du processus d'envoi d'une annonce IDE.";
+			final String message = "Exception lors du processus d'envoi d'une annonce à l'IDE.";
 			LogLevel.log(LOGGER, LogLevel.Level.FATAL, message, e);
 
 			throw new AnnonceIDEException(message, e);
