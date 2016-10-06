@@ -125,7 +125,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 								                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
 								                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-								                  adresse, null);
+								                  adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 				this.addAnnonceIDE(annonce);
 
 				// L'organisation

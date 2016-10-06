@@ -61,7 +61,7 @@ public class RCEntAnnonceIDEHelper {
 	public static final String NO_APPLICATION_UNIREG = "2";
 	public static final String NOM_APPLICATION_UNIREG = "UNIREG";
 
-	private static final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl SERVICE_IDE_UNIREG =
+	public static final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl SERVICE_IDE_UNIREG =
 			new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE,
 			                                                   RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
 			                                                   RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG);
@@ -102,7 +102,7 @@ public class RCEntAnnonceIDEHelper {
 
 		// Création et données de base
 		final String noticeRequestId = noticeIdent.getNoticeRequestId();
-		final Long numero = noticeRequestId.startsWith(DUMMY_TEMPLATE_ID) ? null : Long.valueOf(noticeRequestId);
+		final Long numero = (noticeRequestId == null  || noticeRequestId.startsWith(DUMMY_TEMPLATE_ID)) ? null : Long.valueOf(noticeRequestId);
 		final TypeAnnonce typeAnnonce = TYPE_OF_NOTICE_CONVERTER.apply(noticeIdent.getTypeOfNoticeRequest());
 		final Date dateAnnonce = noticeIdent.getNoticeRequestDateTime();
 		final TypeDeSite typeDeSite = TYPE_OF_LOCATION_CONVERTER.apply(noticeBody.getTypeOfLocation());
@@ -138,6 +138,11 @@ public class RCEntAnnonceIDEHelper {
 		final AddressInformation postOfficeBoxAddress = addresses == null ? null : addresses.getPostOfficeBoxAddress();
 		final AdresseAnnonceIDE adresse;
 
+		final RequestApplication reportingApplication = noticeHeader.getNoticeRequestIdentification().getReportingApplication();
+		final String appId = reportingApplication.getId();
+		final String appName = reportingApplication.getApplicationName();
+		final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application = new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(null, appId, appName);
+
 		if (address != null) {
 			adresse = ADDRESS_CONVERTER.convert(address);
 		}
@@ -158,12 +163,12 @@ public class RCEntAnnonceIDEHelper {
 		if (numero == null) {
 			return createProtoAnnonceIDE(typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
 			                             noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse,
-			                             statut);
+			                             statut, application);
 		}
 		else {
 			return createAnnonceIDE(numero, typeAnnonce, dateAnnonce, userId, telephone, typeDeSite, raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant,
 			                        noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel, formeLegale, secteurActivite, adresse,
-			                        statut);
+			                        statut, application);
 		}
 	}
 
@@ -254,9 +259,9 @@ public class RCEntAnnonceIDEHelper {
 
 	@NotNull
 	public static AnnonceIDE createAnnonceIDE(Long numero, TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
-	                                           RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
-	                                           NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
-	                                           FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut) {
+	                                          RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
+	                                          NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
+	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 		Assert.notNull(numero, "Une annonce IDE ne peut pas avoir un numéro vide.");
 
 		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
@@ -267,7 +272,7 @@ public class RCEntAnnonceIDEHelper {
 		                                             utilisateur,
 		                                             typeDeSite,
 		                                             statut,
-		                                             SERVICE_IDE_UNIREG
+		                                             application
 		);
 		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel,
 		                      formeLegale, secteurActivite, adresse, annonceIDE);
@@ -278,7 +283,7 @@ public class RCEntAnnonceIDEHelper {
 	public static ProtoAnnonceIDE createProtoAnnonceIDE(TypeAnnonce typeAnnonce, Date dateAnnonce, String userId, String telephone, TypeDeSite typeDeSite,
 	                                                    RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
 	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
-	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut) {
+	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
 
 		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(typeAnnonce,
@@ -286,7 +291,7 @@ public class RCEntAnnonceIDEHelper {
 		                                                            utilisateur,
 		                                                            typeDeSite,
 		                                                            statut,
-		                                                            SERVICE_IDE_UNIREG
+		                                                            application
 		);
 		fillDetailsAnnonceIDE(raisonDeRadiationRegistreIDE, commentaire, noIde, noIdeRemplacant, noIdeEtablissementPrincipal, numeroSite, numeroOrganisation, numeroSiteRemplacant, nom, nomAdditionnel,
 		                      formeLegale, secteurActivite, adresse, protoAnnonceIDE);

@@ -291,9 +291,10 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 		private static final long serialVersionUID = -1663517686746298723L;
 
-		NumeroIDE noIdeServiceIDEObligEtendues;
-		String applicationId;
-		String applicationName;
+		// msi : à quoi sert ce numéro ? Il n'est pas retourné par RCEnt...
+		private final NumeroIDE noIdeServiceIDEObligEtendues;
+		private final String applicationId;
+		private final String applicationName;
 
 		public InfoServiceIDEObligEtenduesImpl(NumeroIDE noIdeServiceIDEObligEtendues, String applicationId, String applicationName) {
 			this.noIdeServiceIDEObligEtendues = noIdeServiceIDEObligEtendues;

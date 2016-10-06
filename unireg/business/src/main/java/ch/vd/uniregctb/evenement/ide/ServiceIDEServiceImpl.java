@@ -336,7 +336,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			ProtoAnnonceIDE protoActuel =
 					RCEntAnnonceIDEHelper.createProtoAnnonceIDE(typeAnnonce, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, raisonDeRadiationRegistreIDE, null,
 					                                            noIde == null ? null : new NumeroIDE(noIde), null, null, etablissement.getNumeroEtablissement(), entreprise.getNumeroEntreprise(), null,
-					                                            raisonSocialeActuelle, null, formeLegaleActuelle, secteurActiviteActuel, adresseActuelle, null);
+					                                            raisonSocialeActuelle, null, formeLegaleActuelle, secteurActiviteActuel, adresseActuelle, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 
 			// Qu'a-t'on déjà envoyé? Doit-on renvoyer?

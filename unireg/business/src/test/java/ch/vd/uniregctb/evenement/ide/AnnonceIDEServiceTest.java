@@ -50,7 +50,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 
 		final AnnonceIDEData annonce =
 				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
-				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce, null);
+				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 		// l'établissement
 		final Etablissement etablissement = new Etablissement();
