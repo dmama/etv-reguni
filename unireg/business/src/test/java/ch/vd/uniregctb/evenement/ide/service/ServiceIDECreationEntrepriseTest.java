@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
@@ -86,7 +87,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				// Annonce existante
 
 				// Validation
-				AnnonceIDEData modele =
+				ProtoAnnonceIDE proto =
 						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            null, null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
@@ -96,7 +97,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 								                                                                                null, null), null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
-				this.addStatutAnnonceIDEAttentu(modele, statut);
+				this.addStatutAnnonceIDEAttentu(proto, statut);
 
 			}
 		});
@@ -261,15 +262,14 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				this.addAnnonceIDE(annonce);
 
 				// Validation
-				AnnonceIDEData modele =
+				ProtoAnnonceIDE proto =
 						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                            "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
 				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 6, 11, 0, 1), new ArrayList<Pair<String, String>>());
-				this.addStatutAnnonceIDEAttentu(modele, statut);
-
+				this.addStatutAnnonceIDEAttentu(proto, statut);
 			}
 		});
 

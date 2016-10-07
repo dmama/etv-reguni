@@ -109,6 +109,11 @@ public interface BaseAnnonceIDE {
 		 * @return la liste des erreurs attachées au statut en cours
 		 */
 		List<Pair<String, String>> getErreurs();
+
+		/**
+ 		 * @return La liste d'erreur sous forme d'une ligne de texte
+		 */
+		String getTexteErreurs();
 	}
 
 	interface Utilisateur {

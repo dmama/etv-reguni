@@ -26,7 +26,6 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		serviceInfra.setUpDefault();
-		annonceIDEService = getBean(AnnonceIDEService.class, "annonceIDEService");
 
 		super.runOnSetUp();
 	}

@@ -401,8 +401,8 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 
 	@Override
-	public void validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceIDEException {
-		final BaseAnnonceIDE.Statut statut = serviceOrganisation.validerAnnonceIDE(modele);
+	public void validerAnnonceIDE(BaseAnnonceIDE proto) throws ServiceIDEException {
+		final BaseAnnonceIDE.Statut statut = serviceOrganisation.validerAnnonceIDE(proto);
 
 		// Workaround du SIREF-9364, où le statut est "sans erreur" même lorsqu'il y en a.
 		if (statut.getErreurs() != null && !statut.getErreurs().isEmpty()) {

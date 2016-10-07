@@ -10,6 +10,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +18,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.NoticeRequestReport;
+import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -37,7 +38,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NoticeReportEventJmsHandler.class);
 
-	private AnnonceIDEService annonceIDEService;
+	private ReponseIDEProcessor reponseIDEProcessor;
 
 	private Schema schemaCache;
 
@@ -49,8 +50,8 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setAnnonceIDEService(AnnonceIDEService annonceIDEService) {
-		this.annonceIDEService = annonceIDEService;
+	public void setReponseIDEProcessor(ReponseIDEProcessor reponseIDEProcessor) {
+		this.reponseIDEProcessor = reponseIDEProcessor;
 	}
 
 	@Override
@@ -111,27 +112,27 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e); // Avec les amitiés de la baronne
 		}
 
+		final String texteErreurs = annonce.getStatut().getTexteErreurs();
+
 		Audit.info(annonce.getNumero(),
-		           String.format("Arrivée de l'événement de rapport d'annonce à l'IDE %d (%s du %s), no IDE %s%s, statut %s le %s.",
+		           String.format("Arrivée de l'événement de rapport d'annonce à l'IDE %d (%s du %s), no IDE %s%s, statut %s le %s.%s",
 		                         annonce.getNumero(),
 		                         annonce.getType(),
 		                         annonce.getDateAnnonce() == null ? null : DateHelper.dateTimeToDisplayString(annonce.getDateAnnonce()),
 		                         annonce.getNoIde(),
 		                         annonce.getNoIdeRemplacant() == null ? "" : ", no IDE remplacant " + annonce.getNoIdeRemplacant(),
-				                 annonce.getStatut() == null ? null : annonce.getStatut().getStatut(),
-		                         annonce.getStatut() == null ? null : DateHelper.dateTimeToDisplayString(annonce.getStatut().getDateStatut())
+		                         annonce.getStatut() == null ? null : annonce.getStatut().getStatut(),
+		                         annonce.getStatut() == null ? null : DateHelper.dateTimeToDisplayString(annonce.getStatut().getDateStatut()),
+		                         StringUtils.isBlank(texteErreurs) ? " Pas de messages d'erreur." : " Erreurs: " + texteErreurs + "."
 		           )
 		);
 
 		try {
-			// TODO: Utilisation du rapport d'annonce
-
-			// Quittance de création -> sauver le numéro IDE temporaire
-			// Rejet IDE avec numéro IDE -> supprimer l'ancien numéro IDE et sauver le numéro IDE temporaire
+			reponseIDEProcessor.traiterReponseAnnonceIDE(annonce);
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | ReponseIDEProcessorException e) {
 			Audit.error(annonce.getNumero(), String.format("Erreur au cours du traitement de l'événement de rapport d'annonce à l'IDE %d:", annonce.getNumero()));
-			throw e;
+			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e); // On est conscient qu'on est au delà du simple xml invalide. TODO: Demander l'ajout d'un code spécifique?
 		}
 	}
 

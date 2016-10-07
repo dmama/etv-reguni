@@ -66,7 +66,7 @@ public class RCEntAnnonceIDEHelper {
 			                                                   RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
 			                                                   RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG);
 
-	private final static TypeOfNoticeRequestConverter TYPE_OF_NOTICE_CONVERTER = new TypeOfNoticeRequestConverter();
+	public final static TypeOfNoticeRequestConverter TYPE_OF_NOTICE_CONVERTER = new TypeOfNoticeRequestConverter();
 	public static final NoticeRequestStatusCodeConverter NOTICE_REQUEST_STATUS_CONVERTER = new NoticeRequestStatusCodeConverter();
 	public static final TypeOfLocationConverter TYPE_OF_LOCATION_CONVERTER = new TypeOfLocationConverter();
 	public static final LegalFormConverter LEGAL_FORM_CONVERTER = new LegalFormConverter();
@@ -75,9 +75,9 @@ public class RCEntAnnonceIDEHelper {
 
 	public static final StatutAnnonceConverter STATUS_ANNONCE_CONVERTER = new StatutAnnonceConverter();
 	public static final TypeAnnonceConverter TYPE_ANNONCE_CONVERTER = new TypeAnnonceConverter();
-	private static final TypeDeSiteConverter TYPE_DE_SITE_CONVERTER = new TypeDeSiteConverter();
-	private static final RaisonDeRadiationRegistreIDEConverter RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER = new RaisonDeRadiationRegistreIDEConverter();
-	private static final FormeLegaleConverter FORME_LEGALE_CONVERTER = new FormeLegaleConverter();
+	public static final TypeDeSiteConverter TYPE_DE_SITE_CONVERTER = new TypeDeSiteConverter();
+	public static final RaisonDeRadiationRegistreIDEConverter RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER = new RaisonDeRadiationRegistreIDEConverter();
+	public static final FormeLegaleConverter FORME_LEGALE_CONVERTER = new FormeLegaleConverter();
 
 	private static final String DUMMY_TEMPLATE_ID = "dummy_template_id";
 
@@ -85,7 +85,7 @@ public class RCEntAnnonceIDEHelper {
 	 * Converti une demande d'annonce à l'IDE de RCEnt en annonce à l'IDE ou en modèle d'annonce à l'IDE (sans numéro), en fonction de la présence ou non
 	 * d'un numéro.
 	 *
-	 * @param noticeRequest la demande d'annonce RCEnt en entrée.
+	 * @param noticeReport la demande d'annonce RCEnt en entrée.
 	 * @return une annonce ou un modèle d'annonce à l'IDE.
 	 */
 	private static BaseAnnonceIDE buildBaseAnnonceIDE(@NotNull NoticeRequestReport noticeReport) {
@@ -173,8 +173,8 @@ public class RCEntAnnonceIDEHelper {
 	}
 
 	@NotNull
-	public static NoticeRequest buildNoticeRequest(BaseAnnonceIDE modele) {
-		return doBuildNoticeRequest(modele);
+	public static NoticeRequest buildNoticeRequest(BaseAnnonceIDE proto) {
+		return doBuildNoticeRequest(proto);
 	}
 
 	@NotNull
@@ -183,45 +183,45 @@ public class RCEntAnnonceIDEHelper {
 	}
 
 	@NotNull
-	private static NoticeRequest doBuildNoticeRequest(BaseAnnonceIDE modele) {
+	private static NoticeRequest doBuildNoticeRequest(BaseAnnonceIDE proto) {
 
 		final NoticeRequestHeader header = new NoticeRequestHeader();
 		final NoticeRequestIdentification identification = new NoticeRequestIdentification();
 		header.setNoticeRequestIdentification(identification);
 		final NoticeRequestBody body = new NoticeRequestBody();
 
-		final TypeAnnonce type = modele.getType();
+		final TypeAnnonce type = proto.getType();
 		identification.setTypeOfNoticeRequest(type == null ? null : TYPE_ANNONCE_CONVERTER.convert(type));
 
 		identification.setNoticeRequestId(DUMMY_TEMPLATE_ID);
-		if (modele instanceof AnnonceIDEEnvoyee) {
-			final Long numero = ((AnnonceIDEEnvoyee) modele).getNumero();
+		if (proto instanceof AnnonceIDEEnvoyee) {
+			final Long numero = ((AnnonceIDEEnvoyee) proto).getNumero();
 			identification.setNoticeRequestId(numero == null ? DUMMY_TEMPLATE_ID : numero.toString());
 		}
-		identification.setNoticeRequestDateTime(modele.getDateAnnonce());
+		identification.setNoticeRequestDateTime(proto.getDateAnnonce());
 
-		final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = modele.getInfoServiceIDEObligEtendues();
+		final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = proto.getInfoServiceIDEObligEtendues();
 		identification.setReportingApplication(infoServiceIDEObligEtendues == null ? null : new RequestApplication(infoServiceIDEObligEtendues.getApplicationId(), infoServiceIDEObligEtendues
 				.getApplicationName()));
 		identification.setIDESource(infoServiceIDEObligEtendues == null ? null : new NamedOrganisationId("CH.IDE", infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues().getValeur()));
 
-		final BaseAnnonceIDE.Utilisateur utilisateur = modele.getUtilisateur();
+		final BaseAnnonceIDE.Utilisateur utilisateur = proto.getUtilisateur();
 		header.setUserId(utilisateur == null ? null :utilisateur.getUserId());
 		header.setUserPhoneNumber(utilisateur == null ? null :utilisateur.getTelephone());
-		header.setComment(modele.getCommentaire());
+		header.setComment(proto.getCommentaire());
 
-		final TypeDeSite typeDeSite = modele.getTypeDeSite();
+		final TypeDeSite typeDeSite = proto.getTypeDeSite();
 		body.setTypeOfLocation(typeDeSite == null ? null :TYPE_DE_SITE_CONVERTER.convert(typeDeSite));
 
-		final NumeroIDE noIde = modele.getNoIde();
+		final NumeroIDE noIde = proto.getNoIde();
 		body.setUid(noIde == null ? null : new UidStructure(UidOrganisationIdCategorie.CHE, noIde.getValeurBrute()));;
-		final NumeroIDE noIdeRemplacant = modele.getNoIdeRemplacant();
+		final NumeroIDE noIdeRemplacant = proto.getNoIdeRemplacant();
 		body.setUidReplacement(noIdeRemplacant == null ? null : new UidStructure(UidOrganisationIdCategorie.CHE, noIdeRemplacant.getValeurBrute()));
 
-		final RaisonDeRadiationRegistreIDE raisonDeRadiation = modele.getRaisonDeRadiation();
+		final RaisonDeRadiationRegistreIDE raisonDeRadiation = proto.getRaisonDeRadiation();
 		body.setDeregistrationReason(raisonDeRadiation == null ? null : RAISON_DE_RADIATION_REGISTRE_IDE_CONVERTER.convert(raisonDeRadiation));
 
-		final AnnonceIDEEnvoyee.InformationOrganisation informationOrganisation = modele.getInformationOrganisation();
+		final AnnonceIDEEnvoyee.InformationOrganisation informationOrganisation = proto.getInformationOrganisation();
 		if (informationOrganisation != null) {
 			final Long numeroSite = informationOrganisation.getNumeroSite();
 			body.setCantonalId(numeroSite == null ? null : BigInteger.valueOf(numeroSite));
@@ -231,7 +231,7 @@ public class RCEntAnnonceIDEHelper {
 			body.setHeadquarterCantonalId(numeroOrganisation == null ? null : BigInteger.valueOf(numeroOrganisation));
 		}
 
-		final AnnonceIDEEnvoyee.Contenu contenu = modele.getContenu();
+		final AnnonceIDEEnvoyee.Contenu contenu = proto.getContenu();
 		if (contenu != null) {
 
 			body.setName(contenu.getNom());

@@ -368,6 +368,18 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		}
 
 		@Override
+		public String getTexteErreurs() {
+			if (erreurs == null) {
+				return null;
+			}
+			StringBuilder sb = new StringBuilder();
+			for (Pair<String, String> erreur : erreurs) {
+				sb.append(erreur.toString());
+			}
+			return sb.toString();
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;

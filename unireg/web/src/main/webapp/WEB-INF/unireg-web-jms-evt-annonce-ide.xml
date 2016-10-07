@@ -15,7 +15,7 @@
 	</bean>
 
 	<bean id="noticeReportEventJmsHandler" class="ch.vd.uniregctb.evenement.ide.NoticeReportEventJmsHandler">
-		<property name="annonceIDEService" ref="annonceIDEService" />
+		<property name="reponseIDEProcessor" ref="reponseIDEProcessor" />
 	</bean>
 
 	<bean id="evenementRapportAnnonceIDEJmsEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

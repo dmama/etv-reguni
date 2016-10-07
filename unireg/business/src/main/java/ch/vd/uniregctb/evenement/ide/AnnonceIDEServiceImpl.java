@@ -26,9 +26,9 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 	}
 
 	@Override
-	public AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE modele, Etablissement etablissement) {
+	public AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE proto, Etablissement etablissement) {
 
-		Assert.notNull(modele, "Le modèle de la demande d'annonce doit être fournie.");
+		Assert.notNull(proto, "Le prototype de la demande d'annonce doit être fournie.");
 		Assert.notNull(etablissement, "L'établissement concerné par l'annonce doit être fournie.");
 
 		final ReferenceAnnonceIDE tmpReferenceAnnonceIDE = new ReferenceAnnonceIDE();
@@ -38,7 +38,7 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 		final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.save(tmpReferenceAnnonceIDE);
 
 		// Créer la véritable annonce, avec son numéro cette fois.
-		final AnnonceIDE annonceIDE = new AnnonceIDE(referenceAnnonceIDE.getId(), modele, null);
+		final AnnonceIDE annonceIDE = new AnnonceIDE(referenceAnnonceIDE.getId(), proto, null);
 
 		// Générer le businessId et le sauver avec la référence
 		final String msgBusinessId = generateBusinessId(referenceAnnonceIDE);

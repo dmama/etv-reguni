@@ -139,7 +139,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		if (formeLegaleHisto != null) {
 			final FormeLegale formeLegale = formeLegaleHisto.getFormeLegale();
 			final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
-			if (contenu != null && !(formeLegale == contenu.getFormeLegale())) {
+			if (contenu != null && formeLegale != contenu.getFormeLegale()) {
 				warnings.addWarning(
 						String.format("La forme juridique [%s] présente dans le registre civil est differente de celle annoncée [%s] à l'IDE par Unireg. " +
 								              "Un autre service IDE a peut-être effectué une modification concurrente. Veuillez vérifier la situation de l'entreprise.",

@@ -12,9 +12,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
@@ -43,12 +43,12 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 		final Date dateAnnonce = DateHelper.getCurrentDate();
 		String msgBusinessIdPrefix = "unireg-req-" + numeroAttendu + "-";
 
-		// l'annonce modèle
+		// le prototype d'annonce
 		final AdresseAnnonceIDERCEnt adresseAnnonce = RCEntAnnonceIDEHelper
 				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, 1020, "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
-		final AnnonceIDEData annonce =
+		final ProtoAnnonceIDE annonce =
 				RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, dateAnnonce, "Robert", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null, null, null, null, null, null, null,
 				                                            "Synergy tour", null, FormeLegale.N_0109_ASSOCIATION, "Tourisme", adresseAnnonce, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
@@ -57,12 +57,11 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 		etablissement.setNumero(1L);
 
 		// "emission" de l'annonce
-		final AnnonceIDE annonceIDE = annonceIDEService.emettreAnnonceIDE(annonce, etablissement);
+		final AnnonceIDEEnvoyee annonceIDE = annonceIDEService.emettreAnnonceIDE(annonce, etablissement);
 
 		// Vérification
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(numeroAttendu, annonceIDE.getNumero().longValue());
-		Assert.assertTrue(annonce != annonceIDE);
 		Assert.assertEquals(annonce.getType(), annonceIDE.getType());
 		Assert.assertEquals(annonce.getDateAnnonce(), annonceIDE.getDateAnnonce());
 		Assert.assertEquals(annonce.getNoIde(), annonceIDE.getNoIde());
