@@ -26,6 +26,8 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -35,6 +37,8 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @Controller
 @RequestMapping(value = "/annonceIDE")
 public class AnnonceIDEController {
+
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de suivi des annonces à l'IDE";
 
 	private TiersMapHelper tiersMapHelper;
 	private ServiceOrganisationService organisationService;
@@ -55,6 +59,7 @@ public class AnnonceIDEController {
 	/**
 	 * Affiche l'écran de suivi des annonces. L'écran de suivi contient un formulaire de recherche et des résultats paginés.
 	 */
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/find.do", method = RequestMethod.GET)
 	public String find(@ModelAttribute(value = "view") AnnonceIDEQueryView view, HttpServletRequest request, Model model) {
 
@@ -89,6 +94,7 @@ public class AnnonceIDEController {
 	/**
 	 * Affiche les détails d'une annonce.
 	 */
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
 	public String visu(@RequestParam Long id, Model model) {
 
