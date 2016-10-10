@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
 import ch.vd.uniregctb.type.TypeMandat;
@@ -43,13 +45,20 @@ public class AddMandatViewValidator implements Validator {
 
 		// spécificités du mandat TIERS : IBAN
 		else if (view.getTypeMandat() == TypeMandat.TIERS) {
-			if (StringUtils.isBlank(view.getIban())) {
+			final String iban = view.getIban();
+			if (StringUtils.isBlank(iban)) {
 				errors.rejectValue("iban", "error.iban.mandat.tiers.vide");
 			}
 			else {
-				final String erreurIban = ibanValidator.getIbanValidationError(view.getIban());
+				final String erreurIban = ibanValidator.getIbanValidationError(iban);
 				if (StringUtils.isNotBlank(erreurIban)) {
 					errors.rejectValue("iban", "error.iban.detail", new Object[]{erreurIban}, null);
+				}
+				else {
+					final String normalized = FormatNumeroHelper.removeSpaceAndDash(iban).toUpperCase();
+					if (!normalized.startsWith(ServiceInfrastructureRaw.SIGLE_SUISSE)) {
+						errors.rejectValue("iban", "error.iban.etranger");
+					}
 				}
 			}
 
