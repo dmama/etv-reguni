@@ -41,8 +41,8 @@
 	<ciManagement/>
 	<scm>
 		<url>http://git.etat-de-vaud.ch/?p=fiscalite/unireg.git</url>
-		<connection>scm:git:ssh://git.etat-de-vaud.ch/fiscalite/unireg</connection>
-		<developerConnection>scm:git:git@git.etat-de-vaud.ch/fiscalite/unireg</developerConnection>
+		<connection>scm:git:ssh://git.etat-de-vaud.ch:/fiscalite/unireg</connection>
+		<developerConnection>scm:git:git@git.etat-de-vaud.ch:/fiscalite/unireg</developerConnection>
 	</scm>
 
 	<issueManagement>
