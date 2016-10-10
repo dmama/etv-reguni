@@ -40,9 +40,9 @@
 	</licenses>
 	<ciManagement/>
 	<scm>
-		<connection>scm:svn:https://svn.etat-de-vaud.ch/SVN_SOCLE/registre/unireg/trunk/04-Implementation/unireg/</connection>
-		<developerConnection>scm:svn:https://svn.etat-de-vaud.ch/SVN_SOCLE/registre/unireg/trunk/04-Implementation/unireg/</developerConnection>
-		<url/>
+		<url>http://git.etat-de-vaud.ch/?p=fiscalite/unireg.git</url>
+		<connection>scm:git:ssh://git.etat-de-vaud.ch/fiscalite/unireg</connection>
+		<developerConnection>scm:git:git@git.etat-de-vaud.ch/fiscalite/unireg</developerConnection>
 	</scm>
 
 	<issueManagement>
