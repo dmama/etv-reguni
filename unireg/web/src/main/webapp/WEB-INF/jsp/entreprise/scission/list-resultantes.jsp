@@ -155,7 +155,7 @@
 				    </display:column>
 				    <display:column sortable="true" titleKey="label.raison.sociale" property="nom1"/>
 				    <display:column sortable="true" titleKey="label.siege" property="domicileEtablissementPrincipal"/>
-				    <display:column sortable="true" titleKey="label.forme.juridique" sortProperty="formeJuridique.codeECH">
+				    <display:column sortable="true" titleKey="label.forme.juridique" sortProperty="formeJuridique.code">
 					    <c:if test="${row.formeJuridique != null}">
 						    <c:out value="${row.formeJuridique}"/>
 					    </c:if>

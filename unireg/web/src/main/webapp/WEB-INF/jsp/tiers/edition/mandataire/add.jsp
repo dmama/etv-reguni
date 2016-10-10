@@ -102,7 +102,7 @@
 						</c:otherwise>
 					</c:choose>
 				</display:column>
-				<display:column sortable="true" titleKey="label.forme.juridique" sortProperty="formeJuridique.codeECH">
+				<display:column sortable="true" titleKey="label.forme.juridique" sortProperty="formeJuridique.code">
 					<c:if test="${row.formeJuridique != null}">
 						<c:out value="${row.formeJuridique}"/>
 					</c:if>
