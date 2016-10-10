@@ -86,6 +86,7 @@ public class Mandat extends RapportEntreTiers {
 		this.prenomPersonneContact = src.prenomPersonneContact;
 		this.noTelephoneContact = src.noTelephoneContact;
 		this.withCopy = src.withCopy;
+		this.codeGenreImpot = src.codeGenreImpot;
 	}
 
 	@Column(name = "TYPE_MANDAT", length = LengthConstants.MANDAT_TYPE)
