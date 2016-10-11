@@ -37,10 +37,18 @@
 	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient"/>
 
 	<!-- Mock des différents checkers -->
-	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
-	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
-	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
-	<bean id="serviceBVRChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
+	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.MockStatusChecker">
+		<constructor-arg value="serviceCivil"/>
+	</bean>
+	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.MockStatusChecker">
+		<constructor-arg value="serviceInfra"/>
+	</bean>
+	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.MockStatusChecker">
+		<constructor-arg value="serviceSecurite"/>
+	</bean>
+	<bean id="serviceBVRChecker" class="ch.vd.uniregctb.checker.MockStatusChecker">
+		<constructor-arg value="serviceBVR"/>
+	</bean>
 
 	<!-- Mock pour la e-Facture -->
 	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.MockEFactureMessageSender" />

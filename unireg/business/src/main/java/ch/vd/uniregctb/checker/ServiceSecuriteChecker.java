@@ -1,32 +1,45 @@
 package ch.vd.uniregctb.checker;
 
-import ch.vd.registre.base.utils.Assert;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.shared.statusmanager.CheckerException;
+import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 
-public class ServiceSecuriteChecker implements ServiceChecker {
+public class ServiceSecuriteChecker implements StatusChecker {
 
 	private ServiceSecuriteService serviceSecuriteRaw;
-	private String details;
 
+	@NotNull
 	@Override
-	public Status getStatus() {
-		try {
-			Operateur op = serviceSecuriteRaw.getOperateur("zaiptf");
-			Assert.isTrue("zaiptf".equalsIgnoreCase(op.getCode()));
-			details = null;
-			return Status.OK;
-		}
-		catch (Exception e) {
-			details = ExceptionUtils.extractCallStack(e);
-			return Status.KO;
-		}
+	public String getName() {
+		return "serviceSecurite";
 	}
 
 	@Override
-	public String getStatusDetails() {
-		return details;
+	public int getTimeout() {
+		return 1000;
+	}
+
+	@Override
+	public void check() throws CheckerException {
+		try {
+			Operateur op = serviceSecuriteRaw.getOperateur("zaiptf");
+			if (op == null) {
+				throw new CheckerException("Impossible de trouver l'opérateur zaiptf");
+			}
+			if (!"zaiptf".equalsIgnoreCase(op.getCode())) {
+				throw new CheckerException("Données incohérentes retournées");
+			}
+		}
+		catch (CheckerException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

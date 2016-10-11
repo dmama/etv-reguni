@@ -1,17 +1,30 @@
 package ch.vd.uniregctb.admin.status;
 
-import ch.vd.uniregctb.checker.ServiceChecker;
+import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.uniregctb.common.HtmlHelper;
 
 public class ServiceStatusView {
-	private String name;
-	private String code;
-	private String description;
 
-	public ServiceStatusView(String name, ServiceChecker checker) {
-		this.name = name;
-		this.code = checker.getStatus().name();
-		this.description = HtmlHelper.renderMultilines(checker.getStatusDetails());
+	private final String name;
+	private final String code;
+	private final String description;
+
+	public ServiceStatusView(StatusChecker checker) {
+		this.name = checker.getName();
+
+		String code;
+		String description;
+		try {
+			checker.check();
+			code = "OK";
+			description = null;
+		}
+		catch (Exception e) {
+			code = "KO";
+			description = HtmlHelper.renderMultilines(e.getMessage());
+		}
+		this.code = code;
+		this.description = description;
 	}
 
 	public String getName() {

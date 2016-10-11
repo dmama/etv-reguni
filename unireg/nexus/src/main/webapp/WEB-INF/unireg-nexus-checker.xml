@@ -4,9 +4,24 @@
 
 	<bean id="applicationChecker" class="ch.vd.unireg.app.ApplicationChecker">
 		<property name="version" value="${project.version}" />
-		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
-		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
-		<property name="serviceOrganisationChecker" ref="serviceOrganisationChecker"/>
+		<property name="statusManager" ref="statusManager" />
+	</bean>
+
+	<bean id="statusManager" class="ch.vd.shared.statusmanager.StatusManagerImpl">
+		<property name="executor">
+			<bean class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+				<property name="corePoolSize" value="2" /><!-- nombre minimal de threads -->
+				<property name="maxPoolSize" value="2" /><!-- nombre maximal de threads -->
+				<property name="threadNamePrefix" value="NexusCheckerExecutor-" />
+			</bean>
+		</property>
+		<property name="criticalCheckers">
+			<list>
+				<ref bean="serviceCivilChecker" />
+				<ref bean="serviceOrganisationChecker" />
+				<ref bean="serviceInfraChecker" />
+			</list>
+		</property>
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
@@ -14,7 +29,7 @@
 	</bean>
 
 	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
-		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing"/>
+		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing" />
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">

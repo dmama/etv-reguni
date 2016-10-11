@@ -1,28 +1,35 @@
 package ch.vd.uniregctb.checker;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.shared.statusmanager.CheckerException;
+import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 
-public class ServiceBVRChecker implements ServiceChecker {
+public class ServiceBVRChecker implements StatusChecker {
 
 	private BVRPlusClient bvrClient;
-	private String details;
 
+	@NotNull
 	@Override
-	public Status getStatus() {
-		try {
-			bvrClient.ping();
-			return Status.OK;
-		}
-		catch (Exception e) {
-			details = ExceptionUtils.extractCallStack(e);
-			return Status.KO;
-		}
+	public String getName() {
+		return "serviceBVRPlus";
 	}
 
 	@Override
-	public String getStatusDetails() {
-		return details;
+	public int getTimeout() {
+		return 1000;
+	}
+
+	@Override
+	public void check() throws CheckerException {
+		try {
+			bvrClient.ping();
+		}
+		catch (Exception e) {
+			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

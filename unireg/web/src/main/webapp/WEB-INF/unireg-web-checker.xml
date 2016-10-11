@@ -4,12 +4,31 @@
 
 	<bean id="applicationChecker" class="ch.vd.uniregctb.checker.ApplicationChecker">
 		<property name="version" value="${project.version}" />
-		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
-		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
-		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
-		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
-		<property name="serviceEFactureChecker" ref="serviceEFactureChecker" />
-		<property name="serviceOrganisationChecker" ref="serviceOrganisationChecker"/>
+		<property name="statusManager" ref="statusManager" />
+	</bean>
+
+	<bean id="statusManager" class="ch.vd.shared.statusmanager.StatusManagerImpl">
+		<property name="executor">
+			<bean class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+				<property name="corePoolSize" value="2" /><!-- nombre minimal de threads -->
+				<property name="maxPoolSize" value="2" /><!-- nombre maximal de threads -->
+				<property name="threadNamePrefix" value="WebCheckerExecutor-" />
+			</bean>
+		</property>
+		<property name="criticalCheckers">
+			<list>
+				<ref bean="serviceCivilChecker" />
+				<ref bean="serviceOrganisationChecker" />
+				<ref bean="serviceInfraChecker" />
+				<ref bean="serviceSecuriteChecker" />
+			</list>
+		</property>
+		<property name="nonCriticalCheckers">
+			<list>
+				<ref bean="serviceBVRChecker" />
+				<ref bean="serviceEFactureChecker" />
+			</list>
+		</property>
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
@@ -17,7 +36,7 @@
 	</bean>
 
 	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
-		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing"/>
+		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing" />
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">

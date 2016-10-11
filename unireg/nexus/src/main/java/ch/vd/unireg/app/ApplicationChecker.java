@@ -1,9 +1,6 @@
 package ch.vd.unireg.app;
 
-import ch.vd.uniregctb.checker.ServiceCivilChecker;
-import ch.vd.uniregctb.checker.ServiceInfraChecker;
-import ch.vd.uniregctb.checker.ServiceOrganisationChecker;
-import ch.vd.uniregctb.checker.Status;
+import ch.vd.shared.statusmanager.StatusManager;
 import ch.vd.uniregctb.common.TimeHelper;
 
 public class ApplicationChecker {
@@ -11,27 +8,14 @@ public class ApplicationChecker {
 	private static final long startupTime = System.nanoTime();
 
 	private String version;
-	private ServiceCivilChecker serviceCivilChecker;
-	private ServiceInfraChecker serviceInfraChecker;
-	private ServiceOrganisationChecker serviceOrganisationChecker;
+	private StatusManager statusManager;
 
 	public String getStatus() {
-		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK
-				&& serviceOrganisationChecker.getStatus() == Status.OK
-				&& serviceInfraChecker.getStatus() == Status.OK) {
-			status = Status.OK;
-		}
-		else {
-			status = Status.KO;
-		}
-		return status.name();
+		return statusManager.getStatus();
 	}
 
 	public String getStatusJSON() {
-		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
-				"'serviceOrganisation' : '" + serviceOrganisationChecker.getStatus().name() + "', " +
-				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "'}";
+		return "{'status' : '" + statusManager.getStatus() + "'}";
 	}
 
 	public static long getUptimeSeconds() {
@@ -51,18 +35,8 @@ public class ApplicationChecker {
 		this.version = version;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivilChecker(ServiceCivilChecker serviceCivilChecker) {
-		this.serviceCivilChecker = serviceCivilChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
-		this.serviceInfraChecker = serviceInfraChecker;
-	}
-
-	public void setServiceOrganisationChecker(ServiceOrganisationChecker serviceOrganisationChecker) {
-		this.serviceOrganisationChecker = serviceOrganisationChecker;
+	public void setStatusManager(StatusManager statusManager) {
+		this.statusManager = statusManager;
 	}
 }
 

@@ -1,30 +1,36 @@
 package ch.vd.uniregctb.checker;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.shared.statusmanager.CheckerException;
+import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.efacture.EFactureService;
 
-public class ServiceEFactureChecker implements ServiceChecker {
+public class ServiceEFactureChecker implements StatusChecker {
 
 	private EFactureClient efactureClient;
-	private String details;
 
+	@NotNull
 	@Override
-	public Status getStatus() {
-		try {
-			efactureClient.getHistory(10000000L, EFactureService.ACI_BILLER_ID);
-			details = null;
-			return Status.OK;
-		}
-		catch (Exception e) {
-			details = ExceptionUtils.extractCallStack(e);
-			return Status.KO;
-		}
+	public String getName() {
+		return "serviceEFacture";
 	}
 
 	@Override
-	public String getStatusDetails() {
-		return details;
+	public int getTimeout() {
+		return 1000;
+	}
+
+	@Override
+	public void check() throws CheckerException {
+		try {
+			efactureClient.getHistory(10000000L, EFactureService.ACI_BILLER_ID);
+		}
+		catch (Exception e) {
+			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+		}
 	}
 
 	public void setEfactureClient(EFactureClient efactureClient) {

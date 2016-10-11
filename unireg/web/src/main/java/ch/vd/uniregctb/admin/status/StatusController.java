@@ -3,6 +3,7 @@ package ch.vd.uniregctb.admin.status;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Statistics;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.checker.ServiceChecker;
+import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.uniregctb.common.HtmlHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -40,12 +41,12 @@ public class StatusController {
 	private CacheManager cacheManager;
 	private StatsService statsService;
 
-	private ServiceChecker serviceCivilChecker;
-	private ServiceChecker serviceOrganisationChecker;
-	private ServiceChecker serviceInfraChecker;
-	private ServiceChecker serviceSecuriteChecker;
-	private ServiceChecker serviceBVRChecker;
-	private ServiceChecker serviceEFactureChecker;
+	private StatusChecker serviceCivilChecker;
+	private StatusChecker serviceOrganisationChecker;
+	private StatusChecker serviceInfraChecker;
+	private StatusChecker serviceSecuriteChecker;
+	private StatusChecker serviceBVRChecker;
+	private StatusChecker serviceEFactureChecker;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
@@ -75,31 +76,31 @@ public class StatusController {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivilChecker(ServiceChecker serviceCivilChecker) {
+	public void setServiceCivilChecker(StatusChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
-	public void setServiceOrganisationChecker(ServiceChecker serviceOrganisationChecker) {
+	public void setServiceOrganisationChecker(StatusChecker serviceOrganisationChecker) {
 		this.serviceOrganisationChecker = serviceOrganisationChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfraChecker(ServiceChecker serviceInfraChecker) {
+	public void setServiceInfraChecker(StatusChecker serviceInfraChecker) {
 		this.serviceInfraChecker = serviceInfraChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceSecuriteChecker(ServiceChecker serviceSecuriteChecker) {
+	public void setServiceSecuriteChecker(StatusChecker serviceSecuriteChecker) {
 		this.serviceSecuriteChecker = serviceSecuriteChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceBVRChecker(ServiceChecker serviceBVRChecker) {
+	public void setServiceBVRChecker(StatusChecker serviceBVRChecker) {
 		this.serviceBVRChecker = serviceBVRChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceEFactureChecker(ServiceChecker serviceEFactureChecker) {
+	public void setServiceEFactureChecker(StatusChecker serviceEFactureChecker) {
 		this.serviceEFactureChecker = serviceEFactureChecker;
 	}
 
@@ -118,37 +119,37 @@ public class StatusController {
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/civil.do", method = RequestMethod.GET)
 	public ServiceStatusView civilStatus() {
-		return new ServiceStatusView("serviceCivil", serviceCivilChecker);
+		return new ServiceStatusView(serviceCivilChecker);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/organisation.do", method = RequestMethod.GET)
 	public ServiceStatusView organisationStatus() {
-		return new ServiceStatusView("serviceOrganisation", serviceOrganisationChecker);
+		return new ServiceStatusView(serviceOrganisationChecker);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/infra.do", method = RequestMethod.GET)
 	public ServiceStatusView infraStatus() {
-		return new ServiceStatusView("serviceInfra", serviceInfraChecker);
+		return new ServiceStatusView(serviceInfraChecker);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/securite.do", method = RequestMethod.GET)
 	public ServiceStatusView securiteStatus() {
-		return new ServiceStatusView("serviceSecurite", serviceSecuriteChecker);
+		return new ServiceStatusView(serviceSecuriteChecker);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/bvr.do", method = RequestMethod.GET)
 	public ServiceStatusView bvrPlusStatus() {
-		return new ServiceStatusView("serviceBVR", serviceBVRChecker);
+		return new ServiceStatusView(serviceBVRChecker);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/efacture.do", method = RequestMethod.GET)
 	public ServiceStatusView efactureStatus() {
-		return new ServiceStatusView("serviceEFacture", serviceEFactureChecker);
+		return new ServiceStatusView(serviceEFactureChecker);
 	}
 
 	private String getTiersIndexCount() {

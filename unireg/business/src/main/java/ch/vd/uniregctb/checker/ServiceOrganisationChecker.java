@@ -1,29 +1,35 @@
 package ch.vd.uniregctb.checker;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.shared.statusmanager.CheckerException;
+import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 
-public class ServiceOrganisationChecker implements ServiceChecker {
+public class ServiceOrganisationChecker implements StatusChecker {
 
 	private ServiceOrganisationRaw serviceOrganisationRaw;
-	private String details;
 
+	@NotNull
 	@Override
-	public Status getStatus() {
-		try {
-			serviceOrganisationRaw.ping();
-			details = null;
-			return Status.OK;
-		}
-		catch (Exception e) {
-			details = ExceptionUtils.extractCallStack(e);
-			return Status.KO;
-		}
+	public String getName() {
+		return "serviceOrganisation";
 	}
 
 	@Override
-	public String getStatusDetails() {
-		return details;
+	public int getTimeout() {
+		return 1000;
+	}
+
+	@Override
+	public void check() throws CheckerException {
+		try {
+			serviceOrganisationRaw.ping();
+		}
+		catch (Exception e) {
+			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
