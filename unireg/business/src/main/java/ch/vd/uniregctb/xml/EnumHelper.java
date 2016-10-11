@@ -3860,7 +3860,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType coreToXMLv2(TypeAssujettissement t) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType coreToXMLIndividualv2(TypeAssujettissement t) {
 		if (t == null) {
 			return null;
 		}
@@ -3891,7 +3891,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType coreToXMLv3(TypeAssujettissement t) {
+	public static ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType coreToXMLIndividualv3(TypeAssujettissement t) {
 		if (t == null) {
 			return null;
 		}
@@ -3922,7 +3922,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v4.IndividualTaxLiabilityType coreToXMLv4(TypeAssujettissement t) {
+	public static ch.vd.unireg.xml.party.taxresidence.v4.IndividualTaxLiabilityType coreToXMLIndividualv4(TypeAssujettissement t) {
 		if (t == null) {
 			return null;
 		}
@@ -3948,6 +3948,63 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v4.IndividualTaxLiabilityType.EXPENDITURE_BASED;
 		case VAUDOIS_ORDINAIRE:
 			return ch.vd.unireg.xml.party.taxresidence.v4.IndividualTaxLiabilityType.ORDINARY_RESIDENT;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v2.CorporationTaxLiabilityType coreToXMLCorporationv2(TypeAssujettissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case HORS_CANTON:
+			return ch.vd.unireg.xml.party.taxresidence.v2.CorporationTaxLiabilityType.OTHER_CANTON;
+		case HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.CorporationTaxLiabilityType.FOREIGN_COUNTRY;
+		case VAUDOIS_ORDINAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.CorporationTaxLiabilityType.ORDINARY_RESIDENT;
+		case NON_ASSUJETTI:
+			return ch.vd.unireg.xml.party.taxresidence.v2.CorporationTaxLiabilityType.NONE;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v3.CorporationTaxLiabilityType coreToXMLCorporationv3(TypeAssujettissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case HORS_CANTON:
+			return ch.vd.unireg.xml.party.taxresidence.v3.CorporationTaxLiabilityType.OTHER_CANTON;
+		case HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.CorporationTaxLiabilityType.FOREIGN_COUNTRY;
+		case VAUDOIS_ORDINAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.CorporationTaxLiabilityType.ORDINARY_RESIDENT;
+		case NON_ASSUJETTI:
+			return ch.vd.unireg.xml.party.taxresidence.v3.CorporationTaxLiabilityType.NONE;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v4.CorporationTaxLiabilityType coreToXMLCorporationv4(TypeAssujettissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case HORS_CANTON:
+			return ch.vd.unireg.xml.party.taxresidence.v4.CorporationTaxLiabilityType.OTHER_CANTON;
+		case HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.CorporationTaxLiabilityType.FOREIGN_COUNTRY;
+		case VAUDOIS_ORDINAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.CorporationTaxLiabilityType.ORDINARY_RESIDENT;
+		case NON_ASSUJETTI:
+			return ch.vd.unireg.xml.party.taxresidence.v4.CorporationTaxLiabilityType.NONE;
 		default:
 			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
 		}

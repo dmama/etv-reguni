@@ -49,6 +49,7 @@ public class TiersIndexedData implements Serializable {
 	private final CategorieImpotSource categorieImpotSource;
 	private final ModeCommunication modeCommunication;
 	private final TypeAssujettissement assujettissementPP;
+	private final TypeAssujettissement assujettissementPM;
 	private final boolean annule;
 	private final boolean debiteurInactif;
 	private final Boolean dansLeCanton;
@@ -91,6 +92,7 @@ public class TiersIndexedData implements Serializable {
 		categorieImpotSource = DocumentExtractorHelper.getEnumValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc, CategorieImpotSource.class);
 		modeCommunication = DocumentExtractorHelper.getEnumValue(TiersIndexableData.MODE_COMMUNICATION, doc, ModeCommunication.class);
 		assujettissementPP = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PP, doc, TypeAssujettissement.class);
+		assujettissementPM = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PM, doc, TypeAssujettissement.class);
 		numerosIDE = DocumentExtractorHelper.getList(DocumentExtractorHelper.getDocValue(TiersIndexableData.IDE, doc));
 		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
 		etatEntreprise = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ETAT_ENTREPRISE_COURANT, doc, TypeEtatEntreprise.class);
@@ -220,6 +222,13 @@ public class TiersIndexedData implements Serializable {
 	 */
 	public TypeAssujettissement getAssujettissementPP() {
 		return assujettissementPP;
+	}
+
+	/**
+	 * @return le type d'assujettissement "Entreprise" du contribuable; <b>null</b> si le tiers n'est pas une entreprise.
+	 */
+	public TypeAssujettissement getAssujettissementPM() {
+		return assujettissementPM;
 	}
 
 	public boolean isAnnule() {

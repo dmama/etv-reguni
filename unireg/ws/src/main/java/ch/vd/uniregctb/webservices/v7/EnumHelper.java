@@ -212,7 +212,7 @@ public abstract class EnumHelper {
 	}
 
 	public static IndividualTaxLiabilityType coreToWeb(TypeAssujettissement type) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv4(type);
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLIndividualv4(type);
 	}
 
 	public static EbillingStatusType coreToWeb(TypeEtatDestinataire type) {
