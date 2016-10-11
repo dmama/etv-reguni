@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-v7</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>7.1</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>7.2-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS v7</name>
@@ -192,7 +192,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service v7 (7.1)"
+									doctitle="Unireg - Documentation du web service v7 (7.2-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
