@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
+public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesIndexable<Entreprise> {
 
 	public static final String SUB_TYPE = "entreprise";
 

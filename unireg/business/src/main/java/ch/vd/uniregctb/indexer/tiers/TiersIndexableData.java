@@ -108,6 +108,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String MODE_COMMUNICATION = "D_MODE_COMMUNICATION";
 	public static final String D_DATE_NAISSANCE = "D_DATE_NAISSANCE";
 	public static final String ASSUJETTISSEMENT_PP = "D_ASSUJETTISSEMENT_PP";
+	public static final String ASSUJETTISSEMENT_PM = "D_ASSUJETTISSEMENT_PM";
 	public static final String AVATAR = "D_AVATAR";
 	public static final String DOMICILE_ETABLISSEMENT_PRINCIPAL = "D_DOMICILE_ETABLISSEMENT_PRINCIPAL";
 
@@ -167,6 +168,7 @@ public class TiersIndexableData extends IndexableData {
 	private String indexationDate;
 	private ModeCommunication modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
 	private TypeAssujettissement assujettissementPP;  // seulement sur les PP/MC (SIFISC-11102)
+	private TypeAssujettissement assujettissementPM;  // seulement sur les entreprises (SIFISC-21524)
 	private TypeAvatar typeAvatar;
 	private String domicileEtablissementPrincipal;
 
@@ -241,6 +243,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication, ENUM_RENDERER);
 		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissanceInscriptionRC, IndexerFormatHelper.DateStringMode.STORAGE));
 		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP, ENUM_RENDERER);
+		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PM, assujettissementPM, ENUM_RENDERER);
 		addStoredValue(d, TiersIndexableData.AVATAR, typeAvatar, IndexerFormatHelper.DEFAULT_RENDERER);
 		addStoredValue(d, TiersIndexableData.DOMICILE_ETABLISSEMENT_PRINCIPAL, domicileEtablissementPrincipal);
 
@@ -684,6 +687,10 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setAssujettissementPP(TypeAssujettissement assujettissement) {
 		this.assujettissementPP = assujettissement;
+	}
+
+	public void setAssujettissementPM(TypeAssujettissement assujettissement) {
+		this.assujettissementPM = assujettissement;
 	}
 
 	public String getIde() {

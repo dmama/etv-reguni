@@ -605,9 +605,9 @@
 		<jackson.version>1.9.13</jackson.version>
 		<wsparty3.version>3.8</wsparty3.version>
 		<wsparty4.version>4.1</wsparty4.version>
-		<ws.v5.version>5.4.1</ws.v5.version>
-		<ws.v6.version>6.4</ws.v6.version>
-		<ws.v7.version>7.1</ws.v7.version>
+		<ws.v5.version>5.5-SNAPSHOT</ws.v5.version>
+		<ws.v6.version>6.5-SNAPSHOT</ws.v6.version>
+		<ws.v7.version>7.2-SNAPSHOT</ws.v7.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>

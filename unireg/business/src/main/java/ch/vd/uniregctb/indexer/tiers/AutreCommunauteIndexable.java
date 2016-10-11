@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.NatureJuridique;
  * @author Sean Paul
  *
  */
-public class AutreCommunauteIndexable extends ContribuableIndexable<AutreCommunaute> {
+public class AutreCommunauteIndexable extends ContribuableImpositionPersonnesMoralesIndexable<AutreCommunaute> {
 
 	public static final String SUB_TYPE = "autrecommunaute";
 
