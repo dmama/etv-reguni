@@ -65,10 +65,6 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 		return noOrganisation;
 	}
 
-	public static long getSerialVersionUID() {
-		return serialVersionUID;
-	}
-
 	public TypeEvenementOrganisation getType() {
 		return type;
 	}

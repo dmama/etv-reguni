@@ -79,10 +79,6 @@ public class OrganisationView implements Serializable {
 		this.numeroOrganisationRemplacant = numeroOrganisationRemplacant;
 	}
 
-	public static long getSerialVersionUID() {
-		return serialVersionUID;
-	}
-
 	@SuppressWarnings("UnusedDeclaration")
 	public String getNumeroIDE() {
 		return numeroIDE;
