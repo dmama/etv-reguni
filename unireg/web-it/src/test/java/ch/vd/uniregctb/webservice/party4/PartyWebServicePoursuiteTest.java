@@ -213,7 +213,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertFormattedAddress(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
 		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Monsieur le Juge de Paix de Belmont/Conc",
-				"ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac", "1400 Yverdon-les-Bains");
+				"ise/Champvent/Grandson/Ste-Croix/Yverdon", "Rue du Lac 2", "1400 Yverdon-les-Bains");
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
