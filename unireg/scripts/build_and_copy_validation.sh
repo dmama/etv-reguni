@@ -7,10 +7,11 @@ fi
 
 DATE=$(date "+%Y-%m-%d_%H_%M_%S")
 
-DEPOSANT=""
-while [[ ! "$DEPOSANT" =~ ^[a-zA-Z0-9]+$ ]]; do
-	read -p "Hexagramme du déposant : " DEPOSANT
-done
+DEPOSANT="$1"
+if [[ ! "$DEPOSANT" =~ ^[a-zA-Z0-9]{6}$ ]]; then
+	echo "!!! L'identifiant du déposant ($DEPOSANT) n'est pas un hexagramme valide."
+	exit 1
+fi
 
 
 #########
