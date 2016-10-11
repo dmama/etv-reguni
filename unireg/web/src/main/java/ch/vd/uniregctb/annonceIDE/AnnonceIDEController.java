@@ -59,7 +59,7 @@ public class AnnonceIDEController {
 	/**
 	 * Affiche l'écran de suivi des annonces. L'écran de suivi contient un formulaire de recherche et des résultats paginés.
 	 */
-	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/find.do", method = RequestMethod.GET)
 	public String find(@ModelAttribute(value = "view") AnnonceIDEQueryView view, HttpServletRequest request, Model model) {
 
@@ -94,7 +94,7 @@ public class AnnonceIDEController {
 	/**
 	 * Affiche les détails d'une annonce.
 	 */
-	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
 	public String visu(@RequestParam Long id, Model model) {
 
