@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AnnonceIDEControllerTest {
 
 	private static final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl SERVICE_UNIREG =
-			new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE,
+			new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS,
 			                                                   RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
 			                                                   RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG);
 

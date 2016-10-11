@@ -69,7 +69,7 @@ public class RCEntAnnonceIDEHelperTest {
 	@NotNull
 	private static NoticeRequestReport buildNoticeReport(Long requestId, Date requetsDate, TypeOfNoticeRequest type, NoticeRequestStatusCode status, RequestApplication requestApplication) {
 
-		final NamedOrganisationId ideSource = new NamedOrganisationId("CAT", RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE.getValeur());
+		final NamedOrganisationId ideSource = new NamedOrganisationId("CAT", RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS.getValeur());
 		final NoticeRequestIdentification identification = new NoticeRequestIdentification(requestId == null ? null : String.valueOf(requestId), type, requestApplication, requetsDate, ideSource);
 		final NoticeRequestHeader header = new NoticeRequestHeader(identification, "test-user", "0123456789", "no comment");
 

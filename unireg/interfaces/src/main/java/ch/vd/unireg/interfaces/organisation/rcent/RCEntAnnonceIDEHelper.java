@@ -53,16 +53,17 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterDeregist
 public class RCEntAnnonceIDEHelper {
 
 	/*
-		Identification du service IDE et d'Unireg:
-		- Numéro IDE du "service IDE" selon Art. 3c LIDE
-		- Identification de l'application dans RCEnt
-	*/
-	public static final NumeroIDE NO_IDE_SERVICE_IDE = new NumeroIDE("999999996");
+		Identification du service IDE selon Art. 3c LIDE: numéro IDE de l'administration cantonale des impôts (ACI VD)
+	 */
+	public static final NumeroIDE NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS = new NumeroIDE("CHE322886489");
+	/*
+		Identification d'Unireg en tant qu'application de l'ACI
+	 */
 	public static final String NO_APPLICATION_UNIREG = "2";
 	public static final String NOM_APPLICATION_UNIREG = "UNIREG";
 
 	public static final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl SERVICE_IDE_UNIREG =
-			new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE,
+			new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS,
 			                                                   RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
 			                                                   RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG);
 

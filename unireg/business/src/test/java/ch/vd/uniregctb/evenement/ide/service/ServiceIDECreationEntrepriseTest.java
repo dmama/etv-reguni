@@ -146,7 +146,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
 				assertNotNull(infoServiceIDEObligEtendues);
-				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
+				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
 				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
 				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
@@ -319,7 +319,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
 				assertNotNull(infoServiceIDEObligEtendues);
-				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
+				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
 				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
 				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
 
