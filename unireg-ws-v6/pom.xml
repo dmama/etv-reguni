@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-v6</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>6.4</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>6.5-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS v6</name>
@@ -20,7 +20,7 @@
 		<dependency>
 			<artifactId>unireg-jaxb2-party</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>4.6</version>
+			<version>5.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -164,7 +164,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service v6 (6.4)"
+									doctitle="Unireg - Documentation du web service v6 (6.5-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
