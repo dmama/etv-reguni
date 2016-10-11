@@ -1,31 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:util="http://www.springframework.org/schema/util"
-		xmlns:jaxws="http://cxf.apache.org/jaxws"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans
-							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://cxf.apache.org/jaxws
-							http://cxf.apache.org/schemas/jaxws.xsd
-							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+
+
+							http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-	<!-- WS - Batch Service -->
-	<jaxws:endpoint implementor="#batchServiceBean"
-					address="/batch" />
-
-	<bean id="batchServiceBean" class="ch.vd.uniregctb.webservices.batch.BatchWebServiceImpl">
-		<property name="batchScheduler" ref="batchScheduler" />
-		<property name="documentService" ref="docService" />
-	</bean>
-	
 	<!-- Job pour le testing du BatchClient -->
 	<bean id="itBatchClientJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.batch.ItBatchClientJob" >
 		<constructor-arg value="1" />
 		<constructor-arg value="IT - BatchClient testing job" />
+	</bean>
+
+	<!-- WS REST Batch -->
+	<jaxrs:server address="/batch">
+		<jaxrs:serviceBeans>
+			<ref bean="wsBatchEndPoint"/>
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<bean class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator">
+				<property name="addResourceAndMethodIds" value="false" />
+				<property name="applicationTitle" value="Unireg Batch" />
+			</bean>
+			<bean class="org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper">
+				<property name="printStackTrace" value="true" />
+			</bean>
+			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="wsBatchEndPoint" class="ch.vd.uniregctb.webservices.batch.WebServiceEndPoint">
+		<property name="batchScheduler" ref="batchScheduler"/>
+		<property name="documentService" ref="docService"/>
 	</bean>
 
 </beans>

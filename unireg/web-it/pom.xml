@@ -64,17 +64,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>uniregctb-wsclient-batch</artifactId>
-			<version>1.2.5</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
 			<exclusions>

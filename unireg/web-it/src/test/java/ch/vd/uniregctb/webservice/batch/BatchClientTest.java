@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservice.batch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +14,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.ubr.BatchRunnerClient;
-import ch.vd.uniregctb.webservices.batch.BatchWSException;
-import ch.vd.uniregctb.webservices.batch.JobDefinition;
-import ch.vd.uniregctb.webservices.batch.JobStatut;
-import ch.vd.uniregctb.webservices.batch.Param;
+import ch.vd.uniregctb.ubr.BatchRunnerClientException;
+import ch.vd.uniregctb.ubr.JobDescription;
+import ch.vd.uniregctb.ubr.JobParamDescription;
+import ch.vd.uniregctb.ubr.JobStatus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -154,7 +155,7 @@ public class BatchClientTest extends WebitTest {
 			client.startBatch("", null);
 			fail("il ne devrait pas être possible de pouvoir démarrer un batch nul");
 		}
-		catch (BatchWSException e) {
+		catch (BatchRunnerClientException e) {
 			assertEquals("Batch Name incorrect", e.getMessage());
 		}
 	}
@@ -166,7 +167,7 @@ public class BatchClientTest extends WebitTest {
 			client.startBatch("inconnu", null);
 			fail("il ne devrait pas être possible de pouvoir démarrer un batch inconnu");
 		}
-		catch (BatchWSException e) {
+		catch (BatchRunnerClientException e) {
 			assertEquals("Batch Name incorrect", e.getMessage());
 		}
 	}
@@ -204,20 +205,20 @@ public class BatchClientTest extends WebitTest {
 		client.stopBatch(BATCH_NAME);
 
 		// le job doit être dans l'état interrompu
-		final JobDefinition definition = client.getBatchDefinition(BATCH_NAME);
-		assertNotNull(definition);
-		assertEquals(JobStatut.JOB_INTERRUPTED, definition.getStatut());
+		final JobDescription description = client.getBatchDescription(BATCH_NAME);
+		assertNotNull(description);
+		assertEquals(JobStatus.INTERRUPTED, description.getStatus());
 	}
 
 	@Test
 	public void testShowArgumentWithBatchName() throws Exception {
 
-		final JobDefinition definition = client.getBatchDefinition(BATCH_NAME);
-		assertNotNull(definition);
-		assertEquals(BATCH_NAME, definition.getName());
-		assertEquals("IT - BatchClient testing job", definition.getDescription());
+		final JobDescription description = client.getBatchDescription(BATCH_NAME);
+		assertNotNull(description);
+		assertEquals(BATCH_NAME, description.getName());
+		assertEquals("IT - BatchClient testing job", description.getDescription());
 
-		final List<Param> params = definition.getParams();
+		final List<JobParamDescription> params = description.getParameters();
 		assertNotNull(params);
 		assertEquals(6, params.size());
 		assertParam(params.get(0), "dateDebut", "regdate");
@@ -269,20 +270,20 @@ public class BatchClientTest extends WebitTest {
 		assertTrue(duration > 20L);
 
 		// Finalement, le job doit être dans l'état interrompu
-		final JobDefinition definition = client.getBatchDefinition(BATCH_NAME);
-		assertNotNull(definition);
-		assertEquals(JobStatut.JOB_INTERRUPTED, definition.getStatut());
+		final JobDescription description = client.getBatchDescription(BATCH_NAME);
+		assertNotNull(description);
+		assertEquals(JobStatus.INTERRUPTED, description.getStatus());
 	}
 
-	private static void assertParam(Param param, final String paramName, final String paramType) {
+	private static void assertParam(JobParamDescription param, final String paramName, final String paramType) {
 		assertNotNull(param);
 		assertEquals(paramName, param.getName());
 		assertEquals(paramType, param.getType());
 	}
 
-	private static void assertEnumParam(Param param, final String paramName, final List<String> paramEnumValues) {
+	private static void assertEnumParam(JobParamDescription param, final String paramName, final List<String> paramEnumValues) {
 		assertNotNull(param);
 		assertEquals(paramName, param.getName());
-		assertEquals(paramEnumValues, param.getEnumValues());
+		assertEquals(paramEnumValues, Arrays.asList(param.getEnumValues()));
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.admin.batch;
 
 import javax.validation.Valid;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -163,7 +164,7 @@ public class BatchController {
 				throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 			}
 
-			batchScheduler.stopJob(name);
+			batchScheduler.stopJob(name, Duration.ofSeconds(30));
 			return null;
 		}
 		catch (Exception e) {

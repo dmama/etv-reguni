@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.scheduler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -7,6 +9,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -14,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -47,6 +54,10 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	private Date lastEnd;
 	private Document lastRunReport;
 	private JobStatusManager statusManager = null;
+
+	// suivi des status
+	private final Lock statusLock = new ReentrantLock();
+	private final Condition statusCondition = statusLock.newCondition();
 
 	// Params static
 	private final String name;
@@ -223,7 +234,16 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		if (!logDisabled) {
 			LOGGER.debug('<' + name + "> status changed from " + this.statut + " to " + statut);
 		}
-		this.statut = statut;
+
+		// notifie tout le monde que le statut a changé
+		statusLock.lock();
+		try {
+			this.statut = statut;
+			statusCondition.signalAll();
+		}
+		finally {
+			statusLock.unlock();
+		}
 	}
 
 	/**
@@ -794,5 +814,39 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	public boolean isLogDisabled() {
 		return logDisabled;
+	}
+
+	public static class TimeoutExpiredException extends Exception {
+		public final JobStatut statut;
+		public TimeoutExpiredException(JobStatut statut) {
+			this.statut = statut;
+		}
+	}
+
+	/**
+	 * Attend le temps imparti que le job atteigne l'un des états attendus
+	 * @param expected les états attendus
+	 * @param timeout le temps d'attente maximal
+	 * @return l'état atteint
+	 * @throws TimeoutExpiredException si le timeout est atteint avant que l'un des états attendus soit atteint
+	 * @throws InterruptedException si le thread a été interrompu
+	 */
+	public JobStatut waitForStatusIn(Set<JobStatut> expected, Duration timeout) throws TimeoutExpiredException, InterruptedException {
+		final Instant now = InstantHelper.get();
+		final Instant expiration = now.plus(timeout);
+		statusLock.lock();
+		try {
+			while (!expected.contains(statut)) {
+				final Duration remaningTime = Duration.between(InstantHelper.get(), expiration);
+				if (remaningTime.isNegative() || remaningTime.isZero()) {
+					throw new TimeoutExpiredException(statut);
+				}
+				statusCondition.awaitNanos(Math.max(remaningTime.toNanos(), 1L));
+			}
+			return statut;
+		}
+		finally {
+			statusLock.unlock();
+		}
 	}
 }

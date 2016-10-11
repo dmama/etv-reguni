@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.ubr.BatchRunnerClient;
-import ch.vd.uniregctb.webservices.batch.JobDefinition;
-import ch.vd.uniregctb.webservices.batch.JobStatut;
+import ch.vd.uniregctb.ubr.JobDescription;
+import ch.vd.uniregctb.ubr.JobStatus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,8 +40,8 @@ public class WebitIncontainerTestingJobTest extends WebitTest {
 		// Démarre le job et attend qu'il soit terminé
 		client.runBatch(jobName, null);
 
-		final JobDefinition definition = client.getBatchDefinition(jobName);
+		final JobDescription definition = client.getBatchDescription(jobName);
 		assertNotNull(definition);
-		assertEquals(JobStatut.JOB_OK, definition.getStatut());
+		assertEquals(JobStatus.OK, definition.getStatus());
 	}
 }

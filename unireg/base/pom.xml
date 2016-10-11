@@ -21,6 +21,7 @@
 		<module>../interfaces</module>
 		<module>../business</module>
 		<module>../avatars</module>
+		<module>../ubr-data</module>
 		<module>../nexus</module>
 		<module>../web</module>
 		<module>../ws</module>

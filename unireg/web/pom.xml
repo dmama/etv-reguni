@@ -67,6 +67,11 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>uniregctb-ubr-data</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-web</artifactId>
 			<version>2.12.0</version>
@@ -203,24 +208,14 @@
 			<version>${javamail.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>${cxf.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>stax</groupId>
-					<artifactId>stax-api</artifactId>
-				</exclusion>
-				<!-- exclusion de geronimo javamail : ce package redéfini les classes javax.mail.* et après l'envoi des emails marche pas bien -->
-				<exclusion>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-javamail_1.4_spec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-activation_1.1_spec</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>

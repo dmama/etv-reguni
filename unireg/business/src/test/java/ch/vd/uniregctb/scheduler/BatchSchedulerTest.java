@@ -58,7 +58,7 @@ public class BatchSchedulerTest extends JobTest {
 			count++;
 
 			if (count > 20) { // 2s
-				batchScheduler.stopJob(LoggingJob.NAME);
+				batchScheduler.stopJob(LoggingJob.NAME, null);
 				LOGGER.info("Message: " + job.getRunningMessage() + " Statut=" + job.getStatut());
 				assertNotRunning(job);
 				assertEquals(JobStatut.JOB_INTERRUPTED, job.getStatut());
@@ -91,7 +91,7 @@ public class BatchSchedulerTest extends JobTest {
 			assertTrue("OK : Job NOT started 2 times ", job.isRunning());
 		}
 
-		batchScheduler.stopJob(LoggingJob.NAME);
+		batchScheduler.stopJob(LoggingJob.NAME, null);
 
 		// Attente de l'arrêt de l'exécution
 		while (job.isRunning()) {
@@ -119,7 +119,7 @@ public class BatchSchedulerTest extends JobTest {
 			// Attente du démarrage de l'exécution
 			waitUntilRunning(job, startTime);
 
-			batchScheduler.stopJob(LoggingJob.NAME);
+			batchScheduler.stopJob(LoggingJob.NAME, null);
 
 			// Attente de l'arrêt de l'exécution
 			while (job.isRunning()) {
@@ -136,7 +136,7 @@ public class BatchSchedulerTest extends JobTest {
 			// Attente du démarrage de l'exécution
 			waitUntilRunning(job, startTime);
 
-			batchScheduler.stopJob(LoggingJob.NAME);
+			batchScheduler.stopJob(LoggingJob.NAME, null);
 
 			// Attente de l'arrêt de l'exécution
 			while (job.isRunning()) {

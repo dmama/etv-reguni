@@ -2,6 +2,7 @@ package ch.vd.uniregctb.scheduler;
 
 
 import java.text.ParseException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class MockBatchScheduler implements BatchScheduler {
 	}
 
 	@Override
-	public void stopJob(String name) throws SchedulerException {
+	public void stopJob(String name, @Nullable Duration timeout) throws SchedulerException {
 		throw new NotImplementedException();
 	}
 

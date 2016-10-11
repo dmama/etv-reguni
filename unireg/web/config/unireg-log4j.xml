@@ -128,6 +128,11 @@
 		<appender-ref ref="WEB_ACCESS" />
 	</category>
 
+	<category name="ws.batch" additivity="false">
+		<priority value="INFO" />
+		<appender-ref ref="WEB_ACCESS"/>
+	</category>
+
 	<category name="ServiceTracing" additivity="false">
 		<priority value="INFO" />
 		<appender-ref ref="SERVICE_TRACING" />

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.scheduler;
 
 import java.text.ParseException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -78,9 +79,10 @@ public interface BatchScheduler {
 	 * Arrête l'exécution d'un job et ne retourne que lorsque le job est vraiment arrêté.
 	 *
 	 * @param name le nom du job à arrêter
+	 * @param timeout (optionel) si fourni, ne rend la main qu'après que le job est vraiment arrêté ou que le timeout soit écoulé ; si absent, retour immédiat
 	 * @throws SchedulerException en cas d'erreur de scheduling Quartz
 	 */
-	void stopJob(String name) throws SchedulerException;
+	void stopJob(String name, @Nullable Duration timeout) throws SchedulerException;
 
 	/**
 	 * Demande à tous les jobs en cours de s'arrêter

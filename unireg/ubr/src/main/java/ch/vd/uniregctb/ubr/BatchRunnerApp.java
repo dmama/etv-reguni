@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.ubr;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,16 +22,10 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.PropertyConfigurator;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
-
-import ch.vd.uniregctb.webservices.batch.BatchWSException;
-import ch.vd.uniregctb.webservices.batch.JobDefinition;
-import ch.vd.uniregctb.webservices.batch.JobSynchronousMode;
-import ch.vd.uniregctb.webservices.batch.Param;
-import ch.vd.uniregctb.webservices.batch.Report;
 
 /**
  * Application qui permet de piloter les batches d'Unireg à partir de la ligne de commande.
@@ -117,41 +109,45 @@ public class BatchRunnerApp {
 		final String[] params = line.getOptionValues("params");
 
 		if (command == null) {
-			System.err.println("La commande doit être spécifiée.");
+			System.err.println("Command should be specified.");
 			System.exit(1);
 		}
 
 		if (!command.equals("list") && name == null) {
-			System.err.println("Le nom du batch doit être spécifié.");
+			System.err.println("Batch name should be specified.");
 			System.exit(1);
 		}
 
 		final BatchRunnerClient client = new BatchRunnerClient(serviceUrl, username, password);
 
 		try {
-			if (command.equals("start")) {
+			switch (command) {
+			case "start":
 				startBatch(name, params, client);
-			}
-			else if (command.equals("run")) {
+				break;
+			case "run":
 				runBatch(name, params, client);
-			}
-			else if (command.equals("stop")) {
+				break;
+			case "stop":
 				stopBatch(name, client);
-			}
-			else if (command.equals("list")) {
-				final List<String> names = client.getBatchNames();
-				for (String s : names) {
+				break;
+			case "list":
+				for (String s : client.getBatchNames()) {
 					System.out.println(s);
 				}
-			}
-			else if (command.equals("show")) {
+				break;
+			case "show":
 				showBatch(name, client);
-			}
-			else if (command.equals("status")) {
+				break;
+			case "status":
 				statusBatch(name, client);
-			}
-			else if (command.equals("lastreport")) {
+				break;
+			case "lastreport":
 				lastReport(name, outputDir, client);
+				break;
+			default:
+				System.err.println("Unknown command '" + command + "'");
+				System.exit(1);
 			}
 		}
 		catch (BatchException e) {
@@ -181,30 +177,30 @@ public class BatchRunnerApp {
 		l.setLevel(Level.WARNING);
 	}
 
-	private static void startBatch(String name, String[] params, BatchRunnerClient client) throws BatchWSException {
+	private static void startBatch(String name, String[] params, BatchRunnerClient client) throws BatchRunnerClientException {
 		client.startBatch(name, array2map(params));
 	}
 
-	private static void runBatch(String name, String[] params, BatchRunnerClient client) throws BatchWSException {
+	private static void runBatch(String name, String[] params, BatchRunnerClient client) throws BatchRunnerClientException {
 		client.runBatch(name, array2map(params));
 	}
 
-	private static void stopBatch(String name, BatchRunnerClient client) throws BatchWSException {
+	private static void stopBatch(String name, BatchRunnerClient client) throws BatchRunnerClientException {
 		client.stopBatch(name);
 	}
 
-	private static void statusBatch(String name, BatchRunnerClient client) throws UnknownBatchException {
-		final JobDefinition def = client.getBatchDefinition(name);
-		if (def == null) {
+	private static void statusBatch(String name, BatchRunnerClient client) throws UnknownBatchException, BatchRunnerClientException {
+		final JobStatus status = client.getBatchStatus(name);
+		if (status == null) {
 			throw new UnknownBatchException(name);
 		}
 		else {
-			System.out.println(def.getStatut().name());
+			System.out.println(status.name());
 		}
 	}
 
-	private static void showBatch(String name, BatchRunnerClient client) throws UnknownBatchException {
-		final JobDefinition def = client.getBatchDefinition(name);
+	private static void showBatch(String name, BatchRunnerClient client) throws UnknownBatchException, BatchRunnerClientException {
+		final JobDescription def = client.getBatchDescription(name);
 		if (def == null) {
 			throw new UnknownBatchException(name);
 		}
@@ -214,9 +210,7 @@ public class BatchRunnerApp {
 			System.out.print("description:     ");
 			System.out.println(def.getDescription());
 			System.out.print("parameters:      ");
-			toString(def.getParams());
-			System.out.print("execution mode:  ");
-			System.out.println(toString(def.getSynchronousMode()));
+			toString(def.getParameters());
 			System.out.print("last stop:       ");
 			System.out.println(toString(def.getLastEnd()));
 			System.out.print("last start:      ");
@@ -224,7 +218,7 @@ public class BatchRunnerApp {
 			System.out.print("running message: ");
 			System.out.println(toString(def.getRunningMessage()));
 			System.out.print("status:          ");
-			System.out.println(def.getStatut().name());
+			System.out.println(def.getStatus().name());
 		}
 	}
 
@@ -236,27 +230,23 @@ public class BatchRunnerApp {
 	 * @param outputDir
 	 *            le répertoire de sortie
 	 */
-	private static void lastReport(String name, String outputDir, BatchRunnerClient client) throws IOException, BatchWSException, NoLastReportFoundException {
+	private static void lastReport(String name, String outputDir, BatchRunnerClient client) throws IOException, BatchRunnerClientException, NoLastReportFoundException {
 
 		// récupère le rapport
-		final Report report = client.getLastReport(name);
-		if (report == null) {
-			throw new NoLastReportFoundException(name);
+		try (Report report = client.getLastReport(name)) {
+			if (report == null) {
+				throw new NoLastReportFoundException(name);
+			}
+
+			// sauve le rapport
+			final String filename = addPath(outputDir, report.getFileName());
+			try (InputStream is = report.getContent(); FileOutputStream os = new FileOutputStream(filename)) {
+				IOUtils.copy(is, os);
+			}
+
+			System.out.print("filePath: ");
+			System.out.println(filename);
 		}
-
-		// sauve le rapport
-		final String filename = addPath(outputDir, report.getFileName());
-
-		try (InputStream is = report.getContentByteStream().getInputStream(); FileOutputStream os = new FileOutputStream(filename)) {
-			FileCopyUtils.copy(is, os);
-		}
-
-		System.out.print("name:        ");
-		System.out.println(report.getName());
-		System.out.print("description: ");
-		System.out.println(report.getDescription());
-		System.out.print("filePath:    ");
-		System.out.println(filename);
 	}
 
 	/**
@@ -293,13 +283,11 @@ public class BatchRunnerApp {
 			this.enumValues = enumValues;
 		}
 
-		public ParamLine(Param p) {
+		public ParamLine(JobParamDescription p) {
 			this.name = p.getName();
 			this.type = p.getType();
-			this.mandatoryFlag = p.isIsMandatory() ? "Y" : "N";
-
-			final List<String> v = p.getEnumValues();
-			this.enumValues = (v == null || v.isEmpty()) ? N_A : ArrayUtils.toString(v.toArray());
+			this.mandatoryFlag = p.isMandatory() ? "Y" : "N";
+			this.enumValues = p.getEnumValues() == null || p.getEnumValues().length == 0 ? N_A : ArrayUtils.toString(p.getEnumValues());
 		}
 
 		public void println(String format) {
@@ -308,12 +296,12 @@ public class BatchRunnerApp {
 		}
 	}
 
-	private static void toString(List<Param> pl) {
+	private static void toString(List<JobParamDescription> pl) {
 		if (pl == null || pl.isEmpty()) {
 			System.out.println(N_A);
 		}
 		else {
-			System.out.println("");
+			System.out.println();
 
 			final List<ParamLine> lines = new ArrayList<>(pl.size() + 1);
 			lines.add(new ParamLine("name", "type", "mandatory", "enum values"));
@@ -323,7 +311,7 @@ public class BatchRunnerApp {
 			int maxEnum = "enum values".length();
 			int maxMandatory = "mandatory".length();
 
-			for (Param p : pl) {
+			for (JobParamDescription p : pl) {
 				final ParamLine line = new ParamLine(p);
 				lines.add(line);
 
@@ -354,15 +342,10 @@ public class BatchRunnerApp {
 		return message == null ? N_A : message;
 	}
 
-	private static String toString(JobSynchronousMode mode) {
-		return mode == null ? N_A : mode.name();
-	}
-
-	private static String toString(final XMLGregorianCalendar lastEnd) {
-		if (lastEnd == null) {
+	private static String toString(final Date date) {
+		if (date == null) {
 			return N_A;
 		}
-		Date date = lastEnd.toGregorianCalendar().getTime();
 		return date.toString();
 	}
 
@@ -388,12 +371,8 @@ public class BatchRunnerApp {
 				if (stringValue.startsWith(FILE_PREFIX)) {
 					// paramète de type fichier
 					try {
-						File file = ResourceUtils.getFile(stringValue);
-						byte[] bytes = FileUtils.readFileToByteArray(file);
-						value = bytes;
-					}
-					catch (FileNotFoundException e) {
-						throw new RuntimeException(e);
+						final File file = ResourceUtils.getFile(stringValue);
+						value = FileUtils.readFileToByteArray(file);
 					}
 					catch (IOException e) {
 						throw new RuntimeException(e);

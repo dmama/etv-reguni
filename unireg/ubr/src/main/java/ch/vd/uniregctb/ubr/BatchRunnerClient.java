@@ -1,36 +1,33 @@
 package ch.vd.uniregctb.ubr;
 
 import javax.activation.DataHandler;
-import javax.mail.util.ByteArrayDataSource;
-import javax.xml.ws.BindingProvider;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.message.Message;
+import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
+import org.apache.cxf.jaxrs.impl.MetadataMap;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
-
-import ch.vd.uniregctb.webservices.batch.BatchPort;
-import ch.vd.uniregctb.webservices.batch.BatchService;
-import ch.vd.uniregctb.webservices.batch.BatchWSException;
-import ch.vd.uniregctb.webservices.batch.JobDefParam;
-import ch.vd.uniregctb.webservices.batch.JobDefinition;
-import ch.vd.uniregctb.webservices.batch.JobName;
-import ch.vd.uniregctb.webservices.batch.JobNameArray;
-import ch.vd.uniregctb.webservices.batch.JobStatut;
-import ch.vd.uniregctb.webservices.batch.LastReport;
-import ch.vd.uniregctb.webservices.batch.ParamMap;
-import ch.vd.uniregctb.webservices.batch.ParamMapEntry;
-import ch.vd.uniregctb.webservices.batch.Report;
-import ch.vd.uniregctb.webservices.batch.StartBatch;
-import ch.vd.uniregctb.webservices.batch.StopBatch;
 
 /**
  * Client qui se connecte au web-service 'batch' d'Unireg et qui permet de piloter (démarrer, arrêter, ...) les batches.
@@ -39,69 +36,199 @@ import ch.vd.uniregctb.webservices.batch.StopBatch;
  */
 public class BatchRunnerClient {
 
-	private final BatchPort service;
-	
 	static private final Logger LOGGER = LoggerFactory.getLogger(BatchRunnerClient.class);
 
+	private final String serviceUrl;
+	private final String username;
+	private final String password;
+
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+	private static final String CONTENT_TYPE = "Content-Type";
+
+	private static final String JOB_LIST = "/jobs";
+
+	private enum JobAction {
+		START("/job/%s/start"),
+		STOP("/job/%s/stop"),
+		STATUS("/job/%s/status"),
+		WAIT("/job/%s/wait"),
+		DESCRIPTION("/job/%s/description"),
+		REPORT("/job/%s/report");
+
+		private final String pattern;
+
+		JobAction(String pattern) {
+			this.pattern = pattern;
+		}
+
+		public String path(String jobName) {
+			return String.format(pattern, jobName);
+		}
+	}
+
+	private void setReceiveTimeout(WebClient client, long receiveTimeout) {
+		final HTTPConduit conduit = (HTTPConduit) WebClient.getConfig(client).getConduit();
+		conduit.getClient().setReceiveTimeout(receiveTimeout);
+	}
+
+	private WebClient createWebClient(long receiveTimeout) {
+		final WebClient wc = WebClient.create(serviceUrl, username, password, null);
+		setReceiveTimeout(wc, receiveTimeout);
+		return wc;
+	}
+
+	private void reinitWebClient(WebClient client, long receiveTimeout) {
+		client.reset();
+		setReceiveTimeout(client, receiveTimeout);
+	}
+
+	private static void path(WebClient client, JobAction action, String jobName) {
+		client.path(action.path(jobName));
+	}
+
+	private static void param(WebClient client, String paramName, Object paramValue) {
+		client.query(paramName, paramValue);
+	}
+
 	public BatchRunnerClient(String serviceUrl, String username, String password) throws Exception {
-		service = initWebService(serviceUrl, username, password);
+		this.serviceUrl = serviceUrl;
+		this.username = username;
+		this.password = password;
 	}
 
 	/**
-	 * Démarre le batch spécifié par son nom. En fonction du type de batch, l'appel retourne immédiatement (=exécution asynchrone) ou attend
-	 * que le batch soit terminé (=exécution synchrone).
-	 *
-	 * @param name
-	 *            le nom du batch
-	 * @param params
-	 *            les paramètres à utiliser
-	 * @throws BatchWSException
-	 *             en cas d'erreur lors du démarrage du batch
+	 * Démarre le batch spécifié par son nom. L'appel retourne immédiatement.
+	 * @param name le nom du batch
+	 * @param params les paramètres à utiliser
+	 * @throws BatchRunnerClientException en cas d'erreur lors du démarrage du batch
 	 */
-	public void startBatch(String name, Map<String, Object> params) throws BatchWSException {
-		StartBatch p = new StartBatch();
-		p.setName(name);
-		p.setParams(util2web(params));
-		service.start(p);
+	public void startBatch(String name, Map<String, Object> params) throws BatchRunnerClientException {
+		final WebClient client = createWebClient(60000);        // 60 secondes
+		path(client, JobAction.START, name);
+
+		final List<Attachment> attachments = new ArrayList<>();
+
+		// en gros, dans les paramètres, à ce niveau, il y a des String et des byte[]
+		final Map<String, String> simpleParameters = new HashMap<>(params.size());
+		for (Map.Entry<String, Object> paramEntry : params.entrySet()) {
+			final String paramName = paramEntry.getKey();
+			final Object paramValue = paramEntry.getValue();
+			if (paramValue instanceof String) {
+				simpleParameters.put(paramName, (String) paramValue);
+			}
+			else if (paramValue != null) {
+				final DataHandler dh = new DataHandler(paramValue, MediaType.APPLICATION_OCTET_STREAM);
+				final MultivaluedMap<String, String> headers = buildHeaders(MediaType.APPLICATION_OCTET_STREAM, paramName);
+				final Attachment attachment = new Attachment(paramName, dh, headers);
+				attachments.add(attachment);
+			}
+		}
+
+		try {
+			// paramètres "simples" (même vide, il faut renseigner le champ dans la requête)
+			final ObjectMapper mapper = new ObjectMapper();
+			final String json = mapper.writeValueAsString(simpleParameters);
+			final DataHandler dh = new DataHandler(json, MediaType.APPLICATION_JSON);
+			final MultivaluedMap<String, String> headers = buildHeaders(MediaType.APPLICATION_JSON, JobConstants.SIMPLE_PARAMETERS_PART_NAME);
+			final Attachment attachment = new Attachment(JobConstants.SIMPLE_PARAMETERS_PART_NAME, dh, headers);
+			attachments.add(attachment);
+
+			final Response response = client.type(JobConstants.MULTIPART_MIXED).post(new MultipartBody(attachments, MediaType.valueOf(JobConstants.MULTIPART_MIXED), false));
+			final int status = response.getStatus();
+			if (status == HttpURLConnection.HTTP_PRECON_FAILED) {
+				throw new BatchRunnerClientException("Job is already running...");
+			}
+			if (status >= 400) {
+				throw new ServerWebApplicationException(response);
+			}
+			if (status != HttpURLConnection.HTTP_CREATED) {
+				throw new BatchRunnerClientException(String.format("HTTP code %d received from the server", status));
+			}
+		}
+		catch (ServerWebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getStatus()), e);
+		}
+		catch (BatchRunnerClientException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new BatchRunnerClientException(e);
+		}
+	}
+
+	private static MultivaluedMap<String, String> buildHeaders(String contentType, String name) {
+		final MultivaluedMap<String, String> headers = new MetadataMap<>();
+		headers.putSingle(CONTENT_DISPOSITION, String.format("form-data; name=\"%s\"", name));
+		headers.putSingle(CONTENT_TYPE, contentType);
+		return headers;
 	}
 
 	/**
 	 * Démarre le batch spécifié par son nom et <b>attend</b> que le batch soit terminé (=exécution synchrone).
-	 *
-	 * @param name
-	 *            le nom du batch
-	 * @param params
-	 *            les paramètres à utiliser
-	 * @throws BatchWSException
-	 *             en cas d'erreur lors du démarrage du batch
+	 * @param name le nom du batch
+	 * @param params les paramètres à utiliser
+	 * @throws BatchRunnerClientException en cas d'erreur lors du démarrage du batch
 	 */
-	public void runBatch(String name, Map<String, Object> params) throws BatchWSException {
-		StartBatch p = new StartBatch();
-		p.setName(name);
-		p.setParams(util2web(params));
-		service.start(p);
+	public void runBatch(String name, Map<String, Object> params) throws BatchRunnerClientException {
+		// démarrage
+		startBatch(name, params);
 
-		final JobDefParam pp = new JobDefParam();
-		pp.setName(name);
+		// attendons un peu pour laisser le temps au job de démarrer
+		try {
+			Thread.sleep(TimeUnit.SECONDS.toMillis(10));
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
 
-		String runningMessage = null;
-		JobStatut status = JobStatut.JOB_READY;
-		while (isRunning(status) || JobStatut.JOB_READY == status) {
-			try {
-				Thread.sleep(2000);
+		// on attend la fin du job
+		attendreArretJob(name);
+	}
+
+	private void attendreArretJob(String jobName) throws BatchRunnerClientException {
+		final Set<JobStatus> endStatuses = EnumSet.of(JobStatus.EXCEPTION,
+		                                              JobStatus.INTERRUPTED,
+		                                              JobStatus.OK);
+		final JobWaitInformation waitInfo = waitForJobStatus(endStatuses, jobName);
+		if (JobStatus.EXCEPTION == waitInfo.getJobStatus()) {
+			// on essaie d'abord d'aller chercher le message de l'exception (qui se trouve dans le "runningMessage" du dernier run du batch)
+			final String msg;
+			final String runningMessage = waitInfo.getJobRunningMessage();
+			if (StringUtils.isNotBlank(runningMessage)) {
+				msg = String.format("%s (détails dans le log du serveur)", runningMessage);
 			}
-			catch (InterruptedException e) {
-				throw new RuntimeException(e);
+			else {
+				msg = "Le job a lancé une exception - consulter le log du serveur";
 			}
+			throw new BatchRunnerClientException(msg);
+		}
+	}
+
+	@NotNull
+	private JobWaitInformation waitForJobStatus(Set<JobStatus> expectedStatuses, String jobName) throws BatchRunnerClientException {
+		final long timeoutMetier = TimeUnit.SECONDS.toMillis(20);
+		final long timeoutTechnique = timeoutMetier * 2;
+		final WebClient client = createWebClient(timeoutTechnique);
+
+		while (true) {
 			try {
-				final JobDefinition def = service.getJobDefinition(pp);
-				runningMessage = def.getRunningMessage();
-				status = def.getStatut();
+				reinitWebClient(client, timeoutTechnique);
+				path(client, JobAction.WAIT, jobName);
+				expectedStatuses.stream().map(Enum::name).forEach(s -> param(client, "status", s));
+				param(client, "timeout", timeoutMetier);
+
+				final JobWaitInformation info = getJSON(client, JobWaitInformation.class);
+				if (info.getWaitStatus() == JobWaitInformation.JobWaitStatus.EXPECTED_STATUS_REACHED) {
+					return info;
+				}
+			}
+			catch (ServerWebApplicationException | IOException e) {
+				throw new BatchRunnerClientException(e);
 			}
 			catch (RuntimeException e) {
 				if (causedByTimeout(e)) {
 					LOGGER.warn("Timeout lors de la récupération du statut du batch, on va réessayer...");
-					status = JobStatut.JOB_RUNNING; // on suppose que le job tourne toujours
 				}
 				else {
 					LOGGER.error("Impossible de récupérer le statut du batch", e);
@@ -109,22 +236,6 @@ public class BatchRunnerClient {
 				}
 			}
 		}
-
-		if (JobStatut.JOB_EXCEPTION == status) {
-			// on essaie d'abord d'aller chercher le message de l'exception (qui se trouve dans le "runningMessage" du dernier run du batch)
-			final String msg;
-			if (StringUtils.isNotBlank(runningMessage)) {
-				msg = String.format("%s (détails dans le log du serveur)", runningMessage);
-			}
-			else {
-				msg = "Le job a lancé une exception - consulter le log du serveur";
-			}
-			throw new BatchWSException(msg);
-		}
-	}
-
-	private boolean isRunning(JobStatut status) {
-		return status == JobStatut.JOB_RUNNING || status == JobStatut.JOB_INTERRUPTING;
 	}
 
 	/**
@@ -146,108 +257,130 @@ public class BatchRunnerClient {
 
 	/**
 	 * Stoppe le batch spécifié. La méthode ne retourne que lorsque le batch est véritablement stoppé.
-	 *
-	 * @param name
-	 *            le nom du batch à stopper.
-	 * @throws BatchWSException
-	 *             en cas d'erreur lors de l'arrêt du batch
+	 * @param name le nom du batch à stopper.
+	 * @throws BatchRunnerClientException en cas d'erreur lors de l'arrêt du batch
 	 */
-	public void stopBatch(String name) throws BatchWSException {
-		StopBatch p = new StopBatch();
-		p.setName(name);
-		service.stop(p);
+	public void stopBatch(String name) throws BatchRunnerClientException {
+		final WebClient client = createWebClient(10000);   // 10 secondes
+		path(client, JobAction.STOP, name);
+
+		try {
+			// demande d'arrêt
+			final Response response = client.post(null);
+			if (response.getStatus() >= 400) {
+				throw new ServerWebApplicationException(response);
+			}
+			if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+				throw new BatchRunnerClientException(String.format("HTTP code %d received while trying to stop job %s.", response.getStatus(), name));
+			}
+		}
+		catch (ServerWebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP code %d received from the server", e.getStatus()), e);
+		}
+
+		// attente de l'arrêt
+		attendreArretJob(name);
 	}
 
 	/**
 	 * @return les noms des batchs disponibles.
 	 */
-	public List<String> getBatchNames() {
-		final JobNameArray array = service.getListJobs();
-		return web2util(array);
+	public List<String> getBatchNames() throws BatchRunnerClientException {
+		final WebClient client = createWebClient(10000);    // 10 secondes
+		client.path(JOB_LIST);
+
+		try {
+			final JobNames names = getJSON(client, JobNames.class);
+			return names.getJobs();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getStatus()), e);
+		}
+		catch (Exception e) {
+			throw new BatchRunnerClientException(e);
+		}
+	}
+
+	private static <T> T getJSON(WebClient client, Class<T> clazz) throws IOException, ServerWebApplicationException {
+		final Response response = client.accept(MediaType.APPLICATION_JSON_TYPE).get();
+		if (response.getStatus() >= 400) {
+			throw new ServerWebApplicationException(response);
+		}
+		final ObjectMapper mapper = new ObjectMapper();
+		try (InputStream is = (InputStream) response.getEntity()) {
+			return mapper.readValue(is, clazz);
+		}
+	}
+
+	private static String getString(WebClient client) throws IOException, ServerWebApplicationException {
+		return client.accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 	}
 
 	/**
-	 * @param name
-	 *            le nom du job à détailler.
+	 * @param name le nom du job à détailler.
 	 * @return les informations complètes (paramètres, état, ...) d'un job.
 	 */
-	public JobDefinition getBatchDefinition(String name) {
-		JobDefParam p = new JobDefParam();
-		p.setName(name);
-		return service.getJobDefinition(p);
-	}
-
-	/**
-	 * @param name
-	 *            le nom du job dont on veut obtenir le dernier rapport.
-	 * @return le dernier rapport d'exécution du job spécifié; <b>null</b> si le job n'a pas été exécuté depuis le démarrage de
-	 *         l'application.
-	 */
-	public Report getLastReport(String name) throws BatchWSException {
-		LastReport p = new LastReport();
-		p.setName(name);
-		return service.getLastReport(p);
-	}
-
-	private static BatchPort initWebService(String serviceUrl, String username, String password) throws Exception {
-		URL wsdlUrl = ResourceUtils.getURL("classpath:BatchService.wsdl");
-		BatchService ts = new BatchService(wsdlUrl);
-		BatchPort service = ts.getBatchPortPort();
-		Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-		if (StringUtils.isNotBlank(username)) {
-			context.put(BindingProvider.USERNAME_PROPERTY, username);
-			context.put(BindingProvider.PASSWORD_PROPERTY, password);
+	public JobDescription getBatchDescription(String name) throws BatchRunnerClientException {
+		final WebClient client = createWebClient(10000);    // 10 secondes
+		path(client, JobAction.DESCRIPTION, name);
+		try {
+			return getJSON(client, JobDescription.class);
 		}
-		context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
-
-		// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
-		context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
-		context.put("set-jaxb-validation-event-handler", false);
-		
-		return service;
-	}
-
-	/**
-	 * Converti une java.util.HashMap en MyHashMapType.
-	 */
-	private ParamMap util2web(Map<String, Object> params) {
-
-		ParamMap map = new ParamMap();
-
-		if (params != null) {
-			final List<ParamMapEntry> entries = map.getEntries();
-			for (Entry<String, Object> e : params.entrySet()) {
-				ParamMapEntry entry = new ParamMapEntry();
-				entry.setKey(e.getKey());
-				final Object value = e.getValue();
-				if (value instanceof String) {
-					entry.setValue((String) value);
-				}
-				else if (value instanceof byte[]) {
-					entry.setBytesValue(new DataHandler(new ByteArrayDataSource((byte[]) value, "application/octet-stream")));
-				}
-				else {
-					throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + ']');
-				}
-				entries.add(entry);
+		catch (ServerWebApplicationException e) {
+			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+				return null;
 			}
+			throw new BatchRunnerClientException(e);
 		}
+		catch (Exception e) {
+			throw new BatchRunnerClientException(e);
+		}
+	}
 
-		return map;
+	public JobStatus getBatchStatus(String name) throws BatchRunnerClientException {
+		final WebClient client = createWebClient(10000);    // 10 secondes
+		path(client, JobAction.STATUS, name);
+		try {
+			final String status = getString(client);
+			return JobStatus.valueOf(status);
+		}
+		catch (ServerWebApplicationException e) {
+			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+				return null;
+			}
+			throw new BatchRunnerClientException(e);
+		}
+		catch (Exception e) {
+			throw new BatchRunnerClientException(e);
+		}
 	}
 
 	/**
-	 * Converti un array JobNameArray en liste de strings.
+	 * @param name le nom du job dont on veut obtenir le dernier rapport.
+	 * @return le dernier rapport d'exécution du job spécifié; <b>null</b> si le job n'a pas été exécuté depuis le démarrage de l'application.
 	 */
-	private List<String> web2util(final JobNameArray array) {
-		if (array == null) {
-			return Collections.emptyList();
+	public Report getLastReport(String name) throws BatchRunnerClientException {
+		final WebClient client = createWebClient(10000);    // 10 secondes
+		path(client, JobAction.REPORT, name);
+
+		try {
+			final Response response = client.accept(MediaType.APPLICATION_OCTET_STREAM_TYPE).get();
+			if (response.getStatus() >= 400) {
+				throw new ServerWebApplicationException(response);
+			}
+			if (response.getStatus() == HttpURLConnection.HTTP_NO_CONTENT) {
+				return null;
+			}
+
+			final ContentDisposition cd = new ContentDisposition((String) response.getMetadata().getFirst(CONTENT_DISPOSITION));
+			final String filename = StringUtils.defaultIfBlank(cd.getParameter("filename"), String.format("%s-report-data", name));
+			return new Report((InputStream) response.getEntity(), filename);
 		}
-		final List<JobName> items = array.getItem();
-		List<String> list = new ArrayList<>(items.size());
-		for (JobName n : items) {
-			list.add(n.getName());
+		catch (ServerWebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getStatus()), e);
 		}
-		return list;
+		catch (Exception e) {
+			throw new BatchRunnerClientException(e);
+		}
 	}
 }

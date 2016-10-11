@@ -11,6 +11,7 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.ReflectionException;
 import java.text.ParseException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -262,7 +263,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		return job;
 	}
 
-	private void sleep(int millisecondes) {
+	private void sleep(long millisecondes) {
 		try {
 			Thread.sleep(millisecondes);
 		}
@@ -310,10 +311,11 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 	 * Arrête l'exécution d'un job et ne retourne que lorsque le job est vraiment arrêté.
 	 *
 	 * @param name le nom du job à arrêter
+	 * @param timeout (optionel) si fourni, ne rend la main qu'après que le job est vraiment arrêté ou que le timeout soit écoulé ; si absent, retour immédiat
 	 * @throws SchedulerException en cas d'erreur de scheduling Quartz
 	 */
 	@Override
-	public void stopJob(String name) throws SchedulerException {
+	public void stopJob(String name, @Nullable Duration timeout) throws SchedulerException {
 
 		final JobDefinition job = jobs.get(name);
 		Assert.notNull(job, "Le job <" + name + "> n'existe pas");
@@ -322,25 +324,26 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		registerInterruptionRequest(job);
 
 		// Attends que le job soit stoppé
-		boolean warningDone = false;
-		int count = 0;
-		while (job.isRunning()) {
+		if (timeout != null && job.isRunning()) {
 
-			sleep(500);
-			
-			count++;
-			if (count > 10 && !warningDone) { // 5s
-				LOGGER.warn("Job <" + name + "> takes looooong (>5s) to stop!");
-				warningDone = true;
-			}
-			if (count > 60) { // 30s
-				LOGGER.error("Job <" + name + "> takes REALLY too looooong (>30s) to stop. Aborting wait.");
-				break;
-			}
-		}
+			// on attend deux phases...
+			// - à 20% du timeout, on indique un warning
+			// - à 100% du timeout, on indique une erreur et on sort
+			final long millis = Math.max(timeout.toMillis(), 5);            // minimum 5ms pour que 20% soit non-zéro
 
-		if (!job.isRunning()) {
-			LOGGER.info("Job <" + name + "> is now stopped with status " + job.getStatut());
+			// on attend 20% du temps
+			sleep(millis / 5L);
+			if (job.isRunning()) {
+				LOGGER.warn("Job <" + name + "> takes looooong (> " + millis / 5 + " ms) to stop!");
+			}
+
+			sleep(millis * 4 / 5);
+			if (job.isRunning()) {
+				LOGGER.error("Job <" + name + "> takes REALLY too looooong (> " + millis + " ms) to stop. Aborting wait.");
+			}
+			else {
+				LOGGER.info("Job <" + name + "> is now stopped with status " + job.getStatut());
+			}
 		}
 	}
 
@@ -514,7 +517,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 				else {
 					final JobDefinition job = jobs.get(target);
 					if (job.isRunning()) {
-						stopJob(target);
+						stopJob(target, Duration.ofSeconds(30));
 						if (job.isRunning()) {
 							msg = "Job is still running!";
 						}

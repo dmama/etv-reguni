@@ -93,7 +93,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Web-service Batch</web-resource-name>
-			<url-pattern>/ws/batch</url-pattern>
+			<url-pattern>/ws/batch/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
