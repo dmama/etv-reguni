@@ -5,44 +5,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationServiceImpl implements EvenementOrganisationService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationServiceImpl.class);
 
 	/**
 	 * Comparateur qui trie les événements organisation par date, puis par priorité
 	 */
 	private static final Comparator<EvenementOrganisation> EVT_ORGANISATION_COMPARATOR = new EvenementOrganisationComparator();
 
-	private ServiceOrganisationService serviceOrganisationService;
     private EvenementOrganisationDAO evenementOrganisationDAO;
-	private TiersDAO tiersDAO;
-	private TiersService tiersService;
 
 	public void setEvenementOrganisationDAO(EvenementOrganisationDAO evenementOrganisationDAO) {
 		this.evenementOrganisationDAO = evenementOrganisationDAO;
-	}
-
-	public void setServiceOrganisation(ServiceOrganisationService serviceOrganisationService) {
-		this.serviceOrganisationService = serviceOrganisationService;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
 	}
 
 	@Override

@@ -7,9 +7,6 @@
 
 	<bean id="evtOrganisationService" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationServiceImpl">
 		<property name="evenementOrganisationDAO" ref="evenementOrganisationDAO"/>
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 </beans>

@@ -147,7 +147,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		}
 
 		@Override
-		public int compareTo(Delayed o) {
+		public int compareTo(@NotNull Delayed o) {
 			final long now = getTimestamp();
 			final long myDelay = getDelay(TimeUnit.NANOSECONDS, now);
 			final long yourDelay = ((DelayedOrganisation) o).getDelay(TimeUnit.NANOSECONDS, now);
@@ -260,7 +260,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		final DelayedOrganisation elt = finalQueue.poll(timeout, unit);
 		if (elt != null) {
 			// 1. trouve tous les événements de cette organisation qui sont dans un état A_TRAITER, EN_ATTENTE, EN_ERREUR
-			// 2. tri de ces événements par date, puis type d'événement
+			// 2. tri de ces événements par date, puis ordre arrivée
 			return new Batch(elt.noOrganisation, buildLotsEvenementsOrganisation(elt.noOrganisation));
 		}
 
