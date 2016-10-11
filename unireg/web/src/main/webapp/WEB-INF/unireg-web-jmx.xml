@@ -167,6 +167,7 @@
 				<entry key="EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
 				<entry key="ReqDes" value-ref="reqdesEventListener"/>
 				<entry key="EvenementsOrganisation" value-ref="evtOrganisationListener"/>
+				<entry key="RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
 			</map>
 		</property>
 	</bean>
