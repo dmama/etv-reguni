@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -542,8 +543,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
 		final List<Rue> histo = rawService.getRuesHisto(numero);
 		if (histo != null && !histo.isEmpty()) {
-			Collections.sort(histo, new DateRangeComparator<Rue>(DateRangeComparator.CompareOrder.DESCENDING));
-			return histo.get(0);        // = la plus récente
+			final List<Rue> sorted = new ArrayList<>(histo);
+			Collections.sort(sorted, new DateRangeComparator<Rue>(DateRangeComparator.CompareOrder.DESCENDING));
+			return sorted.get(0);        // = la plus récente
 		}
 		return null;
 	}
