@@ -894,6 +894,38 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="corporationTaxLiabilityTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Type d'assujettissement "Entreprise"</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE">
+				<xs:annotation>
+					<xs:documentation>Non assujetti</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ORDINARY_RESIDENT">
+				<xs:annotation>
+					<xs:documentation>Vaudois ordinaire</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Hors-Suisse</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER_CANTON">
+				<xs:annotation>
+					<xs:documentation>Hors-Canton</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:complexType name="withholdingTaxationPeriodType">
 		<xs:annotation>
 			<xs:appinfo>
