@@ -279,7 +279,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test
 	public void testValidateAnnonceIDEPourrie() throws ParseException {
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
-		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
+		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		// TODO: check le contenu

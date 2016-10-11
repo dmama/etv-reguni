@@ -68,7 +68,7 @@ public class RCEntApiHelper {
 		if (noticeRequestIdent != null) {
 			final String applicationId = noticeRequestIdent.getReportingApplication().getId();
 			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
-			if (RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
+			if (RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
 				final String noticeRequestId = noticeRequestIdent.getNoticeRequestId();
 				if (noticeRequestId != null) {
 					return Long.parseLong(noticeRequestId);

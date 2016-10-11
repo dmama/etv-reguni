@@ -69,7 +69,7 @@ public class AnnonceIDESenderItTest extends EvenementTest {
 
 			final AnnonceIDE
 					annonceIDE = new AnnonceIDE(123456L, TypeAnnonce.CREATION, RegDate.get(2016, 8, 19).asJavaDate(), new AnnonceIDEData.UtilisateurImpl("c4zem2", null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
-					                            new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_SERVICE_IDE, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG));
+					                            new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG));
 			annonceIDE.setCommentaire("Ceci est une annonce de test.");
 			final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();
 			contenu.setNom("Synergy SA");
