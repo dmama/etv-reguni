@@ -2,7 +2,6 @@ package ch.vd.uniregctb.checker;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
@@ -38,7 +37,7 @@ public class ServiceSecuriteChecker implements StatusChecker {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+			throw new CheckerException(e.getMessage());
 		}
 	}
 

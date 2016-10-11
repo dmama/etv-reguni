@@ -2,7 +2,6 @@ package ch.vd.uniregctb.checker;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -28,7 +27,7 @@ public class ServiceInfraChecker implements StatusChecker {
 			serviceInfraRaw.ping();
 		}
 		catch (Exception e) {
-			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+			throw new CheckerException(e.getMessage());
 		}
 	}
 

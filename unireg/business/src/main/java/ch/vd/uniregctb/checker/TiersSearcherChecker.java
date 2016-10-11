@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.shared.statusmanager.CheckerException;
 import ch.vd.shared.statusmanager.StatusChecker;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -40,7 +39,7 @@ public class TiersSearcherChecker implements StatusChecker {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new CheckerException(ExceptionUtils.extractCallStack(e));
+			throw new CheckerException(e.getMessage());
 		}
 	}
 
