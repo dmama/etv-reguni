@@ -22,14 +22,6 @@ fi
 echo "Deploy only: $DEPLOY_ONLY"
 
 
-if [ $DEPLOY_ONLY == 0 ]; then
-	git pull
-fi
-if [ $? != 0 ]; then
-	echo "!!! Erreur lors du svn update" >&2
-	exit 1
-fi
-
 #########
 # Version
 version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
