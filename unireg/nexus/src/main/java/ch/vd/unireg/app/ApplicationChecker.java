@@ -1,11 +1,15 @@
 package ch.vd.unireg.app;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import ch.vd.shared.statusmanager.StatusManager;
 import ch.vd.uniregctb.common.TimeHelper;
 
 public class ApplicationChecker {
 
 	private static final long startupTime = System.nanoTime();
+
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	private String version;
 	private StatusManager statusManager;
@@ -15,7 +19,12 @@ public class ApplicationChecker {
 	}
 
 	public String getStatusJSON() {
-		return "{'status' : '" + statusManager.getStatus() + "'}";
+		try {
+			return mapper.writeValueAsString(statusManager.getDetailedStatus());
+		}
+		catch (Exception e) {
+			return "{'exception':'" + e.getMessage() + "'}";
+		}
 	}
 
 	public static long getUptimeSeconds() {
