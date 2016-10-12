@@ -63,6 +63,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="serviceIDEService" ref="serviceIDEService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="tacheService" ref="tacheService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
