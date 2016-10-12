@@ -202,10 +202,11 @@ public class RCEntAnnonceIDEHelper {
 		identification.setNoticeRequestDateTime(proto.getDateAnnonce());
 
 		final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = proto.getInfoServiceIDEObligEtendues();
-		identification.setReportingApplication(infoServiceIDEObligEtendues == null ? null : new RequestApplication(infoServiceIDEObligEtendues.getApplicationId(), infoServiceIDEObligEtendues
-				.getApplicationName()));
-		identification.setIDESource(infoServiceIDEObligEtendues == null ? null : new NamedOrganisationId("CH.IDE", infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues().getValeur()));
-
+		if (infoServiceIDEObligEtendues != null) {
+			identification.setReportingApplication(new RequestApplication(infoServiceIDEObligEtendues.getApplicationId(), infoServiceIDEObligEtendues.getApplicationName()));
+			final NumeroIDE noIdeServiceIDEObligEtendues = infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues();
+			identification.setIDESource(noIdeServiceIDEObligEtendues == null ? null : new NamedOrganisationId("CH.IDE", noIdeServiceIDEObligEtendues.getValeur()));
+		}
 		final BaseAnnonceIDE.Utilisateur utilisateur = proto.getUtilisateur();
 		header.setUserId(utilisateur == null ? null :utilisateur.getUserId());
 		header.setUserPhoneNumber(utilisateur == null ? null :utilisateur.getTelephone());

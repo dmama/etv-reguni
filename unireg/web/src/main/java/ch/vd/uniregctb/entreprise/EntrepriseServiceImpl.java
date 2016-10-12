@@ -120,6 +120,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}));
 		entrepriseView.setEtats(getEtats(etats));
 
+		entrepriseView.setDegreAssocCivil(tiersService.determineDegreAssociationCivil(entreprise, RegDate.get()));
+
 		return entrepriseView;
 	}
 
@@ -129,11 +131,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		final EtablissementView etablissementView = new EtablissementView();
 		etablissementView.setId(etablissement.getNumero());
 
+		final RegDate aujourdhui = RegDate.get();
 		if (etablissement.isConnuAuCivil()) {
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			etablissementView.setRaisonSociale(site.getNom(null));
 
-			final String noIde = site.getNumeroIDE(RegDate.get());
+			final String noIde = site.getNumeroIDE(aujourdhui);
 			if (StringUtils.isNotBlank(noIde)) {
 				etablissementView.setNumerosIDE(Collections.singletonList(noIde));
 			}
@@ -148,6 +151,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		etablissementView.setEnseigne(etablissement.getEnseigne());
 		etablissementView.setDomiciles(getDomiciles(tiersService.getDomicilesEnActiviteSourceReelle(etablissement, true)));
 		etablissementView.setNoCantonal(etablissement.getNumeroEtablissement());
+
+		etablissementView.setDegreAssocCivilEntreprise(tiersService.determineDegreAssociationCivil(etablissement, aujourdhui));
+
 		return etablissementView;
 	}
 

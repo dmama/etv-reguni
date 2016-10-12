@@ -88,7 +88,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-bomaco-history.xml";
 
 	// annonce à l'IDE sur RCEnt
-	private static final long ID_ANNONCE = 301L;
+	private static final long ID_ANNONCE = 1L;
 
 	private String baseUrl;
 
@@ -241,7 +241,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
 
 		Assert.assertNotNull(annonceIDE);
-		Assert.assertEquals(301L, annonceIDE.getNumero().longValue());
+		Assert.assertEquals(1L, annonceIDE.getNumero().longValue());
 	}
 
 	@Test
@@ -252,13 +252,21 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 //		final AnnonceIDEModele.Statut statut = service.validerAnnonceIDE(new AnnonceIDERCEnt(null, TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL));
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(StatutAnnonce.TRANSMIS, annonceIDE.getStatut().getStatut());
-		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(annonceIDE);
+		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(annonceIDE.getType(), annonceIDE.getDateAnnonce(), annonceIDE.getUtilisateur(), annonceIDE.getTypeDeSite(), annonceIDE.getStatut(),
+		                                                            annonceIDE.getInfoServiceIDEObligEtendues());
+		protoAnnonceIDE.setCommentaire(annonceIDE.getCommentaire());
+		protoAnnonceIDE.setRaisonDeRadiation(annonceIDE.getRaisonDeRadiation());
+		protoAnnonceIDE.setNoIde(annonceIDE.getNoIde());
+		protoAnnonceIDE.setNoIdeRemplacant(annonceIDE.getNoIdeRemplacant());
+		protoAnnonceIDE.setNoIdeEtablissementPrincipal(annonceIDE.getNoIdeEtablissementPrincipal());
+		protoAnnonceIDE.setContenu(annonceIDE.getContenu());
+
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(protoAnnonceIDE);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
-		Assert.assertEquals(0, statut.getErreurs().size());
+		Assert.assertEquals(3, statut.getErreurs().size());
 	}
-
 
 	@Test
 	public void testValidateProtoAnnonceIDE() throws ParseException {

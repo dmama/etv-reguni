@@ -18,4 +18,6 @@
 
 	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
 
+	<bean id="serviceIDEService" class="ch.vd.uniregctb.evenement.ide.MockServiceIDEService"/>
+
 </beans>
