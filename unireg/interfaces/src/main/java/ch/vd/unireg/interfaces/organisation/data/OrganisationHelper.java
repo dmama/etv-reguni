@@ -753,10 +753,12 @@ public abstract class OrganisationHelper {
 		// trouvons la première information d'inscription
 		InscriptionRC first = null;
 		final List<DateRanged<InscriptionRC>> inscriptions = site.getDonneesRC().getInscription();
-		for (DateRanged<InscriptionRC> inscription : inscriptions) {
-			if (inscription.getPayload().isInscrit()) {
-				first = inscription.getPayload();
-				break;
+		if (inscriptions != null) {
+			for (DateRanged<InscriptionRC> inscription : inscriptions) {
+				if (inscription.getPayload().isInscrit()) {
+					first = inscription.getPayload();
+					break;
+				}
 			}
 		}
 
