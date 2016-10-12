@@ -7,6 +7,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
+import ch.vd.uniregctb.tiers.DegreAssociationRegistreCivil;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
@@ -32,6 +33,8 @@ public class EntrepriseView {
 
 	private RegDate dateInscriptionIde;
 	private StatusRegistreIDE statusIde;
+
+	private DegreAssociationRegistreCivil degreAssocCivil;
 
 	public Long getId() {
 		return id;
@@ -176,4 +179,11 @@ public class EntrepriseView {
 		this.statusIde = statusIde;
 	}
 
+	public DegreAssociationRegistreCivil getDegreAssocCivil() {
+		return degreAssocCivil;
+	}
+
+	public void setDegreAssocCivil(DegreAssociationRegistreCivil degreAssocCivil) {
+		this.degreAssocCivil = degreAssocCivil;
+	}
 }

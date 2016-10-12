@@ -2,6 +2,7 @@ package ch.vd.uniregctb.entreprise;
 
 import java.util.List;
 
+import ch.vd.uniregctb.tiers.DegreAssociationRegistreCivil;
 import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
 
 public class EtablissementView {
@@ -15,6 +16,8 @@ public class EtablissementView {
 	private List<DomicileEtablissementView> domiciles;
 
 	private List<String> numerosIDE;
+
+	private DegreAssociationRegistreCivil degreAssocCivilEntreprise;
 
 	public Long getId() {
 		return id;
@@ -68,5 +71,11 @@ public class EtablissementView {
 		this.numerosIDE = numerosIDE;
 	}
 
+	public DegreAssociationRegistreCivil getDegreAssocCivilEntreprise() {
+		return degreAssocCivilEntreprise;
+	}
 
+	public void setDegreAssocCivilEntreprise(DegreAssociationRegistreCivil degreAssocCivilEntreprise) {
+		this.degreAssocCivilEntreprise = degreAssocCivilEntreprise;
+	}
 }
