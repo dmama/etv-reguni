@@ -124,12 +124,22 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					// [SIFISC-18817] on revient ;
 					// 1. au premier jour du mois de la même année suivant le passage au rôle s'il y en a eu un dans l'année avant l'arrivée HC
 					// 2. au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
-					fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, new Predicate<ForFiscalPrincipalPP>() {
-						@Override
-						public boolean evaluate(ForFiscalPrincipalPP ff) {
-							return ff.getModeImposition().isRole() && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS;
-						}
-					});
+					if (current.getModeImposition() == ModeImposition.MIXTE_137_2 && previous != null && !previous.getModeImposition().isRole()) {
+						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, new Predicate<ForFiscalPrincipalPP>() {
+							@Override
+							public boolean evaluate(ForFiscalPrincipalPP ff) {
+								return ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS;
+							}
+						});
+					}
+					else {
+						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, new Predicate<ForFiscalPrincipalPP>() {
+							@Override
+							public boolean evaluate(ForFiscalPrincipalPP ff) {
+								return ff.getModeImposition().isRole() && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS;
+							}
+						});
+					}
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC && previous != null && previous.getModeImposition().isRole() && !previous.getModeImposition().isSource()) {
 					// [SIFISC-18817] départ HC d'un "ordinaire", on se ramène
@@ -200,13 +210,22 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					// [SIFISC-18817] on revient ;
 					// - au premier jour du mois de la même année suivant le passage au rôle s'il y en a eu un dans l'année avant l'arrivée HC
 					// - au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
-					final ForFiscalPrincipalContext<ForFiscalPrincipalPP> origin = current.getModeImposition().isRole() ? forPrincipal : forPrincipal.slideToNext();
-					fraction = getFractionArriveeDepartHC(origin, current.getDateFin(), motifEffectif, new Predicate<ForFiscalPrincipalPP>() {
-						@Override
-						public boolean evaluate(ForFiscalPrincipalPP ff) {
-							return ff.getModeImposition().isRole() && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS;
-						}
-					});
+					if (current.getModeImposition().isRole() && next.getModeImposition() != ModeImposition.MIXTE_137_2) {
+						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, new Predicate<ForFiscalPrincipalPP>() {
+							@Override
+							public boolean evaluate(ForFiscalPrincipalPP ff) {
+								return ff.getModeImposition().isRole() && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS;
+							}
+						});
+					}
+					else {
+						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, new Predicate<ForFiscalPrincipalPP>() {
+							@Override
+							public boolean evaluate(ForFiscalPrincipalPP ff) {
+								return ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS;
+							}
+						});
+					}
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC && current.getModeImposition().isRole() && !current.getModeImposition().isSource()) {
 					// [SIFISC-18817] départ HC d'un "ordinaire", on se ramène
