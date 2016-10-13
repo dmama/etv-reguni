@@ -162,13 +162,7 @@ public interface TiersService {
      */
     void setIdentifiantEntreprise(Contribuable contribuable, String ide) throws TiersException;
 
-	/**
-	 * Vérifie que l'édition des données civiles du contribuable visé est permise d'un point de vue métier
-	 * @param contribuable le contribuable visé (une entreprise ou un établissement)
-	 */
-	void checkEditionCivileAutorisee(Contribuable contribuable);
-
-	/**
+    /**
      * Change un non Habitant (qui n'a jamais été habitant) en ménage. Méthode a utiliser qu'en cas de strict necessité
      *
      * @param numeroTiers le numéro de tiers (= numéro de contribuable de la PP non habitant)
@@ -317,39 +311,6 @@ public interface TiersService {
 	 * @param finFiscale la date du dernier jour des données fiscales (la veille du début des données civiles)
 	 */
 	void fermeSurchargesCiviles(Etablissement etablissement, RegDate finFiscale);
-
-
-	/**
-	 * <p>
-	 *     Détermine le degré d'association d'un tiers entreprise avec le registre civil. Il existe en effet un degré intermédiaire
-	 *     entre "connu" et "inconnu" au civil: connu au civil avec Unireg responsable des données civiles du tiers en tant que
-	 *     service à obligations étendues. Dans ce niveau intermédiaire, certaines données sont établies par Unireg et sont
-	 *     modifiables dans l'IHM, tandis que d'autre restent strictement gouvernées par le registre civil.
-	 * </p>
-	 * <p>
-	 *     Exemple de données non modifiable: le numéro IDE.
-	 * </p>
- 	 * @param entreprise l'entreprise dont on veut connaître le degré d'association
-	 * @param date la date pour laquelle on veut connaître le degré.
-	 * @return le degré d'association de l'entreprise avec le registre civil
-	 */
-	DegreAssociationRegistreCivil determineDegreAssociationCivil(Entreprise entreprise, RegDate date);
-
-	/**
-	 * <p>
-	 *     Détermine le degré d'association d'un tiers etablissement avec le registre civil. Il existe en effet un degré intermédiaire
-	 *     entre "connu" et "inconnu" au civil: connu au civil avec Unireg responsable des données civiles du tiers en tant que
-	 *     service à obligations étendues. Dans ce niveau intermédiaire, certaines données sont établies par Unireg et sont
-	 *     modifiables dans l'IHM, tandis que d'autre restent strictement gouvernées par le registre civil.
-	 * </p>
-	 * <p>
-	 *     Exemple de données non modifiable: le numéro IDE.
-	 * </p>
- 	 * @param etablissement l'établissement dont on veut connaître le degré d'association
-	 * @param date la date pour laquelle on veut connaître le degré.
-	 * @return le degré d'association de l'établissement avec le registre civil
-	 */
-	DegreAssociationRegistreCivil determineDegreAssociationCivil(Etablissement etablissement, RegDate date);
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.entreprise;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -27,12 +26,10 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
-import ch.vd.uniregctb.tiers.DegreAssociationRegistreCivil;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -138,7 +135,9 @@ public class CivilEntrepriseEditController {
 	}
 
 	private void checkEditionAutorisee(Entreprise entreprise) {
-		tiersService.checkEditionCivileAutorisee(entreprise);
+		if (entreprise.isConnueAuCivil()) {
+			throw new AccessDeniedException("Il n'est pas possible d'éditer les entreprises connues au civil.");
+		}
 	}
 
 	private String showEditEntreprise(Model model, long id, EntrepriseView view) {
@@ -545,14 +544,6 @@ public class CivilEntrepriseEditController {
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
-
-			Entreprise entreprise = (Entreprise) tiers;
-			final Set<IdentificationEntreprise> identificationsEntreprise = entreprise.getIdentificationsEntreprise();
-			boolean ideVide = identificationsEntreprise == null || identificationsEntreprise.isEmpty();
-			if (ideVide && tiersService.determineDegreAssociationCivil(entreprise, RegDate.get()) == DegreAssociationRegistreCivil.CIVIL_ESCLAVE) {
-				throw new AccessDeniedException("Le numéro IDE de l'entreprise ne peut être édité. Il est fourni par le registre civil.");
-			}
-
 			final Autorisations auth = getAutorisations(tiers);
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");

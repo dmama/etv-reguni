@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.entreprise;
 
 import javax.validation.Valid;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -23,10 +22,8 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.DegreAssociationRegistreCivil;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersException;
@@ -125,7 +122,9 @@ public class CivilEtablissementEditController {
 	}
 
 	private void checkEditionAutorisee(Etablissement etablissement) {
-		tiersService.checkEditionCivileAutorisee(etablissement);
+		if (etablissement.isConnuAuCivil()) {
+			throw new AccessDeniedException("Il n'est pas possible d'éditer les établissements connus au civil.");
+		}
 	}
 
 	private String showEditEtablissement(Model model, long id, EtablissementView view) {
@@ -215,12 +214,6 @@ public class CivilEtablissementEditController {
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers == null || !(tiers instanceof Etablissement)) {
 			throw new TiersNotFoundException(id);
-		}
-		Etablissement etablissement = (Etablissement) tiers;
-		final Set<IdentificationEntreprise> identificationsEntreprise = etablissement.getIdentificationsEntreprise();
-		boolean ideVide = identificationsEntreprise == null || identificationsEntreprise.isEmpty();
-		if (ideVide && tiersService.determineDegreAssociationCivil(etablissement, RegDate.get()) == DegreAssociationRegistreCivil.CIVIL_ESCLAVE) {
-			throw new AccessDeniedException("Le numéro IDE de l'établissement ne peut être édité. Il est fourni par le registre civil.");
 		}
 
 		if (bindingResult.hasErrors()) {

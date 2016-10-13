@@ -102,7 +102,6 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.ide.ServiceIDEService;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
@@ -122,7 +121,6 @@ import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
-import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
@@ -179,7 +177,6 @@ public class TiersServiceImpl implements TiersService {
 	private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private ServiceOrganisationService serviceOrganisationService;
-	private ServiceIDEService serviceIDEService;
 	private TacheService tacheService;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
@@ -229,11 +226,6 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
 		this.serviceOrganisationService = serviceOrganisationService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceIDEService(ServiceIDEService serviceIDEService) {
-		this.serviceIDEService = serviceIDEService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -809,8 +801,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) {
-		checkEditionCivileAutorisee(contribuable);
+	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) throws TiersException {
+		checkEditionAutorisee(contribuable);
 		final Set<IdentificationEntreprise> set = new HashSet<>(1);
 		final String normalizedIde = NumeroIDEHelper.normalize(ide);
 		if (StringUtils.isNotBlank(normalizedIde)) {
@@ -819,32 +811,15 @@ public class TiersServiceImpl implements TiersService {
 		contribuable.setIdentificationsEntreprise(set);
 	}
 
-	@Override
-	public void checkEditionCivileAutorisee(Contribuable contribuable)  {
-		final RegDate aujourdhui = RegDate.get();
+	private void checkEditionAutorisee(Contribuable contribuable) throws TiersException {
 		if (contribuable instanceof Entreprise) {
-			final Entreprise entreprise = (Entreprise) contribuable;
-			final DegreAssociationRegistreCivil degreAssociationRegistreCivil = determineDegreAssociationCivil(entreprise, aujourdhui);
-			if (degreAssociationRegistreCivil == DegreAssociationRegistreCivil.CIVIL_ESCLAVE) {
-				throw new AccessDeniedException(
-						String.format("Impossible d'éditer l'entreprise n°%s, elle est connue au civil et Unireg n'est pas service IDE à obligations étendues.",
-						              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
-						)
-				);
+			if (((Entreprise) contribuable).isConnueAuCivil()) {
+				throw new TiersException("L'édition d'une entreprise connue au civil n'est pas permise.");
 			}
 		} else if (contribuable instanceof Etablissement) {
-			final Etablissement etablissement = (Etablissement) contribuable;
-			final DegreAssociationRegistreCivil degreAssociationRegistreCivil = determineDegreAssociationCivil(etablissement, aujourdhui);
-			if (degreAssociationRegistreCivil == DegreAssociationRegistreCivil.CIVIL_ESCLAVE) {
-				throw new AccessDeniedException(
-						String.format("Impossible d'éditer l'établissement n°%s, elle est connue au civil et Unireg n'est pas service IDE à obligations étendues.",
-						              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
-						)
-				);
+			if (((Etablissement) contribuable).isConnuAuCivil()) {
+				throw new TiersException("L'édition d'un établissement connu au civil n'est pas permise.");
 			}
-		}
-		else {
-			throw new IllegalArgumentException("Le type de contribuable ne fait pas partie de ceux supportés par la vérification de l'édition de données civiles. C'est un bug.");
 		}
 	}
 
@@ -5713,8 +5688,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) {
-		checkEditionCivileAutorisee(e);
+	public RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(e);
 
 		RaisonSocialeFiscaleEntreprise existing = getDerniereRaisonSocialeFiscale(e);
 
@@ -5730,8 +5705,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) {
-		checkEditionCivileAutorisee(rs.getEntreprise());
+	public void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) throws TiersException {
+		checkEditionAutorisee(rs.getEntreprise());
 
 		rs.setAnnule(true);
 		addRaisonSocialeFiscale(rs.getEntreprise(), raisonSociale, rs.getDateDebut(), rs.getDateFin());
@@ -5744,8 +5719,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) {
-		checkEditionCivileAutorisee(raisonSociale.getEntreprise());
+	public void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) throws TiersException {
+		checkEditionAutorisee(raisonSociale.getEntreprise());
 		final RaisonSocialeFiscaleEntreprise dernier = getDerniereRaisonSocialeFiscale(raisonSociale.getEntreprise());
 		if (dernier != raisonSociale) {
 			throw new ValidationException(raisonSociale, "Seule la dernière raison sociale peut être annulée.");
@@ -5776,8 +5751,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin) {
-		checkEditionCivileAutorisee(e);
+	public FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(e);
 
 		FormeJuridiqueFiscaleEntreprise existing = getDerniereFormeJuridiqueFiscale(e);
 
@@ -5793,8 +5768,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) {
-		checkEditionCivileAutorisee(fj.getEntreprise());
+	public void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) throws TiersException {
+		checkEditionAutorisee(fj.getEntreprise());
 		fj.setAnnule(true);
 		addFormeJuridiqueFiscale(fj.getEntreprise(), formeJuridique, fj.getDateDebut(), fj.getDateFin());
 	}
@@ -5806,8 +5781,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) {
-		checkEditionCivileAutorisee(formeJuridique.getEntreprise());
+	public void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) throws TiersException {
+		checkEditionAutorisee(formeJuridique.getEntreprise());
 		final FormeJuridiqueFiscaleEntreprise dernier = getDerniereFormeJuridiqueFiscale(formeJuridique.getEntreprise());
 		if (dernier != formeJuridique) {
 			throw new ValidationException(formeJuridique, "Seule la dernière forme juridique peut être annulée.");
@@ -5838,8 +5813,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public DomicileEtablissement addDomicileFiscal(Etablissement etablissement, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateDebut, RegDate dateFin) {
-		checkEditionCivileAutorisee(etablissement);
+	public DomicileEtablissement addDomicileFiscal(Etablissement etablissement, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateDebut, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(etablissement);
 
 		DomicileEtablissement existing = getDernierDomicileFiscal(etablissement);
 
@@ -5855,16 +5830,16 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs) {
-		checkEditionCivileAutorisee(domicile.getEtablissement());
+	public DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs) throws TiersException {
+		checkEditionAutorisee(domicile.getEtablissement());
 		domicile.setAnnule(true);
 		return addDomicileFiscal(domicile.getEtablissement(), typeAutorite, noOfs, domicile.getDateDebut(), domicile.getDateFin());
 	}
 
 	@Override
-	public DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateFin) {
+	public DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateFin) throws TiersException {
 		Assert.notNull(domicile);
-		checkEditionCivileAutorisee(domicile.getEtablissement());
+		checkEditionAutorisee(domicile.getEtablissement());
 		final DomicileEtablissement dernier = getDernierDomicileFiscal(domicile.getEtablissement());
 		if (dernier != domicile && domicile.getDateFin() != dateFin) {
 			throw new ValidationException(domicile, "Seul le dernier domicile peut avoir sa date de fin changée.");
@@ -5874,8 +5849,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void closeDomicileFiscal(DomicileEtablissement domicile, RegDate dateFin) {
-		checkEditionCivileAutorisee(domicile.getEtablissement());
+	public void closeDomicileFiscal(DomicileEtablissement domicile, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(domicile.getEtablissement());
 		final DomicileEtablissement dernier = getDernierDomicileFiscal(domicile.getEtablissement());
 		if (dernier != domicile) {
 			throw new ValidationException(domicile, "Seul le dernier domicile peut être fermé.");
@@ -5884,8 +5859,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleDomicileFiscal(DomicileEtablissement domicile) {
-		checkEditionCivileAutorisee(domicile.getEtablissement());
+	public void annuleDomicileFiscal(DomicileEtablissement domicile) throws TiersException {
+		checkEditionAutorisee(domicile.getEtablissement());
 		final DomicileEtablissement dernier = getDernierDomicileFiscal(domicile.getEtablissement());
 		if (dernier != domicile) {
 			throw new ValidationException(domicile, "Seul le dernier domicile peut être annulée.");
@@ -5916,10 +5891,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin) {
+	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin) throws TiersException {
 		Assert.notNull(montant);
 		Assert.notNull(monnaie);
-		checkEditionCivileAutorisee(e);
+		checkEditionAutorisee(e);
 
 		CapitalFiscalEntreprise existing = getDernierCapitalFiscal(e);
 
@@ -5935,8 +5910,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, String monnaie, RegDate dateFin) {
-		checkEditionCivileAutorisee(cf.getEntreprise());
+	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, String monnaie, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(cf.getEntreprise());
 		cf.setAnnule(true);
 		addCapitalFiscal(cf.getEntreprise(), montant, monnaie, cf.getDateDebut(), cf.getDateFin());
 	}
@@ -5948,8 +5923,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleCapitalFiscal(CapitalFiscalEntreprise capital) {
-		checkEditionCivileAutorisee(capital.getEntreprise());
+	public void annuleCapitalFiscal(CapitalFiscalEntreprise capital) throws TiersException {
+		checkEditionAutorisee(capital.getEntreprise());
 
 		final CapitalFiscalEntreprise dernier = getDernierCapitalFiscal(capital.getEntreprise());
 		if (dernier != capital) {
@@ -7040,65 +7015,6 @@ public class TiersServiceImpl implements TiersService {
 				nouveauDomicile.setDateFin(finFiscale);
 				etablissement.addDomicile(nouveauDomicile);
 			}
-		}
-	}
-
-	@Override
-	@NotNull
-	public DegreAssociationRegistreCivil determineDegreAssociationCivil(Entreprise entreprise, RegDate date) {
-		if (!entreprise.isConnueAuCivil()) {
-			return DegreAssociationRegistreCivil.FISCAL;
-		}
-		if (serviceIDEService.isServiceIDEObligEtendues(entreprise, date)) {
-			return DegreAssociationRegistreCivil.CIVIL_MAITRE;
-		} else {
-			return DegreAssociationRegistreCivil.CIVIL_ESCLAVE;
-		}
-	}
-
-	@Override
-	@NotNull
-	public DegreAssociationRegistreCivil determineDegreAssociationCivil(Etablissement etablissement, RegDate date) {
-		/*
-			Si on n'est pas connu au civil, notre quête s'arrête là
-		 */
-		if (!etablissement.isConnuAuCivil()) {
-			return DegreAssociationRegistreCivil.FISCAL;
-		}
-
-		/*
-			A partir d'ici, on est connu au civil
-		 */
-
-		final ActiviteEconomique rapport = (ActiviteEconomique) etablissement.getRapportObjetValidAt(date, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-		/*
-			S'il n'y a pas d'entreprise, on n'est pas principal et la règle de base s'applique
-		 */
-		if (rapport == null) {
-			return DegreAssociationRegistreCivil.CIVIL_ESCLAVE;
-		}
-
-		/*
-			Les établissements secondaires, non gérés, ne sont pas pris en considération
-		 */
-		if (!rapport.isPrincipal()) {
-			return DegreAssociationRegistreCivil.CIVIL_ESCLAVE;
-		}
-		Entreprise entreprise = (Entreprise) getTiers(rapport.getSujetId());
-		if (entreprise == null) {
-			throw new NullPointerException(
-					String.format("Entreprise introuvable pour le numéro n°%s en rapport d'activité économique avec le tiers n°%s.",
-					              FormatNumeroHelper.numeroCTBToDisplay(rapport.getSujetId()),
-					              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
-					));
-		}
-		/*
-			Déterminer si Unireg est un service IDE à obligations étendues.
-		 */
-		if (serviceIDEService.isServiceIDEObligEtendues(entreprise, date)) {
-			return DegreAssociationRegistreCivil.CIVIL_MAITRE;
-		} else {
-			return DegreAssociationRegistreCivil.CIVIL_ESCLAVE;
 		}
 	}
 }
