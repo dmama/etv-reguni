@@ -15,9 +15,7 @@ import ch.vd.evd0001.v5.Contact;
 import ch.vd.evd0001.v5.DwellingAddress;
 import ch.vd.evd0001.v5.Residence;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -417,10 +415,5 @@ public class AdresseRCPers implements Adresse, Serializable {
 	@Override
 	public Localisation getLocalisationSuivante() {
 		return localisationSuivante;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

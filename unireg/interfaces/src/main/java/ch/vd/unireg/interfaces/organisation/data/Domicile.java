@@ -7,9 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
@@ -40,11 +38,6 @@ public class Domicile implements Serializable, CollatableDateRange, DateRangeLim
 		                    dateFin == null ? this.dateFin : dateFin,
 		                    this.typeAutoriteFiscale,
 		                    this.numeroOfsAutoriteFiscale);
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

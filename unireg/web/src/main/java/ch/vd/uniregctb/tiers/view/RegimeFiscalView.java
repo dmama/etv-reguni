@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.Annulable;
 
@@ -39,11 +37,6 @@ public class RegimeFiscalView implements DateRange, Annulable {
 
 	public TypeRegimeFiscal getType() {
 		return type;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

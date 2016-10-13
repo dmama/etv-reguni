@@ -3,9 +3,7 @@ package ch.vd.uniregctb.tiers;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
@@ -34,11 +32,6 @@ public class CategorieEntrepriseHisto implements CollatableDateRange {
 			throw new IllegalArgumentException("Ranges are not collatable!");
 		}
 		return new CategorieEntrepriseHisto(dateDebut, next.getDateFin(), categorie);
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

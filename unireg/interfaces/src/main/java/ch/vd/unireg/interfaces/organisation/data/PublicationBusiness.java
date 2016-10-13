@@ -3,9 +3,7 @@ package ch.vd.unireg.interfaces.organisation.data;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * En l'absence de documentation RCEnt, on ne sait pas trop ce que représente cette classe,
@@ -44,11 +42,6 @@ public class PublicationBusiness implements Serializable, DateRange {
 		this.typeDeReductionDuCapital = typeDeReductionDuCapital;
 		this.typeDeTransfere = typeDeTransfere;
 		this.typeDeLiquidation = typeDeLiquidation;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

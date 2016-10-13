@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -101,10 +99,5 @@ public class ForGestion implements DateRange {
 	 */
 	public ForFiscalRevenuFortune getSousjacent() {
 		return sousjacent;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

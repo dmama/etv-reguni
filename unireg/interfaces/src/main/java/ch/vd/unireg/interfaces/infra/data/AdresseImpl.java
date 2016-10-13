@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.xml.XmlUtils;
@@ -290,24 +289,4 @@ public class AdresseImpl implements Adresse, Serializable {
 		// cette information n'est pas disponible dans host-interfaces
 		return null;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	private class InfosRue{
-		public String designationCourrier;
-		public Integer numeroOrdrePostal;
-
-		public InfosRue(Integer numeroOrdrePostal,String designationCourrier) {
-			this.numeroOrdrePostal = numeroOrdrePostal;
-			this.designationCourrier = designationCourrier;
-
-		}
-	}
-
 }

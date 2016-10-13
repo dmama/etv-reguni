@@ -3,9 +3,7 @@ package ch.vd.uniregctb.tiers;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.Annulable;
@@ -77,7 +75,7 @@ public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, D
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && CollatableDateRange.super.isValidAt(date);
 	}
 
 	@Override

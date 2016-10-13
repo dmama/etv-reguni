@@ -5,9 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.MontantMonetaireView;
 import ch.vd.uniregctb.tiers.CapitalHisto;
@@ -75,7 +73,7 @@ public class ShowCapitalView implements Sourced<Source>, Annulable, CollatableDa
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && CollatableDateRange.super.isValidAt(date);
 	}
 
 	@Override

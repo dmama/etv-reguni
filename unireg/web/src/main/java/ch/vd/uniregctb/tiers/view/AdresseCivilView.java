@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
@@ -60,11 +58,6 @@ public class AdresseCivilView implements DateRange {
 
 	public void setUsageCivil(TypeAdresseCivil usageCivil) {
 		this.usageCivil = usageCivil;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

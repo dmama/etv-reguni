@@ -1,9 +1,7 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 
 public class MockLienCommuneBatiment implements DateRange {
 
@@ -35,10 +33,5 @@ public class MockLienCommuneBatiment implements DateRange {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

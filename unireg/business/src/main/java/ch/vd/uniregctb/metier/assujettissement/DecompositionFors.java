@@ -5,9 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.ForsList;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -168,10 +166,5 @@ public abstract class DecompositionFors implements DateRange {
 	 */
 	public boolean isFullyEmpty() {
 		return principauxDansLaPeriode.isEmpty() && secondairesDansLaPeriode.isEmpty();
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 	}
 }

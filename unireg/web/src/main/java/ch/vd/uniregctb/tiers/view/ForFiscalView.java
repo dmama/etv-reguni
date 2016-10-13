@@ -498,11 +498,6 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	}
 
 	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateOuverture, dateFermeture, NullDateBehavior.LATEST);
-	}
-
-	@Override
 	public RegDate getDateDebut() {
 		return dateOuverture;
 	}

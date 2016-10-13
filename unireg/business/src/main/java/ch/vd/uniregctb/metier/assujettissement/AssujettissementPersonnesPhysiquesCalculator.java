@@ -1215,11 +1215,6 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		}
 
 		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
-		}
-
-		@Override
 		public RegDate getDateDebut() {
 			return debut;
 		}

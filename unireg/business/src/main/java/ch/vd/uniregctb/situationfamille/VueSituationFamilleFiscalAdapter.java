@@ -2,9 +2,7 @@ package ch.vd.uniregctb.situationfamille;
 
 import java.util.Date;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
 
@@ -45,11 +43,6 @@ public abstract class VueSituationFamilleFiscalAdapter implements VueSituationFa
 	@Override
 	public Source getSource() {
 		return source;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
 	@Override

@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.mandataire;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -47,7 +45,7 @@ public abstract class MandataireView implements Annulable, DateRange {
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !annule && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !annule && DateRange.super.isValidAt(date);
 	}
 
 	@Override

@@ -3,9 +3,7 @@ package ch.vd.uniregctb.individu;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.uniregctb.common.Annulable;
 
@@ -75,6 +73,6 @@ public class PermisView implements DateRange, Serializable, Annulable {
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !annule && RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
+		return !annule && DateRange.super.isValidAt(date);
 	}
 }

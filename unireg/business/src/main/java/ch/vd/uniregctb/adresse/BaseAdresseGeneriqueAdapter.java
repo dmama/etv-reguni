@@ -6,9 +6,7 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.CasePostale;
 
 /*
@@ -239,7 +237,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	@Override
 	public boolean isValidAt(RegDate date) {
 		// [UNIREG-2895] les adresses annulées ne doivent pas être considérées comme valides
-		return !isAnnule() && RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
+		return !isAnnule() && AdresseGenerique.super.isValidAt(date);
 	}
 
 	/**

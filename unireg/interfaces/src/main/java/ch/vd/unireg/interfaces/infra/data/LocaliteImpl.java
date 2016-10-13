@@ -10,7 +10,6 @@ import ch.vd.fidor.xml.common.v1.Range;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
@@ -143,11 +142,6 @@ public class LocaliteImpl implements Localite, Serializable {
 	@Override
 	public String getNom() {
 		return nomComplet;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

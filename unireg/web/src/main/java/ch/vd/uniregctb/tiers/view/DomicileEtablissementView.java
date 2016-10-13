@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Source;
@@ -41,7 +39,7 @@ public class DomicileEtablissementView implements Sourced<Source>, DateRange, An
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !annule && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !annule && DateRange.super.isValidAt(date);
 	}
 
 	@Override

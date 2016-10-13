@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 
 public class ExerciceCommercialView implements DateRange {
@@ -32,11 +30,6 @@ public class ExerciceCommercialView implements DateRange {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public boolean isOneYearLong() {

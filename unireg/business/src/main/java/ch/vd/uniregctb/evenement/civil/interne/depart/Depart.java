@@ -632,11 +632,6 @@ public abstract class Depart extends Mouvement {
 		}
 
 		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-		}
-
-		@Override
 		public RegDate getDateDebut() {
 			return dateDebut;
 		}

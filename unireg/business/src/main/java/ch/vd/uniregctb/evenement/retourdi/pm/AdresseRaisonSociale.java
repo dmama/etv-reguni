@@ -426,11 +426,6 @@ public abstract class AdresseRaisonSociale {
 					public Integer getNoOfsCommuneAdresse() {
 						return null;
 					}
-
-					@Override
-					public boolean isValidAt(RegDate date) {
-						return true;
-					}
 				};
 			}
 		}

@@ -154,10 +154,5 @@ public class ServiceUpiRCPers implements ServiceUpiRaw {
 		public RegDate getDateFin() {
 			return null;            // pas mieux...
 		}
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			return true;            // du coup...
-		}
 	}
 }

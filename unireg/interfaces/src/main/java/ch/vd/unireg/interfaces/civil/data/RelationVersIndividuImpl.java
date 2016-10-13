@@ -6,9 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 
 public class RelationVersIndividuImpl implements RelationVersIndividu, Serializable {
 
@@ -48,11 +46,6 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 
 	public void setDateFin(@Nullable RegDate dateFin) {
 		this.dateFin = dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

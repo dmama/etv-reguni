@@ -1,8 +1,6 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 
@@ -193,11 +191,6 @@ public class MockLocalite implements Localite {
 
 	public void setCommuneLocalite(Commune c) {
 		communeLocalite = c;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

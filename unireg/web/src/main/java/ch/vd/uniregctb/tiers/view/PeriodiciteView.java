@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -87,7 +85,7 @@ public class PeriodiciteView implements Annulable, DateRange {
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && DateRange.super.isValidAt(date);
 	}
 
 	public boolean isActive() {

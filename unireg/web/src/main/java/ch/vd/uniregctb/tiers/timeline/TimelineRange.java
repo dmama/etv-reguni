@@ -3,9 +3,7 @@ package ch.vd.uniregctb.tiers.timeline;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * Représente la première cellule d'une ligne
@@ -25,11 +23,6 @@ public class TimelineRange implements DateRange {
 		this.dateFin = range.getDateFin();
 		this.yearSpan = 1;
 		this.multiYears = (dateFin == null || dateDebut.year() != dateFin.year());
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	/**

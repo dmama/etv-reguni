@@ -20,9 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -194,11 +192,6 @@ public class AppariementServiceImpl implements AppariementService {
 		@Override
 		public Integer getNumeroOfsAutoriteFiscale() {
 			return numeroOfsAutoriteFiscale;
-		}
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(dateDebut, dateFin, date, NullDateBehavior.LATEST);
 		}
 
 		@Override

@@ -26,11 +26,6 @@ public final class ReqDesNationalite implements Nationalite {
 	}
 
 	@Override
-	public boolean isValidAt(RegDate date) {
-		return true;
-	}
-
-	@Override
 	public Pays getPays() {
 		return pays;
 	}

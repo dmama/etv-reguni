@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.Source;
@@ -55,7 +53,7 @@ public class ShowRaisonSocialeView implements Sourced<Source>, Annulable, DateRa
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && DateRange.super.isValidAt(date);
 	}
 
 	private static <T> boolean isSameValue(T one, T two) {

@@ -9,9 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -87,11 +85,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 		this.source = source;
 		this.artificelle = false;
 		this.localiteInvalideMatcherService = localiteInvalideMatcherService;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public void setDateDebut(RegDate dateDebut) {

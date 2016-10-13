@@ -7,9 +7,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -70,7 +68,7 @@ public abstract class TacheEnvoiDeclarationImpot extends TacheEnvoiDocument impl
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && DateRange.super.isValidAt(date);
 	}
 
 	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)

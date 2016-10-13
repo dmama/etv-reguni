@@ -264,12 +264,6 @@ public class ListeNoteProcessor {
 			this.dateFin = dateFin;
 		}
 
-
-		@Override
-		public boolean isValidAt(RegDate regDate) {
-			return false;
-		}
-
 		@Override
 		public RegDate getDateDebut() {
 			return null;

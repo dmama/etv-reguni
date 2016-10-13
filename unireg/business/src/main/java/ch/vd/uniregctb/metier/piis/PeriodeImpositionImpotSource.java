@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class PeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<PeriodeImpositionImpotSource.Type> implements Duplicable<PeriodeImpositionImpotSource> {
 
-	public static enum Type {
+	public enum Type {
 		MIXTE,
 		SOURCE
 	}

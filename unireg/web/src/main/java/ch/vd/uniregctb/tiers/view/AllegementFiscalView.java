@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
@@ -106,11 +105,6 @@ public class AllegementFiscalView implements DateRange, Annulable {
 
 	public Long getId() {
 		return id;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

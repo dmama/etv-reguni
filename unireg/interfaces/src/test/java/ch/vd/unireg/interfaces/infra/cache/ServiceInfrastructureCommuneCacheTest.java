@@ -301,12 +301,6 @@ public class ServiceInfrastructureCommuneCacheTest {
 			throw new NotImplementedException();
 		}
 
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			throw new NotImplementedException();
-		}
-
 		@Override
 		public RegDate getDateDebut() {
 			throw new NotImplementedException();

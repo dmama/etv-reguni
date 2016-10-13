@@ -143,7 +143,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && CollatableDateRange.super.isValidAt(date);
 	}
 
 	@Override

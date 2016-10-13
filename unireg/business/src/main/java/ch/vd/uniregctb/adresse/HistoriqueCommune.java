@@ -3,9 +3,7 @@ package ch.vd.uniregctb.adresse;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 
 /**
@@ -21,11 +19,6 @@ public class HistoriqueCommune implements CollatableDateRange {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.commune = commune;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

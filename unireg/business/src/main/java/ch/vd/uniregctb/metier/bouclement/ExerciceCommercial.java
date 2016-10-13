@@ -6,9 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 
 public class ExerciceCommercial implements DateRange, Serializable {
 
@@ -23,11 +21,6 @@ public class ExerciceCommercial implements DateRange, Serializable {
 		}
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@NotNull

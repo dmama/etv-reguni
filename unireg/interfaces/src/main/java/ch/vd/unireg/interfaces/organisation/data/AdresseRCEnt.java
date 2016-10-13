@@ -8,9 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0022.v3.Address;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -141,11 +139,6 @@ public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Seriali
             return null;
         }
         return new CasePostale(text, number);
-    }
-
-    @Override
-    public boolean isValidAt(RegDate date) {
-        return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
     }
 
     @Override

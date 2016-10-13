@@ -6,9 +6,7 @@ import java.math.BigDecimal;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.ComparisonHelper;
 
 public class Capital implements Serializable, DateRange, DateRangeLimitable<Capital> {
@@ -72,11 +70,6 @@ public class Capital implements Serializable, DateRange, DateRangeLimitable<Capi
 
 	public String getRepartition() {
 		return repartition;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

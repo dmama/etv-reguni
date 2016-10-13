@@ -11,9 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -50,11 +48,6 @@ public class DumpPeriodesImpositionImpotSourceResults extends AbstractJobResults
 				comparison = DateRangeComparator.compareRanges(this, o);
 			}
 			return comparison;
-		}
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 		}
 
 		@Override

@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.mandataire;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.type.TypeMandat;
@@ -62,11 +60,6 @@ public class AddMandatView implements DateRange {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public TypeMandat getTypeMandat() {

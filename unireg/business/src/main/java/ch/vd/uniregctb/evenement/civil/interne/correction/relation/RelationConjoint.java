@@ -6,9 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -83,11 +81,6 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 		result = 31 * result + (dateFin != null ? dateFin.hashCode() : 0);
 		result = 31 * result + (noIndividuConjoint != null ? noIndividuConjoint.hashCode() : 0);
 		return result;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

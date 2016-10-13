@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.EtatCivil;
  */
 public interface VueSituationFamille extends DateRange {
 
-	public static enum Source {
+	enum Source {
 		CIVILE,
 		FISCALE_TIERS,
 		FISCALE_AUTRE_TIERS

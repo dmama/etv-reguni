@@ -2,9 +2,7 @@ package ch.vd.unireg.interfaces.infra.mock;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -297,14 +295,6 @@ public class MockAdresse implements Adresse, MockCloneable {
 
 	public void setLocalisationSuivante(Localisation localisationSuivante) {
 		this.localisationSuivante = localisationSuivante;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
 	}
 
 	@Override

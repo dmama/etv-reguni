@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.tiers.view;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 public class AddRegimeFiscalView implements ValidableRegimeFiscalView {
@@ -54,11 +52,6 @@ public class AddRegimeFiscalView implements ValidableRegimeFiscalView {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

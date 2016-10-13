@@ -4,9 +4,7 @@ import java.util.Comparator;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxResidence;
 import ch.vd.uniregctb.xml.DataHelper;
 
@@ -37,11 +35,6 @@ public final class ForFiscalComparator implements Comparator<TaxResidence> {
 		@Override
 		public RegDate getDateFin() {
 			return dateFin;
-		}
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 		}
 	}
 

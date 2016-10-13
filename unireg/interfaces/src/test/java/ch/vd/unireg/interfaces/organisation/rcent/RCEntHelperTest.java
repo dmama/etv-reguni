@@ -402,11 +402,6 @@ public class RCEntHelperTest extends WithoutSpringTest {
 			this.data = data;
 		}
 
-		@Override
-		public boolean isValidAt(RegDate regDate) {
-			return regDate.isAfterOrEqual(dateDebut) || regDate.isBeforeOrEqual(dateFin);
-		}
-
 		public RegDate getDateDebut() {
 			return dateDebut;
 		}

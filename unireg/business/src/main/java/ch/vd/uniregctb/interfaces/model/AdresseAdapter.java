@@ -2,9 +2,7 @@ package ch.vd.uniregctb.interfaces.model;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -23,11 +21,6 @@ public class AdresseAdapter implements Adresse {
 		this.target = target;
 		this.debut = debut;
 		this.fin = fin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
 	}
 
 	@Override

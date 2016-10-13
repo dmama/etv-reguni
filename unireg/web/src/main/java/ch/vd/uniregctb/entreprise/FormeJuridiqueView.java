@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
@@ -56,11 +54,6 @@ public abstract class FormeJuridiqueView implements DateRange {
 
 	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
 		this.formeJuridique = formeJuridique;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	/**

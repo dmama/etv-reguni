@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -138,11 +137,6 @@ public abstract class PeriodeImposition implements CollatableDateRange {
 	 * @return si oui ou non la période courante et compatible avec la suivante (= si, les dates jouant, elles pourraient être fusionnées ensemble)
 	 */
 	protected abstract boolean isCompatibleWith(PeriodeImposition next);
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
-	}
 
 	@NotNull
 	@Override

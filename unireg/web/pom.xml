@@ -299,8 +299,8 @@
 						<configuration>
 							<!-- On veut utiliser la version déjà filtrée -->
 							<inputWebXml>${project.basedir}/target/classes/WEB-INF/web.xml</inputWebXml>
-							<source>1.7</source>
-							<target>1.7</target>
+							<source>1.8</source>
+							<target>1.8</target>
 							<sources>
 								<directory>${project.basedir}/src/main/webapp</directory>
 								<includes>

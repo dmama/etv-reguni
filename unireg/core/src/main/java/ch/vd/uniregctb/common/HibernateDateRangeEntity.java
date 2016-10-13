@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -55,7 +54,7 @@ public abstract class HibernateDateRangeEntity extends HibernateEntity implement
 	@Transient
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && DateRange.super.isValidAt(date);
 	}
 
 	@Override

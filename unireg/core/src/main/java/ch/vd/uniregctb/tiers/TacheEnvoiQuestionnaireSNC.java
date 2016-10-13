@@ -10,9 +10,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -75,7 +73,7 @@ public class TacheEnvoiQuestionnaireSNC extends TacheEnvoiDocument implements Da
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && DateRange.super.isValidAt(date);
 	}
 
 	@Transient

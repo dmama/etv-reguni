@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 
 public abstract class CapitalView implements DateRange {
@@ -65,11 +63,6 @@ public abstract class CapitalView implements DateRange {
 
 	public void setMonnaie(String monnaie) {
 		this.monnaie = monnaie;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	/**

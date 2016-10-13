@@ -10,9 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
@@ -93,11 +91,6 @@ public class EnvoiDIsPMResults extends AbstractJobResults<Long, EnvoiDIsPMResult
 			super(noCtb);
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
-		}
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 		}
 
 		@Override

@@ -3,9 +3,7 @@ package ch.vd.uniregctb.common;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 
 /**
@@ -63,11 +61,6 @@ public class GentilDateRangeExtendedAdapterCallbackTest extends WithoutSpringTes
 		TestDateRange(RegDate dateDebut, RegDate dateFin) {
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
-		}
-
-		@Override
-		public boolean isValidAt(RegDate date) {
-			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 		}
 
 		@Override

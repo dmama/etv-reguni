@@ -5,9 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import ch.vd.evd0001.v5.Nationality;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -105,11 +103,6 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

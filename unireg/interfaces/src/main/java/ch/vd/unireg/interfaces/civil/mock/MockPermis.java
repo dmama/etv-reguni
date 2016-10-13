@@ -2,9 +2,7 @@ package ch.vd.unireg.interfaces.civil.mock;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -29,11 +27,6 @@ public class MockPermis implements Permis {
 
 	public MockPermis(@NotNull RegDate dateDebutValidite, RegDate dateFinValidite, RegDate dateAnnulation, TypePermis typePermis) {
 		this(dateDebutValidite, dateFinValidite, dateAnnulation, dateDebutValidite, typePermis);
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
 	}
 
 	@Override
