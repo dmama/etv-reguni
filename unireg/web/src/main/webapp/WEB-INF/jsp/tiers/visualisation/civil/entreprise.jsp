@@ -16,7 +16,7 @@
 
 <fieldset>
 	<legend><span><fmt:message key="label.entreprise"/></span></legend>
-	<c:if test="${page == 'edit' && (entreprise.degreAssocCivil == 'FISCAL' || empty entreprise.numerosIDE) && autorisations.donneesCiviles && autorisations.identificationEntreprise}">
+	<c:if test="${page == 'edit' && (entreprise.connueAuCivil && empty entreprise.numerosIDE || ! entreprise.connueAuCivil) && autorisations.donneesCiviles && autorisations.identificationEntreprise}">
 		<table border="0">
 			<tr>
 				<td>
