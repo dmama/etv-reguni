@@ -6688,7 +6688,6 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	public void testArriveeHCMixte2SansForPrecedent() throws Exception {
 
 		final long noIndividu = 4651543L;
-		final RegDate dateArriveeHS = date(2014, 5, 14);
 		final RegDate dateArriveeHC = date(2016, 6, 15);
 		final RegDate dateDeces = date(2016, 10, 10);
 
@@ -6833,7 +6832,6 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	public void testArriveeHCMixte1SansForPrecedent() throws Exception {
 
 		final long noIndividu = 4651543L;
-		final RegDate dateArriveeHS = date(2014, 5, 14);
 		final RegDate dateArriveeHC = date(2016, 6, 15);
 		final RegDate dateDeces = date(2016, 10, 10);
 
@@ -6897,6 +6895,63 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 					Assert.assertNull(pi.getNoOfs());
 					Assert.assertEquals(dateDeces.getOneDayAfter(), pi.getDateDebut());
 					Assert.assertEquals(date(2016, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-21550] cas de données farfelues : motif arrivée HC sur un for HS ouvert au 1er janvier de la période qui nous intéresse
+	 * (= on n'arrivait pas à rétablir le véritable motif d'ouverture)
+	 */
+	@Test
+	public void testMotifOuvertureArriveeHorsCantonSurForHorsSuisseEnDebutAnnee() throws Exception {
+
+		final long noIndividu = 4651543L;
+		final RegDate dateArriveeHC = date(2014, 1, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, null, "Grandrenaud", "Escapador", Sexe.MASCULIN);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArriveeHC.addYears(-2), MotifFor.INDETERMINE, dateArriveeHC.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne, ModeImposition.ORDINAIRE);
+				addForPrincipal(pp, dateArriveeHC, MotifFor.ARRIVEE_HC, MockPays.Colombie, ModeImposition.ORDINAIRE);
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				addRapportPrestationImposable(dpi, pp, dateArriveeHC.addMonths(3), dateArriveeHC.addYears(1).getOneDayBefore(), false);
+				return pp.getNumero();
+			}
+		});
+
+		// calcul des piis
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(1, piis.size());
+
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsSuisse(MockPays.Colombie.getNoOFS()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.Colombie.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(2014, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(2014, 12, 31), pi.getDateFin());
 					Assert.assertNotNull(pi.getContribuable());
 					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
 				}

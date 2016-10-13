@@ -26,13 +26,17 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 
 	private final int pf;
+	private final ForFiscalPrincipalPP justeAvantPF;
+	private final ForFiscalPrincipalPP justeApresPF;
 	private final ServiceInfrastructureService infraService;
 	private final Fractionnements<ForFiscalPrincipalPP> fractionnements;
 
-	public FractionnementsPeriodesImpositionIS(List<ForFiscalPrincipalPP> principaux, int pf, ServiceInfrastructureService infraService) {
+	public FractionnementsPeriodesImpositionIS(List<ForFiscalPrincipalPP> principauxDansPF, int pf, @Nullable ForFiscalPrincipalPP justeAvantPF, @Nullable ForFiscalPrincipalPP justeApresPF, ServiceInfrastructureService infraService) {
 		this.pf = pf;
+		this.justeAvantPF = justeAvantPF;
+		this.justeApresPF = justeApresPF;
 		this.infraService = infraService;
-		this.fractionnements = new Fractionnements<ForFiscalPrincipalPP>(principaux) {
+		this.fractionnements = new Fractionnements<ForFiscalPrincipalPP>(principauxDansPF) {
 			@Override
 			protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
 				return FractionnementsPeriodesImpositionIS.this.isFractionOuverture(forPrincipal);
@@ -105,9 +109,10 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 				fraction = new FractionContrariante(current.getDateDebut(), MotifFor.VEUVAGE_DECES, null);
 			}
 			else {
+				final ForFiscalPrincipalPP previousPourMotif = (previous == null && current.getDateDebut() == RegDate.get(pf, 1, 1) ? justeAvantPF : previous);
 				final Localisation currentLocalisation = getLocalisation(current);
-				final Localisation previousLocalisation = getLocalisation(previous);
-				final MotifFor motifEffectif = getMotifEffectif(previousLocalisation, previous != null ? previous.getMotifFermeture() : null, currentLocalisation, current.getMotifOuverture());
+				final Localisation previousLocalisation = getLocalisation(previousPourMotif);
+				final MotifFor motifEffectif = getMotifEffectif(previousLocalisation, previousPourMotif != null ? previousPourMotif.getMotifFermeture() : null, currentLocalisation, current.getMotifOuverture());
 
 				// transition Suisse <-> étranger : fractionnement à la date pile
 				if (motifEffectif == MotifFor.DEPART_HS || motifEffectif == MotifFor.ARRIVEE_HS) {
@@ -192,9 +197,10 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 				fraction = new FractionContrariante(current.getDateFin().getOneDayAfter(), null, MotifFor.VEUVAGE_DECES);
 			}
 			else {
+				final ForFiscalPrincipalPP nextPourMotif = (next == null && current.getDateFin() == RegDate.get(pf, 12, 31) ? justeApresPF : next);
 				final Localisation currentLocalisation = getLocalisation(current);
-				final Localisation nextLocalisation = getLocalisation(next);
-				final MotifFor motifEffectif = getMotifEffectif(currentLocalisation, current.getMotifFermeture(), nextLocalisation, next != null ? next.getMotifOuverture() : null);
+				final Localisation nextLocalisation = getLocalisation(nextPourMotif);
+				final MotifFor motifEffectif = getMotifEffectif(currentLocalisation, current.getMotifFermeture(), nextLocalisation, nextPourMotif != null ? nextPourMotif.getMotifOuverture() : null);
 
 				if (motifEffectif == MotifFor.DEPART_HS || motifEffectif == MotifFor.ARRIVEE_HS) {
 					fraction = new FractionContrariante(current.getDateFin().getOneDayAfter(), null, motifEffectif);
