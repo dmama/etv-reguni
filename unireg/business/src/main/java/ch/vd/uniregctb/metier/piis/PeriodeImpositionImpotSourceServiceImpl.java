@@ -307,7 +307,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 
 	private static final class ProtoPeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<ProtoPeriodeImpositionImpotSource.Type> {
 
-		public static enum Type {
+		public enum Type {
 			/**
 			 * Source, sans aucun doute
 			 */
@@ -441,8 +441,27 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			}
 
 			// il y a des fors, nous voici donc dans le vif du sujet...
+
+			// [SIFISC-21550] comme on n'utilise qu'une partie des fors à la fois (= ceux qui intersectent l'année de la PF), il nous manque parfois
+			// le for juste avant ou juste après (en cas de début de for au 01.01 ou de fin de for au 31.12), ce qui peut-être assez embêtant quand
+			// il s'agit de rétablir la vérité sur les motifs d'ouverture ou de fermeture des fors en fonction des types d'autorité fiscale
+			final ForFiscalPrincipalPP forAvantPF;
+			if (forsPf.get(0).getDateDebut() == RegDate.get(pf, 1, 1)) {
+				forAvantPF = DateRangeHelper.rangeAt(fors, RegDate.get(pf - 1, 12, 31));
+			}
+			else {
+				forAvantPF = null;
+			}
+			final ForFiscalPrincipalPP forApresPF;
+			if (CollectionsUtils.getLastElement(forsPf).getDateFin() == RegDate.get(pf, 12, 31)) {
+				forApresPF = DateRangeHelper.rangeAt(fors, RegDate.get(pf + 1, 1, 1));
+			}
+			else {
+				forApresPF = null;
+			}
+
 			final List<ProtoPeriodeImpositionImpotSource> protos = new ArrayList<>(forsPf.size());
-			final FractionnementsPeriodesImpositionIS fracs = new FractionnementsPeriodesImpositionIS(forsPf, pf, infraService);
+			final FractionnementsPeriodesImpositionIS fracs = new FractionnementsPeriodesImpositionIS(forsPf, pf, forAvantPF, forApresPF, infraService);
 			final MovingWindow<ForFiscalPrincipalPP> iterator = new MovingWindow<>(forsPf);
 			while (iterator.hasNext()) {
 				final MovingWindow.Snapshot<ForFiscalPrincipalPP> snapshot = iterator.next();
