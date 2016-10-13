@@ -103,12 +103,12 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
-			<version>5.2-SNAPSHOT</version>
+			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
-			<version>5.2-SNAPSHOT</version>
+			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
