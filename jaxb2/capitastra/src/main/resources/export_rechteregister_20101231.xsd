@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:recht="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xml:lang="de">
+	<xs:annotation>
+		<xs:documentation xml:lang="de">Schema für Konstrukte im Zusammenhang mit Rechteregister.
+		</xs:documentation>
+	</xs:annotation>
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- Elementen                                                                                                                                    -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<xs:element name="RechteregisterExport">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="StandardRechtList" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="de">Eine Liste von Rechten.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:choice maxOccurs="unbounded">
+								<xs:element name="Anmerkung" type="recht:AnmerkungType"/>
+								<xs:element name="Vormerkung" type="recht:VormerkungType"/>
+								<xs:element name="Dienstbarkeit" type="recht:DienstbarkeitType"/>
+								<xs:element name="Grundlast" type="recht:GrundlastType"/>
+							</xs:choice>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="LastRechtGruppeList" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="de">Eine Liste von Rechten.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="LastRechtGruppe" type="recht:LastRechtGruppeType" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="GrundstueckKopfList" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="de">Eine Liste von Grundstueck Kopf.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="GrundstueckKopf" type="recht:GrundstueckKopfType" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PersonstammList" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="de">Eine Liste von Personstamm.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:choice maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation xml:lang="de">Ein Grundbuch Person referenziert immer eine Personstamm. Eine Personstamm ist eindeutig.</xs:documentation>
+								</xs:annotation>
+								<xs:element name="NatuerlichePersonstamm" type="recht:NatuerlichePersonstammType"/>
+								<xs:element name="JuristischePersonstamm" type="recht:JuristischePersonstammType"/>
+							</xs:choice>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PersonstammKantonaleIdentifikationList" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="de">Eine Liste von Personstamm, die nur durch kantonale Identifikation (BE: ZPV Nummer, VD: ACI und IROLE) repraesentiert werden.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PersonstammKantonaleIdentifikation" type="recht:PersonstammKantonaleIdentifikationType" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- Allgemein                                                                                                                                    -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- ********************************************************** -->
+	<!-- CAPICODE                                                                   -->
+	<!-- ********************************************************** -->
+	<xs:complexType name="CapiCodeType">
+		<xs:annotation>
+			<xs:documentation>Codes aus der Codeverwaltung. Texte in der jeweiligen Sprache werden nur geliefert, wenn sie vorhanden sind.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TextDe" type="xs:string" minOccurs="0"/>
+			<xs:element name="TextFr" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<!-- RECHTSGRUND                                                          -->
+	<!-- ********************************************************** -->
+	<xs:complexType name="RechtsgrundType">
+		<xs:annotation>
+			<xs:documentation>ein Rechtsgrund mit Beleg</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AmtNummer" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>die Nummer des Grundbuchamtes für diesen Beleg</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RechtsgrundCode" type="recht:CapiCodeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>der Code des Rechtsgrunds</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RechtsgrundZusatz" type="xs:string" minOccurs="0"/>
+			<xs:element name="BelegDatum" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>das Datum des Beleges</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BelegJahr" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>das Jahr des Beleges</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BelegNummer" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>die Nummer des Beleges</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BelegNummerIndex" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>der Index zur Nummer des Beleges</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BelegAlt" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>alte Identifikations des Beleges</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- PERSON                                                                                                                                        -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- ********************************************************** -->
+	<!-- PERSONGB                                                       -->
+	<!-- ********************************************************** -->
+	<xs:element name="PersonGb" type="recht:PersonGbType"/>
+	<xs:complexType name="PersonGbType" abstract="true">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="Status" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+		<xs:attribute name="MasterID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="GeburtsDatumType">
+		<xs:sequence>
+			<xs:element name="Tag" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="Monat" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="Jahr" type="xs:unsignedInt" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="NatuerlichePersonGb" type="recht:NatuerlichePersonGbType" substitutionGroup="recht:PersonGb"/>
+	<xs:complexType name="NatuerlichePersonGbType">
+		<xs:complexContent>
+			<xs:extension base="recht:PersonGbType">
+				<xs:sequence>
+					<xs:element name="Vorname" type="xs:string" minOccurs="0"/>
+					<xs:element name="Ledigname" type="xs:string" minOccurs="0"/>
+					<xs:element name="Geburtsdatum" type="recht:GeburtsDatumType" minOccurs="0"/>
+					<xs:element name="Zivilstand" type="recht:ZivilstandType" minOccurs="0"/>
+					<xs:element name="NameEltern" type="xs:string" minOccurs="0"/>
+					<xs:element name="AHVNrAlt" type="xs:string" minOccurs="0"/>
+					<xs:element name="AHVNrNeu" type="xs:string" minOccurs="0"/>
+					<xs:element name="Buergerort" type="xs:string" minOccurs="0"/>
+					<xs:element name="NameEhegatte" type="xs:string" minOccurs="0"/>
+					<xs:element name="WeitereVornamen" type="xs:string" minOccurs="0"/>
+					<xs:element name="NameAlias" type="xs:string" minOccurs="0"/>
+					<xs:element name="PersonstammIDREF" type="xs:IDREF" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="JuristischePersonGb" type="recht:JuristischePersonGbType" substitutionGroup="recht:PersonGb"/>
+	<xs:complexType name="JuristischePersonGbType">
+		<xs:complexContent>
+			<xs:extension base="recht:PersonGbType">
+				<xs:sequence>
+					<xs:element name="Sitz" type="xs:string" minOccurs="0"/>
+					<xs:element name="Gesellschaftsform" type="recht:CapiCodeType" minOccurs="0"/>
+					<xs:element name="Rechtsform" type="recht:CapiCodeType" minOccurs="0"/>
+					<xs:element name="RechtsformZusatz" type="xs:string" minOccurs="0"/>
+					<xs:element name="FirmenNr" type="xs:string" minOccurs="0"/>
+					<xs:element name="Departement" type="xs:string" minOccurs="0"/>
+					<xs:element name="PersonstammIDREF" type="xs:IDREF" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<!-- PERSONSTAMM                                                -->
+	<!-- ********************************************************** -->
+	<xs:simpleType name="AdresseRolleType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Rechtsdomizil"/>
+			<xs:enumeration value="Zustelladresse"/>
+			<xs:enumeration value="Referenzadresse"/>
+			<xs:enumeration value="Verwalteradresse"/>
+			<xs:enumeration value="Rechnungsadresse"/>
+			<xs:enumeration value="Wohnadresse"/>
+			<xs:enumeration value="AndereAdresse"/>
+			<!-- VD -->
+            <xs:enumeration value="ACI"/>
+            <xs:enumeration value="RF"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="PersonAdresseType">
+		<xs:sequence>
+			<xs:element name="Strasse" type="xs:string" minOccurs="0"/>
+			<xs:element name="HausNr" type="xs:string" minOccurs="0"/>
+			<xs:element name="PLZ" type="xs:string" minOccurs="0"/>
+			<xs:element name="Ort" type="xs:string"/>
+			<xs:element name="Land" type="xs:string" minOccurs="0"/>
+			<xs:element name="Rolle" type="recht:AdresseRolleType" minOccurs="0"/>
+			<xs:element name="ZusatzInformationEmpfaenger" type="xs:string" minOccurs="0"/>
+			<xs:element name="PostDienstleistung" type="xs:string" minOccurs="0"/>
+			<xs:element name="BenanntesGebiet" type="xs:string" minOccurs="0"/>
+			<xs:element name="GebaeudeBezeichnung" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="Personstamm" type="recht:PersonstammType"/>
+	<xs:complexType name="PersonstammType" abstract="true">
+		<xs:sequence>
+			<xs:element name="PersonstammID" type="xs:ID">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Technische Identifikation einer Personstamm.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Gueltig" type="xs:boolean"/>
+			<xs:element name="GrundunGueltig" type="xs:string" minOccurs="0"/>
+			<xs:element name="ClientRegulier" type="xs:boolean" minOccurs="0"/>
+			<!-- Genf -->
+			<xs:element name="NoSCC" type="xs:decimal" minOccurs="0"/>
+			<!-- Freiburg -->
+			<xs:element name="HRNr" type="xs:decimal" minOccurs="0"/>
+			<!-- Freiburg -->
+			<xs:element name="Status" type="xs:string" minOccurs="0"/>
+			<xs:element name="Kuerzel" type="xs:string" minOccurs="0"/>
+			<xs:element name="Sprache" type="recht:CapiCodeType" minOccurs="0"/>
+			<xs:element name="PersonenGruppe" type="recht:CapiCodeType" minOccurs="0"/>
+			<xs:element name="Anrede" type="recht:CapiCodeType" minOccurs="0"/>
+			<xs:element name="KantonalPersonNr" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Kantonsweit eindeutige Personennummer. Z.B. ZPV Nummer im Kanton BE.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NrACI" type="xs:decimal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Nur fuer Kanton VD.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- 68% der Personen haben nur 1 Adresse, 32% haben 2 Adresse (1 Person hat 3, mehr gibt es nicht). -->
+			<xs:element name="Adressen" type="recht:PersonAdresseType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:simpleType name="ZivilstandType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="ledig"/>
+			<xs:enumeration value="verheiratet"/>
+			<xs:enumeration value="geschieden"/>
+			<xs:enumeration value="verwitwet"/>
+			<xs:enumeration value="unbekannt"/>
+			<!-- Entspricht DB -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GeschlechtType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="weiblich"/>
+			<xs:enumeration value="maennlich"/>
+			<xs:enumeration value="unbekannt"/>
+			<!-- Entspricht DB -->
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="DateDecedeQuitteType">
+		<xs:sequence>
+			<xs:element name="Jour" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="Mois" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="Annee" type="xs:unsignedInt" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="NatuerlichePersonstamm" type="recht:NatuerlichePersonstammType" substitutionGroup="recht:Personstamm"/>
+	<xs:complexType name="NatuerlichePersonstammType">
+		<xs:complexContent>
+			<xs:extension base="recht:PersonstammType">
+				<xs:sequence>
+					<xs:element name="Vorname" type="xs:string" minOccurs="0"/>
+					<xs:element name="Zivilstand" type="recht:ZivilstandType" minOccurs="0"/>
+					<xs:element name="Geburtsdatum" type="recht:GeburtsDatumType" minOccurs="0"/>
+					<xs:element name="LedigName" type="xs:string" minOccurs="0"/>
+					<xs:element name="Buergerort" type="xs:string" minOccurs="0"/>
+					<xs:element name="NameDerEltern" type="xs:string" minOccurs="0"/>
+					<xs:element name="Geschlecht" type="recht:GeschlechtType" minOccurs="0"/>
+					<xs:element name="AHVNrAlt" type="xs:string" minOccurs="0"/>
+					<xs:element name="AHVNrNeu" type="xs:string" minOccurs="0"/>
+					<xs:element name="Epid" type="xs:string" minOccurs="0"/>
+					<xs:element name="DateDecedeQuitte" type="recht:DateDecedeQuitteType" minOccurs="0"/>
+					<!-- Genf -->
+					<xs:element name="DecedeQuitte" type="xs:string" minOccurs="0"/>
+					<!-- Genf -->
+					<xs:element name="NoOCP" type="xs:string" minOccurs="0"/>
+					<!-- Genf -->
+					<xs:element name="NameEhegatte" type="xs:string" minOccurs="0"/>
+					<xs:element name="WeitereVornamen" type="xs:string" minOccurs="0"/>
+					<xs:element name="NameAlias" type="xs:string" minOccurs="0"/>
+					<!-- Für Transition Gründe werden die beide neu und alt AHV Nummer exportiert, wenn sie existieren. -->
+					<xs:element name="NrIROLE" type="xs:decimal" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="de">Nur fuer Kanton VD.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:simpleType name="JuristischePersonUnterartType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="SchweizerischeJuristischePerson"/>
+			<xs:enumeration value="AuslaendischeRechtsform"/>
+			<xs:enumeration value="OeffentlicheKoerperschaft"/>
+		</xs:restriction>
+		<!-- Nach der Subclass. -->
+		<!-- Entspricht DB -->
+	</xs:simpleType>
+	<!-- ********************************************************** -->
+	<xs:element name="JuristischePersonstamm" type="recht:JuristischePersonstammType" substitutionGroup="recht:Personstamm"/>
+	<xs:complexType name="JuristischePersonstammType">
+		<xs:complexContent>
+			<xs:extension base="recht:PersonstammType">
+				<xs:sequence>
+					<xs:element name="Sitz" type="xs:string" minOccurs="0"/>
+					<xs:element name="Gesellschaftsform" type="recht:CapiCodeType" minOccurs="0"/>
+					<xs:element name="Rechtsform" type="recht:CapiCodeType" minOccurs="0"/>
+					<xs:element name="RechtsformZusatz" type="xs:string" minOccurs="0"/>
+					<xs:element name="FirmenNr" type="xs:string" minOccurs="0"/>
+					<xs:element name="Departement" type="xs:string" minOccurs="0"/>
+					<xs:element name="NoCollectivitePublic" type="xs:decimal" minOccurs="0"/>
+					<!-- Genf -->
+					<xs:element name="Unterart" type="recht:JuristischePersonUnterartType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="PersonstammKantonaleIdentifikation" type="recht:PersonstammKantonaleIdentifikationType"/>
+	<xs:complexType name="PersonstammKantonaleIdentifikationType">
+		<xs:sequence>
+			<xs:element name="PersonstammID" type="xs:ID">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Technische Identifikation einer Personstamm.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KantonalPersonNr" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Kantonsweit eindeutige Personennummer. Z.B. ZPV Nummer im Kanton BE.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:sequence minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Nur Bei Kanton Waadt.</xs:documentation>
+				</xs:annotation>
+				<xs:element name="NrACI" type="xs:decimal" minOccurs="0"/>
+				<xs:element name="NrIROLE" type="xs:decimal" minOccurs="0"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- STANDARDRECHT                                                                                                                          -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<xs:complexType name="BelegType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Der Beleg besteht normalerweise aus einem Datum und einer Belegnummer. Handelt es sich um ein altes Geschäft wird anstelle der Belegnummer der alte Beleg angegeben. Der Beleg ist nur zusammen mit der Amtsnummer eindeutig.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<!-- AmtNummer sollte nicht optional sein aber ist immer null in DB zurszeit. -->
+			<xs:element name="AmtNummer" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="BelegJahr" type="xs:unsignedInt"/>
+			<xs:element name="BelegNummer" type="xs:unsignedInt"/>
+			<xs:element name="BelegNummerIndex" type="xs:unsignedInt" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="StandardRecht" type="recht:StandardRechtType"/>
+	<xs:complexType name="StandardRechtType" abstract="true">
+		<xs:sequence>
+			<xs:element name="StandardRechtID" type="xs:ID">
+				<xs:annotation>
+					<xs:documentation>Technische Identifikation eines Recht Damit können die Beziehungen berechnet werde,
+					zB. zwischen ein Grundstück und der Recht.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BeteiligtesGrundstueckIDREF" type="xs:IDREF" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Technische Referenze auf eines Grundstück. Verbindet Recht mit Grundstück</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RechtEintragJahrID" type="xs:unsignedInt"/>
+			<xs:element name="RechtEintragNummerID" type="xs:unsignedInt"/>
+			<xs:element name="Bereinigungsmarkierung" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Bereinigungsgrund" type="xs:string" minOccurs="0"/>
+			<xs:element name="AmtNummer" type="xs:unsignedInt"/>
+			<xs:element name="Stichwort" type="recht:CapiCodeType" minOccurs="0"/>
+			<xs:element name="Rechtzusatz" type="xs:string" minOccurs="0"/>
+			<xs:element name="Beleg" type="recht:BelegType" minOccurs="0"/>
+			<xs:element name="BelegAlt" type="xs:string" minOccurs="0"/>
+			<xs:element name="BeginDatum" type="xs:date"/>
+			<xs:element name="AblaufDatum" type="xs:date" minOccurs="0"/>
+			<xs:element name="Entschaedigung" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="Wert" type="xs:unsignedInt" minOccurs="0"/>
+			<xs:element name="FremdID" type="xs:string" minOccurs="0"/>
+			<xs:element name="Meldungspflichtig" type="xs:string" minOccurs="0"/>
+			<xs:element name="Personenberechtigt" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Grundstueckeberechtigt" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+		<xs:attribute name="MasterID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="Anmerkung" type="recht:AnmerkungType" substitutionGroup="recht:StandardRecht"/>
+	<xs:complexType name="AnmerkungType">
+		<xs:complexContent>
+			<xs:extension base="recht:StandardRechtType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="Vormerkung" type="recht:VormerkungType" substitutionGroup="recht:StandardRecht"/>
+	<xs:complexType name="VormerkungType">
+		<xs:complexContent>
+			<xs:extension base="recht:StandardRechtType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="Dienstbarkeit" type="recht:DienstbarkeitType" substitutionGroup="recht:StandardRecht"/>
+	<xs:complexType name="DienstbarkeitType">
+		<xs:complexContent>
+			<xs:extension base="recht:StandardRechtType">
+				<xs:sequence>
+					<xs:element name="EintragungAlsSdR" type="xs:boolean" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:element name="Grundlast" type="recht:GrundlastType" substitutionGroup="recht:StandardRecht"/>
+	<xs:complexType name="GrundlastType">
+		<xs:complexContent>
+			<xs:extension base="recht:StandardRechtType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<!-- LASTRECHTGRUPPE                                         -->
+	<!-- ********************************************************** -->
+	<xs:complexType name="LastRechtGruppeType">
+		<xs:sequence>
+			<xs:element name="StandardRechtIDREF" type="xs:IDREF">
+				<xs:annotation>
+					<xs:documentation>Technische Referenz auf ein Recht Damit können die Beziehungen berechnet werde,
+					zB. zwischen ein Grundstück und der Recht.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BelastetesGrundstueck" type="recht:BelastetesGrundstueckType" maxOccurs="unbounded"/>
+			<xs:element name="BerechtigtesGrundstueck" type="recht:BerechtigtesGrundstueckType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="BerechtigtePerson" type="recht:BerechtigtePersonType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="BelastetesGrundstueckType">
+		<xs:sequence>
+			<xs:element name="BelastetesGrundstueckIDREF" type="xs:IDREF">
+				<xs:annotation>
+					<xs:documentation>Technische Referenze auf eines Grundstück. Verbindet Recht mit Grundstück</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Rechtsgruende" type="recht:RechtsgrundType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="BerechtigtesGrundstueckType">
+		<xs:sequence>
+			<xs:element name="BerechtigtesGrundstueckIDREF" type="xs:IDREF">
+				<xs:annotation>
+					<xs:documentation>Technische Referenze auf eines Grundstück. Verbindet Recht mit Grundstück</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Rechtsgruende" type="recht:RechtsgrundType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="BerechtigtePersonType">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="NatuerlichePersonGb" type="recht:NatuerlichePersonGbType"/>
+				<xs:element name="JuristischePersonGb" type="recht:JuristischePersonGbType"/>
+			</xs:choice>
+			<xs:element name="Rechtsgruende" type="recht:RechtsgrundType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<!-- GRUNDSTUECK                                                                                                                             -->
+	<!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	<xs:simpleType name="GrundstueckArtType">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Liegenschaft"/>
+			<xs:enumeration value="StockwerksEinheit"/>
+			<xs:enumeration value="GewoehnlichesMiteigentum"/>
+			<xs:enumeration value="Bergwerk"/>
+			<xs:enumeration value="Folio">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Folio Grundstück bzw. Seybuch</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SelbstaendigesDauerndesRecht">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Selbständiges und dauerndes Recht</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UnbekanntesGrundstueck"/>
+		</xs:restriction>
+		<!-- Entspricht DB -->
+	</xs:simpleType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="GrundstueckKopfType">
+		<xs:sequence>
+			<xs:element name="GrundstueckID" type="xs:ID">
+				<xs:annotation>
+					<xs:documentation>Technische Identifikation eines Grundstück. Damit können die Beziehungen berechnet werde,
+					zB. zwischen Grundstück und seine Adresse.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EGrid" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>eidgenössiche Grundstücksidentifikationsnummer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GrundstueckNummer" type="recht:GrundstueckNummerType"/>
+			<xs:element name="GrundstueckArt" type="recht:GrundstueckArtType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+	<xs:complexType name="GrundstueckNummerType">
+		<xs:annotation>
+			<xs:documentation>die Identifikationsnummer eines Grundstücks</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="BfsNr" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>BFS-Nummer der Gemeinde</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="KreisNr" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Kreisnummer der Gemeinde</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="StammNr" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Stammnummer des Grundstücks</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IndexNr1" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>erster Index des Grundstücks</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IndexNr2" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>zweiter Indexdes Grundstücks</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IndexNr3" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>dritter Indexdes Grundstücks</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="VersionID" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<!-- ********************************************************** -->
+</xs:schema>

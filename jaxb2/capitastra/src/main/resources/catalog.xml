@@ -1,0 +1,6 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/grundstueck.xsd" uri="export_grundstueck_20140310_626.xsd" />
+	<system systemId="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/rechteregister.xsd" uri="export_rechteregister_20101231.xsd" />
+
+</catalog>

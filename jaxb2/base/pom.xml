@@ -26,6 +26,7 @@
 		<module>../editique</module>
 		<module>../host-interfaces</module>
 		<module>../infra</module>
+		<module>../capitastra</module>
 	</modules>
 
 	<dependencies>
