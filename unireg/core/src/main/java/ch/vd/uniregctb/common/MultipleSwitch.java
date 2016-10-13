@@ -10,12 +10,7 @@ import java.util.Deque;
 public class MultipleSwitch {
 
 	private final Switchable[] switches;
-	private final ThreadLocal<Deque<boolean[]>> stateStack = new ThreadLocal<Deque<boolean[]>>() {
-		@Override
-		protected Deque<boolean[]> initialValue() {
-			return new ArrayDeque<>();
-		}
-	};
+	private final ThreadLocal<Deque<boolean[]>> stateStack = ThreadLocal.withInitial(ArrayDeque::new);
 
 	public MultipleSwitch(Switchable... switches) {
 		if (switches == null) {

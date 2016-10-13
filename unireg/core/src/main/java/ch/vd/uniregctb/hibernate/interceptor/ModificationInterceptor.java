@@ -37,12 +37,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
 
 	private TransactionManager transactionManager;
-	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>() {
-		@Override
-		protected HashSet<Transaction> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = ThreadLocal.withInitial(HashSet::new);
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<>();
 
 	public void setTransactionManager(TransactionManager transactionManager) {

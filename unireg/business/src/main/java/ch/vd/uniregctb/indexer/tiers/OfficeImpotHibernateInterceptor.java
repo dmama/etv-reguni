@@ -33,32 +33,17 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 
 	private final ThreadSwitch enabled = new ThreadSwitch(true);
 
-	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = new ThreadLocal<HashMap<Long, Tiers>>() {
-		@Override
-		protected HashMap<Long, Tiers> initialValue() {
-			return new HashMap<>();
-		}
-	};
+	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = ThreadLocal.withInitial(HashMap::new);
 
 	/**
 	 * Les tiers (avec leurs nouveaux OIDs) qui doivent être mis-à-jour
 	 */
-	private final ThreadLocal<HashMap<Long, Integer>> toUpdateOids = new ThreadLocal<HashMap<Long, Integer>>() {
-		@Override
-		protected HashMap<Long, Integer> initialValue() {
-			return new HashMap<>();
-		}
-	};
+	private final ThreadLocal<HashMap<Long, Integer>> toUpdateOids = ThreadLocal.withInitial(HashMap::new);
 
 	/**
 	 * Une map numéro de tiers -> nouveau numéro d'oid des tiers qui ont été changés.
 	 */
-	private final ThreadLocal<HashMap<Long, Integer>> updatedOids = new ThreadLocal<HashMap<Long, Integer>>() {
-		@Override
-		protected HashMap<Long, Integer> initialValue() {
-			return new HashMap<>();
-		}
-	};
+	private final ThreadLocal<HashMap<Long, Integer>> updatedOids = ThreadLocal.withInitial(HashMap::new);
 
 	@Override
 	public void preFlush(Iterator<?> entities) throws CallbackException {

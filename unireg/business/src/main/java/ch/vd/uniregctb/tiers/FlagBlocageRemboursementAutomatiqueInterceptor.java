@@ -30,12 +30,7 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlagBlocageRemboursementAutomatiqueInterceptor.class);
 
-	private final ThreadLocal<Set<Long>> idsTiersFlagACalculer = new ThreadLocal<Set<Long>>() {
-		@Override
-		protected Set<Long> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<Set<Long>> idsTiersFlagACalculer = ThreadLocal.withInitial(HashSet::new);
 
 	private ModificationInterceptor parent;
 	private TiersDAO tiersDAO;

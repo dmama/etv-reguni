@@ -27,12 +27,7 @@ public abstract class AuthenticationHelper {
 		}
 	}
 
-	private static final ThreadLocal<Deque<StackableData>> STACKS = new ThreadLocal<Deque<StackableData>>() {
-		@Override
-		protected Deque<StackableData> initialValue() {
-			return new ArrayDeque<>();
-		}
-	};
+	private static final ThreadLocal<Deque<StackableData>> STACKS = ThreadLocal.withInitial(ArrayDeque::new);
 
 	private static Deque<StackableData> stack() {
 		return STACKS.get();

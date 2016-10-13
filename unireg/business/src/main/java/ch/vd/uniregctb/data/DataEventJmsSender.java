@@ -53,12 +53,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	 * Container des données déjà émises dans la transaction courante
 	 * (histoire ne ne pas envoyer plusieurs messages identiques dans une même transaction)
 	 */
-	private ThreadLocal<Data> alreadySent = new ThreadLocal<Data>() {
-		@Override
-		protected Data initialValue() {
-			return new Data();
-		}
-	};
+	private ThreadLocal<Data> alreadySent = ThreadLocal.withInitial(Data::new);
 
 	/**
 	 * Clé d'identification d'une relation entre tiers

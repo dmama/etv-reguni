@@ -28,12 +28,7 @@ public class MessageIdentificationIndexerHibernateInterceptor implements Modific
 
 	private final ThreadSwitch enabled = new ThreadSwitch(true);
 
-	private final ThreadLocal<Set<Long>> modifiedEntities = new ThreadLocal<Set<Long>>() {
-		@Override
-		protected HashSet<Long> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<Set<Long>> modifiedEntities = ThreadLocal.withInitial(HashSet::new);
 
 	private Set<Long> getModifiedEntities() {
 		return modifiedEntities.get();

@@ -32,12 +32,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private TacheService tacheService;
 	private TiersService tiersService;
 
-	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>() {
-		@Override
-		protected HashSet<Long> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = ThreadLocal.withInitial(HashSet::new);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 

@@ -41,12 +41,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 
 	private final Random randomGenerator = new Random();
 
-	private final ThreadLocal<HashSet<Long>> modifiedNosIndividus = new ThreadLocal<HashSet<Long>>() {
-		@Override
-		protected HashSet<Long> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<HashSet<Long>> modifiedNosIndividus = ThreadLocal.withInitial(HashSet::new);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 

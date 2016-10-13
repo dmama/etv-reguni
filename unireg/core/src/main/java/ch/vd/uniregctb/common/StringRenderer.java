@@ -11,12 +11,7 @@ public interface StringRenderer<T> {
 	/**
 	 * Implémentation par défaut du StringRenderer qui peut s'appliquer à tout objet en appelant sa méthode {@link Object#toString}
 	 */
-	StringRenderer<Object> DEFAULT = new StringRenderer<Object>() {
-		@Override
-		public String toString(Object object) {
-			return Objects.toString(object);
-		}
-	};
+	StringRenderer<Object> DEFAULT = Objects::toString;
 
 	/**
 	 * @param object objet à convertir

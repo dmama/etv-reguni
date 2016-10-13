@@ -42,12 +42,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private TransactionManager transactionManager;
 	private Dialect dialect;
 
-	private final ThreadLocal<HashSet<Long>> modifiedEntities = new ThreadLocal<HashSet<Long>>() {
-		@Override
-		protected HashSet<Long> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<HashSet<Long>> modifiedEntities = ThreadLocal.withInitial(HashSet::new);
 
 	/**
 	 * Cette méthode est appelé lorsque une entité hibernate est modifié/sauvé.

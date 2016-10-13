@@ -57,19 +57,9 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 		RegDate getReferenceDate();
 	}
 
-	private static final ReferenceDateAccessor CURRENT_DATE_ACCESSOR = new ReferenceDateAccessor() {
-		@Override
-		public RegDate getReferenceDate() {
-			return RegDate.get();
-		}
-	};
+	private static final ReferenceDateAccessor CURRENT_DATE_ACCESSOR = RegDate::get;
 
-	private static final ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = new ThreadLocal<ReferenceDateAccessor>() {
-		@Override
-		protected ReferenceDateAccessor initialValue() {
-			return CURRENT_DATE_ACCESSOR;
-		}
-	};
+	private static final ThreadLocal<ReferenceDateAccessor> futureBeginDateAccessors = ThreadLocal.withInitial(() -> CURRENT_DATE_ACCESSOR);
 
 	/**
 	 * Méthode utilisable dans les tests et qui fait en sorte que la date de "début du futur" soit la date donnée
@@ -80,12 +70,7 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 			futureBeginDateAccessors.remove();
 		}
 		else {
-			futureBeginDateAccessors.set(new ReferenceDateAccessor() {
-				@Override
-				public RegDate getReferenceDate() {
-					return date;
-				}
-			});
+			futureBeginDateAccessors.set(() -> date);
 		}
 	}
 
