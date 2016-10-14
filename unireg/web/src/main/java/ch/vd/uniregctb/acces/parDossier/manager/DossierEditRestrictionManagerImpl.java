@@ -96,12 +96,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 				String officeImpot;
 				try {
 					final List<CollectiviteAdministrativeUtilisateur> collectivitesAdministratives = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
-					final StringRenderer<CollectiviteAdministrative> nomsCourts = new StringRenderer<CollectiviteAdministrative>() {
-						@Override
-						public String toString(CollectiviteAdministrative ca) {
-							return ca.getNomCourt();
-						}
-					};
+					final StringRenderer<CollectiviteAdministrative> nomsCourts = CollectiviteAdministrative::getNomCourt;
 					officeImpot = CollectionsUtils.toString(collectivitesAdministratives, nomsCourts, ", ", null);
 				}
 				catch (ServiceSecuriteException e) {

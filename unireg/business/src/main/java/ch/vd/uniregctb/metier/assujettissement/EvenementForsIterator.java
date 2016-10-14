@@ -89,29 +89,14 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 	 */
 	private List<ForFiscal> extractForsQuiSeFerment(List<ForFiscal> forsDansLaPeriode, RegDate finPeriode) {
 
-		List<ForFiscal> fors = new ArrayList<>(forsDansLaPeriode.size());
+		final List<ForFiscal> fors = new ArrayList<>(forsDansLaPeriode.size());
 
 		for (ForFiscal f : forsDansLaPeriode) {
 			if (RegDateHelper.isBeforeOrEqual(f.getDateFin(), finPeriode, NullDateBehavior.LATEST)) {
 				fors.add(f);
 			}
 		}
-		Collections.sort(fors, new Comparator<ForFiscal>() {
-			@Override
-			public int compare(ForFiscal o1, ForFiscal o2) {
-				if (o1.getDateFin() == null && o2.getDateFin() == null) {
-					return 0;
-				}
-				if (o1.getDateFin() == null && o2.getDateFin() != null) {
-					return 1;
-				}
-				if (o1.getDateFin() != null && o2.getDateFin() == null) {
-					return -1;
-				}
-				return o1.getDateFin().compareTo(o2.getDateFin());
-			}
-		});
-
+		Collections.sort(fors, (f1, f2) -> NullDateBehavior.LATEST.compare(f1.getDateFin(), f2.getDateFin()));
 		return fors;
 	}
 
@@ -124,20 +109,14 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 	 */
 	private List<ForFiscal> extractForsQuiSOuvrent(List<ForFiscal> forsDansLaPeriode, RegDate debutPeriode) {
 
-		List<ForFiscal> fors = new ArrayList<>(forsDansLaPeriode.size());
+		final List<ForFiscal> fors = new ArrayList<>(forsDansLaPeriode.size());
 
 		for (ForFiscal f : forsDansLaPeriode) {
 			if (f.getDateDebut().isAfterOrEqual(debutPeriode)) {
 				fors.add(f);
 			}
 		}
-		Collections.sort(fors, new Comparator<ForFiscal>() {
-			@Override
-			public int compare(ForFiscal o1, ForFiscal o2) {
-				return o1.getDateDebut().compareTo(o2.getDateDebut());
-			}
-		});
-
+		Collections.sort(fors, (f1, f2) -> NullDateBehavior.EARLIEST.compare(f1.getDateDebut(), f2.getDateDebut()));
 		return fors;
 	}
 

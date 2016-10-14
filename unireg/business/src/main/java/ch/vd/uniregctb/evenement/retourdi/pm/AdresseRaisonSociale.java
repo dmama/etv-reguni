@@ -182,12 +182,7 @@ public abstract class AdresseRaisonSociale {
 			}
 
 			// un joli log peut grandement aider...
-			final StringRenderer<Localite> onrpRenderer = new StringRenderer<Localite>() {
-				@Override
-				public String toString(Localite localite) {
-					return Objects.toString(localite.getNoOrdre());
-				}
-			};
+			final StringRenderer<Localite> onrpRenderer = localite -> Objects.toString(localite.getNoOrdre());
 			final String descriptionLocalite = String.format("%d %s (onrp %s)", npaEntier, localite, CollectionsUtils.toString(localitesPostales, onrpRenderer, ", "));
 
 			// quelles sont les rues officielles de ces localités postales ?

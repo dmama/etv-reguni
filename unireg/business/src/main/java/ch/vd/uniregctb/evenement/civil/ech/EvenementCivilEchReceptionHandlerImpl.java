@@ -188,12 +188,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 
 			// façade de monitoring sur la queue d'attente de traitement des événements civils
 			// où la charge est définie comme le nombre d'individus en attente de traitement
-			final LoadMonitorable service = new LoadMonitorable() {
-				@Override
-				public int getLoad() {
-					return getNombreIndividusEnAttenteDeTraitement();
-				}
-			};
+			final LoadMonitorable service = this::getNombreIndividusEnAttenteDeTraitement;
 
 			// calculateur de moyenne de charge sur les 5 dernières minutes (échantillonnage à 2 fois par seconde)
 			loadAverager = new LoadAverager(service, SERVICE_NAME, 600, 500);

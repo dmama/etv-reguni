@@ -35,11 +35,8 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètre");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nettoyage seul : ", String.valueOf(results.isCleanupOnly()));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nettoyage seul : ", String.valueOf(results.isCleanupOnly()));
 			});
 		}
 
@@ -51,14 +48,11 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total d'actions menées :", String.valueOf(results.getActions().size()));
-					table.addLigne("Nombre total d'erreurs :", String.valueOf(results.getExceptions().size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total d'actions menées :", String.valueOf(results.getActions().size()));
+				table.addLigne("Nombre total d'erreurs :", String.valueOf(results.getExceptions().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 

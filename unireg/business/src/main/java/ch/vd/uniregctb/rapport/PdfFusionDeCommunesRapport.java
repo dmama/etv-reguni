@@ -47,14 +47,11 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Paramètres
 		document.addEntete1("Paramètres");
 		{
-			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					table.addLigne("Date de fusion:", RegDateHelper.dateToDisplayString(results.dateFusion));
-					table.addLigne("Anciennes Communes:", displayCommunes(results.anciensNoOfs, results.dateFusion.getOneDayBefore(), infraService));
-					table.addLigne("Commune résultante:", displayCommune(results.nouveauNoOfs, results.dateFusion, infraService));
-				}
+			document.addTableSimple(2, table -> {
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Date de fusion:", RegDateHelper.dateToDisplayString(results.dateFusion));
+				table.addLigne("Anciennes Communes:", displayCommunes(results.anciensNoOfs, results.dateFusion.getOneDayBefore(), infraService));
+				table.addLigne("Commune résultante:", displayCommune(results.nouveauNoOfs, results.dateFusion, infraService));
 			});
 		}
 
@@ -66,28 +63,20 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(new float[]{70, 30}, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de tiers examinés:", String.valueOf(results.nbTiersExamines));
+			document.addTableSimple(new float[]{70, 30}, table -> {
+				table.addLigne("Nombre total de tiers examinés:", String.valueOf(results.nbTiersExamines));
+				table.addLigne("Nombre de tiers en erreur:", String.valueOf(results.tiersEnErreur.size()));
+				table.addLigne("Nombre de tiers traités pour un for:", String.valueOf(results.tiersTraitesPourFors.size()));
+				table.addLigne("Nombre de tiers ignorés pour les fors:", String.valueOf(results.tiersIgnoresPourFors.size()));
+				table.addLigne("Nombre de tiers traités pour une décision ACI:", String.valueOf(results.tiersTraitesPourDecisions.size()));
+				table.addLigne("Nombre de tiers ignorés pour les décisions ACI:", String.valueOf(results.tiersIgnoresPourDecisions.size()));
+				table.addLigne("Nombre de tiers traités pour un domicile d'établissement:", String.valueOf(results.tiersTraitesPourDomicilesEtablissement.size()));
+				table.addLigne("Nombre de tiers ignorés pour les domiciles d'établissement:", String.valueOf(results.tiersIgnoresPourDomicilesEtablissement.size()));
+				table.addLigne("Nombre de tiers traités pour un allègement fiscal:", String.valueOf(results.tiersTraitesPourAllegementsFiscaux.size()));
+				table.addLigne("Nombre de tiers ignorés pour les allègements fiscaux:", String.valueOf(results.tiersIgnoresPourAllegementsFiscaux.size()));
 
-					table.addLigne("Nombre de tiers en erreur:", String.valueOf(results.tiersEnErreur.size()));
-
-					table.addLigne("Nombre de tiers traités pour un for:", String.valueOf(results.tiersTraitesPourFors.size()));
-					table.addLigne("Nombre de tiers ignorés pour les fors:", String.valueOf(results.tiersIgnoresPourFors.size()));
-
-					table.addLigne("Nombre de tiers traités pour une décision ACI:", String.valueOf(results.tiersTraitesPourDecisions.size()));
-					table.addLigne("Nombre de tiers ignorés pour les décisions ACI:", String.valueOf(results.tiersIgnoresPourDecisions.size()));
-
-					table.addLigne("Nombre de tiers traités pour un domicile d'établissement:", String.valueOf(results.tiersTraitesPourDomicilesEtablissement.size()));
-					table.addLigne("Nombre de tiers ignorés pour les domiciles d'établissement:", String.valueOf(results.tiersIgnoresPourDomicilesEtablissement.size()));
-
-					table.addLigne("Nombre de tiers traités pour un allègement fiscal:", String.valueOf(results.tiersTraitesPourAllegementsFiscaux.size()));
-					table.addLigne("Nombre de tiers ignorés pour les allègements fiscaux:", String.valueOf(results.tiersIgnoresPourAllegementsFiscaux.size()));
-
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 

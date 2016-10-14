@@ -35,11 +35,8 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 
@@ -51,15 +48,12 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'événements en erreur ou non traité à examiner :", String.valueOf(results.nbEvenementTotal));
-					table.addLigne("Nombre d'événements traites :", String.valueOf(results.traites.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(new float[]{70f, 30f}, table -> {
+				table.addLigne("Nombre d'événements en erreur ou non traité à examiner :", String.valueOf(results.nbEvenementTotal));
+				table.addLigne("Nombre d'événements traites :", String.valueOf(results.traites.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 

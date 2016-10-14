@@ -38,14 +38,11 @@ public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
 
         // Paramètres
         addEntete1("Paramètres");
-        addTableSimple(new float[] {70, 30}, new TableSimpleCallback() {
-            @Override
-            public void fillTable(PdfTableSimple table) throws DocumentException {
-                table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-	            if (results.getNombreMaxSommations() != null && results.getNombreMaxSommations() > 0) {
-		            table.addLigne("Nombre maximal de sommations à émettre: ", Integer.toString(results.getNombreMaxSommations()));
-	            }
-            }
+        addTableSimple(new float[] {70, 30}, table -> {
+            table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+	        if (results.getNombreMaxSommations() != null && results.getNombreMaxSommations() > 0) {
+		        table.addLigne("Nombre maximal de sommations à émettre: ", Integer.toString(results.getNombreMaxSommations()));
+	        }
         });
         // Résultats
         addEntete1("Résultats");
@@ -55,21 +52,18 @@ public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(2, new TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Nombre total de DI sommées:", String.valueOf(results.getTotalDisSommees()));
-                    for (Integer annee : results.getListeAnnees()) {
-                        table.addLigne(String.format("Période %s :", annee), String.valueOf(results.getTotalSommations(annee)));
-                    }
-                    table.addLigne("Nombre de DI non sommées pour cause de délai effectif non-échu :", String.valueOf(results.getTotalDelaisEffectifsNonEchus()));
-                    table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
-                    table.addLigne("Nombre de DI non sommées pour cause d'optionnalité :", String.valueOf(results.getTotalDisOptionnelles()));
-                    table.addLigne("Nombre de DI non sommées pour cause de suspension :", String.valueOf(results.getTotalDisSuspendues()));
-                    table.addLigne("Nombre de sommations en erreur :", String.valueOf(results.getTotalSommationsEnErreur()));
-	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
+            addTableSimple(2, table -> {
+                table.addLigne("Nombre total de DI sommées:", String.valueOf(results.getTotalDisSommees()));
+                for (Integer annee : results.getListeAnnees()) {
+                    table.addLigne(String.format("Période %s :", annee), String.valueOf(results.getTotalSommations(annee)));
                 }
+                table.addLigne("Nombre de DI non sommées pour cause de délai effectif non-échu :", String.valueOf(results.getTotalDelaisEffectifsNonEchus()));
+                table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
+                table.addLigne("Nombre de DI non sommées pour cause d'optionnalité :", String.valueOf(results.getTotalDisOptionnelles()));
+                table.addLigne("Nombre de DI non sommées pour cause de suspension :", String.valueOf(results.getTotalDisSuspendues()));
+                table.addLigne("Nombre de sommations en erreur :", String.valueOf(results.getTotalSommationsEnErreur()));
+	            table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+                table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
             });
         }
 

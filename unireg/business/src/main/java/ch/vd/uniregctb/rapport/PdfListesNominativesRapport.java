@@ -37,15 +37,12 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    // Paramètres
 	    addEntete1("Paramètre");
 	    {
-	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-	            @Override
-	            public void fillTable(PdfTableSimple table) throws DocumentException {
-		            table.addLigne("Type d'adresses :", String.valueOf(results.getTypeAdressesIncluses().getDescription()));
-			        table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuablesPP()));
-			        table.addLigne("Inclure les personnes morales :", String.valueOf(results.isAvecContribuablesPM()));
-			        table.addLigne("Inclure les débiteurs de prestations imposables :", String.valueOf(results.isAvecDebiteurs()));
-			        table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
-	            }
+	        addTableSimple(2, table -> {
+		        table.addLigne("Type d'adresses :", String.valueOf(results.getTypeAdressesIncluses().getDescription()));
+			    table.addLigne("Inclure les personnes physiques / ménages :", String.valueOf(results.isAvecContribuablesPP()));
+			    table.addLigne("Inclure les personnes morales :", String.valueOf(results.isAvecContribuablesPM()));
+			    table.addLigne("Inclure les débiteurs de prestations imposables :", String.valueOf(results.isAvecDebiteurs()));
+			    table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
 	        });
 	    }
 
@@ -57,14 +54,11 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	                    + "les valeurs ci-dessous sont donc incomplètes.");
 	        }
 
-	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-	            @Override
-	            public void fillTable(PdfTableSimple table) throws DocumentException {
-	                table.addLigne("Nombre total de tiers listés :", String.valueOf(results.getNombreTiersTraites()));
-	                table.addLigne("Dont tiers en erreur :", String.valueOf(results.getListeErreurs().size()));
-		            table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-	                table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-	            }
+	        addTableSimple(2, table -> {
+	            table.addLigne("Nombre total de tiers listés :", String.valueOf(results.getNombreTiersTraites()));
+	            table.addLigne("Dont tiers en erreur :", String.valueOf(results.getListeErreurs().size()));
+		        table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+	            table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 	        });
 	    }
 

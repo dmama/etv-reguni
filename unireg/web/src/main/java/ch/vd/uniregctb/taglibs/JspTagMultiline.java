@@ -31,12 +31,7 @@ public class JspTagMultiline extends BodyTagSupport {
 		}
 	}
 
-	private static final StringRenderer<String> HTML_ESCAPER = new StringRenderer<String>() {
-		@Override
-		public String toString(String object) {
-			return HtmlUtils.htmlEscape(object);
-		}
-	};
+	private static final StringRenderer<String> HTML_ESCAPER = HtmlUtils::htmlEscape;
 
 	private String buildHtlm() {
 		return CollectionsUtils.toString(lines, HTML_ESCAPER, "<br/>");

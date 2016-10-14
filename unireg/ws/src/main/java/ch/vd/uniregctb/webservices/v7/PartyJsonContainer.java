@@ -263,47 +263,19 @@ public class PartyJsonContainer {
 		}
 	}
 
-	private static final JsonExtractor<TaxLiability> TAX_LIABILITY_JSON_EXTRACTOR = new JsonExtractor<TaxLiability>() {
-		@Override
-		public TaxLiability jsonEquivalentOf(TaxLiability elt) {
-			return JsonTaxLiabilityHelper.jsonEquivalentOf(elt);
-		}
-	};
-
-	private static final JsonExtractor<TaxDeclaration> TAX_DECLARATION_JSON_EXTRACTOR = new JsonExtractor<TaxDeclaration>() {
-		@Override
-		public TaxDeclaration jsonEquivalentOf(TaxDeclaration elt) {
-			return JsonTaxDeclarationHelper.jsonEquivalentOf(elt);
-		}
-	};
-
-	private static final JsonExtractor<RelationBetweenParties> RELATION_BETWEEN_PARTIES_JSON_EXTRACTOR = new JsonExtractor<RelationBetweenParties>() {
-		@Override
-		public RelationBetweenParties jsonEquivalentOf(RelationBetweenParties elt) {
-			return JsonRelationBetweenPartiesHelper.jsonEquivalentOf(elt);
-		}
-	};
-
-	private static final JsonExtractor<Agent> AGENT_JSON_EXTRACTOR = new JsonExtractor<Agent>() {
-		@Override
-		public Agent jsonEquivalentOf(Agent elt) {
-			return JsonAgentHelper.jsonEquivalentOf(elt);
-		}
-	};
-
 	private static void replacePolymorphicTaxLiabilites(Taxpayer taxpayer) {
-		replacePolymorphicData(taxpayer.getTaxLiabilities(), TAX_LIABILITY_JSON_EXTRACTOR);
+		replacePolymorphicData(taxpayer.getTaxLiabilities(), JsonTaxLiabilityHelper::jsonEquivalentOf);
 	}
 
 	private static void replacePolymorphicTaxDeclarations(Party party) {
-		replacePolymorphicData(party.getTaxDeclarations(), TAX_DECLARATION_JSON_EXTRACTOR);
+		replacePolymorphicData(party.getTaxDeclarations(), JsonTaxDeclarationHelper::jsonEquivalentOf);
 	}
 
 	private static void replacePolymorphicRelationsBetweenParties(Party party) {
-		replacePolymorphicData(party.getRelationsBetweenParties(), RELATION_BETWEEN_PARTIES_JSON_EXTRACTOR);
+		replacePolymorphicData(party.getRelationsBetweenParties(), JsonRelationBetweenPartiesHelper::jsonEquivalentOf);
 	}
 
 	private static void replacePolymorphicAgents(Party party) {
-		replacePolymorphicData(party.getAgents(), AGENT_JSON_EXTRACTOR);
+		replacePolymorphicData(party.getAgents(), JsonAgentHelper::jsonEquivalentOf);
 	}
 }

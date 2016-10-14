@@ -147,12 +147,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		}
 
 		if (triAlphabetique) {
-			Collections.sort(listCommunes, new Comparator<Commune>() {
-				@Override
-				public int compare(Commune o1, Commune o2) {
-					return o1.getNomOfficiel().compareTo(o2.getNomOfficiel());
-				}
-			});
+			Collections.sort(listCommunes, Comparator.comparing(Commune::getNomOfficiel));
 		}
 
 		return listCommunes;

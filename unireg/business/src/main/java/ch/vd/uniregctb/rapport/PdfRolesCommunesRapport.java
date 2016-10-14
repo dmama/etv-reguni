@@ -56,14 +56,11 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-		    addTableSimple(2, new TableSimpleCallback() {
-		        @Override
-		        public void fillTable(PdfTableSimple table) throws DocumentException {
-		            table.addLigne("Année fiscale :", String.valueOf(results.annee));
-			        table.addLigne("Type de rôles :", results.getTypeRoles().name());
-		            table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-		            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-		        }
+		    addTableSimple(2, table -> {
+		        table.addLigne("Année fiscale :", String.valueOf(results.annee));
+			    table.addLigne("Type de rôles :", results.getTypeRoles().name());
+		        table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+		        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		    });
 		}
 
@@ -82,16 +79,13 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 			    nbCommunesTraitees = results.getNoOfsCommunesTraitees().size();
 			}
 
-		    addTableSimple(2, new TableSimpleCallback() {
-		        @Override
-		        public void fillTable(PdfTableSimple table) throws DocumentException {
-		            table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
-		            table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
-		            table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
-		            table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
-			        table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-		            table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-		        }
+		    addTableSimple(2, table -> {
+		        table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
+		        table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
+		        table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
+		        table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
+			    table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+		        table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 		    });
 		}
 
@@ -172,16 +166,12 @@ public abstract class PdfRolesCommunesRapport<T extends ProduireRolesCommunesRes
 		    addEntete1("Résumé");
 		    {
 		        final Map<InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoCommune.getInfosContribuables());
-		        addTableSimple(2, new TableSimpleCallback() {
-		            @Override
-		            public void fillTable(PdfTableSimple table) throws DocumentException {
-		                table.setWidths(new float[]{2.0f, 1.0f});
-		                table.addLigne("Nombre total de contribuables traités:", String.valueOf(totalContribuables));
-			            addLignesStatsParTypeCtb(table, nombreParType);
-			            table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-		                table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-		            }
-
+		        addTableSimple(2, table -> {
+		            table.setWidths(new float[]{2.0f, 1.0f});
+		            table.addLigne("Nombre total de contribuables traités:", String.valueOf(totalContribuables));
+			        addLignesStatsParTypeCtb(table, nombreParType);
+			        table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+		            table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 		        });
 		    }
 

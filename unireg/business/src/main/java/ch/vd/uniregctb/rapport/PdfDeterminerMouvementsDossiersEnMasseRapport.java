@@ -35,12 +35,9 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-		    addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-		        @Override
-		        public void fillTable(PdfTableSimple table) throws DocumentException {
-		            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-			        table.addLigne("Archives seulements :", String.valueOf(results.archivesSeulement));
-		        }
+		    addTableSimple(2, table -> {
+		        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+			    table.addLigne("Archives seulements :", String.valueOf(results.archivesSeulement));
 		    });
 		}
 
@@ -52,15 +49,12 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNbContribuablesInspectes()));
-					table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.ignores.size()));
-					table.addLigne("Nombre de mouvements créés :", String.valueOf(results.mouvements.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNbContribuablesInspectes()));
+				table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.ignores.size()));
+				table.addLigne("Nombre de mouvements créés :", String.valueOf(results.mouvements.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(results));
 			});
 		}
 

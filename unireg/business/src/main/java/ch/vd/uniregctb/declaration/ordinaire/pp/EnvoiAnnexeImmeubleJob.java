@@ -151,12 +151,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		Audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
 
 		// tri dans l'ordre croissant des numéros de contribuables
-		Collections.sort(listeCtb, new Comparator<ContribuableAvecImmeuble>() {
-			@Override
-			public int compare(ContribuableAvecImmeuble o1, ContribuableAvecImmeuble o2) {
-				return o1.getNumeroContribuable() < o2.getNumeroContribuable() ? -1 : (o1.getNumeroContribuable() > o2.getNumeroContribuable() ? 1 : 0);
-			}
-		});
+		Collections.sort(listeCtb, Comparator.comparing(ContribuableAvecImmeuble::getNumeroContribuable));
 
 		return listeCtb;
 	}

@@ -10,11 +10,8 @@ public class MockEvenementOrganisationEvenementProcessor implements EvenementOrg
 	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
-		return new ListenerHandle() {
-			@Override
-			public void unregister() {
-				// rien à faire de spécial
-			}
+		return () -> {
+			// rien à faire de spécial
 		};
 	}
 

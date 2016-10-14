@@ -36,14 +36,11 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Période fiscale:", String.valueOf(results.annee));
-					table.addLigne("Date de délai:", RegDateHelper.dateToDisplayString(results.dateDelai));
-					table.addLigne("Contribuables à traiter:", "(voir le fichier contribuables_a_traiter.csv)");
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Période fiscale:", String.valueOf(results.annee));
+				table.addLigne("Date de délai:", RegDateHelper.dateToDisplayString(results.dateDelai));
+				table.addLigne("Contribuables à traiter:", "(voir le fichier contribuables_a_traiter.csv)");
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 			// ids en entrées
 			String filename = "contribuables_a_traiter.csv";
@@ -60,16 +57,13 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de contribuables traités:", String.valueOf(results.nbCtbsTotal));
-					table.addLigne("Nombre de déclarations traitées:", String.valueOf(results.traites.size()));
-					table.addLigne("Nombre de déclarations ignorés:", String.valueOf(results.ignores.size()));
-					table.addLigne("Nombre d'erreurs:", String.valueOf(results.errors.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de contribuables traités:", String.valueOf(results.nbCtbsTotal));
+				table.addLigne("Nombre de déclarations traitées:", String.valueOf(results.traites.size()));
+				table.addLigne("Nombre de déclarations ignorés:", String.valueOf(results.ignores.size()));
+				table.addLigne("Nombre d'erreurs:", String.valueOf(results.errors.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 

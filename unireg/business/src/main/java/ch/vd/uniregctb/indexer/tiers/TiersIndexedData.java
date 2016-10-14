@@ -97,12 +97,7 @@ public class TiersIndexedData implements Serializable {
 		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
 		etatEntreprise = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ETAT_ENTREPRISE_COURANT, doc, TypeEtatEntreprise.class);
 		tousEtatsEntreprise = DocumentExtractorHelper.getEnumSet(DocumentExtractorHelper.getDocValues(TiersIndexableData.ETATS_ENTREPRISE, doc), TypeEtatEntreprise.class);
-		formeJuridique = DocumentExtractorHelper.getValue(TiersIndexableData.FORME_JURIDIQUE, doc, new StringParser<FormeLegale>() {
-			@Override
-			public FormeLegale parse(String string) throws IllegalArgumentException {
-				return FormeLegale.fromCode(string);
-			}
-		});
+		formeJuridique = DocumentExtractorHelper.getValue(TiersIndexableData.FORME_JURIDIQUE, doc, FormeLegale::fromCode);
 		domicileEtablissementPrincipal = DocumentExtractorHelper.getDocValue(TiersIndexableData.DOMICILE_ETABLISSEMENT_PRINCIPAL, doc);
 	}
 

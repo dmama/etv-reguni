@@ -85,12 +85,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 
 		// données des parties prenantes
 		final List<PartiePrenante> sortedPartiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
-		Collections.sort(sortedPartiesPrenantes, new Comparator<PartiePrenante>() {
-			@Override
-			public int compare(PartiePrenante o1, PartiePrenante o2) {
-				return Long.compare(o1.getId(), o2.getId());
-			}
-		});
+		Collections.sort(sortedPartiesPrenantes, Comparator.comparing(PartiePrenante::getId));
 		for (PartiePrenante pp : sortedPartiesPrenantes) {
 			addEntete(doc, "Partie prenante");
 

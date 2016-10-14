@@ -26,12 +26,7 @@ public class PdfRolesPMCommunesRapport extends PdfRolesCommunesRapport<ProduireR
 		final String nomCommune = nomsCommunes.get(noOfsCommune);
 		status.setMessage(String.format("Génération du rapport pour la commune de %s...", nomCommune));
 
-		return traiteListeContribuablesPM(infos, nomsCommunes, new AccesCommune() {
-			@Override
-			public int getNoOfsCommune(InfoContribuable infoContribuable) {
-				return noOfsCommune;
-			}
-		});
+		return traiteListeContribuablesPM(infos, nomsCommunes, infoContribuable -> noOfsCommune);
 	}
 
 	@Override

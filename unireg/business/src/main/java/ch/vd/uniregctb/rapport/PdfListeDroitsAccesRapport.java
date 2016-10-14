@@ -40,11 +40,8 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
 	    // Paramètres
 	    addEntete1("Paramètres");
 	    {
-		    addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-			    @Override
-			    public void fillTable(PdfTableSimple table) throws DocumentException {
-				    table.addLigne("Date valeur :", RegDateHelper.dateToDisplayString(results.getDateValeur()));
-			    }
+		    addTableSimple(2, table -> {
+			    table.addLigne("Date valeur :", RegDateHelper.dateToDisplayString(results.getDateValeur()));
 		    });
 	    }
 
@@ -56,14 +53,11 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(2, new TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Nombre total de droits d'accès:", String.valueOf(results.droitsAcces.size()));
-                    table.addLigne("Nombre d'erreurs:", String.valueOf(results.erreurs.size()));
-	                table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-                }
+            addTableSimple(2, table -> {
+                table.addLigne("Nombre total de droits d'accès:", String.valueOf(results.droitsAcces.size()));
+                table.addLigne("Nombre d'erreurs:", String.valueOf(results.erreurs.size()));
+	            table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+                table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
             });
         }
 

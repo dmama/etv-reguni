@@ -261,12 +261,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(Set<ModeleFeuilleDocument> listFeuille) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		final List<ModeleFeuilleDocument> listeTriee = new ArrayList<>(listFeuille);
-		Collections.sort(listeTriee, new Comparator<ModeleFeuilleDocument>() {
-			@Override
-			public int compare(ModeleFeuilleDocument o1, ModeleFeuilleDocument o2) {
-				return o1.getIndex() - o2.getIndex();
-			}
-		});
+		Collections.sort(listeTriee, Comparator.comparing(ModeleFeuilleDocument::getIndex));
 		for (ModeleFeuilleDocument feuille : listeTriee) {
 			final ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique(feuille, 1);
 			annexes.add(feuilleEditique);

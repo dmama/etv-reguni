@@ -90,27 +90,21 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 
 	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive) throws EditiqueException {
-		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
-			@Override
-			public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
-				}
-				return src;
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, src -> {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
 			}
+			return src;
 		});
 	}
 
 	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, FichierImpression document, boolean archive) throws EditiqueException {
-		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
-			@Override
-			public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
-				}
-				return src;
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, src -> {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
 			}
+			return src;
 		});
 	}
 

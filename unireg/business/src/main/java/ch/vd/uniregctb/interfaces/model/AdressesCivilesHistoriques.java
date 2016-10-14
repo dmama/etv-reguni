@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -70,26 +71,7 @@ public class AdressesCivilesHistoriques {
 	 * Ordonne toutes les adresses par date de début de validité croissant
 	 */
 	private void sort() {
-		Comparator<Adresse> comparator = new Comparator<Adresse>() {
-			@Override
-			public int compare(Adresse left, Adresse right) {
-				final RegDate dateRight = right.getDateDebut();
-				final RegDate dateLeft = left.getDateDebut();
-
-				if (dateLeft == null && dateRight == null) {
-					return 0;
-				}
-				else if (dateLeft == null) {
-					return -1;
-				}
-				else if (dateRight == null) {
-					return 1;
-				}
-				else {
-					return dateLeft.compareTo(dateRight);
-				}
-			}
-		};
+		final Comparator<Adresse> comparator = (a1, a2) -> NullDateBehavior.EARLIEST.compare(a1.getDateDebut(), a2.getDateDebut());
 		Collections.sort(principales, comparator);
 		Collections.sort(courriers, comparator);
 		Collections.sort(secondaires, comparator);

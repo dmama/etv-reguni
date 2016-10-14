@@ -724,12 +724,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		if (statsService != null) {
 
 			// façade de monitoring sur la queue d'indexation on-the-fly, où la charge est définie comme le nombre de tiers en attente d'indexation
-			final LoadMonitorable service = new LoadMonitorable() {
-				@Override
-				public int getLoad() {
-					return getOnTheFlyQueueSize();
-				}
-			};
+			final LoadMonitorable service = this::getOnTheFlyQueueSize;
 
 			// calculateur de moyenne de charge sur les 5 dernières minutes (échantillonnage à 2 fois par seconde)
 			onTheFlyLoadAverager = new LoadAverager(service, ON_THE_FLY_SERVICE_NAME, 600, 500);

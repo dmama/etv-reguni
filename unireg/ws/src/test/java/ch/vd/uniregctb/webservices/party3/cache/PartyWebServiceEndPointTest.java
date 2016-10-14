@@ -132,12 +132,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		final List<BatchPartyEntry> list = results.getEntries();
 		assertEquals(2, list.size()); // dans la version 3 du web-service, les ids nuls sont ignorés
 
-		Collections.sort(list, new Comparator<BatchPartyEntry>() {
-			@Override
-			public int compare(BatchPartyEntry o1, BatchPartyEntry o2) {
-				return Integer.valueOf(o1.getNumber()).compareTo(o2.getNumber());
-			}
-		});
+		Collections.sort(list, Comparator.comparingInt(BatchPartyEntry::getNumber));
 
 		assertEquals(ids.a, list.get(0).getNumber());
 		assertEquals(ids.b, list.get(1).getNumber());

@@ -34,11 +34,8 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 		// Paramètres
 		document.addEntete1("Paramètres");
 		{
-			document.addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
-				}
+			document.addTableSimple(2, table -> {
+				table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
 			});
 		}
 
@@ -50,16 +47,13 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 						                    + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(new float[] {60, 40}, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de personnes physiques analysées :", String.valueOf(results.getNbPersonnesPhysiquesAnalysees()));
-					table.addLigne("Nombre de personnes physiques ignorées :", String.valueOf(results.getIgnores().size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErrors().size()));
-					table.addLigne("Nombre de période d'imposition IS trouvées :", String.valueOf(results.getInfos().size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			document.addTableSimple(new float[] {60, 40}, table -> {
+				table.addLigne("Nombre total de personnes physiques analysées :", String.valueOf(results.getNbPersonnesPhysiquesAnalysees()));
+				table.addLigne("Nombre de personnes physiques ignorées :", String.valueOf(results.getIgnores().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErrors().size()));
+				table.addLigne("Nombre de période d'imposition IS trouvées :", String.valueOf(results.getInfos().size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 

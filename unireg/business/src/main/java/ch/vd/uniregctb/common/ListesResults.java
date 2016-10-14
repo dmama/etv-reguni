@@ -113,15 +113,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
     }
 
     public void sort() {
-
-        Collections.sort(this.tiersErreur, new Comparator<Erreur>() {
-            @Override
-            public int compare(Erreur o1, Erreur o2) {
-                final long numero1 = o1.noCtb;
-                final long numero2 = o2.noCtb;
-                return numero1 == numero2 ? 0 : (numero1 < numero2 ? -1 : 1);
-            }
-        });
+        Collections.sort(this.tiersErreur, Comparator.comparingLong(e -> e.noCtb));
     }
 
 	public int getNombreThreads() {

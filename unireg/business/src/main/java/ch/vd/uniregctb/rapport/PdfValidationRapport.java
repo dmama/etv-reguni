@@ -34,14 +34,11 @@ public class PdfValidationRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					table.addLigne("Calcul des assujettissements:", Boolean.toString(results.calculatePeriodesImposition));
-					table.addLigne("Cohérence des dates des DIs", Boolean.toString(results.coherencePeriodesImpositionWrtDIs));
-					table.addLigne("Calcul des adresses:", Boolean.toString(results.calculateAdresses));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Calcul des assujettissements:", Boolean.toString(results.calculatePeriodesImposition));
+				table.addLigne("Cohérence des dates des DIs", Boolean.toString(results.coherencePeriodesImpositionWrtDIs));
+				table.addLigne("Calcul des adresses:", Boolean.toString(results.calculateAdresses));
 			});
 		}
 
@@ -53,20 +50,17 @@ public class PdfValidationRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de tiers:", String.valueOf(results.nbTiersTotal));
-					table.addLigne("Nombre de tiers ne validant pas:", String.valueOf(results.erreursValidation.size()));
-					table.addLigne("Nombre de périodes d'imposition qui ne sont pas calculables:", String
-							.valueOf(results.erreursPeriodesImposition.size()));
-					table.addLigne("Nombre de DIs émises dont les dates ne correspondent pas aux dates d'assujettissement:", String
-							.valueOf(results.erreursCoherenceDI.size()));
-					table.addLigne("Nombre de tiers dont les adresses ne sont pas calculables:", String
-							.valueOf(results.erreursAdresses.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de tiers:", String.valueOf(results.nbTiersTotal));
+				table.addLigne("Nombre de tiers ne validant pas:", String.valueOf(results.erreursValidation.size()));
+				table.addLigne("Nombre de périodes d'imposition qui ne sont pas calculables:", String
+						.valueOf(results.erreursPeriodesImposition.size()));
+				table.addLigne("Nombre de DIs émises dont les dates ne correspondent pas aux dates d'assujettissement:", String
+						.valueOf(results.erreursCoherenceDI.size()));
+				table.addLigne("Nombre de tiers dont les adresses ne sont pas calculables:", String
+						.valueOf(results.erreursAdresses.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 

@@ -37,14 +37,11 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(new float[]{.7f, .3f}, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					table.addLigne("Délai de carence (jours) :", Integer.toString(results.delaiCarence));
-					table.addLigne("Date seuil pour les nouveaux assujettissements :", RegDateHelper.dateToDisplayString(results.dateOrigine));
-					table.addLigne("Taille minimale (jours) du trou d'assujettissement pour une nouvelle lettre :", Integer.toString(results.tailleMinimaleTrouAssujettissement));
-				}
+			addTableSimple(new float[]{.7f, .3f}, table -> {
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Délai de carence (jours) :", Integer.toString(results.delaiCarence));
+				table.addLigne("Date seuil pour les nouveaux assujettissements :", RegDateHelper.dateToDisplayString(results.dateOrigine));
+				table.addLigne("Taille minimale (jours) du trou d'assujettissement pour une nouvelle lettre :", Integer.toString(results.tailleMinimaleTrouAssujettissement));
 			});
 		}
 
@@ -56,16 +53,13 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total d'entreprises inspectées :", String.valueOf(results.getErreurs().size() + results.getTraites().size() + results.getIgnores().size()));
-					table.addLigne("Nombre de lettres envoyées :", String.valueOf(results.getTraites().size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
-					table.addLigne("Nombre d'entreprises ignorées :", String.valueOf(results.getIgnores().size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total d'entreprises inspectées :", String.valueOf(results.getErreurs().size() + results.getTraites().size() + results.getIgnores().size()));
+				table.addLigne("Nombre de lettres envoyées :", String.valueOf(results.getTraites().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+				table.addLigne("Nombre d'entreprises ignorées :", String.valueOf(results.getIgnores().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 
@@ -74,12 +68,9 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 			addEntete1("Détail des envois");
 
 			final Map<TypeLettreBienvenue, MutableInt> map = buildStatsEnvois(results.getTraites());
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					for (Map.Entry<TypeLettreBienvenue, MutableInt> entry : map.entrySet()) {
-						table.addLigne(entry.getKey().name(), entry.getValue().toString());
-					}
+			addTableSimple(2, table -> {
+				for (Map.Entry<TypeLettreBienvenue, MutableInt> entry : map.entrySet()) {
+					table.addLigne(entry.getKey().name(), entry.getValue().toString());
 				}
 			});
 		}

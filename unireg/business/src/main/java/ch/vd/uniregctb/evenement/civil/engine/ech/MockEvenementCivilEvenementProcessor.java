@@ -9,11 +9,8 @@ public class MockEvenementCivilEvenementProcessor implements EvenementCivilEchPr
 	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
-		return new ListenerHandle() {
-			@Override
-			public void unregister() {
-				// rien à faire...
-			}
+		return () -> {
+			// rien à faire...
 		};
 	}
 

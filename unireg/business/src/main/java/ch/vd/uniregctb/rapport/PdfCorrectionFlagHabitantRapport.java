@@ -39,15 +39,12 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de personnes physiques inspectées :", String.valueOf(res.getNombrePPInspectees()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(res.getErreurs().size()));
-					table.addLigne("Nombre de nouveaux habitants :", String.valueOf(res.getNouveauxHabitants().size()));
-					table.addLigne("Nombre de nouveaux non-habitants :", String.valueOf(res.getNouveauxNonHabitants().size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(res));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de personnes physiques inspectées :", String.valueOf(res.getNombrePPInspectees()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(res.getErreurs().size()));
+				table.addLigne("Nombre de nouveaux habitants :", String.valueOf(res.getNouveauxHabitants().size()));
+				table.addLigne("Nombre de nouveaux non-habitants :", String.valueOf(res.getNouveauxNonHabitants().size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(res));
 			});
 		}
 

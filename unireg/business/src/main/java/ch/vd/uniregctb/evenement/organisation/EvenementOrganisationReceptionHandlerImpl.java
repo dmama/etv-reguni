@@ -181,12 +181,7 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 
 			// façade de monitoring sur la queue d'attente de traitement des événements organisation
 			// où la charge est définie comme le nombre d'organisations en attente de traitement
-			final LoadMonitorable service = new LoadMonitorable() {
-				@Override
-				public int getLoad() {
-					return getNombreOrganisationsEnAttenteDeTraitement();
-				}
-			};
+			final LoadMonitorable service = this::getNombreOrganisationsEnAttenteDeTraitement;
 
 			// calculateur de moyenne de charge sur les 5 dernières minutes (échantillonnage à 2 fois par seconde)
 			loadAverager = new LoadAverager(service, SERVICE_NAME, 600, 500);

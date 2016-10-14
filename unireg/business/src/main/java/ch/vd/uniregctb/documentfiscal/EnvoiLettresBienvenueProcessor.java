@@ -177,12 +177,7 @@ public class EnvoiLettresBienvenueProcessor {
 		if (liste.isEmpty()) {
 			return Collections.emptyList();
 		}
-		Collections.sort(liste, new Comparator<LettreBienvenue>() {
-			@Override
-			public int compare(LettreBienvenue o1, LettreBienvenue o2) {
-				return NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
-			}
-		});
+		Collections.sort(liste, (l1, l2) -> NullDateBehavior.EARLIEST.compare(l1.getDateEnvoi(), l2.getDateEnvoi()));
 		return liste;
 	}
 

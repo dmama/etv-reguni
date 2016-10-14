@@ -34,15 +34,12 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Catégorie de débiteurs:", (results.categorie == null ? "-" : results.categorie.name()));
-					if (results.dateFinPeriode != null) {
-						table.addLigne("Fin de période:", RegDateHelper.dateToDisplayString(results.dateFinPeriode));
-					}
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+			addTableSimple(2, table -> {
+				table.addLigne("Catégorie de débiteurs:", (results.categorie == null ? "-" : results.categorie.name()));
+				if (results.dateFinPeriode != null) {
+					table.addLigne("Fin de période:", RegDateHelper.dateToDisplayString(results.dateFinPeriode));
 				}
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 
@@ -54,15 +51,12 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de listes récapitulatives:", String.valueOf(results.nbLRsTotal));
-					table.addLigne("Nombre de listes récapitulatives sommées:", String.valueOf(results.lrSommees.size()));
-					table.addLigne("Nombre de listes récapitulatives en erreur:", String.valueOf(results.sommationLREnErreurs.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de listes récapitulatives:", String.valueOf(results.nbLRsTotal));
+				table.addLigne("Nombre de listes récapitulatives sommées:", String.valueOf(results.lrSommees.size()));
+				table.addLigne("Nombre de listes récapitulatives en erreur:", String.valueOf(results.sommationLREnErreurs.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 

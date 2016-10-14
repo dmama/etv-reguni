@@ -38,20 +38,17 @@ public class PdfEnvoiDIsPPRapport extends PdfRapport {
         // Paramètres
         addEntete1("Paramètres");
         {
-            addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Période fiscale considérée :", String.valueOf(results.annee));
-                    table.addLigne("Catégorie de contribuables :", results.categorie.getDescription());
-                    table.addLigne("Nombre maximum d'envois :", String.valueOf(results.nbMax));
-	                table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-	                table.addLigne("Numéro de contribuable minimal :", results.noCtbMin == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMin));
-	                table.addLigne("Numéro de contribuable maximal :", results.noCtbMax == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMax));
-	                if(results.dateExclureDecede!=null){
-		                 table.addLigne("Date de debut d'exclusion des contribuables décédés :",  RegDateHelper.dateToDisplayString(results.dateExclureDecede));
-	                }
-                    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-                }
+            addTableSimple(2, table -> {
+                table.addLigne("Période fiscale considérée :", String.valueOf(results.annee));
+                table.addLigne("Catégorie de contribuables :", results.categorie.getDescription());
+                table.addLigne("Nombre maximum d'envois :", String.valueOf(results.nbMax));
+	            table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+	            table.addLigne("Numéro de contribuable minimal :", results.noCtbMin == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMin));
+	            table.addLigne("Numéro de contribuable maximal :", results.noCtbMax == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMax));
+	            if(results.dateExclureDecede!=null){
+		             table.addLigne("Date de debut d'exclusion des contribuables décédés :",  RegDateHelper.dateToDisplayString(results.dateExclureDecede));
+	            }
+                table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
             });
         }
 
@@ -63,17 +60,14 @@ public class PdfEnvoiDIsPPRapport extends PdfRapport {
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
-                    table.addLigne("Nombre de périodes d'imposition traitées:", String.valueOf(results.ctbsAvecDiGeneree.size()));
-                    table.addLigne("Nombre d'indigents traités:", String.valueOf(results.ctbsIndigents.size()));
-                    table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
-                    table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
-	                table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-                }
+            addTableSimple(2, table -> {
+                table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
+                table.addLigne("Nombre de périodes d'imposition traitées:", String.valueOf(results.ctbsAvecDiGeneree.size()));
+                table.addLigne("Nombre d'indigents traités:", String.valueOf(results.ctbsIndigents.size()));
+                table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
+                table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
+	            table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+                table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
             });
         }
 

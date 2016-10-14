@@ -33,16 +33,13 @@ public class PdfSuppressionOIDRapport extends PdfRapport {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Numéro de l'office d'impôt supprimé (OID) :", String.valueOf(results.oid));
-					table.addLigne("Nombre de tiers impactés :", String.valueOf(results.total));
-					table.addLigne("Nombre de tiers traités :", String.valueOf(results.traites.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.errors.size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
-					table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Numéro de l'office d'impôt supprimé (OID) :", String.valueOf(results.oid));
+				table.addLigne("Nombre de tiers impactés :", String.valueOf(results.total));
+				table.addLigne("Nombre de tiers traités :", String.valueOf(results.traites.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.errors.size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(results));
+				table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
 			});
 		}
 

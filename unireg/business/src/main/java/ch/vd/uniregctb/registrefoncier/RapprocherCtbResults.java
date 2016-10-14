@@ -82,12 +82,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	@Override
 	public void end() {
 		super.end();
-		Collections.sort(listeRapproche, new Comparator<ProprietaireRapproche>() {
-			@Override
-			public int compare(ProprietaireRapproche o1, ProprietaireRapproche o2) {
-				return o1.getNumeroRegistreFoncier() > o2.getNumeroRegistreFoncier() ? 1 : o1.getNumeroRegistreFoncier() < o2.getNumeroRegistreFoncier() ? -1 : 0;
-			}
-		});
+		Collections.sort(listeRapproche, Comparator.comparingLong(ProprietaireRapproche::getNumeroRegistreFoncier));
 	}
 
 	/**

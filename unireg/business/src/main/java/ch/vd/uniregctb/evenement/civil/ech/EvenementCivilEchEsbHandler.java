@@ -60,12 +60,8 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	/**
 	 * Renderer d'un événement civil à la réception (on ne renvoie que les données fournies à la réception de l'événement)
 	 */
-	private static final StringRenderer<EvenementCivilEch> RECEPTION_EVT_CIVIL_RENDERER = new StringRenderer<EvenementCivilEch>() {
-		@Override
-		public String toString(EvenementCivilEch evt) {
-			return String.format("id=%d, refId=%d, type=%s, action=%s, date=%s", evt.getId(), evt.getRefMessageId(), evt.getType(), evt.getAction(), evt.getDateEvenement());
-		}
-	};
+	private static final StringRenderer<EvenementCivilEch> RECEPTION_EVT_CIVIL_RENDERER =
+			evt -> String.format("id=%d, refId=%d, type=%s, action=%s, date=%s", evt.getId(), evt.getRefMessageId(), evt.getType(), evt.getAction(), evt.getDateEvenement());
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setReceptionHandler(EvenementCivilEchReceptionHandler receptionHandler) {
@@ -414,12 +410,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
-			final StringRenderer<TypeEvenementCivilEch> renderer = new StringRenderer<TypeEvenementCivilEch>() {
-				@Override
-				public String toString(TypeEvenementCivilEch type) {
-					return String.format("%s (%d)", type, type.getCodeECH());
-				}
-			};
+			final StringRenderer<TypeEvenementCivilEch> renderer = type -> String.format("%s (%d)", type, type.getCodeECH());
 			LOGGER.info(String.format("Liste des événements civils ignorés en mode %s : %s", processingMode, CollectionsUtils.toString(ignoredEventTypes, renderer, ", ", "Aucun")));
 			LOGGER.info(String.format("Liste des événements civils dont une date nulle sera remplacée par la date de réception en mode %s : %s", processingMode, CollectionsUtils.toString(eventTypesWithNullEventDateReplacement, renderer, ", ", "Aucun")));
 		}

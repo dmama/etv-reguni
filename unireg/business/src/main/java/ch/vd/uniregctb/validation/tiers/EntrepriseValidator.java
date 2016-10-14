@@ -2,10 +2,14 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -36,50 +40,20 @@ import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
 
-	private interface KeyExtractor<T, U> {
-		U extractKey(T value);
-	}
+	private static final Function<FlagEntreprise, GroupeFlagsEntreprise> FLAG_GROUP_EXTRACTOR = FlagEntreprise::getGroupe;
 
-	private static final KeyExtractor<FlagEntreprise, GroupeFlagsEntreprise> FLAG_GROUP_EXTRACTOR = new KeyExtractor<FlagEntreprise, GroupeFlagsEntreprise>() {
-		@Override
-		public GroupeFlagsEntreprise extractKey(FlagEntreprise value) {
-			return value.getGroupe();
-		}
-	};
+	private static final Function<FlagEntreprise, TypeFlagEntreprise> FLAG_TYPE_EXTRACTOR = FlagEntreprise::getType;
 
-	private static final KeyExtractor<FlagEntreprise, TypeFlagEntreprise> FLAG_TYPE_EXTRACTOR = new KeyExtractor<FlagEntreprise, TypeFlagEntreprise>() {
-		@Override
-		public TypeFlagEntreprise extractKey(FlagEntreprise value) {
-			return value.getType();
-		}
-	};
+	private static final Function<AllegementFiscal, AllegementFiscalHelper.OverlappingKey> ALLEGEMENT_KEY_EXTRACTOR = AllegementFiscalHelper.OverlappingKey::valueOf;
 
-	private static final KeyExtractor<AllegementFiscal, AllegementFiscalHelper.OverlappingKey> ALLEGEMENT_KEY_EXTRACTOR = new KeyExtractor<AllegementFiscal, AllegementFiscalHelper.OverlappingKey>() {
-		@Override
-		public AllegementFiscalHelper.OverlappingKey extractKey(AllegementFiscal value) {
-			return AllegementFiscalHelper.OverlappingKey.valueOf(value);
-		}
-	};
+	private static final Function<RegimeFiscal, RegimeFiscal.Portee> REGIME_FISCAL_PORTEE_EXTRACTOR = RegimeFiscal::getPortee;
 
-	private static final KeyExtractor<RegimeFiscal, RegimeFiscal.Portee> REGIME_FISCAL_PORTEE_EXTRACTOR = new KeyExtractor<RegimeFiscal, RegimeFiscal.Portee>() {
-		@Override
-		public RegimeFiscal.Portee extractKey(RegimeFiscal value) {
-			return value.getPortee();
-		}
-	};
-
-	private static <K, V> Map<K, List<V>> byKey(Collection<? extends V> source, KeyExtractor<? super V, ? extends K> keyExtractor) {
-		final Map<K, List<V>> map = new HashMap<>(source.size());
-		for (V data : source) {
-			final K key = keyExtractor.extractKey(data);
-			List<V> forKey = map.get(key);
-			if (forKey == null) {
-				forKey = new ArrayList<>(source.size());
-				map.put(key, forKey);
-			}
-			forKey.add(data);
-		}
-		return map;
+	private static <K, V> Map<K, List<V>> byKey(Collection<? extends V> source, Function<? super V, ? extends K> keyExtractor) {
+		return source.stream()
+				.collect(Collectors.toMap(keyExtractor,
+				                          Collections::singletonList,
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+				                          HashMap::new));
 	}
 
 	/**

@@ -89,11 +89,6 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		super.sort();
 
 		Collections.sort(contribuablesIdentifies);
-		Collections.sort(contribuablesIgnores, new Comparator<InfoContribuableIgnore>() {
-			@Override
-			public int compare(InfoContribuableIgnore o1, InfoContribuableIgnore o2) {
-				return o1.ctbId < o2.ctbId ? -1 : (o1.ctbId > o2.ctbId ? 1 : 0);
-			}
-		});
+		Collections.sort(contribuablesIgnores, (c1, c2) -> Long.compare(c1.ctbId, c2.ctbId));
 	}
 }

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -1169,12 +1170,9 @@ public abstract class DataHelper {
 
 		// Récupère les appartenances ménages du tiers
 		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
-		final Collection<RapportEntreTiers> rapportsMenage = CollectionUtils.select(rapports, new Predicate<RapportEntreTiers>() {
-			@Override
-			public boolean evaluate(RapportEntreTiers rapport) {
-				return !rapport.isAnnule() && rapport instanceof AppartenanceMenage;
-			}
-		});
+		final List<RapportEntreTiers> rapportsMenage = rapports.stream()
+				.filter(rapport -> !rapport.isAnnule() && rapport instanceof AppartenanceMenage)
+				.collect(Collectors.toList());
 
 		if (rapportsMenage.isEmpty()) {
 			return Collections.emptyList();

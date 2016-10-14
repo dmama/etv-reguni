@@ -14,6 +14,8 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 
+import static ch.vd.uniregctb.rapport.PdfRapport.*;
+
 public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRapport {
 
 	/**
@@ -37,11 +39,8 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			// Paramètres
 			document.addEntete1("Paramètres");
 			{
-				document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					}
+				document.addTableSimple(2, table -> {
+					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 				});
 			}
 
@@ -53,18 +52,15 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 							+ "les valeurs ci-dessous sont donc incomplètes.");
 				}
 
-				document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre total de sourciers candidats:", String.valueOf(results.getNbSourciersTotal()));
-						table.addLigne("Nombre de sourciers convertis (Total de fors Mixte 1 ouverts):", String.valueOf(results.sourciersConvertis.size()));
-						table.addLigne("Nombre de sourciers convertis via leur conjoint:", String.valueOf(results.nbSourciersConjointsIgnores));
-						table.addLigne("Nombre de sourciers non-convertis car trop jeunes :", String.valueOf(results.nbSourciersTropJeunes));
-						table.addLigne("Nombre de sourciers non-convertis car hors-Suisse :", String.valueOf(results.nbSourciersHorsSuisse));
-						table.addLigne("Nombre de sourciers en erreur:", String.valueOf(results.sourciersEnErreurs.size()));
-						table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-						table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-					}
+				document.addTableSimple(2, table -> {
+					table.addLigne("Nombre total de sourciers candidats:", String.valueOf(results.getNbSourciersTotal()));
+					table.addLigne("Nombre de sourciers convertis (Total de fors Mixte 1 ouverts):", String.valueOf(results.sourciersConvertis.size()));
+					table.addLigne("Nombre de sourciers convertis via leur conjoint:", String.valueOf(results.nbSourciersConjointsIgnores));
+					table.addLigne("Nombre de sourciers non-convertis car trop jeunes :", String.valueOf(results.nbSourciersTropJeunes));
+					table.addLigne("Nombre de sourciers non-convertis car hors-Suisse :", String.valueOf(results.nbSourciersHorsSuisse));
+					table.addLigne("Nombre de sourciers en erreur:", String.valueOf(results.sourciersEnErreurs.size()));
+					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				});
 			}
 

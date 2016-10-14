@@ -96,26 +96,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationTranslatorImpl.class);
 
-	private static final StringRenderer<Tiers> TIERS_NO_RENDERER = new StringRenderer<Tiers>() {
-		@Override
-		public String toString(Tiers tiers) {
-			return String.format("n°%s", FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
-		}
-	};
+	private static final StringRenderer<Tiers> TIERS_NO_RENDERER = tiers -> String.format("n°%s", FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 
-	private static final StringRenderer<String> NO_IDE_RENDERER = new StringRenderer<String>() {
-		@Override
-		public String toString(String ide) {
-			return FormatNumeroHelper.formatNumIDE(ide);
-		}
-	};
+	private static final StringRenderer<String> NO_IDE_RENDERER = FormatNumeroHelper::formatNumIDE;
 
-	private static final StringRenderer<SiteOrganisation> SITE_RENDERER = new StringRenderer<SiteOrganisation>() {
-		@Override
-		public String toString(SiteOrganisation site) {
-			return String.format("n°%d", site.getNumeroSite());
-		}
-	};
+	private static final StringRenderer<SiteOrganisation> SITE_RENDERER = site -> String.format("n°%d", site.getNumeroSite());
 
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;

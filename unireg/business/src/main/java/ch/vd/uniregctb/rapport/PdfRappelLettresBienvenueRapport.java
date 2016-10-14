@@ -33,11 +33,8 @@ public class PdfRappelLettresBienvenueRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(new float[]{.7f, .3f}, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-				}
+			addTableSimple(new float[]{.7f, .3f}, table -> {
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 
@@ -49,16 +46,13 @@ public class PdfRappelLettresBienvenueRapport extends PdfRapport {
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de lettres inspectées :", String.valueOf(results.getErreurs().size() + results.getTraites().size() + results.getIgnores().size()));
-					table.addLigne("Nombre de rappels envoyés :", String.valueOf(results.getTraites().size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
-					table.addLigne("Nombre de lettres ignorées :", String.valueOf(results.getIgnores().size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de lettres inspectées :", String.valueOf(results.getErreurs().size() + results.getTraites().size() + results.getIgnores().size()));
+				table.addLigne("Nombre de rappels envoyés :", String.valueOf(results.getTraites().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+				table.addLigne("Nombre de lettres ignorées :", String.valueOf(results.getIgnores().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 

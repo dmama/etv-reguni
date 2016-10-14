@@ -68,12 +68,7 @@ public abstract class DocumentExtractorHelper {
 	 * @return la valeur du document Lucene
 	 */
 	public static Long getLongValue(String key, Document document) {
-		return getValue(key, document, new StringParser<Long>() {
-			@Override
-			public Long parse(String string) throws IllegalArgumentException {
-				return Long.valueOf(string);
-			}
-		});
+		return getValue(key, document, Long::valueOf);
 	}
 
 	public static Boolean getBooleanValue(String key, Document document, @Nullable Boolean defaultValue) {
@@ -87,30 +82,17 @@ public abstract class DocumentExtractorHelper {
 	}
 
 	public static Integer getIntegerValue(String key, Document document) {
-		return getValue(key, document, new StringParser<Integer>() {
-			@Override
-			public Integer parse(String string) throws IllegalArgumentException {
-				return Integer.valueOf(string);
-			}
-		});
+		return getValue(key, document, Integer::valueOf);
 	}
 
 	public static <T extends Enum<T>> T getEnumValue(String key, Document document, final Class<T> clazz) {
-		return getValue(key, document, new StringParser<T>() {
-			@Override
-			public T parse(String string) throws IllegalArgumentException {
-				return Enum.valueOf(clazz, string);
-			}
-		});
+		return getValue(key, document, string -> Enum.valueOf(clazz, string));
 	}
 
 	public static RegDate getRegDateValue(String key, Document document, final boolean allowPartial) {
-		return getValue(key, document, new StringParser<RegDate>() {
-			@Override
-			public RegDate parse(String string) throws IllegalArgumentException {
-				final int index = Integer.valueOf(string);
-				return RegDate.fromIndex(index, allowPartial);
-			}
+		return getValue(key, document, string -> {
+			final int index = Integer.valueOf(string);
+			return RegDate.fromIndex(index, allowPartial);
 		});
 	}
 

@@ -289,13 +289,7 @@ public class ActivationServiceImpl implements ActivationService {
 		if (tiers instanceof Entreprise) {
 			// les liens ne sont pas annulés, il faut juste récupérer le dernier lien vers un établissement principal et
 			// réactiver l'établissement derrière le lien
-			Etablissement principal = null;
-			final SortedSet<ActiviteEconomique> rapportsEtbsPrincipaux = new TreeSet<>(new Comparator<ActiviteEconomique>() {
-				@Override
-				public int compare(ActiviteEconomique o1, ActiviteEconomique o2) {
-					return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-				}
-			});
+			final SortedSet<ActiviteEconomique> rapportsEtbsPrincipaux = new TreeSet<>((o1, o2) -> NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut()));
 			for (RapportEntreTiers rapportSujet : tiers.getRapportsSujet()) {
 				if (!rapportSujet.isAnnule() && rapportSujet.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
 					final ActiviteEconomique ae = (ActiviteEconomique) rapportSujet;

@@ -35,17 +35,14 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'immeubles lus :", String.valueOf(results.getNbImmeubles()));
-					table.addLigne("Nombre d'immeubles importés :", String.valueOf(results.traites.size()));
-					table.addLigne("Nombre d'immeubles ignorés :", String.valueOf(results.ignores.size()));
-					table.addLigne("Nombre d'immeubles à vérifier :", String.valueOf(results.averifier.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
-					table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre d'immeubles lus :", String.valueOf(results.getNbImmeubles()));
+				table.addLigne("Nombre d'immeubles importés :", String.valueOf(results.traites.size()));
+				table.addLigne("Nombre d'immeubles ignorés :", String.valueOf(results.ignores.size()));
+				table.addLigne("Nombre d'immeubles à vérifier :", String.valueOf(results.averifier.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(results));
+				table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
 			});
 		}
 

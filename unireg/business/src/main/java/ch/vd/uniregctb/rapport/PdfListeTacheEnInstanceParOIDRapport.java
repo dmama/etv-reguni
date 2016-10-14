@@ -38,11 +38,8 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 
 		// Paramètres
 		document.addEntete1("Paramètres");
-		document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-			@Override
-			public void fillTable(PdfTableSimple table) throws DocumentException {
-				table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.dateTraitement));
-			}
+		document.addTableSimple(2, table -> {
+			table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		});
 		// Résultats
 		document.addEntete1("Résultats");
@@ -52,14 +49,11 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					DecimalFormat df = new DecimalFormat("###,###,###.#");
-					table.addLigne("Nombre moyen de tâche par contribuable: ", df.format(results.getNombreTacheMoyen()) + " tâche(s)");
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport: ", formatTimestamp(dateGeneration));
-				}
+			document.addTableSimple(2, table -> {
+				DecimalFormat df = new DecimalFormat("###,###,###.#");
+				table.addLigne("Nombre moyen de tâche par contribuable: ", df.format(results.getNombreTacheMoyen()) + " tâche(s)");
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport: ", formatTimestamp(dateGeneration));
 			});
 		}
 		{

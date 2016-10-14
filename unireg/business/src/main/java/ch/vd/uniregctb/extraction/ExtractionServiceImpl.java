@@ -717,13 +717,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		Assert.isTrue(threadPoolSize > 0, "Le nombre de threads dans le pool doit être strictement positif");
 
 		final ThreadNameGenerator threadNameGenerator = new DefaultThreadNameGenerator("Extraction");
-		executorService = new MonitorableExecutorService<>(Executors.newFixedThreadPool(threadPoolSize, new ThreadFactory() {
-			@NotNull
-			@Override
-			public Thread newThread(@NotNull Runnable r) {
-				return new ExtractorThread(r, threadNameGenerator.getNewThreadName());
-			}
-		}));
+		executorService = new MonitorableExecutorService<>(Executors.newFixedThreadPool(threadPoolSize, r -> new ExtractorThread(r, threadNameGenerator.getNewThreadName())));
 
 		LOGGER.info(String.format("Service d'extractions asychrones démarré avec %d exécuteur(s)", threadPoolSize));
 	}

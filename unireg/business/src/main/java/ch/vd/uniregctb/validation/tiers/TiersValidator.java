@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -79,20 +79,10 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 
 		if (sujets != null) {
 			// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
-			checkNonOverlap(sujets, results, "représentation conventionnelle", new Predicate<RapportEntreTiers>() {
-				@Override
-				public boolean evaluate(RapportEntreTiers object) {
-					return object instanceof RepresentationConventionnelle;
-				}
-			});
+			checkNonOverlap(sujets, results, "représentation conventionnelle", object -> object instanceof RepresentationConventionnelle);
 
 			// de même on s'assure que les établissements principaux ne sont pas plusieurs à un moment donné
-			checkNonOverlap(sujets, results, "activité économique principale", new Predicate<RapportEntreTiers>() {
-				@Override
-				public boolean evaluate(RapportEntreTiers object) {
-					return object instanceof ActiviteEconomique && ((ActiviteEconomique) object).isPrincipal();
-				}
-			});
+			checkNonOverlap(sujets, results, "activité économique principale", object -> object instanceof ActiviteEconomique && ((ActiviteEconomique) object).isPrincipal());
 		}
 
 		return results;
@@ -100,12 +90,10 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 
 	private static void checkNonOverlap(Set<RapportEntreTiers> rapports, ValidationResults results, String descripion, Predicate<RapportEntreTiers> filtre) {
 		if (rapports != null && rapports.size() > 1) {
-			final List<RapportEntreTiers> concernes = new ArrayList<>(rapports.size());
-			for (RapportEntreTiers ret : rapports) {
-				if (!ret.isAnnule() && filtre.evaluate(ret)) {
-					concernes.add(ret);
-				}
-			}
+			final List<RapportEntreTiers> concernes = rapports.stream()
+					.filter(r -> !r.isAnnule())
+					.filter(filtre)
+					.collect(Collectors.toList());
 
 			final List<DateRange> intersections = DateRangeHelper.overlaps(concernes);
 			if (intersections != null) {

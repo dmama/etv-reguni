@@ -34,12 +34,9 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					table.addLigne("Date de fin de période:", results.getMoisFinPeriode());
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Date de fin de période:", results.getMoisFinPeriode());
 			});
 		}
 
@@ -51,20 +48,17 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de débiteurs :", String.valueOf(results.nbDPIsTotal));
-					table.addLigne("Nombre LR générées :", String.valueOf(results.LRTraitees.size()));
-					table.addLigne("dont mensuelles :", String.valueOf(results.nbLrMensuellesTraitees));
-					table.addLigne("     trimestrielles :", String.valueOf(results.nbLrTrimestriellesTraitees));
-					table.addLigne("     semestrielles :", String.valueOf(results.nbLrSemestriellesTraitees));
-					table.addLigne("     annuelles :", String.valueOf(results.nbLrAnnuellesTraitees));
-					table.addLigne("     uniques :", String.valueOf(results.nbLrUniquesTraitees));
-					table.addLigne("Nombre de LR en erreur :", String.valueOf(results.LREnErreur.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de débiteurs :", String.valueOf(results.nbDPIsTotal));
+				table.addLigne("Nombre LR générées :", String.valueOf(results.LRTraitees.size()));
+				table.addLigne("dont mensuelles :", String.valueOf(results.nbLrMensuellesTraitees));
+				table.addLigne("     trimestrielles :", String.valueOf(results.nbLrTrimestriellesTraitees));
+				table.addLigne("     semestrielles :", String.valueOf(results.nbLrSemestriellesTraitees));
+				table.addLigne("     annuelles :", String.valueOf(results.nbLrAnnuellesTraitees));
+				table.addLigne("     uniques :", String.valueOf(results.nbLrUniquesTraitees));
+				table.addLigne("Nombre de LR en erreur :", String.valueOf(results.LREnErreur.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 

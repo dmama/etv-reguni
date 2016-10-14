@@ -78,12 +78,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			if (o == null || getClass() != o.getClass()) return false;
 
 			final RelationshipKey that = (RelationshipKey) o;
-
-			if (objetId != that.objetId) return false;
-			if (sujetId != that.sujetId) return false;
-			if (type != that.type) return false;
-
-			return true;
+			return objetId == that.objetId && sujetId == that.sujetId && type == that.type;
 		}
 
 		@Override
@@ -210,6 +205,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
+	@FunctionalInterface
 	private interface OnNotificationAction {
 		/**
 		 * @param data les données maintenues
@@ -230,12 +226,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onDroitAccessChange(final long tiersId) {
-		final OnNotificationAction action = new OnNotificationAction() {
-			@Override
-			public boolean registerNotification(Data data) {
-				return data.addDroitAccesChange(tiersId);
-			}
-		};
+		final OnNotificationAction action = data -> data.addDroitAccesChange(tiersId);
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
@@ -255,12 +246,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onTiersChange(final long id) {
-		final OnNotificationAction action = new OnNotificationAction() {
-			@Override
-			public boolean registerNotification(Data data) {
-				return data.addTiersChange(id);
-			}
-		};
+		final OnNotificationAction action = data -> data.addTiersChange(id);
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
@@ -279,12 +265,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 
 	@Override
 	public void onOrganisationChange(final long id) {
-		final OnNotificationAction action = new OnNotificationAction() {
-			@Override
-			public boolean registerNotification(Data data) {
-				return data.addOrganisationChange(id);
-			}
-		};
+		final OnNotificationAction action = data -> data.addOrganisationChange(id);
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
@@ -304,12 +285,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void onIndividuChange(final long id) {
-		final OnNotificationAction action = new OnNotificationAction() {
-			@Override
-			public boolean registerNotification(Data data) {
-				return data.addIndividuChange(id);
-			}
-		};
+		final OnNotificationAction action = data -> data.addIndividuChange(id);
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
@@ -329,12 +305,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		final RelationshipKey key = new RelationshipKey(type, sujetId, objetId);
-		final OnNotificationAction action = new OnNotificationAction() {
-			@Override
-			public boolean registerNotification(Data data) {
-				return data.addRelationshipChange(key);
-			}
-		};
+		final OnNotificationAction action = data -> data.addRelationshipChange(key);
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {

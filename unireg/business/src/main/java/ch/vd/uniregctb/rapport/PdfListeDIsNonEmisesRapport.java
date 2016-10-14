@@ -37,12 +37,9 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 
 		// Paramètres
 		document.addEntete1("Paramètres");
-		document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-			@Override
-			public void fillTable(PdfTableSimple table) throws DocumentException {
-				table.addLigne("Période fiscale considérée: ", String.valueOf(results.annee));
-				table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.dateTraitement));
-			}
+		document.addTableSimple(2, table -> {
+			table.addLigne("Période fiscale considérée: ", String.valueOf(results.annee));
+			table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		});
 		// Résultats
 		document.addEntete1("Résultats");
@@ -52,13 +49,10 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de contribuables sans DI: ", String.valueOf(results.getNombreDeDIsNonEmises()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport: ", formatTimestamp(dateGeneration));
-				}
+			document.addTableSimple(2, table -> {
+				table.addLigne("Nombre total de contribuables sans DI: ", String.valueOf(results.getNombreDeDIsNonEmises()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport: ", formatTimestamp(dateGeneration));
 			});
 		}
 		{

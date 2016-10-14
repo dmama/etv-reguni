@@ -179,12 +179,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 				taken.add(id);
 
 				final List<EvenementCivilEchBasicInfo> remaining = new LinkedList<>(referrers);
-				Collections.sort(remaining, new Comparator<EvenementCivilEchBasicInfo>() {
-					@Override
-					public int compare(EvenementCivilEchBasicInfo o1, EvenementCivilEchBasicInfo o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+				Collections.sort(remaining, Comparator.comparingLong(EvenementCivilEchBasicInfo::getId));
 
 				final List<EvenementCivilEchBasicInfo> sorted = new ArrayList<>(referrers.size());
 				while (remaining.size() > 0) {

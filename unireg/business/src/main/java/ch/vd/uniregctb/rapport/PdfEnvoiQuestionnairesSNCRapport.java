@@ -36,13 +36,10 @@ public class PdfEnvoiQuestionnairesSNCRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
-					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-					table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "Pas de max" : String.valueOf(results.getNbMaxEnvois()));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+				table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "Pas de max" : String.valueOf(results.getNbMaxEnvois()));
 			});
 		}
 
@@ -54,16 +51,13 @@ public class PdfEnvoiQuestionnairesSNCRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'entreprises inspectées :", String.valueOf(results.getNombreTiersInspectes()));
-					table.addLigne("Nombre de questionnaires envoyés :", String.valueOf(results.getNombreEnvoyes()));
-					table.addLigne("Nombre de cas ignorés :", String.valueOf(results.getNombreIgnores()));
-					table.addLigne("Nombre de cas en erreur :", String.valueOf(results.getNombreErreurs()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre d'entreprises inspectées :", String.valueOf(results.getNombreTiersInspectes()));
+				table.addLigne("Nombre de questionnaires envoyés :", String.valueOf(results.getNombreEnvoyes()));
+				table.addLigne("Nombre de cas ignorés :", String.valueOf(results.getNombreIgnores()));
+				table.addLigne("Nombre de cas en erreur :", String.valueOf(results.getNombreErreurs()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 

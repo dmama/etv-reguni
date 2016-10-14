@@ -54,13 +54,10 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			// Paramètres
 			addEntete1("Paramètres");
 			{
-			    addTableSimple(2, new TableSimpleCallback() {
-			        @Override
-			        public void fillTable(PdfTableSimple table) throws DocumentException {
-			            table.addLigne("Année fiscale :", String.valueOf(results[0].annee));
-			            table.addLigne("Nombre de threads :", String.valueOf(results[0].nbThreads));
-			            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results[0].dateTraitement));
-			        }
+			    addTableSimple(2, table -> {
+			        table.addLigne("Année fiscale :", String.valueOf(results[0].annee));
+			        table.addLigne("Nombre de threads :", String.valueOf(results[0].nbThreads));
+			        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results[0].dateTraitement));
 			    });
 			}
 
@@ -73,19 +70,16 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 
 				final int nbOidTraites = results.length;
 
-			    addTableSimple(2, new TableSimpleCallback() {
-			        @Override
-			        public void fillTable(PdfTableSimple table) throws DocumentException {
+			    addTableSimple(2, table -> {
 
-				        long dureeTotale = 0;
-				        for (ProduireRolesOIDsResults part : results) {
-					        dureeTotale += getDureeExecution(part);
-				        }
+				    long dureeTotale = 0;
+				    for (ProduireRolesOIDsResults part : results) {
+					    dureeTotale += getDureeExecution(part);
+				    }
 
-		                table.addLigne("Nombre d'offices traités:", String.valueOf(nbOidTraites));
-				        table.addLigne("Durée d'exécution du job:", formatDureeExecution(dureeTotale));
-			            table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-			        }
+		            table.addLigne("Nombre d'offices traités:", String.valueOf(nbOidTraites));
+				    table.addLigne("Durée d'exécution du job:", formatDureeExecution(dureeTotale));
+			        table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			    });
 			}
 
@@ -118,13 +112,10 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-		    addTableSimple(2, new TableSimpleCallback() {
-		        @Override
-		        public void fillTable(PdfTableSimple table) throws DocumentException {
-		            table.addLigne("Année fiscale :", String.valueOf(results.annee));
-		            table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-		            table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-		        }
+		    addTableSimple(2, table -> {
+		        table.addLigne("Année fiscale :", String.valueOf(results.annee));
+		        table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+		        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		    });
 		}
 
@@ -146,16 +137,13 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 				nbCommunesTraitees = results.getNoOfsCommunesTraitees().size();
 			}
 
-		    addTableSimple(2, new TableSimpleCallback() {
-		        @Override
-		        public void fillTable(PdfTableSimple table) throws DocumentException {
+		    addTableSimple(2, table -> {
 					table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
 					table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
 					table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
 					table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
-			        table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-		            table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-		        }
+			    table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+		        table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 		    });
 		}
 
@@ -217,11 +205,8 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		addEntete1("Résumé des types de contribuables trouvés");
 		{
 		    final Map<InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoOid);
-		    addTableSimple(new float[]{2.0f, 1.0f}, new TableSimpleCallback() {
-		        @Override
-		        public void fillTable(PdfTableSimple table) throws DocumentException {
-			        addLignesStatsParTypeCtb(table, nombreParType);
-		        }
+		    addTableSimple(new float[]{2.0f, 1.0f}, table -> {
+			    addLignesStatsParTypeCtb(table, nombreParType);
 		    });
 		}
 
@@ -239,11 +224,6 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 	 */
 	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, List<InfoContribuablePP> infos, StatusManager status) {
 		status.setMessage("Génération du rapport");
-		return traiteListeContribuablesPP(infos, nomsCommunes, new AccesCommune() {
-			@Override
-			public int getNoOfsCommune(InfoContribuable infoContribuable) {
-				return infoContribuable.getNoOfsDerniereCommune();
-			}
-		});
+		return traiteListeContribuablesPP(infos, nomsCommunes, InfoContribuable::getNoOfsDerniereCommune);
 	}
 }

@@ -100,12 +100,7 @@ public class EnvoiQuestionnairesSNCEnMasseResults extends AbstractJobResults<Lon
 
 	@Override
 	public void end() {
-		final Comparator<Info> comparateur = new Comparator<Info>() {
-			@Override
-			public int compare(Info o1, Info o2) {
-				return Long.compare(o1.noCtb, o2.noCtb);
-			}
-		};
+		final Comparator<Info> comparateur = (i1, i2) -> Long.compare(i1.noCtb, i2.noCtb);
 		Collections.sort(envoyes, comparateur);
 		Collections.sort(ignores, comparateur);
 		Collections.sort(erreurs, comparateur);

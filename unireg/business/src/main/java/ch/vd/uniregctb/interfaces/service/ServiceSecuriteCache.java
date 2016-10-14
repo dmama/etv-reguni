@@ -35,31 +35,10 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 	static
 	{
 		final CacheHelper.ValueRendererFactory factory = new CacheHelper.ValueRendererFactory();
-		factory.addSpecificRenderer(CollectiviteAdministrative.class, new StringRenderer<CollectiviteAdministrative>() {
-			@Override
-			public String toString(CollectiviteAdministrative coladm) {
-				return String.format("CollAdm{no=%d}", coladm.getNoColAdm());
-			}
-		});
-
-		factory.addSpecificRenderer(IfoSecProfil.class, new StringRenderer<IfoSecProfil>() {
-			@Override
-			public String toString(IfoSecProfil profil) {
-				return String.format("{%s (%s %s)}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom());
-			}
-		});
-		factory.addSpecificRenderer(Operateur.class, new StringRenderer<Operateur>() {
-			@Override
-			public String toString(Operateur operateur) {
-				return String.format("{%s (%s %s)}", operateur.getCode(), operateur.getPrenom(), operateur.getNom());
-			}
-		});
-		factory.addSpecificRenderer(IfoSecProcedure.class, new StringRenderer<IfoSecProcedure>() {
-			@Override
-			public String toString(IfoSecProcedure object) {
-				return object.getCode();
-			}
-		});
+		factory.addSpecificRenderer(CollectiviteAdministrative.class, coladm -> String.format("CollAdm{no=%d}", coladm.getNoColAdm()));
+		factory.addSpecificRenderer(IfoSecProfil.class, profil -> String.format("{%s (%s %s)}", profil.getVisaOperateur(), profil.getPrenom(), profil.getNom()));
+		factory.addSpecificRenderer(Operateur.class, operateur -> String.format("{%s (%s %s)}", operateur.getCode(), operateur.getPrenom(), operateur.getNom()));
+		factory.addSpecificRenderer(IfoSecProcedure.class, IfoSecProcedure::getCode);
 		RENDERER_FACTORY = factory;
 	}
 

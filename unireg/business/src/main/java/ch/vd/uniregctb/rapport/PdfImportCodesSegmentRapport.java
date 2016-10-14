@@ -35,17 +35,14 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de lignes valides dans le fichier initial :", String.valueOf(nbLignesLuesFichierEntree));
-					table.addLigne("Nombre de données uniques inspectées :", String.valueOf(results.getNombreTiersAnalyses()));
-					table.addLigne("Nombre de codes modifiés :", String.valueOf(results.getTraites().size()));
-					table.addLigne("Nombre de codes laissés en l'état :", String.valueOf(results.getIgnores().size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
-					table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de lignes valides dans le fichier initial :", String.valueOf(nbLignesLuesFichierEntree));
+				table.addLigne("Nombre de données uniques inspectées :", String.valueOf(results.getNombreTiersAnalyses()));
+				table.addLigne("Nombre de codes modifiés :", String.valueOf(results.getTraites().size()));
+				table.addLigne("Nombre de codes laissés en l'état :", String.valueOf(results.getIgnores().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(results));
+				table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
 			});
 		}
 

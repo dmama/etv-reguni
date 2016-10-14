@@ -120,12 +120,7 @@ public class ImportCodesSegmentJob extends JobDefinition {
 
 		// récupération dans une liste et tri dans l'ordre croissant des numéros de contribuables
 		final List<ContribuableAvecCodeSegment> listeSansDoublons = new ArrayList<>(sansDoublons);
-		Collections.sort(listeSansDoublons, new Comparator<ContribuableAvecCodeSegment>() {
-			@Override
-			public int compare(ContribuableAvecCodeSegment o1, ContribuableAvecCodeSegment o2) {
-				return o1.getNoContribuable() < o2.getNoContribuable() ? -1 : (o1.getNoContribuable() > o2.getNoContribuable() ? 1 : 0);
-			}
-		});
+		Collections.sort(listeSansDoublons, Comparator.comparing(ContribuableAvecCodeSegment::getNoContribuable));
 
 		if (nbrLignesLues != null) {
 			nbrLignesLues.setValue(lignesCtbLues);

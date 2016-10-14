@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -105,18 +105,8 @@ public class QuittancementDeclaration implements EvenementDeclarationHandler<Dec
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final Quittanceur<DeclarationImpotOrdinaire> quittanceurDI = new Quittanceur<DeclarationImpotOrdinaire>() {
-			@Override
-			public void quittance(DeclarationImpotOrdinaire declaration, RegDate date, String source) throws DeclarationException {
-				diService.quittancementDI(declaration.getTiers(), declaration, date, source, true);
-			}
-		};
-		final Quittanceur<QuestionnaireSNC> quittanceurQSNC = new Quittanceur<QuestionnaireSNC>() {
-			@Override
-			public void quittance(QuestionnaireSNC declaration, RegDate date, String source) throws DeclarationException {
-				qsncService.quittancerQuestionnaire(declaration, date, source);
-			}
-		};
+		final Quittanceur<DeclarationImpotOrdinaire> quittanceurDI = (declaration, date, source) -> diService.quittancementDI(declaration.getTiers(), declaration, date, source, true);
+		final Quittanceur<QuestionnaireSNC> quittanceurQSNC = (declaration, date, source) -> qsncService.quittancerQuestionnaire(declaration, date, source);
 
 		final Map<Class<? extends DeclarationAvecNumeroSequence>, Quittanceur<?>> map = new HashMap<>();
 		registerQuittanceur(map, DeclarationImpotOrdinairePP.class, quittanceurDI);
@@ -161,12 +151,7 @@ public class QuittancementDeclaration implements EvenementDeclarationHandler<Dec
 		final List<DeclarationAvecNumeroSequence> aQuittancer;
 		if (declaration.getSequenceNumber() != null) {
 			// on ne quittance que celle avec le bon numéro de séquence, si tant est qu'on la trouve (et qu'elle est non-annulée)
-			final DeclarationAvecNumeroSequence decla = getFirstMatch(declarations, new Predicate<DeclarationAvecNumeroSequence>() {
-				@Override
-				public boolean evaluate(DeclarationAvecNumeroSequence d) {
-					return declaration.getSequenceNumber().equals(d.getNumero());
-				}
-			});
+			final DeclarationAvecNumeroSequence decla = getFirstMatch(declarations, d -> declaration.getSequenceNumber().equals(d.getNumero()));
 			if (decla == null) {
 				throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration " + annee + " avec le numéro de séquence " + declaration.getSequenceNumber() + ".", null);
 			}
@@ -200,12 +185,10 @@ public class QuittancementDeclaration implements EvenementDeclarationHandler<Dec
 		if (source == null || source.isEmpty()) {
 			return null;
 		}
-		for (T element : source) {
-			if (predicate.evaluate(element)) {
-				return element;
-			}
-		}
-		return null;
+		return source.stream()
+				.filter(predicate)
+				.findFirst()
+				.orElse(null);
 	}
 
 	private void sendQuittancementToBam(long ctbId, int annee, List<DeclarationAvecNumeroSequence> declarations, RegDate dateQuittancement, Map<String, String> incomingHeaders) throws EsbBusinessException {

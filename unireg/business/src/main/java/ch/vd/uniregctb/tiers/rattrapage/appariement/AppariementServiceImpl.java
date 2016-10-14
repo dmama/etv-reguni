@@ -247,19 +247,8 @@ public class AppariementServiceImpl implements AppariementService {
 	private List<CandidatAppariement> appariementsParLocalisationEtRaisonSociale(Map<Long, Pair<Etablissement, List<DateRange>>> etbsSecondairesNonApparies,
 	                                                                             Map<Long, Pair<SiteOrganisation, List<DateRange>>> sitesSecondairesDisponibles) {
 
-		final DataExtractor<Etablissement, Localisation> etbLocalisationExtractor = new DataExtractor<Etablissement, Localisation>() {
-			@Override
-			public Localisation extract(Etablissement data) {
-				return extractDerniereLocalisation(data);
-			}
-		};
-
-		final DataExtractor<SiteOrganisation, Localisation> siteLocalisationExtractor = new DataExtractor<SiteOrganisation, Localisation>() {
-			@Override
-			public Localisation extract(SiteOrganisation data) {
-				return extractDerniereLocalisation(data);
-			}
-		};
+		final DataExtractor<Etablissement, Localisation> etbLocalisationExtractor = AppariementServiceImpl::extractDerniereLocalisation;
+		final DataExtractor<SiteOrganisation, Localisation> siteLocalisationExtractor = AppariementServiceImpl::extractDerniereLocalisation;
 
 		// on va regrouper les établissements et les sites par dernière localisation
 		final Map<Boolean, Map<Localisation, List<Etablissement>>> etbsParLocalisationEtActivite = extractAccordingToLocalisationActivityState(etbsSecondairesNonApparies.values(), etbLocalisationExtractor);

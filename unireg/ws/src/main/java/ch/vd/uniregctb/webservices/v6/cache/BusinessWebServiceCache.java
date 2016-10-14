@@ -168,13 +168,8 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			}
 			else {
 				final GetPartyValue value = (GetPartyValue) element.getObjectValue();
-				party = value.getValueForPartsAndCompleteIfNeeded(parts, new CompletePartsCallbackWithException<Party, PartyPart>() {
-					@Override
-					public Party getDeltaValue(Set<PartyPart> delta) throws Exception {
-						// on complète la liste des parts à la volée
-						return target.getParty(user, partyNo, delta);
-					}
-				});
+				// on complète la liste des parts à la volée
+				party = value.getValueForPartsAndCompleteIfNeeded(parts, delta -> target.getParty(user, partyNo, delta));
 			}
 			return party;
 		}

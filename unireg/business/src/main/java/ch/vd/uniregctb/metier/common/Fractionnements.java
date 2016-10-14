@@ -105,12 +105,7 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 	@Override
 	public Iterator<Fraction> iterator() {
 		final List<Fraction> fractionnements = new ArrayList<>(map.values());
-		Collections.sort(fractionnements, new Comparator<Fraction>() {
-			@Override
-			public int compare(Fraction o1, Fraction o2) {
-				return o1.getDate().compareTo(o2.getDate());
-			}
-		});
+		Collections.sort(fractionnements, Comparator.comparing(Fraction::getDate));
 		final List<Fraction> list = Collections.unmodifiableList(fractionnements);
 		return list.iterator();
 	}

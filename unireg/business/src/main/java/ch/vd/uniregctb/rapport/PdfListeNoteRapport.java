@@ -39,12 +39,9 @@ public class PdfListeNoteRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-					table.addLigne("Période fiscale :", String.valueOf(results.getPeriode()));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+				table.addLigne("Période fiscale :", String.valueOf(results.getPeriode()));
 			});
 		}
 
@@ -56,15 +53,12 @@ public class PdfListeNoteRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbContribuable));
-					table.addLigne("Nombre de fors succeptibles de déclencher une note  :", String.valueOf(results.listeContribuableAvecNote.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(new float[]{70f, 30f}, table -> {
+				table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbContribuable));
+				table.addLigne("Nombre de fors succeptibles de déclencher une note  :", String.valueOf(results.listeContribuableAvecNote.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 

@@ -97,11 +97,7 @@ public class StaticSingletonBrokerFactoryBean implements FactoryBean, Initializi
 		}
 
 		if (systemExitOnShutdown) {
-			broker.addShutdownHook(new Runnable() {
-				public void run() {
-					System.exit(systemExitOnShutdownExitCode);
-				}
-			});
+			broker.addShutdownHook(() -> System.exit(systemExitOnShutdownExitCode));
 		}
 		if (start) {
 			broker.start();

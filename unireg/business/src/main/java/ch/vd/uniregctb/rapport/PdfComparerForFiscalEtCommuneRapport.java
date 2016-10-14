@@ -35,11 +35,8 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 
@@ -51,15 +48,12 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbCtbTotal));
-					table.addLigne("Nombre de communes différentes  :", String.valueOf(results.listeCommunesDifferentes.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(new float[]{70f, 30f}, table -> {
+				table.addLigne("Nombre de contribuables analysés :", String.valueOf(results.nbCtbTotal));
+				table.addLigne("Nombre de communes différentes  :", String.valueOf(results.listeCommunesDifferentes.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 

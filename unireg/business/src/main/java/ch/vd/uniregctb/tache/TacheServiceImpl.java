@@ -12,9 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.PredicateUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -207,12 +207,7 @@ public class TacheServiceImpl implements TacheService {
 
 				// trie la liste par OID
 				List<Map.Entry<Integer, TacheStats>> list = new ArrayList<>(stats.entrySet());
-				Collections.sort(list, new Comparator<Map.Entry<Integer, TacheStats>>() {
-					@Override
-					public int compare(Map.Entry<Integer, TacheStats> o1, Map.Entry<Integer, TacheStats> o2) {
-						return o1.getKey().compareTo(o2.getKey());
-					}
-				});
+				Collections.sort(list, Comparator.comparing(Map.Entry::getKey));
 
 				for (Map.Entry<Integer, TacheStats> e : list) {
 					final TacheStats ts = e.getValue();
@@ -1181,12 +1176,7 @@ public class TacheServiceImpl implements TacheService {
 		//
 
 		for (final PeriodeImposition periode : periodes) {
-			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAtWithAdditionnalFilter(declarations, periode, new Predicate<DeclarationImpotOrdinaire>() {
-				@Override
-				public boolean evaluate(DeclarationImpotOrdinaire di) {
-					return periode.getDateFin().year() == di.getPeriode().getAnnee();
-				}
-			});
+			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAtWithAdditionnalFilter(declarations, periode, di -> periode.getDateFin().year() == di.getPeriode().getAnnee());
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
 				if (periode.isDeclarationMandatory()) {
@@ -1280,12 +1270,7 @@ public class TacheServiceImpl implements TacheService {
 		//
 
 		for (final DeclarationImpotOrdinaire declaration : declarations) {
-			final List<PeriodeImposition> ps = getIntersectingRangeAtWithAdditionnalFilter(periodes, declaration, new Predicate<PeriodeImposition>() {
-				@Override
-				public boolean evaluate(PeriodeImposition pi) {
-					return pi.getDateFin().year() == declaration.getPeriode().getAnnee();
-				}
-			});
+			final List<PeriodeImposition> ps = getIntersectingRangeAtWithAdditionnalFilter(periodes, declaration, pi -> pi.getDateFin().year() == declaration.getPeriode().getAnnee());
 			if (ps == null) {
 				if (!isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
 					// il n'y a pas de période correspondante
@@ -1685,20 +1670,18 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private static <T extends DateRange> List<T> getIntersectingRangeAt(List<T> dis, DateRange range) {
-		return getIntersectingRangeAtWithAdditionnalFilter(dis, range, PredicateUtils.<T>truePredicate());
+		return getIntersectingRangeAtWithAdditionnalFilter(dis, range, x -> true);
 	}
 
 	private static <T extends DateRange> List<T> getIntersectingRangeAtWithAdditionnalFilter(List<T> src, DateRange range, Predicate<? super T> filter) {
 		if (src == null || src.isEmpty()) {
 			return null;
 		}
-		final List<T> result = new LinkedList<>();
-		for (T s : src) {
-			if (DateRangeHelper.intersect(s, range) && filter.evaluate(s)) {
-				result.add(s);
-			}
-		}
-		return result.isEmpty() ? null : result;
+		final List<T> filtered = src.stream()
+				.filter(s -> DateRangeHelper.intersect(s, range))
+				.filter(filter)
+				.collect(Collectors.toList());
+		return filtered.isEmpty() ? null : filtered;
 	}
 
 	/**

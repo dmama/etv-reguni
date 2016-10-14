@@ -183,23 +183,19 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	private Response execute(final String user, Object callDescription, Logger accessLog, final ExecutionCallbackWithUser callback) {
-		return execute(callDescription, accessLog, new ExecutionCallback() {
-			@NotNull
-			@Override
-			public ExecutionResult execute() throws Exception {
-				final UserLogin userLogin = WebServiceHelper.parseLoginParameter(user);
-				if (userLogin == null) {
-					LOGGER.error("Missing/invalid user (" + user + ")");
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Missing/invalid user parameter."));
-				}
+		return execute(callDescription, accessLog, () -> {
+			final UserLogin userLogin = WebServiceHelper.parseLoginParameter(user);
+			if (userLogin == null) {
+				LOGGER.error("Missing/invalid user (" + user + ")");
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Missing/invalid user parameter."));
+			}
 
-				WebServiceHelper.login(userLogin);
-				try {
-					return callback.execute(userLogin);
-				}
-				finally {
-					WebServiceHelper.logout();
-				}
+			WebServiceHelper.login(userLogin);
+			try {
+				return callback.execute(userLogin);
+			}
+			finally {
+				WebServiceHelper.logout();
 			}
 		});
 	}
@@ -213,19 +209,15 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s, value=%s}", partyNo, WebServiceHelper.enquote(user), WebServiceHelper.enquote(value));
 			}
 		};
-		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
-					LOGGER.error("Wrong or missing new flag value");
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Wrong or missing new flag value."));
-				}
-
-				final boolean blocked = Boolean.parseBoolean(value);
-				target.setAutomaticRepaymentBlockingFlag(partyNo, userLogin, blocked);
-				return ExecutionResult.with(Response.ok().build());
+		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
+			if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
+				LOGGER.error("Wrong or missing new flag value");
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "Wrong or missing new flag value."));
 			}
+
+			final boolean blocked = Boolean.parseBoolean(value);
+			target.setAutomaticRepaymentBlockingFlag(partyNo, userLogin, blocked);
+			return ExecutionResult.with(Response.ok().build());
 		});
 	}
 
@@ -237,25 +229,15 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
-				return ExecutionResult.with(Response.ok(blocked, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build());
-			}
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
+			return ExecutionResult.with(Response.ok(blocked, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build());
 		});
 	}
 
 	@Override
 	public Response ping() {
-		return execute("ping", READ_ACCESS_LOG, new ExecutionCallback() {
-			@NotNull
-			@Override
-			public ExecutionResult execute() throws Exception {
-				return ExecutionResult.with(Response.ok(DateHelper.getCurrentDate().getTime(), WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build());
-			}
-		});
+		return execute("ping", READ_ACCESS_LOG, () -> ExecutionResult.with(Response.ok(DateHelper.getCurrentDate().getTime(), WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build()));
 	}
 
 	@Override
@@ -266,20 +248,16 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getSecurityOnParty{user=%s, partyNo=%d}", WebServiceHelper.enquote(user), partyNo);
 			}
 		};
-		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
-			@NotNull
-			@Override
-			public ExecutionResult execute() throws Exception {
-				final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					return ExecutionResult.with(Response.ok(response, preferred).build());
-				}
-				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(securityObjectFactory.createUserAccess(response), preferred).build());
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(params, READ_ACCESS_LOG, () -> {
+			final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return ExecutionResult.with(Response.ok(response, preferred).build());
 			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(securityObjectFactory.createUserAccess(response), preferred).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
 	}
 
@@ -293,37 +271,33 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(sortedParts));
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				try {
-					final Party party = target.getParty(userLogin, partyNo, parts);
-					if (party == null) {
-						return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas."));
-					}
-					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-						return ExecutionResult.with(Response.ok(PartyJsonContainer.fromValue(party), preferred).build(), 1);
-					}
-					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-						return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build(), 1);
-					}
-					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			try {
+				final Party party = target.getParty(userLogin, partyNo, parts);
+				if (party == null) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas."));
 				}
-				catch (ServiceException e) {
-					final ErrorType errorType;
-					final Response.Status status;
-					if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
-						errorType = ErrorType.ACCESS;
-						status = Response.Status.FORBIDDEN;
-					}
-					else {
-						errorType = e.getInfo() instanceof BusinessExceptionInfo ? ErrorType.BUSINESS : ErrorType.TECHNICAL;
-						status = Response.Status.INTERNAL_SERVER_ERROR;
-					}
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(status, getAcceptableMediaTypes(), errorType, e));
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					return ExecutionResult.with(Response.ok(PartyJsonContainer.fromValue(party), preferred).build(), 1);
 				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(partyObjectFactory.createParty(party), preferred).build(), 1);
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+			catch (ServiceException e) {
+				final ErrorType errorType;
+				final Response.Status status;
+				if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
+					errorType = ErrorType.ACCESS;
+					status = Response.Status.FORBIDDEN;
+				}
+				else {
+					errorType = e.getInfo() instanceof BusinessExceptionInfo ? ErrorType.BUSINESS : ErrorType.TECHNICAL;
+					status = Response.Status.INTERNAL_SERVER_ERROR;
+				}
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(status, getAcceptableMediaTypes(), errorType, e));
 			}
 		});
 	}
@@ -338,29 +312,25 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getParties{user=%s, partyNo=%s, parts=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos), WebServiceHelper.toString(sortedParts));
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				try {
-					final Parties parties = target.getParties(userLogin, partyNos, parts);
-					if (parties == null) {
-						return ExecutionResult.with(Response.noContent().build(), 0);
-					}
-					final int nbItems = countParties(parties.getEntries());
-					final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-					if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-						// TODO quel format utiliser pour le retour JSON ?
-						throw new NotImplementedException();
-					}
-					else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-						return ExecutionResult.with(Response.ok(parties, preferred).build(), nbItems);
-					}
-					return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			try {
+				final Parties parties = target.getParties(userLogin, partyNos, parts);
+				if (parties == null) {
+					return ExecutionResult.with(Response.noContent().build(), 0);
 				}
-				catch (ServiceException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+				final int nbItems = countParties(parties.getEntries());
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+					// TODO quel format utiliser pour le retour JSON ?
+					throw new NotImplementedException();
 				}
+				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(parties, preferred).build(), nbItems);
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+			catch (ServiceException e) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
 			}
 		});
 	}
@@ -391,38 +361,34 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				                     onlyActiveMainTaxResidence, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final RegDate dateNaissance;
-				try {
-					dateNaissance = dateFromString(dateOfBirthStr, true);
-				}
-				catch (ParseException | IllegalArgumentException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
-				}
-
-				SearchResult result;
-				try {
-					final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, uidNumber, taxResidenceFSOId,
-					                                                 onlyActiveMainTaxResidence, partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
-					result = new SearchResult(null, infos);
-				}
-				catch (IndexerException e) {
-					result = new SearchResult(new Error(ErrorType.BUSINESS, WebServiceHelper.buildExceptionMessage(e)), null);
-				}
-
-				final int nbItems = result.getParty() != null ? result.getParty().size() : 0;
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					return ExecutionResult.with(Response.ok(result, preferred).build(), nbItems);
-				}
-				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(searchPartyObjectFactory.createSearchResult(result), preferred).build(), nbItems);
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final RegDate dateNaissance;
+			try {
+				dateNaissance = dateFromString(dateOfBirthStr, true);
 			}
+			catch (ParseException | IllegalArgumentException e) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+			}
+
+			SearchResult result;
+			try {
+				final List<PartyInfo> infos = target.searchParty(userLogin, partyNo, name, nameSearchMode, townOrCountry, dateNaissance, socialInsuranceNumber, uidNumber, taxResidenceFSOId,
+				                                                 onlyActiveMainTaxResidence, partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
+				result = new SearchResult(null, infos);
+			}
+			catch (IndexerException e) {
+				result = new SearchResult(new Error(ErrorType.BUSINESS, WebServiceHelper.buildExceptionMessage(e)), null);
+			}
+
+			final int nbItems = result.getParty() != null ? result.getParty().size() : 0;
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return ExecutionResult.with(Response.ok(result, preferred).build(), nbItems);
+			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(searchPartyObjectFactory.createSearchResult(result), preferred).build(), nbItems);
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
 	}
 
@@ -444,28 +410,24 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getTaxOffices{municipalityId=%d, date=%s}", municipalityId, WebServiceHelper.enquote(dateStr));
 			}
 		};
-		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
-			@NotNull
-			@Override
-			public ExecutionResult execute() throws Exception {
-				final RegDate date;
-				try {
-					date = dateFromString(dateStr, false);
-				}
-				catch (ParseException | IllegalArgumentException e) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
-				}
-
-				final TaxOffices taxOffices = target.getTaxOffices(municipalityId, date);
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					return ExecutionResult.with(Response.ok(taxOffices, preferred).build());
-				}
-				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(taxOfficesObjectFactory.createTaxOffices(taxOffices), preferred).build());
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(params, READ_ACCESS_LOG, () -> {
+			final RegDate date;
+			try {
+				date = dateFromString(dateStr, false);
 			}
+			catch (ParseException | IllegalArgumentException e) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+			}
+
+			final TaxOffices taxOffices = target.getTaxOffices(municipalityId, date);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return ExecutionResult.with(Response.ok(taxOffices, preferred).build());
+			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(taxOfficesObjectFactory.createTaxOffices(taxOffices), preferred).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
 	}
 
@@ -490,13 +452,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("ackOrdinaryTaxDeclarations{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
 			}
 		};
-		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
-				return ExecutionResult.with(Response.ok(ackObjectFactory.createOrdinaryTaxDeclarationAckResponse(response)).build());
-			}
+		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
+			final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
+			return ExecutionResult.with(Response.ok(ackObjectFactory.createOrdinaryTaxDeclarationAckResponse(response)).build());
 		});
 	}
 
@@ -509,13 +467,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("newOrdinaryTaxDeclarationDeadline{user=%s, partyNo=%d, pf=%d, seqNo=%d, request=%s}", WebServiceHelper.enquote(user), partyNo, pf, seqNo, request);
 			}
 		};
-		return execute(user, params, WRITE_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
-				return ExecutionResult.with(Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build());
-			}
+		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
+			final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
+			return ExecutionResult.with(Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build());
 		});
 	}
 
@@ -527,29 +481,25 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getModifiedTaxPayers{user=%s, since=%d, until=%d}", WebServiceHelper.enquote(user), since, until);
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				if (since == null || until == null) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' and 'until' are required parameters."));
-				}
-				else if (since > until) {
-					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' should be before 'until'"));
-				}
-
-				final Date sinceTimestamp = new Date(since);
-				final Date untilTimestamp = new Date(until);
-				final PartyNumberList response = target.getModifiedTaxPayers(userLogin, sinceTimestamp, untilTimestamp);
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					return ExecutionResult.with(Response.ok(response, preferred).build(), response.getPartyNo().size());
-				}
-				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(modifiedTaxPayersFactory.createModifiedTayPayers(response), preferred).build(), response.getPartyNo().size());
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			if (since == null || until == null) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' and 'until' are required parameters."));
 			}
+			else if (since > until) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' should be before 'until'"));
+			}
+
+			final Date sinceTimestamp = new Date(since);
+			final Date untilTimestamp = new Date(until);
+			final PartyNumberList response = target.getModifiedTaxPayers(userLogin, sinceTimestamp, untilTimestamp);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return ExecutionResult.with(Response.ok(response, preferred).build(), response.getPartyNo().size());
+			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(modifiedTaxPayersFactory.createModifiedTayPayers(response), preferred).build(), response.getPartyNo().size());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
 	}
 
@@ -561,20 +511,16 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s}", debtorNo, pf, WebServiceHelper.enquote(user));
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final DebtorInfo info = target.getDebtorInfo(userLogin, debtorNo, pf);
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					return ExecutionResult.with(Response.ok(info, preferred).build());
-				}
-				else if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(debtorInfoFactory.createDebtorInfo(info), preferred).build());
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final DebtorInfo info = target.getDebtorInfo(userLogin, debtorNo, pf);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return ExecutionResult.with(Response.ok(info, preferred).build());
 			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(debtorInfoFactory.createDebtorInfo(info), preferred).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
 	}
 
@@ -586,14 +532,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getAvatar{partyNo=%d}", partyNo);
 			}
 		};
-		return execute(params, READ_ACCESS_LOG, new ExecutionCallback() {
-			@NotNull
-			@Override
-			public ExecutionResult execute() throws Exception {
-				try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream(16 * 1024)) {
-					IOUtils.copy(data.getDataStream(), bos);
-					return ExecutionResult.with(Response.ok(bos.toByteArray(), data.getMimeType()).build());
-				}
+		return execute(params, READ_ACCESS_LOG, () -> {
+			try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream(16 * 1024)) {
+				IOUtils.copy(data.getDataStream(), bos);
+				return ExecutionResult.with(Response.ok(bos.toByteArray(), data.getMimeType()).build());
 			}
 		});
 	}
@@ -606,18 +548,14 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return String.format("getFiscalEvents{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
 			}
 		};
-		return execute(user, params, READ_ACCESS_LOG, new ExecutionCallbackWithUser() {
-			@NotNull
-			@Override
-			public ExecutionResult execute(UserLogin userLogin) throws Exception {
-				final FiscalEvents events = target.getFiscalEvents(userLogin, partyNo);
-				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
-				if (preferred == MediaType.APPLICATION_XML_TYPE) {
-					return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events)).build());
-				}
-				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
-
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final FiscalEvents events = target.getFiscalEvents(userLogin, partyNo);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events)).build());
 			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+
 		});
 	}
 }

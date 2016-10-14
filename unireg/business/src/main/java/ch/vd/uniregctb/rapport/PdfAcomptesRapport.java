@@ -45,14 +45,11 @@ public class PdfAcomptesRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total traité :", String.valueOf(results.getNombreContribuablesAssujettisTraites()));
-					table.addLigne("Nombre total en erreur :", String.valueOf(results.getListeErreurs().size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total traité :", String.valueOf(results.getNombreContribuablesAssujettisTraites()));
+				table.addLigne("Nombre total en erreur :", String.valueOf(results.getListeErreurs().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 

@@ -51,13 +51,10 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 	 * Pour les tests de limitations, on aime bien que les questionnaires soient toujours traités dans le même ordre,
 	 * (= le même ordre que celui des données d'entrée)
 	 */
-	private static final Comparator<QuestionnaireSNC> SNC_COMPARATOR = new Comparator<QuestionnaireSNC>() {
-		@Override
-		public int compare(QuestionnaireSNC o1, QuestionnaireSNC o2) {
-			final IdentifiantDeclaration id1 = new IdentifiantDeclaration(o1, null);
-			final IdentifiantDeclaration id2 = new IdentifiantDeclaration(o2, null);
-			return IdentifiantDeclaration.COMPARATOR_NATUREL.compare(id1, id2);
-		}
+	private static final Comparator<QuestionnaireSNC> SNC_COMPARATOR = (o1, o2) -> {
+		final IdentifiantDeclaration id1 = new IdentifiantDeclaration(o1, null);
+		final IdentifiantDeclaration id2 = new IdentifiantDeclaration(o2, null);
+		return IdentifiantDeclaration.COMPARATOR_NATUREL.compare(id1, id2);
 	};
 
 	public EnvoiRappelsQuestionnairesSNCProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, QuestionnaireSNCDAO questionnaireSNCDAO, DelaisService delaisService, QuestionnaireSNCService qsncService) {

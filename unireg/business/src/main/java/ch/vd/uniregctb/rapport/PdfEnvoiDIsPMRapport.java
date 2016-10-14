@@ -39,16 +39,13 @@ public class PdfEnvoiDIsPMRapport extends PdfRapport {
         // Paramètres
         addEntete1("Paramètres");
         {
-            addTableSimple(2, new TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
-                    table.addLigne("Date limite de bouclement :", RegDateHelper.dateToDisplayString(results.getDateLimiteBouclements()));
-                    table.addLigne("Type d'envoi :", results.getCategorieEnvoi().name());
-                    table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "-" : String.valueOf(results.getNbMaxEnvois()));
-	                table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
-                    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-                }
+            addTableSimple(2, table -> {
+                table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
+                table.addLigne("Date limite de bouclement :", RegDateHelper.dateToDisplayString(results.getDateLimiteBouclements()));
+                table.addLigne("Type d'envoi :", results.getCategorieEnvoi().name());
+                table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "-" : String.valueOf(results.getNbMaxEnvois()));
+	            table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
+                table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
             });
         }
 
@@ -60,16 +57,13 @@ public class PdfEnvoiDIsPMRapport extends PdfRapport {
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(2, new TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNbContribuablesVus()));
-                    table.addLigne("Nombre de périodes d'imposition traitées :", String.valueOf(results.getEnvoyees().size()));
-                    table.addLigne("Nombre de périodes d'imposition ignorées :", String.valueOf(results.getIgnorees().size()));
-                    table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getErreurs().size()));
-	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-                }
+            addTableSimple(2, table -> {
+                table.addLigne("Nombre total de contribuables inspectés :", String.valueOf(results.getNbContribuablesVus()));
+                table.addLigne("Nombre de périodes d'imposition traitées :", String.valueOf(results.getEnvoyees().size()));
+                table.addLigne("Nombre de périodes d'imposition ignorées :", String.valueOf(results.getIgnorees().size()));
+                table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getErreurs().size()));
+	            table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+                table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
             });
         }
 

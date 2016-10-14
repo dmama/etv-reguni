@@ -25,13 +25,7 @@ public abstract class NationaliteHelper {
 	 */
 	@NotNull
 	public static List<Nationalite> validAt(Collection<Nationalite> nationalites, final RegDate date) {
-		return filter(nationalites, new Filter() {
-			@NotNull
-			@Override
-			public FilteringResult filter(Nationalite nationalite) {
-				return nationalite.isValidAt(date) ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT;
-			}
-		});
+		return filter(nationalites, nationalite -> nationalite.isValidAt(date) ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT);
 	}
 
 	/**
@@ -80,13 +74,7 @@ public abstract class NationaliteHelper {
 	 * @return la liste des nationalités dont la date de début correspond à la date demandée
 	 */
 	public static List<Nationalite> startingAt(Collection<Nationalite> nationalites, final RegDate date) {
-		return filter(nationalites, new Filter() {
-			@NotNull
-			@Override
-			public FilteringResult filter(Nationalite nationalite) {
-				return nationalite.getDateDebut() == date ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT;
-			}
-		});
+		return filter(nationalites, nationalite -> nationalite.getDateDebut() == date ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT);
 	}
 
 	/**
@@ -95,13 +83,7 @@ public abstract class NationaliteHelper {
 	 * @return la liste des nationalités dont la date de fin correspond à la date demandée
 	 */
 	public static List<Nationalite> endingAt(Collection<Nationalite> nationalites, final RegDate date) {
-		return filter(nationalites, new Filter() {
-			@NotNull
-			@Override
-			public FilteringResult filter(Nationalite nationalite) {
-				return nationalite.getDateFin() == date ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT;
-			}
-		});
+		return filter(nationalites, nationalite -> nationalite.getDateFin() == date ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT);
 	}
 
 	private static enum FilteringResult {

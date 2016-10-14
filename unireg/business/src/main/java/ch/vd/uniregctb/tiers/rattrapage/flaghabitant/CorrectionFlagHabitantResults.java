@@ -16,7 +16,7 @@ public class CorrectionFlagHabitantResults extends JobResults<Long, CorrectionFl
 
 	private boolean interrupted;
 
-	public static enum Message {
+	public enum Message {
 		PP_NOUVEL_HABITANT("Personne physique changée en habitant en raison de la présence d'une adresse de résidence active dans le canton"),
 		PP_NOUVEAU_NON_HABITANT("Personne physique changée en non-habitant en raison de l'absence d'une adresse de résidence active dans le canton (ou d'un décès)"),
 		MC_FOR_VD_SANS_HABITANT("Le for principal actif du ménage est vaudois alors qu'aucun des membres n'est habitant"),
@@ -25,7 +25,7 @@ public class CorrectionFlagHabitantResults extends JobResults<Long, CorrectionFl
 
 		private final String libelle;
 
-		private Message(String libelle) {
+		Message(String libelle) {
 			this.libelle = libelle;
 		}
 
@@ -34,12 +34,7 @@ public class CorrectionFlagHabitantResults extends JobResults<Long, CorrectionFl
 		}
 	}
 
-	public static final Comparator<ContribuableInfo> COMPARATOR = new Comparator<ContribuableInfo>() {
-		@Override
-		public int compare(ContribuableInfo o1, ContribuableInfo o2) {
-			return o1.noCtb < o2.noCtb ? -1 : (o1.noCtb > o2.noCtb ? 1 : 0);
-		}
-	};
+	public static final Comparator<ContribuableInfo> COMPARATOR = Comparator.comparingLong(ContribuableInfo::getNoCtb);
 
 	public static class ContribuableInfo {
 

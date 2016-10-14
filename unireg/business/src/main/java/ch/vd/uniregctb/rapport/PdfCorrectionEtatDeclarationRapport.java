@@ -38,15 +38,12 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de déclarations inspectées :", String.valueOf(results.nbDeclarationsTotal));
-					table.addLigne("Nombre d'états inspectés :", String.valueOf(results.nbEtatsTotal));
-					table.addLigne("Nombre de doublons supprimés :", String.valueOf(results.doublons.size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de déclarations inspectées :", String.valueOf(results.nbDeclarationsTotal));
+				table.addLigne("Nombre d'états inspectés :", String.valueOf(results.nbEtatsTotal));
+				table.addLigne("Nombre de doublons supprimés :", String.valueOf(results.doublons.size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(results));
 			});
 		}
 

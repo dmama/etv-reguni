@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -283,38 +285,22 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		SANS_MOTS_RESERVES
 	}
 
-	private interface IdFetcher<T> {
-		Long getId(T element);
-	}
-
-	private static <T> List<Long> buildIdList(List<T> src, IdFetcher<T> idFetcher) {
+	private static <T> List<Long> buildIdList(List<T> src, Function<T, Long> idFetcher) {
 		if (src == null) {
 			return Collections.emptyList();
 		}
 
-		final List<Long> res = new ArrayList<>(src.size());
-		for (T elt : src) {
-			res.add(idFetcher.getId(elt));
-		}
-		return res;
+		return src.stream()
+				.map(idFetcher)
+				.collect(Collectors.toList());
 	}
 
 	private static List<Long> buildIdListFromPP(List<PersonnePhysique> list) {
-		return buildIdList(list, new IdFetcher<PersonnePhysique>() {
-			@Override
-			public Long getId(PersonnePhysique pp) {
-				return pp.getNumero();
-			}
-		});
+		return buildIdList(list, PersonnePhysique::getNumero);
 	}
 
 	private static List<Long> buildIdListFromIndex(List<TiersIndexedData> list) {
-		return buildIdList(list, new IdFetcher<TiersIndexedData>() {
-			@Override
-			public Long getId(TiersIndexedData data) {
-				return data.getNumero();
-			}
-		});
+		return buildIdList(list, TiersIndexedData::getNumero);
 	}
 
 	public static boolean criteresEmptyForReChercheComplete(CriteresPersonne criteres) {
@@ -1327,23 +1313,17 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final String prenomCritere = criteres.getPrenoms();
 		if (nomCritere != null) {
 			final String nomMinuscule = StringComparator.toLowerCaseWithoutAccent(nomCritere);
-			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
-				@Override
-				public boolean evaluate(PersonnePhysique pp) {
-					final String nomPrenom = StringComparator.toLowerCaseWithoutAccent(tiersService.getNomPrenom(pp));
-					return (nomPrenom.contains(nomMinuscule));
-				}
+			CollectionUtils.filter(list, pp -> {
+				final String nomPrenom = StringComparator.toLowerCaseWithoutAccent(tiersService.getNomPrenom(pp));
+				return (nomPrenom.contains(nomMinuscule));
 			});
 		}
 
 		if (prenomCritere != null) {
 			final String prenomMinuscule = StringComparator.toLowerCaseWithoutAccent(prenomCritere);
-			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
-				@Override
-				public boolean evaluate(PersonnePhysique pp) {
-					final String nomPrenom =StringComparator.toLowerCaseWithoutAccent(tiersService.getNomPrenom(pp));
-					return (nomPrenom.contains(prenomMinuscule));
-				}
+			CollectionUtils.filter(list, pp -> {
+				final String nomPrenom = StringComparator.toLowerCaseWithoutAccent(tiersService.getNomPrenom(pp));
+				return (nomPrenom.contains(prenomMinuscule));
 			});
 		}
 
@@ -1359,12 +1339,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void filterSexe(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		final Sexe sexeCritere = criteres.getSexe();
 		if (sexeCritere != null) {
-			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
-				@Override
-				public boolean evaluate(PersonnePhysique pp) {
-					final Sexe sexe = tiersService.getSexe(pp);
-					return (sexe!=null && sexe == sexeCritere);
-				}
+			CollectionUtils.filter(list, pp -> {
+				final Sexe sexe = tiersService.getSexe(pp);
+				return (sexe!=null && sexe == sexeCritere);
 			});
 		}
 	}
@@ -1378,13 +1355,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void filterDateNaissance(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		final RegDate critereDateNaissance = criteres.getDateNaissance();
 		if (critereDateNaissance != null) {
-			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
-				@Override
-				public boolean evaluate(PersonnePhysique pp) {
-					return matchDateNaissance(pp, critereDateNaissance);
-				}
-
-			});
+			CollectionUtils.filter(list, pp -> matchDateNaissance(pp, critereDateNaissance));
 		}
 	}
 

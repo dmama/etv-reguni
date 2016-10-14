@@ -42,11 +42,8 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
         // Paramètres
         addEntete1("Paramètres");
         {
-            addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
-                }
+            addTableSimple(2, table -> {
+                table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
             });
         }
 
@@ -58,22 +55,19 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(new float[] {70f, 30f}, new PdfRapport.TableSimpleCallback() {
-                @Override
-                public void fillTable(PdfTableSimple table) throws DocumentException {
-                    table.addLigne("Nombre total de contribuables inspectés", String.valueOf(results.nbCtbsTotal));
+            addTableSimple(new float[] {70f, 30f}, table -> {
+                table.addLigne("Nombre total de contribuables inspectés", String.valueOf(results.nbCtbsTotal));
 
-	                final Map<ProprietaireRapproche.CodeRetour, Integer> stats = results.getStats();
-                    table.addLigne("Individus trouvés avec correspondance exacte :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT)));
-	                table.addLigne("Individus trouvés avec correspondance sauf date de naissance :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE)));
-                    table.addLigne("Individus trouvés sans correspondance exacte :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT) + stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_NON_EXACT)));
-                    table.addLigne("Pas de contribuable trouvé :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.CTB_NON_TROUVE)));
-                    table.addLigne("Pas d'individu trouvé :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_NON_TROUVE)));
-                    table.addLigne("Plus de deux individus trouvés :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.PLUS_DE_DEUX_INDIV_TROUVES)));
-                    table.addLigne("Nombre d'erreurs :", String.valueOf(results.ctbsEnErreur.size()));
-	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-                }
+	            final Map<ProprietaireRapproche.CodeRetour, Integer> stats = results.getStats();
+                table.addLigne("Individus trouvés avec correspondance exacte :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT)));
+	            table.addLigne("Individus trouvés avec correspondance sauf date de naissance :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE)));
+                table.addLigne("Individus trouvés sans correspondance exacte :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDUS_TROUVE_NON_EXACT) + stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_TROUVE_NON_EXACT)));
+                table.addLigne("Pas de contribuable trouvé :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.CTB_NON_TROUVE)));
+                table.addLigne("Pas d'individu trouvé :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.INDIVIDU_NON_TROUVE)));
+                table.addLigne("Plus de deux individus trouvés :", String.valueOf(stats.get(ProprietaireRapproche.CodeRetour.PLUS_DE_DEUX_INDIV_TROUVES)));
+                table.addLigne("Nombre d'erreurs :", String.valueOf(results.ctbsEnErreur.size()));
+	            table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+                table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
             });
         }
 

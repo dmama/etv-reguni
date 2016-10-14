@@ -36,13 +36,10 @@ public class PdfDeterminationQuestionnairesSNCRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Période fiscale considérée:", String.valueOf(results.periodeFiscale));
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-					table.addLigne("Nombre de threads:", String.valueOf(results.nbThreads));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Période fiscale considérée:", String.valueOf(results.periodeFiscale));
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Nombre de threads:", String.valueOf(results.nbThreads));
 			});
 		}
 
@@ -54,16 +51,13 @@ public class PdfDeterminationQuestionnairesSNCRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'entreprises inspectées :", String.valueOf(results.getNbContribuablesInspectes()));
-					table.addLigne("Nombre d'actions menées :", String.valueOf(results.getTraites().size()));
-					table.addLigne("Nombre de cas ignorés :", String.valueOf(results.getIgnores().size()));
-					table.addLigne("Nombre de cas en erreur :", String.valueOf(results.getErreurs().size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre d'entreprises inspectées :", String.valueOf(results.getNbContribuablesInspectes()));
+				table.addLigne("Nombre d'actions menées :", String.valueOf(results.getTraites().size()));
+				table.addLigne("Nombre de cas ignorés :", String.valueOf(results.getIgnores().size()));
+				table.addLigne("Nombre de cas en erreur :", String.valueOf(results.getErreurs().size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 

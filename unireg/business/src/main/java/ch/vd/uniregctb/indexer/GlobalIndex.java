@@ -106,12 +106,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	public int getApproxDocCount() {
 
-		final Integer count = (Integer) index.read(new ReadOnlyCallback() {
-			@Override
-			public Object doInReadOnly(Searcher searcher) {
-				return searcher.numDocs();
-			}
-		});
+		final Integer count = (Integer) index.read(Searcher::numDocs);
 
 		return count;
 	}

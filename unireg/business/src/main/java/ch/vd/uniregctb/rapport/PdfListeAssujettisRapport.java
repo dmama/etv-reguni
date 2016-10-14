@@ -37,15 +37,12 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-			    @Override
-			    public void fillTable(PdfTableSimple table) throws DocumentException {
-			        table.addLigne("Période fiscale :", String.valueOf(results.getAnneeFiscale()));
-				    table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
-				    table.addLigne("Avec sourciers purs :", String.valueOf(results.isAvecSourciersPurs()));
-				    table.addLigne("Seulement assujettis fin année :", String.valueOf(results.isSeulementAssujettisFinAnnee()));
-			        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-			    }
+			addTableSimple(2, table -> {
+			    table.addLigne("Période fiscale :", String.valueOf(results.getAnneeFiscale()));
+				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
+				table.addLigne("Avec sourciers purs :", String.valueOf(results.isAvecSourciersPurs()));
+				table.addLigne("Seulement assujettis fin année :", String.valueOf(results.isSeulementAssujettisFinAnnee()));
+			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 
@@ -56,16 +53,13 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\nles valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNbContribuablesInspectes()));
-					table.addLigne("Nombre de contribuables assujettis :", String.valueOf(results.getNbCtbAssujettis()));
-					table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.getNbCtbIgnores()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getListeErreurs().size()));
-					table.addLigne("Durée d'exécution :", formatDureeExecution(results));
-					table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNbContribuablesInspectes()));
+				table.addLigne("Nombre de contribuables assujettis :", String.valueOf(results.getNbCtbAssujettis()));
+				table.addLigne("Nombre de contribuables ignorés :", String.valueOf(results.getNbCtbIgnores()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getListeErreurs().size()));
+				table.addLigne("Durée d'exécution :", formatDureeExecution(results));
+				table.addLigne("Date de génération :", formatTimestamp(dateGeneration));
 			});
 		}
 

@@ -1624,47 +1624,17 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	private static final String VIDE = "vide";
 
-	private static final StringRenderer<Object> DEFAULT_RENDERER = new StringRenderer<Object>() {
-		@Override
-		public String toString(Object value) {
-			return value == null ? VIDE : String.format("\"%s\"", value);
-		}
-	};
+	private static final StringRenderer<Object> DEFAULT_RENDERER = value -> value == null ? VIDE : String.format("\"%s\"", value);
 
-	private static final StringRenderer<RegDate> DATE_RENDERER = new StringRenderer<RegDate>() {
-		@Override
-		public String toString(RegDate value) {
-			return value == null ? VIDE : RegDateHelper.dateToDisplayString(value);
-		}
-	};
+	private static final StringRenderer<RegDate> DATE_RENDERER = value -> value == null ? VIDE : RegDateHelper.dateToDisplayString(value);
 
-	private static final StringRenderer<EtatCivil> ETAT_CIVIL_RENDERER = new StringRenderer<EtatCivil>() {
-		@Override
-		public String toString(EtatCivil value) {
-			return value == null ? VIDE : value.format();
-		}
-	};
+	private static final StringRenderer<EtatCivil> ETAT_CIVIL_RENDERER = value -> value == null ? VIDE : value.format();
 
-	private static final StringRenderer<String> AVS_RENDERER = new StringRenderer<String>() {
-		@Override
-		public String toString(String value) {
-			return value == null ? VIDE : FormatNumeroHelper.formatNumAVS(value);
-		}
-	};
+	private static final StringRenderer<String> AVS_RENDERER = value -> value == null ? VIDE : FormatNumeroHelper.formatNumAVS(value);
 
-	private static final StringRenderer<Sexe> SEXE_RENDERER = new StringRenderer<Sexe>() {
-		@Override
-		public String toString(Sexe value) {
-			return value == null ? VIDE : value.getDisplayName();
-		}
-	};
+	private static final StringRenderer<Sexe> SEXE_RENDERER = value -> value == null ? VIDE : value.getDisplayName();
 
-	private static final StringRenderer<CategorieEtranger> CATEGORIE_ETRANGER_RENDERER = new StringRenderer<CategorieEtranger>() {
-		@Override
-		public String toString(CategorieEtranger value) {
-			return value == null ? VIDE : value.getDisplayName();
-		}
-	};
+	private static final StringRenderer<CategorieEtranger> CATEGORIE_ETRANGER_RENDERER = value -> value == null ? VIDE : value.getDisplayName();
 
 	private final StringRenderer<Integer> PAYS_RENDERER = new StringRenderer<Integer>() {
 		@Override
@@ -1677,12 +1647,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		}
 	};
 
-	private static final StringRenderer<OriginePersonnePhysique> ORIGINE_RENDERER = new StringRenderer<OriginePersonnePhysique>() {
-		@Override
-		public String toString(OriginePersonnePhysique origine) {
-			return origine == null ? VIDE : origine.getLibelleAvecCanton();
-		}
-	};
+	private static final StringRenderer<OriginePersonnePhysique> ORIGINE_RENDERER = origine -> origine == null ? VIDE : origine.getLibelleAvecCanton();
 
 	private static final AttributeAccessor<String> NOM_ACCESSOR = new AttributeAccessor<String>() {
 		@Override

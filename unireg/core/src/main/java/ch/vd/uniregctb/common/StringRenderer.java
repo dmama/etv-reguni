@@ -6,6 +6,7 @@ import java.util.Objects;
  * Interface qui permet de customiser la conversion d'un objet en chaîne de caractères
  * @param <T> type de l'objet à convertir
  */
+@FunctionalInterface
 public interface StringRenderer<T> {
 
 	/**

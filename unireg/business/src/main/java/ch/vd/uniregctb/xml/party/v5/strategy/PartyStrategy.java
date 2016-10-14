@@ -303,203 +303,103 @@ public abstract class PartyStrategy<T extends Party> {
 	/**
 	 * Factory qui construit une relation de fusion d'entreprise vers l'entreprise absorbée
 	 */
-	private static final RelationFactory<FusionEntreprises> ABSORBED_FACTORY = new RelationFactory<FusionEntreprises>() {
-		@Override
-		public RelationBetweenParties build(FusionEntreprises rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newAbsorbed(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<FusionEntreprises> ABSORBED_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAbsorbed(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de fusion d'entreprise vers l'entreprise absorbante
 	 */
-	private static final RelationFactory<FusionEntreprises> ABSORBING_FACTORY = new RelationFactory<FusionEntreprises>() {
-		@Override
-		public RelationBetweenParties build(FusionEntreprises rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newAbsorbing(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<FusionEntreprises> ABSORBING_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAbsorbing(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation entre un contribuable et un établissement
 	 */
-	private static final RelationFactory<ActiviteEconomique> ECONOMIC_ACTIVITY_FACTORY = new RelationFactory<ActiviteEconomique>() {
-		@Override
-		public RelationBetweenParties build(ActiviteEconomique rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newEconomicActivite(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<ActiviteEconomique> ECONOMIC_ACTIVITY_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newEconomicActivite(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "annule et remplace" vers le remplacé
 	 */
-	private static final RelationFactory<AnnuleEtRemplace> REPLACED_FACTORY = new RelationFactory<AnnuleEtRemplace>() {
-		@Override
-		public RelationBetweenParties build(AnnuleEtRemplace rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newReplaced(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<AnnuleEtRemplace> REPLACED_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newReplaced(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "annule et remplace" vers le remplaçant
 	 */
-	private static final RelationFactory<AnnuleEtRemplace> REPLACED_BY_FACTORY = new RelationFactory<AnnuleEtRemplace>() {
-		@Override
-		public RelationBetweenParties build(AnnuleEtRemplace rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newReplacedBy(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<AnnuleEtRemplace> REPLACED_BY_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newReplacedBy(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "appartenance ménage"
 	 */
-	private static final RelationFactory<AppartenanceMenage> HOUSEHOLD_MEMBER_FACTORY = new RelationFactory<AppartenanceMenage>() {
-		@Override
-		public RelationBetweenParties build(AppartenanceMenage rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newHouseholdMember(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<AppartenanceMenage> HOUSEHOLD_MEMBER_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newHouseholdMember(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "conseil légal"
 	 */
-	private static final RelationFactory<ConseilLegal> LEGAL_ADVISER_FACTORY = new RelationFactory<ConseilLegal>() {
-		@Override
-		public RelationBetweenParties build(ConseilLegal rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newLegalAdviser(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<ConseilLegal> LEGAL_ADVISER_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newLegalAdviser(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "curatelle"
 	 */
-	private static final RelationFactory<Curatelle> WELFARE_ADVOCATE_FACTORY = new RelationFactory<Curatelle>() {
-		@Override
-		public RelationBetweenParties build(Curatelle rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newWelfareAdvocate(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<Curatelle> WELFARE_ADVOCATE_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newWelfareAdvocate(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "prestation imposable"
 	 */
-	private static final RelationFactory<RapportPrestationImposable> TAXABLE_REVENUE_FACTORY = new RelationFactory<RapportPrestationImposable>() {
-		@Override
-		public RelationBetweenParties build(RapportPrestationImposable rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newTaxableRevenue(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<RapportPrestationImposable> TAXABLE_REVENUE_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newTaxableRevenue(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "représentation conventionnelle"
 	 */
-	private static final RelationFactory<RepresentationConventionnelle> REPRESENTATIVE_FACTORY = new RelationFactory<RepresentationConventionnelle>() {
-		@Override
-		public RelationBetweenParties build(RepresentationConventionnelle rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newRepresentative(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<RepresentationConventionnelle> REPRESENTATIVE_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newRepresentative(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de type "tutelle"
 	 */
-	private static final RelationFactory<Tutelle> GUARDIAN_FACTORY = new RelationFactory<Tutelle>() {
-		@Override
-		public RelationBetweenParties build(Tutelle rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newGuardian(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<Tutelle> GUARDIAN_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newGuardian(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de scission d'entreprise vers l'entreprise avant scission
 	 */
-	private static final RelationFactory<ScissionEntreprise> BEFORE_SPLIT_FACTORY = new RelationFactory<ScissionEntreprise>() {
-		@Override
-		public RelationBetweenParties build(ScissionEntreprise rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newBeforeSplit(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<ScissionEntreprise> BEFORE_SPLIT_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newBeforeSplit(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de scission d'entreprise vers l'entreprise après scission
 	 */
-	private static final RelationFactory<ScissionEntreprise> AFTER_SPLIT_FACTORY = new RelationFactory<ScissionEntreprise>() {
-		@Override
-		public RelationBetweenParties build(ScissionEntreprise rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newAfterSplit(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<ScissionEntreprise> AFTER_SPLIT_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAfterSplit(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de transfert de patrimoine vers l'entreprise émettrice
 	 */
-	private static final RelationFactory<TransfertPatrimoine> WEALTH_TRANSFER_ORIGINATOR_FACTORY = new RelationFactory<TransfertPatrimoine>() {
-		@Override
-		public RelationBetweenParties build(TransfertPatrimoine rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newWealthTransferOriginator(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<TransfertPatrimoine> WEALTH_TRANSFER_ORIGINATOR_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newWealthTransferOriginator(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de transfert de patrimoine vers l'entreprise réceptrice
 	 */
-	private static final RelationFactory<TransfertPatrimoine> WEALTH_TRANSFER_RECIPIENT_FACTORY = new RelationFactory<TransfertPatrimoine>() {
-		@Override
-		public RelationBetweenParties build(TransfertPatrimoine rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newWealthTransferRecipient(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<TransfertPatrimoine> WEALTH_TRANSFER_RECIPIENT_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newWealthTransferRecipient(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de contact impôt source (entre un débiteur IS et son contribuable)
 	 */
-	private static final RelationFactory<ContactImpotSource> WITHHOLDING_TAX_CONTACT_FACTORY = new RelationFactory<ContactImpotSource>() {
-		@Override
-		public RelationBetweenParties build(ContactImpotSource rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newWithholdingTaxContact(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<ContactImpotSource> WITHHOLDING_TAX_CONTACT_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newWithholdingTaxContact(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation d'administration d'entreprise (entre une entreprise - société immobilière seulement ? - et son/ses
 	 * administrateurs (= personnes physiques)
 	 */
-	private static final RelationFactory<AdministrationEntreprise> ADMINISTRATION_FACTORY = new RelationFactory<AdministrationEntreprise>() {
-		@Override
-		public RelationBetweenParties build(AdministrationEntreprise rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newAdministration(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<AdministrationEntreprise> ADMINISTRATION_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newAdministration(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation de société de direction (vers la société de direction)
 	 */
-	private static final RelationFactory<SocieteDirection> MANAGEMENT_COMPANY_FACTORY = new RelationFactory<SocieteDirection>() {
-		@Override
-		public RelationBetweenParties build(SocieteDirection rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newManagementCompany(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<SocieteDirection> MANAGEMENT_COMPANY_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newManagementCompany(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation d'assujettissement par substitution (vers le remplaçant, i.e. celui qui est effectivement assujetti)
 	 */
-	private static final RelationFactory<AssujettissementParSubstitution> TAX_LIABILITY_SUBSTITUTE_FACTORY = new RelationFactory<AssujettissementParSubstitution>() {
-		@Override
-		public RelationBetweenParties build(AssujettissementParSubstitution rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newTaxLiabilitySubstitute(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<AssujettissementParSubstitution> TAX_LIABILITY_SUBSTITUTE_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newTaxLiabilitySubstitute(rapport, otherId.intValue());
 
 	/**
 	 * Factory qui construit une relation d'assujettissement par substitution (vers le substitué, i.e. celui pour le compte duquel le tiers courant est assujetti)
 	 */
-	private static final RelationFactory<AssujettissementParSubstitution> TAX_LIABILITY_SUBSTITUTE_FOR_FACTORY = new RelationFactory<AssujettissementParSubstitution>() {
-		@Override
-		public RelationBetweenParties build(AssujettissementParSubstitution rapport, @NotNull Long otherId) {
-			return RelationBetweenPartiesBuilder.newTaxLiabilitySubstituteFor(rapport, otherId.intValue());
-		}
-	};
+	private static final RelationFactory<AssujettissementParSubstitution> TAX_LIABILITY_SUBSTITUTE_FOR_FACTORY = (rapport, otherId) -> RelationBetweenPartiesBuilder.newTaxLiabilitySubstituteFor(rapport, otherId.intValue());
 
 	private static final Map<RapportEntreTiersKey, RelationFactory<?>> RELATION_FACTORIES = buildRelationFactories();
 

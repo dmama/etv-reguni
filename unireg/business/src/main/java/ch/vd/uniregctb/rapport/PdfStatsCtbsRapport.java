@@ -42,12 +42,9 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Année fiscale:", String.valueOf(results.annee));
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Année fiscale:", String.valueOf(results.annee));
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 
@@ -59,14 +56,11 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
-					table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
+				table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 
@@ -102,13 +96,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final Set<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> entrySet = results.stats.entrySet();
 		final List<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> list = new ArrayList<>(entrySet);
-		Collections.sort(list, new Comparator<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>() {
-			@Override
-			public int compare(Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> o1,
-			                   Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value> o2) {
-				return o1.getKey().compareTo(o2.getKey());
-			}
-		});
+		Collections.sort(list, Comparator.comparing(Map.Entry::getKey));
 
 		final int size = list.size();
 		if (size > 0) {

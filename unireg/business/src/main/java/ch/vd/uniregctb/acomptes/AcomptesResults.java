@@ -349,24 +349,8 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     @Override
     public void sort() {
         super.sort();
-
-        Collections.sort(this.contribuablesAssujettis, new Comparator<InfoContribuableAssujetti>() {
-            @Override
-            public int compare(InfoContribuableAssujetti o1, InfoContribuableAssujetti o2) {
-                final long numero1 = o1.getNumeroCtb();
-                final long numero2 = o2.getNumeroCtb();
-                return numero1 == numero2 ? 0 : (numero1 < numero2 ? -1 : 1);
-            }
-        });
-
-	    Collections.sort(this.contribuablesIgnores, new Comparator<InfoContribuableIgnore>() {
-		    @Override
-		    public int compare(InfoContribuableIgnore o1, InfoContribuableIgnore o2) {
-			    final long numero1 = o1.getNumeroCtb();
-			    final long numero2 = o2.getNumeroCtb();
-			    return numero1 == numero2 ? 0 : (numero1 < numero2 ? -1 : 1);
-		    }
-	    });
+        Collections.sort(this.contribuablesAssujettis, Comparator.comparing(InfoContribuableAssujetti::getNumeroCtb));
+	    Collections.sort(this.contribuablesIgnores, Comparator.comparing(InfoContribuableIgnore::getNumeroCtb));
     }
 
     public List<InfoContribuableAssujetti> getListeContribuablesAssujettis() {

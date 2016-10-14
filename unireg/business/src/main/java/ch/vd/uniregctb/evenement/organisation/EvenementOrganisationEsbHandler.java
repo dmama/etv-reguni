@@ -67,20 +67,17 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	/**
 	 * Renderer d'un événement organisation à la réception (on ne renvoie que les données fournies à la réception de l'événement)
 	 */
-	private static final StringRenderer<OrganisationsOfNotice> RECEPTION_EVT_ORGANISATION_RENDERER = new StringRenderer<OrganisationsOfNotice>() {
-		@Override
-		public String toString(OrganisationsOfNotice message) {
-			final Notice notice = message.getNotice();
-			final NoticeRequestIdentification request = notice.getNoticeRequest();
-			return String.format("id=%d, type=%s, date=%s, reportingId=%s, noOrganisation=%d, nom='%s'",
-			                     notice.getNoticeId(),
-			                     notice.getTypeOfNotice(),
-			                     RegDateHelper.dateToDisplayString(notice.getNoticeDate()),
-			                     request != null ? request.getReportingApplication() : "?",
-			                     message.getOrganisation().get(0).getOrganisation().getCantonalId(),
-			                     message.getOrganisation().get(0).getOrganisation().getOrganisationLocation().get(0).getName()
-			);
-		}
+	private static final StringRenderer<OrganisationsOfNotice> RECEPTION_EVT_ORGANISATION_RENDERER = message -> {
+		final Notice notice = message.getNotice();
+		final NoticeRequestIdentification request = notice.getNoticeRequest();
+		return String.format("id=%d, type=%s, date=%s, reportingId=%s, noOrganisation=%d, nom='%s'",
+		                     notice.getNoticeId(),
+		                     notice.getTypeOfNotice(),
+		                     RegDateHelper.dateToDisplayString(notice.getNoticeDate()),
+		                     request != null ? request.getReportingApplication() : "?",
+		                     message.getOrganisation().get(0).getOrganisation().getCantonalId(),
+		                     message.getOrganisation().get(0).getOrganisation().getOrganisationLocation().get(0).getName()
+		);
 	};
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -393,12 +390,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
-			final StringRenderer<TypeEvenementOrganisation> renderer = new StringRenderer<TypeEvenementOrganisation>() {
-				@Override
-				public String toString(TypeEvenementOrganisation type) {
-					return String.format("%s (%s)", type, type.getName());
-				}
-			};
+			final StringRenderer<TypeEvenementOrganisation> renderer = type -> String.format("%s (%s)", type, type.getName());
 			LOGGER.info(String.format("Liste des événements organisation ignorés en mode %s : %s", processingMode, CollectionsUtils.toString(ignoredEventTypes, renderer, ", ", "Aucun")));
 		}
 

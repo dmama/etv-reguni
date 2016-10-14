@@ -36,11 +36,8 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 
@@ -52,15 +49,12 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de situations de familles inspectées:", String.valueOf(results.nbSituationsTotal));
-					table.addLigne("Nombre de situations réinitialisées:", String.valueOf(results.situationsTraitees.size()));
-					table.addLigne("Nombre de situations en erreur:", String.valueOf(results.situationsEnErrors.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de situations de familles inspectées:", String.valueOf(results.nbSituationsTotal));
+				table.addLigne("Nombre de situations réinitialisées:", String.valueOf(results.situationsTraitees.size()));
+				table.addLigne("Nombre de situations en erreur:", String.valueOf(results.situationsEnErrors.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 

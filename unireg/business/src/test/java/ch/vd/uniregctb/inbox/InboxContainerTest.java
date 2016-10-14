@@ -54,12 +54,7 @@ public class InboxContainerTest extends WithoutSpringTest {
 	@Test
 	public void testNotificationNewInbox() throws Exception {
 		final MutableInt nbNotifications = new MutableInt(0);
-		final InboxManagementListener listener = new InboxManagementListener() {
-			@Override
-			public void onNewInbox(String visa) {
-				nbNotifications.increment();
-			}
-		};
+		final InboxManagementListener listener = visa -> nbNotifications.increment();
 		Assert.assertEquals(0, nbNotifications.intValue());
 		container.registerInboxManagementListener(listener, true);
 		Assert.assertEquals(0, nbNotifications.intValue());
@@ -72,12 +67,7 @@ public class InboxContainerTest extends WithoutSpringTest {
 	@Test
 	public void testNotificationNewInboxWithCatchup() throws Exception {
 		final MutableInt nbNotifications = new MutableInt(0);
-		final InboxManagementListener listener = new InboxManagementListener() {
-			@Override
-			public void onNewInbox(String visa) {
-				nbNotifications.increment();
-			}
-		};
+		final InboxManagementListener listener = visa -> nbNotifications.increment();
 		container.addElement("TOTO", new InboxElement("test", "Message de test", null, 0));
 		Assert.assertEquals(0, nbNotifications.intValue());
 		container.registerInboxManagementListener(listener, true);
@@ -91,12 +81,7 @@ public class InboxContainerTest extends WithoutSpringTest {
 	@Test
 	public void testNotificationNewInboxWithoutCatchup() throws Exception {
 		final MutableInt nbNotifications = new MutableInt(0);
-		final InboxManagementListener listener = new InboxManagementListener() {
-			@Override
-			public void onNewInbox(String visa) {
-				nbNotifications.increment();
-			}
-		};
+		final InboxManagementListener listener = visa -> nbNotifications.increment();
 		container.addElement("TOTO", new InboxElement("test", "Message de test", null, 0));
 		Assert.assertEquals(0, nbNotifications.intValue());
 		container.registerInboxManagementListener(listener, false);
@@ -110,17 +95,9 @@ public class InboxContainerTest extends WithoutSpringTest {
 	@Test
 	public void testNotificationListenerApresExplosion() throws Exception {
 		final MutableInt nbNotifications = new MutableInt(0);
-		final InboxManagementListener listener = new InboxManagementListener() {
-			@Override
-			public void onNewInbox(String visa) {
-				nbNotifications.increment();
-			}
-		};
-		final InboxManagementListener boom = new InboxManagementListener() {
-			@Override
-			public void onNewInbox(String visa) {
-				throw new IllegalArgumentException("Exception de test!");
-			}
+		final InboxManagementListener listener = visa -> nbNotifications.increment();
+		final InboxManagementListener boom = visa -> {
+			throw new IllegalArgumentException("Exception de test!");
 		};
 		container.registerInboxManagementListener(boom, false);
 		container.registerInboxManagementListener(listener, false);

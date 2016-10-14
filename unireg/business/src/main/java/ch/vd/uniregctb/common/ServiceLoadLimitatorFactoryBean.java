@@ -89,12 +89,7 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 			// 1. le nombre d'appels en cours
 			{
 				final String name = buildRunningServiceName();
-				final LoadMonitorable service = new LoadMonitorable() {
-					@Override
-					public int getLoad() {
-						return load.get();
-					}
-				};
+				final LoadMonitorable service = load::get;
 				runningAverager = new LoadAverager(service, name, 600, 500);
 				runningAverager.start();
 				statsService.registerLoadMonitor(name, new BasicLoadMonitor(service, runningAverager));
@@ -103,12 +98,7 @@ public class ServiceLoadLimitatorFactoryBean<T> implements FactoryBean<T>, Initi
 			// 2. le nombre d'appels en attente
 			{
 				final String name = buildWaitingServiceName();
-				final LoadMonitorable service = new LoadMonitorable() {
-					@Override
-					public int getLoad() {
-						return workQueue.size();
-					}
-				};
+				final LoadMonitorable service = workQueue::size;
 				waitingAverager = new LoadAverager(service, name, 600, 500);
 				waitingAverager.start();
 				statsService.registerLoadMonitor(name, new BasicLoadMonitor(service, waitingAverager));

@@ -39,14 +39,11 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-			    @Override
-			    public void fillTable(PdfTableSimple table) throws DocumentException {
-			        table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
-			        table.addLigne("Mode d'extraction :", results.getMode().getDescription());
-				    table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
-			        table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-			    }
+			addTableSimple(2, table -> {
+			    table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
+			    table.addLigne("Mode d'extraction :", results.getMode().getDescription());
+				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
+			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
 		}
 
@@ -58,31 +55,25 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNombreCtbAnalyses()));
-					table.addLigne("Contribuables ignorés :", String.valueOf(results.getListeCtbsIgnores().size()));
-					table.addLigne("Contribuables en erreur :", String.valueOf(results.getListeErreurs().size()));
-					table.addLigne("Nombre de périodes trouvées :", String.valueOf(results.getListePeriode().size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNombreCtbAnalyses()));
+				table.addLigne("Contribuables ignorés :", String.valueOf(results.getListeCtbsIgnores().size()));
+				table.addLigne("Contribuables en erreur :", String.valueOf(results.getListeErreurs().size()));
+				table.addLigne("Nombre de périodes trouvées :", String.valueOf(results.getListePeriode().size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 
 		// Répartition par modes d'imposition
 		addEntete1("Répartition des périodes trouvées");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					final Map<ModeImposition, Integer> decoupage = results.getDecoupageEnModeImposition();
-					for (ModeImposition modeImposition : ModeImposition.values()) {
-						final Integer nb = decoupage.get(modeImposition);
-						if (nb != null && nb > 0) {
-							table.addLigne(modeImposition.texte(), String.valueOf(nb));
-						}
+			addTableSimple(2, table -> {
+				final Map<ModeImposition, Integer> decoupage = results.getDecoupageEnModeImposition();
+				for (ModeImposition modeImposition : ModeImposition.values()) {
+					final Integer nb = decoupage.get(modeImposition);
+					if (nb != null && nb > 0) {
+						table.addLigne(modeImposition.texte(), String.valueOf(nb));
 					}
 				}
 			});

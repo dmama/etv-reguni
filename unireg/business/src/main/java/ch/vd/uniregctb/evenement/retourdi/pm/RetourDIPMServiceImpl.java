@@ -517,12 +517,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			if (foundIds.isEmpty()) {
 				return super.getMessage();
 			}
-			final StringRenderer<Long> renderer = new StringRenderer<Long>() {
-				@Override
-				public String toString(Long id) {
-					return FormatNumeroHelper.numeroCTBToDisplay(id);
-				}
-			};
+			final StringRenderer<Long> renderer = FormatNumeroHelper::numeroCTBToDisplay;
 			return String.format("%d tiers trouvés : %s",
 			                     foundIds.size(),
 			                     CollectionsUtils.toString(foundIds, renderer, ", "));

@@ -38,12 +38,9 @@ public class PdfCalculParentesRapport extends PdfRapport {
 			// Paramètres
 			document.addEntete1("Paramètres");
 			{
-				document.addTableSimple(2, new TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-						table.addLigne("Mode :", String.valueOf(results.mode));
-					}
+				document.addTableSimple(2, table -> {
+					table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+					table.addLigne("Mode :", String.valueOf(results.mode));
 				});
 			}
 
@@ -55,14 +52,11 @@ public class PdfCalculParentesRapport extends PdfRapport {
 							+ "les valeurs ci-dessous sont donc incomplètes.");
 				}
 
-				document.addTableSimple(2, new TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre total de relations mises à jour :", String.valueOf(results.getUpdates().size()));
-						table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
-						table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-						table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-					}
+				document.addTableSimple(2, table -> {
+					table.addLigne("Nombre total de relations mises à jour :", String.valueOf(results.getUpdates().size()));
+					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 				});
 			}
 

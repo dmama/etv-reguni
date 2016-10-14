@@ -22,8 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.HibernateException;
@@ -312,22 +312,12 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<DateRanged<Etablissement>> getEtablissementsPrincipauxEntreprise(Entreprise entreprise) {
-		return getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
-			@Override
-			public boolean evaluate(ActiviteEconomique value) {
-				return value.isPrincipal();
-			}
-		});
+		return getEtablissementsEntreprise(entreprise, true, ActiviteEconomique::isPrincipal);
 	}
 
 	@Override
 	public List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise) {
-		return getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
-			@Override
-			public boolean evaluate(ActiviteEconomique value) {
-				return !value.isPrincipal();
-			}
-		});
+		return getEtablissementsEntreprise(entreprise, true, ae -> !ae.isPrincipal());
 	}
 
 	@Override
@@ -345,12 +335,9 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<Etablissement> getEtablissementsSecondairesEntreprise(Entreprise entreprise, final RegDate date) {
-		final List<DateRanged<Etablissement>> etablissementsEntreprise = getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
-			@Override
-			public boolean evaluate(ActiviteEconomique value) {
+		final List<DateRanged<Etablissement>> etablissementsEntreprise = getEtablissementsEntreprise(entreprise, true, ae -> {
 				final RegDate dateDeValeur = date != null ? date : RegDate.get();
-				return value.isValidAt(dateDeValeur) && !value.isPrincipal();
-			}
+				return ae.isValidAt(dateDeValeur) && !ae.isPrincipal();
 		});
 		List<Etablissement> etablissements = new ArrayList<>(etablissementsEntreprise.size());
 		for (DateRanged<Etablissement> etablissementDateRanged : etablissementsEntreprise) {
@@ -367,7 +354,7 @@ public class TiersServiceImpl implements TiersService {
 		final Set<RapportEntreTiers> sujets = entreprise.getRapportsSujet();
 		final List<DateRanged<Etablissement>> etablissements = new LinkedList<>();
 		for (RapportEntreTiers ret : sujets) {
-			if (!ret.isAnnule() && ret instanceof ActiviteEconomique && filtre.evaluate((ActiviteEconomique) ret)) {
+			if (!ret.isAnnule() && ret instanceof ActiviteEconomique && filtre.test((ActiviteEconomique) ret)) {
 				final Etablissement etb = (Etablissement) getTiers(ret.getObjetId());
 				if (etb != null) {
 					etablissements.add(new DateRanged<>(ret.getDateDebut(), ret.getDateFin(), etb));
@@ -1031,12 +1018,7 @@ public class TiersServiceImpl implements TiersService {
         Individu getIndividu(PersonnePhysique pp);
     }
 
-    private final IndividuProvider individuProviderWithoutDate = new IndividuProvider() {
-        @Override
-        public Individu getIndividu(PersonnePhysique pp) {
-            return TiersServiceImpl.this.getIndividu(pp);
-        }
-    };
+    private final IndividuProvider individuProviderWithoutDate = TiersServiceImpl.this::getIndividu;
 
     private Sexe getSexe(PersonnePhysique pp, IndividuProvider indProvider) {
         if (pp == null) {
@@ -2164,22 +2146,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         //[SIFISC-2703] tri des enfants par date de naissance croissante
-        Collections.sort(listeEnfants, new Comparator<PersonnePhysique>() {
-            @Override
-            public int compare(PersonnePhysique o1, PersonnePhysique o2) {
-                final RegDate dateNaissance1 = getDateNaissance(o1);
-                final RegDate dateNaissance2 = getDateNaissance(o2);
-                if (dateNaissance1 == null && dateNaissance2 == null) {
-                    return 0;
-                } else if (dateNaissance1 == null) {
-                    return -1;
-                } else if (dateNaissance2 == null) {
-                    return 1;
-                } else {
-                    return dateNaissance1.compareTo(dateNaissance2);
-                }
-            }
-        });
+        Collections.sort(listeEnfants, (pp1, pp2) -> NullDateBehavior.EARLIEST.compare(getDateNaissance(pp1), getDateNaissance(pp2)));
         return listeEnfants;
     }
 
@@ -6381,12 +6348,7 @@ public class TiersServiceImpl implements TiersService {
 			if (identificationEntreprises != null && !identificationEntreprises.isEmpty()) {
 				List<IdentificationEntreprise> ident = AnnulableHelper.sansElementsAnnules(identificationEntreprises);
 
-				Collections.sort(ident, new Comparator<IdentificationEntreprise>() {
-					@Override
-					public int compare(IdentificationEntreprise o1, IdentificationEntreprise o2) {
-						return o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
-					}
-				});
+				Collections.sort(ident, Comparator.comparing(IdentificationEntreprise::getLogCreationDate));
 				return CollectionsUtils.getLastElement(ident).getNumeroIde();
 			}
 		}
@@ -6410,12 +6372,7 @@ public class TiersServiceImpl implements TiersService {
 		Set<IdentificationEntreprise> identificationEntreprises = etablissement.getIdentificationsEntreprise();
 		if (identificationEntreprises != null && ! identificationEntreprises.isEmpty()) {
 			List<IdentificationEntreprise> ident = new ArrayList<>(identificationEntreprises);
-			Collections.sort(ident, new Comparator<IdentificationEntreprise>() {
-				@Override
-				public int compare(IdentificationEntreprise o1, IdentificationEntreprise o2) {
-					return o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
-				}
-			});
+			Collections.sort(ident, Comparator.comparing(IdentificationEntreprise::getLogCreationDate));
 			return CollectionsUtils.getLastElement(ident).getNumeroIde();
 		}
 		return null;

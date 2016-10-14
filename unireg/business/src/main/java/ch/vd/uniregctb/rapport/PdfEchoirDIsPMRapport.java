@@ -36,11 +36,8 @@ public class PdfEchoirDIsPMRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 
@@ -52,16 +49,13 @@ public class PdfEchoirDIsPMRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de déclarations inspectées:", String.valueOf(results.nbDIsTotal));
-					table.addLigne("Nombre de déclarations passées dans l'état échu:", String.valueOf(results.disEchues.size()));
-					table.addLigne("Nombre de déclarations en erreur:", String.valueOf(results.disEnErrors.size()));
-					table.addLigne("Nombre de déclarations ignorées:", String.valueOf(results.disIgnorees.size()));
-					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre total de déclarations inspectées:", String.valueOf(results.nbDIsTotal));
+				table.addLigne("Nombre de déclarations passées dans l'état échu:", String.valueOf(results.disEchues.size()));
+				table.addLigne("Nombre de déclarations en erreur:", String.valueOf(results.disEnErrors.size()));
+				table.addLigne("Nombre de déclarations ignorées:", String.valueOf(results.disIgnorees.size()));
+				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 

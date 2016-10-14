@@ -159,15 +159,10 @@ public class DeterminationQuestionnairesSNCResults extends JobResults<Long, Dete
 		traites.addAll(right.traites);
 	}
 
-	private static final StringRenderer<TacheEnvoiQuestionnaireSNC> ENVOI_RENDERER = new StringRenderer<TacheEnvoiQuestionnaireSNC>() {
-		@Override
-		public String toString(TacheEnvoiQuestionnaireSNC tache) {
-			return String.format("du %s au %s (%s)",
-			                     RegDateHelper.dateToDisplayString(tache.getDateDebut()),
-			                     RegDateHelper.dateToDisplayString(tache.getDateFin()),
-			                     tache.getCategorieEntreprise());
-		}
-	};
+	private static final StringRenderer<TacheEnvoiQuestionnaireSNC> ENVOI_RENDERER = tache -> String.format("du %s au %s (%s)",
+	                                                                                                        RegDateHelper.dateToDisplayString(tache.getDateDebut()),
+	                                                                                                        RegDateHelper.dateToDisplayString(tache.getDateFin()),
+	                                                                                                        tache.getCategorieEntreprise());
 
 	@Override
 	public void addErrorException(Long element, Exception e) {

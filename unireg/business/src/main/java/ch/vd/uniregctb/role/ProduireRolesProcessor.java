@@ -701,12 +701,7 @@ public class ProduireRolesProcessor {
 			// on va boucler sur tous les OIDs connus dans l'ordre des numéro de collectivité administrative
 			final List<OfficeImpot> oids = infraService.getOfficesImpot();
 			final List<OfficeImpot> oidsTries = new ArrayList<>(oids);
-			Collections.sort(oidsTries, new Comparator<OfficeImpot>() {
-				@Override
-				public int compare(OfficeImpot o1, OfficeImpot o2) {
-					return o1.getNoColAdm() - o2.getNoColAdm();
-				}
-			});
+			Collections.sort(oidsTries, Comparator.comparingInt(OfficeImpot::getNoColAdm));
 
 			// on commence enfin la boucle
 			int index = 0;

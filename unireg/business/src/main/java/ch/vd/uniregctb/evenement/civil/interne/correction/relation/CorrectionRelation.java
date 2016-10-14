@@ -63,19 +63,16 @@ public class CorrectionRelation extends EvenementCivilInterne {
 	protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		if (hasDifferenceSurConjoints()) {
 			// dans le cas où les conjoints ne sont pas ceux que l'on croit, on part en traitement manuel
-			erreurs.addErreur(String.format("L'historique des conjoints fiscaux n'est pas réconciliable de manière univoque avec les données civiles."));
+			erreurs.addErreur("L'historique des conjoints fiscaux n'est pas réconciliable de manière univoque avec les données civiles.");
 		}
 	}
 
-	private static final StringRenderer<RelationConjoint> REL_CNJNT_RENDERER = new StringRenderer<RelationConjoint>() {
-		@Override
-		public String toString(RelationConjoint rc) {
-			if (rc.noIndividuConjoint == null && rc.conjointFiscalConnu) {
-				return String.format("%s -> null (avec conjoint fiscal)", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin));
-			}
-			else {
-				return String.format("%s -> %d", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin), rc.noIndividuConjoint);
-			}
+	private static final StringRenderer<RelationConjoint> REL_CNJNT_RENDERER = rc -> {
+		if (rc.noIndividuConjoint == null && rc.conjointFiscalConnu) {
+			return String.format("%s -> null (avec conjoint fiscal)", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin));
+		}
+		else {
+			return String.format("%s -> %d", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin), rc.noIndividuConjoint);
 		}
 	};
 

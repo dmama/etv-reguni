@@ -34,12 +34,9 @@ public class PdfAppariementEtablissementsSecondairesRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-					table.addLigne("Mode simulation :", String.valueOf(results.simulation));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+				table.addLigne("Mode simulation :", String.valueOf(results.simulation));
 			});
 		}
 
@@ -51,15 +48,12 @@ public class PdfAppariementEtablissementsSecondairesRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'entreprises à inspecter :", String.valueOf(results.idsEntreprises.size()));
-					table.addLigne("Nombre d'appariements trouvés :", String.valueOf(results.getAppariements().size()));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre d'entreprises à inspecter :", String.valueOf(results.idsEntreprises.size()));
+				table.addLigne("Nombre d'appariements trouvés :", String.valueOf(results.getAppariements().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
 

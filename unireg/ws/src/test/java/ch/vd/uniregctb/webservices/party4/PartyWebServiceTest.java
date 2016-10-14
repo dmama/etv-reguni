@@ -1250,12 +1250,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(otherIds);
 		assertEquals(2, otherIds.size());
 
-		Collections.sort(otherIds, new Comparator<NamedPersonId>() {
-			@Override
-			public int compare(NamedPersonId o1, NamedPersonId o2) {
-				return o1.getPersonIdCategory().compareTo(o2.getPersonIdCategory());
-			}
-		});
+		Collections.sort(otherIds, Comparator.comparing(NamedPersonId::getPersonIdCategory));
 
 		final NamedPersonId otherId0 = otherIds.get(0);
 		assertNotNull(otherId0);
@@ -1305,12 +1300,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(otherIds);
 		assertEquals(2, otherIds.size());
 
-		Collections.sort(otherIds, new Comparator<NamedPersonId>() {
-			@Override
-			public int compare(NamedPersonId o1, NamedPersonId o2) {
-				return o1.getPersonIdCategory().compareTo(o2.getPersonIdCategory());
-			}
-		});
+		Collections.sort(otherIds, Comparator.comparing(NamedPersonId::getPersonIdCategory));
 
 		final NamedPersonId otherId0 = otherIds.get(0);
 		assertNotNull(otherId0);
@@ -2676,12 +2666,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(3, found.getItems().size());
 
 			final List<PartyInfo> allFound = new ArrayList<>(found.getItems());
-			Collections.sort(allFound, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(allFound, Comparator.comparing(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = allFound.get(0);
@@ -2762,12 +2747,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(3, found.getItems().size());
 
 			final List<PartyInfo> allFound = new ArrayList<>(found.getItems());
-			Collections.sort(allFound, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(allFound, Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = allFound.get(0);
@@ -3003,12 +2983,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(4, found.getItems().size());
 
 			final List<PartyInfo> allFound = new ArrayList<>(found.getItems());
-			Collections.sort(allFound, new Comparator<PartyInfo>() {
-				@Override
-				public int compare(PartyInfo o1, PartyInfo o2) {
-					return o1.getNumber() - o2.getNumber();
-				}
-			});
+			Collections.sort(allFound, Comparator.comparingInt(PartyInfo::getNumber));
 
 			{
 				final PartyInfo info = allFound.get(0);

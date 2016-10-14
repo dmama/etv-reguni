@@ -161,12 +161,7 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 		}
 
 		// tri de la liste par numéro du registre foncier
-		Collections.sort(listeProprio, new Comparator<ProprietaireFoncier>() {
-			@Override
-			public int compare(ProprietaireFoncier o1, ProprietaireFoncier o2) {
-				return o1.getNumeroRegistreFoncier() > o2.getNumeroRegistreFoncier() ? 1 : (o1.getNumeroRegistreFoncier() < o2.getNumeroRegistreFoncier() ? -1 : 0);
-			}
-		});
+		Collections.sort(listeProprio, Comparator.comparingLong(ProprietaireFoncier::getNumeroRegistreFoncier));
 
 		Audit.info("Nombre de propriétaires lus dans le fichier : " + proprietairesLus);
 		return listeProprio;

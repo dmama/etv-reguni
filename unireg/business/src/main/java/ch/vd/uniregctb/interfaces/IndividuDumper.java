@@ -162,12 +162,7 @@ public abstract class IndividuDumper {
 		}
 
 		final List<Origine> list = new ArrayList<>(coll);
-		Collections.sort(list, new Comparator<Origine>() {
-			@Override
-			public int compare(Origine o1, Origine o2) {
-				return o1.getNomLieu().compareTo(o2.getNomLieu());
-			}
-		});
+		Collections.sort(list, Comparator.comparing(Origine::getNomLieu));
 
 		StringBuilder s = new StringBuilder();
 		s.append("[");
@@ -206,15 +201,12 @@ public abstract class IndividuDumper {
 		}
 
 		final List<Nationalite> list = new ArrayList<>(coll);
-		Collections.sort(list, new Comparator<Nationalite>() {
-			@Override
-			public int compare(Nationalite o1, Nationalite o2) {
-				int compare = NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-				if (compare == 0) {
-					compare = Integer.compare(o1.getPays().getNoOFS(), o2.getPays().getNoOFS());
-				}
-				return compare;
+		Collections.sort(list, (o1, o2) -> {
+			int compare = NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
+			if (compare == 0) {
+				compare = Integer.compare(o1.getPays().getNoOFS(), o2.getPays().getNoOFS());
 			}
+			return compare;
 		});
 
 		final StringBuilder b = new StringBuilder();
@@ -352,15 +344,12 @@ public abstract class IndividuDumper {
 
 		// on trie les adresses pour pouvoir plus facilement les comparer
 		final ArrayList<Adresse> adresses = new ArrayList<>(list);
-		Collections.sort(adresses, new Comparator<Adresse>() {
-			@Override
-			public int compare(Adresse o1, Adresse o2) {
-				if (o1.getTypeAdresse() == o2.getTypeAdresse()) {
-					return DateRangeComparator.compareRanges(o1, o2);
-				}
-				else {
-					return o1.getTypeAdresse().compareTo(o2.getTypeAdresse());
-				}
+		Collections.sort(adresses, (o1, o2) -> {
+			if (o1.getTypeAdresse() == o2.getTypeAdresse()) {
+				return DateRangeComparator.compareRanges(o1, o2);
+			}
+			else {
+				return o1.getTypeAdresse().compareTo(o2.getTypeAdresse());
 			}
 		});
 

@@ -33,20 +33,10 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 
 	private static SortBuilder buildSortBuilder(final SortField.Type type, boolean addIdSorting) {
 		if (addIdSorting) {
-			return new SortBuilder() {
-				@Override
-				public Sort build(String fieldName, boolean reverse) {
-					return new Sort(new SortField(fieldName, type, reverse));
-				}
-			};
+			return (fieldName, reverse) -> new Sort(new SortField(fieldName, type, reverse));
 		}
 		else {
-			return new SortBuilder() {
-				@Override
-				public Sort build(String fieldName, boolean reverse) {
-					return new Sort(new SortField(fieldName, type, reverse), new SortField(MessageIdentificationIndexableData.TRI_ID, SortField.Type.LONG, reverse));
-				}
-			};
+			return (fieldName, reverse) -> new Sort(new SortField(fieldName, type, reverse), new SortField(MessageIdentificationIndexableData.TRI_ID, SortField.Type.LONG, reverse));
 		}
 	}
 

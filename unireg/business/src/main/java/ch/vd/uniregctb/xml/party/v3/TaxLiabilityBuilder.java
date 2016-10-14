@@ -30,60 +30,15 @@ public abstract class TaxLiabilityBuilder {
 	private static Map<Class, Builders> builders = new HashMap<>();
 
 	static {
-		builders.put(ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newSwissDiplomat((ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.HorsCanton.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newOtherCanton((ch.vd.uniregctb.metier.assujettissement.HorsCanton) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.HorsSuisse.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newForeignCountry((ch.vd.uniregctb.metier.assujettissement.HorsSuisse) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.Indigent.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newIndigent((ch.vd.uniregctb.metier.assujettissement.Indigent) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newMixedWithholding137Par1((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newMixedWithholding137Par2((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierPur.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newPureWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierPur) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.VaudoisDepense.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newExpenditureBased((ch.vd.uniregctb.metier.assujettissement.VaudoisDepense) right);
-			}
-		});
-		builders.put(ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire.class, new Builders() {
-			@Override
-			public TaxLiability instanciate(ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-				return newOrdinaryResident((ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire) right);
-			}
-		});
+		builders.put(ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse.class, right -> newSwissDiplomat((ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.HorsCanton.class, right -> newOtherCanton((ch.vd.uniregctb.metier.assujettissement.HorsCanton) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.HorsSuisse.class, right -> newForeignCountry((ch.vd.uniregctb.metier.assujettissement.HorsSuisse) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.Indigent.class, right -> newIndigent((ch.vd.uniregctb.metier.assujettissement.Indigent) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1.class, right -> newMixedWithholding137Par1((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2.class, right -> newMixedWithholding137Par2((ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.SourcierPur.class, right -> newPureWithholding((ch.vd.uniregctb.metier.assujettissement.SourcierPur) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.VaudoisDepense.class, right -> newExpenditureBased((ch.vd.uniregctb.metier.assujettissement.VaudoisDepense) right));
+		builders.put(ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire.class, right -> newOrdinaryResident((ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire) right));
 	}
 
 	private static SwissDiplomat newSwissDiplomat(ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse right) {

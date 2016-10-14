@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -437,32 +437,17 @@ public class TiersView {
 
 	@NotNull
 	public List<ForFiscalView> getForsFiscauxPrincipaux() {
-		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView ff) {
-				return ff.isPrincipal();
-			}
-		});
+		return extract(forsFiscaux, ForFiscalView::isPrincipal);
 	}
 
 	@NotNull
 	public List<ForFiscalView> getForsFiscauxSecondaires() {
-		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView ff) {
-				return ff.isSecondaire();
-			}
-		});
+		return extract(forsFiscaux, ForFiscalView::isSecondaire);
 	}
 
 	@NotNull
 	public List<ForFiscalView> getAutresForsFiscaux() {
-		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView ff) {
-				return !ff.isPrincipal() && !ff.isSecondaire();
-			}
-		});
+		return extract(forsFiscaux, ff -> !ff.isPrincipal() && !ff.isSecondaire());
 	}
 
 	@NotNull
@@ -470,18 +455,13 @@ public class TiersView {
 		if (source == null || source.isEmpty()) {
 			return Collections.emptyList();
 		}
-
-		final List<T> output = new ArrayList<>(source.size());
-		return CollectionUtils.select(source, predicate, output);
+		return source.stream()
+				.filter(predicate)
+				.collect(Collectors.toList());
 	}
 
 	public boolean isWithForIBC() {
-		final List<ForFiscalView> forsIBC = extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView object) {
-				return !object.isAnnule() && object.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL;
-			}
-		});
+		final List<ForFiscalView> forsIBC = extract(forsFiscaux, ff -> !ff.isAnnule() && ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL);
 		return !forsIBC.isEmpty();
 	}
 

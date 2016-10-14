@@ -32,23 +32,13 @@ public class TiersIndexableData extends IndexableData {
 	 * La différence entre ce {@link StringRenderer} et {@link IndexerFormatHelper#DEFAULT_RENDERER} est que, en cas de valeur absente,
 	 * nous renvoyons ici {@link StringUtils#EMPTY} tandis que {@link IndexerFormatHelper#DEFAULT_RENDERER} renvoie {@link IndexerFormatHelper#nullValue()}.
 	 */
-	private static final StringRenderer<Enum<?>> ENUM_RENDERER = new StringRenderer<Enum<?>>() {
-		@Override
-		public String toString(Enum<?> modality) {
-			return modality == null ? StringUtils.EMPTY : modality.name();
-		}
-	};
+	private static final StringRenderer<Enum<?>> ENUM_RENDERER = modality -> modality == null ? StringUtils.EMPTY : modality.name();
 
 	/**
 	 * La différence entre ce {@link StringRenderer} et {@link IndexerFormatHelper#BOOLEAN_RENDERER} est que, en cas de valeur absente,
 	 * nous renvoyons ici {@link StringUtils#EMPTY} tandis que {@link IndexerFormatHelper#BOOLEAN_RENDERER} renvoie {@link IndexerFormatHelper#nullValue()}.
 	 */
-	private static final StringRenderer<Boolean> BOOLEAN_RENDERER = new StringRenderer<Boolean>() {
-		@Override
-		public String toString(Boolean object) {
-			return object == null ? StringUtils.EMPTY : IndexerFormatHelper.booleanToString(object);
-		}
-	};
+	private static final StringRenderer<Boolean> BOOLEAN_RENDERER = object -> object == null ? StringUtils.EMPTY : IndexerFormatHelper.booleanToString(object);
 
 	// champs de recherche
 	public static final String NUMEROS = "S_NUMEROS";

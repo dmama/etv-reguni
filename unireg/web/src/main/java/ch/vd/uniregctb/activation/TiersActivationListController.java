@@ -142,21 +142,11 @@ public class TiersActivationListController extends AbstractTiersListController {
 	}
 
 	private static void filterOutAnnules(List<TiersIndexedDataView> views) {
-		CollectionUtils.filter(views, new Predicate<TiersIndexedDataView>() {
-			@Override
-			public boolean evaluate(TiersIndexedDataView view) {
-				return !view.isAnnule();
-			}
-		});
+		CollectionUtils.filter(views, view -> !view.isAnnule());
 	}
 
 	private static void filterOutNonAnnules(final List<TiersIndexedDataView> views) {
-		CollectionUtils.filter(views, new Predicate<TiersIndexedDataView>() {
-			@Override
-			public boolean evaluate(TiersIndexedDataView view) {
-				return view.isAnnule();
-			}
-		});
+		CollectionUtils.filter(views, TiersIndexedDataView::isAnnule);
 	}
 
 	/**

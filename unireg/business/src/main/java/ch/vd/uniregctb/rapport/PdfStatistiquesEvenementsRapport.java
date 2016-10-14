@@ -77,17 +77,14 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Evénements civils (personnes):", String.valueOf(civilsPersonnes != null));
-					table.addLigne("Evénements civils (organisations):", String.valueOf(civilsOrganisations != null));
-					table.addLigne("Evénements externes:", String.valueOf(externes != null));
-					table.addLigne("Evénements identification:", String.valueOf(identCtb != null));
-					table.addLigne("Evénements notaires:", String.valueOf(notaires != null));
-					table.addLigne("Date de référence:", RegDateHelper.dateToDisplayString(dateReference));
-					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-				}
+			addTableSimple(2, table -> {
+				table.addLigne("Evénements civils (personnes):", String.valueOf(civilsPersonnes != null));
+				table.addLigne("Evénements civils (organisations):", String.valueOf(civilsOrganisations != null));
+				table.addLigne("Evénements externes:", String.valueOf(externes != null));
+				table.addLigne("Evénements identification:", String.valueOf(identCtb != null));
+				table.addLigne("Evénements notaires:", String.valueOf(notaires != null));
+				table.addLigne("Date de référence:", RegDateHelper.dateToDisplayString(dateReference));
+				table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 			});
 		}
 
@@ -99,23 +96,20 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// Evénements civils : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(3, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
+				addTableSimple(3, table -> {
 
-						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
-						table.setHeaderRows(1);
+					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
+					table.setHeaderRows(1);
 
-						final Map<EtatEvenementCivil, Integer> etats = civilsPersonnes.getEtats();
-						final Map<EtatEvenementCivil, Integer> etatsNouveaux = civilsPersonnes.getEtatsNouveaux();
-						for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
-							final Integer nombre = etats.get(etat);
-							final Integer nombreNouveaux = etatsNouveaux.get(etat);
+					final Map<EtatEvenementCivil, Integer> etats = civilsPersonnes.getEtats();
+					final Map<EtatEvenementCivil, Integer> etatsNouveaux = civilsPersonnes.getEtatsNouveaux();
+					for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
+						final Integer nombre = etats.get(etat);
+						final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
-							final String total = toStringInt(nombre, 0);
-							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
-							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
-						}
+						final String total = toStringInt(nombre, 0);
+						final String totalNouveaux = toStringInt(nombreNouveaux, 0);
+						table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 					}
 				});
 			}
@@ -189,23 +183,20 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// Evénements civils : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(3, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
+				addTableSimple(3, table -> {
 
-						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
-						table.setHeaderRows(1);
+					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
+					table.setHeaderRows(1);
 
-						final Map<EtatEvenementOrganisation, Integer> etats = civilsOrganisations.getEtats();
-						final Map<EtatEvenementOrganisation, Integer> etatsNouveaux = civilsOrganisations.getEtatsNouveaux();
-						for (EtatEvenementOrganisation etat : EtatEvenementOrganisation.values()) {
-							final Integer nombre = etats.get(etat);
-							final Integer nombreNouveaux = etatsNouveaux.get(etat);
+					final Map<EtatEvenementOrganisation, Integer> etats = civilsOrganisations.getEtats();
+					final Map<EtatEvenementOrganisation, Integer> etatsNouveaux = civilsOrganisations.getEtatsNouveaux();
+					for (EtatEvenementOrganisation etat : EtatEvenementOrganisation.values()) {
+						final Integer nombre = etats.get(etat);
+						final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
-							final String total = toStringInt(nombre, 0);
-							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
-							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
-						}
+						final String total = toStringInt(nombre, 0);
+						final String totalNouveaux = toStringInt(nombreNouveaux, 0);
+						table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 					}
 				});
 			}
@@ -264,18 +255,15 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements externes : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
+				addTableSimple(2, table -> {
 
-						table.addLigne("Etat", "Total");
-						table.setHeaderRows(1);
+					table.addLigne("Etat", "Total");
+					table.setHeaderRows(1);
 
-						final Map<EtatEvenementExterne, Integer> etats = externes.getEtats();
-						for (EtatEvenementExterne etat : EtatEvenementExterne.values()) {
-							final Integer nombre = etats.get(etat);
-							table.addLigne(etat.name(), toStringInt(nombre, 0));
-						}
+					final Map<EtatEvenementExterne, Integer> etats = externes.getEtats();
+					for (EtatEvenementExterne etat : EtatEvenementExterne.values()) {
+						final Integer nombre = etats.get(etat);
+						table.addLigne(etat.name(), toStringInt(nombre, 0));
 					}
 				});
 			}
@@ -300,23 +288,20 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements d'identification de contribuable : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
+				addTableSimple(new float[] {60f, 20f, 20f}, table -> {
 
-						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
-						table.setHeaderRows(1);
+					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
+					table.setHeaderRows(1);
 
-						final Map<IdentificationContribuable.Etat, Integer> etats = identCtb.getEtats();
-						final Map<IdentificationContribuable.Etat, Integer> etatsNouveaux = identCtb.getEtatsNouveaux();
-						for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
-							final Integer nombre = etats.get(etat);
-							final Integer nombreNouveaux = etatsNouveaux.get(etat);
+					final Map<IdentificationContribuable.Etat, Integer> etats = identCtb.getEtats();
+					final Map<IdentificationContribuable.Etat, Integer> etatsNouveaux = identCtb.getEtatsNouveaux();
+					for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
+						final Integer nombre = etats.get(etat);
+						final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
-							final String total = toStringInt(nombre, 0);
-							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
-							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
-						}
+						final String total = toStringInt(nombre, 0);
+						final String totalNouveaux = toStringInt(nombreNouveaux, 0);
+						table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 					}
 				});
 			}
@@ -341,23 +326,20 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements ReqDes : états
 			addEntete1("Répartition par état");
 			{
-				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
-					@Override
-					public void fillTable(PdfTableSimple table) throws DocumentException {
+				addTableSimple(new float[] {60f, 20f, 20f}, table -> {
 
-						table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
-						table.setHeaderRows(1);
+					table.addLigne("Etat", "Total", "Reçus depuis " + RegDateHelper.dateToDisplayString(dateReference));
+					table.setHeaderRows(1);
 
-						final Map<EtatTraitement, Integer> etats = notaires.getEtats();
-						final Map<EtatTraitement, Integer> etatsNouveaux = notaires.getEtatsNouveaux();
-						for (EtatTraitement etat : EtatTraitement.values()) {
-							final Integer nombre = etats.get(etat);
-							final Integer nombreNouveaux = etatsNouveaux.get(etat);
+					final Map<EtatTraitement, Integer> etats = notaires.getEtats();
+					final Map<EtatTraitement, Integer> etatsNouveaux = notaires.getEtatsNouveaux();
+					for (EtatTraitement etat : EtatTraitement.values()) {
+						final Integer nombre = etats.get(etat);
+						final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
-							final String total = toStringInt(nombre, 0);
-							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
-							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
-						}
+						final String total = toStringInt(nombre, 0);
+						final String totalNouveaux = toStringInt(nombreNouveaux, 0);
+						table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 					}
 				});
 			}
@@ -545,12 +527,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
 			final List<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>> stats = new ArrayList<>(map.entrySet());
-			Collections.sort(stats, new Comparator<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>() {
-				@Override
-				public int compare(Map.Entry<EvtCivilEchMsgTypeKey, MutableInt> o1, Map.Entry<EvtCivilEchMsgTypeKey, MutableInt> o2) {
-					return o2.getValue().intValue() - o1.getValue().intValue();
-				}
-			});
+			Collections.sort(stats, Comparator.comparingInt(entry -> entry.getValue().intValue()));
 
 			// touche finale : remplissage de la chaîne de caractères qui finira dans le fichier CSV
 			contenu = CsvHelper.asCsvTemporaryFile(stats, fileName, statusManager, new CsvHelper.FileFiller<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>() {

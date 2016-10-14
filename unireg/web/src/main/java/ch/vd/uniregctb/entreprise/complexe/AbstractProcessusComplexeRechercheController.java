@@ -31,12 +31,7 @@ public abstract class AbstractProcessusComplexeRechercheController extends Abstr
 	@Override
 	public void afterPropertiesSet() {
 		this.searchComponent = buildSearchComponent(getSearchCriteriaSessionName(), getSearchResultViewPath(),
-		                                            new SearchTiersComponent.TiersCriteriaFiller() {
-			                                            @Override
-			                                            public void fill(TiersCriteriaView data) {
-				                                            fillCriteriaWithImplicitValues(data);
-			                                            }
-		                                            });
+		                                            this::fillCriteriaWithImplicitValues);
 	}
 
 	/**

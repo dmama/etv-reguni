@@ -34,15 +34,12 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// Paramètres
 		document.addEntete1("Paramètres");
 		{
-			document.addTableSimple(2, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
-					table.addLigne("Ecrasement autorisé :", String.valueOf(results.forceEcrasement));
-					table.addLigne("Noms/prénoms des parents :", String.valueOf(results.parents));
-					table.addLigne("Prénoms complets :", String.valueOf(results.prenoms));
-					table.addLigne("Nom de naissance :", String.valueOf(results.nomNaissance));
-				}
+			document.addTableSimple(2, table -> {
+				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+				table.addLigne("Ecrasement autorisé :", String.valueOf(results.forceEcrasement));
+				table.addLigne("Noms/prénoms des parents :", String.valueOf(results.parents));
+				table.addLigne("Prénoms complets :", String.valueOf(results.prenoms));
+				table.addLigne("Nom de naissance :", String.valueOf(results.nomNaissance));
 			});
 		}
 
@@ -54,19 +51,16 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 						                    + "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(new float[] {60, 40}, new TableSimpleCallback() {
-				@Override
-				public void fillTable(PdfTableSimple table) throws DocumentException {
-					final int sizeIgnores = results.getIgnores().size();
-					final int sizeTraites = results.getTraites().size();
-					final int sizeErreurs = results.getErreurs().size();
-					table.addLigne("Nombre total de personnes physiques analysées :", String.valueOf(sizeErreurs + sizeIgnores + sizeTraites));
-					table.addLigne("Nombre de cas ignorés :", String.valueOf(sizeIgnores));
-					table.addLigne("Nombre d'erreurs :", String.valueOf(sizeErreurs));
-					table.addLigne("Nombre d'anciens habitants modifiés :", String.valueOf(sizeTraites));
-					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
-					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
-				}
+			document.addTableSimple(new float[] {60, 40}, table -> {
+				final int sizeIgnores = results.getIgnores().size();
+				final int sizeTraites = results.getTraites().size();
+				final int sizeErreurs = results.getErreurs().size();
+				table.addLigne("Nombre total de personnes physiques analysées :", String.valueOf(sizeErreurs + sizeIgnores + sizeTraites));
+				table.addLigne("Nombre de cas ignorés :", String.valueOf(sizeIgnores));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(sizeErreurs));
+				table.addLigne("Nombre d'anciens habitants modifiés :", String.valueOf(sizeTraites));
+				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
 			});
 		}
 
