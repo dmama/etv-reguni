@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.permis;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -51,7 +51,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, null);
-				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", noIndividu)));
+				assertErreurs(evt, Collections.singletonList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", noIndividu)));
 				return null;
 			}
 		});
@@ -274,7 +274,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
 		});
@@ -316,7 +316,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
 		});
@@ -362,7 +362,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
 		});
@@ -453,7 +453,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
 		});
@@ -563,7 +563,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
-				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
+				assertErreurs(evt, Collections.singletonList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
 		});

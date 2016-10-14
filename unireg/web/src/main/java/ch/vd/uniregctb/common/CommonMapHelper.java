@@ -65,12 +65,7 @@ public class CommonMapHelper {
 				tmp.add(Pair.of(c, nom));
 			}
 		}
-    	Collections.sort(tmp, new Comparator<Pair<T, String>>() {
-			@Override
-			public int compare(Pair<T, String> o1, Pair<T, String> o2) {
-				return o1.getRight().compareTo(o2.getRight());
-			}
-		});
+    	Collections.sort(tmp, Comparator.comparing(Pair::getRight));
 
 		final Map<T, String> map = new LinkedHashMap<>();
 		for (Pair<T, String> pair : tmp) {
@@ -93,12 +88,7 @@ public class CommonMapHelper {
 			final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);
 			tmp.add(Pair.of(c, nom));
 		}
-		Collections.sort(tmp, new Comparator<Pair<T, String>>() {
-			@Override
-			public int compare(Pair<T, String> o1, Pair<T, String> o2) {
-				return o1.getRight().compareTo(o2.getRight());
-			}
-		});
+		Collections.sort(tmp, Comparator.comparing(Pair::getRight));
 
 		final Map<T, String> map = new LinkedHashMap<>();
 		for (Pair<T, String> pair : tmp) {

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.metier;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -715,12 +715,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -869,12 +869,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -982,12 +982,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 
 				marieIndividus(fabrice, georgette, dateMariage);
 			}
@@ -1111,12 +1111,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -1263,12 +1263,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				// pas d'adresse connue sur madame (oubli ?)
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -1392,13 +1392,13 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, null, dateMariage, dateSeparation.getOneDayBefore());
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Riex.BatimentRouteDeLaCorniche, null, null, dateSeparation, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -1503,13 +1503,13 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, null, dateMariage, dateSeparation.getOneDayBefore());
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockBatiment.Riex.BatimentRouteDeLaCorniche, null, null, dateSeparation, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRueSaintGeorges, null, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -1608,12 +1608,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, dateMariage.addMonths(10));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateMariage.addMonths(10).getOneDayAfter(), null);
 
@@ -1741,12 +1741,12 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
-				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
+				fabrice.setNationalites(Collections.singletonList(nationaliteFabrice));
 				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
-				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
+				georgette.setNationalites(Collections.singletonList(nationaliteGeorgette));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, dateMariage.addMonths(10));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, "Avenue des Champs-Elysées", "5", null, null, "75017 Paris", MockPays.France, dateMariage.addMonths(10).getOneDayAfter(), null);
 

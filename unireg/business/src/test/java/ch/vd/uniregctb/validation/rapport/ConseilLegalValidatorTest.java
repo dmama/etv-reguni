@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.validation.rapport;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +51,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 		conseilLegal.setSujet(pupille);
 		conseilLegal.setObjet(tuteur);
 		conseilLegal.setDateDebut(date(2000, 1, 1));
-		assertValidation(Arrays.asList("Une représentation légale ne peut s'appliquer que sur une personne physique"), null, validate(conseilLegal));
+		assertValidation(Collections.singletonList("Une représentation légale ne peut s'appliquer que sur une personne physique"), null, validate(conseilLegal));
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class ConseilLegalValidatorTest extends AbstractValidatorTest<Representat
 		curatelle.setSujet(pupille);
 		curatelle.setObjet(tuteur);
 		curatelle.setDateDebut(date(2000, 1, 1));
-		assertValidation(Arrays.asList("Un conseiller légal ne peut être qu'une personne physique ou une collectivité administrative"), null, validate(curatelle));
+		assertValidation(Collections.singletonList("Un conseiller légal ne peut être qu'une personne physique ou une collectivité administrative"), null, validate(curatelle));
 	}
 
 	/**

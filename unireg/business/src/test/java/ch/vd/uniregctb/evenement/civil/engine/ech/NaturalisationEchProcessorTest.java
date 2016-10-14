@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
+				individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
 			}
 		});
 
@@ -123,7 +123,7 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
+				individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse)));
 			}
 		});
 

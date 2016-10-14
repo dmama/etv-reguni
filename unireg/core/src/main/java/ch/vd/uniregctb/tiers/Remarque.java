@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
@@ -69,6 +69,6 @@ public class Remarque extends HibernateEntity implements LinkedEntity {
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return tiers == null ? null : Arrays.asList(tiers);
+		return tiers == null ? null : Collections.singletonList(tiers);
 	}
 }

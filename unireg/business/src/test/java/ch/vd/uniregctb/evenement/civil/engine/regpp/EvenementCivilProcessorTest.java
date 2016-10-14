@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.engine.regpp;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -632,7 +631,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				evt.setNumeroOfsCommuneAnnonce(ofs);
 				evt = evenementCivilRegPPDAO.save(evt);
 				if (etat == EtatEvenementCivil.EN_ERREUR) {
-					evt.addErrors(Arrays.asList(new EvenementCivilRegPPErreur("Erreur de test")));
+					evt.addErrors(Collections.singletonList(new EvenementCivilRegPPErreur("Erreur de test")));
 				}
 				return evt;
 			}

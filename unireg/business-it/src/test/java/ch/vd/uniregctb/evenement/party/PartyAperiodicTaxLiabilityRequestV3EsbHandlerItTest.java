@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class PartyAperiodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyRe
 
 	@Override
 	protected List<String> getResponseXSD() {
-		return Arrays.asList("event/party/taxliab-response-3.xsd");
+		return Collections.singletonList("event/party/taxliab-response-3.xsd");
 	}
 
 

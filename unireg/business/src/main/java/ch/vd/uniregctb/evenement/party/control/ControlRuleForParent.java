@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +54,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 					else {
 						//on est dans un echec du controle d'assujetissement sur le ménage du parent
 						final List<Long> ParentmenageCommunIds = resultMenagesParent.getEchec().getMenageCommunIds();
-						result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, ParentmenageCommunIds, Arrays.asList(parentId)));
+						result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, ParentmenageCommunIds, Collections.singletonList(parentId)));
 						//Si aucun menage trouvée, on reste sur les premières causes d'echecs notamment un assujettissement non conforme
 						if (resultMenagesParent.getEchec().getType() == TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE) {
 							result.getEchec().setAssujetissementNonConforme(assujettissementStatut.assujettissementNonConforme);

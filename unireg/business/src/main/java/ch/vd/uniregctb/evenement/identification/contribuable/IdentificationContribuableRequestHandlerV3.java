@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -189,6 +189,6 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 	}
 
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/identification/identification-contribuable-response-3.xsd"));
+		return Collections.singletonList(new ClassPathResource("event/identification/identification-contribuable-response-3.xsd"));
 	}
 }

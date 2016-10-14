@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.changement.arrivee;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -119,7 +119,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MAJEUR_SANS_FOR, 123454, ppId);
-				assertErreurs(evt, Arrays.asList("L'individu n'a pas de for fiscal principal connu."));
+				assertErreurs(evt, Collections.singletonList("L'individu n'a pas de for fiscal principal connu."));
 				return null;
 			}
 		});
@@ -142,7 +142,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_HS, 123454, ppId);
-				assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
+				assertErreurs(evt, Collections.singletonList(String.format("Le dernier for principal du contribuable %s est hors-Suisse.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
 				return null;
 			}
 		});
@@ -165,7 +165,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_MAUVAISE_COMMUNE, MockCommune.Aubonne.getNoOFS(), ppId);
-				assertErreurs(evt, Arrays.asList(String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
+				assertErreurs(evt, Collections.singletonList(String.format("Le dernier for principal du contribuable %s n'est pas sur la commune d'annonce de l'événement.", FormatNumeroHelper.numeroCTBToDisplay(ppId))));
 				return null;
 			}
 		});
@@ -191,7 +191,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
 				final String msg = String.format("Le dernier for principal sur le contribuable %s n'a pas été ouvert pour un motif d'arrivée (trouvé : %s).",
 						FormatNumeroHelper.numeroCTBToDisplay(ppId), MotifFor.CHGT_MODE_IMPOSITION.getDescription(true));
-				assertErreurs(evt, Arrays.asList(msg));
+				assertErreurs(evt, Collections.singletonList(msg));
 				return null;
 			}
 		});
@@ -214,7 +214,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_PAS_ARRIVEE, MockCommune.Cossonay.getNoOFS(), ppId);
-				assertErreurs(evt, Arrays.asList("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
+				assertErreurs(evt, Collections.singletonList("La date d'ouverture du for principal ne peut pas changer d'année avec le traitement automatique. Veuillez traiter ce cas manuellement."));
 				return null;
 			}
 		});
@@ -429,7 +429,7 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CorrectionDateArrivee evt = createValidEvenement(NO_IND_INCONNU, MockCommune.Cossonay.getNoOFS(), null);
-				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", NO_IND_INCONNU)));
+				assertErreurs(evt, Collections.singletonList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", NO_IND_INCONNU)));
 				return null;
 			}
 		});

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -1150,7 +1150,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		assertAssujetissmentModeImpositionNonConforme(result);
-		assertEquals(Arrays.asList(ids.idMc), result.getEchec().getMenageCommunIds());
+		assertEquals(Collections.singletonList(ids.idMc), result.getEchec().getMenageCommunIds());
 		assertEquals(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, result.getEchec().getType());
 	}
 
@@ -1199,7 +1199,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		assertAssujetissmentModeImpositionNonConforme(result);
-		assertEquals(Arrays.asList(ids.idPere), result.getEchec().getParentsIds());
+		assertEquals(Collections.singletonList(ids.idPere), result.getEchec().getParentsIds());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
 	}
 
@@ -1254,7 +1254,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		assertAssujetissmentModeImpositionNonConforme(result);
-		assertEquals(Arrays.asList(ids.idMenagePere), result.getEchec().getMenageCommunParentsIds());
+		assertEquals(Collections.singletonList(ids.idMenagePere), result.getEchec().getMenageCommunParentsIds());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
 	}
 
@@ -1316,7 +1316,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		});
 
 		assertAssujetissmentModeImpositionNonConforme(result);
-		assertEquals(Arrays.asList(ids.idMenage), result.getEchec().getMenageCommunParentsIds());
+		assertEquals(Collections.singletonList(ids.idMenage), result.getEchec().getMenageCommunParentsIds());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
 	}
 

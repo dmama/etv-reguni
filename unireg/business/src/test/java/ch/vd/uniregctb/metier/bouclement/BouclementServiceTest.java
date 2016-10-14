@@ -57,7 +57,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDateProchainBouclementReferenceAvant() throws Exception {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
-		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
+		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
 		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), true));
 		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), false));
@@ -68,7 +68,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDateDernierBouclementReferenceAvant() throws Exception {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
-		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
+		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
 		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2014, 1, 1), true));
 		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2014, 1, 1), false));
@@ -79,7 +79,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDateProchainBouclementDernierePeriodicite() throws Exception {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
-		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
+		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
 		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), true));
 		Assert.assertEquals(date(2015, 3, 31), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
@@ -94,7 +94,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDateDernierBouclementPremierePeriodicite() throws Exception {
 		// dates des bouclements attendues : 31.03.2015, 31.03.2016, ...
-		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
+		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12));
 
 		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), true));
 		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2015, 1, 1), false));
@@ -266,7 +266,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDateProchainBouclementFinFevrier() throws Exception {
 		// dates de bouclements attendues : 28.02.2014, 28.02.2015, 29.02.2016, 28.02.2017...
-		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2014, 2, 28), DayMonth.get(2, 28), 12));
+		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2014, 2, 28), DayMonth.get(2, 28), 12));
 		Assert.assertEquals(date(2014, 2, 28), service.getDateProchainBouclement(bouclements, date(2014, 1, 1), false));
 		Assert.assertEquals(date(2015, 2, 28), service.getDateProchainBouclement(bouclements, date(2015, 1, 1), false));
 		Assert.assertEquals(date(2016, 2, 29), service.getDateProchainBouclement(bouclements, date(2016, 1, 1), false));
@@ -484,7 +484,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	public void testExtractionBouclementsDepuisUneDate() throws Exception {
 		// annuel
 		{
-			final List<RegDate> dates = Arrays.asList(date(2015, 12, 31));
+			final List<RegDate> dates = Collections.singletonList(date(2015, 12, 31));
 			final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
 			Assert.assertNotNull(bouclements);
 			checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 12, 31));
@@ -503,7 +503,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		}
 		// trimestriel
 		{
-			final List<RegDate> dates = Arrays.asList(date(2015, 12, 31));
+			final List<RegDate> dates = Collections.singletonList(date(2015, 12, 31));
 			final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 3);
 			Assert.assertNotNull(bouclements);
 			checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 3, 31));

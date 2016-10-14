@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
@@ -91,6 +91,6 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 	@Transient
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return entreprise == null ? null : Arrays.asList(entreprise);
+		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 }

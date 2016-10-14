@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +74,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationData data = new IdentificationData(null, null, "Pittet", null, new PartialDate(1980, 1, 24), null, null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
 				assertNotNull(jaxbResponse);
@@ -120,7 +120,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationData data = new IdentificationData(null, null, "Pittet", null, new PartialDate(1980, 1, 24), null, null);
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
 				assertNotNull(jaxbResponse);
@@ -166,7 +166,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final IdentificationData data = new IdentificationData(null, null, nom, prenom, null, null, "Très grand");
-				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+				final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 				final JAXBElement<IdentificationContribuableResponse> jaxbResponse = handler.handle(request, "toto");
 				assertNotNull(jaxbResponse);
 
@@ -193,7 +193,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 	public void testDateNaissancePartielleInvalide() throws Exception {
 		final PartialDate dateNaissanceBidon = new PartialDate(2000, null, 20);     // cette date ne devrait pas être acceptée... notre XSD est trop lâche...
 		final IdentificationData data = new IdentificationData(null, null, "Tartempion", null, dateNaissanceBidon, null, null);
-		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 		try {
 			handler.handle(request, "toto");
 			fail("Aurait dû se plaindre de la date partielle pourrie");

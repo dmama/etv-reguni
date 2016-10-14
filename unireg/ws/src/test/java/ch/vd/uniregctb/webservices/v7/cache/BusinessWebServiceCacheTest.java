@@ -899,7 +899,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
 			assertEquals(2, getNumberOfCalls(calls));
 			assertEquals(2, getNumberOfCallsToGetParties(calls));
-			assertEquals(Arrays.asList(ids.eric.intValue()), getLastCallParametersToGetParties(calls).getLeft());
+			assertEquals(Collections.singletonList(ids.eric.intValue()), getLastCallParametersToGetParties(calls).getLeft());
 		}
 	}
 

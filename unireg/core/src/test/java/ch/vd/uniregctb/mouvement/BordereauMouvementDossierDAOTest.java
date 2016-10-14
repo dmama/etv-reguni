@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.mouvement;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class BordereauMouvementDossierDAOTest extends AbstractMouvementDossierDA
 
 				// mouvements à inclure dans un bordereau
 				final List<EnvoiDossierVersCollectiviteAdministrative> bordereauEnvoi = Arrays.asList(md1, md2, md3, md4, md5);
-				final List<ReceptionDossierArchives> bordereauReception = Arrays.asList(md7);
+				final List<ReceptionDossierArchives> bordereauReception = Collections.singletonList(md7);
 				addBordereau(bordereauEnvoi, EtatMouvementDossier.TRAITE);
 				addBordereau(bordereauReception, EtatMouvementDossier.TRAITE);
 

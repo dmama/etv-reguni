@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.rapport.travail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -623,7 +622,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/rt/rapport-travail-response-1.xsd"));
+		return Collections.singletonList(new ClassPathResource("event/rt/rapport-travail-response-1.xsd"));
 	}
 
 	private void validateDebiteur(DebiteurPrestationImposable dpi, DateRange periodeDeclaration) throws ServiceException {

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -84,7 +84,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 					final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
 					erreur.setMessage("Toto");
 					erreur.setType(TypeEvenementErreur.ERROR);
-					evt.setErreurs(new HashSet<>(Arrays.asList(erreur)));
+					evt.setErreurs(new HashSet<>(Collections.singletonList(erreur)));
 
 					hibernateTemplate.merge(evt);
 				}
@@ -188,7 +188,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 					final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
 					erreur.setMessage("Toto");
 					erreur.setType(TypeEvenementErreur.ERROR);
-					evt.setErreurs(new HashSet<>(Arrays.asList(erreur)));
+					evt.setErreurs(new HashSet<>(Collections.singletonList(erreur)));
 
 					hibernateTemplate.merge(evt);
 				}

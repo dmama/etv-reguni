@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.editique;
 
 import javax.resource.spi.ResourceAdapter;
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -130,7 +130,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final PersonnePhysique jose = addNonHabitant("José", "Papenddrum", date(1972, 3, 4), Sexe.MASCULIN);
 		addForPrincipal(jose, date(2000, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Renens);
 
-		final EditiqueResultat resultat = composition.imprimeNouveauxDossiers(Arrays.asList((Contribuable) jose));
+		final EditiqueResultat resultat = composition.imprimeNouveauxDossiers(Collections.singletonList((Contribuable) jose));
 		assertNotNull("Aucun document reçu en retour après " + RECEIVE_TIMEOUT + " secondes", resultat);
 		assertInstanceOf(EditiqueResultatDocument.class, resultat);
 		assertEquals("application/pdf", ((EditiqueResultatDocument) resultat).getContentType());

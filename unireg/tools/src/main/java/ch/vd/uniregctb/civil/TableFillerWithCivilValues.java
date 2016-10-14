@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -357,13 +358,13 @@ public class TableFillerWithCivilValues {
 					throw e;
 				}
 				else {
-					dumpIndividus(Arrays.asList(new CollectedData(data.get(0).noIndividu, e)), dbConnectionPool, this);
+					dumpIndividus(Collections.singletonList(new CollectedData(data.get(0).noIndividu, e)), dbConnectionPool, this);
 				}
 			}
 			else {
 				// un par un
 				for (CollectedData ind : data) {
-					dumpIndividus(Arrays.asList(ind), dbConnectionPool, null);
+					dumpIndividus(Collections.singletonList(ind), dbConnectionPool, null);
 				}
 			}
 		}
@@ -387,13 +388,13 @@ public class TableFillerWithCivilValues {
 			if (nosIndividus.size() == 1) {
 				// rien à faire de plus, ça pête déjà pour lui,,,
 				final Long noIndividu = nosIndividus instanceof List<?> ? ((List<Long>) nosIndividus).get(0) : nosIndividus.iterator().next();
-				return Arrays.asList(new CollectedData(noIndividu, e));
+				return Collections.singletonList(new CollectedData(noIndividu, e));
 			}
 			else {
 				// un par un
 				final List<CollectedData> res = new ArrayList<>(nosIndividus.size());
 				for (Long noIndividu : nosIndividus) {
-					res.addAll(getIndividus(Arrays.asList(noIndividu), parts));
+					res.addAll(getIndividus(Collections.singletonList(noIndividu), parts));
 				}
 				return res;
 			}

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party.control;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,15 +111,15 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 				switch (analyse.getOrigine()) {
 				case MENAGE_COMMUN:
 					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES);
-					echec.setMenageCommunIds(Arrays.asList(analyse.getIdTiersAssujetti()));
+					echec.setMenageCommunIds(Collections.singletonList(analyse.getIdTiersAssujetti()));
 					break;
 				case PARENT:
 					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO);
-					echec.setParentsIds(Arrays.asList(analyse.getIdTiersAssujetti()));
+					echec.setParentsIds(Collections.singletonList(analyse.getIdTiersAssujetti()));
 					break;
 				case MENAGE_COMMUN_PARENT:
 					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO);
-					echec.setMenageCommunParentsIds(Arrays.asList(analyse.getIdTiersAssujetti()));
+					echec.setMenageCommunParentsIds(Collections.singletonList(analyse.getIdTiersAssujetti()));
 					break;
 				default:
 					echec = new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO);

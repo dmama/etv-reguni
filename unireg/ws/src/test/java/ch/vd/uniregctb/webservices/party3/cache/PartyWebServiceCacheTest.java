@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.webservices.party3.cache;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -636,7 +636,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
 			assertEquals(2, implementation.getBatchTiersCalls.size());
 			assertEquals(params.getPartyNumbers(), implementation.getBatchTiersCalls.get(0).getPartyNumbers());
-			assertEquals(Arrays.asList(ids.eric.intValue()), implementation.getBatchTiersCalls.get(1).getPartyNumbers());
+			assertEquals(Collections.singletonList(ids.eric.intValue()), implementation.getBatchTiersCalls.get(1).getPartyNumbers());
 		}
 	}
 

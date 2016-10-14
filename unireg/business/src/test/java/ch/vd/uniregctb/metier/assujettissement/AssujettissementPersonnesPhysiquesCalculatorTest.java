@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -4437,7 +4438,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createUnForSimple();
 		final List<Assujettissement> assujettissements = determine(ctb, RANGE_2000_2008, false);
 		for (Assujettissement a : assujettissements) {
-			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
+			assertCommunesActives(a, Collections.singletonList(MockCommune.Lausanne.getNoOFS()));
 		}
 	}
 
@@ -4447,7 +4448,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createHorsCantonAvecImmeuble(date(2006, 3, 12));
 		final List<Assujettissement> assujettissements = determine(ctb, RANGE_2006_2008, false);
 		for (Assujettissement a : assujettissements) {
-			assertCommunesActives(a, Arrays.asList(MockCommune.Aubonne.getNoOFS()));
+			assertCommunesActives(a, Collections.singletonList(MockCommune.Aubonne.getNoOFS()));
 		}
 	}
 
@@ -4479,7 +4480,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		for (int annee = 2005 ; annee <= 2007 ; ++ annee) {
 			final List<Assujettissement> assujettissements = determine(ctb, annee);
-			final List<Integer> communeActive = Arrays.asList(annee < 2006 ? MockCommune.Lausanne.getNoOFS() : MockCommune.Leysin.getNoOFS());
+			final List<Integer> communeActive = Collections.singletonList(annee < 2006 ? MockCommune.Lausanne.getNoOFS() : MockCommune.Leysin.getNoOFS());
 			for (Assujettissement a : assujettissements) {
 				assertCommunesActives(a, communeActive);
 			}
@@ -4492,7 +4493,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createDecesVaudoisOrdinaire(date(1990, 4, 21), date(2005, 5, 12));
 		final List<Assujettissement> assujettissements = determine(ctb, 2005);
 		for (Assujettissement a : assujettissements) {
-			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
+			assertCommunesActives(a, Collections.singletonList(MockCommune.Lausanne.getNoOFS()));
 		}
 	}
 
@@ -4502,7 +4503,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createDepartHorsSuisse(date(2005, 5, 12));
 		final List<Assujettissement> assujettissements = determine(ctb, 2005);
 		for (Assujettissement a : assujettissements) {
-			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
+			assertCommunesActives(a, Collections.singletonList(MockCommune.Lausanne.getNoOFS()));
 		}
 	}
 
@@ -4512,7 +4513,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final PersonnePhysique ctb = createDepartHorsSuisseAvecImmeuble(date(2005, 5, 12));
 		final List<Assujettissement> assujettissements = determine(ctb, 2005);
 		for (Assujettissement a : assujettissements) {
-			assertCommunesActives(a, Arrays.asList(MockCommune.Lausanne.getNoOFS()));
+			assertCommunesActives(a, Collections.singletonList(MockCommune.Lausanne.getNoOFS()));
 		}
 	}
 

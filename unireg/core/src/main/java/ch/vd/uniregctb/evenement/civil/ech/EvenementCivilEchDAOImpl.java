@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -48,7 +47,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 
 	@Override
 	public List<EvenementCivilEch> getEvenementsCivilsPourIndividu(long noIndividu, boolean followLinks) {
-		return getEvenementsCivilsNonTraites(Arrays.asList(noIndividu), false, followLinks);
+		return getEvenementsCivilsNonTraites(Collections.singletonList(noIndividu), false, followLinks);
 	}
 
 	@SuppressWarnings("unchecked")

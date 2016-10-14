@@ -56,7 +56,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	@Test
 	public void testGetCelibataire() throws Exception {
 		final MaritalData celibataire = newMaritalData(date(1960, 1, 1), "1", null);
-		final List<MaritalData> statuses = Arrays.asList(celibataire);
+		final List<MaritalData> statuses = Collections.singletonList(celibataire);
 
 		final EtatCivilList ecList = IndividuRCPers.initEtatsCivils(statuses);
 		assertNotNull(ecList);
@@ -1095,7 +1095,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final RegDate depart = date(2008, 12, 3);
 		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
 
-		final List<Residence> residences = Arrays.asList(res);
+		final List<Residence> residences = Collections.singletonList(res);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1131,7 +1131,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
 		res.setGoesTo(new Destination(StringUtils.EMPTY, null, null, null));    // <-- unknown
 
-		final List<Residence> residences = Arrays.asList(res);
+		final List<Residence> residences = Collections.singletonList(res);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1174,7 +1174,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final String ville = "Madrid";
 		res.setGoesTo(new Destination(null, null, new Destination.ForeignCountry(newCountry(pays), ville), null));
 
-		final List<Residence> residences = Arrays.asList(res);
+		final List<Residence> residences = Collections.singletonList(res);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1225,7 +1225,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final String ville = "Madrid";
 		res.setGoesTo(new Destination(null, null, new Destination.ForeignCountry(newCountry(pays), ville), newAddressInformation(MockRue.Echallens.GrandRue)));
 
-		final List<Residence> residences = Arrays.asList(res);
+		final List<Residence> residences = Collections.singletonList(res);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1275,7 +1275,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MockCommune commune = MockCommune.Aigle;
 		res.setGoesTo(newDestination(commune));
 
-		final List<Residence> residences = Arrays.asList(res);
+		final List<Residence> residences = Collections.singletonList(res);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1321,7 +1321,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		destination.setMailAddress(newAddressInformation(MockRue.Aubonne.CheminTraverse));
 		res.setGoesTo(destination);
 
-		final List<Residence> residences = Arrays.asList(res);
+		final List<Residence> residences = Collections.singletonList(res);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<Contact>emptyList(), residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1370,8 +1370,8 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
 		final Contact ctct = newContact(depart.getOneDayAfter(), null, MockRue.Bussigny.RueDeLIndustrie);
 
-		final List<Residence> residences = Arrays.asList(res);
-		final List<Contact> contacts = Arrays.asList(ctct);
+		final List<Residence> residences = Collections.singletonList(res);
+		final List<Contact> contacts = Collections.singletonList(ctct);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, contacts, residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
@@ -1514,7 +1514,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Contact ctct = newContact(depart.addMonths(-1), depart.addMonths(1), MockRue.Bussigny.RueDeLIndustrie);
 
 		final List<Residence> residences = Arrays.asList(res1, res2);
-		final List<Contact> contacts = Arrays.asList(ctct);
+		final List<Contact> contacts = Collections.singletonList(ctct);
 		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, contacts, residences, null, infraService);
 		assertNotNull(adresses);
 		assertEquals(4, adresses.size());
@@ -1575,7 +1575,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// premier test avec la date de décès (on doit donc ignorer la date de fin de l'adresse)
 		{
-			final List<Adresse> adresses = IndividuRCPers.initAdresses(null, null, Arrays.asList(res), deces, infraService);
+			final List<Adresse> adresses = IndividuRCPers.initAdresses(null, null, Collections.singletonList(res), deces, infraService);
 			assertNotNull(adresses);
 			assertEquals(1, adresses.size());
 
@@ -1594,7 +1594,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// second test sans la date de décès (là, on n'ignore pas la fin civile de l'adresse)
 		{
-			final List<Adresse> adresses = IndividuRCPers.initAdresses(null, null, Arrays.asList(res), null, infraService);
+			final List<Adresse> adresses = IndividuRCPers.initAdresses(null, null, Collections.singletonList(res), null, infraService);
 			assertNotNull(adresses);
 			assertEquals(1, adresses.size());
 

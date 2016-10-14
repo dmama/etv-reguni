@@ -160,10 +160,13 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           "CH")), null);
 
 		final PlaceOfOrigin origin = new PlaceOfOrigin(MockCommune.Bale.getNomOfficiel(), CantonAbbreviation.valueOf(MockCommune.Bale.getSigleCanton()));
-		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null), residence, stakeholderId));
-		final List<StakeholderReferenceWithRole> refWithRoles = Arrays.asList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
+		final List<Stakeholder> stakeholders = Collections.singletonList(
+				new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null),
+				                residence, stakeholderId));
+		final List<StakeholderReferenceWithRole> refWithRoles = Collections.singletonList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
 
-		final List<Transaction> transactions = Arrays.asList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
+		final List<Transaction> transactions =
+				Collections.singletonList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
 		final NotarialInformation notarialInformation = buildNotarialInformation(buildActor("fr32ghs", "Garibaldi", "Alfredo"), null);
 		final CreationModification creationModification = buildMsg(buildNotarialDeed(dateActe, noMinute), notarialInformation, stakeholders, transactions);
 
@@ -321,10 +324,13 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           MockPays.Suisse.getCodeIso2())), null);
 
 		final PlaceOfOrigin origin = new PlaceOfOrigin(MockCommune.Zurich.getNomOfficiel(), CantonAbbreviation.valueOf(MockCommune.Zurich.getSigleCanton()));
-		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null), residence, stakeholderId));
-		final List<StakeholderReferenceWithRole> refWithRoles = Arrays.asList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
+		final List<Stakeholder> stakeholders = Collections.singletonList(
+				new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null),
+				                residence, stakeholderId));
+		final List<StakeholderReferenceWithRole> refWithRoles = Collections.singletonList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
 
-		final List<Transaction> transactions = Arrays.asList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
+		final List<Transaction> transactions =
+				Collections.singletonList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
 		final NotarialInformation notarialInformation = buildNotarialInformation(buildActor("fr32ghs", "Garibaldi", "Alfredo"), null);
 		final CreationModification creationModification = buildMsg(buildNotarialDeed(dateActe, noMinute), notarialInformation, stakeholders, transactions);
 
@@ -497,10 +503,13 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           MockPays.Suisse.getCodeIso2())), null);
 
 		final PlaceOfOrigin origin = new PlaceOfOrigin(MockCommune.Zurich.getNomOfficiel(), CantonAbbreviation.valueOf(MockCommune.Zurich.getSigleCanton()));
-		final List<Stakeholder> stakeholders = Arrays.asList(new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null), residence, stakeholderId));
-		final List<StakeholderReferenceWithRole> refWithRoles = Arrays.asList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
+		final List<Stakeholder> stakeholders = Collections.singletonList(
+				new Stakeholder(registryOrigin, identity, null, new MaritalStatus("2", null, new Date(2000, 1, 1), null, new Partner(new FullName("De la campagnola", "Philippine"), null)), new Nationality(new Swissness(origin), null, null, null),
+				                residence, stakeholderId));
+		final List<StakeholderReferenceWithRole> refWithRoles = Collections.singletonList(new StakeholderReferenceWithRole(stakeholderId, StakeholderRole.BUYER));
 
-		final List<Transaction> transactions = Arrays.asList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
+		final List<Transaction> transactions =
+				Collections.singletonList(new Transaction("Une transaction", Arrays.asList(MockCommune.Leysin.getNoOFS(), MockCommune.Aigle.getNoOFS()), refWithRoles, InscriptionMode.INSCRIPTION, InscriptionType.PROPERTY));
 		final NotarialInformation notarialInformation = buildNotarialInformation(buildActor("fr32ghs", "Garibaldi", "Alfredo"), null);
 		final CreationModification creationModification = buildMsg(buildNotarialDeed(dateActe, noMinute), notarialInformation, stakeholders, transactions);
 

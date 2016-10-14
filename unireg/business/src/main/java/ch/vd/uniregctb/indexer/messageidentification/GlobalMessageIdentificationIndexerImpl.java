@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.indexer.messageidentification;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -129,7 +129,7 @@ public class GlobalMessageIdentificationIndexerImpl implements GlobalMessageIden
 
 	private void reindex(long id, boolean eraseBeforeIndexing) {
 		final IdentificationContribuable msg = identCtbDAO.get(id);
-		reindex(Arrays.asList(msg), eraseBeforeIndexing);
+		reindex(Collections.singletonList(msg), eraseBeforeIndexing);
 	}
 
 	private void reindex(List<IdentificationContribuable> list, boolean eraseBeforeIndexing) {

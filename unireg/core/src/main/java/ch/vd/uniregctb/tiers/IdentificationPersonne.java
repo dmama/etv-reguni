@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
@@ -94,6 +94,6 @@ public class IdentificationPersonne extends HibernateEntity implements LinkedEnt
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return personnePhysique == null ? null : Arrays.asList(personnePhysique);
+		return personnePhysique == null ? null : Collections.singletonList(personnePhysique);
 	}
 }

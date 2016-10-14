@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 		handler = new EvenementExterneEsbHandler();
 		handler.setHandler(service);
 
-		final List<EvenementExterneConnector> connectors = Arrays.<EvenementExterneConnector>asList(getTestedConnector());
+		final List<EvenementExterneConnector> connectors = Collections.<EvenementExterneConnector>singletonList(getTestedConnector());
 		handler.setConnectors(connectors);
 		handler.afterPropertiesSet();
 	}

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.identification.individus;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class IdentificationParNoAVS13 implements StrategieIdentification {
 			return Collections.emptyList();
 		}
 
-		final ListOfPersons l = rcPersClient.getPersonsBySocialsNumbers(Arrays.asList(nouveauNoAVS), null, false);
+		final ListOfPersons l = rcPersClient.getPersonsBySocialsNumbers(Collections.singletonList(nouveauNoAVS), null, false);
 		if (l.getNumberOfResults().intValue() == 0) {
 			return Collections.emptyList();
 		}

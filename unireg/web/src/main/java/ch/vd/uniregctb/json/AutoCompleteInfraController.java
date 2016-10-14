@@ -223,7 +223,7 @@ public class AutoCompleteInfraController {
 		}
 
 		if (categories.contains(InfraCategory.JUSTICES_DE_PAIX)) {
-			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Arrays.asList(TypeCollectivite.SIGLE_JPAIX));
+			final List<CollectiviteAdministrative> colls = serviceInfrastructureService.getCollectivitesAdministratives(Collections.singletonList(TypeCollectivite.SIGLE_JPAIX));
 			if (colls != null) {
 				for (CollectiviteAdministrative c : colls) {
 					final String nomComplet = String.format("%s %s", c.getNomComplet1(), c.getNomComplet2());

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.adresse;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,27 +29,27 @@ public class AdresseMixerTest {
 		assertEmpty(AdresseMixer.splitAt(Collections.<AdresseGenerique>emptyList(), Collections.<RegDate>emptySet()));
 
 		// une seule date qui coupe
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(null, null)), newSet(date(2000, 1, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(null, null)), newSet(date(2000, 1, 1))),
 				newAdresse(null, date(1999, 12, 31)), newAdresse(date(2000, 1, 1), null));
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(null, date(2010, 3, 12))), newSet(date(2000, 1, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(null, date(2010, 3, 12))), newSet(date(2000, 1, 1))),
 				newAdresse(null, date(1999, 12, 31)), newAdresse(date(2000, 1, 1), date(2010, 3, 12)));
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(date(1955, 11, 22), date(2010, 3, 12))), newSet(date(2000, 1, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(date(1955, 11, 22), date(2010, 3, 12))), newSet(date(2000, 1, 1))),
 				newAdresse(date(1955, 11, 22), date(1999, 12, 31)), newAdresse(date(2000, 1, 1), date(2010, 3, 12)));
 
 		// une seule date qui ne coupe pas
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(null, null)), Collections.<RegDate>emptySet()),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(null, null)), Collections.<RegDate>emptySet()),
 				newAdresse(null, null));
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(null, date(2010, 3, 12))), newSet(date(2020, 1, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(null, date(2010, 3, 12))), newSet(date(2020, 1, 1))),
 				newAdresse(null, date(2010, 3, 12)));
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(date(1955, 11, 22), date(2010, 3, 12))), newSet(date(1925, 1, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(date(1955, 11, 22), date(2010, 3, 12))), newSet(date(1925, 1, 1))),
 				newAdresse(date(1955, 11, 22), date(2010, 3, 12)));
 
 		// deux dates qui coupent la même adresse
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(null, null)), newSet(date(2000, 1, 1), date(2007, 7, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(null, null)), newSet(date(2000, 1, 1), date(2007, 7, 1))),
 				newAdresse(null, date(1999, 12, 31)), newAdresse(date(2000, 1, 1), date(2007, 6, 30)), newAdresse(date(2007, 7, 1), null));
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(null, date(2010, 3, 12))), newSet(date(2000, 1, 1), date(2007, 7, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(null, date(2010, 3, 12))), newSet(date(2000, 1, 1), date(2007, 7, 1))),
 				newAdresse(null, date(1999, 12, 31)), newAdresse(date(2000, 1, 1), date(2007, 6, 30)), newAdresse(date(2007, 7, 1), date(2010, 3, 12)));
-		assertRanges(AdresseMixer.splitAt(Arrays.asList(newAdresse(date(1955, 11, 22), date(2010, 3, 12))), newSet(date(2000, 1, 1), date(2007, 7, 1))),
+		assertRanges(AdresseMixer.splitAt(Collections.singletonList(newAdresse(date(1955, 11, 22), date(2010, 3, 12))), newSet(date(2000, 1, 1), date(2007, 7, 1))),
 				newAdresse(date(1955, 11, 22), date(1999, 12, 31)), newAdresse(date(2000, 1, 1), date(2007, 6, 30)), newAdresse(date(2007, 7, 1), date(2010, 3, 12)));
 	}
 

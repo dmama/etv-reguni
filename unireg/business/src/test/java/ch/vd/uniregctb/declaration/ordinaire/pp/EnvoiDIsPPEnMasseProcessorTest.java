@@ -2,7 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -273,7 +272,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = date(2008, 1, 23);
 		final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
-		final DeclarationsCache dcache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
+		final DeclarationsCache dcache = processor.new DeclarationsCache(2007, Collections.singletonList(ids.ctb));
 		final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 		final TacheEnvoiDeclarationImpotPP tache = hibernateTemplate.get(TacheEnvoiDeclarationImpotPP.class, ids.tache);
 
@@ -436,7 +435,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final RegDate dateTraitement = date(annee + 1, 1, 15);
-				final List<Long> idsCtb = Arrays.asList(ids.marcId);
+				final List<Long> idsCtb = Collections.singletonList(ids.marcId);
 
 				final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
 				processor.traiterBatch(idsCtb, rapport, annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement);
@@ -1682,7 +1681,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertEquals(0, results.ctbsIgnores.size());
 		assertEquals(0, results.ctbsIndigents.size());
 
-		assertEquals(Arrays.asList(ppId), results.ctbsAvecDiGeneree);
+		assertEquals(Collections.singletonList(ppId), results.ctbsAvecDiGeneree);
 	}
 
 	/**

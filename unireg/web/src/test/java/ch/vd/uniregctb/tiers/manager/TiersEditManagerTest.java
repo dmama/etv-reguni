@@ -960,7 +960,7 @@ public class TiersEditManagerTest extends WebTest {
 
 		// passage en SEMESTRIEL / non-supergra
 		{
-			final List<RegDate> expectedDates = Arrays.asList(nextNewYear);         // on ne commence pas avant, c'est déjà semestriel avant
+			final List<RegDate> expectedDates = Collections.singletonList(nextNewYear);         // on ne commence pas avant, c'est déjà semestriel avant
 			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.SEMESTRIEL, oneYearFromNow, true);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()) + " vs " + Arrays.toString(expectedDates.toArray()), expectedDates.size(), dates.size());
@@ -988,7 +988,7 @@ public class TiersEditManagerTest extends WebTest {
 
 		// passage en ANNUEL / non-supergra
 		{
-			final List<RegDate> expectedDates = Arrays.asList(date(year, 1, 1));
+			final List<RegDate> expectedDates = Collections.singletonList(date(year, 1, 1));
 			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, PeriodiciteDecompte.ANNUEL, oneYearFromNow, true);
 			assertNotNull(dates);
 			assertEquals(Arrays.toString(dates.toArray()) + " vs " + Arrays.toString(expectedDates.toArray()), expectedDates.size(), dates.size());

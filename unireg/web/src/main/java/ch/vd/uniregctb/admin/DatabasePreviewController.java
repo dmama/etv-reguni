@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.admin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +71,7 @@ public class DatabasePreviewController {
 					nomsPrenoms = adresseService.getNomCourrier(t, null, false);
 				}
 				catch (Exception e) {
-					nomsPrenoms = Arrays.asList("Exception: " + e.getMessage());
+					nomsPrenoms = Collections.singletonList("Exception: " + e.getMessage());
 				}
 
 				final InfoTiers info = new InfoTiers(numero, type, nomsPrenoms);

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 	@Test
 	public void testSansNumeroContribuable() throws Exception {
 		final long noRf = 1234L;
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", date(1975, 3, 15), null)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", date(1975, 3, 15), null)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -65,7 +65,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 	public void testAvecNumeroContribuableInconnu() throws Exception {
 		final long noRf = 1234L;
 		final Long noCtbDonne = 99999998L;
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", date(1975, 3, 15), noCtbDonne)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", date(1975, 3, 15), noCtbDonne)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -116,7 +116,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ppId);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissance, ppId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissance, ppId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -168,7 +168,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		Assert.assertNotNull(ppId);
 
 		final RegDate dateNaissanceRf = dateNaissance.addMonths(7);
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissanceRf, ppId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissanceRf, ppId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -219,7 +219,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ppId);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", null, ppId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", null, ppId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -268,7 +268,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ppId);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissance, ppId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissance, ppId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -319,7 +319,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ppId);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissance, ppId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissance, ppId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -370,7 +370,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ppId);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto Henri", dateNaissance, ppId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto Henri", dateNaissance, ppId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -440,7 +440,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ids);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissanceM, ids.mcId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Toto", dateNaissanceM, ids.mcId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -510,7 +510,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ids);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Tata", dateNaissanceMme, ids.mcId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Tata", dateNaissanceMme, ids.mcId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);
@@ -580,7 +580,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		});
 		Assert.assertNotNull(ids);
 
-		final RapprocherCtbResults res = processor.run(Arrays.asList(new ProprietaireFoncier(noRf, "Tartempion", "Tutu", dateNaissanceMme, ids.mcId)), null, RegDate.get(), 1);
+		final RapprocherCtbResults res = processor.run(Collections.singletonList(new ProprietaireFoncier(noRf, "Tartempion", "Tutu", dateNaissanceMme, ids.mcId)), null, RegDate.get(), 1);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.nbCtbsTotal);
 		Assert.assertNotNull(res.ctbsEnErreur);

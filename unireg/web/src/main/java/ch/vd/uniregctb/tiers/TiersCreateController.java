@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -438,7 +437,7 @@ public class TiersCreateController {
 
 		final PeriodiciteDecompte periodicite = fiscalView.getPeriodiciteDecompte();
 		final PeriodeDecompte periode = periodicite == PeriodiciteDecompte.UNIQUE ? fiscalView.getPeriodeDecompte() : null;
-		dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(periodicite, periode, RegDate.get(RegDate.get().year(), 1, 1), null))));
+		dpi.setPeriodicites(new HashSet<>(Collections.singletonList(new Periodicite(periodicite, periode, RegDate.get(RegDate.get().year(), 1, 1), null))));
 
 		setComplementCommunication(dpi, view.getComplementCommunication());
 		setComplementCoordFinanciere(dpi, view.getComplementCoordFinanciere());

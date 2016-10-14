@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.webservice.rcpers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +45,7 @@ public class RcPersServiceTest {
 	public void testGetPeople() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final ListOfPersons list = client.getPersons(Arrays.asList(476228L), null, false);
+		final ListOfPersons list = client.getPersons(Collections.singletonList(476228L), null, false);
 		assertNotNull(list);
 		assertEquals(1, list.getNumberOfResults().intValue());
 
@@ -70,7 +69,7 @@ public class RcPersServiceTest {
 		final RcPersClientImpl client = buildClient();
 		final RegDate dateNaissance = RegDate.get(1976, 4, 15);
 
-		final ListOfPersons list = client.getPersons(Arrays.asList(347101L), null, true);
+		final ListOfPersons list = client.getPersons(Collections.singletonList(347101L), null, true);
 		assertNotNull(list);
 		assertEquals(1, list.getNumberOfResults().intValue());
 

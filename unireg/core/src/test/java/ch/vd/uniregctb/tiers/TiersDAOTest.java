@@ -1523,7 +1523,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		// Charge le contribuable principal à travers getBatch et en demandant les rapports-entre-tiers (va tirer le ménage commun) et la liste des fors fiscaux
-		final List<Tiers> list = dao.getBatch(Arrays.asList(id), EnumSet.of(Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS));
+		final List<Tiers> list = dao.getBatch(Collections.singletonList(id), EnumSet.of(Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS));
 		assertEquals(1, list.size());
 
 		final PersonnePhysique paul = (PersonnePhysique) list.get(0);
@@ -1582,7 +1582,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		// charge le débiteur
 		final Set<Parts> parts = new HashSet<>();
 		parts.add(Parts.RAPPORTS_ENTRE_TIERS);
-		final List<Tiers> tiers = dao.getBatch(Arrays.asList(id), parts);
+		final List<Tiers> tiers = dao.getBatch(Collections.singletonList(id), parts);
 		assertEquals(1, tiers.size());
 
 		final Tiers t0 = tiers.get(0);

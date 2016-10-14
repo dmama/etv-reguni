@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -343,7 +344,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 			@Override
 			protected void init() {
 				final MockIndividu bebe = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
-				bebe.setParents(Arrays.<RelationVersIndividu>asList(new RelationVersIndividuImpl(noIndividuMere, TypeRelationVersIndividu.MERE, dateNaissance, null)));
+				bebe.setParents(Collections.<RelationVersIndividu>singletonList(new RelationVersIndividuImpl(noIndividuMere, TypeRelationVersIndividu.MERE, dateNaissance, null)));
 			}
 		});
 

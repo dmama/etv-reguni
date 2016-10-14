@@ -2,7 +2,6 @@ package ch.vd.unireg.interfaces.infra.host;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -324,7 +323,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<Localite> getLocalitesByONRP(int numeroOrdre) throws ServiceInfrastructureException {
 		try {
 			final Localite localite = LocaliteImpl.get(serviceInfrastructure.getLocalite(numeroOrdre));
-			return localite == null ? Collections.<Localite>emptyList() : Arrays.asList(localite);
+			return localite == null ? Collections.<Localite>emptyList() : Collections.singletonList(localite);
 		}
 		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la localite", e);

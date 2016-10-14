@@ -2,7 +2,7 @@ package ch.vd.uniregctb.mouvement;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,7 +118,7 @@ public class BordereauController {
 
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
 		criteria.setTypeMouvement(typeMouvement);
-		criteria.setEtatsMouvement(Arrays.asList(EtatMouvementDossier.A_ENVOYER));
+		criteria.setEtatsMouvement(Collections.singletonList(EtatMouvementDossier.A_ENVOYER));
 		criteria.setInclureMouvementsAnnules(false);
 		if (typeMouvement == TypeMouvement.ReceptionDossier) {
 			// les bordereaux de réception sont pour les archives

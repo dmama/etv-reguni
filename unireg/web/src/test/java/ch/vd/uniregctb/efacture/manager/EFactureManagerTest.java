@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.efacture.manager;
 
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.Test;
@@ -114,7 +114,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 							new PayerWithHistory(
 									new PayerId("BUSINESS_ID", "BILLER_ID"),
 									PayerStatus.INSCRIT,
-									new PayerWithHistory.HistoryOfSituations(Arrays.asList(pshe)),
+									new PayerWithHistory.HistoryOfSituations(Collections.singletonList(pshe)),
 									new PayerWithHistory.HistoryOfRequests()),
 							NO_CTB);
 				}

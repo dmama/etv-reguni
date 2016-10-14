@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tache;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -81,7 +81,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		v1Handler.setEvenementCediService(cediHandler);
 
 		cediListener = new EvenementRetourDiEsbMessageHandler();
-		cediListener.setHandlers(Arrays.<RetourDiHandler<?>>asList(v1Handler));
+		cediListener.setHandlers(Collections.<RetourDiHandler<?>>singletonList(v1Handler));
 		cediListener.setHibernateTemplate(hibernateTemplate);
 		cediListener.afterPropertiesSet();
 

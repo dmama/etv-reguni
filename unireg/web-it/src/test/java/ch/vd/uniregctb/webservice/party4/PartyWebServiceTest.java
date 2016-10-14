@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.webservice.party4;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -1726,7 +1725,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 	@Test
 	public void testGetNaturalPersonWithUnknownWeddingDate() throws Exception {
 
-		final GetPartyRequest params = new GetPartyRequest(login, 10615671, Arrays.asList(PartyPart.FAMILY_STATUSES));
+		final GetPartyRequest params = new GetPartyRequest(login, 10615671, Collections.singletonList(PartyPart.FAMILY_STATUSES));
 		final NaturalPerson person = (NaturalPerson) service.getParty(params);
 		assertNotNull(person);
 

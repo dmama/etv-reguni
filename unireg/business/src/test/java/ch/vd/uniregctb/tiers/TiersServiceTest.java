@@ -2938,14 +2938,14 @@ debut PF                                                                        
 		// individu avec nationalité suisse
 		{
 			MockIndividu ind = new MockIndividu();
-			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.Suisse)));
+			ind.setNationalites(Collections.<Nationalite>singletonList(new MockNationalite(null, null, MockPays.Suisse)));
 			assertTrue(tiersService.isSuisse(ind, null));
 		}
 
 		// individu avec nationalité française
 		{
 			MockIndividu ind = new MockIndividu();
-			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.France)));
+			ind.setNationalites(Collections.<Nationalite>singletonList(new MockNationalite(null, null, MockPays.France)));
 			assertFalse(tiersService.isSuisse(ind, null));
 		}
 

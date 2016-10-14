@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -349,7 +349,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 
 		// //debugValidationResults(hab.validate());
-		assertValidation(Arrays.asList("Le for principal qui commence le 12.08.2005 chevauche le for précédent"), null, validate(hab));
+		assertValidation(Collections.singletonList("Le for principal qui commence le 12.08.2005 chevauche le for précédent"), null, validate(hab));
 	}
 
 	/**
@@ -431,7 +431,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			hab.addForFiscal(forFiscal);
 		}
 
-		assertValidation(Arrays.asList("Le for principal qui commence le 03.10.2006 chevauche le for précédent"), null, validate(hab));
+		assertValidation(Collections.singletonList("Le for principal qui commence le 03.10.2006 chevauche le for précédent"), null, validate(hab));
 	}
 
 	/**
@@ -475,7 +475,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		// Validation KO
 		forFiscalSecondaire.setDateDebut(RegDate.get(1990, 6, 1));
 		forFiscalSecondaire.setDateFin(RegDate.get(2005, 12, 31));
-		assertValidation(Arrays.asList("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le 01.06.1990 et se termine le 31.12.2005"), null, validate(hab));
+		assertValidation(Collections.singletonList("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le 01.06.1990 et se termine le 31.12.2005"), null, validate(hab));
 	}
 
 	@Test

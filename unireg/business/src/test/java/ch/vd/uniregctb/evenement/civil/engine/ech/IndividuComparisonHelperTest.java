@@ -17,7 +17,7 @@ public class IndividuComparisonHelperTest  extends WithoutSpringTest {
 		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(null, Collections.<Integer>emptyList(), IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
 		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(Collections.<Integer>emptyList(), null, IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
 		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(Arrays.asList(1, 2, 3), Arrays.asList(3, 1, 2), IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
-		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(Arrays.asList(1), Arrays.asList(1), IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
+		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(Collections.singletonList(1), Collections.singletonList(1), IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
 		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(Arrays.asList(1, 2), Arrays.asList(1, 2), IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
 
 		Assert.assertFalse(IndividuComparisonHelper.areContentsEqual(Arrays.asList(1, 2, 3), null, IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));

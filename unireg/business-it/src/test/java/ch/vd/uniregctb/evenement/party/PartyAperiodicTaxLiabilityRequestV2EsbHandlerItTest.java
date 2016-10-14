@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -52,7 +52,7 @@ public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRe
 
 	@Override
 	protected List<String> getResponseXSD() {
-		return Arrays.asList("event/party/taxliab-response-2.xsd");
+		return Collections.singletonList("event/party/taxliab-response-2.xsd");
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)

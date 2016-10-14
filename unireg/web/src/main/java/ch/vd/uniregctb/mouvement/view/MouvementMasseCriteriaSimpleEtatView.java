@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.mouvement.view;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 
@@ -39,7 +39,7 @@ public class MouvementMasseCriteriaSimpleEtatView extends MouvementMasseCriteria
 			return EtatMouvementDossier.getEtatsTraites();
 		}
 		else {
-			return Arrays.asList(etatMouvement);
+			return Collections.singletonList(etatMouvement);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.civil.data;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ public class PermisListTest extends WithoutSpringTest {
 		// Un seul permis = [1.3.1960..fin-des-temps]
 		final MockPermis permis1 = new MockPermis();
 		permis1.setDateDebutValidite(RegDate.get(1960, 3, 1));
-		final PermisList list = new PermisListImpl(Arrays.<Permis>asList(permis1));
+		final PermisList list = new PermisListImpl(Collections.<Permis>singletonList(permis1));
 
 		final Permis p1 = list.getPermisActif(null);
 		assertNotNull(p1);
@@ -55,7 +56,7 @@ public class PermisListTest extends WithoutSpringTest {
 		final MockPermis permis1 = new MockPermis();
 		permis1.setDateDebutValidite(RegDate.get(1960, 3, 1));
 		permis1.setDateFinValidite(RegDate.get(1990, 1, 1));
-		final PermisList list = new PermisListImpl(Arrays.<Permis>asList(permis1));
+		final PermisList list = new PermisListImpl(Collections.<Permis>singletonList(permis1));
 
 		final Permis p1 = list.getPermisActif(null);
 		assertNull(p1);
@@ -112,7 +113,7 @@ public class PermisListTest extends WithoutSpringTest {
 		// (ceci est un cas réel existant sur le host)
 		final MockPermis permis1 = new MockPermis();
 		permis1.setDateDebutValidite(null);
-		final PermisList list = new PermisListImpl(Arrays.<Permis>asList(permis1));
+		final PermisList list = new PermisListImpl(Collections.<Permis>singletonList(permis1));
 
 		Permis p1 = list.getPermisActif(null);
 		assertNotNull(p1);

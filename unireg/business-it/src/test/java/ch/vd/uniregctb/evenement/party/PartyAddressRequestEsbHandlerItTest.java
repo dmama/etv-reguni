@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -65,7 +65,7 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerV
 
 	@Override
 	protected List<String> getResponseXSD() {
-		return Arrays.asList("event/party/address-response-1.xsd");
+		return Collections.singletonList("event/party/address-response-1.xsd");
 	}
 
 	@Override

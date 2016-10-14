@@ -11,7 +11,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -82,7 +82,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		globalTiersIndexer.sync();
 
 		final IdentificationData data = new NaturalPersonIdentificationData("MaDemande", 7569396525489L, null, "Monnier", "Christophe", null, null);
-		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -130,7 +130,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		globalTiersIndexer.sync();
 
 		final IdentificationData data = new CorporationIdentificationData("MaDemandePM", null, "Pittet Echaffaudages", null);
-		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -184,7 +184,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		globalTiersIndexer.sync();
 
 		final IdentificationData data = new NaturalPersonIdentificationData("Monnier, tu dors...?", null, null, "Monnier", "Christophe", null, null);
-		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -224,7 +224,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		globalTiersIndexer.sync();
 
 		final IdentificationData data = new NaturalPersonIdentificationData("Raphaello", null, null, "Adam", "Raphaël", null, null);
-		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {

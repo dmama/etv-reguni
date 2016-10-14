@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.civil.rcpers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +56,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws ServiceCivilException {
 
 		// on récupère la personne
-		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), null, true);
+		final ListOfPersons list = getPersonsSafely(Collections.singletonList(noIndividu), null, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}

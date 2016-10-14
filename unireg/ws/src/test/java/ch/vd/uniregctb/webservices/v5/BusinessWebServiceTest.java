@@ -1049,7 +1049,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Arrays.asList("CHE123456789"), info.getUidNumbers().getUidNumber());
+				Assert.assertEquals(Collections.singletonList("CHE123456789"), info.getUidNumbers().getUidNumber());
 			}
 			{
 				final PartyInfo info = sortedRes.get(1);
@@ -1061,7 +1061,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Arrays.asList("CHE987654321"), info.getUidNumbers().getUidNumber());
+				Assert.assertEquals(Collections.singletonList("CHE987654321"), info.getUidNumbers().getUidNumber());
 			}
 			{
 				final PartyInfo info = sortedRes.get(2);
@@ -1094,7 +1094,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Arrays.asList("CHE123456789"), info.getUidNumbers().getUidNumber());
+				Assert.assertEquals(Collections.singletonList("CHE123456789"), info.getUidNumbers().getUidNumber());
 			}
 		}
 
@@ -1116,7 +1116,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(NaturalPersonSubtype.NON_RESIDENT, info.getNaturalPersonSubtype());
 				Assert.assertEquals(IndividualTaxLiabilityType.NONE, info.getIndividualTaxLiability());
 				Assert.assertNotNull(info.getUidNumbers());
-				Assert.assertEquals(Arrays.asList("CHE987654321"), info.getUidNumbers().getUidNumber());
+				Assert.assertEquals(Collections.singletonList("CHE987654321"), info.getUidNumbers().getUidNumber());
 			}
 		}
 

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		final long noCtb = 10020040L;
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noCtb, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noCtb, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -89,7 +88,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 		});
 
 		final long noCtb = 10020040L;
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noCtb, 23));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noCtb, 23));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -126,7 +125,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -163,7 +162,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -203,7 +202,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -254,7 +253,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -305,7 +304,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -356,7 +355,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());
@@ -401,7 +400,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			}
 		});
 
-		final List<ContribuableAvecCodeSegment> coll = Arrays.asList(new ContribuableAvecCodeSegment(noTiers, 4));
+		final List<ContribuableAvecCodeSegment> coll = Collections.singletonList(new ContribuableAvecCodeSegment(noTiers, 4));
 		final ImportCodesSegmentResults res = processor.run(coll, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNombreTiersAnalyses());

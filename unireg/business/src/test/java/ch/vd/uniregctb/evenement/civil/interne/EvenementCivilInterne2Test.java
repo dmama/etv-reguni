@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -198,7 +198,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 				evenDateNull.validate(collector, collector);
 				assertTrue(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
-				assertContent(Arrays.asList("L'événement n'est pas daté"), collector.getErreurs());
+				assertContent(Collections.singletonList("L'événement n'est pas daté"), collector.getErreurs());
 				collector.clear();
 
 				//test KO date future
@@ -206,7 +206,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 				evenDateFuture.validate(collector, collector);
 				assertTrue(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
-				assertContent(Arrays.asList("La date de l'événement est dans le futur"), collector.getErreurs());
+				assertContent(Collections.singletonList("La date de l'événement est dans le futur"), collector.getErreurs());
 				collector.clear();
 
 				//test OK numéro OFS commune du sentier

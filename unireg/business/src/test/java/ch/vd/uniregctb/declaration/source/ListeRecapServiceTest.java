@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.declaration.source;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -402,14 +402,14 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 		// cas simple sur une seule période fiscale (= pas de coupure à générer)
 		{
-			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2010, 5, 14), date(2010, 9, 10)));
+			final List<DateRange> periodesADecouper = Collections.<DateRange>singletonList(new DateRangeHelper.Range(date(2010, 5, 14), date(2010, 9, 10)));
 			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 			checkSameCollections(periodesADecouper, periodesDecoupees);
 		}
 
 		// cas simple sur deux périodes fiscales
 		{
-			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2009, 2, 1), date(2010, 9, 10)));
+			final List<DateRange> periodesADecouper = Collections.<DateRange>singletonList(new DateRangeHelper.Range(date(2009, 2, 1), date(2010, 9, 10)));
 			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
 			final List<DateRange> periodeAttendues = new ArrayList<>();
@@ -421,7 +421,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 		// cas simple sur plusieurs périodes fiscales
 		{
-			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2006, 5, 14), date(2010, 9, 10)));
+			final List<DateRange> periodesADecouper = Collections.<DateRange>singletonList(new DateRangeHelper.Range(date(2006, 5, 14), date(2010, 9, 10)));
 			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
 			final List<DateRange> periodesAttendues = new ArrayList<>();
@@ -483,7 +483,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				final List<DateRange> periodeACompleter = Arrays.<DateRange>asList(new DateRangeHelper.Range(dateDebut, date(2009, 12, 31)));
+				final List<DateRange> periodeACompleter = Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebut, date(2009, 12, 31)));
 				final List<DateRange> lrTrouvees = ListeRecapServiceImpl.extrairePeriodesAvecPeriodicites(dpi, periodeACompleter);
 
 				// attendues : mensuelles sur 2008, trimestrielles sur 2009

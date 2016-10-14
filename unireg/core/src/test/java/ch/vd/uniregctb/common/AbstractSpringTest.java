@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -234,7 +235,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 		/* crée un objet Authentication */
 		GrantedAuthority auth = new SimpleGrantedAuthority(username);
-		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(auth));
+		User user = new User(username, "noPwd", true, true, true, true, Collections.singletonList(auth));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd");
 
 		/* Enregistre le context de sécurité */

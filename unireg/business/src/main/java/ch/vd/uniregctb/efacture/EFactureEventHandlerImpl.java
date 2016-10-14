@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -259,7 +258,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		if (tiers instanceof PersonnePhysique) {
 			final String avsStr = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
 			final Long noAvs = StringUtils.isBlank(avsStr) ? null : AvsHelper.stringToLong(avsStr);
-			list = new HashSet<>(Arrays.asList(noAvs));
+			list = new HashSet<>(Collections.singletonList(noAvs));
 		}
 		else if (tiers instanceof MenageCommun) {
 			final Set<PersonnePhysique> pps = tiersService.getPersonnesPhysiques((MenageCommun) tiers);

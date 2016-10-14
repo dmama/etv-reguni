@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.regpp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -88,12 +88,12 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	@Override
 	public void traiteEvenementCivil(final Long evenementCivilId) {
-		traiteEvenements(Arrays.asList(evenementCivilId), true, true, null);
+		traiteEvenements(Collections.singletonList(evenementCivilId), true, true, null);
 	}
 
 	@Override
 	public void recycleEvenementCivil(final Long evenementCivilId) {
-		traiteEvenements(Arrays.asList(evenementCivilId), false, true, null);
+		traiteEvenements(Collections.singletonList(evenementCivilId), false, true, null);
 	}
 
 	@Override

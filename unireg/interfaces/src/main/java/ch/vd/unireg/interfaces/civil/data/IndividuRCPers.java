@@ -2,7 +2,6 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -140,7 +139,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		else {
 			this.parents = initParents(this.naissance, person.getCurrentParent());
-			this.conjoints = initConjoints(this.deces, Arrays.asList(person.getCurrentMaritalStatus()));
+			this.conjoints = initConjoints(this.deces, Collections.singletonList(person.getCurrentMaritalStatus()));
 		}
 
 		try {
@@ -358,7 +357,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	protected static List<Nationalite> initNationalites(Nationality nationalite, ServiceInfrastructureRaw infraService) {
-		return initNationalites(Arrays.asList(nationalite), infraService);
+		return initNationalites(Collections.singletonList(nationalite), infraService);
 	}
 
 	protected static List<Nationalite> initNationalites(List<Nationality> nationalities, ServiceInfrastructureRaw infraService) {
@@ -380,7 +379,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (permis == null) {
 			return null;
 		}
-		return new PermisListImpl(Arrays.asList(PermisRCPers.get(permis)));
+		return new PermisListImpl(Collections.singletonList(PermisRCPers.get(permis)));
 	}
 
 	private static PermisList initPermis(List<ResidencePermit> permis) {
@@ -504,10 +503,10 @@ public class IndividuRCPers implements Individu, Serializable {
 		final DateRange life = new DateRangeHelper.Range(bigBang, null);
 		final DateRangeAdapterCallback callback = new DateRangeAdapterCallback();
 		final Set<TypeAdresseCivil> typesPrisEnCompte = EnumSet.of(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE);
-		List<DateRange> holes = Arrays.asList(life);
+		List<DateRange> holes = Collections.singletonList(life);
 		for (Adresse adr : adresses) {
 			if (typesPrisEnCompte.contains(adr.getTypeAdresse())) {
-				holes = DateRangeHelper.subtract(holes, Arrays.asList(adr), callback);
+				holes = DateRangeHelper.subtract(holes, Collections.singletonList(adr), callback);
 			}
 		}
 

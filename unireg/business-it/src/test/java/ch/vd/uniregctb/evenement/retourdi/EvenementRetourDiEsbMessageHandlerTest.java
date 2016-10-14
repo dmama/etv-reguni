@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.retourdi;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -104,7 +105,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<>();
 
-		esbHandler.setHandlers(Arrays.<RetourDiHandler<?>>asList(new V1Handler() {
+		esbHandler.setHandlers(Collections.<RetourDiHandler<?>>singletonList(new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) {
 				events.add(evt);
@@ -147,7 +148,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<>();
 
-		esbHandler.setHandlers(Arrays.<RetourDiHandler<?>>asList(new V1Handler() {
+		esbHandler.setHandlers(Collections.<RetourDiHandler<?>>singletonList(new V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) {
 				events.add(evt);

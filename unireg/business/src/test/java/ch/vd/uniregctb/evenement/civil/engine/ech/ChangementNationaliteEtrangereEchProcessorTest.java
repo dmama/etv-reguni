@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class ChangementNationaliteEtrangereEchProcessorTest extends AbstractEven
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setNationalites(Arrays.asList((Nationalite) new MockNationalite(dateChangement, null, MockPays.Albanie)));
+				individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateChangement, null, MockPays.Albanie)));
 			}
 		});
 

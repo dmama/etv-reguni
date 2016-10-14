@@ -343,7 +343,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber(ids.menage.intValue());
-			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.ADDRESSES));
 
 			final CommonHousehold menage = (CommonHousehold) service.getParty(params);
 			assertNotNull(menage);
@@ -417,7 +417,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.tiia);
-			params.getParts().addAll(Arrays.asList(PartyPart.ADDRESSES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.ADDRESSES));
 
 			final NaturalPerson tiia = (NaturalPerson) service.getParty(params);
 			assertNotNull(tiia);
@@ -795,7 +795,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber(id.intValue());
-			params.getParts().addAll(Arrays.asList(PartyPart.VIRTUAL_TAX_RESIDENCES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.VIRTUAL_TAX_RESIDENCES));
 
 			// on s'assure que l'appartenance ménage annulé n'est pas pris en compte (s'il l'était, on recevrait une exception avec le message "Détecté 2 fors fiscaux principaux valides à la même date")
 			final NaturalPerson arnold = (NaturalPerson) service.getParty(params);
@@ -956,7 +956,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				final AcknowledgeTaxDeclarationsRequest params = new AcknowledgeTaxDeclarationsRequest();
 				params.setLogin(login);
-				params.getRequests().addAll(Arrays.asList(demande));
+				params.getRequests().addAll(Collections.singletonList(demande));
 
 				final AcknowledgeTaxDeclarationsResponse reponse = service.acknowledgeTaxDeclarations(params);
 				assertNotNull(reponse);
@@ -1028,7 +1028,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int)ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -1077,7 +1077,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int)ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -1329,7 +1329,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Arrays.asList(PartyPart.TAX_RESIDENCES));
+		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.singletonList(PartyPart.TAX_RESIDENCES));
 		final Party party = service.getParty(params);
 		assertNotNull(party);
 
@@ -1379,7 +1379,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Arrays.asList(PartyPart.ADDRESSES));
+		final GetPartyRequest params = new GetPartyRequest(login, id.intValue(), Collections.singletonList(PartyPart.ADDRESSES));
 		final Party party = service.getParty(params);
 		assertNotNull(party);
 
@@ -1452,7 +1452,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
 		final NaturalPerson person = (NaturalPerson) service.getParty(params);
 		assertNotNull(person);
 
@@ -1494,7 +1494,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
 		final NaturalPerson person = (NaturalPerson) service.getParty(params);
 		assertNotNull(person);
 
@@ -1536,7 +1536,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
 		final NaturalPerson person = (NaturalPerson) service.getParty(params);
 		assertNotNull(person);
 
@@ -1561,7 +1561,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Collections.singletonList(PartyPart.ADDRESSES));
 		final NaturalPerson person = (NaturalPerson) service.getParty(params);
 		assertNotNull(person);
 
@@ -1924,7 +1924,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -1941,7 +1941,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_DEADLINES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS_DEADLINES));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -2002,7 +2002,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -2019,7 +2019,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_STATUSES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS_STATUSES));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -2084,7 +2084,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -2101,7 +2101,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_DEADLINES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS_DEADLINES));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -2170,7 +2170,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
@@ -2187,7 +2187,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final GetPartyRequest params = new GetPartyRequest();
 			params.setLogin(login);
 			params.setPartyNumber((int) ids.ppId);
-			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_STATUSES));
+			params.getParts().addAll(Collections.singletonList(PartyPart.TAX_DECLARATIONS_STATUSES));
 
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);

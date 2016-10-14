@@ -27,7 +27,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 
 	@Test
 	public void testSourceUnElement() throws Exception {
-		final MovingWindow<Long> mw = new MovingWindow<>(Arrays.asList(42L));
+		final MovingWindow<Long> mw = new MovingWindow<>(Collections.singletonList(42L));
 		Assert.assertTrue(mw.hasNext());
 
 		final MovingWindow.Snapshot<Long> snapshot = mw.next();
@@ -73,7 +73,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 			Assert.assertNotNull(snapshot);
 			Assert.assertEquals((Long) 26L, snapshot.getCurrent());
 			Assert.assertEquals(Arrays.asList(123L, 87L, 12L), snapshot.getAllNext());
-			Assert.assertEquals(Arrays.asList(42L), snapshot.getAllPrevious());
+			Assert.assertEquals(Collections.singletonList(42L), snapshot.getAllPrevious());
 			Assert.assertEquals((Long) 123L, snapshot.getNext());
 			Assert.assertEquals((Long) 87L, snapshot.getNextAfterNext());
 			Assert.assertEquals((Long) 42L, snapshot.getPrevious());
@@ -96,7 +96,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 			final MovingWindow.Snapshot<Long> snapshot = mw.next();
 			Assert.assertNotNull(snapshot);
 			Assert.assertEquals((Long) 87L, snapshot.getCurrent());
-			Assert.assertEquals(Arrays.asList(12L), snapshot.getAllNext());
+			Assert.assertEquals(Collections.singletonList(12L), snapshot.getAllNext());
 			Assert.assertEquals(Arrays.asList(123L, 26L, 42L), snapshot.getAllPrevious());
 			Assert.assertEquals((Long) 12L, snapshot.getNext());
 			Assert.assertNull(snapshot.getNextAfterNext());
@@ -163,7 +163,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 			Assert.assertNotNull(snapshot);
 			Assert.assertEquals((Long) 26L, snapshot.getCurrent());
 			Assert.assertEquals(Arrays.asList(123L, 87L, 12L), snapshot.getAllNext());
-			Assert.assertEquals(Arrays.asList(42L), snapshot.getAllPrevious());
+			Assert.assertEquals(Collections.singletonList(42L), snapshot.getAllPrevious());
 			Assert.assertEquals((Long) 123L, snapshot.getNext());
 			Assert.assertEquals((Long) 87L, snapshot.getNextAfterNext());
 			Assert.assertEquals((Long) 42L, snapshot.getPrevious());
@@ -184,7 +184,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 			final MovingWindow.Snapshot<Long> snapshot = recup.get(3);
 			Assert.assertNotNull(snapshot);
 			Assert.assertEquals((Long) 87L, snapshot.getCurrent());
-			Assert.assertEquals(Arrays.asList(12L), snapshot.getAllNext());
+			Assert.assertEquals(Collections.singletonList(12L), snapshot.getAllNext());
 			Assert.assertEquals(Arrays.asList(123L, 26L, 42L), snapshot.getAllPrevious());
 			Assert.assertEquals((Long) 12L, snapshot.getNext());
 			Assert.assertNull(snapshot.getNextAfterNext());
@@ -245,7 +245,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 		Assert.assertNotNull(newSnapshot);
 		Assert.assertEquals((Integer) 16, newSnapshot.getCurrent());
 		Assert.assertEquals(Arrays.asList(65, 12, 43), newSnapshot.getAllNext());
-		Assert.assertEquals(Arrays.asList(42), newSnapshot.getAllPrevious());
+		Assert.assertEquals(Collections.singletonList(42), newSnapshot.getAllPrevious());
 		Assert.assertEquals((Integer) 65, newSnapshot.getNext());
 		Assert.assertEquals((Integer) 12, newSnapshot.getNextAfterNext());
 		Assert.assertEquals((Integer) 42, newSnapshot.getPrevious());
@@ -313,7 +313,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 			Assert.assertNotNull(snap);
 			Assert.assertEquals((Integer) 65, snap.getCurrent());
 			Assert.assertEquals(Arrays.asList(12, 43), snap.getAllNext());
-			Assert.assertEquals(Arrays.asList(16), snap.getAllPrevious());
+			Assert.assertEquals(Collections.singletonList(16), snap.getAllPrevious());
 			Assert.assertEquals((Integer) 12, snap.getNext());
 			Assert.assertEquals((Integer) 43, snap.getNextAfterNext());
 			Assert.assertEquals((Integer) 16, snap.getPrevious());
@@ -325,7 +325,7 @@ public class MovingWindowTest extends WithoutSpringTest {
 			// pas de modification dans le snapshot déjà pris
 			Assert.assertEquals((Integer) 65, snap.getCurrent());
 			Assert.assertEquals(Arrays.asList(12, 43), snap.getAllNext());
-			Assert.assertEquals(Arrays.asList(16), snap.getAllPrevious());
+			Assert.assertEquals(Collections.singletonList(16), snap.getAllPrevious());
 			Assert.assertEquals((Integer) 12, snap.getNext());
 			Assert.assertEquals((Integer) 43, snap.getNextAfterNext());
 			Assert.assertEquals((Integer) 16, snap.getPrevious());
@@ -342,8 +342,8 @@ public class MovingWindowTest extends WithoutSpringTest {
 			Assert.assertNotNull(snap);
 			Assert.assertNotNull(snap);
 			Assert.assertEquals((Integer) 12, snap.getCurrent());
-			Assert.assertEquals(Arrays.asList(43), snap.getAllNext());
-			Assert.assertEquals(Arrays.asList(16), snap.getAllPrevious());
+			Assert.assertEquals(Collections.singletonList(43), snap.getAllNext());
+			Assert.assertEquals(Collections.singletonList(16), snap.getAllPrevious());
 			Assert.assertEquals((Integer) 43, snap.getNext());
 			Assert.assertNull(snap.getNextAfterNext());
 			Assert.assertEquals((Integer) 16, snap.getPrevious());

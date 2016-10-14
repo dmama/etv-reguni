@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -86,7 +87,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			debiteur.addForFiscal(forFiscal);
 		}
 
-		assertValidation(Arrays.asList("Le for DPI qui commence le 03.10.2006 et se termine le 30.03.2007 chevauche le for précédent"), null, validate(debiteur));
+		assertValidation(Collections.singletonList("Le for DPI qui commence le 03.10.2006 et se termine le 30.03.2007 chevauche le for précédent"), null, validate(debiteur));
 	}
 
 	@Test
@@ -298,7 +299,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			lr.setDateFin(date(2006, 12, 31));
 			debiteur.addDeclaration(lr);
 		}
-		assertValidation(Arrays.asList("La période qui débute le (02.10.2006) et se termine le (31.12.2006) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
+		assertValidation(Collections.singletonList("La période qui débute le (02.10.2006) et se termine le (31.12.2006) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
 		                 null, validate(debiteur));
 	}
 
@@ -327,7 +328,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			lr.setDateFin(date(2006, 12, 31));
 			debiteur.addDeclaration(lr);
 		}
-		assertValidation(Arrays.asList("La période qui débute le (02.10.2006) et se termine le (31.12.2006) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
+		assertValidation(Collections.singletonList("La période qui débute le (02.10.2006) et se termine le (31.12.2006) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
 		                 null, validate(debiteur));
 	}
 }
