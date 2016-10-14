@@ -81,6 +81,8 @@
 	<bean id="reqdesEvenementDAO" class="ch.vd.uniregctb.reqdes.EvenementReqDesDAOImpl" parent="hibernateDao"/>
 	<bean id="reqdesUniteTraitementDAO" class="ch.vd.uniregctb.reqdes.UniteTraitementDAOImpl" parent="hibernateDao"/>
 
+	<bean id="evenementRFImmeubleDAO" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImmeubleDAOImpl" parent="hibernateDao" />
+
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDao">
 		<property name="transactionManager" ref="transactionManager" />

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Evénements du Registre Foncier -->
+
+	<bean id="evtRFImmeubleEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evtRFImmeubleEventEsbHandler"/>
+	</bean>
+
+	<bean id="evtRFImmeubleEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImmeubleEsbHandler">
+		<property name="evenementRFImmeubleDAO" ref="evenementRFImmeubleDAO"/>
+	</bean>
+
+	<bean id="evtRFImmeubleEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareMasterSwitchableEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtRfImmeuble}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="reqdesEventListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRfImmeuble.enabled}"/>
+		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>
+	</bean>
+
+</beans>
