@@ -195,7 +195,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (CapitalHisto capital : capitaux) {
 			views.add(new ShowCapitalView(capital));
 		}
-		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowCapitalView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING)));
 		final List<ShowCapitalView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(views);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
@@ -211,7 +211,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (FormeLegaleHisto formeLegale : formesLegale) {
 			list.add(new ShowFormeJuridiqueView(formeLegale));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowFormeJuridiqueView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING)));
 		final List<ShowFormeJuridiqueView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
@@ -227,7 +227,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (RaisonSocialeHisto raisonSociale : raisonsSociales) {
 			list.add(new ShowRaisonSocialeView(raisonSociale, false));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowRaisonSocialeView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING)));
 		final List<ShowRaisonSocialeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
@@ -243,7 +243,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (DomicileHisto siege : sieges) {
 			list.add(new ShowSiegeView(siege));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowSiegeView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING)));
 		final List<ShowSiegeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
@@ -262,7 +262,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (DomicileHisto siege : domiciles) {
 			list.add(new DomicileEtablissementView(siege));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<DomicileEtablissementView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING)));
 		final List<DomicileEtablissementView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);

@@ -78,7 +78,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 		final List<DeclarationImpotSource> lesLRs = dpi.getDeclarationsTriees(DeclarationImpotSource.class, false);
 		if (!lesLRs.isEmpty()) {
 			final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
-			final List<DateRange> lrs = new ArrayList<DateRange>(lesLRs);
+			final List<DateRange> lrs = new ArrayList<>(lesLRs);
 			final List<DateRange> periodeNonCouverte = DateRangeHelper.subtract(lrs, fors, new DateRangeAdapterCallback());
 			if (!periodeNonCouverte.isEmpty()) {
 				for (DateRange dateRange : periodeNonCouverte) {

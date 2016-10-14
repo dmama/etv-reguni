@@ -123,7 +123,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
 			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
-				imprimees.add(new Pair<Long, DateRange>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+				imprimees.add(new Pair<>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
 		};
 
@@ -199,7 +199,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
 			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
-				imprimees.add(new Pair<Long, DateRange>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+				imprimees.add(new Pair<>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
 		};
 
@@ -289,7 +289,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
 			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
-				imprimees.add(new Pair<Long, DateRange>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+				imprimees.add(new Pair<>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
 		};
 

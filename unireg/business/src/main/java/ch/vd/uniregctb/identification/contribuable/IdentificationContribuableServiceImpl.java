@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -319,7 +318,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	@Override
 	public List<Long> identifiePersonnePhysique(CriteresPersonne criteres, Mutable<String> upiAutreNavs) throws TooManyIdentificationPossibilitiesException {
 
-		final Mutable<String> avsUpi = upiAutreNavs != null ? upiAutreNavs : new MutableObject<String>();
+		final Mutable<String> avsUpi = upiAutreNavs != null ? upiAutreNavs : new MutableObject<>();
 		avsUpi.setValue(null);
 
 		// 1. phase AVS13

@@ -5403,7 +5403,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(2, ffs.size());
 
 				final List<ForFiscal> sortedFors = new ArrayList<>(ffs);
-				Collections.sort(sortedFors, new DateRangeComparator<ForFiscal>());
+				Collections.sort(sortedFors, new DateRangeComparator<>());
 
 				// seulement des fors principaux (rôle aliénateur -> pas de création de for secondaire)
 				{

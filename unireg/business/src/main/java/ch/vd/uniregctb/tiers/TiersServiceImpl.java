@@ -6337,7 +6337,7 @@ public class TiersServiceImpl implements TiersService {
 			final Organisation org = getOrganisation(entreprise);
 			final List<DateRanged<String>> liste = org.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
-				Collections.sort(liste, new DateRangeComparator<DateRanged<String>>());
+				Collections.sort(liste, new DateRangeComparator<>());
 				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
 				if (last != null) {
 					return last.getPayload();
@@ -6362,7 +6362,7 @@ public class TiersServiceImpl implements TiersService {
 		if (site != null) {
 			final List<DateRanged<String>> liste = site.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
-				Collections.sort(liste, new DateRangeComparator<DateRanged<String>>());
+				Collections.sort(liste, new DateRangeComparator<>());
 				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
 				if (last != null) {
 					return last.getPayload();
@@ -6470,7 +6470,7 @@ public class TiersServiceImpl implements TiersService {
 			for (DateRanged<FormeLegale> formeLegale: formeLegalesCiviles) {
 				formes.add(new FormeLegaleHisto(formeLegale));
 			}
-			Collections.sort(formes, new DateRangeComparator<FormeLegaleHisto>());
+			Collections.sort(formes, new DateRangeComparator<>());
 			return formes;
 		}
 		return Collections.emptyList();
@@ -6518,7 +6518,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final List<T> result = new ArrayList<>(); // Nécessaire car la collection retournée sera en lecture seule si elle est vide.
-		result.addAll(DateRangeHelper.override(donneesCiviles, nonAnnulees, new GentilDateRangeExtendedAdapterCallback<T>()));
+		result.addAll(DateRangeHelper.override(donneesCiviles, nonAnnulees, new GentilDateRangeExtendedAdapterCallback<>()));
 		result.addAll(annulees);
 		return result;
 	}
@@ -6536,7 +6536,7 @@ public class TiersServiceImpl implements TiersService {
 			for (DateRanged<String> raisonSociale : nomsCivils) {
 				raisonsSociales.add(new RaisonSocialeHisto(raisonSociale));
 			}
-			Collections.sort(raisonsSociales, new DateRangeComparator<RaisonSocialeHisto>());
+			Collections.sort(raisonsSociales, new DateRangeComparator<>());
 			return raisonsSociales;
 		}
 		return Collections.emptyList();
@@ -6577,7 +6577,7 @@ public class TiersServiceImpl implements TiersService {
 			for (Domicile siege: organisation.getSiegesPrincipaux()) {
 				sieges.add(new DomicileHisto(siege));
 			}
-			Collections.sort(sieges, new DateRangeComparator<DomicileHisto>());
+			Collections.sort(sieges, new DateRangeComparator<>());
 			return sieges;
 		}
 		return Collections.emptyList();
@@ -6590,7 +6590,7 @@ public class TiersServiceImpl implements TiersService {
 		for (DomicileEtablissement domicile: domicileEtablissements) {
 			liste.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(liste, new DateRangeComparator<DomicileHisto>());
+		Collections.sort(liste, new DateRangeComparator<>());
 		return liste;
 	}
 
@@ -6671,7 +6671,7 @@ public class TiersServiceImpl implements TiersService {
 		for (Domicile domicile : domicilesCivils) {
 			domiciles.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
+		Collections.sort(domiciles, new DateRangeComparator<>());
 		return domiciles;
 	}
 
@@ -6686,7 +6686,7 @@ public class TiersServiceImpl implements TiersService {
 				domiciles.add(new DomicileHisto(domicile));
 			}
 		}
-		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
+		Collections.sort(domiciles, new DateRangeComparator<>());
 		return domiciles;
 	}
 
@@ -6714,7 +6714,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 		}
-		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
+		Collections.sort(domiciles, new DateRangeComparator<>());
 		return domiciles;
 	}
 

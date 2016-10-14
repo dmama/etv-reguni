@@ -158,7 +158,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		final List<SituationFamille> list = dao.getAll();
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		Collections.sort(list, new DateRangeComparator<SituationFamille>());
+		Collections.sort(list, new DateRangeComparator<>());
 
 		final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
 		assertEquals(traitee.ancienneId, situation0.getId().longValue());
@@ -259,7 +259,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		final List<SituationFamille> list = dao.getAll();
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		Collections.sort(list, new DateRangeComparator<SituationFamille>());
+		Collections.sort(list, new DateRangeComparator<>());
 
 		final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
 		assertEquals(traitee.ancienneId, situation0.getId().longValue());
@@ -325,7 +325,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 					final List<SituationFamille> list = dao.getAll();
 					assertNotNull(list);
 					assertEquals(2, list.size());
-					Collections.sort(list, new DateRangeComparator<SituationFamille>());
+					Collections.sort(list, new DateRangeComparator<>());
 
 					final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
 					assertSituation(date(2005, 1, 1), date(2009, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN, situation0);
@@ -366,7 +366,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 					final List<SituationFamille> list = dao.getAll();
 					assertNotNull(list);
 					assertEquals(2, list.size());
-					Collections.sort(list, new DateRangeComparator<SituationFamille>());
+					Collections.sort(list, new DateRangeComparator<>());
 
 					final SituationFamilleMenageCommun situation0 = (SituationFamilleMenageCommun) list.get(0);
 					assertSituation(date(2005, 1, 1), date(2009, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN, situation0);

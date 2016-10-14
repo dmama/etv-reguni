@@ -742,7 +742,7 @@ public class TiersManager implements MessageSourceAware {
 		for (DomicileHisto domicile : domiciles) {
 			domicilesViews.add(new DomicileEtablissementView(domicile));
 		}
-		Collections.sort(domicilesViews, new ReverseComparator<>(new DateRangeComparator<DomicileEtablissementView>()));
+		Collections.sort(domicilesViews, new ReverseComparator<>(new DateRangeComparator<>()));
 		return domicilesViews;
 	}
 

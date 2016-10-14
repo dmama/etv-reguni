@@ -1080,7 +1080,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(allegements);
 				assertEquals(3, allegements.size());        // les deux pré-existants + le nouveau
 
-				Collections.sort(allegements, new DateRangeComparator<AllegementFiscal>());
+				Collections.sort(allegements, new DateRangeComparator<>());
 				{
 					final AllegementFiscal af = allegements.get(0);
 					assertNotNull(af);

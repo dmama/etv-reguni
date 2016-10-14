@@ -55,7 +55,7 @@ public class EvenementReqDesRetryProcessorTest extends AbstractEvenementReqDesPr
 
 	private static class MyCollectingProcessor extends EvenementReqDesProcessorImpl {
 
-		private final List<Long> collectedIds = Collections.synchronizedList(new LinkedList<Long>());
+		private final List<Long> collectedIds = Collections.synchronizedList(new LinkedList<>());
 
 		@Override
 		public void postUniteTraitement(long id) {

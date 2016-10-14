@@ -473,7 +473,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final EvenementOrganisation eventCreation = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR);
 				EvenementOrganisation event = hibernateTemplate.merge(eventCreation);
-				event.setErreurs(new ArrayList<EvenementOrganisationErreur>());
+				event.setErreurs(new ArrayList<>());
 				{
 					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
 					e.setMessage("Erreur 1");

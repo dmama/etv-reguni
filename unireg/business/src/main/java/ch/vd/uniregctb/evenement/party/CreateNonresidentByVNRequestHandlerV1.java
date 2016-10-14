@@ -85,7 +85,7 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 		try {
 			upiData = serviceUpi.getPersonInfo(avsDemande);
 			if (upiData == null) {
-				return new RequestHandlerResult<Response>(new ExceptionResponse(new BusinessExceptionInfo("Numéro AVS inconnu à l'UPI.", BusinessExceptionCode.UNKNOWN_PARTY.name(), null)));
+				return new RequestHandlerResult<>(new ExceptionResponse(new BusinessExceptionInfo("Numéro AVS inconnu à l'UPI.", BusinessExceptionCode.UNKNOWN_PARTY.name(), null)));
 			}
 		}
 		catch (ServiceUpiException e) {
@@ -101,7 +101,7 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 		}
 		contribuableConnu = contribuableConnu || isContribuableConnu(avsRetenu);
 		if (contribuableConnu) {
-			return new RequestHandlerResult<Response>(new ExceptionResponse(new BusinessExceptionInfo("Un contribuable existe déjà avec ce numéro AVS.", BusinessExceptionCode.ALREADY_EXISTING_PARTY.name(), null)));
+			return new RequestHandlerResult<>(new ExceptionResponse(new BusinessExceptionInfo("Un contribuable existe déjà avec ce numéro AVS.", BusinessExceptionCode.ALREADY_EXISTING_PARTY.name(), null)));
 		}
 
 		final PersonnePhysique nh = new PersonnePhysique(false);
@@ -130,7 +130,7 @@ public class CreateNonresidentByVNRequestHandlerV1 implements RequestHandlerV2<C
 		// quelque chose à flusher, alors que le "principal" n'est plus connu...
 		hibernateTemplate.flush();
 
-		return new RequestHandlerResult<Response>(new CreateNonresidentByVNResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant, null));
+		return new RequestHandlerResult<>(new CreateNonresidentByVNResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant, null));
 	}
 
 	private boolean isContribuableConnu(String avs) {

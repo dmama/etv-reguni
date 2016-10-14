@@ -103,7 +103,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		// qu'on ne devra pas fusionner des groupes (si un élément n'intersecte pas un groupe déjà formé, l'élément suivant ne pourra pas non-plus
 		// intersecter l'un de ces groupes)
 		final List<RapportPrestationImposable> listeTriee = new ArrayList<>(anciensRapports);
-		Collections.sort(listeTriee, new DateRangeComparator<RapportPrestationImposable>());
+		Collections.sort(listeTriee, new DateRangeComparator<>());
 
 		// constitution des groupes
 		final List<List<RapportPrestationImposable>> groupes = new ArrayList<>(anciensRapports.size());
@@ -270,7 +270,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		if (rapportsConcernes.size() > 1) {
 
 			//on orddonnes les rapports;
-			Collections.sort(rapportsConcernes, new DateRangeComparator<RapportPrestationImposable>());
+			Collections.sort(rapportsConcernes, new DateRangeComparator<>());
 
 			//On prépare la date de début et la date de fin du rapport
 			RegDate dateDebutNouveauRapport = rapportsConcernes.get(0).getDateDebut();
@@ -629,7 +629,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private void validateDebiteur(DebiteurPrestationImposable dpi, DateRange periodeDeclaration) throws ServiceException {
 
 		final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
-		final List<DateRange> forRanges = new ArrayList<DateRange>(fors);
+		final List<DateRange> forRanges = new ArrayList<>(fors);
 
 		final List<DateRange> periodeNonCouverte = DateRangeHelper.subtract(periodeDeclaration, forRanges);
 		if (!periodeNonCouverte.isEmpty()) {

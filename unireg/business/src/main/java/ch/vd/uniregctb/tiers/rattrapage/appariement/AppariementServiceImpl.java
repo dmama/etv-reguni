@@ -313,8 +313,8 @@ public class AppariementServiceImpl implements AppariementService {
 	                                                                                                        DataExtractor<? super T, Localisation> localisationExtractor) {
 
 		final Map<Boolean, Map<Localisation, List<T>>> map = new HashMap<>(2);
-		map.put(Boolean.TRUE, new HashMap<Localisation, List<T>>(source.size()));
-		map.put(Boolean.FALSE, new HashMap<Localisation, List<T>>(source.size()));
+		map.put(Boolean.TRUE, new HashMap<>(source.size()));
+		map.put(Boolean.FALSE, new HashMap<>(source.size()));
 
 		for (Pair<T, List<DateRange>> pair : source) {
 			final Boolean active = CollectionsUtils.getLastElement(pair.getRight()).getDateFin() == null ? Boolean.TRUE : Boolean.FALSE;

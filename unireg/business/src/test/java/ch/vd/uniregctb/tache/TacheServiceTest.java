@@ -3674,7 +3674,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
 				assertEquals(2, dis.size());
-				Collections.sort(dis, new DateRangeComparator<DeclarationImpotOrdinaire>());
+				Collections.sort(dis, new DateRangeComparator<>());
 				assertDIPP(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				           cedi.getNumero(), null, dis.get(0));
 				assertDIPP(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
@@ -3814,7 +3814,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
 				assertEquals(anneeCourante - 2004, dis.size());
-				Collections.sort(dis, new DateRangeComparator<DeclarationImpotOrdinaire>());
+				Collections.sort(dis, new DateRangeComparator<>());
 				assertDIPP(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
 				           dis.get(0));
 

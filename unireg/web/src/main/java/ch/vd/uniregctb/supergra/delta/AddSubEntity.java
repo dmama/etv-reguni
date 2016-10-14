@@ -93,7 +93,7 @@ public class AddSubEntity extends Delta {
 			// Récupère la collection sur le parent
 			Set set = (Set) getter.invoke(entity);
 			if (set == null) {
-				set = new HashSet<Object>();
+				set = new HashSet<>();
 				final Method setter = desc.getWriteMethod();
 				setter.invoke(entity, set);
 			}

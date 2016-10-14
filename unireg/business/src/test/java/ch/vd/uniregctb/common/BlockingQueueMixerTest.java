@@ -44,8 +44,8 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 	public void testTwoToOne() throws Exception {
 
 		final List<BlockingQueue<Integer>> inputList = new ArrayList<>();
-		inputList.add(new LinkedBlockingQueue<Integer>());
-		inputList.add(new LinkedBlockingQueue<Integer>());
+		inputList.add(new LinkedBlockingQueue<>());
+		inputList.add(new LinkedBlockingQueue<>());
 
 		final BlockingQueue<Integer> output = new LinkedBlockingQueue<>();
 

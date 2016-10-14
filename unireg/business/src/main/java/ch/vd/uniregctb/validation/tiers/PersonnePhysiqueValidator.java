@@ -94,7 +94,7 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 				}
 			}
 		}
-		Collections.sort(rapportsMenages, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportsMenages, new DateRangeComparator<>());
 		final List<DateRange> periodes = DateRangeHelper.collateRange(rapportsMenages);
 
 		// Vérifie que chaque for est entièrement compris à l'extérieur d'une période de validité

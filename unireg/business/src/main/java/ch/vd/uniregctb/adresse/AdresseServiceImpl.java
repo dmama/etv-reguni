@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NavigableSet;
@@ -2007,7 +2008,7 @@ public class AdresseServiceImpl implements AdresseService {
 		// Bouche tous les éventuels trous avec les adresses par défaut
 		if (boucheTrous != null) {
 			adresses.addAll(boucheTrous);
-			Collections.sort(adresses, new DateRangeComparator<AdresseGenerique>());
+			Collections.sort(adresses, new DateRangeComparator<>());
 		}
 
 		return adresses;
@@ -2172,7 +2173,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (listeAdresse != null) {
 
 			// Tri des adresses dans l'ordre inverse
-			Collections.sort(listeAdresse, Collections.reverseOrder(new DateRangeComparator<AdresseGenerique>()));
+			Collections.sort(listeAdresse, Collections.reverseOrder(new DateRangeComparator<>()));
 			for (AdresseGenerique adresseGenerique : listeAdresse) {
 				final Commune commune;
 				try {
@@ -2208,11 +2209,12 @@ public class AdresseServiceImpl implements AdresseService {
 			adressesFiscalesHisto.add(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
 		}
 
-		Collections.sort(adressesFiscalesHisto.courrier, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(adressesFiscalesHisto.domicile, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(adressesFiscalesHisto.representation, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(adressesFiscalesHisto.poursuite, new DateRangeComparator<AdresseGenerique>());
-		Collections.sort(adressesFiscalesHisto.poursuiteAutreTiers, new DateRangeComparator<AdresseGenerique>());
+		final Comparator<AdresseGenerique> comparator = new DateRangeComparator<>();
+		Collections.sort(adressesFiscalesHisto.courrier, comparator);
+		Collections.sort(adressesFiscalesHisto.domicile, comparator);
+		Collections.sort(adressesFiscalesHisto.representation, comparator);
+		Collections.sort(adressesFiscalesHisto.poursuite, comparator);
+		Collections.sort(adressesFiscalesHisto.poursuiteAutreTiers, comparator);
 
 		return adressesFiscalesHisto;
 	}

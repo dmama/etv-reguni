@@ -118,7 +118,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 		return getDatesFermetureAutorisees(dpi, fdpi.getDateDebut(), maxAllowed, dpi.getPeriodicitesNonAnnulees(true));
 	}
 
-	private static final SortedSet<RegDate> EMPTY_DATE_SET = Collections.unmodifiableSortedSet(new TreeSet<RegDate>());
+	private static final SortedSet<RegDate> EMPTY_DATE_SET = Collections.unmodifiableSortedSet(new TreeSet<>());
 
 	/**
 	 * Méthode utilitaire qui permet de savoir quelles sont les dates de fermeture possibles d'un for de débiteur IS

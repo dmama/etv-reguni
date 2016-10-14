@@ -131,7 +131,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 				try {
 					final DateRanged<Etablissement> etablissementPrincipalRange = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant);
 					final Set<DomicileEtablissement> domiciles = etablissementPrincipalRange.getPayload().getDomiciles();
-					final DateRange domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<DateRange>(domiciles), dateApres);
+					final DateRange domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<>(domiciles), dateApres);
 
 					Integer noOfsAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getNumeroOfsAutoriteFiscale();
 					TypeAutoriteFiscale typeAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getTypeAutoriteFiscale();

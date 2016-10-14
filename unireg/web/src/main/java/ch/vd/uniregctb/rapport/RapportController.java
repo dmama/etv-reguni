@@ -304,7 +304,7 @@ public class RapportController {
 		}
 
 		// On ne peuple dans la vue que les rapports concernés par la page courante
-		List<RapportEntreTiers> currentRapports = new ArrayList<RapportEntreTiers>(rapports);
+		List<RapportEntreTiers> currentRapports = new ArrayList<>(rapports);
 		if (currentRapports.size() > pagination.getSqlMaxResults()) {
 			int toIndex = (pagination.getSqlMaxResults()*pagination.getNumeroPage() > rapports.size()) ? rapports.size() : pagination.getSqlMaxResults()*pagination.getNumeroPage();
 			currentRapports = rapports.subList(pagination.getSqlFirstResult(), toIndex);

@@ -506,7 +506,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(null,rapportPrestationImposable.getDateFin());
 
@@ -561,7 +561,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
 
@@ -616,7 +616,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportEntreTiers> rapportPrestations = new ArrayList<>(dpi.getRapportsObjet());
 				assertEquals(2, rapportPrestations.size());
 
-				Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+				Collections.sort(rapportPrestations, new DateRangeComparator<>());
 
 				// rapport existant conservé ...
 				{
@@ -687,7 +687,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportEntreTiers> rapportPrestations = new ArrayList<>(dpi.getRapportsObjet());
 				assertEquals(2, rapportPrestations.size());
 
-				Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+				Collections.sort(rapportPrestations, new DateRangeComparator<>());
 
 				// rapport existant annulé ...
 				{
@@ -757,7 +757,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		assertEquals(3,rapportPrestations.size());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 
 		RapportPrestationImposable rapportAnnule = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertTrue(rapportAnnule.isAnnule());
@@ -948,7 +948,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateDeces,rapportPrestationImposable.getDateFin());
 
@@ -1001,7 +1001,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		assertEquals(2, rapportPrestations.size());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
 		assertEquals(null,rapportPrestationImposable.getDateFin());
@@ -1064,7 +1064,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		assertEquals(2, rapportPrestations.size());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
 		assertEquals(dateFinVersementSalaire,rapportPrestationImposable.getDateFin());
@@ -1185,7 +1185,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportPrestations, new DateRangeComparator<>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateFermetureFor,rapportPrestationImposable.getDateFin());
 
@@ -1274,7 +1274,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
 				assertEquals(2,rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1361,7 +1361,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
 				assertEquals(2,rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1448,7 +1448,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
 				assertEquals(3,rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1546,7 +1546,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
 				assertEquals(2,rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1633,7 +1633,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, false, true);
 				assertEquals(3,rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1725,7 +1725,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				assertNotNull(rapports);
 				assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1809,7 +1809,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				assertNotNull(rapports);
 				assertEquals(3, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1898,7 +1898,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				assertNotNull(rapports);
 				assertEquals(2, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);
@@ -1977,7 +1977,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 				assertNotNull(rapports);
 				assertEquals(3, rapports.size());
 
-				Collections.sort(rapports, new DateRangeComparator<RapportPrestationImposable>());
+				Collections.sort(rapports, new DateRangeComparator<>());
 				{
 					final RapportPrestationImposable rapport = rapports.get(0);
 					assertNotNull(rapport);

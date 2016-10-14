@@ -65,7 +65,7 @@ public class MenageCommunValidator extends ContribuableImpositionPersonnesPhysiq
 		        }
 		    }
 		}
-		Collections.sort(rapportsMenages, new DateRangeComparator<RapportEntreTiers>());
+		Collections.sort(rapportsMenages, new DateRangeComparator<>());
 		final List<DateRange> periodes = DateRangeHelper.collateRange(rapportsMenages);
 
 		// Vérifie que chaque for est entièrement défini à l'intérieur d'une période de validité

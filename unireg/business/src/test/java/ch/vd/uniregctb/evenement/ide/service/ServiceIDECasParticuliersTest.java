@@ -7,7 +7,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -120,7 +119,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 								                                                                          MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 								                                                                          null, null), null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
-				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<Pair<String, String>>());
+				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 5, 11, 0, 1), new ArrayList<>());
 				this.addStatutAnnonceIDEAttentu(proto, statut);
 
 			}

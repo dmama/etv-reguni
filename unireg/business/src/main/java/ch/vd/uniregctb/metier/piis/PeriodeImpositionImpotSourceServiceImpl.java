@@ -93,7 +93,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	@NotNull
 	private static List<ForFiscalPrincipalPP> getForsPrincipaux(ContribuableImpositionPersonnesPhysiques ctb, boolean rw) {
 		final List<ForFiscalPrincipalPP> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
-		return ffps != null ? ffps : (rw ? new ArrayList<ForFiscalPrincipalPP>() : Collections.<ForFiscalPrincipalPP>emptyList());
+		return ffps != null ? ffps : (rw ? new ArrayList<>() : Collections.<ForFiscalPrincipalPP>emptyList());
 	}
 
 	/**

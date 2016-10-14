@@ -19,7 +19,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -649,7 +648,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		// Teste que les adresses ne se chevauchent pas
 		{
-			nh.setAdressesTiers(new HashSet<AdresseTiers>());
+			nh.setAdressesTiers(new HashSet<>());
 			nh.addAdresseTiers(c1);
 			nh.addAdresseTiers(c2);
 			nh.addAdresseTiers(c3);
@@ -660,7 +659,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// Teste que les adresses se chevauchent
 		{
-			nh.setAdressesTiers(new HashSet<AdresseTiers>());
+			nh.setAdressesTiers(new HashSet<>());
 			nh.addAdresseTiers(c1);
 			nh.addAdresseTiers(c2);
 			nh.addAdresseTiers(c3);
@@ -672,7 +671,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// Teste que les adresses ont toute une date de debut
 		{
-			nh.setAdressesTiers(new HashSet<AdresseTiers>());
+			nh.setAdressesTiers(new HashSet<>());
 			nh.addAdresseTiers(d1);
 			nh.addAdresseTiers(d2);
 			nh.addAdresseTiers(c6);
@@ -681,7 +680,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// Une seule adresse par type peut avoir une date de fin nulle
 		{
-			nh.setAdressesTiers(new HashSet<AdresseTiers>());
+			nh.setAdressesTiers(new HashSet<>());
 			nh.addAdresseTiers(c3);
 			nh.addAdresseTiers(c4);
 			nh.addAdresseTiers(c5);
@@ -692,7 +691,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// Le chevauchement est autorisé par type d'adresse
 		{
-			nh.setAdressesTiers(new HashSet<AdresseTiers>());
+			nh.setAdressesTiers(new HashSet<>());
 			nh.addAdresseTiers(c2);
 			nh.addAdresseTiers(c3);
 			nh.addAdresseTiers(d1);
@@ -702,7 +701,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// Le chevauchement est autorisé par type d'adresse
 		{
-			nh.setAdressesTiers(new HashSet<AdresseTiers>());
+			nh.setAdressesTiers(new HashSet<>());
 			nh.addAdresseTiers(c1);
 			nh.addAdresseTiers(c2);
 			nh.addAdresseTiers(c3);

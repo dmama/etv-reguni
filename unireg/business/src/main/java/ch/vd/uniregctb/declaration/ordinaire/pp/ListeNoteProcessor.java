@@ -126,7 +126,7 @@ public class ListeNoteProcessor {
 		for (Contribuable contribuable : list) {
 			r.nbContribuable++;
 			final List<ForFiscalSecondaire> forsSecondaires = mapInfo.get(contribuable.getNumero());
-			Collections.sort(forsSecondaires, new DateRangeComparator<ForFiscalSecondaire>());
+			Collections.sort(forsSecondaires, new DateRangeComparator<>());
 			for (ForFiscalSecondaire forsSecondaire : forsSecondaires) {
 				if (!isForSecondaireRecouvert(contribuable, forsSecondaire)) {
 					final RegDate dateFinSecondaire = forsSecondaire.getDateFin();

@@ -41,7 +41,7 @@ public class RolesPM extends Roles<InfoContribuablePM, InfoCommunePM, Entreprise
 	@Override
 	public List<DateRange> getPeriodesFiscales(Entreprise entreprise, TiersService tiersService) {
 		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-		return new ArrayList<DateRange>(exercices);
+		return new ArrayList<>(exercices);
 	}
 
 	@Override

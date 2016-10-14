@@ -19,7 +19,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -80,7 +79,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		}
 
 		final Declaration d = addDeclarationImpot(mrKong, periode, RegDate.get(2009, 1, 1), RegDate.get(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
-		d.setDelais(new HashSet<DelaiDeclaration>());
+		d.setDelais(new HashSet<>());
 		assertNull(d.getDelaiAccordeAu());
 		addEtatDeclarationEmise(d, date(2010, 1, 7));
 
@@ -253,7 +252,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				d.setDelais(new HashSet<DelaiDeclaration>());
+				d.setDelais(new HashSet<>());
 				assertNull(d.getDelaiAccordeAu());
 
 				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));

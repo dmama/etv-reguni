@@ -3099,7 +3099,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3227,7 +3227,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3363,7 +3363,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3475,7 +3475,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3580,7 +3580,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3711,7 +3711,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3850,7 +3850,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3965,7 +3965,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<ForFiscalPrincipalPP>(new DateRangeComparator<>()));
+				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);

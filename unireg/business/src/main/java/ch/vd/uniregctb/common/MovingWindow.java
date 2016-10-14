@@ -96,7 +96,7 @@ public class MovingWindow<E> implements Iterator<MovingWindow.Snapshot<E>> {
 	public MovingWindow(List<? extends E> source) {
 		this.iterator = source.iterator();
 		this.nextes = source.size() < 2 ? Collections.<E>emptyList() : new LinkedList<>(source.subList(1, source.size()));
-		this.previouses = source.isEmpty() ? Collections.<E>emptyList() : new LinkedList<E>();
+		this.previouses = source.isEmpty() ? Collections.<E>emptyList() : new LinkedList<>();
 	}
 
 	@Override

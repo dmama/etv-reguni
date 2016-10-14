@@ -544,7 +544,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		final List<Rue> histo = rawService.getRuesHisto(numero);
 		if (histo != null && !histo.isEmpty()) {
 			final List<Rue> sorted = new ArrayList<>(histo);
-			Collections.sort(sorted, new DateRangeComparator<Rue>(DateRangeComparator.CompareOrder.DESCENDING));
+			Collections.sort(sorted, new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING));
 			return sorted.get(0);        // = la plus récente
 		}
 		return null;

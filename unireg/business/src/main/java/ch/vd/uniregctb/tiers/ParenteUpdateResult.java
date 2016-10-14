@@ -33,7 +33,7 @@ public final class ParenteUpdateResult {
 	private final List<Error> errors;
 
 	public ParenteUpdateResult() {
-		this(new LinkedList<ParenteUpdateInfo>(), new LinkedList<Error>());
+		this(new LinkedList<>(), new LinkedList<>());
 	}
 
 	private ParenteUpdateResult(List<ParenteUpdateInfo> updates, List<Error> errors) {

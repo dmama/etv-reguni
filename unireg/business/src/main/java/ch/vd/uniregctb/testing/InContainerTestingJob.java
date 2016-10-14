@@ -118,7 +118,7 @@ public class InContainerTestingJob extends JobDefinition {
 		private volatile int transactionsStarted = 0;
 
 		private final Map<Method, TransactionContext> transactionContextCache = Collections
-				.synchronizedMap(new IdentityHashMap<Method, TransactionContext>());
+				.synchronizedMap(new IdentityHashMap<>());
 
 		public void beforeTestMethod(final Method testMethod) throws Exception {
 			Assert.notNull(testMethod, "The test method of the supplied TestContext must not be null");

@@ -21,7 +21,7 @@ public class MockExtractionService implements ExtractionService {
 
 	private static final String FILENAME_RADICAL = "notice";
 
-	private final Map<UUID, ExtractionJob> map = Collections.synchronizedMap(new HashMap<UUID, ExtractionJob>());
+	private final Map<UUID, ExtractionJob> map = Collections.synchronizedMap(new HashMap<>());
 
 	private static InputStream buildResultStream() {
 		return new ByteArrayInputStream(RESULT_STREAM_CONTENT.getBytes());

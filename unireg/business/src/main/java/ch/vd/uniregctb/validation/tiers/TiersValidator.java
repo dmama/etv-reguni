@@ -222,7 +222,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		final Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
 		if (forsFiscaux != null) {
 			final List<ForFiscal> forsTries = new ArrayList<>(forsFiscaux);
-			Collections.sort(forsTries, new DateRangeComparator<ForFiscal>());
+			Collections.sort(forsTries, new DateRangeComparator<>());
 			for (ForFiscal f : forsTries) {
 				results.merge(getValidationService().validate(f));
 			}

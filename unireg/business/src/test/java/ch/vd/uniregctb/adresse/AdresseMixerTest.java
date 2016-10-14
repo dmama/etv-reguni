@@ -54,6 +54,7 @@ public class AdresseMixerTest {
 				newAdresse(date(1955, 11, 22), date(1999, 12, 31)), newAdresse(date(2000, 1, 1), date(2007, 6, 30)), newAdresse(date(2007, 7, 1), date(2010, 3, 12)));
 	}
 
+	@SafeVarargs
 	private static <T> Set<T> newSet(T... val) {
 		Set<T> s = new HashSet<>();
 		Collections.addAll(s, val);

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -734,7 +733,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 
 	@Override
 	public List<ExtractionJob> getQueueContent(String visa) {
-		return new ArrayList<ExtractionJob>(executorService.getWaiting());
+		return new ArrayList<>(executorService.getWaiting());
 	}
 
 	@Override

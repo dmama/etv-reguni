@@ -5049,7 +5049,7 @@ debut PF                                                                        
 				assertEquals(3, rapports.size());
 
 				final List<RapportEntreTiers> rapportsTries = new ArrayList<>(rapports);
-				Collections.sort(rapportsTries, new DateRangeComparator<RapportEntreTiers>());
+				Collections.sort(rapportsTries, new DateRangeComparator<>());
 
 				// rapport déjà fermé -> pas modifié
 				{
@@ -9066,7 +9066,7 @@ debut PF                                                                        
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
 				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
 				assertNotNull(decisionsAci);
 				assertFalse(decisionsAci.isEmpty());
 				assertEquals(1, decisionsAci.size());
@@ -9129,7 +9129,7 @@ debut PF                                                                        
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
 				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
 				assertNotNull(decisionsAci);
 				assertFalse(decisionsAci.isEmpty());
 				assertEquals(2, decisionsAci.size());
@@ -9194,7 +9194,7 @@ debut PF                                                                        
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
 				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
 				assertNotNull(decisionsAci);
 				assertFalse(decisionsAci.isEmpty());
 				assertEquals(1, decisionsAci.size());
@@ -9258,7 +9258,7 @@ debut PF                                                                        
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
 				Assert.assertNotNull(pp);
-				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				final List<DecisionAci> decisionsAci = new ArrayList<>(pp.getDecisionsAci());
 				assertNotNull(decisionsAci);
 				assertFalse(decisionsAci.isEmpty());
 				assertEquals(2, decisionsAci.size());

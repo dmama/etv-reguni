@@ -121,7 +121,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 				   domiciles qui dépassent de la période de rapport économique.
 
 				   */
-				final List<DomicileHisto> domicilesEffectifs = DateRangeHelper.extract(domiciles, etablissement.getDateDebut(), etablissement.getDateFin(), new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
+				final List<DomicileHisto> domicilesEffectifs = DateRangeHelper.extract(domiciles, etablissement.getDateDebut(), etablissement.getDateFin(), new GentilDateRangeExtendedAdapterCallback<>());
 				for (DomicileHisto domicile : domicilesEffectifs) {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						continue; // On ne crée des fors secondaires que pour VD
@@ -330,7 +330,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 				continue;
 			}
 			if (map.get(key) == null) {
-				map.put(key, new ArrayList<Etablissement>());
+				map.put(key, new ArrayList<>());
 			}
 			map.get(key).add(etablissement);
 		}
@@ -343,7 +343,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 			DomicileStatutKey key = createSiteKey(date, site);
 			if (key == null) continue;
 			if (map.get(key) == null) {
-				map.put(key, new ArrayList<SiteOrganisation>());
+				map.put(key, new ArrayList<>());
 			}
 			map.get(key).add(site);
 		}

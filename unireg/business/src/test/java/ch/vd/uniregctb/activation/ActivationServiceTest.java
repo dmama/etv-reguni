@@ -1221,7 +1221,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(3, rapports.size());
 
 				final List<RapportEntreTiers> rapportsTries = new ArrayList<>(rapports);
-				Collections.sort(rapportsTries, new DateRangeComparator<RapportEntreTiers>());
+				Collections.sort(rapportsTries, new DateRangeComparator<>());
 
 				{
 					final RapportEntreTiers r = rapportsTries.get(0);

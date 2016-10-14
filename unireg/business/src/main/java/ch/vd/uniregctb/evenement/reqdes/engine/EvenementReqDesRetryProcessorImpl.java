@@ -108,7 +108,7 @@ public class EvenementReqDesRetryProcessorImpl implements EvenementReqDesRetryPr
 						final Set<EtatTraitement> etats = EnumSet.of(EtatTraitement.A_TRAITER, EtatTraitement.EN_ERREUR);
 						query.setParameterList("etats", etats);
 						//noinspection unchecked
-						return new HashSet<Long>(query.list());
+						return new HashSet<>(query.list());
 					}
 				});
 			}

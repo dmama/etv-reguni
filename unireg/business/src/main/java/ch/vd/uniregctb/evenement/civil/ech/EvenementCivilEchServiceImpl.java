@@ -370,7 +370,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
             return event.getNumeroIndividu();
         }
         else {
-	        return getNumeroIndividuPourEvent(event.getId(), event, new HashSet<Long>());
+	        return getNumeroIndividuPourEvent(event.getId(), event, new HashSet<>());
         }
     }
 

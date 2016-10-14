@@ -78,7 +78,7 @@ public abstract class AbstractEvenementReqDesProcessingTest extends BusinessTest
 
 	protected void addRole(PartiePrenante pp, RolePartiePrenante role) {
 		if (pp.getRoles() == null) {
-			pp.setRoles(new HashSet<RolePartiePrenante>());
+			pp.setRoles(new HashSet<>());
 		}
 		pp.getRoles().add(role);
 	}

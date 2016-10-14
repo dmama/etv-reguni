@@ -49,7 +49,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 
 		utDao = getBean(UniteTraitementDAO.class, "reqdesUniteTraitementDAO");
 
-		idsUnitesTraitement = Collections.synchronizedSet(new HashSet<Long>());
+		idsUnitesTraitement = Collections.synchronizedSet(new HashSet<>());
 		handler = new ReqDesEventHandler() {
 			@Override
 			protected void lancementTraitementAsynchrone(Set<Long> idsUnitesTraitement) {

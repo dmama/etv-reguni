@@ -2,6 +2,7 @@ package ch.vd.uniregctb.role;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -181,8 +182,9 @@ public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> ex
 	@Override
 	public void end() {
 		// tri des erreurs et des contribuables ignorés
-		Collections.sort(ctbsEnErrors, new CtbComparator<Erreur>());
-		Collections.sort(ctbsIgnores, new CtbComparator<Ignore>());
+		final Comparator<Info> comparator = new CtbComparator<>();
+		Collections.sort(ctbsEnErrors, comparator);
+		Collections.sort(ctbsIgnores, comparator);
 
 		super.end();
 	}

@@ -86,7 +86,8 @@ public class CommonMapHelper {
 	 * @param constants la liste des enums à inclure
 	 * @return une map
 	 */
-	protected <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, T... constants) {
+	@SafeVarargs
+	protected final <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, T... constants) {
 		final List<Pair<T, String>> tmp = new ArrayList<>(constants.length);
 		for (T c : constants) {
 			final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);

@@ -572,7 +572,7 @@ public class MetierServicePMTest extends BusinessTest {
 	private static <T, U> Map<U, List<T>> segmenter(Collection<T> elements, Extractor<? super T, ? extends U> extractor, U... knownKeys) {
 		final Map<U, List<T>> map = new HashMap<>(elements.size());
 		for (U knownKey : knownKeys) {
-			map.put(knownKey, new ArrayList<T>(elements.size()));
+			map.put(knownKey, new ArrayList<>(elements.size()));
 		}
 		for (T element : elements) {
 			final U key = extractor.extract(element);

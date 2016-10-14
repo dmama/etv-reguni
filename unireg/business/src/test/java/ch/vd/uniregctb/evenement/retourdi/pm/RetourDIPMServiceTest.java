@@ -4585,7 +4585,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					}
 				}
 				Assert.assertEquals(2, mandats.size());
-				Collections.sort(mandats, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<Mandat>()));
+				Collections.sort(mandats, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				{
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
@@ -4834,7 +4834,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(adresses);
 				Assert.assertEquals(2, adresses.size());
 				final List<AdresseMandataire> adressesTriees = new ArrayList<>(adresses);
-				Collections.sort(adressesTriees, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<AdresseMandataire>()));
+				Collections.sort(adressesTriees, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				{
 					final AdresseMandataire adresse = adressesTriees.get(0);
 					Assert.assertNotNull(adresse);

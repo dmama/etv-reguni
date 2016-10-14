@@ -95,7 +95,7 @@ public class EtablissementValidator extends ContribuableValidator<Etablissement>
 			// pas la peine de s'embêter plus loin s'il y a moins de deux rapports d'activité économique non-annulés
 			if (activitesEconomiques.size() > 1) {
 				// tri
-				Collections.sort(activitesEconomiques, new DateRangeComparator<RapportEntreTiers>());
+				Collections.sort(activitesEconomiques, new DateRangeComparator<>());
 
 				// calcul des intersections (deux à deux suffit, puisque la collection est triée)
 				final MovingWindow<RapportEntreTiers> wnd = new MovingWindow<>(activitesEconomiques);

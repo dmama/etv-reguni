@@ -1098,7 +1098,7 @@ public class ProduireRolesProcessor {
 		ForFiscalRevenuFortune candidatRetenu = forFiscal;
 		while (candidatRetenu.getDateFin() != null) {
 			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateFin().getOneDayAfter());
-			Collections.sort(fors, new DateRangeComparator<ForFiscal>());       // [SIFISC-13803] l'ordre ne change rien pour le traitement, mais permet de stabiliser les choses
+			Collections.sort(fors, new DateRangeComparator<>());       // [SIFISC-13803] l'ordre ne change rien pour le traitement, mais permet de stabiliser les choses
 			ForFiscalRevenuFortune nouveauCandidat = null;
 			for (ForFiscal candidat : fors) {
 				if (candidat instanceof ForFiscalRevenuFortune &&
