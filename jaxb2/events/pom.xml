@@ -11,7 +11,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>unireg-jaxb2</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>5.2</version>
+		<version>6.0-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
@@ -144,7 +144,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<!-- BEGIN_LVERSION -->
-					<finalName>PartyJMSService_5.2</finalName>
+					<finalName>PartyJMSService_6.0-SNAPSHOT</finalName>
 					<!-- END_LVERSION -->
 					<descriptors>
 						<descriptor>release_partyservice.xml</descriptor>
