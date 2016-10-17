@@ -50,6 +50,14 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
+	<bean id="annonceIDEHibernateInterceptor" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEHibernateInterceptor">
+		<property name="parent" ref="modificationInterceptor"/>
+		<property name="serviceIDEService" ref="serviceIDEService"/>
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="dialect" ref="hibernateDialect" />
+	</bean>
+
 	<bean id="transitionEtatEntrepriseService" class="ch.vd.uniregctb.tiers.etats.TransitionEtatEntrepriseServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
