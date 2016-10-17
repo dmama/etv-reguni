@@ -11,7 +11,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
+import ch.vd.uniregctb.rf.ImportImmeublesResults;
 
 public class PdfImportImmeublesRapport extends PdfRapport {
 

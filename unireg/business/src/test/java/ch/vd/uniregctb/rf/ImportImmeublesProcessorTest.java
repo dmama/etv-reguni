@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.rf;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -16,12 +16,6 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.rf.GenrePropriete;
-import ch.vd.uniregctb.rf.Immeuble;
-import ch.vd.uniregctb.rf.ImmeubleDAO;
-import ch.vd.uniregctb.rf.PartPropriete;
-import ch.vd.uniregctb.rf.Proprietaire;
-import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 

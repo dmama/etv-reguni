@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.rf;
 
 import java.io.InputStream;
 import java.util.List;
@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.rf.ImmeubleDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 

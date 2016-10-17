@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.rf;
 
 import java.util.Collections;
 import java.util.Comparator;

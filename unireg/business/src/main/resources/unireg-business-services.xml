@@ -314,7 +314,7 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 	
-	<bean id="registreFoncierService" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl"> 
+	<bean id="registreFoncierService" class="ch.vd.uniregctb.rf.RegistreFoncierServiceImpl">
 		<property name="adresseService" ref="adresseService" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO" />

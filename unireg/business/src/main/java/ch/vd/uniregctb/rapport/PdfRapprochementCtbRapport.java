@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,8 +14,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.registrefoncier.ProprietaireRapproche;
-import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
+import ch.vd.uniregctb.rf.ProprietaireRapproche;
+import ch.vd.uniregctb.rf.RapprocherCtbResults;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
