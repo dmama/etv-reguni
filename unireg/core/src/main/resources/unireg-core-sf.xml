@@ -208,6 +208,19 @@
 		<value>ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
+		<value>ch.vd.uniregctb.registrefoncier.CodeRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitHabitationRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.EstimationRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.ImmeubleRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.PersonneMoraleRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.SituationRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.SurfaceRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.TiersRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.UsufruitRF</value>
 		<value>ch.vd.uniregctb.reqdes.ErreurTraitement</value>
 		<value>ch.vd.uniregctb.reqdes.EvenementReqDes</value>
 		<value>ch.vd.uniregctb.reqdes.InformationsActeur</value>
