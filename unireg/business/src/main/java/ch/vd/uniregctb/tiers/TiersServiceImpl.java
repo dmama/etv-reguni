@@ -831,9 +831,6 @@ public class TiersServiceImpl implements TiersService {
 				);
 			}
 		}
-		else {
-			throw new IllegalArgumentException("Le type de contribuable ne fait pas partie de ceux supportés par la vérification de l'édition de données civiles. C'est un bug.");
-		}
 	}
 
 	private static IdentificationEntreprise getOrCreateIdentifiantEntreprise(Contribuable contribuable, String ide) {
