@@ -75,7 +75,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 
 				addIdentificationEntreprise(entreprise, "CHE999999996");
 
-				entreprise.setSecteurActivite("Fabrication d'objets synthétiques");
+				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
 				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");

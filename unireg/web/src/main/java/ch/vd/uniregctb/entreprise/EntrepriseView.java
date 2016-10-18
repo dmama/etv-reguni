@@ -24,6 +24,7 @@ public class EntrepriseView {
 	private List<ShowCapitalView> capitaux;
 	private List<EtatEntrepriseView> etats;
 	private String numerosIDE;
+	private String secteurActivite;
 
 	private RegDate dateInscriptionRC;
 	private RegDate dateInscriptionRCVD;
@@ -121,6 +122,14 @@ public class EntrepriseView {
 
 	public void setNumerosIDE(String numerosIDE) {
 		this.numerosIDE = numerosIDE;
+	}
+
+	public String getSecteurActivite() {
+		return secteurActivite;
+	}
+
+	public void setSecteurActivite(String secteurActivite) {
+		this.secteurActivite = secteurActivite;
 	}
 
 	public StatusInscriptionRC getStatusRC() {

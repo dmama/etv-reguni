@@ -105,6 +105,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		entrepriseView.setCapitaux(extractCapitaux(tiersService.getCapitaux(entreprise, true)));
 
+		entrepriseView.setSecteurActivite(entreprise.getSecteurActivite());
+
 		// les états
 		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
 		Collections.sort(etats, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<EtatEntreprise>() {

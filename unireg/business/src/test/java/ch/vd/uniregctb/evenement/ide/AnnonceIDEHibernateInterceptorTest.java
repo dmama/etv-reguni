@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.ide;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -53,8 +55,6 @@ public class AnnonceIDEHibernateInterceptorTest extends BusinessTest {
 				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
 				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
 				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
-
-				entreprise.setSecteurActivite("Fabrication d'objets synthétiques");
 
 				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
@@ -140,6 +140,81 @@ public class AnnonceIDEHibernateInterceptorTest extends BusinessTest {
 				assertEquals(date(2016, 10, 2), secondeRaisonSociale.getDateDebut());
 				assertEquals(null, secondeRaisonSociale.getDateFin());
 
+			}
+		});
+	}
+
+	@Test
+	public void testSecteurActiviteChangeChangePas() throws Exception {
+		// Situation de base l'entreprise
+		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				Etablissement etablissement = addEtablissement();
+
+				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+
+				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
+				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
+				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
+
+				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+
+				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+				adresseSuisse.setNumeroMaison("1");
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// Réinitialisation du flag IdeDirty à false
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+
+				// Réinitialisation du flag
+				entreprise.setIdeDirty(false);
+			}
+		});
+
+		// Premier contrôle et règlage du flag IdeDirty à false et modification de données qui ne doivent pas être prises en compte
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+
+				assertEquals(false, entreprise.isIdeDirty());
+				entreprise.changeSecteurActivite("Assemblage d'engins spaciaux.");
+			}
+		});
+
+		// Vérification que le changement a bien été détecté et le flag mis à true. Puis introduit un changement neutre.
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+
+				assertEquals(true, entreprise.isIdeDirty());
+				assertEquals("Assemblage d'engins spaciaux.", entreprise.getSecteurActivite());
+
+				// Réinitialisation et changement neutre
+				entreprise.setIdeDirty(false);
+				entreprise.setDateDebutPremierExerciceCommercial(date(2016, 9, 5));
+				entreprise.setIdentificationsEntreprise(Collections.singleton(new IdentificationEntreprise("CHE99999996")));
+			}
+		});
+
+		// Vérification que la flag n'a pas été touché malgré des changements neutres sur l'entreprise.
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
+
+				assertEquals(false, entreprise.isIdeDirty());
+				assertEquals(date(2016, 9, 5), entreprise.getDateDebutPremierExerciceCommercial());
+				assertEquals("CHE99999996", entreprise.getIdentificationsEntreprise().iterator().next().getNumeroIde());
 			}
 		});
 	}

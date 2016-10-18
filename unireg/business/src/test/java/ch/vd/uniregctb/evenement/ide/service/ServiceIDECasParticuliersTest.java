@@ -65,7 +65,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
 				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
-				entreprise.setSecteurActivite("Fabrication d'objets synthétiques");
+				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
 				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
@@ -163,7 +163,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Synchrotec SA");
 				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.SA);
 
-				entreprise.setSecteurActivite("Fabrication d'objets synthétiques");
+				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
 				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
@@ -233,7 +233,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), date(2016, 9, 7), "Synergy Assoc");
 				addFormeJuridique(entreprise, date(2016, 9, 5), date(2016, 9, 7), FormeJuridiqueEntreprise.ASSOCIATION);
 
-				entreprise.setSecteurActivite("Fabrication d'objets synthétiques");
+				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
 				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1"); // On laisse l'adresse ouverte, pas envie de configurer une adresse RCEnt propre car le test ne porte pas dessus.
