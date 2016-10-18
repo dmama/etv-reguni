@@ -434,6 +434,24 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		this.secteurActivite = secteurActivite;
 	}
 
+	/**
+	 * <p>
+	 *     Méthode métier à appeler lors de l'enregistrement d'un nouveau secteur d'activité, pour lequel le flag IDEDirty doit être mis à <code>true</code>.
+	 * </p>
+	 * <p>
+	 *     Pourquoi cette méthode dédiée? C'est beaucoup plus facile que de devoir détecter ce changement dans l'intercepteur tout en ignorant tous les autres.
+	 * </p>
+	 *
+	 * @param nouveauSecteurActivite
+	 */
+	public void changeSecteurActivite(String nouveauSecteurActivite) {
+		String precedantSecteurActivite = this.secteurActivite;
+		this.setIdeDirty(precedantSecteurActivite != null && nouveauSecteurActivite != null && !nouveauSecteurActivite.equals(precedantSecteurActivite) ||
+				nouveauSecteurActivite != null && precedantSecteurActivite == null || nouveauSecteurActivite == null && precedantSecteurActivite != null);
+
+		this.secteurActivite = nouveauSecteurActivite;
+	}
+
 	@Column(name = "IDE_DIRTY")
 	public boolean isIdeDirty() {
 		return ideDirty;

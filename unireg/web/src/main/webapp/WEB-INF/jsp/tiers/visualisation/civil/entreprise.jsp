@@ -45,6 +45,26 @@
 </fieldset>
 
 <fieldset>
+	<legend><span><fmt:message key="label.secteur.activite" /></span></legend>
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:raccourciModifier link="../entreprise/secteuractivite/edit.do?tiersId=${entreprise.id}" tooltip="Editer la description du secteur d'activité de l'entreprise" display="label.bouton.modifier"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
+	<unireg:nextRowClass reset="1"/>
+	<table>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="20%"><fmt:message key="label.secteur.activite.long" />&nbsp;:</td>
+			<td><c:out value="${entreprise.secteurActivite}"/></td>
+		</tr>
+	</table>
+</fieldset>
+
+<fieldset>
 	<legend><span><fmt:message key="label.raisons.sociales"/></span></legend>
 
 	<c:if test="${page == 'visu' }">

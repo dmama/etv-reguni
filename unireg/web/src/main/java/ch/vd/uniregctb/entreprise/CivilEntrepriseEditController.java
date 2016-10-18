@@ -105,6 +105,7 @@ public class CivilEntrepriseEditController {
 			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
 			addSubValidator(SiegeView.Add.class, new SiegeViewValidator());
 			addSubValidator(SiegeView.Edit.class, new SiegeViewValidator());
+			addSubValidator(EditSecteurActiviteEntrepriseView.class, new EditSecteurActiviteEntrepriseViewValidator());
 		}
 	}
 
@@ -711,6 +712,55 @@ public class CivilEntrepriseEditController {
 		tiersService.annuleDomicileFiscal(domicile);
 
 		return "redirect:/civil/entreprise/edit.do?id=" + entrepriseId;
+	}
+
+		/* Secteur d'activité */
+
+	@RequestMapping(value = "/secteuractivite/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editSecteurActivite(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
+
+		final Tiers tiers = tiersDAO.get(tiersId);
+		if (tiers == null || !(tiers instanceof Entreprise)) {
+			throw new TiersNotFoundException(tiersId);
+		}
+
+		final Autorisations auth = getAutorisations(tiers);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+		}
+
+		return showSecteurActivite(model, new EditSecteurActiviteEntrepriseView((Entreprise) tiers));
+	}
+
+	private String showSecteurActivite(Model model, EditSecteurActiviteEntrepriseView view) {
+		model.addAttribute("command", view);
+		return "donnees-civiles/edit-secteur-activite";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/secteuractivite/edit.do", method = RequestMethod.POST)
+	public String editSecteurActivite(@Valid @ModelAttribute("command") final EditSecteurActiviteEntrepriseView view, BindingResult result, Model model) throws Exception {
+
+		if (result.hasErrors()) {
+			return showSecteurActivite(model, view);
+		}
+
+		final Tiers tiers = tiersDAO.get(view.getTiersId());
+		if (tiers == null || !(tiers instanceof Entreprise)) {
+			throw new TiersNotFoundException(view.getTiersId());
+		}
+
+		final Entreprise entreprise = (Entreprise) tiers;
+		final Autorisations auth = getAutorisations(entreprise);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+		}
+
+		checkEditionAutorisee((Entreprise) tiers);
+
+		entreprise.changeSecteurActivite(view.getSecteurActivite());
+		return "redirect:/civil/entreprise/edit.do?id=" + tiers.getNumero();
 	}
 
 }
