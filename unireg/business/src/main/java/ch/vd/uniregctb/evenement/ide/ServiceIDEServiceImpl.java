@@ -96,31 +96,13 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final DomicileHisto siege = getSiege(entreprise, date);
 		final boolean actifAuRC = isActifAuRC(entreprise, date);
 
-		final String AUDIT__BASE_FORMAT = "Entreprise n°%s, domicile %s, type %s, %s";
+		return isServiceIDEObligEtendues(formeLegale, siege, actifAuRC);
+	}
 
-		if (!actifAuRC &&
+	protected boolean isServiceIDEObligEtendues(FormeLegale formeLegale, DomicileHisto siege, boolean actifAuRC) {
+		return !actifAuRC &&
 				siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-				(formeLegale == FormeLegale.N_0109_ASSOCIATION || formeLegale == FormeLegale.N_0110_FONDATION)) {
-			Audit.info(
-					String.format(AUDIT__BASE_FORMAT + " --> Unireg est responsable de l'entité. Annonce au registre IDE.",
-					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					              infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton(),
-					              formeLegale.getLibelle(),
-					              "non active au RC"
-			           )
-			);
-			return true;
-		} else {
-			Audit.info(
-					String.format(AUDIT__BASE_FORMAT + " --> Unireg non responsable de l'entité. Pas d'annonce au registre IDE.",
-					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					              siege != null ? infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton() : "<siège inconnu>",
-					              formeLegale != null ? formeLegale.getLibelle() : "<forme juridique inconnue>",
-					              actifAuRC ? " active au RC" : "non active au RC"
-					)
-			);
-			return false;
-		}
+				(formeLegale == FormeLegale.N_0109_ASSOCIATION || formeLegale == FormeLegale.N_0110_FONDATION);
 	}
 
 	private RaisonSocialeHisto getRaisonSociale(Entreprise entreprise, RegDate date) {
@@ -172,6 +154,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final RegDate date = RegDate.get(); // On agit en terme du présent
 		final ProtoAnnonceIDE protoAnnonceIDE = evalueSynchronisationIDE(entreprise, date);
 		if (protoAnnonceIDE != null) {
+			protoAnnonceIDE.setCommentaire("Généré automatiquement suite à la mise à jour des données civiles du contribuable.");
 			return annonceIDEService.emettreAnnonceIDE(protoAnnonceIDE, tiersService.getEtablissementPrincipal(entreprise, date));
 		}
 		else {
@@ -199,7 +182,36 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		               )
 		);
 
+		final DomicileHisto siege = getSiege(entreprise, date);
+		final boolean actifAuRC = isActifAuRC(entreprise, date);
+		final RaisonSocialeHisto raisonsSocialeHisto = getRaisonSociale(entreprise, date);
+		final FormeLegaleHisto formeLegaleHisto = getFormeLegale(entreprise, date);
+		final AdresseGenerique adresseGenerique = getAdresse(entreprise, date);
+		final String secteurActiviteActuel = entreprise.getSecteurActivite();
+
+		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
+			throw new ServiceIDEException(
+					String.format("Impossible de communiquer des changements à l'IDE car il manque des données obligatoires sur l'entreprise: %s%s%s%s.",
+					              raisonsSocialeHisto != null ? "" : "[raison sociale]",
+					              formeLegaleHisto != null ? "" : "[forme juridique]",
+					              adresseGenerique != null ? "" : "[adresse]",
+					              secteurActiviteActuel != null ? "" : "[secteur d'activite]"
+					)
+			);
+		}
+		final FormeLegale formeLegale = formeLegaleHisto.getFormeLegale();
+
+		final String AUDIT__BASE_FORMAT = "Entreprise n°%s, domicile %s, type %s, %s";
+
 		if (isServiceIDEObligEtendues(entreprise, date)) {
+			Audit.info(
+					String.format(AUDIT__BASE_FORMAT + " --> Unireg est responsable de l'entité. Annonce au registre IDE.",
+					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+					              infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton(),
+					              formeLegale.getLibelle(),
+					              "non active au RC"
+					)
+			);
 
 			final Organisation organisation = tiersService.getOrganisation(entreprise);
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
@@ -293,22 +305,6 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				}
 			}
 
-			final RaisonSocialeHisto raisonsSocialeHisto = getRaisonSociale(entreprise, date);
-			final FormeLegaleHisto formeLegaleHisto = getFormeLegale(entreprise, date);
-			final AdresseGenerique adresseGenerique = getAdresse(entreprise, date);
-			final String secteurActiviteActuel = entreprise.getSecteurActivite();
-
-			if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
-				throw new ServiceIDEException(
-						String.format("Impossible de communiquer des changements à l'IDE car il manque des données obligatoires sur l'entreprise: %s%s%s%s.",
-						              raisonsSocialeHisto != null ? "" : "[raison sociale]",
-						              formeLegaleHisto != null ? "" : "[forme juridique]",
-						              adresseGenerique != null ? "" : "[adresse]",
-						              secteurActiviteActuel != null ? "" : "[secteur d'activite]"
-						)
-				);
-			}
-
 			// flags sur l'état des données
 			boolean surchargeEnVigueure = false;
 
@@ -395,6 +391,16 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 			validerAnnonceIDE(protoActuel);
 			return protoActuel;
+		}
+		else {
+			Audit.info(
+					String.format("Pas d'annonce au registre IDE." + AUDIT__BASE_FORMAT,
+					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+					              siege != null ? infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton() : "<siège inconnu>",
+					              formeLegale != null ? formeLegale.getLibelle() : "<forme juridique inconnue>",
+					              actifAuRC ? " active au RC" : "non active au RC"
+					)
+			);
 		}
 		return null;
 	}

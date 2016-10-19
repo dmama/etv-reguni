@@ -198,6 +198,7 @@
 		<value>ch.vd.uniregctb.document.ListeDroitsAccesRapport</value>
 		<value>ch.vd.uniregctb.document.SuppressionOIDRapport</value>
 		<value>ch.vd.uniregctb.document.RecalculTachesRapport</value>
+		<value>ch.vd.uniregctb.document.AnnoncesIDERapport</value>
 		<value>ch.vd.uniregctb.document.CalculParentesRapport</value>
 		<value>ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport</value>
 		<value>ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport</value>
