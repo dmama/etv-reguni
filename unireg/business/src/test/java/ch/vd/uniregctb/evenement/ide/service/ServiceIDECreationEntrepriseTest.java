@@ -138,7 +138,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				assertNull(annonceIDE.getRaisonDeRadiation());
 
-				assertNull(annonceIDE.getCommentaire());
+				assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
 
 				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
 				assertNull(statut);
@@ -311,7 +311,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				assertNull(annonceIDE.getRaisonDeRadiation());
 
-				assertNull(annonceIDE.getCommentaire());
+				assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
 
 				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
 				assertNull(statut);
