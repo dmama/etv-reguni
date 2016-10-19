@@ -110,6 +110,19 @@
         <property name="situationFamilleService" ref="situationFamilleService"/>
     </bean>
 
+	<!-- Job qui effectue l'envoi des annonces à l'IDE pour les entreprises sous le contrôle de l'ACI -->
+	<bean id="annonceIDEJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEJob">
+		<constructor-arg value="111"/>
+		<constructor-arg value="Envoi des annonces à l'IDE pour les entreprises sous le contrôle de l'ACI"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="dialect" ref="hibernateDialect"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="serviceIDEService" ref="serviceIDEService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
 		<constructor-arg value="150"/>
@@ -181,7 +194,7 @@
         <property name="processorOrganisation" ref="evtOrganisationProcessorRetry"/>
     </bean>
 
-    <bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob">
+	<bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob">
         <constructor-arg value="300"/>
         <property name="listeRecapService" ref="lrService"/>
         <property name="rapportService" ref="rapportService"/>

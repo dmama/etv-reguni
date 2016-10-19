@@ -41,6 +41,14 @@
 				<unireg:numIDE numeroIDE="${entreprise.numerosIDE}"/>
 			</td>
 		</tr>
+		<c:if test="${entreprise.degreAssocCivil == 'CIVIL_MAITRE'}">
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="20%"><fmt:message key="label.controle.donnees.civiles"/>&nbsp;:</td>
+				<td>
+					<fmt:message key="label.controle.donnees.civiles.aci"/>&nbsp;
+				</td>
+			</tr>
+		</c:if>
 	</table>
 </fieldset>
 

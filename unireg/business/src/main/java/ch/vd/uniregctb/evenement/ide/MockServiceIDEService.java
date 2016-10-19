@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.evenement.ide;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -14,12 +16,12 @@ public class MockServiceIDEService implements ServiceIDEService {
 	}
 
 	@Override
-	public BaseAnnonceIDE synchroniseIDE(Entreprise entreprise) throws ServiceIDEException {
+	public AnnonceIDEEnvoyee synchroniseIDE(Entreprise entreprise) throws ServiceIDEException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public BaseAnnonceIDE simuleSynchronisationIDE(Entreprise entreprise) throws ServiceIDEException {
+	public ProtoAnnonceIDE simuleSynchronisationIDE(Entreprise entreprise) throws ServiceIDEException {
 		throw new UnsupportedOperationException();
 	}
 
