@@ -70,7 +70,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), date(2016, 9, 5), "Syntruc Asso");
+				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
 				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
 				addIdentificationEntreprise(entreprise, "CHE999999996");
