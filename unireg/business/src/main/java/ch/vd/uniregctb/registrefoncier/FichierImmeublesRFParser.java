@@ -38,7 +38,7 @@ import ch.vd.uniregctb.registrefoncier.elements.UnbekanntesGrundstueckElement;
  */
 public class FichierImmeublesRFParser {
 
-	private static final String GRUNDSTUECK_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck";
+	public static final String GRUNDSTUECK_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck";
 
 	private static final String LIST_IMMEUBLES = "GrundstueckList";
 	private static final String BIEN_FOND = "Liegenschaft";

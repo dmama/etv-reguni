@@ -1,0 +1,224 @@
+package ch.vd.uniregctb.registrefoncier;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.util.ResourceUtils;
+
+import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.Gebaeude;
+import ch.vd.capitastra.grundstueck.Grundstueck;
+import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
+import ch.vd.capitastra.grundstueck.Personstamm;
+import ch.vd.uniregctb.registrefoncier.elements.BergwerkElement;
+import ch.vd.uniregctb.registrefoncier.elements.BodenbedeckungElement;
+import ch.vd.uniregctb.registrefoncier.elements.FolioElement;
+import ch.vd.uniregctb.registrefoncier.elements.GebaeudeElement;
+import ch.vd.uniregctb.registrefoncier.elements.GewoehnlichesMiteigentumElement;
+import ch.vd.uniregctb.registrefoncier.elements.JuristischePersonstammElement;
+import ch.vd.uniregctb.registrefoncier.elements.LiegenschaftElement;
+import ch.vd.uniregctb.registrefoncier.elements.NatuerlichePersonstammElement;
+import ch.vd.uniregctb.registrefoncier.elements.PersonEigentumAnteilElement;
+import ch.vd.uniregctb.registrefoncier.elements.SDRElement;
+import ch.vd.uniregctb.registrefoncier.elements.StockwerksElement;
+import ch.vd.uniregctb.registrefoncier.elements.UnbekanntesGrundstueckElement;
+
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+
+/**
+ * Cet utilitaire permet de rechercher les éléments qui matchent un pattern et de les imprimer dans la console.
+ */
+public class GrepImportImmeuble {
+
+	private final JAXBContext immeubleContext;
+	private final JAXBContext droitContext;
+	private final JAXBContext proprietaireContext;
+	private final JAXBContext constructionContext;
+	private final JAXBContext surfaceContext;
+
+	private FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
+
+	public static void main(String[] args) throws Exception {
+
+		if (args.length != 2) {
+			System.out.println("Usage : GrepImportImmeuble <pattern> <file>");
+			System.exit(1);
+		}
+
+		GrepImportImmeuble grep = new GrepImportImmeuble();
+		grep.run(args);
+		System.exit(0);
+	}
+
+	public GrepImportImmeuble() throws JAXBException {
+		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
+		                                          LiegenschaftElement.class, SDRElement.class, StockwerksElement.class,
+		                                          UnbekanntesGrundstueckElement.class);
+		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
+		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
+		constructionContext = JAXBContext.newInstance(GebaeudeElement.class);
+		surfaceContext = JAXBContext.newInstance(BodenbedeckungElement.class);
+	}
+
+	private void run(String[] args) throws IOException, JAXBException, XMLStreamException {
+
+		final Pattern pattern = Pattern.compile(args[0], Pattern.DOTALL);
+		final String filename = args[1];
+
+		final File file = ResourceUtils.getFile("file:" + filename);
+		assertNotNull(file);
+
+		final MutableInt immeubleCount = new MutableInt(0);
+		final MutableInt droitCount = new MutableInt(0);
+		final MutableInt proprietaireCount = new MutableInt(0);
+		final MutableInt constructionCount = new MutableInt(0);
+		final MutableInt surfaceCount = new MutableInt(0);
+
+		final long start = System.nanoTime();
+
+		// on parse le fichier
+		final FichierImmeublesRFParser.Callback callback = new FichierImmeublesRFParser.Callback() {
+			@Override
+			public void onImmeuble(@NotNull Grundstueck immeuble) {
+				String xml = toXMLString(immeuble);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				immeubleCount.increment();
+			}
+
+			@Override
+			public void onDroit(@NotNull PersonEigentumAnteil droit) {
+				String xml = toXMLString(droit);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				droitCount.increment();
+			}
+
+			@Override
+			public void onProprietaire(@NotNull Personstamm personne) {
+				String xml = toXMLString(personne);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				proprietaireCount.increment();
+			}
+
+			@Override
+			public void onConstruction(@NotNull Gebaeude construction) {
+				String xml = toXMLString(construction);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				constructionCount.increment();
+			}
+
+			@Override
+			public void onSurface(@NotNull Bodenbedeckung surface) {
+				String xml = toXMLString(surface);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				surfaceCount.increment();
+			}
+		};
+
+		try (InputStream is = new FileInputStream(file)) {
+			parser.processFile(is, callback);
+		}
+
+		final long end = System.nanoTime();
+		System.out.println("Temps d'exécution: " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
+	}
+
+	private String toXMLString(Grundstueck obj) {
+		try {
+			final Marshaller m = immeubleContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<Grundstueck>(name, (Class<Grundstueck>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			return e.getMessage();
+		}
+	}
+
+	private String toXMLString(PersonEigentumAnteil obj) {
+		try {
+			final Marshaller m = droitContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<PersonEigentumAnteil>(name, (Class<PersonEigentumAnteil>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			return e.getMessage();
+		}
+	}
+
+	private String toXMLString(Personstamm obj) {
+		try {
+			final Marshaller m = proprietaireContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<Personstamm>(name, (Class<Personstamm>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			return e.getMessage();
+		}
+	}
+
+	private String toXMLString(Gebaeude obj) {
+		try {
+			final Marshaller m = constructionContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<Gebaeude>(name, (Class<Gebaeude>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			return e.getMessage();
+		}
+	}
+
+	private String toXMLString(Bodenbedeckung obj) {
+		try {
+			final Marshaller m = surfaceContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<Bodenbedeckung>(name, (Class<Bodenbedeckung>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			return e.getMessage();
+		}
+	}
+
+	@NotNull
+	private static QName buildQName(@NotNull Object o) {
+		final String simpleName = o.getClass().getSimpleName().replaceAll("Element$", "");
+		return new QName(FichierImmeublesRFParser.GRUNDSTUECK_NAMESPACE, simpleName);
+	}
+
+}
