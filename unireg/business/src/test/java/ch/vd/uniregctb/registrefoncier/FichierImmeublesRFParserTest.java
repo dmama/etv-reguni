@@ -37,9 +37,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class FichierImmeubleRFParserTest {
+public class FichierImmeublesRFParserTest {
 
-	private FichierImmeubleRFParser parser = new FichierImmeubleRFParser();
+	private FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
 
 	@Test
 	public void testParseImmeubles() throws Exception {
@@ -321,7 +321,7 @@ public class FichierImmeubleRFParserTest {
 		}
 	}
 
-	private static class TestCallback implements FichierImmeubleRFParser.Callback {
+	private static class TestCallback implements FichierImmeublesRFParser.Callback {
 
 		private final List<Grundstueck> immeubles = new ArrayList<>();
 		private final List<PersonEigentumAnteil> droits = new ArrayList<>();

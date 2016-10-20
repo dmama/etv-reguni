@@ -36,9 +36,9 @@ import ch.vd.uniregctb.registrefoncier.elements.UnbekanntesGrundstueckElement;
 /**
  * Classe qui parse un fichier d'import d'immeubles du registre foncier et qui notifie au fil du parsing des éléments lus.
  */
-public class FichierImmeubleRFParser {
+public class FichierImmeublesRFParser {
 
-	private static String GRUNDSTUECK_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck";
+	private static final String GRUNDSTUECK_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck";
 
 	private static final String LIST_IMMEUBLES = "GrundstueckList";
 	private static final String BIEN_FOND = "Liegenschaft";
