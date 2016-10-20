@@ -171,25 +171,43 @@ public class AnnonceIDEJob extends JobDefinition {
 	protected AnnonceIDEJobResults evalueEntreprise(final Entreprise entreprise, final boolean simulation) {
 			AnnonceIDEJobResults results = new AnnonceIDEJobResults(simulation);
 			try {
-				if (simulation) {
-					final ProtoAnnonceIDE protoAnnonceIDE = (ProtoAnnonceIDE) serviceIDEService.simuleSynchronisationIDE(entreprise);
-					results.addAnnonceIDE(entreprise.getNumero(), protoAnnonceIDE);
-				}
-				else {
-					final AnnonceIDE annonceIDE = (AnnonceIDE) serviceIDEService.synchroniseIDE(entreprise);
-					results.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
-				}
-				final Session session = sessionFactory.openSession();
-				try {
-					final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
-					query.setParameter("id", entreprise.getNumero());
-					query.executeUpdate();
+				final TransactionTemplate template = new TransactionTemplate(transactionManager);
+				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-					session.flush();
-				}
-				finally {
-					session.close();
-				}
+				results = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
+					@Override
+					public AnnonceIDEJobResults doInTransaction(TransactionStatus status) {
+						AnnonceIDEJobResults results = new AnnonceIDEJobResults(simulation);
+						try {
+							if (simulation) {
+								final ProtoAnnonceIDE protoAnnonceIDE = (ProtoAnnonceIDE) serviceIDEService.simuleSynchronisationIDE(entreprise);
+								results.addAnnonceIDE(entreprise.getNumero(), protoAnnonceIDE);
+							}
+							else {
+								final AnnonceIDE annonceIDE = (AnnonceIDE) serviceIDEService.synchroniseIDE(entreprise);
+								results.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
+							}
+							final Session session = sessionFactory.openSession();
+							try {
+								final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
+								query.setParameter("id", entreprise.getNumero());
+								query.executeUpdate();
+
+								session.flush();
+							}
+							finally {
+								session.close();
+							}
+							return results;
+						}
+						catch (ServiceIDEException e) {
+							// On doit faire le ménage si un problème est survenu pendant l'envoi, sinon on croira qu'on a émis l'annonce alors que ce n'est pas le cas.
+							status.setRollbackOnly();
+							results.addErrorException(entreprise.getNumero(), e);
+							return results;
+						}
+					}
+				});
 			}
 			catch (Exception e) {
 				results.addErrorException(entreprise.getNumero(), e);
