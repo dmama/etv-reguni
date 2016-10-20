@@ -32,8 +32,10 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 		addMetaInfo(nom, description);
 		addEnteteUnireg();
 
+		final boolean simulation = results.isSimulation();
+
 		// Titre
-		addTitrePrincipal("Rapport d'annonce à l'IDE des entreprises sous contrôle de l'ACI");
+		addTitrePrincipal(String.format("Rapport d'annonce à l'IDE des entreprises sous contrôle de l'ACI%s", simulation ? " (Simulation)" : ""));
 
 		// Paramètres
 		addEntete1("Paramètre");
@@ -41,7 +43,7 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 			addTableSimple(2, new TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Simulation : ", String.valueOf(results.isSimulation()));
+					table.addLigne("Simulation : ", String.valueOf(simulation));
 				}
 			});
 		}
@@ -94,7 +96,13 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("ENTREPRISE_ID").append(COMMA);
-				b.append("ANNONCE");
+				b.append("ANNONCE_ID").append(COMMA);
+				b.append("ANNONCE_TYPE").append(COMMA);
+				b.append("ANNONCE_DATE").append(COMMA);
+				b.append("ENTREPRISE_IDE").append(COMMA);
+				b.append("ENTREPRISE_RAISON_SOCIALE").append(COMMA);
+				b.append("ENTREPRISE_FORME_JURIDIQUE").append(COMMA);
+				b.append("ENTREPRISE_SECTEUR_ACTIVITE").append(COMMA);
 			}
 
 			@Override

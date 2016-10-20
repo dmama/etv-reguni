@@ -78,11 +78,9 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		/*
-			- Comparer une à une toutes les données de l'annonce (à rechercher dans RCEnt) et vérifier que le résultat obtenu dans RCEnt correspond bien. (ou faut-il comparer avec l'état actuel d'Unireg?)
-			- Si c'est ok, on ferme toutes les surcharges civiles et adresses. C'est RCEnt qui prend le relais. Cela nous permet d'incorporer automatiquement tout changement causé par d'autres services IDE.
-
-			En fait,ca ne peut pas marcher tout à fait comme ça: le processus de rattachement ferme déjà les surcharge et on l'a peut-être traversé avant d'arriver ici. Plutôt que réécrire un processus
-			séparé, on se contenter de vérifier que les données correspondent et lever une alerte si ce n'est pas le cas.
+			- On rattache les entités, sans fermer les surcharge (demande de l'ACI).
+			- On comparer une à une toutes les données de l'annonce (à rechercher dans RCEnt) et on vérifie que le résultat obtenu dans RCEnt correspond bien. (ou faut-il comparer avec l'état actuel d'Unireg?)
+			- Les différences sont signalées à l'utilisateur avec un message à vérifier. Il ne devrait pas y avoir de différence, sauf en cas de collision avec un autre registre lors du traitement à l'IDE.
 		 */
 		suivis.addSuivi(
 				String.format(
@@ -97,8 +95,8 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 		// Rattacher ?
 		if (getEntreprise().getNumeroEntreprise() == null) {
-			// oui rattacher (ce qui inclue la fermeture des surcharges civiles)
-			tiersService.apparier(getEntreprise(), getOrganisation());
+			// oui rattacher (sans fermer les surcharges civiles, à la demande de l'ACI)
+			tiersService.apparier(getEntreprise(), getOrganisation(), false);
 
 			// Appariement sans fermeture de surcharge de l'établissement principal, car on doit pouvoir garder le domicile différent.
 			etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
@@ -117,7 +115,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			);
 		} else {
 			// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
-			tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
+			//tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore()); // Finallement non (ACI)
 		}
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(getEntreprise(), false);
@@ -167,7 +165,8 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 			/* Si RCEnt propose la même commune qu'Unireg comme commune de siège, on peut fermer la surcharge. */
 			if (numeroOfsFiscal.equals(numeroOfsCivil)) {
-				tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
+				// Finallement, pas de fermeture de surcharge (ACI)
+				//tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
 			} else {
 				warnings.addWarning(
 						String.format("Le domicile [%s] présent dans le registre civil est different de celui trouvé [%s] dans Unireg. " +

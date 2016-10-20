@@ -75,6 +75,19 @@
 					</property>
 				</bean>
 
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="annonceIDEJob"/>
+					<!-- détermination et émission des annonces à l'IDE pour les entreprises sous contrôle d'Unireg. -->
+					<property name="cronExpression" value="${extprop.crontab.refresh.annoncesIDE}"/>
+					<property name="params">
+						<map>
+							<entry>
+								<key><util:constant static-field="ch.vd.uniregctb.evenement.ide.AnnonceIDEJob.SIMULATION"/></key>
+								<value type="java.lang.Boolean">false</value>
+							</entry>
+						</map>
+					</property>
+				</bean>
 			</list>
 		</property>
 	</bean>

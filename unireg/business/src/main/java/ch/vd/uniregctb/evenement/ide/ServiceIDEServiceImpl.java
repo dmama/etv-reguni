@@ -190,34 +190,28 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final String secteurActiviteActuel = entreprise.getSecteurActivite();
 
 		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
+			final String message = String.format("Impossible de communiquer des changements à l'IDE car il manque des données obligatoires sur l'entreprise: %s%s%s%s.",
+			                                    raisonsSocialeHisto != null ? "" : "[raison sociale]",
+			                                    formeLegaleHisto != null ? "" : "[forme juridique]",
+			                                    adresseGenerique != null ? "" : "[adresse]",
+			                                    secteurActiviteActuel != null ? "" : "[secteur d'activite]"
+			);
+			Audit.error(message);
 			throw new ServiceIDEException(
-					String.format("Impossible de communiquer des changements à l'IDE car il manque des données obligatoires sur l'entreprise: %s%s%s%s.",
-					              raisonsSocialeHisto != null ? "" : "[raison sociale]",
-					              formeLegaleHisto != null ? "" : "[forme juridique]",
-					              adresseGenerique != null ? "" : "[adresse]",
-					              secteurActiviteActuel != null ? "" : "[secteur d'activite]"
-					)
+					message
 			);
 		}
 		final FormeLegale formeLegale = formeLegaleHisto.getFormeLegale();
 
-		final String AUDIT__BASE_FORMAT = "Entreprise n°%s, domicile %s, type %s, %s";
-
 		if (isServiceIDEObligEtendues(entreprise, date)) {
-			Audit.info(
-					String.format(AUDIT__BASE_FORMAT + " --> Unireg est responsable de l'entité. Annonce au registre IDE.",
-					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					              infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton(),
-					              formeLegale.getLibelle(),
-					              "non active au RC"
-					)
-			);
 
 			final Organisation organisation = tiersService.getOrganisation(entreprise);
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			if (site != null) {
+				final String message = String.format("Le site apparié à l'établissement n°%s n'est pas un établissement principal.", etablissement.getNumero());
+				Audit.error(message);
 				Assert.isTrue(site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_PRINCIPAL,
-				              String.format("Le site apparié à l'établissement n°%s n'est pas un établissement principal.", etablissement.getNumero()));
+				              message);
 			}
 
 			final StatusRegistreIDE statusRegistreIDE = site == null ? null : site.getDonneesRegistreIDE().getStatus(date);
@@ -228,7 +222,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 			final TypeAnnonce typeAnnonce;
 			final String noIde;
-			final RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE = null; // TODO: Aller chercher la raison de radiation dans les remarques du tiers.
+			final RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE = null; // TODO: Supporter les radiations.
 
 			/*
 					Déterminer le type d'annonce et le numéro IDE
@@ -244,10 +238,12 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 								On connait déjà le numéro IDE
 							 */
 						if (!numeroIDEFiscalEntreprise.equals(numeroIDESite)) {
+							final String message = String.format("Les numéro IDE de Unireg [%s] et du registre civil [%s] ne correspondent pas pour l'établissement n°%s!",
+							                                    numeroIDEFiscalEntreprise, numeroIDESite, FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
+							);
+							Audit.error(message);
 							throw new ServiceIDEException(
-									String.format("Les numéro IDE de Unireg [%s] et du registre civil [%s] ne correspondent pas pour l'établissement n°%s!",
-									              numeroIDEFiscalEntreprise, numeroIDESite, FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
-									));
+									message);
 						}
 						noIde = numeroIDESite;
 					} else {
@@ -351,8 +347,10 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					}
 				} else {
 					// Cas de notre dernière annonce encore dans l'esb.
-					throw new ServiceIDEException("Une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
-							                              "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.");
+					final String message = "Une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
+							"Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.";
+					Audit.warn(message);
+					throw new ServiceIDEException(message);
 				}
 			}
 
@@ -390,17 +388,19 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			// - La détection de radiation émise fonctionne à minima et échoue si
 
 			validerAnnonceIDE(protoActuel);
-			return protoActuel;
-		}
-		else {
+
 			Audit.info(
-					String.format("Pas d'annonce au registre IDE." + AUDIT__BASE_FORMAT,
+					String.format("Annonce à l'IDE de l'entreprise (%s) n°%s %s, domiciliée à %s, type %s, %s.",
+					              protoActuel.getType().getLibelle(),
 					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					              siege != null ? infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton() : "<siège inconnu>",
-					              formeLegale != null ? formeLegale.getLibelle() : "<forme juridique inconnue>",
+					              protoActuel.getContenu() == null ? "" : protoActuel.getContenu().getNom(),
+					              infraService.getCommuneByNumeroOfs(siege.getNumeroOfsAutoriteFiscale(), date).getNomOfficielAvecCanton(),
+					              formeLegale.getLibelle(),
 					              actifAuRC ? " active au RC" : "non active au RC"
 					)
 			);
+
+			return protoActuel;
 		}
 		return null;
 	}
