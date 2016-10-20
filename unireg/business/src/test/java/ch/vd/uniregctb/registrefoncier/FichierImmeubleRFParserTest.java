@@ -374,31 +374,4 @@ public class FichierImmeubleRFParserTest {
 			return surfaces;
 		}
 	}
-
-//	@Test
-//	public void testFullImport() throws Exception {
-//
-//		final File file = ResourceUtils.getFile("file:/home/msi/bidon/unireg/full_import.xml");
-//		assertNotNull(file);
-//
-//		MutableInt count = new MutableInt(0);
-//		final long start = System.nanoTime();
-//
-//		// on parse le fichier
-//		final FichierImmeubleRFParser.Callback callback = new FichierImmeubleRFParser.Callback() {
-//			@Override
-//			public void onImmeuble(Grundstueck immeuble) {
-//				count.increment();
-//				if (count.getValue() % 1000 == 0) {
-//					System.out.println(count.getValue());
-//				}
-//			}
-//		};
-//		try (InputStream is = new FileInputStream(file)) {
-//			parser.processFile(is, callback);
-//		}
-//
-//		final long end = System.nanoTime();
-//		System.out.println("Temps d'exécution: " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
-//	}
 }
