@@ -6901,7 +6901,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void apparier(Entreprise entreprise, Organisation organisation) {
+	public void apparier(Entreprise entreprise, Organisation organisation, boolean fermerSurcharges) {
 		final List<DateRanged<FormeLegale>> formesLegales = organisation.getFormeLegale();
 		final RegDate debutCivil = formesLegales.isEmpty() ? RegDate.get() : formesLegales.get(0).getDateDebut();
 		final RegDate finFiscale = debutCivil.getOneDayBefore();
@@ -6910,7 +6910,9 @@ public class TiersServiceImpl implements TiersService {
 		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
 		entreprise.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
 
-		fermeSurchargesCiviles(entreprise, finFiscale);
+		if (fermerSurcharges) {
+			fermeSurchargesCiviles(entreprise, finFiscale);
+		}
 	}
 
 	@Override

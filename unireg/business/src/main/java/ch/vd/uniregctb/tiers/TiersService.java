@@ -291,10 +291,11 @@ public interface TiersService {
 	/**
 	 * Associe une entreprise à une organisation civile. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,
 	 * et supprime le numéro IDE du registre fiscal.
-	 * @param entreprise
-	 * @param organisation
+	 * @param entreprise le tiers visé
+	 * @param organisation l'organisation à rattacher
+	 * @param fermerSurcharges précise s'il faut fermer les surcharges civiles.
 	 */
-	void apparier(Entreprise entreprise, Organisation organisation);
+	void apparier(Entreprise entreprise, Organisation organisation, boolean fermerSurcharges);
 
 	/**
 	 * Associe un établissement à un site du registre civil. Ce faisant, ferme ou annule les surcharges civiles à la veille du début des données civiles,

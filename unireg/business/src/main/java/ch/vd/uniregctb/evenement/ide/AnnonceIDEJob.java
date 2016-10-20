@@ -35,10 +35,9 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class AnnonceIDEJob extends JobDefinition {
 
-	private static final String NAME = "AnnonceIDEJob";
+	public static final String NAME = "AnnonceIDEJob";
 
-	private static final String SIMULATION = "DRY_RUN";
-	private static final String NB_THREADS = "NB_THREADS";
+	public static final String SIMULATION = "SIMULATION";
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -123,7 +122,7 @@ public class AnnonceIDEJob extends JobDefinition {
 					throw new IllegalArgumentException("Le tiers n'est pas une entreprise.");
 				}
 			});
-			resultatEntreprise.addAll(resultatEntreprise);
+			results.addAll(resultatEntreprise);
 		}
 
 		final AnnoncesIDERapport rapport = rapportService.generateRapport(results, getStatusManager());
