@@ -78,7 +78,7 @@
 				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
 					<property name="job" ref="annonceIDEJob"/>
 					<!-- détermination et émission des annonces à l'IDE pour les entreprises sous contrôle d'Unireg. -->
-					<property name="cronExpression" value="${extprop.crontab.refresh.annoncesIDE}"/>
+					<property name="cronExpression" value="${extprop.crontab.annonce.entreprises.ide}"/>
 					<property name="params">
 						<map>
 							<entry>
