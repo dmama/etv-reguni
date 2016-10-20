@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RechteregisterExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister export_rechteregister_20101231.xsd">
+	<StandardRechtList>
+		<Dienstbarkeit VersionID="1f109152380ffd8901380ffec2516c10" MasterID="1f109152380ffd8901380ffec2506c02">
+			<StandardRechtID>_1f109152380ffd8901380ffec2506c02</StandardRechtID>
+			<BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe0d893e41</BeteiligtesGrundstueckIDREF>
+			<RechtEintragJahrID>2004</RechtEintragJahrID>
+			<RechtEintragNummerID>151</RechtEintragNummerID>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<AmtNummer>8</AmtNummer>
+			<Stichwort>
+				<TextDe>*Habitation</TextDe>
+				<TextFr>Droit d'habitation</TextFr>
+			</Stichwort>
+			<Beleg>
+				<AmtNummer>8</AmtNummer>
+				<BelegJahr>2004</BelegJahr>
+				<BelegNummer>534</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Beleg>
+			<BeginDatum>2004-11-08+01:00</BeginDatum>
+			<Entschaedigung>0</Entschaedigung>
+			<Wert>0</Wert>
+			<Meldungspflichtig>gem_code</Meldungspflichtig>
+			<Personenberechtigt>true</Personenberechtigt>
+			<Grundstueckeberechtigt>false</Grundstueckeberechtigt>
+			<EintragungAlsSdR>false</EintragungAlsSdR>
+		</Dienstbarkeit>
+		<Dienstbarkeit VersionID="1f109152380ffd8901380ffefad64374" MasterID="1f109152380ffd8901380ffefad54360">
+			<StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>
+			<BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>
+			<RechtEintragJahrID>2006</RechtEintragJahrID>
+			<RechtEintragNummerID>361</RechtEintragNummerID>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<AmtNummer>8</AmtNummer>
+			<Stichwort>
+				<TextDe>*Usufruit</TextDe>
+				<TextFr>Usufruit</TextFr>
+			</Stichwort>
+			<Rechtzusatz>conventionnel</Rechtzusatz>
+			<Beleg>
+				<AmtNummer>8</AmtNummer>
+				<BelegJahr>2006</BelegJahr>
+				<BelegNummer>285</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Beleg>
+			<BeginDatum>2006-06-30+02:00</BeginDatum>
+			<Entschaedigung>0</Entschaedigung>
+			<Wert>0</Wert>
+			<Meldungspflichtig>gem_code</Meldungspflichtig>
+			<Personenberechtigt>true</Personenberechtigt>
+			<Grundstueckeberechtigt>false</Grundstueckeberechtigt>
+			<EintragungAlsSdR>false</EintragungAlsSdR>
+		</Dienstbarkeit>
+	</StandardRechtList>
+</RechteregisterExport>
