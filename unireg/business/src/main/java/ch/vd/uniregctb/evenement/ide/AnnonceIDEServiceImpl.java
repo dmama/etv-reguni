@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.Etablissement;
 
 /**
@@ -26,7 +25,7 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 	}
 
 	@Override
-	public AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE proto, Etablissement etablissement) {
+	public AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE proto, Etablissement etablissement) throws AnnonceIDEException {
 
 		Assert.notNull(proto, "Le prototype de la demande d'annonce doit être fournie.");
 		Assert.notNull(etablissement, "L'établissement concerné par l'annonce doit être fournie.");
@@ -45,14 +44,7 @@ public class AnnonceIDEServiceImpl implements AnnonceIDEService {
 		referenceAnnonceIDE.setMsgBusinessId(msgBusinessId);
 
 		// publication de la demande d'annonce
-		try {
-			annonceIDESender.sendEvent(annonceIDE, msgBusinessId);
-		}
-		catch (AnnonceIDEException e) {
-			throw new RuntimeException(
-					String.format("Erreur survenue lors de la demande d'annonce %d à l'IDE pour l'etablissement %s.", annonceIDE.getNumero(), FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())),
-					e);
-		}
+		annonceIDESender.sendEvent(annonceIDE, msgBusinessId);
 
 		return annonceIDE;
 	}

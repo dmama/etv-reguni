@@ -16,6 +16,6 @@ public interface AnnonceIDEService {
 	 * @param etablissement l'établissement concerné par l'annonce à l'IDE
 	 * @return l'annonce telle qu'expédiée, avec son numéro (attention, un nouvel objet est retourné)
 	 */
-	AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE proto, Etablissement etablissement);
+	AnnonceIDE emettreAnnonceIDE(BaseAnnonceIDE proto, Etablissement etablissement) throws AnnonceIDEException;
 
 }

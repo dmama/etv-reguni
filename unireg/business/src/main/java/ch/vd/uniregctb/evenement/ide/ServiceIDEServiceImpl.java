@@ -155,7 +155,15 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final ProtoAnnonceIDE protoAnnonceIDE = evalueSynchronisationIDE(entreprise, date);
 		if (protoAnnonceIDE != null) {
 			protoAnnonceIDE.setCommentaire("Généré automatiquement suite à la mise à jour des données civiles du contribuable.");
-			return annonceIDEService.emettreAnnonceIDE(protoAnnonceIDE, tiersService.getEtablissementPrincipal(entreprise, date));
+			try {
+				return annonceIDEService.emettreAnnonceIDE(protoAnnonceIDE, tiersService.getEtablissementPrincipal(entreprise, date));
+			}
+			catch (AnnonceIDEException e) {
+				final String message =
+						String.format("Erreur lors de la synchronisation de l'IDE de l'entreprise n°%s. %s", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), e.getMessage());
+				Audit.warn(message);
+				throw new ServiceIDEException(message, e);
+			}
 		}
 		else {
 			return null;
