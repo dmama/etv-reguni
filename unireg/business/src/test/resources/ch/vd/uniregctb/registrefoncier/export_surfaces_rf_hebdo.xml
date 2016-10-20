@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+
+	<BodenbedeckungList>
+		<Bodenbedeckung VersionID="1f109152381091220138109a8c19566e">
+			<GrundstueckIDREF>_1f10915238109122013810973b5b5d7e</GrundstueckIDREF>
+			<Art>
+				<TextDe>*Place-jardin</TextDe>
+				<TextFr>Place-jardin</TextFr>
+			</Art>
+			<Flaeche>1766</Flaeche>
+		</Bodenbedeckung>
+		<Bodenbedeckung VersionID="1f10915238102ecd0138103217692dbd">
+			<GrundstueckIDREF>_1f10915238102ecd01381030e605091e</GrundstueckIDREF>
+			<Art>
+				<TextDe>*Pré-champ</TextDe>
+				<TextFr>Pré-champ</TextFr>
+			</Art>
+			<Flaeche>3457</Flaeche>
+		</Bodenbedeckung>
+		<Bodenbedeckung VersionID="1f10915238107c150138108467353b41">
+			<GrundstueckIDREF>_1f10915238107c1501381081420d5645</GrundstueckIDREF>
+			<Art>
+				<TextDe>*Forêt</TextDe>
+				<TextFr>Forêt</TextFr>
+			</Art>
+			<Flaeche>3510</Flaeche>
+		</Bodenbedeckung>
+	</BodenbedeckungList>
+
+</GrundstueckExport>

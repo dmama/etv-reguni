@@ -81,12 +81,14 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
-			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-editique</artifactId>
-			<version>5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-jaxb2-capitastra</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
@@ -172,6 +174,11 @@
 			<artifactId>stax</artifactId>
 			<version>1.2.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.woodstox</groupId>
+			<artifactId>woodstox-core-asl</artifactId>
+			<version>4.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>

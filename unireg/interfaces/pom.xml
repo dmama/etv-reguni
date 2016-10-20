@@ -50,7 +50,6 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
-			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>
@@ -65,7 +64,6 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-cyber</artifactId>
-			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>

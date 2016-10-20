@@ -12,11 +12,11 @@
 		<!-- Lexical representation of date as described here:
 		     http://www.w3.org/TR/xmlschema-2/#dateTime-order -->
 		<jxb:javaType name="ch.vd.registre.base.date.RegDate" xmlType="xs:date"
-		              parseMethod="ch.vd.registre.base.date.RegDateHelper.dashStringToDate"
-		              printMethod="ch.vd.registre.base.date.RegDateHelper.dateToDashString"/>
+		              parseMethod="ch.vd.registre.base.date.RegDateHelper.xmlStringToDate"
+		              printMethod="ch.vd.registre.base.date.RegDateHelper.dateToXmlDateString" />
 		<jxb:javaType name="java.util.Date" xmlType="xs:dateTime"
 		              parseMethod="ch.vd.unireg.shared.DateHelperWrapper.isoTimestampToDate"
-		              printMethod="ch.vd.unireg.shared.DateHelperWrapper.dateToIsoTimestamp"/>
+		              printMethod="ch.vd.unireg.shared.DateHelperWrapper.dateToIsoTimestamp" />
 	</jxb:globalBindings>
 
 	<!-- local XSDs -->

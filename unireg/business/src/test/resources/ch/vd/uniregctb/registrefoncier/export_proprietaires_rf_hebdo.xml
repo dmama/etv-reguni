@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+	<PersonstammList>
+		<NatuerlichePersonstamm>
+			<PersonstammID>_1f109152380ffd8901380ffda31b11e2</PersonstammID>
+			<Name>Debonneville</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<Anrede>
+				<TextDe>*Monsieur</TextDe>
+				<TextFr>Monsieur</TextFr>
+			</Anrede>
+			<NoRF>209544</NoRF>
+			<Vorname>Jean-Luc</Vorname>
+			<Zivilstand>unbekannt</Zivilstand>
+			<Geburtsdatum>
+				<Tag>21</Tag>
+				<Monat>5</Monat>
+				<Jahr>1961</Jahr>
+			</Geburtsdatum>
+			<NameDerEltern>Jacques</NameDerEltern>
+			<Geschlecht>unbekannt</Geschlecht>
+		</NatuerlichePersonstamm>
+		<JuristischePersonstamm>
+			<PersonstammID>_1f1091523810039001381003a44d07a1</PersonstammID>
+			<Name>Société du pâturage des Seytorées</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<NoRF>113800</NoRF>
+			<Sitz>Payerne</Sitz>
+			<Gesellschaftsform>
+				<TextDe>*Société coopérative</TextDe>
+				<TextFr>Société coopérative</TextFr>
+			</Gesellschaftsform>
+			<Unterart>SchweizerischeJuristischePerson</Unterart>
+		</JuristischePersonstamm>
+	</PersonstammList>
+</GrundstueckExport>

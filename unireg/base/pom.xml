@@ -94,6 +94,68 @@
 		</plugins>
 	</build>
 
+	<!-- Le 'dependency management' permet de spécifier quelles versions des librairies doivent être utilisées *si* elles apparaissent
+	     dans les dépendances naturelles des projets. Il ne s'agit donc pas de dépendances globales. -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-capitastra</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-cyber</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-ech</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-editique</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-events</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-fidor</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-host-interfaces</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-infra</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-party</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-rcpers</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.vd.uniregctb</groupId>
+				<artifactId>unireg-jaxb2-rcent</artifactId>
+				<version>${unireg.jaxb2.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<repositories>
 		<repository>
 			<id>releases</id>
@@ -608,6 +670,7 @@
 		<ws.v5.version>5.5</ws.v5.version>
 		<ws.v6.version>6.5</ws.v6.version>
 		<ws.v7.version>7.2</ws.v7.version>
+		<unireg.jaxb2.version>6.0-SNAPSHOT</unireg.jaxb2.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>

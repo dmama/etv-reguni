@@ -2,6 +2,7 @@
 <jxb:bindings version="1.0"
 			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
 			  xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			  xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
@@ -15,15 +16,19 @@
 		<!-- On évite les BigNumber -->
 		<jxb:javaType name="java.lang.Long" xmlType="xs:integer" />
 		<jxb:javaType name="java.lang.Long" xmlType="xs:nonNegativeInteger" />
+		<jxb:javaType name="java.lang.Long" xmlType="xs:unsignedLong" />
+
+		<!-- On veut récupérer les IDs sous forme de String -->
+		<jxb:javaType name="java.lang.String" xmlType="xs:IDREF" />
 
 		<!-- Lexical representation of date as described here:
 		     http://www.w3.org/TR/xmlschema-2/#dateTime-order -->
 		<jxb:javaType name="ch.vd.registre.base.date.RegDate" xmlType="xs:date"
-		              parseMethod="ch.vd.registre.base.date.RegDateHelper.dashStringToDate"
-		              printMethod="ch.vd.registre.base.date.RegDateHelper.dateToDashString"/>
+		              parseMethod="ch.vd.registre.base.date.RegDateHelper.xmlStringToDate"
+		              printMethod="ch.vd.registre.base.date.RegDateHelper.dateToXmlDateString" />
 		<jxb:javaType name="java.util.Date" xmlType="xs:dateTime"
 		              parseMethod="ch.vd.unireg.shared.DateHelperWrapper.isoTimestampToDate"
-		              printMethod="ch.vd.unireg.shared.DateHelperWrapper.dateToIsoTimestamp"/>
+		              printMethod="ch.vd.unireg.shared.DateHelperWrapper.dateToIsoTimestamp" />
 	</jxb:globalBindings>
 
 	<!-- local XSDs -->
@@ -32,6 +37,64 @@
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.capitastra.grundstueck" />
 		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='QuoteType']">
+			<jxb:bindings node=".//xs:element[@name='AnteilZaehler']">
+				<!-- On force le décimal en long parce que dans les faits on ne reçoit que des valeurs entières (pas de décimale) et que c'est plus pratique ainsi -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='PersonstammType']">
+			<jxb:bindings node=".//xs:element[@name='NrACI']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='PersonstammType']">
+			<jxb:bindings node=".//xs:element[@name='NoRF']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='NatuerlichePersonstammType']">
+			<jxb:bindings node=".//xs:element[@name='NrIROLE']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='AbstractGebaeudeType']">
+			<jxb:bindings node=".//xs:element[@name='Flaeche']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='GrundstueckZuGebaeudeType']">
+			<jxb:bindings node=".//xs:element[@name='AbschnittFlaeche']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='BodenbedeckungType']">
+			<jxb:bindings node=".//xs:element[@name='Flaeche']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<!--<jxb:bindings node="//xs:simpleType[@name='PersonEigentumsformType']">-->
+			<!--<jxb:typesafeEnumClass name="PersonEigentumsform">-->
+				<!--<jxb:typesafeEnumMember name="PROPRIETE_INDIVIDUELLE" value="alleineigentum"/>-->
+				<!--<jxb:typesafeEnumMember name="COPROPRIETE_SIMPLE" value="miteigentum"/>-->
+				<!--<jxb:typesafeEnumMember name="PROPRIETE_COMMUNE" value="gesamteigentum"/>-->
+				<!--<jxb:typesafeEnumMember name="PROPRIETE_EN_DESHERENCE" value="herrenlos"/>-->
+			<!--</jxb:typesafeEnumClass>-->
+		<!--</jxb:bindings>-->
+
 	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/rechteregister.xsd">

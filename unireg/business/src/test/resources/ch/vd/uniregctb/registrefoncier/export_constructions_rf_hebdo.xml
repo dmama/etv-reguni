@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+	<GebaeudeList>
+		<Gebaeude VersionID="1f109152380ffd8901380ffe81c91455" MasterID="1f109152380ffd8901380ffe81c4141d">
+			<GrundstueckZuGebaeude>
+				<GrundstueckIDREF>_1f109152380ffd8901380ffe19367d20</GrundstueckIDREF>
+				<AbschnittFlaeche>157</AbschnittFlaeche>
+			</GrundstueckZuGebaeude>
+			<Einzelobjekt>false</Einzelobjekt>
+			<Unterirdisch>false</Unterirdisch>
+			<MehrereGrundstuecke>false</MehrereGrundstuecke>
+			<GebaeudeArten>
+				<GebaeudeArtCode>
+					<TextDe>*Habitation avec affectation mixte</TextDe>
+					<TextFr>Habitation avec affectation mixte</TextFr>
+				</GebaeudeArtCode>
+			</GebaeudeArten>
+			<Versicherungsnummer>142</Versicherungsnummer>
+		</Gebaeude>
+		<Gebaeude VersionID="8af8064d567f817b0156eb1d2f891cee" MasterID="1f109152380ffd8901380ffe894f41ae">
+			<GrundstueckZuGebaeude>
+				<GrundstueckIDREF>_1f109152380ffd8901380ffe07fb2421</GrundstueckIDREF>
+				<AbschnittFlaeche>107</AbschnittFlaeche>
+			</GrundstueckZuGebaeude>
+			<Einzelobjekt>false</Einzelobjekt>
+			<Unterirdisch>false</Unterirdisch>
+			<MehrereGrundstuecke>false</MehrereGrundstuecke>
+			<Flaeche>107</Flaeche>
+			<GebaeudeArten>
+				<GebaeudeArtCode>
+					<TextDe>*Habitation</TextDe>
+					<TextFr>Habitation</TextFr>
+				</GebaeudeArtCode>
+			</GebaeudeArten>
+			<Versicherungsnummer>1563a</Versicherungsnummer>
+		</Gebaeude>
+	</GebaeudeList>
+</GrundstueckExport>

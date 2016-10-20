@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+    <EigentumList>
+        <PersonEigentumAnteil VersionID="1f109152380ffd8901380ffeb9894d82" MasterID="1f109152380ffd8901380ffe560b63c0">
+            <Quote>
+                <AnteilZaehler>1</AnteilZaehler>
+                <AnteilNenner>2</AnteilNenner>
+                <QuoteUnbekannt>false</QuoteUnbekannt>
+            </Quote>
+            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe08d626e9</BelastetesGrundstueckIDREF>
+            <NatuerlichePersonGb VersionID="1f109152380ffd8901380ffe561063f2" MasterID="1f109152380ffd8901380ffeb9894d83">
+                <Name>Gay</Name>
+                <Status>definitiv</Status>
+                <Rechtsgruende>
+                    <AmtNummer>8</AmtNummer>
+                    <RechtsgrundCode>
+                        <TextDe>*Achat</TextDe>
+                        <TextFr>Achat</TextFr>
+                    </RechtsgrundCode>
+                    <BelegDatum>2007-10-19+02:00</BelegDatum>
+                    <BelegJahr>2007</BelegJahr>
+                    <BelegNummer>497</BelegNummer>
+                    <BelegNummerIndex>0</BelegNummerIndex>
+                </Rechtsgruende>
+                <Vorname>Adeline</Vorname>
+                <Ledigname>Gerber</Ledigname>
+                <Geburtsdatum>
+                    <Tag>2</Tag>
+                    <Monat>7</Monat>
+                    <Jahr>1984</Jahr>
+                </Geburtsdatum>
+                <Zivilstand>unbekannt</Zivilstand>
+                <NameEltern>Eric</NameEltern>
+                <NameEhegatte>Pascal</NameEhegatte>
+                <PersonstammIDREF>_1f109152380ffd8901380ffdb60b39f4</PersonstammIDREF>
+            </NatuerlichePersonGb>
+            <PersonEigentumsForm>miteigentum</PersonEigentumsForm>
+            <AnzahlPaquiers>0</AnzahlPaquiers>
+        </PersonEigentumAnteil>
+        <PersonEigentumAnteil VersionID="1f1091523810039001381006a0e56990" MasterID="1f10915238100390013810060a314f95">
+            <Quote>
+                <AnteilZaehler>1</AnteilZaehler>
+                <AnteilNenner>6</AnteilNenner>
+                <QuoteUnbekannt>false</QuoteUnbekannt>
+            </Quote>
+            <BelastetesGrundstueckIDREF>_1f1091523810039001381005406907e5</BelastetesGrundstueckIDREF>
+            <Gemeinschaft VersionID="1f10915238100390013810060a344fc7" MasterID="1f1091523810039001381006a0e56995">
+                <Status>definitiv</Status>
+                <GemeinschatID>_1f10915238100390013810060a314f95</GemeinschatID>
+                <Art>Erbengemeinschaft</Art>
+            </Gemeinschaft>
+            <PersonEigentumsForm>miteigentum</PersonEigentumsForm>
+            <AnzahlPaquiers>0</AnzahlPaquiers>
+        </PersonEigentumAnteil>
+        <PersonEigentumAnteil VersionID="1f109152381009be0138100e1b0e3546" MasterID="1f109152381009be0138100c91a023e9">
+            <Quote>
+                <AnteilZaehler>1</AnteilZaehler>
+                <AnteilNenner>1</AnteilNenner>
+                <QuoteUnbekannt>false</QuoteUnbekannt>
+            </Quote>
+            <BelastetesGrundstueckIDREF>_1f109152381009be0138100bd8d01389</BelastetesGrundstueckIDREF>
+            <JuristischePersonGb VersionID="1f109152381009be0138100c91a2242d" MasterID="1f109152381009be0138100e1b0e3547">
+                <Name>Confédération suisse</Name>
+                <Status>definitiv</Status>
+                <Sitz>Berne</Sitz>
+                <PersonstammIDREF>_1f10915238109122013810913723057f</PersonstammIDREF>
+            </JuristischePersonGb>
+            <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>
+            <AnzahlPaquiers>0</AnzahlPaquiers>
+        </PersonEigentumAnteil>
+        <GrundstueckEigentumAnteil VersionID="8af806fa40347c3301409c00a0cc25e1" MasterID="8af806fa40347c3301409c00a0cd25e2">
+            <Quote>
+                <AnteilZaehler>1</AnteilZaehler>
+                <AnteilNenner>14</AnteilNenner>
+                <QuoteUnbekannt>false</QuoteUnbekannt>
+            </Quote>
+            <BelastetesGrundstueckIDREF>_8af806fa40347c3301409bf788af25a5</BelastetesGrundstueckIDREF>
+            <BerechtigtesGrundstueckIDREF>_8af806fa40347c3301409c009e4e25db</BerechtigtesGrundstueckIDREF>
+            <GrundstueckEigentumsForm>Miteigentum</GrundstueckEigentumsForm>
+            <Rechtsgruende>
+                <AmtNummer>6</AmtNummer>
+                <RechtsgrundCode>
+                    <TextDe>*Constitution de parts de copropriété</TextDe>
+                    <TextFr>Constitution de parts de copropriété</TextFr>
+                </RechtsgrundCode>
+                <BelegDatum>2013-08-08+02:00</BelegDatum>
+                <BelegJahr>2013</BelegJahr>
+                <BelegNummer>6302</BelegNummer>
+                <BelegNummerIndex>0</BelegNummerIndex>
+            </Rechtsgruende>
+            <IndexBS>0</IndexBS>
+        </GrundstueckEigentumAnteil>
+    </EigentumList>
+</GrundstueckExport>
