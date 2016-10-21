@@ -31,6 +31,15 @@
 		              printMethod="ch.vd.unireg.shared.DateHelperWrapper.dateToIsoTimestamp" />
 	</jxb:globalBindings>
 
+	<!-- language XSDs -->
+
+	<jxb:bindings scd="/x-schema::xs">
+		<jxb:schemaBindings>
+			<!-- Pour que les classes Adapter soient générées dans un répertoire spécifique -->
+			<jxb:package name="ch.vd.capitastra.xmlschema"></jxb:package>
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 	<!-- local XSDs -->
 
 	<jxb:bindings schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/grundstueck.xsd">

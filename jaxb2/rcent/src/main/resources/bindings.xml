@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <jxb:bindings version="1.0"
 			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			  xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
@@ -18,6 +19,15 @@
 		              parseMethod="ch.vd.unireg.shared.DateHelperWrapper.isoTimestampToDate"
 		              printMethod="ch.vd.unireg.shared.DateHelperWrapper.dateToIsoTimestamp" />
 	</jxb:globalBindings>
+
+	<!-- language XSDs -->
+
+	<jxb:bindings scd="/x-schema::xs">
+		<jxb:schemaBindings>
+			<!-- Pour que les classes Adapter soient générées dans un répertoire spécifique -->
+			<jxb:package name="ch.vd.rcent.xmlschema"></jxb:package>
+		</jxb:schemaBindings>
+	</jxb:bindings>
 
 	<!-- local XSDs -->
 
