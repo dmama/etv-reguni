@@ -609,7 +609,7 @@
 		<profile>
 			<id>jacoco</id>
 			<properties>
-				<surefire.argline>-javaagent:${jacoco.agent.path}=destfile=${jacoco.dump.path} -Xmx512m -XX:PermSize=128m -XX:MaxPermSize=512m</surefire.argline>
+				<surefire.argline>-javaagent:${jacoco.agent.path}=destfile=${jacoco.dump.path} -Xmx512m</surefire.argline>
 			</properties>
 		</profile>
 	</profiles>
@@ -703,7 +703,7 @@
 
 		<!-- Parametres de Testing -->
 		<surefire.useFile>false</surefire.useFile>
-		<surefire.argline>-Xms256m -Xmx512m -DUseSunHttpHandler=true -XX:-UseSplitVerifier</surefire.argline>
+		<surefire.argline>-Xms256m -Xmx512m -DUseSunHttpHandler=true</surefire.argline>
 
 		<!-- Editique -->
 		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
