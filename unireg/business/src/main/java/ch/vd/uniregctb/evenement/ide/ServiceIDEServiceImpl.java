@@ -179,7 +179,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	private ProtoAnnonceIDE evalueSynchronisationIDE(Entreprise entreprise, RegDate date) throws ServiceIDEException {
 		Assert.notNull(entreprise, "Impossible de synchroniser l'IDE sans une entreprise!");
 
-		LOGGER.info(String.format("Annonce des changements sur l'entreprise n°%s à l'IDE, s'il y a lieu. Seul l'établissement principal est supporté.", entreprise.getNumero()));
+		Audit.info(String.format("Evaluation de l'entreprise n°%s dont les données civiles pertinentes ont changé.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 
 		final Etablissement etablissement = tiersService.getEtablissementPrincipal(entreprise, date);
 
@@ -198,11 +198,12 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final String secteurActiviteActuel = entreprise.getSecteurActivite();
 
 		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
-			final String message = String.format("Impossible de communiquer des changements à l'IDE car il manque des données obligatoires sur l'entreprise: %s%s%s%s.",
-			                                    raisonsSocialeHisto != null ? "" : "[raison sociale]",
-			                                    formeLegaleHisto != null ? "" : "[forme juridique]",
-			                                    adresseGenerique != null ? "" : "[adresse]",
-			                                    secteurActiviteActuel != null ? "" : "[secteur d'activite]"
+			final String message = String.format("Entreprise n°%s: impossible de communiquer des changements à l'IDE car il manque des données obligatoires: %s%s%s%s.",
+			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+			                                     raisonsSocialeHisto != null ? "" : "[raison sociale]",
+			                                     formeLegaleHisto != null ? "" : "[forme juridique]",
+			                                     adresseGenerique != null ? "" : "[adresse]",
+			                                     secteurActiviteActuel != null ? "" : "[secteur d'activite]"
 			);
 			Audit.error(message);
 			throw new ServiceIDEException(
