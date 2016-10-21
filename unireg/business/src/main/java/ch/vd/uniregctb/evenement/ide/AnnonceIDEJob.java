@@ -98,36 +98,78 @@ public class AnnonceIDEJob extends JobDefinition {
 
 		final AnnonceIDEJobResults results = new AnnonceIDEJobResults(simulation);
 
-		for (final Long tiersId : tiersAEvaluer) {
+		AuthenticationHelper.pushPrincipal(AuthenticationHelper.getCurrentPrincipal());
+		try {
+			for (final Long tiersId : tiersAEvaluer) {
+				/*
+					On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
+				 */
+				final TransactionTemplate template = new TransactionTemplate(transactionManager);
+				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-
-			AnnonceIDEJobResults resultatEntreprise = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
-				@Override
-				public AnnonceIDEJobResults doInTransaction(TransactionStatus status) {
-					final Tiers tiers = tiersDAO.get(tiersId);
-					if (tiers instanceof Entreprise) {
-						Entreprise entreprise = (Entreprise) tiers;
-						if (serviceIDEService.isServiceIDEObligEtendues(entreprise, aujourdhui)) {
-							AuthenticationHelper.pushPrincipal(AuthenticationHelper.getCurrentPrincipal());
-							try {
-								return evalueEntreprise(entreprise, simulation);
-							}
-							finally {
-								AuthenticationHelper.popPrincipal();
-							}
+				AnnonceIDEJobResults resultat = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
+					@Override
+					public AnnonceIDEJobResults doInTransaction(TransactionStatus status) {
+						if (simulation) {
+							status.setRollbackOnly();
+						}
+						try {
+							return traiteTiers(tiersId, aujourdhui, simulation);
+						}
+						catch (ServiceIDEException e) {
+							// On doit faire le ménage si un problème est survenu pendant l'envoi afin d'éviter de croire qu'on a émis l'annonce alors que ce n'est pas le cas.
+							status.setRollbackOnly();
+							final AnnonceIDEJobResults resultatTiers = new AnnonceIDEJobResults(simulation);
+							resultatTiers.addErrorException(tiersId, e);
+							return resultatTiers;
 						}
 					}
-					throw new IllegalArgumentException("Le tiers n'est pas une entreprise.");
+				});
+				if (resultat != null) {
+					results.addAll(resultat);
 				}
-			});
-			results.addAll(resultatEntreprise);
+			}
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 
 		final AnnoncesIDERapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 		Audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""));
+	}
+
+	protected AnnonceIDEJobResults traiteTiers(Long tiersId, RegDate date, boolean simulation) throws ServiceIDEException {
+		final Tiers tiers = tiersDAO.get(tiersId);
+		final AnnonceIDEJobResults resultatEntreprise = new AnnonceIDEJobResults(simulation);
+		if (tiers instanceof Entreprise) {
+			final Entreprise entreprise = (Entreprise) tiers;
+			if (serviceIDEService.isServiceIDEObligEtendues(entreprise, date)) {
+				if (simulation) {
+					final ProtoAnnonceIDE protoAnnonceIDE = (ProtoAnnonceIDE) serviceIDEService.simuleSynchronisationIDE(entreprise);
+					resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), protoAnnonceIDE);
+				}
+				else {
+					final AnnonceIDE annonceIDE = (AnnonceIDE) serviceIDEService.synchroniseIDE(entreprise);
+					resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
+				}
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Le tiers n'est pas une entreprise.");
+		}
+		final Session session = sessionFactory.openSession();
+		try {
+			final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
+			query.setParameter("id", tiers.getNumero());
+			query.executeUpdate();
+
+			session.flush();
+		}
+		finally {
+			session.close();
+		}
+		return resultatEntreprise;
 	}
 
 	/**
@@ -161,58 +203,4 @@ public class AnnonceIDEJob extends JobDefinition {
 		return result == null ? Collections.<Long>emptyList() : result;
 	}
 
-	/**
-	 * Tente de synchroniser l'IDE à l'entreprise. Le service IDE est appelé pour évaluer s'il faut mettre à jour les informations de l'IDE en tenant compte
-	 * des différents facteurs comme le fait qu'on avoir déjà annoncé des paramètres civils.
-	 * @param entreprise l'entreprise visée
-	 * @param simulation si <code>true</code>, n'envoie pas réellement d'annonce à l'IDE, mais rapporte le prototype de l'annonce qui serait émise.
-	 * @return une liste d'annonces à l'IDE ou de prototypes d'annonces à l'IDE en cas de simulation.
-	 */
-	protected AnnonceIDEJobResults evalueEntreprise(final Entreprise entreprise, final boolean simulation) {
-			AnnonceIDEJobResults results = new AnnonceIDEJobResults(simulation);
-			try {
-				final TransactionTemplate template = new TransactionTemplate(transactionManager);
-				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-
-				results = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
-					@Override
-					public AnnonceIDEJobResults doInTransaction(TransactionStatus status) {
-						AnnonceIDEJobResults results = new AnnonceIDEJobResults(simulation);
-						try {
-							if (simulation) {
-								final ProtoAnnonceIDE protoAnnonceIDE = (ProtoAnnonceIDE) serviceIDEService.simuleSynchronisationIDE(entreprise);
-								results.addAnnonceIDE(entreprise.getNumero(), protoAnnonceIDE);
-							}
-							else {
-								final AnnonceIDE annonceIDE = (AnnonceIDE) serviceIDEService.synchroniseIDE(entreprise);
-								results.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
-							}
-							final Session session = sessionFactory.openSession();
-							try {
-								final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
-								query.setParameter("id", entreprise.getNumero());
-								query.executeUpdate();
-
-								session.flush();
-							}
-							finally {
-								session.close();
-							}
-							return results;
-						}
-						catch (ServiceIDEException e) {
-							// On doit faire le ménage si un problème est survenu pendant l'envoi, sinon on croira qu'on a émis l'annonce alors que ce n'est pas le cas.
-							status.setRollbackOnly();
-							results.addErrorException(entreprise.getNumero(), e);
-							return results;
-						}
-					}
-				});
-			}
-			catch (Exception e) {
-				results.addErrorException(entreprise.getNumero(), e);
-			}
-
-			return results;
-	}
 }
