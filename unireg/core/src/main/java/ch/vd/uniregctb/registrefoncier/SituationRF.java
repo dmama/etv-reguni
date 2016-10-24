@@ -52,6 +52,11 @@ public class SituationRF extends HibernateDateRangeEntity {
 	private Integer index3;
 
 	/**
+	 * Le numéro RF de la commune de la parcelle (il s'agit en fait de l'ancien numéro cantonal de commune, mais la situation n'est pas claire concernant les nouvelles communes fusionnées).
+	 */
+	private int noRfCommune;
+
+	/**
 	 * Le numéro Ofs de la commune de la parcelle.
 	 */
 	private int noOfsCommune;
@@ -112,7 +117,16 @@ public class SituationRF extends HibernateDateRangeEntity {
 		this.index3 = index3;
 	}
 
-	@Column(name = "NO_OFS_COMMUNE")
+	@Column(name = "NO_RF_COMMUNE", nullable = false)
+	public int getNoRfCommune() {
+		return noRfCommune;
+	}
+
+	public void setNoRfCommune(int noRfCommune) {
+		this.noRfCommune = noRfCommune;
+	}
+
+	@Column(name = "NO_OFS_COMMUNE", nullable = false)
 	public int getNoOfsCommune() {
 		return noOfsCommune;
 	}
