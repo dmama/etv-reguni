@@ -23,7 +23,7 @@ public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
 		/**
 		 * Type de l'événement fiscal émis lors d'une modification des statuts d'une entreprise.
 		 */
-		MODIFICATION_STATUTS("Modification des status"),
+		MODIFICATION_STATUTS("Modification des statuts"),
 
 		/**
 		 * Type de l'événement fiscal émis lors d'une modification du but d'une entreprise.
@@ -108,7 +108,7 @@ public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
 		/**
 		 * Type de l'événement fiscal émis lors de l'état de collocation dans un concordat par abandon d'actif.
 		 */
-		ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF("Etat de collocation dans la concordat par abandon d'actif"),
+		ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF("Etat de collocation dans le concordat par abandon d'actif"),
 
 		/**
 		 * Type de l'événement fiscal émis lors de l'établissement du tableau de distribution et du décompte final dans un concordat par abandon d'actif.
@@ -148,7 +148,7 @@ public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
 		/**
 		 * Type de l'événement fiscal émis lors de l'appel aux créanciers suite à un transfert à l'étranger.
 		 */
-		APPEL_CREANCIERS_TRANSFERT_HS("Appel aux créanciers en suite de transfert à l'étranger"),
+		APPEL_CREANCIERS_TRANSFERT_HS("Appel aux créanciers suite à transfert à l'étranger"),
 
 		/**
 		 * Type de l'événement fiscal émis lors de l'annulation d'une fusion d'entreprises (processus dit 'complexe')
@@ -158,7 +158,7 @@ public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
 		/**
 		 * Type de l'événement fiscal émis lors de l'annulation d'une scission d'entreprise (processus dit 'complexe')
 		 */
-		ANNULATION_SCISSION("Annulation de scission d'entreprises"),
+		ANNULATION_SCISSION("Annulation de scission d'entreprise"),
 
 		/**
 		 * Type de l'événement fiscal émis lors de l'annulation d'un transfert de patrimoine entre entreprises (processus dit 'complexe')
