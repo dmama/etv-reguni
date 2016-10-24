@@ -46,7 +46,7 @@ public class GrepImportImmeuble {
 	private final JAXBContext immeubleContext;
 	private final JAXBContext droitContext;
 	private final JAXBContext proprietaireContext;
-	private final JAXBContext constructionContext;
+	private final JAXBContext batimentContext;
 	private final JAXBContext surfaceContext;
 
 	private FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
@@ -69,7 +69,7 @@ public class GrepImportImmeuble {
 		                                          UnbekanntesGrundstueckElement.class);
 		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
 		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
-		constructionContext = JAXBContext.newInstance(GebaeudeElement.class);
+		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
 		surfaceContext = JAXBContext.newInstance(BodenbedeckungElement.class);
 	}
 
@@ -84,7 +84,7 @@ public class GrepImportImmeuble {
 		final MutableInt immeubleCount = new MutableInt(0);
 		final MutableInt droitCount = new MutableInt(0);
 		final MutableInt proprietaireCount = new MutableInt(0);
-		final MutableInt constructionCount = new MutableInt(0);
+		final MutableInt batimentCount = new MutableInt(0);
 		final MutableInt surfaceCount = new MutableInt(0);
 
 		final long start = System.nanoTime();
@@ -119,12 +119,12 @@ public class GrepImportImmeuble {
 			}
 
 			@Override
-			public void onConstruction(@NotNull Gebaeude construction) {
-				String xml = toXMLString(construction);
+			public void onBatiment(@NotNull Gebaeude batiment) {
+				String xml = toXMLString(batiment);
 				if (pattern.matcher(xml).find()) {
 					System.out.println(xml);
 				}
-				constructionCount.increment();
+				batimentCount.increment();
 			}
 
 			@Override
@@ -189,7 +189,7 @@ public class GrepImportImmeuble {
 
 	private String toXMLString(Gebaeude obj) {
 		try {
-			final Marshaller m = constructionContext.createMarshaller();
+			final Marshaller m = batimentContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
 			final QName name = buildQName(obj);

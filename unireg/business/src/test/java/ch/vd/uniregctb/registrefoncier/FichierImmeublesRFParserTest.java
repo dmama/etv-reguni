@@ -231,9 +231,9 @@ public class FichierImmeublesRFParserTest {
 	}
 
 	@Test
-	public void testParseConstructions() throws Exception {
+	public void testParseBatiments() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_constructions_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_batiments_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -242,13 +242,13 @@ public class FichierImmeublesRFParserTest {
 			parser.processFile(is, callback);
 		}
 
-		// on s'assure que les constructions ont bien été parsées
-		final List<Gebaeude> constructions = callback.getConstructions();
-		assertEquals(2, constructions.size());
+		// on s'assure que les batiments ont bien été parsées
+		final List<Gebaeude> batiments = callback.getBatiments();
+		assertEquals(2, batiments.size());
 
-		final Gebaeude gebaeude0 = constructions.get(0);
+		final Gebaeude bat0 = batiments.get(0);
 		{
-			final List<GrundstueckZuGebaeude> immeubles = gebaeude0.getGrundstueckZuGebaeude();
+			final List<GrundstueckZuGebaeude> immeubles = bat0.getGrundstueckZuGebaeude();
 			assertNotNull(immeubles);
 			assertEquals(1, immeubles.size());
 
@@ -256,17 +256,17 @@ public class FichierImmeublesRFParserTest {
 			assertEquals("_1f109152380ffd8901380ffe19367d20", imm0.getGrundstueckIDREF());
 			assertEquals(Long.valueOf(157), imm0.getAbschnittFlaeche());
 
-			assertNull(gebaeude0.getFlaeche());
+			assertNull(bat0.getFlaeche());
 
-			final List<GebaeudeArt> descriptions = gebaeude0.getGebaeudeArten();
+			final List<GebaeudeArt> descriptions = bat0.getGebaeudeArten();
 			assertNotNull(descriptions);
 			assertEquals(1, descriptions.size());
 			assertEquals("Habitation avec affectation mixte", descriptions.get(0).getGebaeudeArtCode().getTextFr());
 		}
 
-		final Gebaeude gebaeude1 = constructions.get(1);
+		final Gebaeude bat1 = batiments.get(1);
 		{
-			final List<GrundstueckZuGebaeude> immeubles = gebaeude1.getGrundstueckZuGebaeude();
+			final List<GrundstueckZuGebaeude> immeubles = bat1.getGrundstueckZuGebaeude();
 			assertNotNull(immeubles);
 			assertEquals(1, immeubles.size());
 
@@ -274,9 +274,9 @@ public class FichierImmeublesRFParserTest {
 			assertEquals("_1f109152380ffd8901380ffe07fb2421", imm0.getGrundstueckIDREF());
 			assertEquals(Long.valueOf(107), imm0.getAbschnittFlaeche());
 
-			assertEquals(Long.valueOf(107), gebaeude1.getFlaeche());
+			assertEquals(Long.valueOf(107), bat1.getFlaeche());
 
-			final List<GebaeudeArt> descriptions = gebaeude1.getGebaeudeArten();
+			final List<GebaeudeArt> descriptions = bat1.getGebaeudeArten();
 			assertNotNull(descriptions);
 			assertEquals(1, descriptions.size());
 			assertEquals("Habitation", descriptions.get(0).getGebaeudeArtCode().getTextFr());
@@ -326,7 +326,7 @@ public class FichierImmeublesRFParserTest {
 		private final List<Grundstueck> immeubles = new ArrayList<>();
 		private final List<PersonEigentumAnteil> droits = new ArrayList<>();
 		private final List<Personstamm> proprietaires = new ArrayList<>();
-		private final List<Gebaeude> constructions = new ArrayList<>();
+		private final List<Gebaeude> batiments = new ArrayList<>();
 		private final List<Bodenbedeckung> surfaces = new ArrayList<>();
 
 		@Override
@@ -345,8 +345,8 @@ public class FichierImmeublesRFParserTest {
 		}
 
 		@Override
-		public void onConstruction(@NotNull Gebaeude construction) {
-			constructions.add(construction);
+		public void onBatiment(@NotNull Gebaeude batiment) {
+			batiments.add(batiment);
 		}
 
 		@Override
@@ -366,8 +366,8 @@ public class FichierImmeublesRFParserTest {
 			return proprietaires;
 		}
 
-		public List<Gebaeude> getConstructions() {
-			return constructions;
+		public List<Gebaeude> getBatiments() {
+			return batiments;
 		}
 
 		public List<Bodenbedeckung> getSurfaces() {

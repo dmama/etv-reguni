@@ -58,8 +58,8 @@ public class FichierImmeublesRFParser {
 	private static final String PROP_PERSONNE_PHYSIQUE = "NatuerlichePersonstamm";
 	private static final String PROP_PERSONNE_MORALE = "JuristischePersonstamm";
 
-	private static final String LIST_CONSTRUCTIONS = "GebaeudeList";
-	private static final String CONSTRUCTION = "Gebaeude";
+	private static final String LIST_BATIMENTS = "GebaeudeList";
+	private static final String BATIMENT = "Gebaeude";
 
 	private static final String LIST_SURFACES = "BodenbedeckungList";
 	private static final String SURFACE = "Bodenbedeckung";
@@ -75,7 +75,7 @@ public class FichierImmeublesRFParser {
 
 		void onProprietaire(@NotNull Personstamm personne);
 
-		void onConstruction(@NotNull Gebaeude construction);
+		void onBatiment(@NotNull Gebaeude construction);
 
 		void onSurface(@NotNull Bodenbedeckung surface);
 	}
@@ -115,8 +115,8 @@ public class FichierImmeublesRFParser {
 				case LIST_PROPRIETAIRES:
 					processProprietaires(xmlStreamReader, callback);
 					break;
-				case LIST_CONSTRUCTIONS:
-					processConstructions(xmlStreamReader, callback);
+				case LIST_BATIMENTS:
+					processBatiments(xmlStreamReader, callback);
 					break;
 				case LIST_SURFACES:
 					processSurfaces(xmlStreamReader, callback);
@@ -452,7 +452,7 @@ public class FichierImmeublesRFParser {
 	 * 	&lt;/GebaeudeList&gt;
 	 * </pre>
 	 */
-	private void processConstructions(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
+	private void processBatiments(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
 		final JAXBContext jaxbContext = JAXBContext.newInstance(GebaeudeElement.class);
 		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -461,10 +461,10 @@ public class FichierImmeublesRFParser {
 			final int eventType = xmlStreamReader.getEventType();
 			if (eventType == XMLStreamConstants.START_ELEMENT) {
 				final String localName = xmlStreamReader.getLocalName();
-				if (CONSTRUCTION.equals(localName)) {
-					final Gebaeude construction = (Gebaeude) unmarshaller.unmarshal(xmlStreamReader);
-					if (construction != null) {
-						callback.onConstruction(construction);
+				if (BATIMENT.equals(localName)) {
+					final Gebaeude batiment = (Gebaeude) unmarshaller.unmarshal(xmlStreamReader);
+					if (batiment != null) {
+						callback.onBatiment(batiment);
 					}
 				}
 				else {
@@ -473,7 +473,7 @@ public class FichierImmeublesRFParser {
 			}
 			else if (eventType == XMLStreamConstants.END_ELEMENT) {
 				final String localName = xmlStreamReader.getLocalName();
-				if (LIST_CONSTRUCTIONS.equals(localName)) {
+				if (LIST_BATIMENTS.equals(localName)) {
 					return; // fin de liste, on sort
 				}
 				else {
