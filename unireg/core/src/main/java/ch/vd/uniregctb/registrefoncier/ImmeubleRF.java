@@ -1,30 +1,29 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.uniregctb.rf.TypeImmeuble;
 
 /**
  * Représente un immeuble au registre foncier
  */
 @Entity
 @Table(name = "RF_IMMEUBLE")
-public class ImmeubleRF {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+public abstract class ImmeubleRF {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -42,11 +41,6 @@ public class ImmeubleRF {
 	private String egrid;
 
 	/**
-	 * Le type d'immeuble.
-	 */
-	private TypeImmeuble type;
-
-	/**
 	 * URL d'accès à Intercapi pour l'immeuble concerné
 	 */
 	private String urlIntercapi;
@@ -55,12 +49,6 @@ public class ImmeubleRF {
 	 * Vrai si l'immeuble est une construction sur fond d'autrui (CFA).
 	 */
 	private boolean cfa;
-
-	/**
-	 * La quote-part de l'immeuble dans le cas d'une PPE
-	 */
-	@Nullable
-	private Fraction quotePartPPE;
 
 	/**
 	 * Les situations de l'immeuble.
@@ -104,16 +92,6 @@ public class ImmeubleRF {
 		this.egrid = egrid;
 	}
 
-	@Column(name = "TYPE", nullable = false)
-	@Enumerated(EnumType.STRING)
-	public TypeImmeuble getType() {
-		return type;
-	}
-
-	public void setType(TypeImmeuble type) {
-		this.type = type;
-	}
-
 	@Column(name = "URL_INTERCAPI", length = 2000)
 	public String getUrlIntercapi() {
 		return urlIntercapi;
@@ -130,19 +108,6 @@ public class ImmeubleRF {
 
 	public void setCfa(boolean cfa) {
 		this.cfa = cfa;
-	}
-
-	@Nullable
-	@AttributeOverrides({
-			@AttributeOverride(name = "numerateur", column = @Column(name = "QUOTE_PART_NUM")),
-			@AttributeOverride(name = "denominateur", column = @Column(name = "QUOTE_PART_DENOM"))
-	})
-	public Fraction getQuotePartPPE() {
-		return quotePartPPE;
-	}
-
-	public void setQuotePartPPE(@Nullable Fraction quotePartPPE) {
-		this.quotePartPPE = quotePartPPE;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
