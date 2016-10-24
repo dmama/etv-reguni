@@ -39,7 +39,7 @@ public class ImmeubleRF {
 	/**
 	 * Identifiant fédéral de l'immeuble.
 	 */
-	private Long egid;
+	private String egrid;
 
 	/**
 	 * Le type d'immeuble.
@@ -95,13 +95,13 @@ public class ImmeubleRF {
 		this.idRF = idRF;
 	}
 
-	@Column(name = "EGID")
-	public Long getEgid() {
-		return egid;
+	@Column(name = "EGRID", length = 14)
+	public String getEgrid() {
+		return egrid;
 	}
 
-	public void setEgid(Long egid) {
-		this.egid = egid;
+	public void setEgrid(String egrid) {
+		this.egrid = egrid;
 	}
 
 	@Column(name = "TYPE", nullable = false)
@@ -134,8 +134,8 @@ public class ImmeubleRF {
 
 	@Nullable
 	@AttributeOverrides({
-			@AttributeOverride(name = "numerateur", column = @Column(name = "QUOTE_PART_NUM", nullable = true)),
-			@AttributeOverride(name = "denominateur", column = @Column(name = "QUOTE_PART_DENOM", nullable = true))
+			@AttributeOverride(name = "numerateur", column = @Column(name = "QUOTE_PART_NUM")),
+			@AttributeOverride(name = "denominateur", column = @Column(name = "QUOTE_PART_DENOM"))
 	})
 	public Fraction getQuotePartPPE() {
 		return quotePartPPE;
