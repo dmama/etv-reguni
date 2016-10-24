@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
@@ -58,6 +59,7 @@ import ch.vd.uniregctb.tiers.TiersServiceImpl;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TexteCasePostale;
@@ -67,6 +69,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationServiceImpl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class ContribuableIndexableTest extends WithoutSpringTest {
@@ -501,7 +504,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Display
 		assertEquals("Le Brassus", values.getForPrincipal());
 		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.getDateOuvertureFor());
-		assertEquals(IndexerFormatHelper.nullValue(), values.getDateFermtureFor());
+		assertEquals(IndexerFormatHelper.nullValue(), values.getDateFermetureFor());
 	}
 
 	@Test
@@ -540,7 +543,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Display
 		assertEquals("Cossonay", values.getForPrincipal());
 		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.getDateOuvertureFor());
-		assertEquals(RegDateHelper.toIndexString(dateFermeture), values.getDateFermtureFor());
+		assertEquals(RegDateHelper.toIndexString(dateFermeture), values.getDateFermetureFor());
 	}
 
 	@Test
@@ -940,5 +943,29 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 		assertEquals("Ruth", values.getNomRaison());
 		assertEquals("Lolo Laurent Philippe Ruth", values.getAutresNom());  // prénom usuel, tous prénoms, nom
+	}
+
+	/**
+	 * [SIFISC-21631] drôle de date de début de premier for vaudois au 31.12.2399 (= late date) pour un sourcier au pays inconnu
+	 */
+	@Test
+	public void testIndexationDatesForsVaudoisSurSourcierAuPaysInconnu() {
+
+		final PersonnePhysique pp = new PersonnePhysique(false);
+		pp.setNumero(10552389L);
+		pp.setNom("Invisible");
+		pp.setPrenomUsuel("L'Homme");
+		pp.setTousPrenoms("Albert André");
+
+		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP(date(2009, 12, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, MockPays.PaysInconnu.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+		pp.setForsFiscaux(Collections.singleton(ffp));
+
+		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp);
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		assertNotNull(values);
+		assertEquals("NULL", values.getDateOuvertureForVd());
+		assertEquals("NULL", values.getDateFermetureForVd());
+		assertEquals("20091201", values.getDateOuvertureFor());
+		assertEquals("NULL", values.getDateFermetureFor());
 	}
 }
