@@ -127,15 +127,21 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 				}
 
 				// ce sont la première date de début et la dernière date de fin de ces fors qui m'intéressent
-				dateDebutForVaudois = RegDateHelper.getLateDate();
-				dateFinForVaudois = RegDateHelper.getEarlyDate();
-				for (ForFiscal forVaudois : forsVaudoisInteressants) {
-					dateDebutForVaudois = RegDateHelper.minimum(dateDebutForVaudois, forVaudois.getDateDebut(), NullDateBehavior.EARLIEST);
-					dateFinForVaudois = RegDateHelper.maximum(dateFinForVaudois, forVaudois.getDateFin(), NullDateBehavior.LATEST);
+				if (!forsVaudoisInteressants.isEmpty()) {
+					dateDebutForVaudois = RegDateHelper.getLateDate();
+					dateFinForVaudois = RegDateHelper.getEarlyDate();
+					for (ForFiscal forVaudois : forsVaudoisInteressants) {
+						dateDebutForVaudois = RegDateHelper.minimum(dateDebutForVaudois, forVaudois.getDateDebut(), NullDateBehavior.EARLIEST);
+						dateFinForVaudois = RegDateHelper.maximum(dateFinForVaudois, forVaudois.getDateFin(), NullDateBehavior.LATEST);
+					}
+				}
+				else {
+					dateDebutForVaudois = null;
+					dateFinForVaudois = null;
 				}
 
 				data.setDateOuvertureForVd(IndexerFormatHelper.dateToString(dateDebutForVaudois, IndexerFormatHelper.DateStringMode.STORAGE));
-				data.setDateFermtureForVd(IndexerFormatHelper.dateToString(dateFinForVaudois, IndexerFormatHelper.DateStringMode.STORAGE));
+				data.setDateFermetureForVd(IndexerFormatHelper.dateToString(dateFinForVaudois, IndexerFormatHelper.DateStringMode.STORAGE));
 			}
 		}
 		catch (AssujettissementException e) {
@@ -147,7 +153,7 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
 		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
-		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setDateFermetureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 		data.setMotifFermetureDernierForPrincipal(motifFermetureDernierFor);
 	}
 }

@@ -150,9 +150,9 @@ public class TiersIndexableData extends IndexableData {
 	private String pays;
 	private String forPrincipal;
 	private String dateOuvertureFor;
-	private String dateFermtureFor;
+	private String dateFermetureFor;
 	private String dateOuvertureForVd;
-	private String dateFermtureForVd;
+	private String dateFermetureForVd;
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
@@ -224,9 +224,9 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.PAYS, pays);
 		addStoredValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
 		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
-		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
+		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermetureFor);
 		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR_VD, dateOuvertureForVd);
-		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR_VD, dateFermtureForVd);
+		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR_VD, dateFermetureForVd);
 		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
@@ -623,12 +623,12 @@ public class TiersIndexableData extends IndexableData {
 		this.dateOuvertureFor = dateOuvertureFor;
 	}
 
-	public String getDateFermtureFor() {
-		return dateFermtureFor;
+	public String getDateFermetureFor() {
+		return dateFermetureFor;
 	}
 
-	public void setDateFermtureForVd(String dateFermtureForVd) {
-		this.dateFermtureForVd = dateFermtureForVd;
+	public void setDateFermetureForVd(String dateFermetureForVd) {
+		this.dateFermetureForVd = dateFermetureForVd;
 	}
 
 	public String getDateOuvertureForVd() {
@@ -639,12 +639,12 @@ public class TiersIndexableData extends IndexableData {
 		this.dateOuvertureForVd = dateOuvertureForVd;
 	}
 
-	public String getDateFermtureForVd() {
-		return dateFermtureForVd;
+	public String getDateFermetureForVd() {
+		return dateFermetureForVd;
 	}
 
-	public void setDateFermtureFor(String dateFermtureFor) {
-		this.dateFermtureFor = dateFermtureFor;
+	public void setDateFermetureFor(String dateFermetureFor) {
+		this.dateFermetureFor = dateFermetureFor;
 	}
 
 	public String getDomicileVd() {
