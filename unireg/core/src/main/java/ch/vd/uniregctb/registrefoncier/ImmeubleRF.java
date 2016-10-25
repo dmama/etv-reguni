@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
@@ -64,6 +66,11 @@ public abstract class ImmeubleRF {
 	 * Les estimations de l'immeuble.
 	 */
 	private Set<EstimationRF> estimations;
+
+	/**
+	 * Le ou les bâtiments correspondants à l'immeuble.
+	 */
+	private Set<BatimentRF> batiments;
 
 	@Id
 	public Long getId() {
@@ -141,5 +148,15 @@ public abstract class ImmeubleRF {
 
 	public void setEstimations(Set<EstimationRF> estimations) {
 		this.estimations = estimations;
+	}
+
+	@ManyToMany(targetEntity = BatimentRF.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name = "RF_IMMEUBLE_BATIMENT", joinColumns = @JoinColumn(name = "IMMEUBLE_ID"), inverseJoinColumns = @JoinColumn(name = "BATIMENT_ID"))
+	public Set<BatimentRF> getBatiments() {
+		return batiments;
+	}
+
+	public void setBatiments(Set<BatimentRF> batiments) {
+		this.batiments = batiments;
 	}
 }
