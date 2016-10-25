@@ -1090,4 +1090,69 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-21646] cas où une entreprise HC achète un immeuble, par exemple, et le revends rapidement avant
+	 * même que le job d'envoi des lettres de bienvenue n'ait tourné : il faut envoyer une lettre de bienvenue
+	 */
+	@Test
+	public void testAchatVenteImmeubleRapideDansPremierePF() throws Exception {
+
+		final RegDate dateAchat = date(2016, 6, 1);
+		final RegDate dateVente = date(2016, 7, 12);
+		final RegDate dateTraitement = date(2016, 8, 1);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(e, dateAchat, null, FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateAchat, null, "Le petit butineur");
+				addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(e, dateAchat, null, MockCommune.Conthey, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				return e.getNumero();
+			}
+		});
+
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 4, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getIgnores().size());
+		Assert.assertEquals(1, results.getTraites().size());
+
+		{
+			final EnvoiLettresBienvenueResults.Traite traite = results.getTraites().get(0);
+			Assert.assertNotNull(traite);
+			Assert.assertEquals(pmId, traite.noCtb);
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, traite.typeLettreEnvoyee);
+		}
+
+		// vérification de l'émission de lettre
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+				Assert.assertNotNull(adfs);
+				Assert.assertEquals(1, adfs.size());
+
+				final AutreDocumentFiscal adf = adfs.iterator().next();
+				Assert.assertNotNull(adf);
+				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+
+				final LettreBienvenue lb = (LettreBienvenue) adf;
+				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+				Assert.assertNull(lb.getDateRappel());
+				Assert.assertNull(lb.getDateRetour());
+				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+			}
+		});
+	}
 }
