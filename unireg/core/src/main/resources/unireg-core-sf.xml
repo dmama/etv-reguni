@@ -73,6 +73,7 @@
 		<value>ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable</value>
 		<value>ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE</value>
 		<value>ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport</value>
+		<value>ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
