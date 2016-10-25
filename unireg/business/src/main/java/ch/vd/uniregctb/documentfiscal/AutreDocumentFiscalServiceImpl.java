@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.documentfiscal;
 
 import javax.jms.JMSException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
@@ -20,8 +24,9 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForsParTypeAt;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -109,10 +114,10 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
-	public LettreBienvenue envoyerLettreBienvenueBatch(Entreprise entreprise, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	public LettreBienvenue envoyerLettreBienvenueBatch(Entreprise entreprise, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException {
 		final RegDate dateEnvoi = delaiService.getDateFinDelaiCadevImpressionLettreBienvenue(dateTraitement);
 		final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourLettreBienvenue());
-		final TypeLettreBienvenue typeLettre = computeTypeLettreBienvenue(entreprise, dateTraitement);
+		final TypeLettreBienvenue typeLettre = computeTypeLettreBienvenue(entreprise, dateTraitement, dateDebutNouvelAssujettissement);
 
 		final LettreBienvenue lettre = new LettreBienvenue();
 		lettre.setDateEnvoi(dateEnvoi);
@@ -131,14 +136,15 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		return lettre;
 	}
 
-	private TypeLettreBienvenue computeTypeLettreBienvenue(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	private TypeLettreBienvenue computeTypeLettreBienvenue(Entreprise e, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException {
 
 		// if faut tout d'abord regarder le for principal à la date de traitement
-		final ForsParTypeAt fors = e.getForsParTypeAt(dateTraitement, false);
-		if (fors.principal == null) {
+		final ForsParType fors = e.getForsParType(true);
+		final ForFiscalPrincipalPM forPrincipal = DateRangeHelper.rangeAt(fors.principauxPM, dateTraitement);
+		if (forPrincipal == null) {
 			throw new AutreDocumentFiscalException("Pas de for principal actif à la date de traitement, impossible de déterminer le type d'autorité fiscale du siège fiscal de l'entreprise.");
 		}
-		final TypeAutoriteFiscale taf = fors.principal.getTypeAutoriteFiscale();
+		final TypeAutoriteFiscale taf = forPrincipal.getTypeAutoriteFiscale();
 
 		final TypeLettreBienvenue type;
 		if (taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -156,15 +162,24 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 			}
 		}
 		else {
+			// [SIFISC-21646] Pour les fors secondaires, on va prendre en compte tous ceux qui sont actifs depuis la date de début du nouvel assujettissement
+			final List<ForFiscalSecondaire> forsSecondaires = new ArrayList<>(fors.secondaires.size());
+			final DateRange depuisNouvelAssujettissement = new DateRangeHelper.Range(dateDebutNouvelAssujettissement, dateTraitement);
+			for (ForFiscalSecondaire ffs : fors.secondaires) {
+				if (DateRangeHelper.intersect(ffs, depuisNouvelAssujettissement)) {
+					forsSecondaires.add(ffs);
+				}
+			}
+
 			// regardons les fors secondaires et, surtout leur motif de rattachement
-			if (fors.secondaires.isEmpty()) {
-				throw new AutreDocumentFiscalException("Pas de for secondaire actif à la date de traitement sur une entreprise avec siège " + taf);
+			if (forsSecondaires.isEmpty()) {
+				throw new AutreDocumentFiscalException("Pas de for secondaire actif entre la date de début d'assujettissement et la date de traitement sur une entreprise avec siège " + taf);
 			}
 
 			// quels motifs de rattachement a-t-on trouvés ?
 			boolean trouveImmeuble = false;
 			boolean trouveEtablissement = false;
-			for (ForFiscalSecondaire ffs : fors.secondaires) {
+			for (ForFiscalSecondaire ffs : forsSecondaires) {
 				switch (ffs.getMotifRattachement()) {
 				case IMMEUBLE_PRIVE:
 					trouveImmeuble = true;

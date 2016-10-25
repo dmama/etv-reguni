@@ -3,7 +3,6 @@ package ch.vd.uniregctb.documentfiscal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -123,6 +122,7 @@ public class EnvoiLettresBienvenueProcessor {
 				// si on a une période d'assujettissement continu qui commence après la date origine, c'est un candidat à la lettre de bienvenue
 				final MovingWindow<DateRange> movingWindow = new MovingWindow<>(ranges);
 				boolean trouveNouvelAssujettissementSansLettre = false;
+				RegDate dateDebutNouvelAssujettissement = null;
 				while (movingWindow.hasNext()) {
 					final MovingWindow.Snapshot<DateRange> snapshot = movingWindow.next();
 					final DateRange current = snapshot.getCurrent();
@@ -143,6 +143,7 @@ public class EnvoiLettresBienvenueProcessor {
 							// si on a déjà envoyé une lettre, on continue pour la période d'assujettissement suivant (sinon, il faut en envoyer une nouvelle...)
 							if (!dejaEnvoyee) {
 								trouveNouvelAssujettissementSansLettre = true;
+								dateDebutNouvelAssujettissement = debutAssujettissement;
 								break;
 							}
 						}
@@ -154,7 +155,7 @@ public class EnvoiLettresBienvenueProcessor {
 					rapport.addIgnoreLettreDejaEnvoyee(id);
 				}
 				else {
-					final LettreBienvenue lettre = autreDocumentFiscalService.envoyerLettreBienvenueBatch(e, rapport.dateTraitement);
+					final LettreBienvenue lettre = autreDocumentFiscalService.envoyerLettreBienvenueBatch(e, rapport.dateTraitement, dateDebutNouvelAssujettissement);
 					rapport.addLettreEnvoyee(id, lettre.getType());
 				}
 			}

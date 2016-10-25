@@ -31,10 +31,11 @@ public interface AutreDocumentFiscalService {
 	/**
 	 * @param e entreprise pour laquelle on doit envoyer une lettre de bienvenue (en mode batch)
 	 * @param dateTraitement date de traitement
+	 * @param dateDebutNouvelAssujettissement date de début du nouvel assujettissement qui justifie de l'envoi de la lettre de bienvenue
 	 * @return la lettre de bienvenue envoyée
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
-	LettreBienvenue envoyerLettreBienvenueBatch(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException;
+	LettreBienvenue envoyerLettreBienvenueBatch(Entreprise e, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException;
 
 	/**
 	 * @param document autre document fiscal dont on veut récupérer le courrier initial
