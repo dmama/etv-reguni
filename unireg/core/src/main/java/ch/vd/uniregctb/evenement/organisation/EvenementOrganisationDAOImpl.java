@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -16,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 
@@ -87,13 +89,20 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		return query.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date) {
+	@NotNull
+	public List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date) {
 		final EvenementOrganisationCriteria<TypeEvenementOrganisation> criteria = new EvenementOrganisationCriteria<>();
 		criteria.setNumeroOrganisation(noOrganisation);
 		criteria.setRegDateEvenementDebut(date.getOneDayAfter());
-		return find(criteria, null);
+		final List<EvenementOrganisation> trouves = find(criteria, null);
+		final List<EvenementOrganisation> filtres = new ArrayList<>(trouves.size());
+		for (EvenementOrganisation trouve : trouves) {
+			if (!trouve.isAnnule()) {
+				filtres.add(trouve);
+			}
+		}
+		return filtres;
 	}
 
 	@SuppressWarnings("unchecked")

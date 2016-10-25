@@ -213,18 +213,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprises (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
 
-		// Protection contre les événements dans le passé.
-		final List<EvenementOrganisation> evenementsOrganisationApresDate = evenementOrganisationService.getEvenementsOrganisationApresDate(organisation.getNumeroOrganisation(), event.getDateEvenement());
-		if (evenementsOrganisationApresDate != null && !evenementsOrganisationApresDate.isEmpty()) {
-			final EvenementOrganisation dernierEvenementRecu = CollectionsUtils.getLastElement(evenementsOrganisationApresDate);
-			throw new EvenementOrganisationException(
-					String.format(
-							"L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement reçu pour cette organisation! " +
-									"Traitement automatique impossible.",
-							event.getNoEvenement(), organisation.getNumeroOrganisation(),
-							RegDateHelper.dateToDisplayString(event.getDateEvenement()), RegDateHelper.dateToDisplayString(dernierEvenementRecu.getDateEvenement()))
-			);
-		}
+		// Vérification que l'événement n'est pas un événement de correction, c'est à dire un événement qui survient avant le dernier événement de l'historique
+		// des données civiles tel qu'on le connait actellement.
+		checkEvenementDansPasse(event, organisation);
 
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
 		Audit.info(event.getNoEvenement(), String.format("Organisation trouvée: %s", organisationDescription));
@@ -415,6 +406,43 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
+	}
+
+	/**
+	 * Protection contre les événements dans le passé.
+	 * Si on trouve le flag de correction dans le passé sur l'événement, ou si la date de valeur de l'événement reçu est antérieure à celle du dernier événement,
+	 * on lève une erreur.
+	 *
+	 * @param event l'événement à inspecter
+	 * @param organisation l'organisation concernée, dont le numéro d'organisation doit correspondre à celui stocké dans l'événement
+	 * @throws EvenementOrganisationException au cas où on est en présence d'un événement dans le passé
+	 */
+	protected void checkEvenementDansPasse(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+		@NotNull
+		final List<EvenementOrganisation> evenementsOrganisationApresDate = evenementOrganisationService.getEvenementsOrganisationApresDateNonAnnules(organisation.getNumeroOrganisation(), event.getDateEvenement());
+
+		final EvenementOrganisation dernierEvenementRecu;
+		if (!evenementsOrganisationApresDate.isEmpty()) {
+			dernierEvenementRecu = CollectionsUtils.getLastElement(evenementsOrganisationApresDate);
+		}
+		else {
+			dernierEvenementRecu = null;
+		}
+		if (event.getCorrectionDansLePasse() || dernierEvenementRecu != null) {
+			final String fragmentMessage;
+			if (dernierEvenementRecu != null) {
+				fragmentMessage = String.format("possède une date de valeur antérieure à la plus récente déjà reçue (événement n°%d [%s])",
+				                                dernierEvenementRecu.getNoEvenement(), RegDateHelper.dateToDisplayString(dernierEvenementRecu.getDateEvenement())
+				);
+			}
+			else {
+				fragmentMessage = "est marqué comme événement de correction dans le passé";
+			}
+			throw new EvenementOrganisationException(
+					String.format("Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d %s. Traitement automatique impossible.",
+					              event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+			);
+		}
 	}
 
 	private static EvenementOrganisationInterne buildEvenementInterneCapping(EvenementOrganisation event, Organisation organisation, Entreprise entreprise,

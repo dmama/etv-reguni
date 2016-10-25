@@ -2,6 +2,8 @@ package ch.vd.uniregctb.evenement.organisation;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -19,7 +21,16 @@ public interface EvenementOrganisationService {
 
     List<EvenementOrganisation> getEvenementsNonTraitesOrganisation(long noOrganisation);
 
-	List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date);
+	/**
+	 * Renvoie pour une organisation la liste triées des événements ayant une date de valeur postérieure à la date fournie. Les événements
+	 * qui sont marqués en base comme annulés ne sont pas pris en compte.
+	 *
+	 * @param noOrganisation le numéro de l'organisation visée
+	 * @param date la date de référence
+	 * @return la liste des événements postérieurs à la date
+	 */
+	@NotNull
+	List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date);
 
 	/**
      *

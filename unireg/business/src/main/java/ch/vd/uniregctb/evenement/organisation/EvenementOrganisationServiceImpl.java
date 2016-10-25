@@ -47,8 +47,8 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 	}
 
 	@Override
-	public List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date) {
-		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationApresDate(noOrganisation, date));
+	public List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date) {
+		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationApresDateNonAnnules(noOrganisation, date));
 	}
 
 

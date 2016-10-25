@@ -60,6 +60,8 @@ public class EvenementOrganisation extends HibernateEntity {
 	 */
 	private ReferenceAnnonceIDE referenceAnnonceIDE;
 
+	private boolean correctionDansLePasse;
+
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
 	private String commentaireTraitement;
@@ -83,6 +85,7 @@ public class EvenementOrganisation extends HibernateEntity {
 		this.noEvenement = noEvenement;
 		this.noOrganisation = noOrganisation;
 		this.type = type;
+		this.correctionDansLePasse = false;
 	}
 
 	@Transient
@@ -186,6 +189,15 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public void setCommentaireTraitement(@Nullable String commentaireTraitement) {
 		this.commentaireTraitement = StringUtils.abbreviate(commentaireTraitement, LengthConstants.EVTORGANISATION_COMMENT);
+	}
+
+	@Column(name = "CORRECTION_DANS_PASSE")
+	public boolean getCorrectionDansLePasse() {
+		return correctionDansLePasse;
+	}
+
+	public void setCorrectionDansLePasse(boolean correctionDansLePasse) {
+		this.correctionDansLePasse = correctionDansLePasse;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
