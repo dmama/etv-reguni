@@ -3,7 +3,6 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,8 +10,7 @@ import javax.persistence.Enumerated;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
 @Entity
-@DiscriminatorValue("PROPRIETE")
-public class DroitProprieteRF extends DroitRF {
+public abstract class DroitProprieteRF extends DroitRF {
 
 	private Fraction part;
 

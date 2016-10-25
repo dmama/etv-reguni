@@ -38,9 +38,9 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	private Long id;
 
 	/**
-	 * Le tiers concenré par le droit.
+	 * L'ayant-droit concerné par le droit.
 	 */
-	private TiersRF tiers;
+	private AyantDroitRF ayantDroit;
 
 	/**
 	 * L'immeuble concerné par le droit.
@@ -81,18 +81,18 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	@ManyToOne(cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
-	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_DROIT_RF_TIERS_ID", columnNames = "TIERS_ID")
-	public TiersRF getTiers() {
-		return tiers;
+	@JoinColumn(name = "AYANT_DROIT_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
+	public AyantDroitRF getAyantDroit() {
+		return ayantDroit;
 	}
 
-	public void setTiers(TiersRF tiers) {
-		this.tiers = tiers;
+	public void setAyantDroit(AyantDroitRF ayantDroit) {
+		this.ayantDroit = ayantDroit;
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false, insertable = false, updatable = false)
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID")
 	@Index(name = "IDX_DROIT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {

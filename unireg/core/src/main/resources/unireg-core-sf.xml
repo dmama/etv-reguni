@@ -209,10 +209,15 @@
 		<value>ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
+		<value>ch.vd.uniregctb.registrefoncier.AyantDroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.BienFondRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.CodeRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.CommunauteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitHabitationRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.EstimationRF</value>

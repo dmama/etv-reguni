@@ -7,10 +7,10 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
- * Droit d'habitation sur un immeuble.
+ * Droit d'habitation sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
  */
 @Entity
-@DiscriminatorValue("DROIT_HABITATION")
+@DiscriminatorValue("DroitHabitation")
 public class DroitHabitationRF extends DroitRF {
 
 	/**
@@ -22,6 +22,14 @@ public class DroitHabitationRF extends DroitRF {
 	 * L'identifiant métier public du droit.
 	 */
 	private IdentifiantDroitRF identifiantDroit;
+
+	@Override
+	public void setAyantDroit(AyantDroitRF ayantDroit) {
+		if (ayantDroit != null && !(ayantDroit instanceof TiersRF)) {
+			throw new IllegalArgumentException("Seuls les tiers peuvent avoir un droit d'habitation");
+		}
+		super.setAyantDroit(ayantDroit);
+	}
 
 	@Column(name = "ID_RF")
 	public String getIdRF() {

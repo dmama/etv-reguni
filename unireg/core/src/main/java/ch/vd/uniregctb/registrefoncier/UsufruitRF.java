@@ -7,10 +7,10 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
- * Droit de type usufruit sur un immeuble.
+ * Droit de type usufruit sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
  */
 @Entity
-@DiscriminatorValue("USUFRUIT")
+@DiscriminatorValue("Usufruit")
 public class UsufruitRF extends DroitRF {
 
 	/**
@@ -22,6 +22,14 @@ public class UsufruitRF extends DroitRF {
 	 * L'identifiant métier public du droit.
 	 */
 	private IdentifiantDroitRF identifiantDroit;
+
+	@Override
+	public void setAyantDroit(AyantDroitRF ayantDroit) {
+		if (ayantDroit != null && !(ayantDroit instanceof TiersRF)) {
+			throw new IllegalArgumentException("Seuls les tiers peuvent avoir un usufruit");
+		}
+		super.setAyantDroit(ayantDroit);
+	}
 
 	@Column(name = "ID_RF")
 	public String getIdRF() {
