@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.HtmlUtils;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -27,6 +28,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 	private static final AtomicInteger counter = new AtomicInteger();
 
 	private LocalisationView localisation;
+	private RegDate date;
 	private boolean showVD;
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
@@ -72,7 +74,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 				sb.append(HtmlUtils.htmlEscape(adresse.getLocalite())).append("<br/>");
 			}
 			if (adresse.getPaysOFS() != null) {
-				sb.append(HtmlUtils.htmlEscape(getPays(adresse.getPaysOFS()))).append("<br/>");
+				sb.append(HtmlUtils.htmlEscape(getPays(adresse.getPaysOFS(), date))).append("<br/>");
 			}
 
 			sb.append("</div>");
@@ -85,7 +87,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 		switch (localisation.getType()) {
 		case CANTON_VD:
 			if (showVD) {
-				final Commune commune = service.getCommuneByNumeroOfs(localisation.getNoOfs(), null);
+				final Commune commune = service.getCommuneByNumeroOfs(localisation.getNoOfs(), date);
 				if (commune == null) {
 					return "Commune vaudoise inconnue";
 				}
@@ -97,7 +99,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 				return "";
 			}
 		case HORS_CANTON: {
-			final Commune commune = service.getCommuneByNumeroOfs(localisation.getNoOfs(), null);
+			final Commune commune = service.getCommuneByNumeroOfs(localisation.getNoOfs(), date);
 			if (commune == null) {
 				return "Commune hors-canton inconnue";
 			}
@@ -106,15 +108,15 @@ public class JspTagLocalisation extends BodyTagSupport {
 			}
 		}
 		case HORS_SUISSE: {
-			return getPays(localisation.getNoOfs());
+			return getPays(localisation.getNoOfs(), date);
 		}
 		default:
 			throw new IllegalArgumentException("Type de localisation inconnue = [" + localisation + "]");
 		}
 	}
 
-	private String getPays(int noOfs) {
-		final Pays pays = service.getPays(noOfs, null);
+	private String getPays(int noOfs, RegDate date) {
+		final Pays pays = service.getPays(noOfs, date);
 		if (pays == null) {
 			return "Pays inconnu";
 		}
@@ -139,6 +141,10 @@ public class JspTagLocalisation extends BodyTagSupport {
 
 	public void setLocalisation(LocalisationView localisation) {
 		this.localisation = localisation;
+	}
+
+	public void setDate(RegDate date) {
+		this.date = date;
 	}
 
 	public void setService(ServiceInfrastructureService service) {
