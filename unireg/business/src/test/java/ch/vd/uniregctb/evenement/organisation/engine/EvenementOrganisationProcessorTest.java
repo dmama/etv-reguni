@@ -1507,10 +1507,100 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		buildProcessor(translator);
 
 		// Création de l'événement
+
+		final EvenementOrganisation event1 = createEvent(1L, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 8, 18), TRAITE);
+		final EvenementOrganisation event2 = createEvent(2L, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 8, 10), A_TRAITER);
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				hibernateTemplate.merge(event1);
+				return hibernateTemplate.merge(event2).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(1, listEvtInterne.size());
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = getUniqueEvent(2L);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+
+				                             final List<EvenementOrganisationErreur> messages = evt.getErreurs();
+				                             Assert.assertNotNull(messages);
+				                             Assert.assertEquals(1, messages.size());
+				                             Assert.assertEquals(
+						                             String.format(
+								                             "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d possède une date de valeur antérieure à la plus récente déjà reçue (événement n°%d [%s]). " +
+										                             "Traitement automatique impossible.",
+								                             2L, RegDateHelper.dateToDisplayString(date(2015, 8, 10)), noOrganisation,
+								                             1L, RegDateHelper.dateToDisplayString(date(2015, 8, 18))),
+						                             messages.get(0).getMessage());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testProtectionContreEvenementDansLePasseMemeDate() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", date(2000, 1, 1), null, FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne));
+			}
+		});
+
+		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				return entreprise.getNumero();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		final SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
+		translator.setEvenementOrganisationService(getBean(EvenementOrganisationService.class, "evtOrganisationService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Création de l'événement
 		final Long noEvenement = 12344321L;
 
-		final EvenementOrganisation event1 = createEvent(99999L, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 8, 18), TRAITE);
-		final EvenementOrganisation event2 = createEvent(noEvenement, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 6, 24), A_TRAITER);
+		final EvenementOrganisation event1 = createEvent(99999L, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 6, 18), TRAITE);
+		final EvenementOrganisation event2 = createEvent(noEvenement, noOrganisation, FOSC_AUTRE_MUTATION, date(2015, 6, 18), A_TRAITER);
+		event2.setCorrectionDansLePasse(true);
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -1541,15 +1631,14 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             Assert.assertEquals(1, messages.size());
 				                             Assert.assertEquals(
 						                             String.format(
-								                             "L'événement n°%d reçu de RCEnt pour l'organisation %d a une date de valeur [%s] antérieure à celle [%s] du dernier événement reçu pour cette organisation! " +
+								                             "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d est marqué comme événement de correction dans le passé. " +
 										                             "Traitement automatique impossible.",
-								                             noEvenement, noOrganisation,
-								                             RegDateHelper.dateToDisplayString(date(2015, 6, 24)), RegDateHelper.dateToDisplayString(date(2015, 8, 18))),
+								                             noEvenement, RegDateHelper.dateToDisplayString(date(2015, 6, 18)), noOrganisation
+								                             ),
 						                             messages.get(0).getMessage());
 				                             return null;
 			                             }
 		                             }
 		);
 	}
-
 }

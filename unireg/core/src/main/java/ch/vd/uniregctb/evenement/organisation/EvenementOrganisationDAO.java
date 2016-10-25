@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
@@ -36,8 +37,16 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	 */
 	List<EvenementOrganisation> getEvenementsOrganisationARelancer();
 
-	@SuppressWarnings("unchecked")
-	List<EvenementOrganisation> getEvenementsOrganisationApresDate(Long noOrganisation, RegDate date);
+	/**
+	 * Renvoie pour une organisation la liste triées des événements ayant une date de valeur postérieure à la date fournie. Les événements
+	 * qui sont marqués en base comme annulés ne sont pas pris en compte.
+	 *
+	 * @param noOrganisation le numéro de l'organisation visée
+	 * @param date la date de référence
+	 * @return la liste des événements postérieurs à la date
+	 */
+	@NotNull
+	List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date);
 
 	/**
 	 * @return l'ensemble des identifiants des organisations pour lesquels il existe au moins un événement dans l'état {@link EtatEvenementOrganisation#EN_ATTENTE EN_ATTENTE}

@@ -108,10 +108,11 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		final long start = System.nanoTime();
 		try {
 			final Source content = message.getBodyAsSource();
+			final boolean correctionDansLePasse = getCorrectionDansLePasse(message);
 			final String visaMutation = getVisaCreation(message);
 			AuthenticationHelper.pushPrincipal(visaMutation);
 			try {
-				onEvenementOrganisation(content);
+				onEvenementOrganisation(content, correctionDansLePasse);
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -151,6 +152,15 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		return DEFAULT_BUSINESS_USER;
 	}
 
+	/**
+	 * @param msg message reçu (= événement organisation)
+	 * @return <code>true</code> si l'événement représente une correction dans le passé. <code>false</code> si l'événement s'ajoute à l'histoire sans rien modifier.
+	 */
+	public static boolean getCorrectionDansLePasse(EsbMessage msg) {
+		final String isLatestSnapshot = msg.getHeader("isLatestSnapshot");
+		return isLatestSnapshot != null && !Boolean.parseBoolean(isLatestSnapshot);
+	}
+
 
 	/**
 	 * Déroulement des opérations :
@@ -162,9 +172,10 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 *     <li>Notification du moteur de traitement de l'arrivée d'un nouvel événement pour l'organisation</li>
 	 * </ol>
 	 * @param xml le contenu XML du message envoyé par le registre entreprises
+	 * @param correctionDansLePasse <code>true</code> si l'événement représente une correction (il s'intercale entre deux autres événements déjà reçus ou en modifie un), <code>false</code> si l'événement s'ajoute à l'historique sans rien modifier.
 	 * @throws EvenementOrganisationEsbException en cas de problème <i>métier</i>
 	 */
-	private void onEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
+	private void onEvenementOrganisation(Source xml, boolean correctionDansLePasse) throws EvenementOrganisationEsbException {
 
 		OrganisationsOfNotice message = decodeEvenementOrganisation(xml);
 
@@ -176,6 +187,10 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		}
 
 		final List<EvenementOrganisation> events = createEvenementOrganisation(message);
+
+		for (EvenementOrganisation evenementOrganisation : events) {
+			evenementOrganisation.setCorrectionDansLePasse(correctionDansLePasse);
+		}
 
 		final EvenementOrganisation premierEvt = events.get(0);
 		Audit.info((Long) premierEvt.getNoEvenement(), String.format("Arrivée de l'événement organisation %d (%s au %s)", premierEvt.getNoEvenement(), premierEvt.getType(), RegDateHelper.dateToDisplayString(premierEvt.getDateEvenement())));

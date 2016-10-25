@@ -99,20 +99,20 @@ public class EvenementOrganisationDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEvenementsOrganisationApresDate() {
 		{
-			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDate(98989898L, date(2015, 9, 7));
+			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDateNonAnnules(98989898L, date(2015, 9, 7));
 			Collections.sort(evts, getByIdEvtOrganisationComparator());
 			assertEquals(2, evts.size());
 			assertEquals(20001L, evts.get(0).getNoEvenement());
 			assertEquals(20002L, evts.get(1).getNoEvenement());
 		}
 		{
-			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDate(98989898L, date(2015, 9, 8));
+			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDateNonAnnules(98989898L, date(2015, 9, 8));
 			Collections.sort(evts, getByIdEvtOrganisationComparator());
 			assertEquals(1, evts.size());
 			assertEquals(20002L, evts.get(0).getNoEvenement());
 		}
 		{
-			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDate(98989898L, date(2015, 9, 9));
+			final List<EvenementOrganisation> evts = dao.getEvenementsOrganisationApresDateNonAnnules(98989898L, date(2015, 9, 9));
 			Collections.sort(evts, getByIdEvtOrganisationComparator());
 			assertEquals(0, evts.size());
 		}
