@@ -1,12 +1,7 @@
 package ch.vd.watchdog;
 
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -32,10 +27,8 @@ import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebWindow;
-import com.gargoylesoftware.htmlunit.html.DomText;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
@@ -43,8 +36,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
-import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -246,7 +237,7 @@ public abstract class WatchDogTest {
 		}
 	}
 
-	protected static interface JmxCallback<T> {
+	protected interface JmxCallback<T> {
 		T execute(MBeanServerConnection con) throws Exception;
 	}
 
@@ -286,7 +277,7 @@ public abstract class WatchDogTest {
 					final String[] splits = json.split("\\s*,\\s*");
 					assertTrue(json, splits.length > 0);
 
-					final Pattern pattern = Pattern.compile("[^\\w]*'(\\w+)'\\s*:\\s*'(\\w+)'.*");
+					final Pattern pattern = Pattern.compile("[^\\w]*['\"](\\w+)['\"]\\s*:\\s*['\"](\\w+)['\"].*");
 					for (String split : splits) {
 						final Matcher matcher = pattern.matcher(split);
 						if (matcher.matches()) {
