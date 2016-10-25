@@ -8,17 +8,17 @@ import org.hibernate.FlushMode;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 
-public class MockEvenementRFImmeubleDAO implements EvenementRFImmeubleDAO {
+public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
-	private List<EvenementRFImmeuble> db = new ArrayList<>();
+	private List<EvenementRFImport> db = new ArrayList<>();
 
 	@Override
-	public List<EvenementRFImmeuble> getAll() {
+	public List<EvenementRFImport> getAll() {
 		return db;
 	}
 
 	@Override
-	public EvenementRFImmeuble get(Long id) {
+	public EvenementRFImport get(Long id) {
 		throw new NotImplementedException();
 	}
 
@@ -33,7 +33,7 @@ public class MockEvenementRFImmeubleDAO implements EvenementRFImmeubleDAO {
 	}
 
 	@Override
-	public EvenementRFImmeuble save(EvenementRFImmeuble object) {
+	public EvenementRFImport save(EvenementRFImport object) {
 		if (object == null) {
 			throw new IllegalArgumentException();
 		}
@@ -58,7 +58,7 @@ public class MockEvenementRFImmeubleDAO implements EvenementRFImmeubleDAO {
 	}
 
 	@Override
-	public Iterator<EvenementRFImmeuble> iterate(String query) {
+	public Iterator<EvenementRFImport> iterate(String query) {
 		throw new NotImplementedException();
 	}
 

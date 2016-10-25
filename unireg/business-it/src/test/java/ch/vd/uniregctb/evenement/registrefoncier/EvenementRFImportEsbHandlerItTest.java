@@ -21,19 +21,19 @@ import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class EvenementRFImmeubleEsbHandlerItTest extends EvenementTest {
+public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 
-	private EvenementRFImmeubleDAO evenementRFImmeubleDAO;
+	private EvenementRFImportDAO evenementRFImportDAO;
 
 	private String INPUT_QUEUE;
-	private EvenementRFImmeubleEsbHandler handler;
+	private EvenementRFImportEsbHandler handler;
 
 	private final MutableInt receivedCount = new MutableInt(0);
 
 	@Before
 	public void setup() throws Exception {
 
-		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtRfImmeuble");
+		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtRfImport");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
@@ -48,9 +48,9 @@ public class EvenementRFImmeubleEsbHandlerItTest extends EvenementTest {
 
 		clearQueue(INPUT_QUEUE);
 
-		evenementRFImmeubleDAO = new MockEvenementRFImmeubleDAO();
+		evenementRFImportDAO = new MockEvenementRFImportDAO();
 
-		handler = new EvenementRFImmeubleEsbHandler() {
+		handler = new EvenementRFImportEsbHandler() {
 			@Override
 			public void onEsbMessage(EsbMessage message) throws Exception {
 				try {
@@ -65,7 +65,7 @@ public class EvenementRFImmeubleEsbHandlerItTest extends EvenementTest {
 				}
 			}
 		};
-		handler.setEvenementRFImmeubleDAO(evenementRFImmeubleDAO);
+		handler.setEvenementRFImportDAO(evenementRFImportDAO);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
@@ -102,7 +102,7 @@ public class EvenementRFImmeubleEsbHandlerItTest extends EvenementTest {
 	public void testReceptionEvenement() throws Exception {
 
 		// précondition : il n'y a pas d'événement en base
-		assertEquals(0, evenementRFImmeubleDAO.getCount(EvenementRFImmeuble.class));
+		assertEquals(0, evenementRFImportDAO.getCount(EvenementRFImport.class));
 
 		// on envoie l'événement
 		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu");
@@ -115,10 +115,10 @@ public class EvenementRFImmeubleEsbHandlerItTest extends EvenementTest {
 		}
 
 		// postcondition : l'événemnt correspondant doit exister dans la base
-		final List<EvenementRFImmeuble> list = evenementRFImmeubleDAO.getAll();
+		final List<EvenementRFImport> list = evenementRFImportDAO.getAll();
 		assertEquals(1, list.size());
 
-		final EvenementRFImmeuble event = list.get(0);
+		final EvenementRFImport event = list.get(0);
 		assertNotNull(event);
 		assertEquals(EtatEvenementRF.A_TRAITER, event.getEtat());
 		assertEquals("http://example.com/turlututu", event.getFileUrl());

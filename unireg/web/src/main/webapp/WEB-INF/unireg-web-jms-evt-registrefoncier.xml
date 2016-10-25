@@ -5,19 +5,19 @@
 
 	<!-- Evénements du Registre Foncier -->
 
-	<bean id="evtRFImmeubleEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
-		<property name="handler" ref="evtRFImmeubleEventEsbHandler"/>
+	<bean id="evtRFImportEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evtRFImportEventEsbHandler"/>
 	</bean>
 
-	<bean id="evtRFImmeubleEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImmeubleEsbHandler">
-		<property name="evenementRFImmeubleDAO" ref="evenementRFImmeubleDAO"/>
+	<bean id="evtRFImportEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportEsbHandler">
+		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
 	</bean>
 
-	<bean id="evtRFImmeubleEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareMasterSwitchableEsbMessageEndpointManager">
+	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareMasterSwitchableEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtRfImmeuble}"/>
+				<property name="destination" value="${extprop.jms.queue.evtRfImport}"/>
 				<property name="destinationType" value="javax.jms.Queue"/>
 				<property name="maxSessions" value="1"/>
 				<property name="maxMessagesPerSessions" value="1"/>
@@ -25,7 +25,7 @@
 		</property>
 		<property name="messageListener" ref="reqdesEventListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtRfImmeuble.enabled}"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRfImport.enabled}"/>
 		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>
 	</bean>
 

@@ -10,15 +10,19 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Blob;
 
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 
+/**
+ * Un événement d'import d'une extraction hebdomadaire du registre foncier.
+ */
 @Entity
-@Table(name = "EVENEMENT_RF_IMMEUBLE")
-public class EvenementRFImmeuble extends HibernateEntity {
+@Table(name = "EVENEMENT_RF_IMPORT")
+public class EvenementRFImport extends HibernateEntity {
 
 	private Long id;
 
@@ -66,6 +70,7 @@ public class EvenementRFImmeuble extends HibernateEntity {
 
 	@Column(name = "ETAT")
 	@Enumerated(EnumType.STRING)
+	@Index(name="IDX_EV_RF_IMP_ETAT")
 	public EtatEvenementRF getEtat() {
 		return etat;
 	}
@@ -93,7 +98,7 @@ public class EvenementRFImmeuble extends HibernateEntity {
 		this.fileUrl = fileUrl;
 	}
 
-	@Column(name = "ERROR_MESSAGE", nullable = true)
+	@Column(name = "ERROR_MESSAGE")
 	@Lob
 	@Nullable
 	public Blob getErrorMessage() {

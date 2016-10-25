@@ -134,21 +134,21 @@ CREATE TABLE AUTRE_DOCUMENT_FISCAL(
 	PRIMARY KEY (ID)
 );
 
-create table EVENEMENT_RF_IMMEUBLE (
-	id number(19,0) not null,
-	ANNULATION_DATE timestamp,
-	ANNULATION_USER nvarchar2(65),
-	LOG_CDATE timestamp,
-	LOG_CUSER nvarchar2(65),
-	LOG_MDATE timestamp,
-	LOG_MUSER nvarchar2(65),
-	DATE_EVENEMENT number(10,0),
-	ETAT nvarchar2(10),
-	FILE_URL nvarchar2(255),
-	ERROR_MESSAGE blob,
-	primary key (id)
+CREATE TABLE EVENEMENT_RF_IMPORT
+(
+    ID NUMBER(19) PRIMARY KEY NOT NULL,
+    ANNULATION_DATE TIMESTAMP(6),
+    ANNULATION_USER NVARCHAR2(65),
+    LOG_CDATE TIMESTAMP(6),
+    LOG_CUSER NVARCHAR2(65),
+    LOG_MDATE TIMESTAMP(6),
+    LOG_MUSER NVARCHAR2(65),
+    DATE_EVENEMENT NUMBER(10),
+    ERROR_MESSAGE BLOB,
+    ETAT NVARCHAR2(255),
+    FILE_URL NVARCHAR2(255)
 );
-create index IDX_EV_RF_IMM_ETAT on EVENEMENT_RF_IMMEUBLE (ETAT);
+CREATE INDEX IDX_EV_RF_IMP_ETAT ON EVENEMENT_RF_IMPORT (ETAT);
 
 create table EVENEMENT_IDENTIFICATION_CTB (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_TRAITEMENT timestamp, DATE_DEMANDE timestamp, EMETTEUR_ID nvarchar2(50) not null, MESSAGE_ID nvarchar2(255) not null, MODE_IDENTIFICATION nvarchar2(255) not null, MONTANT number(19,0), PERIODE_FISCALE number(10,0) not null, NAVS11 nvarchar2(11), NAVS13 nvarchar2(13), ADR_CH_COMPL nvarchar2(2), ADR_CODE_PAYS nvarchar2(12), ADR_LIEU nvarchar2(40), ADR_LIGNE_1 nvarchar2(60), ADR_LIGNE_2 nvarchar2(60), ADR_LOCALITE nvarchar2(40), ADR_NO_APPART nvarchar2(10), ADR_ORDRE_POSTE number(10,0), ADR_NO_POLICE nvarchar2(12), ADR_NPA_ETRANGER nvarchar2(15), ADR_NPA_SUISSE number(10,0), ADR_NO_CP number(10,0), ADR_RUE nvarchar2(60), ADR_TEXT_CP nvarchar2(15), ADR_TYPE nvarchar2(255), DATE_NAISSANCE number(10,0), NOM nvarchar2(100), PRENOMS nvarchar2(100), SEXE nvarchar2(8), PRIO_EMETTEUR nvarchar2(255) not null, PRIO_UTILISATEUR number(10,0) not null, TRANSMETTEUR nvarchar2(255), DEMANDE_TYPE nvarchar2(30), TYPE_MESSAGE nvarchar2(20) not null, ETAT nvarchar2(23) not null, BUSINESS_ID nvarchar2(255) not null, BUSINESS_USER nvarchar2(255) not null, DOCUMENT_URL nvarchar2(255), META_DATA NVARCHAR2(1024), REPLY_TO nvarchar2(255) not null, NB_CTB_TROUVES number(10,0), DATE_REPONSE timestamp, ATTENTE_IDENTIF_MANUEL number(1,0), ERREUR_CODE nvarchar2(20), ERREUR_MESSAGE nvarchar2(1000), ERREUR_TYPE nvarchar2(9), NO_CONTRIBUABLE number(19,0), NO_MENAGE_COMMUN number(19,0), TRAITEMENT_USER nvarchar2(65), WORK_USER nvarchar2(65), NAVS13_UPI nvarchar2(13), COMMENTAIRE_TRAITEMENT nvarchar2(255), primary key (id));
 

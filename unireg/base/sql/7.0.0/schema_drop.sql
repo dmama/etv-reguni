@@ -36,7 +36,7 @@ drop table EVENEMENT_EXTERNE cascade constraints;
 
 drop table EVENEMENT_IDENTIFICATION_CTB cascade constraints;
 
-drop table EVENEMENT_RF_IMMEUBLE cascade constraints;
+drop table EVENEMENT_RF_IMPORT cascade constraints;
 
 drop table FOR_FISCAL cascade constraints;
 

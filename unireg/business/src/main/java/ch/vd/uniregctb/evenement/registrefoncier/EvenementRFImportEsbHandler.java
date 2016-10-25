@@ -10,14 +10,14 @@ import ch.vd.uniregctb.jms.EsbMessageHandler;
 /**
  * Handler qui reçoit les événements de mutation sur les immeubles de la part du registre foncier (Capitastra)
  */
-public class EvenementRFImmeubleEsbHandler implements EsbMessageHandler {
+public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementRFImmeubleEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementRFImportEsbHandler.class);
 
-	private EvenementRFImmeubleDAO evenementRFImmeubleDAO;
+	private EvenementRFImportDAO evenementRFImportDAO;
 
-	public void setEvenementRFImmeubleDAO(EvenementRFImmeubleDAO evenementRFImmeubleDAO) {
-		this.evenementRFImmeubleDAO = evenementRFImmeubleDAO;
+	public void setEvenementRFImportDAO(EvenementRFImportDAO evenementRFImportDAO) {
+		this.evenementRFImportDAO = evenementRFImportDAO;
 	}
 
 	@Override
@@ -32,11 +32,11 @@ public class EvenementRFImmeubleEsbHandler implements EsbMessageHandler {
 			final String dataUrl = message.getAttachmentRef("data");
 
 			// on crée et insère l'événement en base
-			EvenementRFImmeuble event = new EvenementRFImmeuble();
+			EvenementRFImport event = new EvenementRFImport();
 			event.setDateEvenement(RegDate.get());  // TODO (msi) on devrait obtenir cette information depuis le message
 			event.setEtat(EtatEvenementRF.A_TRAITER);
 			event.setFileUrl(dataUrl);
-			evenementRFImmeubleDAO.save(event);
+			evenementRFImportDAO.save(event);
 
 			// TODO (msi) provoquer le démarrage du batch de traitement à la fermeture de la transaction
 		}

@@ -2,5 +2,5 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import ch.vd.registre.base.dao.GenericDAO;
 
-public interface EvenementRFImmeubleDAO extends GenericDAO<EvenementRFImmeuble, Long> {
+public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long> {
 }
