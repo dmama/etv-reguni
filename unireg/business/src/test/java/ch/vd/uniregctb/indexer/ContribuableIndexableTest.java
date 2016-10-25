@@ -49,6 +49,7 @@ import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -958,7 +959,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		pp.setTousPrenoms("Albert André");
 
 		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP(date(2009, 12, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, MockPays.PaysInconnu.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-		pp.setForsFiscaux(Collections.singleton(ffp));
+		pp.setForsFiscaux(Collections.<ForFiscal>singleton(ffp));
 
 		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp);
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
