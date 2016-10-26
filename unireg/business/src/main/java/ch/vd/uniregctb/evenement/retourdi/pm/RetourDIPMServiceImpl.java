@@ -893,8 +893,14 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * @param contact eventuel nom de la personne de contact
 	 */
 	private void traiterContact(Entreprise entreprise, @Nullable String contact) {
-		if (StringUtils.isNotBlank(contact)) {
+		// [SIFISC-21738] Dans le cas où une donnée de contact est fournie, et qu'elle est différente de la donnée
+		// préalablement connue, il faut effacer les numéros de téléphone...
+		if (StringUtils.isNotBlank(contact) && !Objects.equals(contact, entreprise.getPersonneContact())) {
 			entreprise.setPersonneContact(contact);
+			entreprise.setNumeroTelephoneProfessionnel(null);
+			entreprise.setNumeroTelephonePortable(null);
+			entreprise.setNumeroTelephonePrive(null);
+			entreprise.setNumeroTelecopie(null);
 		}
 	}
 
