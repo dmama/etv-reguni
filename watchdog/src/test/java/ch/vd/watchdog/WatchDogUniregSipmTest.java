@@ -31,6 +31,7 @@ public class WatchDogUniregSipmTest extends WatchDogTest {
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
 	}
 
+	@Ignore("L'environnement est actuellement arrêté sans perspective proche de redémarrage")
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testSipmConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg sur l'environnement SIPM...");
