@@ -62,6 +62,11 @@ public class RCEntAnnonceIDEHelper {
 	public static final String NO_APPLICATION_UNIREG = "2";
 	public static final String NOM_APPLICATION_UNIREG = "UNIREG";
 
+	/*
+		Utilisateur "unireg" pour satisfaire RCEnt qui ne tolère par de champ userId vide.
+	 */
+	public static final String UNIREG_USER = "unireg";
+
 	public static final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl SERVICE_IDE_UNIREG =
 			new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS,
 			                                                   RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
@@ -208,7 +213,7 @@ public class RCEntAnnonceIDEHelper {
 			identification.setIDESource(noIdeServiceIDEObligEtendues == null ? null : new NamedOrganisationId("CH.IDE", noIdeServiceIDEObligEtendues.getValeur()));
 		}
 		final BaseAnnonceIDE.Utilisateur utilisateur = proto.getUtilisateur();
-		header.setUserId(utilisateur == null ? null :utilisateur.getUserId());
+		header.setUserId(utilisateur == null ? UNIREG_USER : utilisateur.getUserId());
 		header.setUserPhoneNumber(utilisateur == null ? null :utilisateur.getTelephone());
 		header.setComment(proto.getCommentaire());
 
