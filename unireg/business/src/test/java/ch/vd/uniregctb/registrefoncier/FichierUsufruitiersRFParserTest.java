@@ -7,17 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
+import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class FichierUsufruitiersRFParserTest {
 
-	private FichierUsufruitiersRFParser parser = new FichierUsufruitiersRFParser();
+	private FichierUsufruitiersRFParser parser;
+
+	@Before
+	public void setUp() throws Exception {
+		parser = new FichierUsufruitiersRFParser();
+		parser.setXmlHelperRF(new XmlHelperRFImpl());
+	}
 
 	@Test
 	public void testParseDroits() throws Exception {

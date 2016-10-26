@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
@@ -20,18 +19,7 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
-import ch.vd.uniregctb.registrefoncier.elements.BergwerkElement;
-import ch.vd.uniregctb.registrefoncier.elements.BodenbedeckungElement;
-import ch.vd.uniregctb.registrefoncier.elements.FolioElement;
-import ch.vd.uniregctb.registrefoncier.elements.GebaeudeElement;
-import ch.vd.uniregctb.registrefoncier.elements.GewoehnlichesMiteigentumElement;
-import ch.vd.uniregctb.registrefoncier.elements.JuristischePersonstammElement;
-import ch.vd.uniregctb.registrefoncier.elements.LiegenschaftElement;
-import ch.vd.uniregctb.registrefoncier.elements.NatuerlichePersonstammElement;
-import ch.vd.uniregctb.registrefoncier.elements.PersonEigentumAnteilElement;
-import ch.vd.uniregctb.registrefoncier.elements.SDRElement;
-import ch.vd.uniregctb.registrefoncier.elements.StockwerksElement;
-import ch.vd.uniregctb.registrefoncier.elements.UnbekanntesGrundstueckElement;
+import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 
 /**
  * Classe qui parse un fichier d'import d'immeubles du registre foncier et qui notifie au fil du parsing des éléments lus.
@@ -63,6 +51,12 @@ public class FichierImmeublesRFParser {
 
 	private static final String LIST_SURFACES = "BodenbedeckungList";
 	private static final String SURFACE = "Bodenbedeckung";
+
+	private XmlHelperRF xmlHelperRF;
+
+	public void setXmlHelperRF(XmlHelperRF xmlHelperRF) {
+		this.xmlHelperRF = xmlHelperRF;
+	}
 
 	/**
 	 * Interface orientée-événement pour recevoir les entités au fur et à mesure qu'elles sont parsées.
@@ -200,10 +194,7 @@ public class FichierImmeublesRFParser {
 	 */
 	private void processImmeubles(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
-		final JAXBContext jaxbContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
-		                                                        LiegenschaftElement.class, SDRElement.class, StockwerksElement.class,
-		                                                        UnbekanntesGrundstueckElement.class);
-		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getImmeubleContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();
@@ -308,8 +299,7 @@ public class FichierImmeublesRFParser {
 	 */
 	private void processDroits(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
-		final JAXBContext jaxbContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
-		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getDroitContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();
@@ -395,8 +385,7 @@ public class FichierImmeublesRFParser {
 	 */
 	private void processProprietaires(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
-		final JAXBContext jaxbContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
-		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getProprietaireContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();
@@ -469,8 +458,7 @@ public class FichierImmeublesRFParser {
 	 */
 	private void processBatiments(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
-		final JAXBContext jaxbContext = JAXBContext.newInstance(GebaeudeElement.class);
-		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getBatimentContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();
@@ -534,8 +522,7 @@ public class FichierImmeublesRFParser {
 	 */
 	private void processSurfaces(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
-		final JAXBContext jaxbContext = JAXBContext.newInstance(BodenbedeckungElement.class);
-		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getSurfaceContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();

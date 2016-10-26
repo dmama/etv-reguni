@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.elements;
 
+import javax.xml.bind.JAXBContext;
+
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
@@ -10,6 +12,36 @@ import ch.vd.capitastra.grundstueck.Personstamm;
  * Classe de manipulation XML des entités propres à l'import du registre foncier.
  */
 public interface XmlHelperRF {
+
+	/**
+	 * @return le context JAXB pour les immeubles
+	 */
+	JAXBContext getImmeubleContext();
+
+	/**
+	 * @return le context JAXB pour les droits
+	 */
+	JAXBContext getDroitContext();
+
+	/**
+	 * @return le context JAXB pour les propriétaires
+	 */
+	JAXBContext getProprietaireContext();
+
+	/**
+	 * @return le context JAXB pour les bâtiments
+	 */
+	JAXBContext getBatimentContext();
+
+	/**
+	 * @return le context JAXB pour les surface
+	 */
+	JAXBContext getSurfaceContext();
+
+	/**
+	 * @return le context JAXB pour les droits contenus dans le fichier qui contient les usufruitiers et les bénéficiaires de droits d'habitation.
+	 */
+	JAXBContext getAutreDroitContext();
 
 	/**
 	 * Converti l'immeuble spécifié dans sa représentation XML.

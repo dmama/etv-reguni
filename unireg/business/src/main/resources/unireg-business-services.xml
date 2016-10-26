@@ -325,6 +325,10 @@
 
 	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl"/>
 
+	<bean id="fichierImmeublesRFParser" class="ch.vd.uniregctb.registrefoncier.FichierImmeublesRFParser">
+		<property name="xmlHelperRF" ref="xmlHelperRF"/>
+	</bean>
+
 	<bean id="statistiquesEvenementsService" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

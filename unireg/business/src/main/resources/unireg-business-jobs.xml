@@ -90,6 +90,7 @@
 		<constructor-arg value="108"/>
 		<constructor-arg value="Traiter un import des immeubles du registre foncier"/>
 		<property name="xmlHelperRF" ref="xmlHelperRF"/>
+		<property name="parser" ref="fichierImmeublesRFParser"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO"/>

@@ -23,6 +23,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext proprietaireContext;
 	private final JAXBContext batimentContext;
 	private final JAXBContext surfaceContext;
+	private final JAXBContext autreDroitContext;
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
@@ -32,6 +33,37 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
 		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
 		surfaceContext = JAXBContext.newInstance(BodenbedeckungElement.class);
+		autreDroitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
+	}
+
+	@Override
+	public JAXBContext getImmeubleContext() {
+		return immeubleContext;
+	}
+
+	@Override
+	public JAXBContext getDroitContext() {
+		return droitContext;
+	}
+
+	@Override
+	public JAXBContext getProprietaireContext() {
+		return proprietaireContext;
+	}
+
+	@Override
+	public JAXBContext getBatimentContext() {
+		return batimentContext;
+	}
+
+	@Override
+	public JAXBContext getSurfaceContext() {
+		return surfaceContext;
+	}
+
+	@Override
+	public JAXBContext getAutreDroitContext() {
+		return autreDroitContext;
 	}
 
 	@Override

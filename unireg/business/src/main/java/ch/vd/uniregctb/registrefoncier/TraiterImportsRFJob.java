@@ -38,13 +38,13 @@ public class TraiterImportsRFJob extends JobDefinition {
 	public static final String ID = "eventId";
 
 	private XmlHelperRF xmlHelperRF;
+	private FichierImmeublesRFParser parser;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 
 	private PlatformTransactionManager transactionManager;
 	private EsbStore zipRaftStore;
-	private FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
 
 	public TraiterImportsRFJob(String name, JobCategory categorie, int sortOrder, String description) {
 		super(name, categorie, sortOrder, description);
@@ -52,6 +52,10 @@ public class TraiterImportsRFJob extends JobDefinition {
 
 	public void setXmlHelperRF(XmlHelperRF xmlHelperRF) {
 		this.xmlHelperRF = xmlHelperRF;
+	}
+
+	public void setParser(FichierImmeublesRFParser parser) {
+		this.parser = parser;
 	}
 
 	public void setImmeubleRFDAO(ImmeubleRFDAO immeubleRFDAO) {

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
@@ -13,7 +12,7 @@ import org.codehaus.stax2.XMLInputFactory2;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
-import ch.vd.uniregctb.registrefoncier.elements.DienstbarkeitElement;
+import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 
 /**
  * Classe qui parse un fichier d'import des usufruitiers et bénéficiaires de droits d'habitation du registre foncier et qui notifie au fil du parsing des éléments lus.
@@ -24,6 +23,12 @@ public class FichierUsufruitiersRFParser {
 
 	private static final String LIST_DROITS = "StandardRechtList";
 	private static final String DROIT = "Dienstbarkeit";
+
+	private XmlHelperRF xmlHelperRF;
+
+	public void setXmlHelperRF(XmlHelperRF xmlHelperRF) {
+		this.xmlHelperRF = xmlHelperRF;
+	}
 
 	/**
 	 * Interface orientée-événement pour recevoir les entités au fur et à mesure qu'elles sont parsées.
@@ -133,8 +138,7 @@ public class FichierUsufruitiersRFParser {
 	 */
 	private void processDroits(XMLStreamReader xmlStreamReader, Callback callback) throws JAXBException, XMLStreamException {
 
-		final JAXBContext jaxbContext = JAXBContext.newInstance(DienstbarkeitElement.class);
-		final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getAutreDroitContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();

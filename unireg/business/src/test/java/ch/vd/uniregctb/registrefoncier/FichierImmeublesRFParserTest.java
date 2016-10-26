@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
@@ -30,6 +31,7 @@ import ch.vd.capitastra.grundstueck.Rechtsgrund;
 import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 
 import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
@@ -39,7 +41,13 @@ import static org.junit.Assert.assertTrue;
 
 public class FichierImmeublesRFParserTest {
 
-	private FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
+	private FichierImmeublesRFParser parser;
+
+	@Before
+	public void setUp() throws Exception {
+		parser = new FichierImmeublesRFParser();
+		parser.setXmlHelperRF(new XmlHelperRFImpl());
+	}
 
 	@Test
 	public void testParseImmeubles() throws Exception {

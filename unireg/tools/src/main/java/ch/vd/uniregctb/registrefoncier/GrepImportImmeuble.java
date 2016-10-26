@@ -30,7 +30,7 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 public class GrepImportImmeuble {
 
 	private final XmlHelperRF xmlHelper;
-	private final FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
+	private final FichierImmeublesRFParser parser;
 
 	public static void main(String[] args) throws Exception {
 
@@ -46,6 +46,8 @@ public class GrepImportImmeuble {
 
 	public GrepImportImmeuble() throws JAXBException {
 		xmlHelper = new XmlHelperRFImpl();
+		parser = new FichierImmeublesRFParser();
+		parser.setXmlHelperRF(xmlHelper);
 	}
 
 	private void run(String[] args) throws IOException, JAXBException, XMLStreamException {
