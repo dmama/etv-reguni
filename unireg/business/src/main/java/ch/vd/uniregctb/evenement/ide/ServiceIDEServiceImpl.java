@@ -197,7 +197,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final AdresseGenerique adresseGenerique = getAdresse(entreprise, date);
 		final String secteurActiviteActuel = entreprise.getSecteurActivite();
 
-		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
+		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null || secteurActiviteActuel == null) {
 			final String message = String.format("Entreprise n°%s: impossible de communiquer des changements à l'IDE car il manque des données obligatoires: %s%s%s%s.",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 			                                     raisonsSocialeHisto != null ? "" : "[raison sociale]",
