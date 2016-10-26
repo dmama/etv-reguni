@@ -213,7 +213,7 @@ public class RCEntAnnonceIDEHelper {
 			identification.setIDESource(noIdeServiceIDEObligEtendues == null ? null : new NamedOrganisationId("CH.IDE", noIdeServiceIDEObligEtendues.getValeur()));
 		}
 		final BaseAnnonceIDE.Utilisateur utilisateur = proto.getUtilisateur();
-		header.setUserId(utilisateur == null ? UNIREG_USER : utilisateur.getUserId());
+		header.setUserId(utilisateur == null || utilisateur.getUserId() == null ? UNIREG_USER : utilisateur.getUserId());
 		header.setUserPhoneNumber(utilisateur == null ? null :utilisateur.getTelephone());
 		header.setComment(proto.getCommentaire());
 
