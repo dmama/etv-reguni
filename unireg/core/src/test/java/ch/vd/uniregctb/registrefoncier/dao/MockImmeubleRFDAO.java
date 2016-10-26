@@ -1,27 +1,30 @@
-package ch.vd.uniregctb.evenement.registrefoncier;
+package ch.vd.uniregctb.registrefoncier.dao;
 
-import java.io.IOException;
-import java.sql.Blob;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.transaction.MockBlob;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
-public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
-
-	private List<EvenementRFImport> db = new ArrayList<>();
-
+public class MockImmeubleRFDAO implements ImmeubleRFDAO {
+	@Nullable
 	@Override
-	public List<EvenementRFImport> getAll() {
-		return db;
+	public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+		throw new NotImplementedException();
 	}
 
 	@Override
-	public EvenementRFImport get(Long id) {
+	public List<ImmeubleRF> getAll() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public ImmeubleRF get(Long id) {
 		throw new NotImplementedException();
 	}
 
@@ -36,13 +39,8 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	}
 
 	@Override
-	public EvenementRFImport save(EvenementRFImport object) {
-		if (object == null) {
-			throw new IllegalArgumentException();
-		}
-		db.add(object);
-		object.setId((long) db.size());
-		return object;
+	public ImmeubleRF save(ImmeubleRF object) {
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -61,13 +59,13 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	}
 
 	@Override
-	public Iterator<EvenementRFImport> iterate(String query) {
+	public Iterator<ImmeubleRF> iterate(String query) {
 		throw new NotImplementedException();
 	}
 
 	@Override
 	public int getCount(Class<?> clazz) {
-		return db.size();
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -78,10 +76,5 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	@Override
 	public void evict(Object o) {
 		throw new NotImplementedException();
-	}
-
-	@Override
-	public Blob createBlob(byte[] bytes) throws IOException {
-		return new MockBlob(bytes);
 	}
 }

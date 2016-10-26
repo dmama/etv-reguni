@@ -1,16 +1,12 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -23,18 +19,8 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
-import ch.vd.uniregctb.registrefoncier.elements.BergwerkElement;
-import ch.vd.uniregctb.registrefoncier.elements.BodenbedeckungElement;
-import ch.vd.uniregctb.registrefoncier.elements.FolioElement;
-import ch.vd.uniregctb.registrefoncier.elements.GebaeudeElement;
-import ch.vd.uniregctb.registrefoncier.elements.GewoehnlichesMiteigentumElement;
-import ch.vd.uniregctb.registrefoncier.elements.JuristischePersonstammElement;
-import ch.vd.uniregctb.registrefoncier.elements.LiegenschaftElement;
-import ch.vd.uniregctb.registrefoncier.elements.NatuerlichePersonstammElement;
-import ch.vd.uniregctb.registrefoncier.elements.PersonEigentumAnteilElement;
-import ch.vd.uniregctb.registrefoncier.elements.SDRElement;
-import ch.vd.uniregctb.registrefoncier.elements.StockwerksElement;
-import ch.vd.uniregctb.registrefoncier.elements.UnbekanntesGrundstueckElement;
+import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
+import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
@@ -43,13 +29,8 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
  */
 public class GrepImportImmeuble {
 
-	private final JAXBContext immeubleContext;
-	private final JAXBContext droitContext;
-	private final JAXBContext proprietaireContext;
-	private final JAXBContext batimentContext;
-	private final JAXBContext surfaceContext;
-
-	private FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
+	private final XmlHelperRF xmlHelper;
+	private final FichierImmeublesRFParser parser = new FichierImmeublesRFParser();
 
 	public static void main(String[] args) throws Exception {
 
@@ -64,13 +45,7 @@ public class GrepImportImmeuble {
 	}
 
 	public GrepImportImmeuble() throws JAXBException {
-		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
-		                                          LiegenschaftElement.class, SDRElement.class, StockwerksElement.class,
-		                                          UnbekanntesGrundstueckElement.class);
-		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
-		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
-		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
-		surfaceContext = JAXBContext.newInstance(BodenbedeckungElement.class);
+		xmlHelper = new XmlHelperRFImpl();
 	}
 
 	private void run(String[] args) throws IOException, JAXBException, XMLStreamException {
@@ -135,6 +110,10 @@ public class GrepImportImmeuble {
 				}
 				surfaceCount.increment();
 			}
+
+			@Override
+			public void done() {
+			}
 		};
 
 		try (InputStream is = new FileInputStream(file)) {
@@ -146,73 +125,23 @@ public class GrepImportImmeuble {
 	}
 
 	private String toXMLString(Grundstueck obj) {
-		try {
-			final Marshaller m = immeubleContext.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
-			m.marshal(new JAXBElement<Grundstueck>(name, (Class<Grundstueck>) obj.getClass(), null, obj), w);
-			return w.toString();
-		}
-		catch (JAXBException e) {
-			return e.getMessage();
-		}
+		return xmlHelper.toXMLString(obj);
 	}
 
 	private String toXMLString(PersonEigentumAnteil obj) {
-		try {
-			final Marshaller m = droitContext.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
-			m.marshal(new JAXBElement<PersonEigentumAnteil>(name, (Class<PersonEigentumAnteil>) obj.getClass(), null, obj), w);
-			return w.toString();
-		}
-		catch (JAXBException e) {
-			return e.getMessage();
-		}
+		return xmlHelper.toXMLString(obj);
 	}
 
 	private String toXMLString(Personstamm obj) {
-		try {
-			final Marshaller m = proprietaireContext.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
-			m.marshal(new JAXBElement<Personstamm>(name, (Class<Personstamm>) obj.getClass(), null, obj), w);
-			return w.toString();
-		}
-		catch (JAXBException e) {
-			return e.getMessage();
-		}
+		return xmlHelper.toXMLString(obj);
 	}
 
 	private String toXMLString(Gebaeude obj) {
-		try {
-			final Marshaller m = batimentContext.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
-			m.marshal(new JAXBElement<Gebaeude>(name, (Class<Gebaeude>) obj.getClass(), null, obj), w);
-			return w.toString();
-		}
-		catch (JAXBException e) {
-			return e.getMessage();
-		}
+		return xmlHelper.toXMLString(obj);
 	}
 
 	private String toXMLString(Bodenbedeckung obj) {
-		try {
-			final Marshaller m = surfaceContext.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
-			m.marshal(new JAXBElement<Bodenbedeckung>(name, (Class<Bodenbedeckung>) obj.getClass(), null, obj), w);
-			return w.toString();
-		}
-		catch (JAXBException e) {
-			return e.getMessage();
-		}
+		return xmlHelper.toXMLString(obj);
 	}
 
 	@NotNull

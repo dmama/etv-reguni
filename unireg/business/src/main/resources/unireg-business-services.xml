@@ -323,6 +323,8 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
+	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl"/>
+
 	<bean id="statistiquesEvenementsService" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

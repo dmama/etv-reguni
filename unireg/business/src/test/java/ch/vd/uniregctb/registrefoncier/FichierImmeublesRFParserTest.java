@@ -373,5 +373,9 @@ public class FichierImmeublesRFParserTest {
 		public List<Bodenbedeckung> getSurfaces() {
 			return surfaces;
 		}
+
+		@Override
+		public void done() {
+		}
 	}
 }

@@ -2424,6 +2424,9 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType.DISTINCT_AND_PERMANENT_RIGHT;
 		case PART_DE_COPROPRIETE:
 			return ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType.CO_OWNERSHIP_SHARE;
+		case MINE:
+			// que retourner d'autre ?
+			return ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType.IMMOVABLE_PROPERTY;
 		default:
 			throw new IllegalArgumentException("Type de priopriété inconnu = [" + type + ']');
 		}
@@ -2442,6 +2445,9 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.immovableproperty.v2.ImmovablePropertyType.DISTINCT_AND_PERMANENT_RIGHT;
 		case PART_DE_COPROPRIETE:
 			return ch.vd.unireg.xml.party.immovableproperty.v2.ImmovablePropertyType.CO_OWNERSHIP_SHARE;
+		case MINE:
+			// que retourner d'autre ?
+			return ch.vd.unireg.xml.party.immovableproperty.v2.ImmovablePropertyType.IMMOVABLE_PROPERTY;
 		default:
 			throw new IllegalArgumentException("Type de priopriété inconnu = [" + type + ']');
 		}

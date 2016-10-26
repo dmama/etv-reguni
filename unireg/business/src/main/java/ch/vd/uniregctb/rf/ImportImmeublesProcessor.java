@@ -527,6 +527,9 @@ public class ImportImmeublesProcessor {
 		else if ("B-F".equalsIgnoreCase(s)) {
 			return TypeImmeuble.BIEN_FOND;
 		}
+		else if ("Mine".equalsIgnoreCase(s)) {
+			return TypeImmeuble.MINE;
+		}
 		else {
 			throw new IllegalArgumentException("Type d'immeuble inconnu = [" + s + "]");
 		}

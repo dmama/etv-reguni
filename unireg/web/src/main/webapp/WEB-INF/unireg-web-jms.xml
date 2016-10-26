@@ -63,6 +63,10 @@
 		<property name="endpoint" value="${extprop.esb.raft.store}" />
 	</bean>
 
+	<bean id="zipRaftEsbStore" class="ch.vd.technical.esb.store.raft.ZipRaftEsbStore">
+		<property name="store" ref="raftEsbStore"/>
+	</bean>
+
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>

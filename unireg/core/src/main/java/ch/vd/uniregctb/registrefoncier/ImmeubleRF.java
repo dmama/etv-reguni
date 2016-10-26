@@ -6,6 +6,8 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -14,9 +16,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Représente un immeuble au registre foncier
@@ -48,11 +52,6 @@ public abstract class ImmeubleRF {
 	private String urlIntercapi;
 
 	/**
-	 * Vrai si l'immeuble est une construction sur fond d'autrui (CFA).
-	 */
-	private boolean cfa;
-
-	/**
 	 * Les situations de l'immeuble.
 	 */
 	private Set<SituationRF> situations;
@@ -73,6 +72,7 @@ public abstract class ImmeubleRF {
 	private Set<BatimentRF> batiments;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
@@ -108,15 +108,6 @@ public abstract class ImmeubleRF {
 		this.urlIntercapi = urlIntercapi;
 	}
 
-	@Column(name = "CFA", nullable = false)
-	public boolean isCfa() {
-		return cfa;
-	}
-
-	public void setCfa(boolean cfa) {
-		this.cfa = cfa;
-	}
-
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_SIT_RF_IMMEUBLE_ID")
@@ -126,6 +117,13 @@ public abstract class ImmeubleRF {
 
 	public void setSituations(Set<SituationRF> situations) {
 		this.situations = situations;
+	}
+
+	public void addSituation(@NotNull SituationRF situation) {
+		if (this.situations == null) {
+			this.situations = new HashSet<>();
+		}
+		this.situations.add(situation);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -148,6 +146,13 @@ public abstract class ImmeubleRF {
 
 	public void setEstimations(Set<EstimationRF> estimations) {
 		this.estimations = estimations;
+	}
+
+	public void addEstimation(EstimationRF estimation) {
+		if (this.estimations == null) {
+			this.estimations = new HashSet<>();
+		}
+		this.estimations.add(estimation);
 	}
 
 	@ManyToMany(targetEntity = BatimentRF.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

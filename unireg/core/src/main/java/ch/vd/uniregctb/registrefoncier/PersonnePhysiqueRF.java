@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.hibernate.annotations.Type;
+
 import ch.vd.registre.base.date.RegDate;
 
 @Entity
@@ -33,6 +35,7 @@ public class PersonnePhysiqueRF extends TiersRF {
 	}
 
 	@Column(name = "DATE_NAISSANCE")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}

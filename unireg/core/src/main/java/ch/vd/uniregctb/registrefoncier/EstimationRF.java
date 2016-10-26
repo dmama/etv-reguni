@@ -5,6 +5,8 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -12,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -64,6 +67,7 @@ public class EstimationRF extends HibernateDateRangeEntity {
 	}
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
@@ -90,7 +94,8 @@ public class EstimationRF extends HibernateDateRangeEntity {
 		this.reference = reference;
 	}
 
-	@Column(name = "DATE_ESTIMATION", nullable = false)
+	@Column(name = "DATE_ESTIMATION")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateEstimation() {
 		return dateEstimation;
 	}

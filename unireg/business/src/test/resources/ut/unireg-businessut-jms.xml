@@ -56,4 +56,9 @@
 		<property name="decalageMaxPourDepart" value="0"/>
 	</bean>
 
+	<bean id="raftEsbStore" class="ch.vd.uniregctb.evenement.MockRaftStore">
+	</bean>
+
+	<alias name="raftEsbStore" alias="zipRaftEsbStore"/>
+
 </beans>

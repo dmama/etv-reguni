@@ -66,6 +66,15 @@ public class FichierImmeublesRFParser {
 
 	/**
 	 * Interface orientée-événement pour recevoir les entités au fur et à mesure qu'elles sont parsées.
+	 * <p/>
+	 * L'ordre de réception des données est le suivant :
+	 * <ul>
+	 *     <li>Immeubles</li>
+	 *     <li>Droits</li>
+	 *     <li>Propriétaires</li>
+	 *     <li>Bâtiments</li>
+	 *     <li>Surfaces au sol</li>
+	 * </ul>
 	 */
 	public static interface Callback {
 
@@ -78,6 +87,11 @@ public class FichierImmeublesRFParser {
 		void onBatiment(@NotNull Gebaeude construction);
 
 		void onSurface(@NotNull Bodenbedeckung surface);
+
+		/**
+		 * Méthode appelée lorsque toutes les données ont été envoyées.
+		 */
+		void done();
 	}
 
 	/**
@@ -130,6 +144,7 @@ public class FichierImmeublesRFParser {
 			}
 
 		}
+		callback.done();
 		xmlStreamReader.close();
 	}
 
