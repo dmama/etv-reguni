@@ -272,4 +272,40 @@ public class AnnonceIDEControllerTest {
 		assertEquals("Renens", adresse.getVille());
 		assertNull(adresse.getPays());
 	}
+
+	/**
+	 * Ce test vérifie que le contrôleur supporte bien de recevoir des numéros cantonaux formattés (123-456-789)
+	 */
+	@Test
+	public void testParseCantonalId() throws Exception {
+
+		final Date dateAnnonce = DateHelper.getDate(2000, 1, 1);
+
+		// on crée le contrôleur et le mock MVC
+		final AnnonceIDEController controller = new AnnonceIDEController();
+		controller.setTiersMapHelper(tiersMapHelper);
+		controller.setOrganisationService(new MockServiceOrganisationService(){
+			@NotNull
+			@Override
+			public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
+				return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList());
+			}
+		});
+
+		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
+
+		// on fait l'appel
+		final ResultActions resActions = m.perform(get("/annonceIDE/find.do").param("cantonalId", "123-456-789"));
+		resActions.andExpect(status().isOk());
+
+		final MvcResult result = resActions.andReturn();
+		assertNotNull(result);
+		final Map<String, Object> model = result.getModelAndView().getModel();
+
+		// on vérifie que l'annonce est bien affichée
+		final AnnonceIDEQueryView query = (AnnonceIDEQueryView) model.get("view");
+		assertNotNull(query);
+
+		assertEquals(Long.valueOf(123456789L), query.getCantonalId());
+	}
 }
