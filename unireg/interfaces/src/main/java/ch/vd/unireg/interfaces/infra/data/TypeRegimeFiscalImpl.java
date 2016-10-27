@@ -1,14 +1,20 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.uniregctb.common.CollectionsUtils;
 
 public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = 8700466175917224034L;
+	private static final long serialVersionUID = -2020442250107554886L;
 
 	private final String code;
 	private final String libelle;
@@ -20,6 +26,7 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 	private final boolean defaultPourAPM;
 	private final Integer premierePeriodeFiscaleValidite;
 	private final Integer dernierePeriodeFiscaleValidite;
+	private final List<PlagePeriodesFiscales> exonerations;
 
 	public static TypeRegimeFiscal get(RegimeFiscal regime) {
 		if (regime == null) {
@@ -39,6 +46,16 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 		this.defaultPourPM = regime.isDefaultPM();
 		this.premierePeriodeFiscaleValidite = regime.getPeriodeFiscaleDebutValidite();
 		this.dernierePeriodeFiscaleValidite = regime.getPeriodeFiscaleFinValidite();
+
+		if (regime.getExoneration() != null && !regime.getExoneration().isEmpty()) {
+			exonerations = regime.getExoneration().stream()
+					.filter(Objects::nonNull)
+					.map(exo -> new PlagePeriodesFiscales(exo.getPeriodeFiscaleDebutValidite(), exo.getPeriodeFiscaleFinValidite()))
+					.collect(Collectors.toList());
+		}
+		else {
+			exonerations = Collections.emptyList();
+		}
 	}
 
 	@Override
@@ -82,6 +99,14 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
+	public boolean isExoneration(int periodeFiscale) {
+		return exonerations.stream()
+				.filter(exo -> exo.isDansPlage(periodeFiscale))
+				.findFirst()
+				.isPresent();
+	}
+
+	@Override
 	public Integer getPremierePeriodeFiscaleValidite() {
 		return premierePeriodeFiscaleValidite;
 	}
@@ -105,6 +130,10 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 				", defaultPourAPM=" + defaultPourAPM +
 				", premierePeriodeFiscaleValidite=" + premierePeriodeFiscaleValidite +
 				", dernierePeriodeFiscaleValidite=" + dernierePeriodeFiscaleValidite +
+				", exonerations=[" + CollectionsUtils.toString(exonerations,
+				                                               exo -> String.format("%d-%s", exo.getPeriodeDebut(), exo.getPeriodeFin() == null ? "?" : exo.getPeriodeFin()),
+				                                               ", ",
+				                                               StringUtils.EMPTY) + "]" +
 				'}';
 	}
 }

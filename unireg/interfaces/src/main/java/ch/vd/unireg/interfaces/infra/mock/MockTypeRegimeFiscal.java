@@ -4,16 +4,21 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.interfaces.infra.data.PlagePeriodesFiscales;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 public class MockTypeRegimeFiscal implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = -2759963025198461926L;
+	private static final long serialVersionUID = 8537806759331758822L;
 
 	private final String code;
 	private final Integer premierePF;
@@ -25,26 +30,29 @@ public class MockTypeRegimeFiscal implements TypeRegimeFiscal, Serializable {
 	private final boolean pourAPM;
 	private final boolean defaultPM;
 	private final boolean defaultAPM;
+	private final List<PlagePeriodesFiscales> exonerations;
 
-	public static final MockTypeRegimeFiscal ORDINAIRE_PM = new MockTypeRegimeFiscal("01", 1994, null, "01 - Ordinaire", true, true, true, false, true, false);
-	public static final MockTypeRegimeFiscal PARTICIPATIONS = new MockTypeRegimeFiscal("11", 1994, null, "11 - Participations", true, true, true, false, false, false);
-	public static final MockTypeRegimeFiscal PARTICIPATIONS_PART_IMPOSABLE = new MockTypeRegimeFiscal("12", 2001, null, "12 - Participations part imposable", true, true, true, false, false, false);
-	public static final MockTypeRegimeFiscal FONDS_PLACEMENT = new MockTypeRegimeFiscal("50", 1992, null, "50 - Fonds de placement", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal TRANSPORT_CONCESSIONNE = new MockTypeRegimeFiscal("60", 1994, null, "60 - Transport concessionné", true, true, true, false, false, false);
-	public static final MockTypeRegimeFiscal ORDINAIRE_APM = new MockTypeRegimeFiscal("70", 1995, null, "70 - Association/fondation", true, true, false, true, false, true);
-	public static final MockTypeRegimeFiscal EXO_90G = new MockTypeRegimeFiscal("109", 2003, null, "109 - PM exonérée 90g", true, true, true, false, false, false);
-	public static final MockTypeRegimeFiscal EXO_90CEFH = new MockTypeRegimeFiscal("190", 2003, null, "190 - PM exonérée 90cefh", true, true, true, false, false, false);
-	public static final MockTypeRegimeFiscal ART90G = new MockTypeRegimeFiscal("709", 1994, null, "709 - 90g", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90D = new MockTypeRegimeFiscal("715", 2001, null, "715 - 90d", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90H = new MockTypeRegimeFiscal("719", 1994, null, "719 - 90h", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90E = new MockTypeRegimeFiscal("729", 1994, null, "729 - 90e", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90F = new MockTypeRegimeFiscal("739", 2001, null, "739 - 90f", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90AI = new MockTypeRegimeFiscal("749", 2001, null, "749 - 90 a et i", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90B = new MockTypeRegimeFiscal("759", 2001, null, "759 - 90b", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90C = new MockTypeRegimeFiscal("769", 2001, null, "769 - 90c", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal ART90J = new MockTypeRegimeFiscal("779", 1992, null, "779 - 90j", true, true, false, true, false, false);
-	public static final MockTypeRegimeFiscal BASE_MIXTE_CANTON = new MockTypeRegimeFiscal("41C", 2001, null, "41C - Base mixte canton", true, true, true, false, false, false);
-	public static final MockTypeRegimeFiscal BASE_DOMICILE_ICC = new MockTypeRegimeFiscal("42C", 2001, null, "42C - Base domicile ICC", true, true, true, false, false, false);
+	public static final MockTypeRegimeFiscal ORDINAIRE_PM = new MockTypeRegimeFiscal("01", 1994, null, "Ordinaire", true, true, true, false, true, false);
+	public static final MockTypeRegimeFiscal PARTICIPATIONS = new MockTypeRegimeFiscal("11", 1994, null, "Société de participations", true, false, true, false, false, false);
+	public static final MockTypeRegimeFiscal PARTICIPATIONS_PART_IMPOSABLE = new MockTypeRegimeFiscal("12", 2001, null, "Société de participations, part imposable", true, false, true, false, false, false);
+	public static final MockTypeRegimeFiscal COMMUNAUTE_PERSONNES_ETRANGERES_PM = new MockTypeRegimeFiscal("13", 2016, null, "Communauté de personnes étrangères - assimilé PM", true, true, true, false, false, false);
+	public static final MockTypeRegimeFiscal FONDS_PLACEMENT = new MockTypeRegimeFiscal("50", 1992, null, "Placement collectif avec immeuble(s)", true, true, false, true, false, false);
+	public static final MockTypeRegimeFiscal TRANSPORT_CONCESSIONNE = new MockTypeRegimeFiscal("60", 1994, null, "Transport concessionné", true, true, true, false, false, false);
+	public static final MockTypeRegimeFiscal ORDINAIRE_APM = new MockTypeRegimeFiscal("70", 1995, null, "Ordinaire Assoc-Fond.", true, true, false, true, false, true);
+	public static final MockTypeRegimeFiscal COMMUNAUTE_PERSONNES_ETRANGERES_APM = new MockTypeRegimeFiscal("71", 2016, null, "Communauté de personnes étrangères - assimilé APM", true, true, false, true, false, false);
+	public static final MockTypeRegimeFiscal EXO_90G = new MockTypeRegimeFiscal("109", 2003, null, "PM avec exonération (Art. 90g LI)", true, true, true, false, false, false, new PlagePeriodesFiscales(2003, null));
+	public static final MockTypeRegimeFiscal EXO_90CEFH = new MockTypeRegimeFiscal("190", 2003, null, "PM avec exonération (Art. 90cefh LI)", true, true, true, false, false, false, new PlagePeriodesFiscales(2003, null));
+	public static final MockTypeRegimeFiscal ART90G = new MockTypeRegimeFiscal("709", 1994, null, "Pure utilité publique (Art. 90 let g LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(1994, null));
+	public static final MockTypeRegimeFiscal ART90D = new MockTypeRegimeFiscal("715", 2001, null, "Fondation ecclésiastique (Art. 90 let d LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(2001, null));
+	public static final MockTypeRegimeFiscal ART90H = new MockTypeRegimeFiscal("719", 1994, null, "Buts culturels (Art. 90 let h LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(1994, null));
+	public static final MockTypeRegimeFiscal ART90E = new MockTypeRegimeFiscal("729", 1994, null, "Institutions de prévoyance (Art. 90 let e LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(1994, null));
+	public static final MockTypeRegimeFiscal ART90F = new MockTypeRegimeFiscal("739", 2001, null, "Caisses assurances sociales (Art 90 let f LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(2001, null));
+	public static final MockTypeRegimeFiscal ART90AI = new MockTypeRegimeFiscal("749", 2001, null, "Confédération + Etats étrangers 90a et i", true, true, false, true, false, false, new PlagePeriodesFiscales(2001, null));
+	public static final MockTypeRegimeFiscal ART90B = new MockTypeRegimeFiscal("759", 2001, null, "Canton + établiss. (Art. 90 let b LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(2001, null));
+	public static final MockTypeRegimeFiscal ART90C = new MockTypeRegimeFiscal("769", 2001, null, "Communes + établiss. (Art. 90 let c LI 2001)", true, true, false, true, false, false, new PlagePeriodesFiscales(2001, null));
+	public static final MockTypeRegimeFiscal ART90J = new MockTypeRegimeFiscal("779", 1992, null, "Placement collectif exonéré (Art. 90j LI)", true, true, false, true, false, false, new PlagePeriodesFiscales(1992, null));
+	public static final MockTypeRegimeFiscal STE_BASE_MIXTE = new MockTypeRegimeFiscal("41C", 2001, null, "Société de base (mixte)", true, false, true, false, false, false);
+	public static final MockTypeRegimeFiscal STE_DOMICILE = new MockTypeRegimeFiscal("42C", 2001, null, "Société de domicile", true, false, true, false, false, false);
 
 	public static final MockTypeRegimeFiscal[] ALL = buildAllMocks();
 
@@ -67,40 +75,27 @@ public class MockTypeRegimeFiscal implements TypeRegimeFiscal, Serializable {
 		}
 
 		// petites vérifications de consistance
-		checkOneAndOnlyOne(mocks, new Predicate<MockTypeRegimeFiscal>() {
-			@Override
-			public boolean evaluate(MockTypeRegimeFiscal object) {
-				return object.isDefaultPourPM();
-			}
-		});
-		checkOneAndOnlyOne(mocks, new Predicate<MockTypeRegimeFiscal>() {
-			@Override
-			public boolean evaluate(MockTypeRegimeFiscal object) {
-				return object.isDefaultPourAPM();
-			}
-		});
+		checkOneAndOnlyOne(mocks, MockTypeRegimeFiscal::isDefaultPourPM);
+		checkOneAndOnlyOne(mocks, MockTypeRegimeFiscal::isDefaultPourAPM);
 
 		return mocks.toArray(new MockTypeRegimeFiscal[mocks.size()]);
 	}
 
 	private static <T extends TypeRegimeFiscal> void checkOneAndOnlyOne(List<T> elements, Predicate<? super T> predicate) {
-		boolean foundOne = false;
-		for (T element : elements) {
-			if (predicate.evaluate(element)) {
-				if (foundOne) {
-					// un deuxième ??
-					throw new IllegalArgumentException("Au moins deux éléments satisfont le prédicat...");
-				}
-				foundOne = true;
-			}
+		final long nbMatching = elements.stream()
+				.filter(predicate)
+				.count();
+		if (nbMatching > 1) {
+			// plusieurs ?
+			throw new IllegalArgumentException("Plus d'un élément (= " + nbMatching + ") satisfait au prédicat");
 		}
-		if (!foundOne) {
+		else if (nbMatching == 0) {
 			// aucun ??
 			throw new IllegalArgumentException("Aucun élément ne satisfait au prédicat...");
 		}
 	}
 
-	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, boolean pourPM, boolean pourAPM, boolean defaultPM, boolean defaultAPM) {
+	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, boolean pourPM, boolean pourAPM, boolean defaultPM, boolean defaultAPM, PlagePeriodesFiscales... exonerations) {
 		this.code = code;
 		this.premierePF = premierePF;
 		this.dernierePF = dernierePF;
@@ -111,6 +106,15 @@ public class MockTypeRegimeFiscal implements TypeRegimeFiscal, Serializable {
 		this.pourAPM = pourAPM;
 		this.defaultPM = defaultPM;
 		this.defaultAPM = defaultAPM;
+
+		if (exonerations == null || exonerations.length == 0) {
+			this.exonerations = Collections.emptyList();
+		}
+		else {
+			this.exonerations = Stream.of(exonerations)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -162,6 +166,14 @@ public class MockTypeRegimeFiscal implements TypeRegimeFiscal, Serializable {
 	@Override
 	public boolean isDefaultPourAPM() {
 		return defaultAPM;
+	}
+
+	@Override
+	public boolean isExoneration(int periodeFiscale) {
+		return exonerations.stream()
+				.filter(exo -> exo.isDansPlage(periodeFiscale))
+				.findFirst()
+				.isPresent();
 	}
 
 	@Override

@@ -54,4 +54,10 @@ public interface TypeRegimeFiscal {
 	 * @return <code>true</code> si le régime est le régime par défaut des APM
 	 */
 	boolean isDefaultPourAPM();
+
+	/**
+	 * @param periodeFiscale une période fiscale
+	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 */
+	boolean isExoneration(int periodeFiscale);
 }
