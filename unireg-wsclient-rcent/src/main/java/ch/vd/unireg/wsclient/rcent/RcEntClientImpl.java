@@ -5,12 +5,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
@@ -29,8 +30,10 @@ import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0004.v3.Errors;
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
+import ch.vd.evd0022.v3.NoticeRequestStatusCode;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.TypeOfNoticeRequest;
 import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
@@ -283,6 +286,20 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable RegDate value) {
 		if (value != null) {
 			wc.query(name, RegDateHelper.dateToDisplayString(value));
+		}
+	}
+
+	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable TypeOfNoticeRequest type) {
+		if (type != null) {
+			wc.query(name, type.value());
+		}
+	}
+
+	private static void addParam(@NotNull WebClient wc, @NotNull String name, @Nullable NoticeRequestStatusCode statuses[]) {
+		if (statuses != null) {
+			// [SIFISC-21627] RCEnt utilise des virgules pour séparer les types de statuts, au lieu de répéter le paramètre.
+			final String value = String.join(",", Arrays.stream(statuses).map(s -> s.value()).collect(Collectors.toList()));
+			wc.query(name, value);
 		}
 	}
 
