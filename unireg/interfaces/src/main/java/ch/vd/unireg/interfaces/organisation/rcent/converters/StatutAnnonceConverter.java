@@ -25,6 +25,8 @@ public class StatutAnnonceConverter extends BaseEnumConverter<StatutAnnonce, Not
 			return NoticeRequestStatusCode.REFUSE_IDE;
 		case REJET_RCENT:
 			return NoticeRequestStatusCode.REJET_RCENT;
+		case VALIDATION_SANS_ERREUR:
+			return NoticeRequestStatusCode.VALIDATION_SANS_ERREUR;
 		case ACCEPTE_REE:
 			return NoticeRequestStatusCode.ACCEPTE_REE;
 		case REFUSE_REE:

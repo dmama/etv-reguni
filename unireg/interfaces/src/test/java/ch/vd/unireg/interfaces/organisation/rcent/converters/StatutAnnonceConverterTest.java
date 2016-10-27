@@ -2,15 +2,15 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.junit.Test;
 
-import ch.vd.evd0022.v3.NoticeRequestStatusCode;
+import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 
 public class StatutAnnonceConverterTest {
 
-	private final NoticeRequestStatusCodeConverter converter = new NoticeRequestStatusCodeConverter();
+	private final StatutAnnonceConverter converter = new StatutAnnonceConverter();
 
 	@Test
 	public void tryAllValues() throws Exception {
-		EnumTestHelper.testAllValues(NoticeRequestStatusCode.class, converter);
+		EnumTestHelper.testAllValues(StatutAnnonce.class, converter);
 	}
 
 }
