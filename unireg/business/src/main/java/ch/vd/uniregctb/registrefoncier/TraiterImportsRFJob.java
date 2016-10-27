@@ -92,22 +92,27 @@ public class TraiterImportsRFJob extends JobDefinition {
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		final long eventId = getLongValue(params, ID);
-		final EvenementRFImport event = getEvent(eventId);
+		final long importId = getLongValue(params, ID);
+		final EvenementRFImport event = getEvent(importId);
 		if (event == null) {
-			throw new ObjectNotFoundException("L'événement RF immeuble avec l'id = [" + eventId + "] n'existe pas.");
+			throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + importId + "] n'existe pas.");
 		}
 
 		try (InputStream is = zipRaftStore.get(event.getFileUrl())) {
 
-			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(eventId, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+			// on détecte les changements et crée les mutations
+			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(importId, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 			parser.processFile(is, new DataRFBatcher(100, mutationsDetector));
 
-			updateEvent(eventId, EtatEvenementRF.TRAITE, null);
+			// on traite les mutations
+			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+			processor.processImport(importId);
+
+			updateEvent(importId, EtatEvenementRF.TRAITE, null);
 		}
 		catch (Exception e) {
-			LOGGER.warn("Erreur lors du processing de l'événement RF immeuble id = [" + eventId + "]", e);
-			updateEvent(eventId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(e));
+			LOGGER.warn("Erreur lors du processing de l'événement d'import RF avec l'id = [" + importId + "]", e);
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(e));
 		}
 
 	}
@@ -131,7 +136,7 @@ public class TraiterImportsRFJob extends JobDefinition {
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport event = evenementRFImportDAO.get(eventId);
 				if (event == null) {
-					throw new ObjectNotFoundException("L'événement RF immeuble avec l'id = [" + eventId + "] n'existe pas.");
+					throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + eventId + "] n'existe pas.");
 				}
 
 				event.setEtat(etat);

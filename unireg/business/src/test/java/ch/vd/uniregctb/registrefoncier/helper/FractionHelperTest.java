@@ -5,7 +5,9 @@ import org.junit.Test;
 import ch.vd.capitastra.grundstueck.Quote;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class FractionHelperTest {
@@ -14,7 +16,7 @@ public class FractionHelperTest {
 	 * Ce test vérifie que deux fractions identiques sont bien considérées comme égales.
 	 */
 	@Test
-	public void testFractionEquals() throws Exception {
+	public void testDataEquals() throws Exception {
 
 		final Fraction fraction = new Fraction();
 		fraction.setNumerateur(2);
@@ -24,14 +26,14 @@ public class FractionHelperTest {
 		quote.setAnteilZaehler(2L);
 		quote.setAnteilNenner(5L);
 
-		assertTrue(FractionHelper.fractionEquals(fraction, quote));
+		assertTrue(FractionHelper.dataEquals(fraction, quote));
 	}
 
 	/**
 	 * Ce test vérifie les différents cas de nullité possibles.
 	 */
 	@Test
-	public void testFractionEqualsNulles() throws Exception {
+	public void testDataEqualsNulles() throws Exception {
 
 		final Fraction fraction = new Fraction();
 		fraction.setNumerateur(2);
@@ -41,16 +43,16 @@ public class FractionHelperTest {
 		quote.setAnteilZaehler(2L);
 		quote.setAnteilNenner(5L);
 
-		assertFalse(FractionHelper.fractionEquals(null, quote));
-		assertFalse(FractionHelper.fractionEquals(fraction, null));
-		assertTrue(FractionHelper.fractionEquals(null, null));
+		assertFalse(FractionHelper.dataEquals(null, quote));
+		assertFalse(FractionHelper.dataEquals(fraction, null));
+		assertTrue(FractionHelper.dataEquals(null, null));
 	}
 
 	/**
 	 * Ce test vérifie que deux fractions avec des numérateurs différents sont bien considérées comme inégales.
 	 */
 	@Test
-	public void testFractionEqualsNumerateursDifferents() throws Exception {
+	public void testDataEqualsNumerateursDifferents() throws Exception {
 
 		final Fraction fraction = new Fraction();
 		fraction.setNumerateur(5);
@@ -60,14 +62,14 @@ public class FractionHelperTest {
 		quote.setAnteilZaehler(2L);
 		quote.setAnteilNenner(5L);
 
-		assertFalse(FractionHelper.fractionEquals(fraction, quote));
+		assertFalse(FractionHelper.dataEquals(fraction, quote));
 	}
 
 	/**
 	 * Ce test vérifie que deux fractions avec des numérateurs différents sont bien considérées comme inégales.
 	 */
 	@Test
-	public void testFractionEqualsDenominateursDifferents() throws Exception {
+	public void testDataEqualsDenominateursDifferents() throws Exception {
 
 		final Fraction fraction = new Fraction();
 		fraction.setNumerateur(2);
@@ -77,6 +79,12 @@ public class FractionHelperTest {
 		quote.setAnteilZaehler(2L);
 		quote.setAnteilNenner(5L);
 
-		assertFalse(FractionHelper.fractionEquals(fraction, quote));
+		assertFalse(FractionHelper.dataEquals(fraction, quote));
+	}
+
+	@Test
+	public void testGet() throws Exception {
+		assertNull(FractionHelper.get(null));
+		assertEquals(new Fraction(2, 5), FractionHelper.get(new Quote(2L, 5L, null, null)));
 	}
 }

@@ -101,7 +101,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.etat = etat;
 	}
 
-	@Column(name = "TYPE_ENTITE", length = 11)
+	@Column(name = "TYPE_ENTITE", length = 11, nullable = false)
 	@Enumerated(EnumType.STRING)
 	@Index(name="IDX_EV_RF_MUT_TYPE_ENTITE")
 	public TypeEntite getTypeEntite() {
@@ -112,7 +112,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.typeEntite = typeEntite;
 	}
 
-	@Column(name = "TYPE_MUTATION", length = 12)
+	@Column(name = "TYPE_MUTATION", length = 12, nullable = false)
 	@Enumerated(EnumType.STRING)
 	public TypeMutation getTypeMutation() {
 		return typeMutation;
@@ -122,7 +122,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.typeMutation = typeMutation;
 	}
 
-	@Column(name = "XML_CONTENT")
+	@Column(name = "XML_CONTENT", nullable = false)
 	@Lob
 	public Blob getXmlContent() {
 		return xmlContent;

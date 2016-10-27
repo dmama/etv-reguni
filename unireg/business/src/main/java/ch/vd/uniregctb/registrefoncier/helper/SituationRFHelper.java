@@ -12,25 +12,27 @@ public abstract class SituationRFHelper {
 	private SituationRFHelper() {
 	}
 
-	public static boolean situationEquals(@NotNull SituationRF situation, @NotNull GrundstueckNummer grundstueckNummer) {
+	public static boolean dataEquals(@NotNull SituationRF situation, @NotNull GrundstueckNummer grundstueckNummer) {
+		return dataEquals(situation, newSituationRF(grundstueckNummer));
+	}
 
-		if (grundstueckNummer.getBfsNr() != situation.getNoRfCommune()) {
-			// la commune diffère
-			return false;
-		}
+	public static boolean dataEquals(@NotNull SituationRF left, @NotNull SituationRF right) {
+		return left.getNoOfsCommune() == right.getNoOfsCommune() &&
+				left.getNoRfCommune() == right.getNoRfCommune() &&
+				left.getNoParcelle() == right.getNoParcelle() &&
+				Objects.equals(left.getIndex1(), right.getIndex1()) &&
+				Objects.equals(left.getIndex2(), right.getIndex2()) &&
+				Objects.equals(left.getIndex3(), right.getIndex3());
+	}
 
-		if (grundstueckNummer.getStammNr() != situation.getNoParcelle()) {
-			// le numéro de parcelle diffère
-			return false;
-		}
-
-		if (!Objects.equals(grundstueckNummer.getIndexNr1(), situation.getIndex1()) ||
-				!Objects.equals(grundstueckNummer.getIndexNr2(), situation.getIndex2()) ||
-				!Objects.equals(grundstueckNummer.getIndexNr3(), situation.getIndex3())) {
-			// un des indexes diffère
-			return false;
-		}
-
-		return true;
+	@NotNull
+	public static SituationRF newSituationRF(@NotNull GrundstueckNummer grundstueckNummer) {
+		final SituationRF situation = new SituationRF();
+		situation.setNoRfCommune(grundstueckNummer.getBfsNr());
+		situation.setNoParcelle(grundstueckNummer.getStammNr());
+		situation.setIndex1(grundstueckNummer.getIndexNr1());
+		situation.setIndex2(grundstueckNummer.getIndexNr2());
+		situation.setIndex3(grundstueckNummer.getIndexNr3());
+		return situation;
 	}
 }

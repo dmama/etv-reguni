@@ -12,28 +12,25 @@ public abstract class EstimationRFHelper {
 	private EstimationRFHelper() {
 	}
 
-	public static boolean estimationEquals(@NotNull EstimationRF estimation, @NotNull AmtlicheBewertung amtlicheBewertung) {
+	public static boolean dataEquals(@NotNull EstimationRF estimation, @NotNull AmtlicheBewertung amtlicheBewertung) {
+		return dataEquals(estimation, newEstimationRF(amtlicheBewertung));
+	}
 
-		if (!Objects.equals(amtlicheBewertung.getAmtlicherWert(), estimation.getMontant())) {
-			// le montant est différent
-			return false;
-		}
+	public static boolean dataEquals(@NotNull EstimationRF left, @NotNull EstimationRF right) {
+		return Objects.equals(left.getMontant(), right.getMontant()) &&
+				Objects.equals(left.getReference(), right.getReference()) &&
+				Objects.equals(left.getDateEstimation(), right.getDateEstimation()) &&
+				left.isEnRevision() == right.isEnRevision();
+	}
 
-		if (!Objects.equals(amtlicheBewertung.getProtokollNr(), estimation.getReference())) {
-			// la référence est différente
-			return false;
-		}
-
-		if (!Objects.equals(amtlicheBewertung.getProtokollDatum(), estimation.getDateEstimation())) {
-			// la date d'estimation est différente
-			return false;
-		}
-
-		if (!Objects.equals(amtlicheBewertung.isProtokollGueltig(), !estimation.isEnRevision())) {
-			// le flag en révision est différent
-			return false;
-		}
-
-		return true;
+	@NotNull
+	public static EstimationRF newEstimationRF(@NotNull AmtlicheBewertung amtlicheBewertung) {
+		final EstimationRF estimation = new EstimationRF();
+		estimation.setMontant(amtlicheBewertung.getAmtlicherWert());
+		estimation.setReference(amtlicheBewertung.getProtokollNr());
+		estimation.setDateEstimation(amtlicheBewertung.getProtokollDatum());
+		final Boolean gueltig = amtlicheBewertung.isProtokollGueltig();
+		estimation.setEnRevision(gueltig == null || !gueltig);
+		return estimation;
 	}
 }

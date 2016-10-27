@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.capitastra.grundstueck.Bergwerk;
 import ch.vd.capitastra.grundstueck.GewoehnlichesMiteigentum;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.Liegenschaft;
@@ -65,8 +66,8 @@ public abstract class ImmeubleRFHelper {
 			}
 		}
 		if (immeuble instanceof PartCoproprieteRF &&
-				!FractionHelper.fractionEquals(((PartCoproprieteRF) immeuble).getQuotePart(),
-				                               ((GewoehnlichesMiteigentum) grundstueck).getStammGrundstueck().getQuote())) {
+				!FractionHelper.dataEquals(((PartCoproprieteRF) immeuble).getQuotePart(),
+				                           ((GewoehnlichesMiteigentum) grundstueck).getStammGrundstueck().getQuote())) {
 			throw new IllegalArgumentException("La quote-part de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 		}
 		if (!immeuble.getEgrid().equals(grundstueck.getEGrid())) {
@@ -79,7 +80,7 @@ public abstract class ImmeubleRFHelper {
 				.collect(Collectors.toList()).get(0);
 
 		// on vérifie la situation courante
-		if (!SituationRFHelper.situationEquals(situation, grundstueck.getGrundstueckNummer())) {
+		if (!SituationRFHelper.dataEquals(situation, grundstueck.getGrundstueckNummer())) {
 			return false;
 		}
 
@@ -88,7 +89,7 @@ public abstract class ImmeubleRFHelper {
 				.collect(Collectors.toList()).get(0);
 
 		// on vérifie l'estimation fiscale courante
-		if (!EstimationRFHelper.estimationEquals(estimation, grundstueck.getAmtlicheBewertung())) {
+		if (!EstimationRFHelper.dataEquals(estimation, grundstueck.getAmtlicheBewertung())) {
 			return false;
 		}
 
@@ -102,4 +103,49 @@ public abstract class ImmeubleRFHelper {
 	public static ImmeubleRFKey newImmeubleRFKey(@NotNull Grundstueck immeuble) {
 		return new ImmeubleRFKey(immeuble.getGrundstueckID());
 	}
+
+	@NotNull
+	public static ImmeubleRF newImmeubleRF(@NotNull Grundstueck grundstueck) {
+
+		final ImmeubleRF immeuble;
+
+		// on crée l'immeuble qui va bien
+		if (grundstueck instanceof Bergwerk) {
+			immeuble = new MineRF();
+		}
+		else if (grundstueck instanceof GewoehnlichesMiteigentum) {
+			final GewoehnlichesMiteigentum gm = (GewoehnlichesMiteigentum) grundstueck;
+			final PartCoproprieteRF copro = new PartCoproprieteRF();
+			copro.setQuotePart(FractionHelper.get(gm.getStammGrundstueck().getQuote()));
+			immeuble = copro;
+		}
+		else if (grundstueck instanceof Liegenschaft) {
+			final Liegenschaft liegenschaft =(Liegenschaft) grundstueck;
+			final BienFondRF bienFond = new BienFondRF();
+			final String ligUnterartEnum = liegenschaft.getLigUnterartEnum();
+			bienFond.setCfa(ligUnterartEnum != null && ligUnterartEnum.contains("cfa"));
+			immeuble = bienFond;
+		}
+		else if (grundstueck instanceof SDR) {
+			immeuble = new DroitDistinctEtPermanentRF();
+		}
+		else if (grundstueck instanceof StockwerksEinheit) {
+			final StockwerksEinheit stockwerksEinheit = (StockwerksEinheit) grundstueck;
+			final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+			ppe.setQuotePart(FractionHelper.get(stockwerksEinheit.getStammGrundstueck().getQuote()));
+			immeuble = ppe;
+		}
+		else {
+			throw new IllegalArgumentException("Type de bâtiment inconnu = [" + grundstueck.getClass() + "]");
+		}
+
+		// on ajoute les données communes
+		immeuble.setIdRF(grundstueck.getGrundstueckID());
+		immeuble.setEgrid(grundstueck.getEGrid());
+		immeuble.addSituation(SituationRFHelper.newSituationRF(grundstueck.getGrundstueckNummer()));
+		immeuble.addEstimation(EstimationRFHelper.newEstimationRF(grundstueck.getAmtlicheBewertung()));
+
+		return immeuble;
+	}
+
 }

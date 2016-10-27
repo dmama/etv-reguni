@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Liegenschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<GrundstueckID>_1f109152381026b501381028a73d1852</GrundstueckID>
+	<EGrid>CH938391457759</EGrid>
+	<GrundstueckNummer VersionID="1f109152381026b501381028a74018e1">
+		<BfsNr>294</BfsNr>
+		<Gemeindenamen>Oron</Gemeindenamen>
+		<StammNr>5089</StammNr>
+	</GrundstueckNummer>
+	<IstKopie>false</IstKopie>
+	<AmtlicheBewertung VersionID="1f109152381026b50138102a464e3d9b">
+		<AmtlicherWert>260000</AmtlicherWert>
+		<Ertragswert>0</Ertragswert>
+		<ProtokollNr>RG93</ProtokollNr>
+		<ProtokollGueltig>true</ProtokollGueltig>
+		<MitEwKomponente>unbekannt</MitEwKomponente>
+	</AmtlicheBewertung>
+	<GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+	<BeschreibungUebergeben>true</BeschreibungUebergeben>
+	<EigentumUebergeben>true</EigentumUebergeben>
+	<PfandrechtUebergeben>true</PfandrechtUebergeben>
+	<DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+	<GrundlastUebergeben>true</GrundlastUebergeben>
+	<AnmerkungUebergeben>true</AnmerkungUebergeben>
+	<VormerkungUebergeben>true</VormerkungUebergeben>
+	<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+	<BereitZurVerifikation>false</BereitZurVerifikation>
+	<NutzungLandwirtschaft>nein</NutzungLandwirtschaft>
+	<NutzungWald>unbekannt</NutzungWald>
+	<NutzungEisenbahn>nein</NutzungEisenbahn>
+	<NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>
+	<GrundstueckFlaeche VersionID="1f109152381026b50138102b2cdc4b91" MasterID="1f109152381026b50138102b2cdc4b90">
+		<Flaeche>707</Flaeche>
+		<Qualitaet>
+			<TextDe>*numérisé</TextDe>
+			<TextFr>numérisé</TextFr>
+		</Qualitaet>
+		<ProjektMutation>false</ProjektMutation>
+		<GeometrischDarstellbar>false</GeometrischDarstellbar>
+		<UeberlagerndeRechte>false</UeberlagerndeRechte>
+	</GrundstueckFlaeche>
+</Liegenschaft>

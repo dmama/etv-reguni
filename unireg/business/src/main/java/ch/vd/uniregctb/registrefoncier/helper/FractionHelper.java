@@ -9,7 +9,7 @@ public abstract class FractionHelper {
 	private FractionHelper() {
 	}
 
-	public static boolean fractionEquals(@Nullable Fraction left, @Nullable Quote right) {
+	public static boolean dataEquals(@Nullable Fraction left, @Nullable Quote right) {
 		if (right == null && left == null) {
 			return true;
 		}
@@ -20,5 +20,13 @@ public abstract class FractionHelper {
 			return right.getAnteilZaehler().equals((long) left.getNumerateur()) &&
 					right.getAnteilNenner().equals((long) left.getDenominateur());
 		}
+	}
+
+	@Nullable
+	public static Fraction get(@Nullable Quote quote) {
+		if (quote == null) {
+			return null;
+		}
+		return new Fraction(quote.getAnteilZaehler().intValue(), quote.getAnteilNenner().intValue());
 	}
 }

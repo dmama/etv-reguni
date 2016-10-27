@@ -27,7 +27,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
-		                                          LiegenschaftElement.class, SDRElement.class, StockwerksElement.class,
+		                                          LiegenschaftElement.class, SdrElement.class, StockwerksEinheitElement.class,
 		                                          UnbekanntesGrundstueckElement.class);
 		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
 		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);

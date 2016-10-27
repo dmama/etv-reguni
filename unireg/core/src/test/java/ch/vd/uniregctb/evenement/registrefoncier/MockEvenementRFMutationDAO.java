@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 
@@ -69,6 +70,12 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public void evict(Object o) {
+		throw new NotImplementedException();
+	}
+
+	@NotNull
+	@Override
+	public List<Long> findIds(long importId, @NotNull EtatEvenementRF... etats) {
 		throw new NotImplementedException();
 	}
 }

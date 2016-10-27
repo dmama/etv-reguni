@@ -1,15 +1,30 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
+import ch.vd.capitastra.grundstueck.Bergwerk;
+import ch.vd.capitastra.grundstueck.GewoehnlichesMiteigentum;
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.capitastra.grundstueck.Liegenschaft;
+import ch.vd.capitastra.grundstueck.Quote;
+import ch.vd.capitastra.grundstueck.SDR;
+import ch.vd.capitastra.grundstueck.StammGrundstueck;
+import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.MineRF;
+import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -150,5 +165,246 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 
 		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
+	@Test
+	public void testNewImmeubleRFMine() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+		grundstueckNummer.setIndexNr2(37823);
+		grundstueckNummer.setIndexNr3(82);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(500000L);
+		amtlicheBewertung.setProtokollNr("2016");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final Bergwerk grundstueck = new Bergwerk();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(MineRF.class, immeuble.getClass());
+
+		final MineRF mine = (MineRF) immeuble;
+		assertEquals("382929efa218", mine.getIdRF());
+		assertEquals("CH282891891", mine.getEgrid());
+
+		final Set<SituationRF> situations = mine.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(109, situation.getNoParcelle());
+		assertEquals(Integer.valueOf(17), situation.getIndex1());
+		assertEquals(Integer.valueOf(37823), situation.getIndex2());
+		assertEquals(Integer.valueOf(82), situation.getIndex3());
+
+		final Set<EstimationRF> estimations = mine.getEstimations();
+		assertEquals(1, estimations.size());
+		final EstimationRF estimation = estimations.iterator().next();
+		assertEquals(500000L, estimation.getMontant());
+		assertEquals("2016", estimation.getReference());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertFalse(estimation.isEnRevision());
+	}
+
+	@Test
+	public void testNewImmeubleRFCopropriete() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+		grundstueckNummer.setIndexNr2(37823);
+		grundstueckNummer.setIndexNr3(82);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(500000L);
+		amtlicheBewertung.setProtokollNr("2016");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final GewoehnlichesMiteigentum grundstueck = new GewoehnlichesMiteigentum();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(1L, 3L, null, null), null, null));
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(PartCoproprieteRF.class, immeuble.getClass());
+
+		final PartCoproprieteRF copro = (PartCoproprieteRF) immeuble;
+		assertEquals("382929efa218", copro.getIdRF());
+		assertEquals("CH282891891", copro.getEgrid());
+		assertEquals(new Fraction(1, 3), copro.getQuotePart());
+
+		final Set<SituationRF> situations = copro.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(109, situation.getNoParcelle());
+		assertEquals(Integer.valueOf(17), situation.getIndex1());
+		assertEquals(Integer.valueOf(37823), situation.getIndex2());
+		assertEquals(Integer.valueOf(82), situation.getIndex3());
+
+		final Set<EstimationRF> estimations = copro.getEstimations();
+		assertEquals(1, estimations.size());
+		final EstimationRF estimation = estimations.iterator().next();
+		assertEquals(500000L, estimation.getMontant());
+		assertEquals("2016", estimation.getReference());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertFalse(estimation.isEnRevision());
+	}
+
+	@Test
+	public void testNewImmeubleRFBienFond() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+		grundstueckNummer.setIndexNr2(37823);
+		grundstueckNummer.setIndexNr3(82);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(500000L);
+		amtlicheBewertung.setProtokollNr("2016");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setLigUnterartEnum("cfa");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(BienFondRF.class, immeuble.getClass());
+
+		final BienFondRF bienFond = (BienFondRF) immeuble;
+		assertEquals("382929efa218", bienFond.getIdRF());
+		assertTrue(bienFond.isCfa());
+		assertEquals("CH282891891", bienFond.getEgrid());
+
+		final Set<SituationRF> situations = bienFond.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(109, situation.getNoParcelle());
+		assertEquals(Integer.valueOf(17), situation.getIndex1());
+		assertEquals(Integer.valueOf(37823), situation.getIndex2());
+		assertEquals(Integer.valueOf(82), situation.getIndex3());
+
+		final Set<EstimationRF> estimations = bienFond.getEstimations();
+		assertEquals(1, estimations.size());
+		final EstimationRF estimation = estimations.iterator().next();
+		assertEquals(500000L, estimation.getMontant());
+		assertEquals("2016", estimation.getReference());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertFalse(estimation.isEnRevision());
+	}
+
+	@Test
+	public void testNewImmeubleRFDDP() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+		grundstueckNummer.setIndexNr2(37823);
+		grundstueckNummer.setIndexNr3(82);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(500000L);
+		amtlicheBewertung.setProtokollNr("2016");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final SDR grundstueck = new SDR();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(DroitDistinctEtPermanentRF.class, immeuble.getClass());
+
+		final DroitDistinctEtPermanentRF ddp = (DroitDistinctEtPermanentRF) immeuble;
+		assertEquals("382929efa218", ddp.getIdRF());
+		assertEquals("CH282891891", ddp.getEgrid());
+
+		final Set<SituationRF> situations = ddp.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(109, situation.getNoParcelle());
+		assertEquals(Integer.valueOf(17), situation.getIndex1());
+		assertEquals(Integer.valueOf(37823), situation.getIndex2());
+		assertEquals(Integer.valueOf(82), situation.getIndex3());
+
+		final Set<EstimationRF> estimations = ddp.getEstimations();
+		assertEquals(1, estimations.size());
+		final EstimationRF estimation = estimations.iterator().next();
+		assertEquals(500000L, estimation.getMontant());
+		assertEquals("2016", estimation.getReference());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertFalse(estimation.isEnRevision());
+	}
+
+	@Test
+	public void testNewImmeubleRFPPE() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+		grundstueckNummer.setIndexNr2(37823);
+		grundstueckNummer.setIndexNr3(82);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(500000L);
+		amtlicheBewertung.setProtokollNr("2016");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final StockwerksEinheit grundstueck = new StockwerksEinheit();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(1L, 3L, null, null), null, null));
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(ProprieteParEtageRF.class, immeuble.getClass());
+
+		final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
+		assertEquals("382929efa218", ppe.getIdRF());
+		assertEquals("CH282891891", ppe.getEgrid());
+		assertEquals(new Fraction(1, 3), ppe.getQuotePart());
+
+		final Set<SituationRF> situations = ppe.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(109, situation.getNoParcelle());
+		assertEquals(Integer.valueOf(17), situation.getIndex1());
+		assertEquals(Integer.valueOf(37823), situation.getIndex2());
+		assertEquals(Integer.valueOf(82), situation.getIndex3());
+
+		final Set<EstimationRF> estimations = ppe.getEstimations();
+		assertEquals(1, estimations.size());
+		final EstimationRF estimation = estimations.iterator().next();
+		assertEquals(500000L, estimation.getMontant());
+		assertEquals("2016", estimation.getReference());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertFalse(estimation.isEnRevision());
 	}
 }
