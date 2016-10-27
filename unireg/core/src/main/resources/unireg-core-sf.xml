@@ -260,6 +260,8 @@
 		<value>ch.vd.uniregctb.tiers.AllegementFiscalCommune</value>
 		<value>ch.vd.uniregctb.tiers.AdministrationEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.SocieteDirection</value>
+		<value>ch.vd.uniregctb.etiquette.Etiquette</value>
+		<value>ch.vd.uniregctb.etiquette.EtiquetteTiers</value>
 	</util:list>
 
 	<!-- La session factory -->

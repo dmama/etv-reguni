@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -17,7 +18,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -46,6 +50,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 			results.merge(validateDeclarations(tiers));
 			results.merge(validateRapports(tiers));
 			results.merge(validateRemarques(tiers));
+			results.merge(validateEtiquettes(tiers));
 		}
 
 		return results;
@@ -79,28 +84,57 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 
 		if (sujets != null) {
 			// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
-			checkNonOverlap(sujets, results, "représentation conventionnelle", object -> object instanceof RepresentationConventionnelle);
+			checkNonOverlap(sujets, r -> r instanceof RepresentationConventionnelle, results, "rapports de type 'représentation conventionnelle'");
 
 			// de même on s'assure que les établissements principaux ne sont pas plusieurs à un moment donné
-			checkNonOverlap(sujets, results, "activité économique principale", object -> object instanceof ActiviteEconomique && ((ActiviteEconomique) object).isPrincipal());
+			checkNonOverlap(sujets, r -> r instanceof ActiviteEconomique && ((ActiviteEconomique) r).isPrincipal(), results, "rapports de type 'activité économique principale'");
 		}
 
 		return results;
 	}
 
-	private static void checkNonOverlap(Set<RapportEntreTiers> rapports, ValidationResults results, String descripion, Predicate<RapportEntreTiers> filtre) {
-		if (rapports != null && rapports.size() > 1) {
-			final List<RapportEntreTiers> concernes = rapports.stream()
-					.filter(r -> !r.isAnnule())
-					.filter(filtre)
+	protected static <T extends DateRange & Annulable> void checkNonOverlap(Collection<T> data,
+	                                                                        Predicate<? super T> filter,
+	                                                                        ValidationResults results,
+	                                                                        String description) {
+		if (data != null && data.size() > 1) {
+			// filtrage des éléments intéressants
+			final List<T> concernes = data.stream()
+					.filter(d -> !d.isAnnule())
+					.filter(filter)
 					.collect(Collectors.toList());
 
-			final List<DateRange> intersections = DateRangeHelper.overlaps(concernes);
-			if (intersections != null) {
-				// génération des messages d'erreur
-				for (DateRange range : intersections) {
-					results.addError(String.format("La période %s est couverte par plusieurs rapports de type '%s'.", DateRangeHelper.toDisplayString(range), descripion));
+			// vérification des overlaps
+			if (concernes.size() > 1) {
+				final List<DateRange> intersections = DateRangeHelper.overlaps(concernes);
+				if (intersections != null) {
+					intersections.stream()
+							.map(range -> String.format("La période %s est couverte par plusieurs %s.", DateRangeHelper.toDisplayString(range), description))
+							.forEach(results::addError);
 				}
+			}
+		}
+	}
+
+	protected static <T extends DateRange & Annulable, K> void checkNonOverlapByGoup(Collection<T> data,
+	                                                                                 Predicate<? super T> filter,
+	                                                                                 Function<? super T, K> groupKeyExtractor,
+	                                                                                 ValidationResults results,
+	                                                                                 String description,
+	                                                                                 StringRenderer<? super K> keyRenderer) {
+		if (data != null && data.size() > 1) {
+			// on construit d'abord une map des valeurs regroupées par la clé du groupe
+			final Map<K, List<T>> groups = data.stream()
+					.filter(d -> !d.isAnnule())
+					.filter(filter)
+					.collect(Collectors.toMap(groupKeyExtractor,
+					                          Collections::singletonList,
+					                          (c1, c2) -> Stream.concat(c1.stream(), c2.stream()).collect(Collectors.toList())));
+
+			// puis on vérifie pour chaque groupe indépendemment
+			for (Map.Entry<K, List<T>> entry : groups.entrySet()) {
+				final String groupDescription = String.format("%s de type '%s'", description, keyRenderer.toString(entry.getKey()));
+				checkNonOverlap(entry.getValue(), x -> true, results, groupDescription);
 			}
 		}
 	}
@@ -113,45 +147,20 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		final List<Declaration> decls = tiers.getDeclarationsTriees(Declaration.class, false);
 		if (decls != null && !decls.isEmpty()) {
 
+			// validation des déclarations pour elles-mêmes
+			decls.stream()
+					.map(validationService::validate)
+					.forEach(results::merge);
+
 			// on sépare d'abord les déclarations par type (parce que des déclarations de types identitiques
 			// ne doivent pas se chevaucher, mais rien n'est dit pour les déclarations de types différents,
 			// cf. la réponse à la question "que se passe-t-il au passage de SNC à SA ?", par exemple)
-			final Map<Class<? extends Declaration>, List<Declaration>> parType = new HashMap<>();
-			for (Declaration declaration : decls) {
-				final List<Declaration> liste;
-				final Class<? extends Declaration> declarationClass = declaration.getClass();
-				if (parType.containsKey(declarationClass)) {
-					liste = parType.get(declarationClass);
-				}
-				else {
-					liste = new LinkedList<>();
-					parType.put(declarationClass, liste);
-				}
-				liste.add(declaration);
-			}
-
-			// chaque type de déclaration doit être contrôlé séparément
-			for (Map.Entry<Class<? extends Declaration>, List<Declaration>> entry : parType.entrySet()) {
-
-				final List<Declaration> declarations = entry.getValue();
-
-				// on valide d'abord toutes les déclarations pour elles-mêmes
-				for (Declaration declaration : declarations) {
-					results.merge(validationService.validate(declaration));
-				}
-
-				// puis on contrôle les non-chevauchements
-				if (declarations.size() > 1) {
-					final List<DateRange> overlaps = DateRangeHelper.overlaps(declarations);
-					if (overlaps != null && !overlaps.isEmpty()) {
-						for (DateRange range : overlaps) {
-							results.addError(String.format("La période %s est couverte par plusieurs déclarations non-annulées de type %s.",
-							                               DateRangeHelper.toDisplayString(range),
-							                               entry.getKey().getSimpleName()));
-						}
-					}
-				}
-			}
+			checkNonOverlapByGoup(decls,
+			                      x -> true,
+			                      Object::getClass,
+			                      results,
+			                      "déclarations non-annulées",
+			                      Class::getSimpleName);
 		}
 
 		return results;
@@ -242,4 +251,27 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		return vr;
 	}
 
+	private ValidationResults validateEtiquettes(T tiers) {
+		final ValidationResults vr = new ValidationResults();
+		final Set<EtiquetteTiers> etiquettes = tiers.getEtiquettes();
+		if (etiquettes != null && !etiquettes.isEmpty()) {
+
+			// chaque étiquette pour elle-même
+			final ValidationService validationService = getValidationService();
+			etiquettes.stream()
+					.map(validationService::validate)
+					.forEach(vr::merge);
+
+			// puis les chevauchements (par code d'étiquette)
+			if (!vr.hasErrors()) {
+				checkNonOverlapByGoup(etiquettes,
+				                      x -> true,
+				                      etiq -> etiq.getEtiquette().getCode(),
+				                      vr,
+				                      "étiquettes non-annulées",
+				                      StringRenderer.DEFAULT);
+			}
+		}
+		return vr;
+	}
 }

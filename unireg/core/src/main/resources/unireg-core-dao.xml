@@ -97,6 +97,9 @@
 
 	<bean id="domicileEtablissementDAO" class="ch.vd.uniregctb.tiers.dao.DomicileEtablissementDAOImpl" parent="hibernateDao"/>
 
+	<bean id="etiquetteDAO" class="ch.vd.uniregctb.etiquette.EtiquetteDAOImpl" parent="hibernateDao"/>
+	<bean id="etiquetteTiersDAO" class="ch.vd.uniregctb.etiquette.EtiquetteTiersDAOImpl" parent="hibernateDao"/>
+
 	<bean id="transactionHelper" class="ch.vd.uniregctb.transaction.TransactionHelper">
 		<constructor-arg ref="transactionManager"/>
 	</bean>

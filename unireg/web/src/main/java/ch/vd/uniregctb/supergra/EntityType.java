@@ -21,6 +21,8 @@ public enum EntityType {
 	ModeleDocument(ch.vd.uniregctb.declaration.ModeleDocument.class, "modèle de document", "le modèle de document", "du modèle de document"),
 	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale", "la période fiscale", "de la période fiscale"),
 	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble", "l'immeuble", "de l'immeuble"),
+	EtiquetteTiers(ch.vd.uniregctb.etiquette.EtiquetteTiers.class, "étiquette", "l'étiquette", "de l'étiquette"),
+	Etiquette(ch.vd.uniregctb.etiquette.Etiquette.class, "étiquette", "l'étiquette", "de l'étiquette"),
 	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque"),
 	MouvementDossier(ch.vd.uniregctb.mouvement.MouvementDossier.class, "mouvement de dossier", "le mouvement de dossier", "du mouvement de dossier"),
 	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI"),

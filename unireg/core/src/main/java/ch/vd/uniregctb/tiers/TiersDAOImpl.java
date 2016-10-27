@@ -40,6 +40,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
@@ -282,21 +283,12 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les identifications des personnes en vrac
 			final List<IdentificationPersonne> identifications = queryObjectsByIds("from IdentificationPersonne as a where a.personnePhysique.id in (:ids)", ids, session);
 			
-			final TiersIdGetter<IdentificationPersonne> getter = new TiersIdGetter<IdentificationPersonne>() {
-				@Override
-				public Long getTiersId(IdentificationPersonne entity) {
-					return entity.getPersonnePhysique().getId();
+			final TiersIdGetter<IdentificationPersonne> getter = entity -> entity.getPersonnePhysique().getId();
+			final EntitySetSetter<IdentificationPersonne> setter = (t, set) -> {
+				if (t instanceof PersonnePhysique) {
+					((PersonnePhysique) t).setIdentificationsPersonnesForGetBatch(set);
 				}
 			};
-			
-			final EntitySetSetter<IdentificationPersonne> setter = new EntitySetSetter<IdentificationPersonne>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<IdentificationPersonne> set) {
-					if (tiers instanceof PersonnePhysique) {
-						((PersonnePhysique) tiers).setIdentificationsPersonnesForGetBatch(set);
-					}
-				}
-			}; 
 
 			// on associe les identifications de personnes avec les tiers à la main
 			associate(session, identifications, tiers, getter, setter);
@@ -306,19 +298,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les identifications d'entreprises en vrac
 			final List<IdentificationEntreprise> identifications = queryObjectsByIds("from IdentificationEntreprise as a where a.ctb.id in (:ids)", ids, session);
 
-			final TiersIdGetter<IdentificationEntreprise> getter = new TiersIdGetter<IdentificationEntreprise>() {
-				@Override
-				public Long getTiersId(IdentificationEntreprise entity) {
-					return entity.getCtb().getId();
-				}
-			};
-
-			final EntitySetSetter<IdentificationEntreprise> setter = new EntitySetSetter<IdentificationEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<IdentificationEntreprise> set) {
-					if (tiers instanceof Contribuable) {
-						((Contribuable) tiers).setIdentificationsEntrepriseForGetBatch(set);
-					}
+			final TiersIdGetter<IdentificationEntreprise> getter = entity -> entity.getCtb().getId();
+			final EntitySetSetter<IdentificationEntreprise> setter = (t, set) -> {
+				if (t instanceof Contribuable) {
+					((Contribuable) t).setIdentificationsEntrepriseForGetBatch(set);
 				}
 			};
 
@@ -331,19 +314,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge toutes les adresses en vrac
 			final List<AdresseTiers> adresses = queryObjectsByIds("from AdresseTiers as a where a.tiers.id in (:ids)", ids, session);
 
-			final TiersIdGetter<AdresseTiers> getter = new TiersIdGetter<AdresseTiers>() {
-				@Override
-				public Long getTiersId(AdresseTiers entity) {
-					return entity.getTiers().getId();
-				}
-			};
-
-			final EntitySetSetter<AdresseTiers> setter = new EntitySetSetter<AdresseTiers>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<AdresseTiers> set) {
-					tiers.setAdressesTiers(set);
-				}
-			};
+			final TiersIdGetter<AdresseTiers> getter = entity -> entity.getTiers().getId();
+			final EntitySetSetter<AdresseTiers> setter = Tiers::setAdressesTiers;
 
 			// on associe les adresses avec les tiers à la main
 			associate(session, adresses, tiers, getter, setter);
@@ -358,19 +330,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge toutes les declarations en vrac
 			final List<Declaration> declarations = queryObjectsByIds("from Declaration as d where d.tiers.id in (:ids)", ids, session);
 
-			final TiersIdGetter<Declaration> getter = new TiersIdGetter<Declaration>() {
-				@Override
-				public Long getTiersId(Declaration entity) {
-					return entity.getTiers().getId();
-				}
-			};
-
-			final EntitySetSetter<Declaration> setter = new EntitySetSetter<Declaration>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<Declaration> set) {
-					tiers.setDeclarations(set);
-				}
-			};
+			final TiersIdGetter<Declaration> getter = entity -> entity.getTiers().getId();
+			final EntitySetSetter<Declaration> setter = Tiers::setDeclarations;
 
 			// on associe les déclarations avec les tiers à la main
 			associate(session, declarations, tiers, getter, setter);
@@ -380,19 +341,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge tous les fors fiscaux en vrac
 			final List<ForFiscal> fors = queryObjectsByIds("from ForFiscal as f where f.tiers.id in (:ids)", ids, session);
 
-			final TiersIdGetter<ForFiscal> getter = new TiersIdGetter<ForFiscal>() {
-				@Override
-				public Long getTiersId(ForFiscal entity) {
-					return entity.getTiers().getId();
-				}
-			};
-
-			final EntitySetSetter<ForFiscal> setter = new EntitySetSetter<ForFiscal>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<ForFiscal> set) {
-					tiers.setForsFiscaux(set);
-				}
-			};
+			final TiersIdGetter<ForFiscal> getter = entity -> entity.getTiers().getId();
+			final EntitySetSetter<ForFiscal> setter = Tiers::setForsFiscaux;
 
 			// on associe les fors fiscaux avec les tiers à la main
 			associate(session, fors, tiers, getter, setter);
@@ -403,19 +353,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			{
 				final List<RapportEntreTiers> rapports = queryObjectsByIds("from RapportEntreTiers as r where r.sujetId in (:ids)", ids, session);
 
-				final TiersIdGetter<RapportEntreTiers> getter = new TiersIdGetter<RapportEntreTiers>() {
-					@Override
-					public Long getTiersId(RapportEntreTiers entity) {
-						return entity.getSujetId();
-					}
-				};
-
-				final EntitySetSetter<RapportEntreTiers> setter = new EntitySetSetter<RapportEntreTiers>() {
-					@Override
-					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
-						tiers.setRapportsSujet(set);
-					}
-				};
+				final TiersIdGetter<RapportEntreTiers> getter = RapportEntreTiers::getSujetId;
+				final EntitySetSetter<RapportEntreTiers> setter = Tiers::setRapportsSujet;
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, getter, setter);
@@ -423,19 +362,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			{
 				final List<RapportEntreTiers> rapports = queryObjectsByIds("from RapportEntreTiers as r where r.objetId in (:ids)", ids, session);
 
-				final TiersIdGetter<RapportEntreTiers> getter = new TiersIdGetter<RapportEntreTiers>() {
-					@Override
-					public Long getTiersId(RapportEntreTiers entity) {
-						return entity.getObjetId();
-					}
-				};
-
-				final EntitySetSetter<RapportEntreTiers> setter = new EntitySetSetter<RapportEntreTiers>() {
-					@Override
-					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
-						tiers.setRapportsObjet(set);
-					}
-				};
+				final TiersIdGetter<RapportEntreTiers> getter = RapportEntreTiers::getObjetId;
+				final EntitySetSetter<RapportEntreTiers> setter = Tiers::setRapportsObjet;
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, getter, setter);
@@ -447,19 +375,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge toutes les situations de famille en vrac
 			final List<SituationFamille> situations = queryObjectsByIds("from SituationFamille as r where r.contribuable.id in (:ids)", ids, session);
 
-			final TiersIdGetter<SituationFamille> getter = new TiersIdGetter<SituationFamille>() {
-				@Override
-				public Long getTiersId(SituationFamille entity) {
-					return entity.getContribuable().getId();
-				}
-			};
-
-			final EntitySetSetter<SituationFamille> setter = new EntitySetSetter<SituationFamille>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<SituationFamille> set) {
-					if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-						((ContribuableImpositionPersonnesPhysiques) tiers).setSituationsFamille(set);
-					}
+			final TiersIdGetter<SituationFamille> getter = entity -> entity.getContribuable().getId();
+			final EntitySetSetter<SituationFamille> setter = (t, set) -> {
+				if (t instanceof ContribuableImpositionPersonnesPhysiques) {
+					((ContribuableImpositionPersonnesPhysiques) t).setSituationsFamille(set);
 				}
 			};
 
@@ -472,19 +391,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge toutes les périodicités en vrac
 			final List<Periodicite> periodicites = queryObjectsByIds("from Periodicite as p where p.debiteur.id in (:ids)", ids, session);
 
-			final TiersIdGetter<Periodicite> getter = new TiersIdGetter<Periodicite>() {
-				@Override
-				public Long getTiersId(Periodicite entity) {
-					return entity.getDebiteur().getId();
-				}
-			};
-
-			final EntitySetSetter<Periodicite> setter = new EntitySetSetter<Periodicite>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<Periodicite> set) {
-					if (tiers instanceof DebiteurPrestationImposable) {
-						((DebiteurPrestationImposable) tiers).setPeriodicites(set);
-					}
+			final TiersIdGetter<Periodicite> getter = entity -> entity.getDebiteur().getId();
+			final EntitySetSetter<Periodicite> setter = (t, set) -> {
+				if (t instanceof DebiteurPrestationImposable) {
+					((DebiteurPrestationImposable) t).setPeriodicites(set);
 				}
 			};
 
@@ -496,19 +406,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge tous les immeubles en vrac
 			final List<Immeuble> immeubles = queryObjectsByIds("from Immeuble as i where i.contribuable.id in (:ids)", ids, session);
 
-			final TiersIdGetter<Immeuble> getter = new TiersIdGetter<Immeuble>() {
-				@Override
-				public Long getTiersId(Immeuble entity) {
-					return entity.getContribuable().getId();
-				}
-			};
-
-			final EntitySetSetter<Immeuble> setter = new EntitySetSetter<Immeuble>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<Immeuble> set) {
-					if (tiers instanceof Contribuable) {
-						((Contribuable) tiers).setImmeubles(set);
-					}
+			final TiersIdGetter<Immeuble> getter = entity -> entity.getContribuable().getId();
+			final EntitySetSetter<Immeuble> setter = (t, set) -> {
+				if (t instanceof Contribuable) {
+					((Contribuable) t).setImmeubles(set);
 				}
 			};
 
@@ -520,19 +421,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les allègements fiscaux en vrac
 			final List<AllegementFiscal> allegements = queryObjectsByIds("from AllegementFiscal as af where af.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<AllegementFiscal> getter = new TiersIdGetter<AllegementFiscal>() {
-				@Override
-				public Long getTiersId(AllegementFiscal entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<AllegementFiscal> setter = new EntitySetSetter<AllegementFiscal>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<AllegementFiscal> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setAllegementsFiscaux(set);
-					}
+			final TiersIdGetter<AllegementFiscal> getter = entity -> entity.getEntreprise().getId();
+			final EntitySetSetter<AllegementFiscal> setter = (t, set) -> {
+				if (t instanceof Entreprise) {
+					((Entreprise) t).setAllegementsFiscaux(set);
 				}
 			};
 
@@ -544,19 +436,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les états fiscaux en vrac
 			final List<EtatEntreprise> etats = queryObjectsByIds("from EtatEntreprise as ee where ee.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<EtatEntreprise> getter = new TiersIdGetter<EtatEntreprise>() {
-				@Override
-				public Long getTiersId(EtatEntreprise entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<EtatEntreprise> setter = new EntitySetSetter<EtatEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<EtatEntreprise> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setEtats(set);
-					}
+			final TiersIdGetter<EtatEntreprise> getter = entity -> entity.getEntreprise().getId();
+			final EntitySetSetter<EtatEntreprise> setter = (t, set) -> {
+				if (t instanceof Entreprise) {
+					((Entreprise) t).setEtats(set);
 				}
 			};
 
@@ -568,19 +451,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les régimes fiscaux en vrac
 			final List<RegimeFiscal> regimes = queryObjectsByIds("from RegimeFiscal as rf where rf.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<RegimeFiscal> getter = new TiersIdGetter<RegimeFiscal>() {
-				@Override
-				public Long getTiersId(RegimeFiscal entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<RegimeFiscal> setter = new EntitySetSetter<RegimeFiscal>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<RegimeFiscal> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setRegimesFiscaux(set);
-					}
+			final TiersIdGetter<RegimeFiscal> getter = entity -> entity.getEntreprise().getId();
+			final EntitySetSetter<RegimeFiscal> setter = (t, set) -> {
+				if (t instanceof Entreprise) {
+					((Entreprise) t).setRegimesFiscaux(set);
 				}
 			};
 
@@ -592,19 +466,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les données civiles en vrac
 			final List<DonneeCivileEntreprise> donnees = queryObjectsByIds("from DonneeCivileEntreprise as dce where dce.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<DonneeCivileEntreprise> getter = new TiersIdGetter<DonneeCivileEntreprise>() {
-				@Override
-				public Long getTiersId(DonneeCivileEntreprise entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<DonneeCivileEntreprise> setter = new EntitySetSetter<DonneeCivileEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<DonneeCivileEntreprise> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setDonneesCiviles(set);
-					}
+			final TiersIdGetter<DonneeCivileEntreprise> getter = entity -> entity.getEntreprise().getId();
+			final EntitySetSetter<DonneeCivileEntreprise> setter = (t, set) -> {
+				if (t instanceof Entreprise) {
+					((Entreprise) t).setDonneesCiviles(set);
 				}
 			};
 
@@ -616,19 +481,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les bouclements en vrac
 			final List<Bouclement> bouclements = queryObjectsByIds("from Bouclement as b where b.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<Bouclement> getter = new TiersIdGetter<Bouclement>() {
-				@Override
-				public Long getTiersId(Bouclement entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<Bouclement> setter = new EntitySetSetter<Bouclement>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<Bouclement> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setBouclements(set);
-					}
+			final TiersIdGetter<Bouclement> getter = entity -> entity.getEntreprise().getId();
+			final EntitySetSetter<Bouclement> setter = (t, set) -> {
+				if (t instanceof Entreprise) {
+					((Entreprise) t).setBouclements(set);
 				}
 			};
 
@@ -640,19 +496,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les flags en vrac
 			final List<FlagEntreprise> flags = queryObjectsByIds("from FlagEntreprise as fe where fe.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<FlagEntreprise> getter = new TiersIdGetter<FlagEntreprise>() {
-				@Override
-				public Long getTiersId(FlagEntreprise entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<FlagEntreprise> setter = new EntitySetSetter<FlagEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<FlagEntreprise> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setFlags(set);
-					}
+			final TiersIdGetter<FlagEntreprise> getter = entity -> entity.getEntreprise().getId();
+			final EntitySetSetter<FlagEntreprise> setter = (t, set) -> {
+				if (t instanceof Entreprise) {
+					((Entreprise) t).setFlags(set);
 				}
 			};
 
@@ -665,24 +512,27 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on charge les adresses mandataires en vrac
 			final List<AdresseMandataire> adresses = queryObjectsByIds("from AdresseMandataire as am where am.mandant.id in (:ids)", ids, session);
 
-			final TiersIdGetter<AdresseMandataire> getter = new TiersIdGetter<AdresseMandataire>() {
-				@Override
-				public Long getTiersId(AdresseMandataire entity) {
-					return entity.getMandant().getId();
-				}
-			};
-
-			final EntitySetSetter<AdresseMandataire> setter = new EntitySetSetter<AdresseMandataire>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<AdresseMandataire> set) {
-					if (tiers instanceof Contribuable) {
-						((Contribuable) tiers).setAdressesMandataires(set);
-					}
+			final TiersIdGetter<AdresseMandataire> getter = entity -> entity.getMandant().getId();
+			final EntitySetSetter<AdresseMandataire> setter = (t, set) -> {
+				if (t instanceof Contribuable) {
+					((Contribuable) t).setAdressesMandataires(set);
 				}
 			};
 
 			// associations manuelles
 			associate(session, adresses, tiers, getter, setter);
+		}
+
+		// les étiquettes
+		if (parts != null && parts.contains(Parts.ETIQUETTES)) {
+			// on charge les étiquettes tiers en vrac
+			final List<EtiquetteTiers> etiquettes = queryObjectsByIds("from EtiquetteTiers as etiq where etiq.tiers.id in (:ids)", ids, session);
+
+			final TiersIdGetter<EtiquetteTiers> getter = entity -> entity.getTiers().getId();
+			final EntitySetSetter<EtiquetteTiers> setter = Tiers::setEtiquettes;
+
+			// associations manuelles
+			associate(session, etiquettes, tiers, getter, setter);
 		}
 
 		return tiers;

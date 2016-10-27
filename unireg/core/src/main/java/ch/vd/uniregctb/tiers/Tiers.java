@@ -48,6 +48,7 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -120,6 +121,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	private Set<Declaration> declarations;
 	private Set<ForFiscal> forsFiscaux;
 	private Set<Remarque> remarques;
+	private Set<EtiquetteTiers> etiquettes;
 
 	public Tiers() {
 	}
@@ -1052,6 +1054,19 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
+	 * Les liens datés vers les étiquettes associées au tiers
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "TIERS_ID", nullable = false)
+	public Set<EtiquetteTiers> getEtiquettes() {
+		return etiquettes;
+	}
+
+	public void setEtiquettes(Set<EtiquetteTiers> etiquettes) {
+		this.etiquettes = etiquettes;
+	}
+
+	/**
 	 * @see java.lang.Object#clone()
 	 */
 	@Override
@@ -1387,6 +1402,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				&& ComparisonHelper.areEqual(personneContact, obj.personneContact)
 				&& ComparisonHelper.areEqual(rapportsObjet, obj.rapportsObjet)
 				&& ComparisonHelper.areEqual(rapportsSujet, obj.rapportsSujet)
-				&& ComparisonHelper.areEqual(titulaireCompteBancaire, obj.titulaireCompteBancaire);
+				&& ComparisonHelper.areEqual(titulaireCompteBancaire, obj.titulaireCompteBancaire)
+				&& ComparisonHelper.areEqual(etiquettes, obj.etiquettes);
 	}
 }

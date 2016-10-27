@@ -122,6 +122,11 @@
 		<property name="tacheService" ref="tacheService"/>
 	</bean>
 
+	<bean id="etiquetteService" class="ch.vd.uniregctb.etiquette.EtiquetteServiceImpl">
+		<property name="etiquetteDAO" ref="etiquetteDAO"/>
+		<property name="etiquetteTiersDAO" ref="etiquetteTiersDAO"/>
+	</bean>
+
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -349,6 +354,9 @@
 	<bean id="questionnaireSNCValidator" class="ch.vd.uniregctb.validation.declaration.QuestionnaireSNCValidator" parent="declarationValidator" />
 
 	<bean id="remarqueValidator" class="ch.vd.uniregctb.validation.remarque.RemarqueValidator" parent="entityValidator"/>
+
+	<bean id="etiquetteValidator" class="ch.vd.uniregctb.validation.etiquette.EtiquetteValidator" parent="entityValidator"/>
+	<bean id="etiquetteTiersValidator" class="ch.vd.uniregctb.validation.etiquette.EtiquetteTiersValidator" parent="dateRangeEntityValidator"/>
 
 	<bean id="decisionValidator" class="ch.vd.uniregctb.validation.decision.DecisionValidator" parent="localisationDateeValidator"/>
 

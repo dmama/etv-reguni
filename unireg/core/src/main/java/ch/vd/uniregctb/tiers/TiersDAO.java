@@ -66,7 +66,8 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 		DONNEES_CIVILES,
 		BOUCLEMENTS,
 		FLAGS,
-		REGIMES_FISCAUX;
+		REGIMES_FISCAUX,
+		ETIQUETTES;
 
 		public static Parts fromValue(String v) {
 			return valueOf(v);

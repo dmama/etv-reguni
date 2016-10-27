@@ -1335,9 +1335,8 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testGetBatch() throws Exception {
 		loadDatabase();
 
-		final List<Long> ids = Arrays.asList(10006789L, 1001234L, 9876L, 10007890L, 10008901L, 10001111L, 2002222L, 10000010L, 10000001L, 10000002L, 10000004L,
-				10000005L);
-		final Set<Parts> parts = EnumSet.of(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE);
+		final List<Long> ids = Arrays.asList(10006789L, 1001234L, 9876L, 10007890L, 10008901L, 10001111L, 2002222L, 10000010L, 10000001L, 10000002L, 10000004L, 10000005L);
+		final Set<Parts> parts = EnumSet.allOf(Parts.class);
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
 		final List<Tiers> listBatch = doInNewReadOnlyTransaction(new TxCallback<List<Tiers>>() {
@@ -1384,7 +1383,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		loadDatabase();
 
 		final Set<Long> ids = new HashSet<>(Arrays.asList(10006789L, 1001234L, 9876L, 10007890L, 10008901L, 10001111L, 2002222L, 10000010L, 10000001L, 10000002L, 10000004L, 10000005L));
-		final Set<Parts> parts = EnumSet.of(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE);
+		final Set<Parts> parts = EnumSet.allOf(Parts.class);
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
 		final List<Tiers> listBatch = doInNewReadOnlyTransaction(new TxCallback<List<Tiers>>() {

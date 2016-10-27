@@ -333,11 +333,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 	}
 
 	private static <K, V> void consolidateInMap(Map<K, List<V>> map, K key, V value) {
-		List<V> list = map.get(key);
-		if (list == null) {
-			list = new LinkedList<>();
-			map.put(key, list);
-		}
+		final List<V> list = map.computeIfAbsent(key, k -> new LinkedList<>());
 		list.add(value);
 	}
 }

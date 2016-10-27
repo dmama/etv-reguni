@@ -39,6 +39,8 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
@@ -1059,6 +1061,24 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			@Override
 			public AttributeView build(Property p, Object value, SuperGraContext context) {
 				return new AttributeView("texte", MultilineString.class, value, false, false, false);
+			}
+		});
+
+		// collectivité administrative associée à une étiquette
+		builders.put(new AttributeKey(Etiquette.class, "collectiviteAdministrative"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "collectivité administrative associée", CollectiviteAdministrative.class, entity, false, false, false);
+			}
+		});
+
+		// instance d'étiquette associée au lien daté avec le tiers
+		builders.put(new AttributeKey(EtiquetteTiers.class, "etiquette"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Etiquette, (Long) value)));
+				return new AttributeView(p.getName(), "étiquette", Etiquette.class, entity, false, false, false);
 			}
 		});
 

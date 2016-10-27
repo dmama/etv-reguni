@@ -44,7 +44,7 @@ public abstract class AbstractValidatorTest<T> extends BusinessTest {
 			}
 		}
 		else {
-			dumpMessages(erreurs, vr.getErrors());
+			dumpMessages(warnings, vr.getWarnings());
 			Assert.fail();
 		}
 	}
