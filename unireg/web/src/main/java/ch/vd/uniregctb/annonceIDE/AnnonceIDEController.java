@@ -29,6 +29,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.utils.CantonalIdEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
@@ -54,6 +55,7 @@ public class AnnonceIDEController {
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(Long.class, "cantonalId", new CantonalIdEditor());
 	}
 
 	/**
