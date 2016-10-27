@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-rcent</artifactId>
-			<version>1.9</version>
+			<version>1.9.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
