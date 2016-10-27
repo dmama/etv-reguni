@@ -64,20 +64,23 @@ public class LiquidationStrategy extends AbstractOrganisationStrategy {
 				&& publications != null
 				&& !publications.isEmpty()) {
 
-			for (PublicationBusiness publication : publications.get(event.getDateEvenement())) {
-				if (publication.getTypeDeLiquidation() != null) {
-					switch (publication.getTypeDeLiquidation()) {
-					case SOCIETE_ANONYME:
-					case SOCIETE_RESPONSABILITE_LIMITE:
-					case SOCIETE_COOPERATIVE:
-					case ASSOCIATION:
-					case FONDATION:
-					case SOCIETE_NOM_COLLECTIF:
-					case SOCIETE_COMMANDITE:
-					case SOCIETE_COMMANDITE_PAR_ACTION:
-						return new Liquidation(event, organisation, entreprise, context, options);
-					default:
-						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de liquidation inconnu: %s", publication.getTypeDeLiquidation()));
+			final List<PublicationBusiness> publicationBusinessesDuJour = publications.get(event.getDateEvenement());
+			if (publicationBusinessesDuJour != null) {
+				for (PublicationBusiness publication : publicationBusinessesDuJour) {
+					if (publication.getTypeDeLiquidation() != null) {
+						switch (publication.getTypeDeLiquidation()) {
+						case SOCIETE_ANONYME:
+						case SOCIETE_RESPONSABILITE_LIMITE:
+						case SOCIETE_COOPERATIVE:
+						case ASSOCIATION:
+						case FONDATION:
+						case SOCIETE_NOM_COLLECTIF:
+						case SOCIETE_COMMANDITE:
+						case SOCIETE_COMMANDITE_PAR_ACTION:
+							return new Liquidation(event, organisation, entreprise, context, options);
+						default:
+							return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de liquidation inconnu: %s", publication.getTypeDeLiquidation()));
+						}
 					}
 				}
 			}
