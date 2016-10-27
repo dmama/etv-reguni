@@ -227,7 +227,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				final List<EntreeJournalRC> entreesJournal = site.getDonneesRC().getEntreesJournalPourDatePublication(getDateEvt());
 				if (entreesJournal.isEmpty()) {
 					throw new EvenementOrganisationException(
-							String.format("Entrée de journal au RC introuvable dans l'établissement n°%s (civil: %s). Impossible de traiter le déménagement VD.",
+							String.format("Entrée de journal au RC introuvable dans l'établissement n°%s (civil: %s). Impossible de traiter le déménagement.",
 							              FormatNumeroHelper.numeroCTBToDisplay(demenagement.getEtablissement().getNumero()), site.getNumeroSite()));
 				}
 				// On prend la première entrée qui vient car il devrait y en avoir qu'une seule. S'il devait vraiment y en avoir plusieurs, on considère qu'elles renverraient toutes vers le même jour.
