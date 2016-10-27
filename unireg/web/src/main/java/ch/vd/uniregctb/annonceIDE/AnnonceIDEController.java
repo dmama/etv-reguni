@@ -2,6 +2,7 @@ package ch.vd.uniregctb.annonceIDE;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -63,7 +65,16 @@ public class AnnonceIDEController {
 	 */
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/find.do", method = RequestMethod.GET)
-	public String find(@ModelAttribute(value = "view") AnnonceIDEQueryView view, HttpServletRequest request, Model model) {
+	public String find(@ModelAttribute(value = "view") AnnonceIDEQueryView view, BindingResult bindingResult, HttpServletRequest request, Model model) {
+
+		if (bindingResult.hasErrors()) {
+			final Page<AnnonceIDEView> page = new PageImpl<>(Collections.<AnnonceIDEView>emptyList());
+			model.addAttribute("page", page);
+			model.addAttribute("totalElements", (int) 0);
+			model.addAttribute("noticeTypes", tiersMapHelper.getTypeAnnonce());
+			model.addAttribute("noticeStatuts", tiersMapHelper.getStatutAnnonce());
+			return "annonceIDE/find";
+		}
 
 		// on interpète la requête
 		final int pageSize = view.getResultsPerPage() == 0 ? 10 : view.getResultsPerPage();
