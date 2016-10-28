@@ -81,7 +81,8 @@ public class HttpDocumentFetcherTest extends WebTest {
 			Assert.fail("La machine locale a son port 53 - serveur DNS - ouvert?");
 		}
 		catch (ConnectException e) {
-			Assert.assertEquals("Connection refused", e.getMessage());
+			// Apparemment, le passage du JDK 1.8.101 à 1.8.111 change le message de "Connection refused" à "Connection refused (Connection refused)"
+			Assert.assertTrue(e.getMessage(), e.getMessage().contains("Connection refused"));
 		}
 	}
 
