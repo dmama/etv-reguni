@@ -863,7 +863,10 @@ public abstract class EvenementOrganisationInterne {
 			context.getTiersService().closeDomicileEtablissement(domicile, dateFin);
 		}
 		final RapportEntreTiers rapportEntreprise = etablissement.getRapportObjetValidAt(dateFin, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-		context.getTiersService().closeRapportEntreTiers(rapportEntreprise, dateFin);
+		// SIFISC-19230: Le rapport peut avoir été fermé dans le cadre du processus complexe "Fin d'activité"
+		if (rapportEntreprise != null) {
+			context.getTiersService().closeRapportEntreTiers(rapportEntreprise, dateFin);
+		}
 
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
