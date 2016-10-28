@@ -10,7 +10,7 @@
 	<artifactId>unireg-wsclient-rcent</artifactId>
 	<packaging>jar</packaging>
         <!-- BEGIN_LVERSION -->
-	<version>1.9</version>
+	<version>1.10-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>Unireg - Client WS RCEnt v3</name>
