@@ -8,7 +8,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-adapter-rcent</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>1.12</version>
+	<version>1.13-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>adapter-rcent</name>
