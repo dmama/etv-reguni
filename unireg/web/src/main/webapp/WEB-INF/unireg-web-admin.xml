@@ -57,6 +57,7 @@
 				<entry key="evenementsDeclaration" value-ref="evenementDeclarationEndpointManager"/>
 				<entry key="evenementsEfacture" value-ref="evenementEfactureEndpointManager"/>
 				<entry key="evenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
+				<entry key="evenementsImportRf" value-ref="evtRFImportEventEndpointManager"/>
 				<entry key="reqDes" value-ref="reqdesEventEndpointManager"/>
 				<entry key="evenementOrganisation" value-ref="evtOrganisationEndpointManager"/>
 				<entry key="rapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>

@@ -13,7 +13,7 @@
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
 	</bean>
 
-	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareMasterSwitchableEsbMessageEndpointManager">
+	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
@@ -23,7 +23,7 @@
 				<property name="maxMessagesPerSessions" value="1"/>
 			</bean>
 		</property>
-		<property name="messageListener" ref="reqdesEventListener"/>
+		<property name="messageListener" ref="evtRFImportEventListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtRfImport.enabled}"/>
 		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>

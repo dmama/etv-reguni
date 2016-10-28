@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 /**
@@ -28,6 +29,7 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 			LOGGER.info(String.format("Réception d'un message JMS d'un import RF des immeubles {businessId='%s'}", businessId));
 		}
 
+		AuthenticationHelper.pushPrincipal("JMS-ImportRF");
 		try {
 			final String dataUrl = message.getAttachmentRef("data");
 
@@ -44,6 +46,9 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 			// boom technique (bug ou problème avec la DB) -> départ dans la DLQ
 			LOGGER.error(e.getMessage(), e);
 			throw e;
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 }
