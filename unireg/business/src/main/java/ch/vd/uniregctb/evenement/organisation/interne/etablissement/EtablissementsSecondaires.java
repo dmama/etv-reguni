@@ -286,7 +286,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			Assert.isTrue(aFermer.getAnnulationDate() == null, "L'établissement secondaire ne peut être fermé: il est annulé.");
 			Assert.isTrue(aFermer.isConnuAuCivil(), "L'établissement secondaire ne peut être fermé: il n'est pas connu au civil.");
 			final RapportEntreTiers rapportSujet = aFermer.getRapportObjetValidAt(dateApres, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-			Assert.notNull(rapportSujet, "L'établissement secondaire ne peut être fermé: il n'y a déjà plus de rapport à la date demandée.");
+			// SIFISC-19230: Le rapport peut avoir été fermé dans le cadre du processus complexe "Fin d'activité"
+			//Assert.notNull(rapportSujet, "L'établissement secondaire ne peut être fermé: il n'y a déjà plus de rapport à la date demandée.");
 		}
 	}
 
