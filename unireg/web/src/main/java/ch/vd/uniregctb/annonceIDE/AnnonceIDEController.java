@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.wsclient.rcent.RcEntClientException;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -40,6 +44,8 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @Controller
 @RequestMapping(value = "/annonceIDE")
 public class AnnonceIDEController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnnonceIDEController.class);
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de suivi des annonces à l'IDE";
 
@@ -67,12 +73,12 @@ public class AnnonceIDEController {
 	@RequestMapping(value = "/find.do", method = RequestMethod.GET)
 	public String find(@ModelAttribute(value = "view") AnnonceIDEQueryView view, BindingResult bindingResult, HttpServletRequest request, Model model) {
 
+		model.addAttribute("noticeTypes", tiersMapHelper.getTypeAnnonce());
+		model.addAttribute("noticeStatuts", tiersMapHelper.getStatutAnnonce());
+
 		if (bindingResult.hasErrors()) {
-			final Page<AnnonceIDEView> page = new PageImpl<>(Collections.<AnnonceIDEView>emptyList());
-			model.addAttribute("page", page);
+			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));
 			model.addAttribute("totalElements", (int) 0);
-			model.addAttribute("noticeTypes", tiersMapHelper.getTypeAnnonce());
-			model.addAttribute("noticeStatuts", tiersMapHelper.getStatutAnnonce());
 			return "annonceIDE/find";
 		}
 
@@ -85,7 +91,17 @@ public class AnnonceIDEController {
 				new Sort.Order(sorting.isAscending() ? Sort.Direction.ASC : Sort.Direction.DESC, sorting.getField());
 
 		// on effectue la recherche
-		final Page<AnnonceIDE> annonces = organisationService.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
+		final Page<AnnonceIDE> annonces;
+		try {
+			annonces = organisationService.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
+		}
+		catch (RcEntClientException e) {
+			LOGGER.warn("Erreur lors de la recherche de demandes à l'IDE", e);
+			Flash.warning("L'appel à RCEnt a levé l'erreur suivante : " + e.getMessage() + ". Veuillez réessayer plus tard.");
+			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));
+			model.addAttribute("totalElements", (int) 0);
+			return "annonceIDE/find";
+		}
 
 		// on adapte les annonces
 		final List<AnnonceIDEView> content = new ArrayList<>(annonces.getNumberOfElements());
@@ -98,8 +114,6 @@ public class AnnonceIDEController {
 		final Page<AnnonceIDEView> page = new PageImpl<>(content, pageable, annonces.getTotalElements());
 		model.addAttribute("page", page);
 		model.addAttribute("totalElements", (int) page.getTotalElements());
-		model.addAttribute("noticeTypes", tiersMapHelper.getTypeAnnonce());
-		model.addAttribute("noticeStatuts", tiersMapHelper.getStatutAnnonce());
 
 		return "annonceIDE/find";
 	}
