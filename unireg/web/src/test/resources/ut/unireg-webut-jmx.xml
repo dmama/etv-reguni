@@ -16,6 +16,7 @@
 	<bean id="evenementDeclarationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="evenementEfactureEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="evenementEfactureResponseEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="reqdesEventEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="evenementRapportAnnonceIDEJmsEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
