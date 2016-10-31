@@ -1,5 +1,12 @@
 package ch.vd.uniregctb.annonceIDE;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -37,13 +44,6 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 public class AnnonceIDEControllerTest {
 
 	private static final AnnonceIDEData.InfoServiceIDEObligEtenduesImpl SERVICE_UNIREG =
@@ -56,7 +56,7 @@ public class AnnonceIDEControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		tiersMapHelper = new TiersMapHelper();
-		tiersMapHelper.setMessageSourceAccessor(new MockMessageSource());
+		tiersMapHelper.setMessageSource(new MockMessageSource());
 	}
 
 	/**

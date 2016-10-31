@@ -20,10 +20,11 @@ public class CommonMapHelper {
 
 	private MessageSourceAccessor messageSourceAccessor;
 
-	public void setMessageSourceAccessor(MessageSource messageSource) {
+	public void setMessageSource(MessageSource messageSource) {
 		this.messageSourceAccessor = new MessageSourceAccessor(messageSource);
 	}
 
+	// pour le testing
 	public void setMessageSourceAccessor(MessageSourceAccessor messageSource) {
 		this.messageSourceAccessor = messageSource;
 	}

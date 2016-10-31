@@ -17,7 +17,7 @@
 	</bean>
 
 	<bean id="tiersMapHelper" class="ch.vd.uniregctb.tiers.TiersMapHelper" >
-		<property name="messageSourceAccessor" ref="messageSource"/>
+		<property name="messageSource" ref="messageSource"/>
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 

@@ -20,7 +20,7 @@
 	</bean>
 
 	<bean id="tacheMapHelper" class="ch.vd.uniregctb.tache.TacheMapHelper">
-		<property name="messageSourceAccessor" ref="messageSource"/>
+		<property name="messageSource" ref="messageSource"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="transactionManager" ref="transactionManager" />
