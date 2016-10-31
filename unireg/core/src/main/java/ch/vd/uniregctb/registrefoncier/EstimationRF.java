@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -38,11 +39,13 @@ public class EstimationRF extends HibernateDateRangeEntity {
 	/**
 	 * Le montant en francs de l'estimation fiscale.
 	 */
-	private long montant;
+	@Nullable
+	private Long montant;
 
 	/**
 	 * Numéro de référence.
 	 */
+	@Nullable
 	private String reference;
 
 	/**
@@ -76,21 +79,23 @@ public class EstimationRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
-	@Column(name = "MONTANT", nullable = false)
-	public long getMontant() {
+	@Nullable
+	@Column(name = "MONTANT")
+	public Long getMontant() {
 		return montant;
 	}
 
-	public void setMontant(long montant) {
+	public void setMontant(@Nullable Long montant) {
 		this.montant = montant;
 	}
 
-	@Column(name = "REFERENCE", nullable = false)
+	@Nullable
+	@Column(name = "REFERENCE")
 	public String getReference() {
 		return reference;
 	}
 
-	public void setReference(String reference) {
+	public void setReference(@Nullable String reference) {
 		this.reference = reference;
 	}
 

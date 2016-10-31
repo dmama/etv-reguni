@@ -19,7 +19,7 @@ public class EstimationRFHelperTest {
 	public void testDataEquals() throws Exception {
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -34,13 +34,23 @@ public class EstimationRFHelperTest {
 	}
 
 	/**
+	 * Ce test vérifie les cas de nullités entre estimations.
+	 */
+	@Test
+	public void testDataEqualsNullNotNull() throws Exception {
+		assertTrue(EstimationRFHelper.dataEquals(null, (EstimationRF) null));
+		assertFalse(EstimationRFHelper.dataEquals(null, new EstimationRF()));
+		assertFalse(EstimationRFHelper.dataEquals(new EstimationRF(), (EstimationRF) null));
+	}
+
+	/**
 	 * Ce test vérifie que deux estimations qui diffèrent sur le montant sont bien considérées inégales.
 	 */
 	@Test
 	public void testDataEqualsMontantsDifferents() throws Exception {
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -61,7 +71,7 @@ public class EstimationRFHelperTest {
 	public void testDataEqualsReferencesDifferentes() throws Exception {
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -82,7 +92,7 @@ public class EstimationRFHelperTest {
 	public void testDataEqualsDatesEstimationDifferentes() throws Exception {
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -103,7 +113,7 @@ public class EstimationRFHelperTest {
 	public void testDataEqualsEtatEnRevisionDifferentes() throws Exception {
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(true);
@@ -127,7 +137,7 @@ public class EstimationRFHelperTest {
 		amtlicheBewertung.setProtokollGueltig(true);
 
 		final EstimationRF estimation = EstimationRFHelper.newEstimationRF(amtlicheBewertung);
-		assertEquals(120000L, estimation.getMontant());
+		assertEquals(Long.valueOf(120000L), estimation.getMontant());
 		assertEquals("2015", estimation.getReference());
 		assertEquals(RegDate.get(2015, 7, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());

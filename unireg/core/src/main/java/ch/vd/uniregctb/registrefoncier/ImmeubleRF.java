@@ -148,7 +148,7 @@ public abstract class ImmeubleRF {
 		this.estimations = estimations;
 	}
 
-	public void addEstimation(EstimationRF estimation) {
+	public void addEstimation(@NotNull EstimationRF estimation) {
 		if (this.estimations == null) {
 			this.estimations = new HashSet<>();
 		}

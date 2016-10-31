@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
@@ -24,8 +25,10 @@ import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 
+import static ch.vd.uniregctb.common.AbstractSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ImmeubleRFHelperTest {
@@ -42,7 +45,7 @@ public class ImmeubleRFHelperTest {
 		situation.setIndex1(17);
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -88,7 +91,7 @@ public class ImmeubleRFHelperTest {
 		situation.setIndex1(17);
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -133,7 +136,7 @@ public class ImmeubleRFHelperTest {
 		situation.setIndex1(17);
 
 		final EstimationRF estimation = new EstimationRF();
-		estimation.setMontant(120000);
+		estimation.setMontant(120000L);
 		estimation.setReference("2015");
 		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
@@ -165,6 +168,38 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 
 		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
+	/**
+	 * Ce test vérifie que deux immeubles sans estimation sont bien considérés égaux.
+	 */
+	@Test
+	public void testCurrentDataEqualsSansEstimation() throws Exception {
+
+		final SituationRF situation = new SituationRF();
+		situation.setNoRfCommune(2233);
+		situation.setNoParcelle(109);
+		situation.setIndex1(17);
+
+		final BienFondRF immeuble = new BienFondRF();
+		immeuble.setIdRF("382929efa218");
+		immeuble.setCfa(true);
+		immeuble.setEgrid("CH282891891");
+		immeuble.addSituation(situation);
+		immeuble.setEstimations(new HashSet<>());
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setLigUnterartEnum("cfa");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+
+		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 	}
 
 	@Test
@@ -208,7 +243,7 @@ public class ImmeubleRFHelperTest {
 		final Set<EstimationRF> estimations = mine.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
-		assertEquals(500000L, estimation.getMontant());
+		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
@@ -257,7 +292,7 @@ public class ImmeubleRFHelperTest {
 		final Set<EstimationRF> estimations = copro.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
-		assertEquals(500000L, estimation.getMontant());
+		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
@@ -306,7 +341,7 @@ public class ImmeubleRFHelperTest {
 		final Set<EstimationRF> estimations = bienFond.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
-		assertEquals(500000L, estimation.getMontant());
+		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
@@ -353,7 +388,7 @@ public class ImmeubleRFHelperTest {
 		final Set<EstimationRF> estimations = ddp.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
-		assertEquals(500000L, estimation.getMontant());
+		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
@@ -402,9 +437,47 @@ public class ImmeubleRFHelperTest {
 		final Set<EstimationRF> estimations = ppe.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
-		assertEquals(500000L, estimation.getMontant());
+		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
+	}
+
+	/**
+	 * Cas de l'immeuble rfId=_8af80e62567f816f01571d91f3e56a38 qui ne possède pas d'estimation fiscale.
+	 */
+	@Test
+	public void testNewImmeubleSansEstimationFiscale() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(13);
+		grundstueckNummer.setStammNr(917);
+		grundstueckNummer.setIndexNr1(106);
+
+		final StockwerksEinheit grundstueck = new StockwerksEinheit();
+		grundstueck.setGrundstueckID("_8af80e62567f816f01571d91f3e56a38");
+		grundstueck.setEGrid("CH776584246539");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(8L, 1000L, null, null), null, null));
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(ProprieteParEtageRF.class, immeuble.getClass());
+
+		final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
+		assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
+		assertEquals("CH776584246539", ppe.getEgrid());
+		assertEquals(new Fraction(8, 1000), ppe.getQuotePart());
+
+		final Set<SituationRF> situations = ppe.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(13, situation.getNoRfCommune());
+		assertEquals(917, situation.getNoParcelle());
+		assertEquals(Integer.valueOf(106), situation.getIndex1());
+		assertNull(situation.getIndex2());
+		assertNull(situation.getIndex3());
+
+		final Set<EstimationRF> estimations = ppe.getEstimations();
+		assertEmpty(estimations);
 	}
 }

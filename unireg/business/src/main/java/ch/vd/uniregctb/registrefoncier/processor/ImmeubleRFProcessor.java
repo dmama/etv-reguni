@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -93,12 +94,17 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		}
 
 		// on va chercher les nouvelles situations et estimations
-		final SituationRF newSituation = newImmeuble.getSituations().iterator().next();     // par définition, le nouvel immeuble ne contient que l'état courant,
-		final EstimationRF newEstimation = newImmeuble.getEstimations().iterator().next();  // il ne contient donc qu'une seule situation et une seule estimation fiscale.
+		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
+		if (newSituation == null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + newImmeuble.getIdRF() + "] ne contient pas de situation.");
+		}
+		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());  // il ne contient donc qu'une seule situation et une seule estimation fiscale.
 
 		// on renseigne les dates de début
 		newSituation.setDateDebut(dateValeur);
-		newEstimation.setDateDebut(dateValeur);
+		if (newEstimation != null) {
+			newEstimation.setDateDebut(dateValeur);
+		}
 
 		immeubleRFDAO.save(newImmeuble);
 	}
@@ -116,22 +122,19 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		final SituationRF persistedSituation = persisted.getSituations().stream()
 				.filter(s -> s.isValidAt(null))
 				.findFirst()
-				.orElse(null);
-		if (persistedSituation == null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation dans la DB.");
-		}
+				.orElseThrow(() -> new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation dans la DB."));
 
 		final EstimationRF persistedEstimation = persisted.getEstimations().stream()
 				.filter(s -> s.isValidAt(null))
 				.findFirst()
 				.orElse(null);
-		if (persistedEstimation == null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas d'estimation fiscale dans la DB.");
-		}
 
 		// on va chercher les nouvelles situations et estimations
-		final SituationRF newSituation = newImmeuble.getSituations().iterator().next();     // par définition, le nouvel immeuble ne contient que l'état courant,
-		final EstimationRF newEstimation = newImmeuble.getEstimations().iterator().next();  // il ne contient donc qu'une seule situation et une seule estimation fiscale.
+		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
+		if (newSituation == null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation.");
+		}
+		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());  // il ne contient donc qu'une seule situation et une seule estimation fiscale.
 
 		// est-ce que la situation a changé ?
 		if (!SituationRFHelper.dataEquals(persistedSituation, newSituation)) {
@@ -144,9 +147,13 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		// est-ce que l'estimation changé ?
 		if (!EstimationRFHelper.dataEquals(persistedEstimation, newEstimation)) {
 			// on ferme l'ancienne estimation et on ajoute la nouvelle
-			persistedEstimation.setDateFin(dateValeur.getOneDayBefore());
-			newEstimation.setDateDebut(dateValeur);
-			persisted.getEstimations().add(newEstimation);
+			if (persistedEstimation != null) {
+				persistedEstimation.setDateFin(dateValeur.getOneDayBefore());
+			}
+			if (newEstimation != null) {
+				newEstimation.setDateDebut(dateValeur);
+				persisted.getEstimations().add(newEstimation);
+			}
 		}
 	}
 }

@@ -369,7 +369,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(260000, estimation.getMontant());
+					assertEquals(Long.valueOf(260000), estimation.getMontant());
 					assertEquals("RG93", estimation.getReference());
 					assertNull(estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -399,7 +399,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(2120000, estimation.getMontant());
+					assertEquals(Long.valueOf(2120000), estimation.getMontant());
 					assertEquals("2016", estimation.getReference());
 					assertEquals(RegDate.get(2016, 9, 13), estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -430,7 +430,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(495000, estimation.getMontant());
+					assertEquals(Long.valueOf(495000), estimation.getMontant());
 					assertEquals("2016", estimation.getReference());
 					assertEquals(RegDate.get(2016, 9, 13), estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -461,7 +461,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(550, estimation.getMontant());
+					assertEquals(Long.valueOf(550), estimation.getMontant());
 					assertEquals("2015", estimation.getReference());
 					assertEquals(RegDate.get(2015, 10, 22), estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -506,10 +506,10 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 			public void execute(TransactionStatus status) throws Exception {
 
 				// données équivalentes au fichier export_immeubles_rf_hebdo.xml
-				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", 294, 5089, 260000, "RG93", null, false, false, RegDate.get(2010, 1, 1));
-				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", 294, 692, 2120000, "2016", RegDate.get(2016, 9, 13), false, RegDate.get(2010, 1, 1));
-				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", 190, 19, 4, 495000, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
-				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", 308, 3601, 7, 13, 550, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", 294, 5089, 260000L, "RG93", null, false, false, RegDate.get(2010, 1, 1));
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", 294, 692, 2120000L, "2016", RegDate.get(2016, 9, 13), false, RegDate.get(2010, 1, 1));
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", 190, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", 308, 3601, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
 
 				immeubleRFDAO.save(bienFond);
 				immeubleRFDAO.save(droitDistinctEtPermanent);
@@ -589,13 +589,13 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 
 				// données partiellement différentes de celles du fichier export_immeubles_rf_hebdo.xml
 				// - données identiques
-				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", 294, 5089, 260000, "RG93", null, false, false, dateImportInitial);
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", 294, 5089, 260000L, "RG93", null, false, false, dateImportInitial);
 				// - estimation fiscale différente
-				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", 294, 692, 2000000, "2015", RegDate.get(2015, 1, 1), false, dateImportInitial);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", 294, 692, 2000000L, "2015", RegDate.get(2015, 1, 1), false, dateImportInitial);
 				// - données identiques
-				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", 190, 19, 4, 495000, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), dateImportInitial);
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", 190, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), dateImportInitial);
 				// - numéro de parcelle différente
-				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", 308, 777, 7, 13, 550, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), dateImportInitial);
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", 308, 777, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), dateImportInitial);
 
 				immeubleRFDAO.save(bienFond);
 				immeubleRFDAO.save(droitDistinctEtPermanent);
@@ -785,7 +785,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(dateImportInitial, estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(260000, estimation.getMontant());
+					assertEquals(Long.valueOf(260000), estimation.getMontant());
 					assertEquals("RG93", estimation.getReference());
 					assertNull(estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -819,7 +819,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation0 = estimationList.get(0);
 					assertEquals(dateImportInitial, estimation0.getDateDebut());
 					assertEquals(dateSecondImport.getOneDayBefore(), estimation0.getDateFin());
-					assertEquals(2000000, estimation0.getMontant());
+					assertEquals(Long.valueOf(2000000), estimation0.getMontant());
 					assertEquals("2015", estimation0.getReference());
 					assertEquals(RegDate.get(2015, 1, 1), estimation0.getDateEstimation());
 					assertFalse(estimation0.isEnRevision());
@@ -827,7 +827,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation1 = estimationList.get(1);
 					assertEquals(dateSecondImport, estimation1.getDateDebut());
 					assertNull(estimation1.getDateFin());
-					assertEquals(2120000, estimation1.getMontant());
+					assertEquals(Long.valueOf(2120000), estimation1.getMontant());
 					assertEquals("2016", estimation1.getReference());
 					assertEquals(RegDate.get(2016, 9, 13), estimation1.getDateEstimation());
 					assertFalse(estimation1.isEnRevision());
@@ -859,7 +859,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(dateImportInitial, estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(495000, estimation.getMontant());
+					assertEquals(Long.valueOf(495000), estimation.getMontant());
 					assertEquals("2016", estimation.getReference());
 					assertEquals(RegDate.get(2016, 9, 13), estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -903,7 +903,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 					final EstimationRF estimation = estimations.iterator().next();
 					assertEquals(dateImportInitial, estimation.getDateDebut());
 					assertNull(estimation.getDateFin());
-					assertEquals(550, estimation.getMontant());
+					assertEquals(Long.valueOf(550), estimation.getMontant());
 					assertEquals("2015", estimation.getReference());
 					assertEquals(RegDate.get(2015, 10, 22), estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
@@ -913,7 +913,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 	}
 
 	private static BienFondRF newBienFondRF(String idRF, String egrid, int noRfCommune, int noParcelle,
-	                                        int montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                        Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                        boolean enRevision, boolean cfa, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
@@ -939,7 +939,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 	}
 
 	private static DroitDistinctEtPermanentRF newDroitDistinctEtPermanentRF(String idRF, String egrid, int noRfCommune, int noParcelle,
-	                                                                        int montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                                                        Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                                                        boolean enRevision, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
@@ -964,7 +964,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 	}
 
 	private static ProprieteParEtageRF newProprieteParEtageRF(String idRF, String egrid, int noRfCommune, int noParcelle, Integer index1,
-	                                                          int montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                                          Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                                          boolean enRevision, Fraction quotePart, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
@@ -991,7 +991,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 	}
 
 	private static PartCoproprieteRF newPartCoproprieteRF(String idRF, String egrid, int noRfCommune, int noParcelle, Integer index1, Integer index2,
-	                                                      int montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                                      Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                                      boolean enRevision, Fraction quotePart, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();

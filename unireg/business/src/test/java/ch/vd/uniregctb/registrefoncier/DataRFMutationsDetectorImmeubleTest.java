@@ -156,7 +156,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 			situation.setIndex1(17);
 
 			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(450000);
+			estimation.setMontant(450000L);
 			estimation.setReference("2015");
 			estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 			estimation.setEnRevision(false);
@@ -176,7 +176,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 			situation.setNoParcelle(46);
 
 			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(250000);
+			estimation.setMontant(250000L);
 			estimation.setReference("RG97");
 			estimation.setDateEstimation(RegDate.get(1997, 1, 1));
 			estimation.setEnRevision(false);
@@ -303,7 +303,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 			situation.setIndex1(17);
 
 			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(450000);
+			estimation.setMontant(450000L);
 			estimation.setReference("2015");
 			estimation.setDateEstimation(RegDate.get(2015, 7, 1));
 			estimation.setEnRevision(false);
@@ -323,7 +323,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 			situation.setNoParcelle(46);
 
 			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(250000);
+			estimation.setMontant(250000L);
 			estimation.setReference("RG97");
 			estimation.setDateEstimation(RegDate.get(1997, 1, 1));
 			estimation.setEnRevision(false);

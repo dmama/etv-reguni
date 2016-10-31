@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -70,14 +70,15 @@ public abstract class ImmeubleRFHelper {
 				                           ((GewoehnlichesMiteigentum) grundstueck).getStammGrundstueck().getQuote())) {
 			throw new IllegalArgumentException("La quote-part de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 		}
-		if (!immeuble.getEgrid().equals(grundstueck.getEGrid())) {
+		if (!Objects.equals(immeuble.getEgrid(), grundstueck.getEGrid())) {
 			throw new IllegalArgumentException("L'egrid de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 		}
 		// [/blindage]
 
 		final SituationRF situation = immeuble.getSituations().stream()
 				.filter(r -> r.isValidAt(RegDate.get()))
-				.collect(Collectors.toList()).get(0);
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("L'immeuble idRF=[" + immeuble.getIdRF() + "] ne contient pas de situation."));
 
 		// on vérifie la situation courante
 		if (!SituationRFHelper.dataEquals(situation, grundstueck.getGrundstueckNummer())) {
@@ -86,7 +87,8 @@ public abstract class ImmeubleRFHelper {
 
 		final EstimationRF estimation = immeuble.getEstimations().stream()
 				.filter(r -> r.isValidAt(RegDate.get()))
-				.collect(Collectors.toList()).get(0);
+				.findFirst()
+				.orElse(null);
 
 		// on vérifie l'estimation fiscale courante
 		if (!EstimationRFHelper.dataEquals(estimation, grundstueck.getAmtlicheBewertung())) {
@@ -143,7 +145,10 @@ public abstract class ImmeubleRFHelper {
 		immeuble.setIdRF(grundstueck.getGrundstueckID());
 		immeuble.setEgrid(grundstueck.getEGrid());
 		immeuble.addSituation(SituationRFHelper.newSituationRF(grundstueck.getGrundstueckNummer()));
-		immeuble.addEstimation(EstimationRFHelper.newEstimationRF(grundstueck.getAmtlicheBewertung()));
+		final EstimationRF estimation = EstimationRFHelper.get(grundstueck.getAmtlicheBewertung());
+		if (estimation != null) {
+			immeuble.addEstimation(estimation);
+		}
 
 		return immeuble;
 	}

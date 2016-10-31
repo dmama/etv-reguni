@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<StockwerksEinheit xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<GrundstueckID>_8af80e62567f816f01571d91f3e56a38</GrundstueckID>
+	<EGrid>CH776584246539</EGrid>
+	<GrundstueckNummer VersionID="8af80e625577ab9d0155fe1d5d21562d">
+		<BfsNr>13</BfsNr>
+		<Gemeindenamen>Roche (VD)</Gemeindenamen>
+		<StammNr>917</StammNr>
+		<IndexNr1>106</IndexNr1>
+	</GrundstueckNummer>
+	<IstKopie>false</IstKopie>
+	<GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+	<BeschreibungUebergeben>true</BeschreibungUebergeben>
+	<EigentumUebergeben>true</EigentumUebergeben>
+	<PfandrechtUebergeben>true</PfandrechtUebergeben>
+	<DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+	<GrundlastUebergeben>true</GrundlastUebergeben>
+	<AnmerkungUebergeben>true</AnmerkungUebergeben>
+	<VormerkungUebergeben>true</VormerkungUebergeben>
+	<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+	<BereitZurVerifikation>false</BereitZurVerifikation>
+	<NutzungLandwirtschaft>unbekannt</NutzungLandwirtschaft>
+	<NutzungWald>unbekannt</NutzungWald>
+	<NutzungEisenbahn>unbekannt</NutzungEisenbahn>
+	<NutzungVerwaltungsvermoegen>unbekannt</NutzungVerwaltungsvermoegen>
+	<StammGrundstueck VersionID="8af80e62567f816f01571d91f45a6a3c">
+		<Quote>
+			<AnteilZaehler>8</AnteilZaehler>
+			<AnteilNenner>1000</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueck VersionID="8af8064e567f817c0156f97d275a1954">
+			<GrundstueckNummer>
+				<BfsNr>13</BfsNr>
+				<Gemeindenamen>Roche (VD)</Gemeindenamen>
+				<StammNr>917</StammNr>
+			</GrundstueckNummer>
+			<GrundstueckArt>Liegenschaft</GrundstueckArt>
+		</BelastetesGrundstueck>
+	</StammGrundstueck>
+</StockwerksEinheit>

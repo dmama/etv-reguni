@@ -150,6 +150,18 @@ public abstract class CollectionsUtils {
 	}
 
 	/**
+	 * @param coll une collection
+	 * @return le premier élément ou <b>null</b> si la collection est vide ou nulle;
+	 */
+	@Nullable
+	public static <T> T getFirst(@Nullable Collection<T> coll) {
+		if (coll == null || coll.isEmpty()) {
+			return null;
+		}
+		return coll.iterator().next();
+	}
+
+	/**
 	 * @param list une liste d'éléments
 	 * @param <T> le type d'élément dans la liste
 	 * @return le dernier élément de la liste (utilise l'accès direct si la liste implémente {@link RandomAccess} ou un accès par {@link ListIterator} dans le cas contraire)
