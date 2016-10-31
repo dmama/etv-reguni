@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import javax.activation.DataHandler;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Before;
@@ -17,6 +18,9 @@ import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
+import ch.vd.uniregctb.registrefoncier.TraiterImportsRFJob;
+import ch.vd.uniregctb.scheduler.MockBatchScheduler;
+import ch.vd.uniregctb.transaction.MockTxSyncManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +30,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 	private EvenementRFImportDAO evenementRFImportDAO;
 
 	private String INPUT_QUEUE;
+	private MockBatchScheduler batchScheduler;
 	private EvenementRFImportEsbHandler handler;
 
 	private final MutableInt receivedCount = new MutableInt(0);
@@ -49,6 +54,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		evenementRFImportDAO = new MockEvenementRFImportDAO();
+		batchScheduler = new MockBatchScheduler();
 
 		handler = new EvenementRFImportEsbHandler() {
 			@Override
@@ -66,6 +72,8 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 			}
 		};
 		handler.setEvenementRFImportDAO(evenementRFImportDAO);
+		handler.setTxSyncManager(new MockTxSyncManager());
+		handler.setBatchScheduler(batchScheduler);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
@@ -96,7 +104,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 	}
 
 	/**
-	 * Ce test vérifie que la réception d'un événement JMS fonctionne bien et que les données correspondantes sont insérées dans la DB (cas passant).
+	 * Ce test vérifie que la réception d'un événement JMS fonctionne bien, que les données correspondantes sont insérées dans la DB (cas passant) et que le batch de traitement est bien déclenché.
 	 */
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceptionEvenement() throws Exception {
@@ -122,5 +130,13 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		assertNotNull(event);
 		assertEquals(EtatEvenementRF.A_TRAITER, event.getEtat());
 		assertEquals("http://example.com/turlututu", event.getFileUrl());
+
+		// le batch doit être démarré
+		final List<MockBatchScheduler.JobData> started = batchScheduler.getStartedJobs();
+		assertEquals(1, started.size());
+		final MockBatchScheduler.JobData started0 = started.get(0);
+		assertEquals(TraiterImportsRFJob.NAME, started0.getName());
+		final Map<String, Object> params0 = started0.getParams();
+		assertEquals(event.getId(), params0.get(TraiterImportsRFJob.ID));
 	}
 }

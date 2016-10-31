@@ -121,7 +121,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.typeMutation = typeMutation;
 	}
 
-	@Column(name = "XML_CONTENT", nullable = false)
+	@Column(name = "XML_CONTENT")   // la colonne doit être nullable car - techniquement - Hibernate fait un insert avec le blob nul puis un update pour insérer le contenu.
 	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
 	public String getXmlContent() {
 		return xmlContent;

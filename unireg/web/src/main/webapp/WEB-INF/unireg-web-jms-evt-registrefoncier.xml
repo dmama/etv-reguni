@@ -10,7 +10,9 @@
 	</bean>
 
 	<bean id="evtRFImportEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportEsbHandler">
-		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
+		<property name="txSyncManager" ref="txSyncManager" />
+		<property name="batchScheduler" ref="batchScheduler" />
+		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 	</bean>
 
 	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
