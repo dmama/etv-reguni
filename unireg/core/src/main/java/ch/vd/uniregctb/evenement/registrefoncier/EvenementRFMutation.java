@@ -8,13 +8,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.sql.Blob;
 
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -61,7 +60,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	/**
 	 * Le représentation XML de l'entité.
 	 */
-	private Blob xmlContent;
+	private String xmlContent;
 
 	@Transient
 	@Override
@@ -123,12 +122,12 @@ public class EvenementRFMutation extends HibernateEntity {
 	}
 
 	@Column(name = "XML_CONTENT", nullable = false)
-	@Lob
-	public Blob getXmlContent() {
+	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	public String getXmlContent() {
 		return xmlContent;
 	}
 
-	public void setXmlContent(@Nullable Blob xmlContent) {
+	public void setXmlContent(@Nullable String xmlContent) {
 		this.xmlContent = xmlContent;
 	}
 }

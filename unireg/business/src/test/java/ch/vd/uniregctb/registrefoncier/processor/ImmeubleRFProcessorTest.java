@@ -26,7 +26,6 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
-import ch.vd.uniregctb.transaction.MockBlob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -122,7 +121,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				mutation.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setParentImport(parentImport);
-				mutation.setXmlContent(new MockBlob(xml.getBytes("UTF-8")));
+				mutation.setXmlContent(xml);
 
 				return evenementRFMutationDAO.save(mutation).getId();
 			}
@@ -229,7 +228,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				mutation.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setParentImport(parentImport);
-				mutation.setXmlContent(new MockBlob(xml.getBytes("UTF-8")));
+				mutation.setXmlContent(xml);
 
 				return evenementRFMutationDAO.save(mutation).getId();
 			}

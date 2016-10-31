@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
-import java.io.IOException;
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +7,6 @@ import java.util.List;
 import org.hibernate.FlushMode;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.transaction.MockBlob;
 
 public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
@@ -80,8 +77,4 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 		throw new NotImplementedException();
 	}
 
-	@Override
-	public Blob createBlob(byte[] bytes) throws IOException {
-		return new MockBlob(bytes);
-	}
 }

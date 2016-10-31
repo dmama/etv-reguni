@@ -31,7 +31,6 @@ import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
-import static ch.vd.uniregctb.common.AbstractCoreDAOTest.assertBlobEquals;
 import static org.junit.Assert.assertEquals;
 
 public class DataRFMutationsDetectorImmeubleTest {
@@ -91,53 +90,53 @@ public class DataRFMutationsDetectorImmeubleTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
-		assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				                 "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				                 "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
-				                 "    <EGrid>CH282891891</EGrid>\n" +
-				                 "    <GrundstueckNummer>\n" +
-				                 "        <BfsNr>2233</BfsNr>\n" +
-				                 "        <StammNr>109</StammNr>\n" +
-				                 "        <IndexNr1>17</IndexNr1>\n" +
-				                 "    </GrundstueckNummer>\n" +
-				                 "    <IstKopie>false</IstKopie>\n" +
-				                 "    <AmtlicheBewertung>\n" +
-				                 "        <AmtlicherWert>500000</AmtlicherWert>\n" +
-				                 "        <ProtokollNr>2016</ProtokollNr>\n" +
-				                 "        <ProtokollDatum>2016-01-01</ProtokollDatum>\n" +
-				                 "        <ProtokollGueltig>false</ProtokollGueltig>\n" +
-				                 "    </AmtlicheBewertung>\n" +
-				                 "    <LigUnterartEnum>cfa</LigUnterartEnum>\n" +
-				                 "</Liegenschaft>\n", mut0.getXmlContent());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
+				             "    <EGrid>CH282891891</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <StammNr>109</StammNr>\n" +
+				             "        <IndexNr1>17</IndexNr1>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>500000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>2016</ProtokollNr>\n" +
+				             "        <ProtokollDatum>2016-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>false</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <LigUnterartEnum>cfa</LigUnterartEnum>\n" +
+				             "</Liegenschaft>\n", mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
-		assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				                 "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				                 "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
-				                 "    <EGrid>CH8383820002</EGrid>\n" +
-				                 "    <GrundstueckNummer>\n" +
-				                 "        <BfsNr>5586</BfsNr>\n" +
-				                 "        <StammNr>1022</StammNr>\n" +
-				                 "    </GrundstueckNummer>\n" +
-				                 "    <IstKopie>false</IstKopie>\n" +
-				                 "    <AmtlicheBewertung>\n" +
-				                 "        <AmtlicherWert>250000</AmtlicherWert>\n" +
-				                 "        <ProtokollNr>RG97</ProtokollNr>\n" +
-				                 "        <ProtokollDatum>1997-01-01</ProtokollDatum>\n" +
-				                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-				                 "    </AmtlicheBewertung>\n" +
-				                 "    <StammGrundstueck>\n" +
-				                 "        <Quote>\n" +
-				                 "            <AnteilZaehler>1</AnteilZaehler>\n" +
-				                 "            <AnteilNenner>1</AnteilNenner>\n" +
-				                 "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
-				                 "        </Quote>\n" +
-				                 "    </StammGrundstueck>\n" +
-				                 "</StockwerksEinheit>\n", mut1.getXmlContent());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
+				             "    <EGrid>CH8383820002</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>5586</BfsNr>\n" +
+				             "        <StammNr>1022</StammNr>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>250000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>RG97</ProtokollNr>\n" +
+				             "        <ProtokollDatum>1997-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <StammGrundstueck>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+				             "        </Quote>\n" +
+				             "    </StammGrundstueck>\n" +
+				             "</StockwerksEinheit>\n", mut1.getXmlContent());
 	}
 
 	/**
@@ -238,53 +237,53 @@ public class DataRFMutationsDetectorImmeubleTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
-		assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				                 "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				                 "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
-				                 "    <EGrid>CH282891891</EGrid>\n" +
-				                 "    <GrundstueckNummer>\n" +
-				                 "        <BfsNr>2233</BfsNr>\n" +
-				                 "        <StammNr>109</StammNr>\n" +
-				                 "        <IndexNr1>17</IndexNr1>\n" +
-				                 "    </GrundstueckNummer>\n" +
-				                 "    <IstKopie>false</IstKopie>\n" +
-				                 "    <AmtlicheBewertung>\n" +
-				                 "        <AmtlicherWert>500000</AmtlicherWert>\n" +
-				                 "        <ProtokollNr>2016</ProtokollNr>\n" +
-				                 "        <ProtokollDatum>2016-01-01</ProtokollDatum>\n" +
-				                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-				                 "    </AmtlicheBewertung>\n" +
-				                 "    <LigUnterartEnum>cfa</LigUnterartEnum>\n" +
-				                 "</Liegenschaft>\n", mut0.getXmlContent());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
+				             "    <EGrid>CH282891891</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <StammNr>109</StammNr>\n" +
+				             "        <IndexNr1>17</IndexNr1>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>500000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>2016</ProtokollNr>\n" +
+				             "        <ProtokollDatum>2016-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <LigUnterartEnum>cfa</LigUnterartEnum>\n" +
+				             "</Liegenschaft>\n", mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
-		assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				                 "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				                 "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
-				                 "    <EGrid>CH8383820002</EGrid>\n" +
-				                 "    <GrundstueckNummer>\n" +
-				                 "        <BfsNr>5693</BfsNr>\n" +
-				                 "        <StammNr>1022</StammNr>\n" +
-				                 "    </GrundstueckNummer>\n" +
-				                 "    <IstKopie>false</IstKopie>\n" +
-				                 "    <AmtlicheBewertung>\n" +
-				                 "        <AmtlicherWert>250000</AmtlicherWert>\n" +
-				                 "        <ProtokollNr>RG97</ProtokollNr>\n" +
-				                 "        <ProtokollDatum>1997-01-01</ProtokollDatum>\n" +
-				                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-				                 "    </AmtlicheBewertung>\n" +
-				                 "    <StammGrundstueck>\n" +
-				                 "        <Quote>\n" +
-				                 "            <AnteilZaehler>1</AnteilZaehler>\n" +
-				                 "            <AnteilNenner>1</AnteilNenner>\n" +
-				                 "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
-				                 "        </Quote>\n" +
-				                 "    </StammGrundstueck>\n" +
-				                 "</StockwerksEinheit>\n", mut1.getXmlContent());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
+				             "    <EGrid>CH8383820002</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>5693</BfsNr>\n" +
+				             "        <StammNr>1022</StammNr>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>250000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>RG97</ProtokollNr>\n" +
+				             "        <ProtokollDatum>1997-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <StammGrundstueck>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+				             "        </Quote>\n" +
+				             "    </StammGrundstueck>\n" +
+				             "</StockwerksEinheit>\n", mut1.getXmlContent());
 	}
 
 	/**

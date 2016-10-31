@@ -123,8 +123,7 @@ public class TraiterImportsRFJob extends JobDefinition {
 		return template.execute(new TxCallback<EvenementRFImport>() {
 			@Override
 			public EvenementRFImport execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport event1 = evenementRFImportDAO.get(eventId);
-				return event1;
+				return evenementRFImportDAO.get(eventId);
 			}
 		});
 	}
@@ -140,7 +139,7 @@ public class TraiterImportsRFJob extends JobDefinition {
 				}
 
 				event.setEtat(etat);
-				event.setErrorMessage(errorMessage == null ? null : evenementRFImportDAO.createBlob(errorMessage.getBytes("UTF-8")));
+				event.setErrorMessage(errorMessage);
 			}
 		});
 	}

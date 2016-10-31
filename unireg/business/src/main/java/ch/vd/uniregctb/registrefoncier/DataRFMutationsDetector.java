@@ -78,13 +78,14 @@ public class DataRFMutationsDetector implements DataRFBatcher.Callback {
 					}
 
 					// on ajoute l'événement à traiter
+					final String immeubleAsXml = xmlHelperRF.toXMLString(immeuble);
+
 					final EvenementRFMutation mutation = new EvenementRFMutation();
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
 					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
 					mutation.setTypeMutation(typeMutation);
-					final String immeubleAsXml = xmlHelperRF.toXMLString(immeuble);
-					mutation.setXmlContent(evenementRFImportDAO.createBlob(immeubleAsXml.getBytes("UTF-8")));
+					mutation.setXmlContent(immeubleAsXml);
 
 					evenementRFMutationDAO.save(mutation);
 				}

@@ -122,220 +122,220 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 				assertEquals(EtatEvenementRF.TRAITE, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
-				assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                 "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						                 "    <GrundstueckID>_1f109152381026b501381028a73d1852</GrundstueckID>\n" +
-						                 "    <EGrid>CH938391457759</EGrid>\n" +
-						                 "    <GrundstueckNummer VersionID=\"1f109152381026b501381028a74018e1\">\n" +
-						                 "        <BfsNr>294</BfsNr>\n" +
-						                 "        <Gemeindenamen>Oron</Gemeindenamen>\n" +
-						                 "        <StammNr>5089</StammNr>\n" +
-						                 "    </GrundstueckNummer>\n" +
-						                 "    <IstKopie>false</IstKopie>\n" +
-						                 "    <AmtlicheBewertung VersionID=\"1f109152381026b50138102a464e3d9b\">\n" +
-						                 "        <AmtlicherWert>260000</AmtlicherWert>\n" +
-						                 "        <Ertragswert>0</Ertragswert>\n" +
-						                 "        <ProtokollNr>RG93</ProtokollNr>\n" +
-						                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-						                 "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
-						                 "    </AmtlicheBewertung>\n" +
-						                 "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
-						                 "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
-						                 "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
-						                 "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
-						                 "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
-						                 "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
-						                 "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
-						                 "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
-						                 "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						                 "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
-						                 "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
-						                 "    <NutzungWald>unbekannt</NutzungWald>\n" +
-						                 "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
-						                 "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
-						                 "    <GrundstueckFlaeche VersionID=\"1f109152381026b50138102b2cdc4b91\" MasterID=\"1f109152381026b50138102b2cdc4b90\">\n" +
-						                 "        <Flaeche>707</Flaeche>\n" +
-						                 "        <Qualitaet>\n" +
-						                 "            <TextDe>*numérisé</TextDe>\n" +
-						                 "            <TextFr>numérisé</TextFr>\n" +
-						                 "        </Qualitaet>\n" +
-						                 "        <ProjektMutation>false</ProjektMutation>\n" +
-						                 "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
-						                 "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
-						                 "    </GrundstueckFlaeche>\n" +
-						                 "</Liegenschaft>\n", mut0.getXmlContent());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <GrundstueckID>_1f109152381026b501381028a73d1852</GrundstueckID>\n" +
+						             "    <EGrid>CH938391457759</EGrid>\n" +
+						             "    <GrundstueckNummer VersionID=\"1f109152381026b501381028a74018e1\">\n" +
+						             "        <BfsNr>294</BfsNr>\n" +
+						             "        <Gemeindenamen>Oron</Gemeindenamen>\n" +
+						             "        <StammNr>5089</StammNr>\n" +
+						             "    </GrundstueckNummer>\n" +
+						             "    <IstKopie>false</IstKopie>\n" +
+						             "    <AmtlicheBewertung VersionID=\"1f109152381026b50138102a464e3d9b\">\n" +
+						             "        <AmtlicherWert>260000</AmtlicherWert>\n" +
+						             "        <Ertragswert>0</Ertragswert>\n" +
+						             "        <ProtokollNr>RG93</ProtokollNr>\n" +
+						             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+						             "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
+						             "    </AmtlicheBewertung>\n" +
+						             "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
+						             "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
+						             "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
+						             "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
+						             "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
+						             "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
+						             "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
+						             "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
+						             "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
+						             "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
+						             "    <NutzungWald>unbekannt</NutzungWald>\n" +
+						             "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
+						             "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
+						             "    <GrundstueckFlaeche VersionID=\"1f109152381026b50138102b2cdc4b91\" MasterID=\"1f109152381026b50138102b2cdc4b90\">\n" +
+						             "        <Flaeche>707</Flaeche>\n" +
+						             "        <Qualitaet>\n" +
+						             "            <TextDe>*numérisé</TextDe>\n" +
+						             "            <TextFr>numérisé</TextFr>\n" +
+						             "        </Qualitaet>\n" +
+						             "        <ProjektMutation>false</ProjektMutation>\n" +
+						             "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
+						             "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
+						             "    </GrundstueckFlaeche>\n" +
+						             "</Liegenschaft>\n", mut0.getXmlContent());
 
 				final EvenementRFMutation mut1 = mutations.get(1);
 				assertEquals(importId, mut1.getParentImport().getId());
 				assertEquals(EtatEvenementRF.TRAITE, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
-				assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                 "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						                 "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
-						                 "    <EGrid>CH729253834531</EGrid>\n" +
-						                 "    <GrundstueckNummer VersionID=\"1f109152381026b501381028ab3f31b8\">\n" +
-						                 "        <BfsNr>294</BfsNr>\n" +
-						                 "        <Gemeindenamen>Oron</Gemeindenamen>\n" +
-						                 "        <StammNr>692</StammNr>\n" +
-						                 "    </GrundstueckNummer>\n" +
-						                 "    <IstKopie>false</IstKopie>\n" +
-						                 "    <AmtlicheBewertung VersionID=\"8af8064d567f817b015722fa93bc63c8\">\n" +
-						                 "        <AmtlicherWert>2120000</AmtlicherWert>\n" +
-						                 "        <ProtokollNr>2016</ProtokollNr>\n" +
-						                 "        <ProtokollDatum>2016-09-13</ProtokollDatum>\n" +
-						                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-						                 "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
-						                 "    </AmtlicheBewertung>\n" +
-						                 "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
-						                 "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
-						                 "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
-						                 "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
-						                 "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
-						                 "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
-						                 "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
-						                 "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
-						                 "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						                 "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
-						                 "    <NutzungLandwirtschaft>ja</NutzungLandwirtschaft>\n" +
-						                 "    <NutzungWald>nein</NutzungWald>\n" +
-						                 "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
-						                 "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
-						                 "    <GrundstueckFlaeche VersionID=\"8af806cc3971feb60139e36d088230f9\" MasterID=\"8af806cc3971feb60139e36d088230f8\">\n" +
-						                 "        <Flaeche>4896</Flaeche>\n" +
-						                 "        <Qualitaet>\n" +
-						                 "            <TextDe>*numérisé</TextDe>\n" +
-						                 "            <TextFr>numérisé</TextFr>\n" +
-						                 "        </Qualitaet>\n" +
-						                 "        <ProjektMutation>false</ProjektMutation>\n" +
-						                 "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
-						                 "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
-						                 "        <Rechtsgruende>\n" +
-						                 "            <AmtNummer>9</AmtNummer>\n" +
-						                 "            <RechtsgrundCode>\n" +
-						                 "                <TextDe>*Cadastration</TextDe>\n" +
-						                 "                <TextFr>Cadastration</TextFr>\n" +
-						                 "            </RechtsgrundCode>\n" +
-						                 "            <BelegDatum>2016-02-22</BelegDatum>\n" +
-						                 "            <BelegJahr>2016</BelegJahr>\n" +
-						                 "            <BelegNummer>559</BelegNummer>\n" +
-						                 "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						                 "        </Rechtsgruende>\n" +
-						                 "    </GrundstueckFlaeche>\n" +
-						                 "    <RechtArt>bauRecht</RechtArt>\n" +
-						                 "</Sdr>\n", mut1.getXmlContent());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
+						             "    <EGrid>CH729253834531</EGrid>\n" +
+						             "    <GrundstueckNummer VersionID=\"1f109152381026b501381028ab3f31b8\">\n" +
+						             "        <BfsNr>294</BfsNr>\n" +
+						             "        <Gemeindenamen>Oron</Gemeindenamen>\n" +
+						             "        <StammNr>692</StammNr>\n" +
+						             "    </GrundstueckNummer>\n" +
+						             "    <IstKopie>false</IstKopie>\n" +
+						             "    <AmtlicheBewertung VersionID=\"8af8064d567f817b015722fa93bc63c8\">\n" +
+						             "        <AmtlicherWert>2120000</AmtlicherWert>\n" +
+						             "        <ProtokollNr>2016</ProtokollNr>\n" +
+						             "        <ProtokollDatum>2016-09-13</ProtokollDatum>\n" +
+						             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+						             "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
+						             "    </AmtlicheBewertung>\n" +
+						             "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
+						             "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
+						             "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
+						             "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
+						             "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
+						             "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
+						             "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
+						             "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
+						             "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
+						             "    <NutzungLandwirtschaft>ja</NutzungLandwirtschaft>\n" +
+						             "    <NutzungWald>nein</NutzungWald>\n" +
+						             "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
+						             "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
+						             "    <GrundstueckFlaeche VersionID=\"8af806cc3971feb60139e36d088230f9\" MasterID=\"8af806cc3971feb60139e36d088230f8\">\n" +
+						             "        <Flaeche>4896</Flaeche>\n" +
+						             "        <Qualitaet>\n" +
+						             "            <TextDe>*numérisé</TextDe>\n" +
+						             "            <TextFr>numérisé</TextFr>\n" +
+						             "        </Qualitaet>\n" +
+						             "        <ProjektMutation>false</ProjektMutation>\n" +
+						             "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
+						             "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
+						             "        <Rechtsgruende>\n" +
+						             "            <AmtNummer>9</AmtNummer>\n" +
+						             "            <RechtsgrundCode>\n" +
+						             "                <TextDe>*Cadastration</TextDe>\n" +
+						             "                <TextFr>Cadastration</TextFr>\n" +
+						             "            </RechtsgrundCode>\n" +
+						             "            <BelegDatum>2016-02-22</BelegDatum>\n" +
+						             "            <BelegJahr>2016</BelegJahr>\n" +
+						             "            <BelegNummer>559</BelegNummer>\n" +
+						             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
+						             "        </Rechtsgruende>\n" +
+						             "    </GrundstueckFlaeche>\n" +
+						             "    <RechtArt>bauRecht</RechtArt>\n" +
+						             "</Sdr>\n", mut1.getXmlContent());
 
 				final EvenementRFMutation mut2 = mutations.get(2);
 				assertEquals(importId, mut2.getParentImport().getId());
 				assertEquals(EtatEvenementRF.TRAITE, mut2.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut2.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
-				assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                 "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						                 "    <GrundstueckID>_8af806fc45d223e60149c23f475365d5</GrundstueckID>\n" +
-						                 "    <EGrid>CH336583651349</EGrid>\n" +
-						                 "    <GrundstueckNummer VersionID=\"8af806fc45d223e60149139250510365\">\n" +
-						                 "        <BfsNr>190</BfsNr>\n" +
-						                 "        <Gemeindenamen>Boulens</Gemeindenamen>\n" +
-						                 "        <StammNr>19</StammNr>\n" +
-						                 "        <IndexNr1>4</IndexNr1>\n" +
-						                 "    </GrundstueckNummer>\n" +
-						                 "    <IstKopie>false</IstKopie>\n" +
-						                 "    <AmtlicheBewertung VersionID=\"8af8064d567f817b015723af4e8167a3\">\n" +
-						                 "        <AmtlicherWert>495000</AmtlicherWert>\n" +
-						                 "        <ProtokollNr>2016</ProtokollNr>\n" +
-						                 "        <ProtokollDatum>2016-09-13</ProtokollDatum>\n" +
-						                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-						                 "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
-						                 "    </AmtlicheBewertung>\n" +
-						                 "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
-						                 "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
-						                 "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
-						                 "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
-						                 "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
-						                 "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
-						                 "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
-						                 "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
-						                 "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						                 "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
-						                 "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
-						                 "    <NutzungWald>nein</NutzungWald>\n" +
-						                 "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
-						                 "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
-						                 "    <StammGrundstueck VersionID=\"8af806fc45d223e60149c23f47cf65d9\">\n" +
-						                 "        <Quote>\n" +
-						                 "            <AnteilZaehler>293</AnteilZaehler>\n" +
-						                 "            <AnteilNenner>1000</AnteilNenner>\n" +
-						                 "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
-						                 "        </Quote>\n" +
-						                 "        <BelastetesGrundstueck VersionID=\"1f109152381026b501381028c81f449a\">\n" +
-						                 "            <EGrid>CH528963834590</EGrid>\n" +
-						                 "            <GrundstueckNummer>\n" +
-						                 "                <BfsNr>190</BfsNr>\n" +
-						                 "                <Gemeindenamen>Boulens</Gemeindenamen>\n" +
-						                 "                <StammNr>19</StammNr>\n" +
-						                 "            </GrundstueckNummer>\n" +
-						                 "            <GrundstueckArt>Liegenschaft</GrundstueckArt>\n" +
-						                 "        </BelastetesGrundstueck>\n" +
-						                 "    </StammGrundstueck>\n" +
-						                 "</StockwerksEinheit>\n", mut2.getXmlContent());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <GrundstueckID>_8af806fc45d223e60149c23f475365d5</GrundstueckID>\n" +
+						             "    <EGrid>CH336583651349</EGrid>\n" +
+						             "    <GrundstueckNummer VersionID=\"8af806fc45d223e60149139250510365\">\n" +
+						             "        <BfsNr>190</BfsNr>\n" +
+						             "        <Gemeindenamen>Boulens</Gemeindenamen>\n" +
+						             "        <StammNr>19</StammNr>\n" +
+						             "        <IndexNr1>4</IndexNr1>\n" +
+						             "    </GrundstueckNummer>\n" +
+						             "    <IstKopie>false</IstKopie>\n" +
+						             "    <AmtlicheBewertung VersionID=\"8af8064d567f817b015723af4e8167a3\">\n" +
+						             "        <AmtlicherWert>495000</AmtlicherWert>\n" +
+						             "        <ProtokollNr>2016</ProtokollNr>\n" +
+						             "        <ProtokollDatum>2016-09-13</ProtokollDatum>\n" +
+						             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+						             "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
+						             "    </AmtlicheBewertung>\n" +
+						             "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
+						             "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
+						             "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
+						             "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
+						             "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
+						             "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
+						             "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
+						             "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
+						             "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
+						             "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
+						             "    <NutzungWald>nein</NutzungWald>\n" +
+						             "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
+						             "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
+						             "    <StammGrundstueck VersionID=\"8af806fc45d223e60149c23f47cf65d9\">\n" +
+						             "        <Quote>\n" +
+						             "            <AnteilZaehler>293</AnteilZaehler>\n" +
+						             "            <AnteilNenner>1000</AnteilNenner>\n" +
+						             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+						             "        </Quote>\n" +
+						             "        <BelastetesGrundstueck VersionID=\"1f109152381026b501381028c81f449a\">\n" +
+						             "            <EGrid>CH528963834590</EGrid>\n" +
+						             "            <GrundstueckNummer>\n" +
+						             "                <BfsNr>190</BfsNr>\n" +
+						             "                <Gemeindenamen>Boulens</Gemeindenamen>\n" +
+						             "                <StammNr>19</StammNr>\n" +
+						             "            </GrundstueckNummer>\n" +
+						             "            <GrundstueckArt>Liegenschaft</GrundstueckArt>\n" +
+						             "        </BelastetesGrundstueck>\n" +
+						             "    </StammGrundstueck>\n" +
+						             "</StockwerksEinheit>\n", mut2.getXmlContent());
 
 				final EvenementRFMutation mut3 = mutations.get(3);
 				assertEquals(importId, mut3.getParentImport().getId());
 				assertEquals(EtatEvenementRF.TRAITE, mut3.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut3.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
-				assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                 "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						                 "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +
-						                 "    <EGrid>CH516579658411</EGrid>\n" +
-						                 "    <GrundstueckNummer VersionID=\"8af806fc4e7cb94d014ffe532ff45108\">\n" +
-						                 "        <BfsNr>308</BfsNr>\n" +
-						                 "        <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
-						                 "        <StammNr>3601</StammNr>\n" +
-						                 "        <IndexNr1>7</IndexNr1>\n" +
-						                 "        <IndexNr2>13</IndexNr2>\n" +
-						                 "    </GrundstueckNummer>\n" +
-						                 "    <IstKopie>false</IstKopie>\n" +
-						                 "    <AmtlicheBewertung VersionID=\"8af806cc5043853201508ec7ede11e40\">\n" +
-						                 "        <AmtlicherWert>550</AmtlicherWert>\n" +
-						                 "        <ProtokollNr>2015</ProtokollNr>\n" +
-						                 "        <ProtokollDatum>2015-10-22</ProtokollDatum>\n" +
-						                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-						                 "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
-						                 "    </AmtlicheBewertung>\n" +
-						                 "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
-						                 "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
-						                 "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
-						                 "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
-						                 "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
-						                 "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
-						                 "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
-						                 "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
-						                 "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						                 "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
-						                 "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
-						                 "    <NutzungWald>nein</NutzungWald>\n" +
-						                 "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
-						                 "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
-						                 "    <StammGrundstueck VersionID=\"8af806cc5043853201508e1e8a811a75\">\n" +
-						                 "        <Quote>\n" +
-						                 "            <AnteilZaehler>1</AnteilZaehler>\n" +
-						                 "            <AnteilNenner>18</AnteilNenner>\n" +
-						                 "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
-						                 "        </Quote>\n" +
-						                 "        <BelastetesGrundstueck VersionID=\"8af806cc5043853201508e1c04c419e6\">\n" +
-						                 "            <EGrid>CH487965658402</EGrid>\n" +
-						                 "            <GrundstueckNummer>\n" +
-						                 "                <BfsNr>308</BfsNr>\n" +
-						                 "                <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
-						                 "                <StammNr>3601</StammNr>\n" +
-						                 "                <IndexNr1>7</IndexNr1>\n" +
-						                 "            </GrundstueckNummer>\n" +
-						                 "            <GrundstueckArt>StockwerksEinheit</GrundstueckArt>\n" +
-						                 "        </BelastetesGrundstueck>\n" +
-						                 "    </StammGrundstueck>\n" +
-						                 "</GewoehnlichesMiteigentum>\n", mut3.getXmlContent());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +
+						             "    <EGrid>CH516579658411</EGrid>\n" +
+						             "    <GrundstueckNummer VersionID=\"8af806fc4e7cb94d014ffe532ff45108\">\n" +
+						             "        <BfsNr>308</BfsNr>\n" +
+						             "        <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
+						             "        <StammNr>3601</StammNr>\n" +
+						             "        <IndexNr1>7</IndexNr1>\n" +
+						             "        <IndexNr2>13</IndexNr2>\n" +
+						             "    </GrundstueckNummer>\n" +
+						             "    <IstKopie>false</IstKopie>\n" +
+						             "    <AmtlicheBewertung VersionID=\"8af806cc5043853201508ec7ede11e40\">\n" +
+						             "        <AmtlicherWert>550</AmtlicherWert>\n" +
+						             "        <ProtokollNr>2015</ProtokollNr>\n" +
+						             "        <ProtokollDatum>2015-10-22</ProtokollDatum>\n" +
+						             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+						             "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
+						             "    </AmtlicheBewertung>\n" +
+						             "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
+						             "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
+						             "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
+						             "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
+						             "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
+						             "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
+						             "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
+						             "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
+						             "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
+						             "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
+						             "    <NutzungWald>nein</NutzungWald>\n" +
+						             "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
+						             "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
+						             "    <StammGrundstueck VersionID=\"8af806cc5043853201508e1e8a811a75\">\n" +
+						             "        <Quote>\n" +
+						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+						             "            <AnteilNenner>18</AnteilNenner>\n" +
+						             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+						             "        </Quote>\n" +
+						             "        <BelastetesGrundstueck VersionID=\"8af806cc5043853201508e1c04c419e6\">\n" +
+						             "            <EGrid>CH487965658402</EGrid>\n" +
+						             "            <GrundstueckNummer>\n" +
+						             "                <BfsNr>308</BfsNr>\n" +
+						             "                <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
+						             "                <StammNr>3601</StammNr>\n" +
+						             "                <IndexNr1>7</IndexNr1>\n" +
+						             "            </GrundstueckNummer>\n" +
+						             "            <GrundstueckArt>StockwerksEinheit</GrundstueckArt>\n" +
+						             "        </BelastetesGrundstueck>\n" +
+						             "    </StammGrundstueck>\n" +
+						             "</GewoehnlichesMiteigentum>\n", mut3.getXmlContent());
 			}
 		});
 
@@ -639,60 +639,60 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 				assertEquals(EtatEvenementRF.TRAITE, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
-				assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                 "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						                 "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
-						                 "    <EGrid>CH729253834531</EGrid>\n" +
-						                 "    <GrundstueckNummer VersionID=\"1f109152381026b501381028ab3f31b8\">\n" +
-						                 "        <BfsNr>294</BfsNr>\n" +
-						                 "        <Gemeindenamen>Oron</Gemeindenamen>\n" +
-						                 "        <StammNr>692</StammNr>\n" +
-						                 "    </GrundstueckNummer>\n" +
-						                 "    <IstKopie>false</IstKopie>\n" +
-						                 "    <AmtlicheBewertung VersionID=\"8af8064d567f817b015722fa93bc63c8\">\n" +
-						                 "        <AmtlicherWert>2120000</AmtlicherWert>\n" +
-						                 "        <ProtokollNr>2016</ProtokollNr>\n" +
-						                 "        <ProtokollDatum>2016-09-13</ProtokollDatum>\n" +
-						                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-						                 "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
-						                 "    </AmtlicheBewertung>\n" +
-						                 "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
-						                 "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
-						                 "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
-						                 "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
-						                 "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
-						                 "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
-						                 "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
-						                 "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
-						                 "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						                 "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
-						                 "    <NutzungLandwirtschaft>ja</NutzungLandwirtschaft>\n" +
-						                 "    <NutzungWald>nein</NutzungWald>\n" +
-						                 "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
-						                 "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
-						                 "    <GrundstueckFlaeche VersionID=\"8af806cc3971feb60139e36d088230f9\" MasterID=\"8af806cc3971feb60139e36d088230f8\">\n" +
-						                 "        <Flaeche>4896</Flaeche>\n" +
-						                 "        <Qualitaet>\n" +
-						                 "            <TextDe>*numérisé</TextDe>\n" +
-						                 "            <TextFr>numérisé</TextFr>\n" +
-						                 "        </Qualitaet>\n" +
-						                 "        <ProjektMutation>false</ProjektMutation>\n" +
-						                 "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
-						                 "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
-						                 "        <Rechtsgruende>\n" +
-						                 "            <AmtNummer>9</AmtNummer>\n" +
-						                 "            <RechtsgrundCode>\n" +
-						                 "                <TextDe>*Cadastration</TextDe>\n" +
-						                 "                <TextFr>Cadastration</TextFr>\n" +
-						                 "            </RechtsgrundCode>\n" +
-						                 "            <BelegDatum>2016-02-22</BelegDatum>\n" +
-						                 "            <BelegJahr>2016</BelegJahr>\n" +
-						                 "            <BelegNummer>559</BelegNummer>\n" +
-						                 "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						                 "        </Rechtsgruende>\n" +
-						                 "    </GrundstueckFlaeche>\n" +
-						                 "    <RechtArt>bauRecht</RechtArt>\n" +
-						                 "</Sdr>\n", mut0.getXmlContent());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
+						             "    <EGrid>CH729253834531</EGrid>\n" +
+						             "    <GrundstueckNummer VersionID=\"1f109152381026b501381028ab3f31b8\">\n" +
+						             "        <BfsNr>294</BfsNr>\n" +
+						             "        <Gemeindenamen>Oron</Gemeindenamen>\n" +
+						             "        <StammNr>692</StammNr>\n" +
+						             "    </GrundstueckNummer>\n" +
+						             "    <IstKopie>false</IstKopie>\n" +
+						             "    <AmtlicheBewertung VersionID=\"8af8064d567f817b015722fa93bc63c8\">\n" +
+						             "        <AmtlicherWert>2120000</AmtlicherWert>\n" +
+						             "        <ProtokollNr>2016</ProtokollNr>\n" +
+						             "        <ProtokollDatum>2016-09-13</ProtokollDatum>\n" +
+						             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+						             "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
+						             "    </AmtlicheBewertung>\n" +
+						             "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
+						             "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
+						             "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
+						             "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
+						             "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
+						             "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
+						             "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
+						             "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
+						             "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
+						             "    <NutzungLandwirtschaft>ja</NutzungLandwirtschaft>\n" +
+						             "    <NutzungWald>nein</NutzungWald>\n" +
+						             "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
+						             "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
+						             "    <GrundstueckFlaeche VersionID=\"8af806cc3971feb60139e36d088230f9\" MasterID=\"8af806cc3971feb60139e36d088230f8\">\n" +
+						             "        <Flaeche>4896</Flaeche>\n" +
+						             "        <Qualitaet>\n" +
+						             "            <TextDe>*numérisé</TextDe>\n" +
+						             "            <TextFr>numérisé</TextFr>\n" +
+						             "        </Qualitaet>\n" +
+						             "        <ProjektMutation>false</ProjektMutation>\n" +
+						             "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
+						             "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
+						             "        <Rechtsgruende>\n" +
+						             "            <AmtNummer>9</AmtNummer>\n" +
+						             "            <RechtsgrundCode>\n" +
+						             "                <TextDe>*Cadastration</TextDe>\n" +
+						             "                <TextFr>Cadastration</TextFr>\n" +
+						             "            </RechtsgrundCode>\n" +
+						             "            <BelegDatum>2016-02-22</BelegDatum>\n" +
+						             "            <BelegJahr>2016</BelegJahr>\n" +
+						             "            <BelegNummer>559</BelegNummer>\n" +
+						             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
+						             "        </Rechtsgruende>\n" +
+						             "    </GrundstueckFlaeche>\n" +
+						             "    <RechtArt>bauRecht</RechtArt>\n" +
+						             "</Sdr>\n", mut0.getXmlContent());
 
 				// le numéro de parcelle est différent
 				final EvenementRFMutation mut1 = mutations.get(1);
@@ -700,57 +700,57 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 				assertEquals(EtatEvenementRF.TRAITE, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
-				assertBlobEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                 "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						                 "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +
-						                 "    <EGrid>CH516579658411</EGrid>\n" +
-						                 "    <GrundstueckNummer VersionID=\"8af806fc4e7cb94d014ffe532ff45108\">\n" +
-						                 "        <BfsNr>308</BfsNr>\n" +
-						                 "        <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
-						                 "        <StammNr>3601</StammNr>\n" +
-						                 "        <IndexNr1>7</IndexNr1>\n" +
-						                 "        <IndexNr2>13</IndexNr2>\n" +
-						                 "    </GrundstueckNummer>\n" +
-						                 "    <IstKopie>false</IstKopie>\n" +
-						                 "    <AmtlicheBewertung VersionID=\"8af806cc5043853201508ec7ede11e40\">\n" +
-						                 "        <AmtlicherWert>550</AmtlicherWert>\n" +
-						                 "        <ProtokollNr>2015</ProtokollNr>\n" +
-						                 "        <ProtokollDatum>2015-10-22</ProtokollDatum>\n" +
-						                 "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
-						                 "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
-						                 "    </AmtlicheBewertung>\n" +
-						                 "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
-						                 "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
-						                 "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
-						                 "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
-						                 "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
-						                 "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
-						                 "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
-						                 "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
-						                 "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						                 "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
-						                 "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
-						                 "    <NutzungWald>nein</NutzungWald>\n" +
-						                 "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
-						                 "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
-						                 "    <StammGrundstueck VersionID=\"8af806cc5043853201508e1e8a811a75\">\n" +
-						                 "        <Quote>\n" +
-						                 "            <AnteilZaehler>1</AnteilZaehler>\n" +
-						                 "            <AnteilNenner>18</AnteilNenner>\n" +
-						                 "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
-						                 "        </Quote>\n" +
-						                 "        <BelastetesGrundstueck VersionID=\"8af806cc5043853201508e1c04c419e6\">\n" +
-						                 "            <EGrid>CH487965658402</EGrid>\n" +
-						                 "            <GrundstueckNummer>\n" +
-						                 "                <BfsNr>308</BfsNr>\n" +
-						                 "                <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
-						                 "                <StammNr>3601</StammNr>\n" +
-						                 "                <IndexNr1>7</IndexNr1>\n" +
-						                 "            </GrundstueckNummer>\n" +
-						                 "            <GrundstueckArt>StockwerksEinheit</GrundstueckArt>\n" +
-						                 "        </BelastetesGrundstueck>\n" +
-						                 "    </StammGrundstueck>\n" +
-						                 "</GewoehnlichesMiteigentum>\n", mut1.getXmlContent());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +
+						             "    <EGrid>CH516579658411</EGrid>\n" +
+						             "    <GrundstueckNummer VersionID=\"8af806fc4e7cb94d014ffe532ff45108\">\n" +
+						             "        <BfsNr>308</BfsNr>\n" +
+						             "        <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
+						             "        <StammNr>3601</StammNr>\n" +
+						             "        <IndexNr1>7</IndexNr1>\n" +
+						             "        <IndexNr2>13</IndexNr2>\n" +
+						             "    </GrundstueckNummer>\n" +
+						             "    <IstKopie>false</IstKopie>\n" +
+						             "    <AmtlicheBewertung VersionID=\"8af806cc5043853201508ec7ede11e40\">\n" +
+						             "        <AmtlicherWert>550</AmtlicherWert>\n" +
+						             "        <ProtokollNr>2015</ProtokollNr>\n" +
+						             "        <ProtokollDatum>2015-10-22</ProtokollDatum>\n" +
+						             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+						             "        <MitEwKomponente>unbekannt</MitEwKomponente>\n" +
+						             "    </AmtlicheBewertung>\n" +
+						             "    <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>\n" +
+						             "    <BeschreibungUebergeben>true</BeschreibungUebergeben>\n" +
+						             "    <EigentumUebergeben>true</EigentumUebergeben>\n" +
+						             "    <PfandrechtUebergeben>true</PfandrechtUebergeben>\n" +
+						             "    <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>\n" +
+						             "    <GrundlastUebergeben>true</GrundlastUebergeben>\n" +
+						             "    <AnmerkungUebergeben>true</AnmerkungUebergeben>\n" +
+						             "    <VormerkungUebergeben>true</VormerkungUebergeben>\n" +
+						             "    <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "    <BereitZurVerifikation>false</BereitZurVerifikation>\n" +
+						             "    <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>\n" +
+						             "    <NutzungWald>nein</NutzungWald>\n" +
+						             "    <NutzungEisenbahn>nein</NutzungEisenbahn>\n" +
+						             "    <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>\n" +
+						             "    <StammGrundstueck VersionID=\"8af806cc5043853201508e1e8a811a75\">\n" +
+						             "        <Quote>\n" +
+						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+						             "            <AnteilNenner>18</AnteilNenner>\n" +
+						             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+						             "        </Quote>\n" +
+						             "        <BelastetesGrundstueck VersionID=\"8af806cc5043853201508e1c04c419e6\">\n" +
+						             "            <EGrid>CH487965658402</EGrid>\n" +
+						             "            <GrundstueckNummer>\n" +
+						             "                <BfsNr>308</BfsNr>\n" +
+						             "                <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
+						             "                <StammNr>3601</StammNr>\n" +
+						             "                <IndexNr1>7</IndexNr1>\n" +
+						             "            </GrundstueckNummer>\n" +
+						             "            <GrundstueckArt>StockwerksEinheit</GrundstueckArt>\n" +
+						             "        </BelastetesGrundstueck>\n" +
+						             "    </StammGrundstueck>\n" +
+						             "</GewoehnlichesMiteigentum>\n", mut1.getXmlContent());
 			}
 		});
 

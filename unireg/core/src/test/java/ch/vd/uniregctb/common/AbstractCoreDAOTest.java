@@ -1,16 +1,12 @@
 package ch.vd.uniregctb.common;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.net.URL;
-import java.sql.Blob;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -129,7 +124,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.transaction.MockBlob;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
@@ -1506,32 +1500,5 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 			}
 		}
 		return filtered;
-	}
-
-	/**
-	 * Vérifie que le contenu d'un blob correspond à une valeur string.
-	 *
-	 * @param expected le contenu attendu
-	 * @param blob     le blob à tester
-	 */
-	public static void assertBlobEquals(@Nullable String expected, @Nullable Blob blob) throws IOException, SQLException {
-		if (expected == null) {
-			assertNull(blob);
-		}
-		else {
-			assertNotNull(blob);
-			final String actual;
-			if (blob instanceof MockBlob) {
-				actual = new String(((MockBlob) blob).getContent(), "UTF-8");
-			}
-			else {
-				try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
-				     final InputStream is = blob.getBinaryStream()) {
-					IOUtils.copy(is, out);
-					actual = out.toString("UTF-8");
-				}
-			}
-			assertEquals(expected, actual);
-		}
 	}
 }

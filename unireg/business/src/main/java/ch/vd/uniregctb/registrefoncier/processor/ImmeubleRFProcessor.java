@@ -2,10 +2,8 @@ package ch.vd.uniregctb.registrefoncier.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
 
+import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		this.xmlHelperRF = xmlHelperRF;
 
 		try {
-			unmarshaller = xmlHelperRF.getImmeubleContext().createUnmarshaller();
+			unmarshaller = this.xmlHelperRF.getImmeubleContext().createUnmarshaller();
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);
@@ -60,10 +58,11 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 		// on interpète le XML
 		final Grundstueck immeubleImport;
-		try (final InputStream is = mutation.getXmlContent().getBinaryStream()) {
-			immeubleImport = (Grundstueck) unmarshaller.unmarshal(is);
+		try {
+			final StringSource source = new StringSource(mutation.getXmlContent());
+			immeubleImport = (Grundstueck) unmarshaller.unmarshal(source);
 		}
-		catch (SQLException | IOException | JAXBException e) {
+		catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
 
