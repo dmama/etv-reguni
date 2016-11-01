@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.StringsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
@@ -87,6 +88,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
  * TODO: triple check everything
@@ -365,6 +368,21 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			}
 		}
 
+		/*
+		    SIFISC-21128 - Sauter les annonces IDE liées à une nouvelle inscription sur VD lorsque c'est possible, afin de pouvoir traiter automatiquement
+		    l'événement FOSC qui suit derrière.
+		  */
+		if (entreprise == null && evenementAIgnorer(event)) {
+			evenements.add(
+					new MessageSuiviPreExecution(event, organisation, null, context, options,
+					                             String.format("L'événement pour l'organisation n°%d précède un événement FOSC d'inscription RC VD sans historique avant ce jour au civil. Ignoré.",
+					                                           organisation.getNumeroOrganisation())
+					)
+			);
+			evaluateStrategies = false;
+		}
+
+
 		/* Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données. */
 		final List<EvenementOrganisationInterne> resultatEvaluationStrategies = new ArrayList<>();
 		if (evaluateStrategies) {
@@ -406,6 +424,63 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
+	}
+
+	/**
+	 * Déterminer si l'événement doit être ignoré en vertu des critères énoncés au SIFISC-21128: Sauter les annonces IDE liées à une nouvelle inscription sur VD
+	 * lorsque c'est possible.
+	 *
+	 * NOTE: Il est requis de contrôler qu'on n'a pas d'entreprise en base associée à ce numéro d'organisation avant d'appeler cette méthode.
+	 *
+	 * @param event l'événement
+	 */
+	protected boolean evenementAIgnorer(EvenementOrganisation event) {
+
+		final RegDate dateEvenement = event.getDateEvenement();
+
+		final Organisation organisationHistory = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+		final SiteOrganisation sitePrincipal = organisationHistory.getSitePrincipal(dateEvenement).getPayload();
+		final Domicile siegePrincipalAvant = organisationHistory.getSiegePrincipal(dateEvenement.getOneDayBefore());
+		final Domicile siegePrincipalApres = organisationHistory.getSiegePrincipal(dateEvenement);
+
+		/*
+		    Les 5 conditions pour estimer sans risque d'ignorer un événement IDE au profit de l'événement FOSC à venir.
+		    FIXME: On ne supporte pas correctement les événements IDE reçus après la FOSC pour un même jour. Perte potentielle de changement d'adresse.
+		  */
+
+		// Etre un événement IDE d'inscription ou mutation
+		final boolean evtIDEIncriptionMutation = event.getType() == TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION || event.getType() == TypeEvenementOrganisation.IDE_MUTATION;
+
+		// On s'attend à une nouvelle inscription au RC (Vaudois, cf. condition de lieu ci-dessous), donc il faut être inscrit et non radié.
+		final boolean actifAuRC = sitePrincipal.isConnuInscritAuRC(dateEvenement) && !sitePrincipal.isRadieDuRC(dateEvenement);
+
+		// Ne pas avoir d'historique avant aujourd'hui au civil. C'est-à-dire être une nouvelle inscription RC VD, soit par fondation, soit par arrivée. On contrôle aussi l'absence d'événements.
+		final boolean estNouveauCivil = organisationHistory.getNom(dateEvenement.getOneDayBefore()) == null &&
+				evenementOrganisationService.evenementsPourDateValeurEtOrganisation(dateEvenement.getOneDayBefore(), event.getNoOrganisation()).isEmpty();
+
+		// On doit être vaudois. On ne peut s'attendre à un événement FOSC pour les cas hors canton, et on veut exclure tout risque de traiter un événement FOSC pour un établissement secondaire.
+		final boolean estVaudoise = siegePrincipalApres.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+
+		// S'assurer que l'événement est vide de tout changement de siège, car dès lors qu'il est présent sur un événement IDE, il serait absent de l'événement FOSC qui suivrait.
+		final boolean sansChangementDeSiege = siegePrincipalAvant == null || (siegePrincipalAvant.getTypeAutoriteFiscale() == siegePrincipalApres.getTypeAutoriteFiscale() && siegePrincipalAvant.getNumeroOfsAutoriteFiscale().equals(siegePrincipalApres.getNumeroOfsAutoriteFiscale()));
+
+		// S'assurer qu'il y a aucun d'événement FOSC avant et au moins un après pour le même jour
+		final List<EvenementOrganisation> evenementsDuJour = evenementOrganisationService.evenementsPourDateValeurEtOrganisation(dateEvenement, event.getNoOrganisation());
+		final List<EvenementOrganisation> evenementsFOSCRecusAvant = new ArrayList<>();
+		final List<EvenementOrganisation> evenementsFOSCRecusApres = new ArrayList<>();
+		for (EvenementOrganisation evt : evenementsDuJour) {
+			if (evt.getType().getSource() == TypeEvenementOrganisation.Source.FOSC) {
+				if (evt.getId() < event.getId()) {
+					evenementsFOSCRecusAvant.add(evt);
+				}
+				else if (evt.getId() > event.getId()) {
+					evenementsFOSCRecusApres.add(evt);
+				}
+			}
+		}
+		final boolean evtFOSCApresPasAvant = evenementsFOSCRecusAvant.isEmpty() && evenementsFOSCRecusApres.size() > 0;
+
+		return evtIDEIncriptionMutation && actifAuRC && estNouveauCivil && estVaudoise && sansChangementDeSiege && evtFOSCApresPasAvant;
 	}
 
 	/**

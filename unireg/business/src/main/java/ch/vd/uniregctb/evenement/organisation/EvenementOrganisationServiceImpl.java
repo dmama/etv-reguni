@@ -88,4 +88,10 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 	public boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event) {
 		return evenementOrganisationDAO.isEvenementDateValeurDansLePasse(event) ;
 	}
+
+	@NotNull
+	@Override
+	public List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation) {
+		return arrangeAndSort(evenementOrganisationDAO.evenementsPourDateValeurEtOrganisation(date, noOrganisation));
+	}
 }

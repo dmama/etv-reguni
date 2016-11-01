@@ -108,4 +108,13 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	 * @return <code>true</code> si l'événement a été reçu pour une date de valeur dans le passé par rapport à d'autres événements déjà reçus. <code>false</code> sinon.
 	 */
 	boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event);
+
+	/**
+	 * @param date date de valeur des événements
+	 * @param noOrganisation no de l'organisation
+	 * @return la liste des événements non annulés valables à cette date pour l'organisation
+	 */
+	@NotNull
+	List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation);
+
 }

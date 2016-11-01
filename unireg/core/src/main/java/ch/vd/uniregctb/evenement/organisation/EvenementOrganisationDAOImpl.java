@@ -126,6 +126,23 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		return !evtRecusAvant.isEmpty();
 	}
 
+	@Override
+	@NotNull
+	public List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation) {
+		final EvenementOrganisationCriteria<TypeEvenementOrganisation> criteria = new EvenementOrganisationCriteria<>();
+		criteria.setNumeroOrganisation(noOrganisation);
+		criteria.setRegDateEvenementDebut(date);
+		criteria.setRegDateEvenementFin(date);
+		final List<EvenementOrganisation> trouves = find(criteria, null);
+		final List<EvenementOrganisation> filtres = new ArrayList<>(trouves.size());
+		for (EvenementOrganisation trouve : trouves) {
+			if (!trouve.isAnnule()) {
+				filtres.add(trouve);
+			}
+		}
+		return filtres;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Long> getOrganisationsConcerneesParEvenementsPourRetry() {
