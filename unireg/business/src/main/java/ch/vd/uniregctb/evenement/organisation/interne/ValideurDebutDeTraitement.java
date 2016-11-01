@@ -66,27 +66,39 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		// On doit connaître la catégorie pour continuer en mode automatique
-		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
-		final FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateEvt());
-		if (getEntreprise() == null && category != null && (category != CategorieEntreprise.PP && formeLegale != FormeLegale.N_0302_SOCIETE_SIMPLE)) {
+		final Organisation organisation = getOrganisation();
+		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, getDateEvt());
+		if (category == null) {
+			throw new ValideurDebutDeTraitementException(
+					String.format("Impossible de déterminer la catégorie d'entreprise de l'organisation n°%d. Veuillez traiter le cas à la main.", organisation.getNumeroOrganisation())
+			);
+		}
+		final FormeLegale formeLegale = organisation.getFormeLegale(getDateEvt());
+		if (getEntreprise() == null && (category != CategorieEntreprise.PP && formeLegale != FormeLegale.N_0302_SOCIETE_SIMPLE)) {
 			// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
-			final RegDate datePasseeTropAncienne = getDateEvt().getOneDayBefore().addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
-			// On a besoin du vrai historique pour savoir cela.
-			final Organisation organisationHistory = getContext().getServiceOrganisation().getOrganisationHistory(getOrganisation().getNumeroOrganisation());
-			final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisationHistory.getSitePrincipal(datePasseeTropAncienne);
-			if (sitePrincipalAvantRange != null) {
-				SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-				final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
-				if (domicilePasse != null) {
-					if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						final Commune commune = getCommune(domicilePasse.getNumeroOfsAutoriteFiscale(), datePasseeTropAncienne);
-						throw new ValideurDebutDeTraitementException(
-								String.format(
-										"L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",
-										organisationHistory.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "",
-										OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
-						);
-					}
+			verifieNonPreexistanteVD();
+		}
+
+	}
+
+	// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
+	protected void verifieNonPreexistanteVD() throws EvenementOrganisationException {
+		final RegDate datePasseeTropAncienne = getDateEvt().getOneDayBefore().addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+		// On a besoin du vrai historique pour savoir cela.
+		final Organisation organisationHistory = getContext().getServiceOrganisation().getOrganisationHistory(getOrganisation().getNumeroOrganisation());
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisationHistory.getSitePrincipal(datePasseeTropAncienne);
+		if (sitePrincipalAvantRange != null) {
+			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
+			final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
+			if (domicilePasse != null) {
+				if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					final Commune commune = getCommune(domicilePasse.getNumeroOfsAutoriteFiscale(), datePasseeTropAncienne);
+					throw new ValideurDebutDeTraitementException(
+							String.format(
+									"L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",
+									organisationHistory.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "",
+									OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+					);
 				}
 			}
 		}
