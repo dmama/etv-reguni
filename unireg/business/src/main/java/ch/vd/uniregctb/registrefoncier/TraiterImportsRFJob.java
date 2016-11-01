@@ -22,6 +22,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
+import ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -105,7 +106,8 @@ public class TraiterImportsRFJob extends JobDefinition {
 			parser.processFile(is, new DataRFBatcher(100, mutationsDetector));
 
 			// on traite les mutations
-			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+			final ImmeubleRFProcessor immeubleRFProcessor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
+			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
 			processor.processImport(importId);
 
 			updateEvent(importId, EtatEvenementRF.TRAITE, null);

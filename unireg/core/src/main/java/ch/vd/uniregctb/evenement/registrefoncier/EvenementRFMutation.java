@@ -62,6 +62,12 @@ public class EvenementRFMutation extends HibernateEntity {
 	 */
 	private String xmlContent;
 
+	/**
+	 * Un message d'erreur en cas d'erreur de traitement.
+	 */
+	@Nullable
+	private String errorMessage;
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -129,5 +135,16 @@ public class EvenementRFMutation extends HibernateEntity {
 
 	public void setXmlContent(@Nullable String xmlContent) {
 		this.xmlContent = xmlContent;
+	}
+
+	@Column(name = "ERROR_MESSAGE")
+	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Nullable
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(@Nullable String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 }

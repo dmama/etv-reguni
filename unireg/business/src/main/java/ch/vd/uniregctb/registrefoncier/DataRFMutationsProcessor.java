@@ -2,48 +2,44 @@ package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Processeur responsable de traiter les mutations du registre foncier.
  */
 public class DataRFMutationsProcessor {
 
-	private final XmlHelperRF xmlHelperRF;
-	private final EvenementRFImportDAO evenementRFImportDAO;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataRFMutationsProcessor.class);
+
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
+	private final MutationRFProcessor immeubleProcessor;
 
-	private final ImmeubleRFProcessor immeubleProcessor;
-
-	public DataRFMutationsProcessor(@NotNull XmlHelperRF xmlHelperRF,
-	                                @NotNull ImmeubleRFDAO immeubleRFDAO,
-	                                @NotNull EvenementRFImportDAO evenementRFImportDAO,
-	                                @NotNull EvenementRFMutationDAO evenementRFMutationDAO,
+	public DataRFMutationsProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
+	                                @NotNull MutationRFProcessor immeubleRFProcessor,
 	                                @NotNull PlatformTransactionManager transactionManager) {
-		this.xmlHelperRF = xmlHelperRF;
-		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
-
-		this.immeubleProcessor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
+		this.immeubleProcessor = immeubleRFProcessor;
 	}
 
 	/**
@@ -56,14 +52,29 @@ public class DataRFMutationsProcessor {
 		final List<Long> ids = findIdsMutationsATraiter(importId);
 
 		// TODO (msi) générer un rapport
-		final BatchTransactionTemplate template = new BatchTransactionTemplate(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		final BatchTransactionTemplate<Long> template = new BatchTransactionTemplate<>(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
 		template.execute(new BatchCallback<Long>() {
+
+			private List<Long> mutationsIds;
+
 			@Override
 			public boolean doInTransaction(List<Long> mutationsIds) throws Exception {
+				this.mutationsIds = mutationsIds;
 				mutationsIds.stream()
 						.map(id -> getMutation(id))
 						.forEach(mut -> processMutation(mut));
 				return true;
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					final Long mutId = CollectionsUtils.getFirst(mutationsIds);
+					LOGGER.warn("Erreur pendant le traitement de la mutation n°" + mutId, e);
+					if (mutId != null) {
+						updateMutation(mutId, e);
+					}
+				}
 			}
 		}, null);
 	}
@@ -71,6 +82,9 @@ public class DataRFMutationsProcessor {
 	private void processMutation(@NotNull EvenementRFMutation mut) {
 		final MutationRFProcessor proc = getProcessor(mut);
 		proc.process(mut);
+
+		// on met-à-jour le statut de la mutation
+		mut.setEtat(EtatEvenementRF.TRAITE);
 	}
 
 	@NotNull
@@ -112,6 +126,20 @@ public class DataRFMutationsProcessor {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
 				return evenementRFMutationDAO.findIds(importId, EtatEvenementRF.A_TRAITER);
+			}
+		});
+	}
+
+	private void updateMutation(final long mutId, @Nullable final Exception e) {
+		final TransactionTemplate t = new TransactionTemplate(transactionManager);
+		t.execute(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = getMutation(mutId);
+				mutation.setEtat(EtatEvenementRF.EN_ERREUR);
+				if (e != null) {
+					mutation.setErrorMessage(ExceptionUtils.getStackTrace(e));
+				}
 			}
 		});
 	}

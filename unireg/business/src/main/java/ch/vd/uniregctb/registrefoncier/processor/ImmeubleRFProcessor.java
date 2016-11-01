@@ -81,9 +81,6 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		default:
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
 		}
-
-		// on met-à-jour le statut de la mutation
-		mutation.setEtat(EtatEvenementRF.TRAITE);
 	}
 
 	private void processCreation(RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
