@@ -1066,6 +1066,24 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		this.etiquettes = etiquettes;
 	}
 
+	@Transient
+	public void addEtiquette(EtiquetteTiers etiquette) {
+		if (etiquette.getTiers() != null && etiquette.getTiers() != this) {
+			throw new IllegalArgumentException("Etiquette déjà associée à un autre tiers.");
+		}
+		etiquette.setTiers(this);
+		getOrCreateEtiquetteTiersSet().add(etiquette);
+	}
+
+	@NotNull
+	@Transient
+	protected synchronized Set<EtiquetteTiers> getOrCreateEtiquetteTiersSet() {
+		if (etiquettes == null) {
+			etiquettes = new HashSet<>();
+		}
+		return etiquettes;
+	}
+
 	/**
 	 * @see java.lang.Object#clone()
 	 */

@@ -57,6 +57,7 @@ public class Autorisations {
 	private final boolean debiteurs;
 	private final boolean mouvements;
 	private final boolean situationsFamille;
+	private final boolean etiquettes;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des mandats est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des mandats est interdite.
@@ -106,6 +107,7 @@ public class Autorisations {
 		this.debiteurs = false;
 		this.mouvements = false;
 		this.situationsFamille = false;
+		this.etiquettes = false;
 
 		this.mandats = false;
 		this.mandatsGeneraux = false;
@@ -153,6 +155,7 @@ public class Autorisations {
 		this.debiteurs = isAllowed(map, AutorisationManagerImpl.MODIF_DEBITEUR);
 		this.mouvements = isAllowed(map, AutorisationManagerImpl.MODIF_MOUVEMENT);
 		this.situationsFamille = isAllowed(map, AutorisationManagerImpl.FISCAL_SIT_FAMILLLE);
+		this.etiquettes = isAllowed(map, AutorisationManagerImpl.MODIF_ETIQUETTES);
 
 		this.mandats = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS);
 		this.mandatsGeneraux = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS_GENERAUX);
@@ -176,7 +179,7 @@ public class Autorisations {
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
 				|| (mandats && (mandatsGeneraux || mandatsSpeciaux || mandatsTiers))
-				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
+				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille || etiquettes
 				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || autresDocumentsFiscaux || remarques;
 	}
 
@@ -278,6 +281,10 @@ public class Autorisations {
 
 	public boolean isSituationsFamille() {
 		return situationsFamille;
+	}
+
+	public boolean isEtiquettes() {
+		return etiquettes;
 	}
 
 	public boolean isIdentificationEntreprise(){

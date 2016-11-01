@@ -81,6 +81,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_MANDATS_GENERAUX = "MANDATS_GENERAUX";
 	static final String MODIF_MANDATS_TIERS = "MANDATS_TIERS";
 	static final String MODIF_REMARQUES = "REMARQUES";
+	static final String MODIF_ETIQUETTES = "ETIQUETTES";
 	
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
@@ -410,6 +411,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(MODIF_AUTRES_DOCS_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_REMARQUES, Boolean.FALSE);
 			map.put(MODIF_MANDATS, Boolean.FALSE);
+			map.put(MODIF_ETIQUETTES, Boolean.FALSE);
 			return map;
 		}
 
@@ -461,6 +463,13 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 			}
 			return map;
+		}
+
+		if (tiers instanceof PersonnePhysique) {
+			// pour le moment, on ne peut les modifier que sur les personnes physiques...
+			if (SecurityHelper.isGranted(securityProvider, Role.GEST_ETIQUETTES, visa, oid)) {
+				map.put(MODIF_ETIQUETTES, Boolean.TRUE);
+			}
 		}
 
 		if (tiers instanceof Contribuable) {

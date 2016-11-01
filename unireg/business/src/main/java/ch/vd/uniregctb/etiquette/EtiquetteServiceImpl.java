@@ -2,10 +2,6 @@ package ch.vd.uniregctb.etiquette;
 
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-
 public class EtiquetteServiceImpl implements EtiquetteService {
 
 	private EtiquetteDAO etiquetteDAO;
@@ -30,8 +26,12 @@ public class EtiquetteServiceImpl implements EtiquetteService {
 	}
 
 	@Override
-	public Etiquette newEtiquette(String code, String libelle, @Nullable CollectiviteAdministrative collectiviteAdministrative) {
-		final Etiquette etiquette = new Etiquette(code, libelle, collectiviteAdministrative);
-		return etiquetteDAO.save(etiquette);
+	public Etiquette getEtiquette(String code) {
+		return etiquetteDAO.getByCode(code);
+	}
+
+	@Override
+	public EtiquetteTiers getEtiquetteTiers(long id) {
+		return etiquetteTiersDAO.get(id);
 	}
 }

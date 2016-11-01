@@ -63,6 +63,9 @@ public class TiersView {
 	private IndividuView individu;
 	private IndividuView individuConjoint;
 
+	private List<EtiquetteTiersView> etiquettes;
+	private List<EtiquetteTiersView> etiquettesConjoint;
+
 	private List<AdresseView> historiqueAdresses;
 
 	private List<AdresseCivilView> historiqueAdressesCiviles;
@@ -695,5 +698,21 @@ public class TiersView {
 
 	public void setMandatairesPerception(List<MandatairePerceptionView> mandatairesPerception) {
 		this.mandatairesPerception = mandatairesPerception;
+	}
+
+	public List<EtiquetteTiersView> getEtiquettes() {
+		return etiquettes;
+	}
+
+	public void setEtiquettes(List<EtiquetteTiersView> etiquettes) {
+		this.etiquettes = etiquettes;
+	}
+
+	public List<EtiquetteTiersView> getEtiquettesConjoint() {
+		return etiquettesConjoint;
+	}
+
+	public void setEtiquettesConjoint(List<EtiquetteTiersView> etiquettesConjoint) {
+		this.etiquettesConjoint = etiquettesConjoint;
 	}
 }

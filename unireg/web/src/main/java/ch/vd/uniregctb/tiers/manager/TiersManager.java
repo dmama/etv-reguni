@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalViewFactory;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -127,6 +129,7 @@ import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
+import ch.vd.uniregctb.tiers.view.EtiquetteTiersView;
 import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
@@ -208,7 +211,25 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Alimente Set<DebiteurView>
+	 * Alimente List&lt;EtiquetteTiersView&gt;
+	 */
+	protected List<EtiquetteTiersView> getEtiquettes(Tiers tiers) {
+		final List<EtiquetteTiersView> views;
+		final Set<EtiquetteTiers> db = tiers.getEtiquettes();
+		if (db == null || db.isEmpty()) {
+			views = Collections.emptyList();
+		}
+		else {
+			views = db.stream()
+					.map(EtiquetteTiersView::new)
+					.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(EtiquetteTiersView::getDateDebut).reversed()))
+					.collect(Collectors.toList());
+		}
+		return views;
+	}
+
+	/**
+	 * Alimente Set&lt;DebiteurView&gt;
 	 */
 	protected Set<DebiteurView> getDebiteurs(Contribuable contribuable) throws AdresseException {
 
@@ -231,11 +252,12 @@ public class TiersManager implements MessageSourceAware {
 				}
 			}
 		}
-
-
 		return debiteursView;
-
 	}
+
+	/**
+	 * Alimente Set&lt;DecisionAciView&gt;
+	 */
 	protected void setDecisionAciView(TiersView tiersView,Contribuable contribuable){
 		final List<DecisionAciView> decisionsView = new ArrayList<>();
 		final Set<DecisionAci> decisions = contribuable.getDecisionsAci();
@@ -252,7 +274,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Alimente List<RapportView>
+	 * Alimente List&lt;RapportView&gt;
 	 */
 	protected List<RapportView> getRapportsEtablissements(Tiers tiers) throws AdresseException {
 		final List<RapportView> rapportsView = new ArrayList<>();
@@ -301,7 +323,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Alimente List<RapportView>
+	 * Alimente List&lt;RapportView&gt;
 	 */
 	protected List<RapportView> getRapports(Tiers tiers) throws AdresseException {
 		final List<RapportView> rapportsView = new ArrayList<>();
@@ -406,7 +428,7 @@ public class TiersManager implements MessageSourceAware {
 
 
 	/**
-	 * Alimente List<RapportView>
+	 * Alimente List&lt;RapportView&gt;
 	 */
 	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur, boolean ctbAssocieHisto) throws AdresseException {
 		final List<RapportView> rapportsView = new ArrayList<>();
@@ -453,7 +475,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Alimente List<RapportPrestationView>
+	 * Alimente List&lt;RapportPrestationView&gt;
 	 */
 	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination, boolean rapportsPrestationHisto) throws AdresseException {
 
@@ -493,7 +515,7 @@ public class TiersManager implements MessageSourceAware {
 
 
 	/**
-	 * Alimente Set<ListeRecapitulativeView>
+	 * Alimente Set&lt;ListeRecapitulativeView&gt;
 	 */
 	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
 
@@ -559,6 +581,9 @@ public class TiersManager implements MessageSourceAware {
 				IndividuView individu = getIndividuView(tiersPrincipal);
 				tiersView.setIndividu(individu);
 			}
+
+			// étiquettes
+			tiersView.setEtiquettes(getEtiquettes(tiersPrincipal));
 		}
 
 		/* 2eme tiers */
@@ -570,6 +595,9 @@ public class TiersManager implements MessageSourceAware {
 				IndividuView individu = getIndividuView(tiersConjoint);
 				tiersView.setIndividuConjoint(individu);
 			}
+
+			// étiquettes
+			tiersView.setEtiquettesConjoint(getEtiquettes(tiersConjoint));
 		}
 	}
 

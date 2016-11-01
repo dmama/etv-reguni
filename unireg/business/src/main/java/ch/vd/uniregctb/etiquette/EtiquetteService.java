@@ -2,10 +2,6 @@ package ch.vd.uniregctb.etiquette;
 
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-
 /**
  * Service de gestion des étiquettes et de leur assignation temporelles à des tiers
  */
@@ -23,12 +19,15 @@ public interface EtiquetteService {
 	Etiquette getEtiquette(long id);
 
 	/**
-	 * Création d'une nouvelle étiquette
-	 * @param code un code (unique)
-	 * @param libelle un libellé (d'affichage)
-	 * @param collectiviteAdministrative (optionnel) une collectivité administrative liée
-	 * @return la nouvelle étiquette
+	 * @param code le code de l'étiquette
+	 * @return l'étiquette correspondant au code, ou <code>null</code> s'il n'y en a pas
 	 */
-	Etiquette newEtiquette(String code, String libelle, @Nullable CollectiviteAdministrative collectiviteAdministrative);
+	Etiquette getEtiquette(String code);
+
+	/**
+	 * @param id l'identifiant de l'étiquette de tiers
+	 * @return l'étiquette de tiers correspondant à l'identifiant, ou <code>null</code> s'il n'y en a pas
+	 */
+	EtiquetteTiers getEtiquetteTiers(long id);
 
 }

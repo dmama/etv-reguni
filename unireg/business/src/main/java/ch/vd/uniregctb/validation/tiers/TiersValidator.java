@@ -266,7 +266,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 			if (!vr.hasErrors()) {
 				checkNonOverlapByGoup(etiquettes,
 				                      x -> true,
-				                      etiq -> etiq.getEtiquette().getCode(),
+				                      etiq -> etiq.getEtiquette().getLibelle(),
 				                      vr,
 				                      "étiquettes non-annulées",
 				                      StringRenderer.DEFAULT);

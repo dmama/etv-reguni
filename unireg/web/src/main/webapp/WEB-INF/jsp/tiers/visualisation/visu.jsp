@@ -167,6 +167,14 @@
 					</authz:authorize>
 				</c:if>
 
+				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+						<li id="etiquetteTab">
+							<a href="#tabContent_etiquetteTab"><span><fmt:message key="label.etiquettes"/></span></a>
+						</li>
+					</authz:authorize>
+				</c:if>
+
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_REMARQUE_TIERS">
 					<li id="remarqueTab">
 						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab"><fmt:message key="label.remarques" /></a>
@@ -267,6 +275,14 @@
 	                </authz:authorize>
 	            </c:if>
 			</unireg:ifEfacture>
+
+			<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+					<div id="tabContent_etiquetteTab" class="visuTiers">
+						<jsp:include page="etiquette.jsp"/>
+					</div>
+				</authz:authorize>
+			</c:if>
 
             <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_REMARQUE_TIERS">
 				<div id="tabContent_remarqueTab" class="visuTiers">

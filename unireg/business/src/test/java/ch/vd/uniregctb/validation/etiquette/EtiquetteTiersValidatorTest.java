@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
+import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<EtiquetteTiers> {
@@ -36,7 +37,7 @@ public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<Etiquette
 	@Test
 	public void testDateDebut() throws Exception {
 		// ça, en gros, c'est pour vérifier que le validateur fait bien appel au DateRangeEntityValidator
-		final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", null);
+		final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP, null, false);
 		final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(null, null, etiquette);
 		assertValidation(Collections.singletonList("L'étiquette EtiquetteTiers (? - ?) possède une date de début nulle"), null, validate(etiquetteTiers));
 	}
@@ -50,7 +51,7 @@ public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<Etiquette
 		}
 
 		{
-			final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", null);
+			final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP_MC, null, false);
 			final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(date(2000, 1, 1), null, etiquette);
 			Assert.assertFalse(validate(etiquetteTiers).hasErrors());
 		}

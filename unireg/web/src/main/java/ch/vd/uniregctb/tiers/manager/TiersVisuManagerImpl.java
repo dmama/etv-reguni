@@ -110,6 +110,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			else {
 				tiersVisuView.setTiers(pp);
 			}
+			tiersVisuView.setEtiquettes(getEtiquettes(tiers));
 		}
 		else if (tiers instanceof MenageCommun) {
 			final MenageCommun menageCommun = (MenageCommun) tiers;
@@ -140,6 +141,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 
 		if (tiersVisuView.getTiers() != null) {
+
 			if (tiers instanceof Contribuable) {
 				final Contribuable contribuable = (Contribuable) tiers;
 				tiersVisuView.setDebiteurs(getDebiteurs(contribuable));
@@ -157,6 +159,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 
+			// adresses
 			resolveAdressesHisto(new AdressesResolverCallback() {
 				@Override
 				public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {

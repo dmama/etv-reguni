@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -64,6 +65,7 @@ public class ConsultLogController {
 		DroitAcces(DroitAcces.class),
 		EtatEntreprise(EtatEntreprise.class),
 		EtatDeclaration(EtatDeclaration.class),
+		Etiquette(EtiquetteTiers.class),
 		Evenement(EvenementCivilRegPP.class),
 		EvenementEch(EvenementCivilEch.class),
 		EvenementOrganisation(EvenementOrganisation.class),

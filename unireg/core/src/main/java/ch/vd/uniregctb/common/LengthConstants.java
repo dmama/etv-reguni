@@ -168,6 +168,8 @@ public abstract class LengthConstants {
 	public static final int ETIQUETTE_LIBELLE = 100;
 	public static final int ETIQUETTE_TYPE_TIERS = 15;
 
+	public static final int ETIQUETTE_TIERS_COMMENTAIRE = 200;
+
 	public static final int MAXLEN = 2000;
 
 	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");

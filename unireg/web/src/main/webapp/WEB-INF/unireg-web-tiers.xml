@@ -294,4 +294,11 @@
 		<property name="ibanValidator" ref="ibanValidator"/>
 	</bean>
 
+	<bean id="etiquetteTiersController" class="ch.vd.uniregctb.etiquette.EtiquetteTiersController">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="etiquetteService" ref="etiquetteService"/>
+	</bean>
+
 </beans>

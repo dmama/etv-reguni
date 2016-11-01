@@ -19,6 +19,7 @@ import org.hibernate.annotations.Index;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -29,6 +30,7 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 	private Long id;
 	private Etiquette etiquette;
 	private Tiers tiers;
+	private String commentaire;
 
 	public EtiquetteTiers() {
 	}
@@ -41,6 +43,7 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 	private EtiquetteTiers(EtiquetteTiers src) {
 		super(src);
 		this.etiquette = src.etiquette;
+		this.commentaire = src.commentaire;
 	}
 
 	@Transient
@@ -84,6 +87,15 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 
 	public void setTiers(Tiers tiers) {
 		this.tiers = tiers;
+	}
+
+	@Column(name = "COMMENTAIRE", length = LengthConstants.ETIQUETTE_TIERS_COMMENTAIRE)
+	public String getCommentaire() {
+		return commentaire;
+	}
+
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
 	}
 
 	@Transient
