@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-v7</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>7.2</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>7.2.1</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS v7</name>
@@ -31,36 +31,6 @@
 			<artifactId>unireg-jaxb2-infra</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
 			<version>5.2</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-api</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<artifactId>spring-beans</artifactId>
-			<groupId>org.springframework</groupId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
 	</dependencies>
 	
@@ -192,7 +162,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service v7 (7.2)"
+									doctitle="Unireg - Documentation du web service v7 (7.2.1)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
@@ -256,9 +226,6 @@
 		<copyright.year>2016</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<spring.version>3.2.13.RELEASE</spring.version>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
-		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 	
