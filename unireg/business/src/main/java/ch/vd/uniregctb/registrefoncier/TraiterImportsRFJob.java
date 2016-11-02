@@ -101,14 +101,20 @@ public class TraiterImportsRFJob extends JobDefinition {
 
 		try (InputStream is = zipRaftStore.get(event.getFileUrl())) {
 
+			LOGGER.debug("Détection des mutations...");
+
 			// on détecte les changements et crée les mutations
 			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(importId, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 			parser.processFile(is, new DataRFBatcher(100, mutationsDetector));
+
+			LOGGER.debug("Traitement des mutations...");
 
 			// on traite les mutations
 			final ImmeubleRFProcessor immeubleRFProcessor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
 			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
 			processor.processImport(importId);
+
+			LOGGER.debug("Traitement terminé.");
 
 			updateEvent(importId, EtatEvenementRF.TRAITE, null);
 		}

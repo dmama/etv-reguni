@@ -61,6 +61,11 @@ public class DataRFMutationsDetector implements DataRFBatcher.Callback {
 
 				for (Grundstueck immeuble : immeubles) {
 
+					if (immeuble.isIstKopie()) {
+						// on ignore les bâtiments flaggés comme des copies
+						continue;
+					}
+
 					final ImmeubleRFKey key = ImmeubleRFHelper.newImmeubleRFKey(immeuble);
 					final ImmeubleRF immeubleRF = immeubleRFDAO.find(key);
 

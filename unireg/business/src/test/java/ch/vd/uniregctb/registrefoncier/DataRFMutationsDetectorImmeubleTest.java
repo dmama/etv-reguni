@@ -16,6 +16,7 @@ import ch.vd.capitastra.grundstueck.Liegenschaft;
 import ch.vd.capitastra.grundstueck.Quote;
 import ch.vd.capitastra.grundstueck.StammGrundstueck;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
+import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -43,6 +44,47 @@ public class DataRFMutationsDetectorImmeubleTest {
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
 		transactionManager = new MockTransactionManager();
+	}
+
+	/**
+	 * Ce test vérifie que les immeubles flaggés comme des "copies" sont complétement ignorés
+	 */
+	@Test
+	public void testImmeublesCopies() throws Exception {
+
+		// un mock de DAO qui simule une base vide
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
+			@Nullable
+			@Override
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+				return null;
+			}
+		};
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(IMPORT_ID, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+
+		// on envoie deux nouveaux immeubles
+		final UnbekanntesGrundstueck kopie0 = newKopie(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
+		final UnbekanntesGrundstueck kopie1 = newKopie(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002");
+		final List<Grundstueck> immeubles = Arrays.asList(kopie0, kopie1);
+		detector.onImmeubles(immeubles);
+
+		// on ne devrait avoir aucune mutation
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(0, mutations.size());
 	}
 
 	/**
@@ -424,6 +466,31 @@ public class DataRFMutationsDetectorImmeubleTest {
 		grundstueck.setEGrid(egrid);
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+
+		return grundstueck;
+	}
+
+	private static UnbekanntesGrundstueck newKopie(int noRfCommune, int noParcelle, Integer index1,
+	                                               long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
+	                                               boolean enRevision, String idRF, String egrid) {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(noRfCommune);
+		grundstueckNummer.setStammNr(noParcelle);
+		grundstueckNummer.setIndexNr1(index1);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(estimationFiscale);
+		amtlicheBewertung.setProtokollNr(referenceEstimation);
+		amtlicheBewertung.setProtokollDatum(dateEstimation);
+		amtlicheBewertung.setProtokollGueltig(!enRevision);
+
+		final UnbekanntesGrundstueck grundstueck = new UnbekanntesGrundstueck();
+		grundstueck.setGrundstueckID(idRF);
+		grundstueck.setEGrid(egrid);
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setIstKopie(true);
 
 		return grundstueck;
 	}
