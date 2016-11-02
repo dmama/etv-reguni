@@ -65,4 +65,19 @@ public interface EvenementOrganisationService {
      */
     int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion);
 
+	/**
+	 * <p>
+	 *     Détermine si l'évnement passé en paramètre possède une date de valeur antérieure à la date de valeur de tout autre
+	 *     événement reçu avant. (Evénement dans le passé)
+	 * </p>
+	 *
+	 * <p>
+	 *     Note: cela veut dire qu'un événement dans le passé pour le même jour date de valeur ne sera pas détecté, car la comparaison
+	 *     se fait sur le jour.
+	 * </p>
+	 *
+	 * @param event l'événement à vérifer
+	 * @return <code>true</code> si l'événement a été reçu pour une date de valeur dans le passé par rapport à d'autres événements déjà reçus. <code>false</code> sinon.
+	 */
+	boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event);
 }

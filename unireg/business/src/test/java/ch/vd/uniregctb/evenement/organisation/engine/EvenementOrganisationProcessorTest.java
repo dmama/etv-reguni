@@ -1540,10 +1540,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             Assert.assertEquals(1, messages.size());
 				                             Assert.assertEquals(
 						                             String.format(
-								                             "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d possède une date de valeur antérieure à la plus récente déjà reçue (événement n°%d [%s]). " +
+								                             "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d possède une date de valeur antérieure à la date portée par un autre événement reçu avant. " +
 										                             "Traitement automatique impossible.",
-								                             2L, RegDateHelper.dateToDisplayString(date(2015, 8, 10)), noOrganisation,
-								                             1L, RegDateHelper.dateToDisplayString(date(2015, 8, 18))),
+								                             2L, RegDateHelper.dateToDisplayString(date(2015, 8, 10)), noOrganisation
+						                             ),
 						                             messages.get(0).getMessage());
 				                             return null;
 			                             }

@@ -105,6 +105,27 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		return filtres;
 	}
 
+	@Override
+	public boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event) {
+		final EvenementOrganisationCriteria<TypeEvenementOrganisation> criteria = new EvenementOrganisationCriteria<>();
+		criteria.setNumeroOrganisation(event.getNoOrganisation());
+		criteria.setRegDateEvenementDebut(event.getDateEvenement().getOneDayAfter());
+		final List<EvenementOrganisation> trouves = find(criteria, null);
+		final List<EvenementOrganisation> filtres = new ArrayList<>(trouves.size());
+		for (EvenementOrganisation trouve : trouves) {
+			if (!trouve.isAnnule()) {
+				filtres.add(trouve);
+			}
+		}
+		final List<EvenementOrganisation> evtRecusAvant = new ArrayList<>();
+		for (EvenementOrganisation evt : filtres) {
+			if (evt.getId() < event.getId()) {
+				evtRecusAvant.add(evt);
+			}
+		}
+		return !evtRecusAvant.isEmpty();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Long> getOrganisationsConcerneesParEvenementsPourRetry() {
