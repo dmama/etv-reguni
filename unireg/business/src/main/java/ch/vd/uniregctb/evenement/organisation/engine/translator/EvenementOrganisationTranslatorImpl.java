@@ -433,29 +433,22 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 * @throws EvenementOrganisationException au cas où on est en présence d'un événement dans le passé
 	 */
 	protected void checkEvenementDansPasse(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
-		@NotNull
-		final List<EvenementOrganisation> evenementsOrganisationApresDate = evenementOrganisationService.getEvenementsOrganisationApresDateNonAnnules(organisation.getNumeroOrganisation(), event.getDateEvenement());
 
-		final EvenementOrganisation dernierEvenementRecu;
-		if (!evenementsOrganisationApresDate.isEmpty()) {
-			dernierEvenementRecu = CollectionsUtils.getLastElement(evenementsOrganisationApresDate);
-		}
-		else {
-			dernierEvenementRecu = null;
-		}
-		if (event.getCorrectionDansLePasse() || dernierEvenementRecu != null) {
-			final String fragmentMessage;
-			if (dernierEvenementRecu != null) {
-				fragmentMessage = String.format("possède une date de valeur antérieure à la plus récente déjà reçue (événement n°%d [%s])",
-				                                dernierEvenementRecu.getNoEvenement(), RegDateHelper.dateToDisplayString(dernierEvenementRecu.getDateEvenement())
-				);
-			}
-			else {
-				fragmentMessage = "est marqué comme événement de correction dans le passé";
-			}
+		final String message = "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d %s. Traitement automatique impossible.";
+		final String fragmentMessage;
+
+		if (event.getCorrectionDansLePasse()) {
+			fragmentMessage = "est marqué comme événement de correction dans le passé";
 			throw new EvenementOrganisationException(
-					String.format("Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d %s. Traitement automatique impossible.",
-					              event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+			);
+		}
+
+		final boolean evenementDateValeurDansLePasse = evenementOrganisationService.isEvenementDateValeurDansLePasse(event);
+		if (evenementDateValeurDansLePasse) {
+			fragmentMessage = "possède une date de valeur antérieure à la date portée par un autre événement reçu avant";
+			throw new EvenementOrganisationException(
+					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
 			);
 		}
 	}

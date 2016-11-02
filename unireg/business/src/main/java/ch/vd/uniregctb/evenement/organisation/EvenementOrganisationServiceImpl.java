@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -47,6 +49,7 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 	}
 
 	@Override
+	@NotNull
 	public List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date) {
 		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationApresDateNonAnnules(noOrganisation, date));
 	}
@@ -80,4 +83,9 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
     public int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
         return evenementOrganisationDAO.count(criterion);
     }
+
+	@Override
+	public boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event) {
+		return evenementOrganisationDAO.isEvenementDateValeurDansLePasse(event) ;
+	}
 }
