@@ -15,6 +15,8 @@ import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -45,14 +47,16 @@ public class DataRFMutationsProcessor {
 	/**
 	 * Traite tous les mutations à l'état A_TRAITER de l'import spécifié
 	 *
-	 * @param importId l'id d'un import du registre foncier
+	 * @param importId      l'id d'un import du registre foncier
+	 * @param statusManager un status manager pour suivre la progression du traitement
 	 */
-	public void processImport(long importId) {
+	public void processImport(long importId, @Nullable StatusManager statusManager) {
 
 		final List<Long> ids = findIdsMutationsATraiter(importId);
 
 		// TODO (msi) générer un rapport
-		final BatchTransactionTemplate<Long> template = new BatchTransactionTemplate<>(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
+		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
+		final BatchTransactionTemplate<Long> template = new BatchTransactionTemplate<>(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager);
 		template.execute(new BatchCallback<Long>() {
 
 			private List<Long> mutationsIds;
@@ -60,6 +64,9 @@ public class DataRFMutationsProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> mutationsIds) throws Exception {
 				this.mutationsIds = mutationsIds;
+				if (statusManager != null) {
+					statusManager.setMessage("Traitement des mutations...", monitor.getProgressInPercent());
+				}
 				mutationsIds.stream()
 						.map(id -> getMutation(id))
 						.forEach(mut -> processMutation(mut));
@@ -76,7 +83,7 @@ public class DataRFMutationsProcessor {
 					}
 				}
 			}
-		}, null);
+		}, monitor);
 	}
 
 	private void processMutation(@NotNull EvenementRFMutation mut) {

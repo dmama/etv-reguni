@@ -14,8 +14,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.technical.esb.store.EsbStore;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
@@ -101,20 +103,21 @@ public class TraiterImportsRFJob extends JobDefinition {
 
 		try (InputStream is = zipRaftStore.get(event.getFileUrl())) {
 
-			LOGGER.debug("Détection des mutations...");
+			final StatusManager statusManager = getStatusManager();
+			statusManager.setMessage("Détection des mutations...");
 
 			// on détecte les changements et crée les mutations
 			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(importId, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-			parser.processFile(is, new DataRFBatcher(100, mutationsDetector));
+			parser.processFile(is, new DataRFBatcher(100, mutationsDetector), new SubStatusManager(0, 50, statusManager));
 
-			LOGGER.debug("Traitement des mutations...");
+			statusManager.setMessage("Traitement des mutations...");
 
 			// on traite les mutations
 			final ImmeubleRFProcessor immeubleRFProcessor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
 			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
-			processor.processImport(importId);
+			processor.processImport(importId, new SubStatusManager(50, 100, statusManager));
 
-			LOGGER.debug("Traitement terminé.");
+			statusManager.setMessage("Traitement terminé.");
 
 			updateEvent(importId, EtatEvenementRF.TRAITE, null);
 		}

@@ -58,7 +58,7 @@ public class FichierImmeublesRFParserTest {
 		// on parse le fichier
 		final TestCallback callback = new TestCallback();
 		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+			parser.processFile(is, callback, null);
 		}
 
 		// on s'assure que les immeubles ont bien été parsés
@@ -136,7 +136,7 @@ public class FichierImmeublesRFParserTest {
 		// on parse le fichier
 		final TestCallback callback = new TestCallback();
 		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+			parser.processFile(is, callback, null);
 		}
 
 		// on s'assure que les droits ont bien été parsés
@@ -206,7 +206,7 @@ public class FichierImmeublesRFParserTest {
 		// on parse le fichier
 		final TestCallback callback = new TestCallback();
 		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+			parser.processFile(is, callback, null);
 		}
 
 		// on s'assure que les propriétaires ont bien été parsés
@@ -247,7 +247,7 @@ public class FichierImmeublesRFParserTest {
 		// on parse le fichier
 		final TestCallback callback = new TestCallback();
 		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+			parser.processFile(is, callback, null);
 		}
 
 		// on s'assure que les batiments ont bien été parsées
@@ -300,7 +300,7 @@ public class FichierImmeublesRFParserTest {
 		// on parse le fichier
 		final TestCallback callback = new TestCallback();
 		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+			parser.processFile(is, callback, null);
 		}
 
 		// on s'assure que les surfaces ont bien été parsées

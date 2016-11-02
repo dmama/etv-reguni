@@ -119,7 +119,7 @@ public class GrepImportImmeuble {
 		};
 
 		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+			parser.processFile(is, callback, null);
 		}
 
 		final long end = System.nanoTime();
