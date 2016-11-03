@@ -104,7 +104,8 @@ drop table AUTRE_DOCUMENT_FISCAL cascade constraints;
 
 drop table REFERENCE_ANNONCE_IDE cascade constraints;
 
-drop table RF_SURFACE cascade constraints;
+drop table RF_SURFACE_TOTALE cascade constraints;
+drop table RF_SURFACE_AU_SOL cascade constraints;
 drop table RF_SITUATION cascade constraints;
 drop table RF_IMMEUBLE_BATIMENT cascade constraints;
 drop table RF_ESTIMATION cascade constraints;

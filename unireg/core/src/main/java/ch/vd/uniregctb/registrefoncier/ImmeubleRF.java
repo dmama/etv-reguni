@@ -53,22 +53,27 @@ public abstract class ImmeubleRF {
 	private String urlIntercapi;
 
 	/**
-	 * Les situations de l'immeuble.
+	 * Les situations (historisées) de l'immeuble.
 	 */
 	private Set<SituationRF> situations;
 
 	/**
-	 * Les surfaces de l'immeuble.
+	 * Les surfaces totales (historisées) de l'immeuble.
 	 */
-	private Set<SurfaceRF> surfaces;
+	private Set<SurfaceTotaleRF> surfacesTotales;
 
 	/**
-	 * Les estimations de l'immeuble.
+	 * Les surfaces au sol (multiples + historisées) de l'immeuble.
+	 */
+	private Set<SurfaceAuSolRF> surfacesAuSol;
+
+	/**
+	 * Les estimations (historisées) de l'immeuble.
 	 */
 	private Set<EstimationRF> estimations;
 
 	/**
-	 * Le ou les bâtiments correspondants à l'immeuble.
+	 * Le ou les bâtiments (multiples + historisés) correspondants à l'immeuble.
 	 */
 	private Set<BatimentRF> batiments;
 
@@ -130,13 +135,24 @@ public abstract class ImmeubleRF {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_SURF_RF_IMMEUBLE_ID")
-	public Set<SurfaceRF> getSurfaces() {
-		return surfaces;
+	@ForeignKey(name = "FK_SURF_TOT_RF_IMMEUBLE_ID")
+	public Set<SurfaceTotaleRF> getSurfacesTotales() {
+		return surfacesTotales;
 	}
 
-	public void setSurfaces(Set<SurfaceRF> surfaces) {
-		this.surfaces = surfaces;
+	public void setSurfacesTotales(Set<SurfaceTotaleRF> surfacesTotales) {
+		this.surfacesTotales = surfacesTotales;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
+	@ForeignKey(name = "FK_SURF_SOL_RF_IMMEUBLE_ID")
+	public Set<SurfaceAuSolRF> getSurfacesAuSol() {
+		return surfacesAuSol;
+	}
+
+	public void setSurfacesAuSol(Set<SurfaceAuSolRF> surfacesAuSol) {
+		this.surfacesAuSol = surfacesAuSol;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
