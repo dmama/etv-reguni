@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +17,11 @@ public class ParallelBatchTransactionTemplate<T> extends ch.vd.shared.batchtempl
 	public ParallelBatchTransactionTemplate(List<T> elements, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager,
 	                                        @Nullable AuthenticationInterface authenticationInterface) {
 		super(elements, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
+	}
+
+	public ParallelBatchTransactionTemplate(Iterator<T> iterator, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager,
+	                                        @Nullable AuthenticationInterface authenticationInterface) {
+		super(iterator, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
 	}
 
 	@Override

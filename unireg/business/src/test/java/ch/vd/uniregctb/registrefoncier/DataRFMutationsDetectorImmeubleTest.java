@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,6 +19,7 @@ import ch.vd.capitastra.grundstueck.StammGrundstueck;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
@@ -44,6 +46,12 @@ public class DataRFMutationsDetectorImmeubleTest {
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
 		transactionManager = new MockTransactionManager();
+		AuthenticationHelper.pushPrincipal("test-user");
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		AuthenticationHelper.popPrincipal();
 	}
 
 	/**
@@ -74,13 +82,13 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(IMPORT_ID, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles
 		final UnbekanntesGrundstueck kopie0 = newKopie(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
 		final UnbekanntesGrundstueck kopie1 = newKopie(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002");
 		final List<Grundstueck> immeubles = Arrays.asList(kopie0, kopie1);
-		detector.onImmeubles(immeubles);
+		detector.processImmeubles(IMPORT_ID, immeubles.iterator());
 
 		// on ne devrait avoir aucune mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -115,13 +123,13 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(IMPORT_ID, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles
 		final Liegenschaft bienfond = newBienFond(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
 		final StockwerksEinheit ppe = newPPE(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeubles = Arrays.asList(bienfond, ppe);
-		detector.onImmeubles(immeubles);
+		detector.processImmeubles(IMPORT_ID, immeubles.iterator());
 
 		// on devrait avoir deux événements de mutation de type CREATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -260,7 +268,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(IMPORT_ID, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec des modifications
 		// - nouvelle estimation fiscale
@@ -268,7 +276,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// - fusion de commune (Thierrens -> Montanair) et changement de numéro de parcelle
 		final StockwerksEinheit ppeImport = newPPE(5693 /* Montanair */, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
-		detector.onImmeubles(immeublesImport);
+		detector.processImmeubles(IMPORT_ID, immeublesImport.listIterator());
 
 		// on devrait avoir deux événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -407,13 +415,13 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(IMPORT_ID, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
 		final Liegenschaft bienfondImport = newBienFond(2233, 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
 		final StockwerksEinheit ppeImport = newPPE(5689, 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
-		detector.onImmeubles(immeublesImport);
+		detector.processImmeubles(IMPORT_ID, immeublesImport.listIterator());
 
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();

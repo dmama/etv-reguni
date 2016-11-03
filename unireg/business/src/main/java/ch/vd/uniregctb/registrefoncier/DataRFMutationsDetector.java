@@ -1,18 +1,20 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.uniregctb.common.AuthenticationInterface;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
@@ -26,22 +28,22 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
  */
-public class DataRFMutationsDetector implements DataRFBatcher.Callback {
+public class DataRFMutationsDetector {
 
-	private final long importId;
+	private static final int BATCH_SIZE = 20;
+	private static final int NB_THREADS = 4;
+
 	private final XmlHelperRF xmlHelperRF;
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 
-	public DataRFMutationsDetector(long importId,
-	                               XmlHelperRF xmlHelperRF,
+	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager) {
-		this.importId = importId;
 		this.xmlHelperRF = xmlHelperRF;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
@@ -49,17 +51,23 @@ public class DataRFMutationsDetector implements DataRFBatcher.Callback {
 		this.transactionManager = transactionManager;
 	}
 
-	@Override
-	public void onImmeubles(@NotNull List<Grundstueck> immeubles) {
+	public void processImmeubles(long importId, @NotNull Iterator<Grundstueck> iterator) {
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallbackWithoutResult() {
+		final ParallelBatchTransactionTemplate<Grundstueck> template = new ParallelBatchTransactionTemplate<Grundstueck>(iterator, BATCH_SIZE, NB_THREADS, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
+			protected int getBlockingQueueCapacity() {
+				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
+				// on sature rapidemment la mémoire de la JVM avec l'entier du fichier d'import.
+				return 10;
+			}
+		};
 
+		template.execute(new BatchCallback<Grundstueck>() {
+			@Override
+			public boolean doInTransaction(List<Grundstueck> batch) throws Exception {
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-				for (Grundstueck immeuble : immeubles) {
+				for (Grundstueck immeuble : batch) {
 
 					if (immeuble.isIstKopie()) {
 						// on ignore les bâtiments flaggés comme des copies
@@ -94,32 +102,37 @@ public class DataRFMutationsDetector implements DataRFBatcher.Callback {
 
 					evenementRFMutationDAO.save(mutation);
 				}
+
+				return true;
 			}
-		});
+		}, null);
 	}
 
-	@Override
-	public void onDroits(@NotNull List<PersonEigentumAnteil> droits) {
-
+	public void processDroits(long importId, Iterator<PersonEigentumAnteil> iterator) {
+		// TODO (msi) implémenter la détection des mutations des droits
+		while (iterator.hasNext()) {
+			iterator.next();
+		}
 	}
 
-	@Override
-	public void onProprietaires(@NotNull List<Personstamm> personnes) {
-
+	public void processProprietaires(long importId, Iterator<Personstamm> iterator) {
+		// TODO (msi) implémenter la détection des mutations des propriétaires
+		while (iterator.hasNext()) {
+			iterator.next();
+		}
 	}
 
-	@Override
-	public void onBatiments(@NotNull List<Gebaeude> batiments) {
-
+	public void processConstructions(long importId, Iterator<Gebaeude> iterator) {
+		// TODO (msi) implémenter la détection des mutations des bâtiments
+		while (iterator.hasNext()) {
+			iterator.next();
+		}
 	}
 
-	@Override
-	public void onSurfaces(@NotNull List<Bodenbedeckung> surfaces) {
-
-	}
-
-	@Override
-	public void done() {
-
+	public void processSurfaces(long importId, Iterator<Bodenbedeckung> iterator) {
+		// TODO (msi) implémenter la détection des mutations des surfaces
+		while (iterator.hasNext()) {
+			iterator.next();
+		}
 	}
 }

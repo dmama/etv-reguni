@@ -2,6 +2,8 @@ package ch.vd.uniregctb.registrefoncier;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -104,21 +106,37 @@ public class TraiterImportsRFJob extends JobDefinition {
 		try (InputStream is = zipRaftStore.get(event.getFileUrl())) {
 
 			final StatusManager statusManager = getStatusManager();
+
 			statusManager.setMessage("Détection des mutations...");
+			final DataRFCallbackAdapter dataAdapter = new DataRFCallbackAdapter();
 
-			// on détecte les changements et crée les mutations
-			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(importId, xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-			parser.processFile(is, new DataRFBatcher(100, mutationsDetector), new SubStatusManager(0, 50, statusManager));
+			// Note : pour des raisons de performances, le parsing de l'import et la détection des mutations s'effectuent concurremment (en parallèle)
 
-			statusManager.setMessage("Traitement des mutations...");
+			// on parse le fichier (dans un thread séparé)
+			ExecutorCompletionService<Boolean> ecs = new ExecutorCompletionService<>(Executors.newFixedThreadPool(1));
+			ecs.submit(() -> {
+				parser.processFile(is, dataAdapter, new SubStatusManager(0, 50, statusManager));    // <-- émetteur des données
+				return true;
+			});
+
+			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
+			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+			mutationsDetector.processImmeubles(importId, dataAdapter.getImmeublesIterator());   // <-- consommateur des données
+			mutationsDetector.processDroits(importId, dataAdapter.getDroitsIterator());
+			mutationsDetector.processProprietaires(importId, dataAdapter.getProprietairesIterator());
+			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator());
+			mutationsDetector.processSurfaces(importId, dataAdapter.getSurfacesIterator());
+
+			// on attend que le parsing soit terminé
+			ecs.take().get();
 
 			// on traite les mutations
+			statusManager.setMessage("Traitement des mutations...");
 			final ImmeubleRFProcessor immeubleRFProcessor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
 			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
 			processor.processImport(importId, new SubStatusManager(50, 100, statusManager));
 
 			statusManager.setMessage("Traitement terminé.");
-
 			updateEvent(importId, EtatEvenementRF.TRAITE, null);
 		}
 		catch (Exception e) {
