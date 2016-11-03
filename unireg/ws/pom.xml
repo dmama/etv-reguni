@@ -119,12 +119,6 @@
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-ws-v7</artifactId>
 			<version>${ws.v7.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
