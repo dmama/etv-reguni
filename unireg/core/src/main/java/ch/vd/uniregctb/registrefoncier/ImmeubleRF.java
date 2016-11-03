@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -81,6 +82,7 @@ public abstract class ImmeubleRF {
 		this.id = id;
 	}
 
+	@Index(name = "IDX_IMMEUBLE_ID_RF")
 	@Column(name = "ID_RF", nullable = false)
 	public String getIdRF() {
 		return idRF;
