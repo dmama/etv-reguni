@@ -45,7 +45,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 
 		// on déclenche le traitement des mutations
 		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
-		processor.processImport(importId, null);
+		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
 		doInNewTransaction(status -> {
@@ -83,7 +83,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 
 		// on déclenche le traitement des mutations
 		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
-		processor.processImport(importId, null);
+		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné
 		doInNewTransaction(status -> {

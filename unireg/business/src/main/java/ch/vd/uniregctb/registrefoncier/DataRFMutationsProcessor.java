@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -17,8 +18,9 @@ import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
@@ -48,15 +50,20 @@ public class DataRFMutationsProcessor {
 	 * Traite tous les mutations à l'état A_TRAITER de l'import spécifié
 	 *
 	 * @param importId      l'id d'un import du registre foncier
+	 * @param nbThreads     le nombre de threads à utiliser pour le traitement
 	 * @param statusManager un status manager pour suivre la progression du traitement
 	 */
-	public void processImport(long importId, @Nullable StatusManager statusManager) {
+	public void processImport(long importId, int nbThreads, @Nullable StatusManager statusManager) {
 
 		final List<Long> ids = findIdsMutationsATraiter(importId);
 
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Mutations to process = {}", Arrays.toString(ids.toArray()));
+		}
+
 		// TODO (msi) générer un rapport
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplate<Long> template = new BatchTransactionTemplate<>(ids, 100, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager);
+		final ParallelBatchTransactionTemplate<Long> template = new ParallelBatchTransactionTemplate<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
 		template.execute(new BatchCallback<Long>() {
 
 			private List<Long> mutationsIds;
@@ -64,6 +71,9 @@ public class DataRFMutationsProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> mutationsIds) throws Exception {
 				this.mutationsIds = mutationsIds;
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Processing mutations ids={}", Arrays.toString(mutationsIds.toArray()));
+				}
 				if (statusManager != null) {
 					statusManager.setMessage("Traitement des mutations...", monitor.getProgressInPercent());
 				}
@@ -87,6 +97,11 @@ public class DataRFMutationsProcessor {
 	}
 
 	private void processMutation(@NotNull EvenementRFMutation mut) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Processing mutation id=[{}]", mut.getId());
+		}
+
 		final MutationRFProcessor proc = getProcessor(mut);
 		proc.process(mut);
 

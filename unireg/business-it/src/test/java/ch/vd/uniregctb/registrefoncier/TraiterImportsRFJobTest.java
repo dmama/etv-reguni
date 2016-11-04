@@ -91,6 +91,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterImportsRFJob.ID, importId);
+		params.put(TraiterImportsRFJob.NB_THREADS, 2);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterImportsRFJob.NAME, params);
 		assertNotNull(job);
@@ -522,6 +523,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterImportsRFJob.ID, importId);
+		params.put(TraiterImportsRFJob.NB_THREADS, 2);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterImportsRFJob.NAME, params);
 		assertNotNull(job);
@@ -608,6 +610,7 @@ public class TraiterImportsRFJobTest extends BusinessItTest {
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterImportsRFJob.ID, importId);
+		params.put(TraiterImportsRFJob.NB_THREADS, 2);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterImportsRFJob.NAME, params);
 		assertNotNull(job);

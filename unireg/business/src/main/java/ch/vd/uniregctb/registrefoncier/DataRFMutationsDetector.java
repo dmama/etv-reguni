@@ -31,7 +31,6 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 public class DataRFMutationsDetector {
 
 	private static final int BATCH_SIZE = 20;
-	private static final int NB_THREADS = 4;
 
 	private final XmlHelperRF xmlHelperRF;
 	private final ImmeubleRFDAO immeubleRFDAO;
@@ -51,9 +50,9 @@ public class DataRFMutationsDetector {
 		this.transactionManager = transactionManager;
 	}
 
-	public void processImmeubles(long importId, @NotNull Iterator<Grundstueck> iterator) {
+	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator) {
 
-		final ParallelBatchTransactionTemplate<Grundstueck> template = new ParallelBatchTransactionTemplate<Grundstueck>(iterator, BATCH_SIZE, NB_THREADS, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<Grundstueck> template = new ParallelBatchTransactionTemplate<Grundstueck>(iterator, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement

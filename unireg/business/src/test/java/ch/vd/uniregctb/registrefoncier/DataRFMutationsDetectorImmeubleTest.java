@@ -88,7 +88,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		final UnbekanntesGrundstueck kopie0 = newKopie(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
 		final UnbekanntesGrundstueck kopie1 = newKopie(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002");
 		final List<Grundstueck> immeubles = Arrays.asList(kopie0, kopie1);
-		detector.processImmeubles(IMPORT_ID, immeubles.iterator());
+		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator());
 
 		// on ne devrait avoir aucune mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -129,7 +129,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		final Liegenschaft bienfond = newBienFond(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
 		final StockwerksEinheit ppe = newPPE(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeubles = Arrays.asList(bienfond, ppe);
-		detector.processImmeubles(IMPORT_ID, immeubles.iterator());
+		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator());
 
 		// on devrait avoir deux événements de mutation de type CREATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -276,7 +276,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// - fusion de commune (Thierrens -> Montanair) et changement de numéro de parcelle
 		final StockwerksEinheit ppeImport = newPPE(5693 /* Montanair */, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
-		detector.processImmeubles(IMPORT_ID, immeublesImport.listIterator());
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator());
 
 		// on devrait avoir deux événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -421,7 +421,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		final Liegenschaft bienfondImport = newBienFond(2233, 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
 		final StockwerksEinheit ppeImport = newPPE(5689, 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
-		detector.processImmeubles(IMPORT_ID, immeublesImport.listIterator());
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator());
 
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();

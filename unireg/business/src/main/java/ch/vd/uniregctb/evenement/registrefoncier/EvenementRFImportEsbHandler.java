@@ -81,6 +81,7 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 		try {
 			final HashMap<String, Object> params = new HashMap<>();
 			params.put(TraiterImportsRFJob.ID, eventId);
+			params.put(TraiterImportsRFJob.NB_THREADS, 8);
 			batchScheduler.startJob(TraiterImportsRFJob.NAME, params);
 		}
 		catch (JobAlreadyStartedException | SchedulerException e) {

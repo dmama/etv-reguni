@@ -30,6 +30,7 @@ import ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamLong;
 
 /**
@@ -41,6 +42,7 @@ public class TraiterImportsRFJob extends JobDefinition {
 
 	public static final String NAME = "TraiterImportsRFJob";
 	public static final String ID = "eventId";
+	public static final String NB_THREADS = "NB_THREADS";
 
 	private XmlHelperRF xmlHelperRF;
 	private FichierImmeublesRFParser parser;
@@ -92,12 +94,20 @@ public class TraiterImportsRFJob extends JobDefinition {
 		param1.setMandatory(true);
 		param1.setType(new JobParamLong());
 		addParameterDefinition(param1, null);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Nombre de threads");
+		param2.setName(NB_THREADS);
+		param2.setMandatory(true);
+		param2.setType(new JobParamInteger());
+		addParameterDefinition(param2, 8);
 	}
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
 		final long importId = getLongValue(params, ID);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final EvenementRFImport event = getEvent(importId);
 		if (event == null) {
 			throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + importId + "] n'existe pas.");
@@ -121,7 +131,7 @@ public class TraiterImportsRFJob extends JobDefinition {
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
 			final DataRFMutationsDetector mutationsDetector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-			mutationsDetector.processImmeubles(importId, dataAdapter.getImmeublesIterator());   // <-- consommateur des données
+			mutationsDetector.processImmeubles(importId, nbThreads, dataAdapter.getImmeublesIterator());   // <-- consommateur des données
 			mutationsDetector.processDroits(importId, dataAdapter.getDroitsIterator());
 			mutationsDetector.processProprietaires(importId, dataAdapter.getProprietairesIterator());
 			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator());
@@ -134,7 +144,7 @@ public class TraiterImportsRFJob extends JobDefinition {
 			statusManager.setMessage("Traitement des mutations...");
 			final ImmeubleRFProcessor immeubleRFProcessor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
 			final DataRFMutationsProcessor processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
-			processor.processImport(importId, new SubStatusManager(50, 100, statusManager));
+			processor.processImport(importId, nbThreads, new SubStatusManager(50, 100, statusManager));
 
 			statusManager.setMessage("Traitement terminé.");
 			updateEvent(importId, EtatEvenementRF.TRAITE, null);

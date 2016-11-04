@@ -31,17 +31,20 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 	private final ImmeubleRFDAO immeubleRFDAO;
 
 	@NotNull
-	private final Unmarshaller unmarshaller;
+	private final ThreadLocal<Unmarshaller> unmarshaller;
 
 	public ImmeubleRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.immeubleRFDAO = immeubleRFDAO;
 
-		try {
-			unmarshaller = xmlHelperRF.getImmeubleContext().createUnmarshaller();
-		}
-		catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
+		// TODO (msi) effacer les données du thread-local lorsque le processor est détruit
+		unmarshaller = ThreadLocal.withInitial(() -> {
+			try {
+				return xmlHelperRF.getImmeubleContext().createUnmarshaller();
+			}
+			catch (JAXBException e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	@Override
@@ -57,7 +60,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		final Grundstueck immeubleImport;
 		try {
 			final StringSource source = new StringSource(mutation.getXmlContent());
-			immeubleImport = (Grundstueck) unmarshaller.unmarshal(source);
+			immeubleImport = (Grundstueck) unmarshaller.get().unmarshal(source);
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);
