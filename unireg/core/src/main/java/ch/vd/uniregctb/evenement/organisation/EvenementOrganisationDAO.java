@@ -76,6 +76,18 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	List<EvenementOrganisation> getEvenementsForNoEvenement(long noEvenement);
 
 	/**
+	 * Renvoie le ou les événements organisation en base Unireg émanant d'un même message expédié par RCEnt (par businessId).
+	 *
+	 * Note: On trouve plusieurs événement en base Unireg pour un seul événement RCEnt lorsque plusieurs organisations sont visées par cet événement. En effet,
+	 * on crée à la réception autant d'événements que nécessaire pour respecter la cardinalité d'un événement pour une organisation, car tous les
+	 * traitements sont construits sur cette hypothèse.
+	 *
+	 * @param businessId L'identifiant du message ESB d'origine
+	 * @return La liste contenant le ou les événements résultants, tels qu'enregistrés en base
+	 */
+	List<EvenementOrganisation> getEvenementsForBusinessId(String businessId);
+
+	/**
 	 * @param criterion les critères de recherche
 	 * @return le nombre d'evenement correspondant aux critères de recherche
 	 */
