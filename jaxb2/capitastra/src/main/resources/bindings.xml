@@ -4,6 +4,7 @@
 			  xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
 			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
 			  xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
 			  http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
@@ -77,22 +78,41 @@
 		<jxb:bindings node="//xs:complexType[@name='AbstractGebaeudeType']">
 			<jxb:bindings node=".//xs:element[@name='Flaeche']">
 				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
-				<jxb:javaType name="java.lang.Long" />
+				<jxb:javaType name="java.lang.Integer" />
 			</jxb:bindings>
 		</jxb:bindings>
 
 		<jxb:bindings node="//xs:complexType[@name='GrundstueckZuGebaeudeType']">
 			<jxb:bindings node=".//xs:element[@name='AbschnittFlaeche']">
 				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
-				<jxb:javaType name="java.lang.Long" />
+				<jxb:javaType name="java.lang.Integer" />
 			</jxb:bindings>
 		</jxb:bindings>
 
 		<jxb:bindings node="//xs:complexType[@name='BodenbedeckungType']">
 			<jxb:bindings node=".//xs:element[@name='Flaeche']">
 				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
-				<jxb:javaType name="java.lang.Long" />
+				<jxb:javaType name="java.lang.Integer" />
 			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='GrundstueckFlaecheType']">
+			<jxb:bindings node=".//xs:element[@name='Flaeche']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Integer" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='LiegenschaftType']">
+			<inheritance:implements>ch.vd.capitastra.common.GrundstueckMitFlaeche</inheritance:implements>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='SDRType']">
+			<inheritance:implements>ch.vd.capitastra.common.GrundstueckMitFlaeche</inheritance:implements>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='BergwerkType']">
+			<inheritance:implements>ch.vd.capitastra.common.GrundstueckMitFlaeche</inheritance:implements>
 		</jxb:bindings>
 
 		<!--<jxb:bindings node="//xs:simpleType[@name='PersonEigentumsformType']">-->
