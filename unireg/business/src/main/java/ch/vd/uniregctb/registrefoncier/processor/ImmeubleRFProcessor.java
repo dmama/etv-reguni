@@ -85,11 +85,6 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 	private void processCreation(RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
 
-
-		if (immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble)) != null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + newImmeuble.getIdRF() + "] existe déjà dans la DB.");
-		}
-
 		// on va chercher les nouvelles situations et estimations
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
 		if (newSituation == null) {

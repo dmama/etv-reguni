@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * Représente un immeuble au registre foncier
  */
 @Entity
-@Table(name = "RF_IMMEUBLE")
+@Table(name = "RF_IMMEUBLE", uniqueConstraints = @UniqueConstraint(name="CS_IMMEUBLE_RF_ID", columnNames = "ID_RF"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class ImmeubleRF {
