@@ -112,7 +112,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			final String visaMutation = getVisaCreation(message);
 			AuthenticationHelper.pushPrincipal(visaMutation);
 			try {
-				onEvenementOrganisation(content, correctionDansLePasse);
+				onEvenementOrganisation(content, businessId, correctionDansLePasse);
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -167,15 +167,16 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 * <ol>
 	 *     <li>Décodage de l'XML reçu</li>
 	 *     <li>Les événements de types ignorés provoquent un log et c'est tout...</li>
-	 *     <li>Création de l'objet de l'evenement, avec une validation plus poussée.</li>
+	 *     <li>Création des objets de l'evenement, avec une validation plus poussée.</li>
 	 *     <li>Sauvegarde de l'événement (dans une transaction séparée) dans l'état {@link ch.vd.uniregctb.type.EtatEvenementOrganisation#A_TRAITER A_TRAITER}</li>
 	 *     <li>Notification du moteur de traitement de l'arrivée d'un nouvel événement pour l'organisation</li>
 	 * </ol>
 	 * @param xml le contenu XML du message envoyé par le registre entreprises
+	 * @param businessId le businessId du message
 	 * @param correctionDansLePasse <code>true</code> si l'événement représente une correction (il s'intercale entre deux autres événements déjà reçus ou en modifie un), <code>false</code> si l'événement s'ajoute à l'historique sans rien modifier.
 	 * @throws EvenementOrganisationEsbException en cas de problème <i>métier</i>
 	 */
-	private void onEvenementOrganisation(Source xml, boolean correctionDansLePasse) throws EvenementOrganisationEsbException {
+	private void onEvenementOrganisation(Source xml, String businessId, boolean correctionDansLePasse) throws EvenementOrganisationEsbException {
 
 		OrganisationsOfNotice message = decodeEvenementOrganisation(xml);
 
@@ -186,7 +187,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			return;
 		}
 
-		final List<EvenementOrganisation> events = createEvenementOrganisation(message);
+		final List<EvenementOrganisation> events = createEvenementOrganisation(message, businessId);
 
 		for (EvenementOrganisation evenementOrganisation : events) {
 			evenementOrganisation.setCorrectionDansLePasse(correctionDansLePasse);
@@ -195,12 +196,18 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		final EvenementOrganisation premierEvt = events.get(0);
 		Audit.info((Long) premierEvt.getNoEvenement(), String.format("Arrivée de l'événement organisation %d (%s au %s)", premierEvt.getNoEvenement(), premierEvt.getType(), RegDateHelper.dateToDisplayString(premierEvt.getDateEvenement())));
 
-		receptionHandler.saveIncomingEvent(events);
+		// si un événement organisation existe déjà avec le businessId donné, on log un warning et on s'arrête là...
+		if (receptionHandler.dejaRecu(businessId)) {
+			Audit.warn(premierEvt.getNoEvenement(), String.format("Le message ESB %s pour l'événement organisation n°%d a déjà été reçu: cette nouvelle réception est donc ignorée!", businessId, premierEvt.getNoEvenement()));
+			return;
+		}
+
+		final List<EvenementOrganisation> evenementOrganisations = receptionHandler.saveIncomingEvent(events);
 
 		// à partir d'ici, l'événement est sauvegardé en base... Il n'est donc plus question
 		// de rejetter en erreur (ou exception) le message entrant...
 		try {
-			receptionHandler.handleEvents(events, processingMode);
+			receptionHandler.handleEvents(evenementOrganisations, processingMode);
 		}
 		catch (Exception e) {
 			// le traitement sera re-tenté au plus tard au prochain démarrage de l'application...
@@ -231,24 +238,24 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
 	 */
 	@NotNull
-	private List<EvenementOrganisation> createEvenementOrganisation(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
+	private List<EvenementOrganisation> createEvenementOrganisation(OrganisationsOfNotice message, String businessId) throws EvenementOrganisationEsbException {
 		try {
-			return createEvenement(message);
+			return createEvenement(message, businessId);
 		}
 		catch (EvenementOrganisationException | RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
 	}
 
-	public List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) throws EvenementOrganisationException, EvenementOrganisationEsbException {
+	private  List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice notice, String businessId) throws EvenementOrganisationException, EvenementOrganisationEsbException {
 		List<EvenementOrganisation> evts = new ArrayList<>();
-		Notice notice = message.getNotice();
-		final long noEvenement = notice.getNoticeId().longValue();
-		final TypeEvenementOrganisation type = RCEntApiHelper.convertTypeOfNotice(notice.getTypeOfNotice());
-		final RegDate noticeDate = notice.getNoticeDate();
-		final Long noAnnonceIDE = RCEntApiHelper.extractNoAnnonceIDE(notice);
+		Notice noticeHeader = notice.getNotice();
+		final long noEvenement = noticeHeader.getNoticeId().longValue();
+		final TypeEvenementOrganisation type = RCEntApiHelper.convertTypeOfNotice(noticeHeader.getTypeOfNotice());
+		final RegDate noticeDate = noticeHeader.getNoticeDate();
+		final Long noAnnonceIDE = RCEntApiHelper.extractNoAnnonceIDE(noticeHeader);
 
-		final List<NoticeOrganisation> organisation = message.getOrganisation();
+		final List<NoticeOrganisation> organisation = notice.getOrganisation();
 		for (NoticeOrganisation org : organisation) {
 			final EvenementOrganisation e = new EvenementOrganisation(
 					noEvenement,
@@ -257,6 +264,8 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 					org.getOrganisation().getCantonalId().longValue(),
 					EtatEvenementOrganisation.A_TRAITER
 			);
+			// Préserver le businessId
+			e.setBusinessId(businessId);
 			// On a un retour d'annonce à l'IDE. Il faut rechercher sa référence et l'attacher à l'événement.
 			if (noAnnonceIDE != null) {
 				final ReferenceAnnonceIDE referencesAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);

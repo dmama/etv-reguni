@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,6 +68,12 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		final EvenementOrganisationReceptionHandler receptionHandler = new EvenementOrganisationReceptionHandler() {
 
 			@Override
+			public boolean dejaRecu(String businessId) {
+				return false;
+			}
+
+			@Override
+			@NotNull
 			public List<EvenementOrganisation> saveIncomingEvent(List<EvenementOrganisation> events) {
 				// pas de sauvegarde ici...
 				return events;
@@ -359,6 +366,63 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			Assert.assertEquals(0, evenementsIgnores.size());
 			Assert.assertEquals(0, evenementsExploses.size());
 		}
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceptionEvenementMultiplesOrganisationsDejaRecu() throws Exception {
+		final Long noEvenement = 5640006354L;
+		final RegDate dateEvenement = RegDate.get();
+		long noOrganisation = 0;
+		final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
+
+		final EvenementOrganisation evt = new EvenementOrganisation(
+				noEvenement,
+				type,
+				dateEvenement,
+				noOrganisation,
+				EtatEvenementOrganisation.A_TRAITER
+		);
+		evt.setCommentaireTraitement("turlututu");
+		evt.setDateTraitement(DateHelper.getCurrentDate());
+		evt.setEtat(EtatEvenementOrganisation.A_VERIFIER);
+		evt.setBusinessId("maBizId");
+
+		// Un receptionHandler "pipé" qui donne l'événement comme déjà reçu.
+		final EvenementOrganisationReceptionHandler receptionHandler = new EvenementOrganisationReceptionHandler() {
+
+			@Override
+			@NotNull
+			public List<EvenementOrganisation> saveIncomingEvent(List<EvenementOrganisation> events) {
+				// pas de sauvegarde ici...
+				return events;
+			}
+
+			@Override
+			public boolean dejaRecu(String businessId) {
+				return true;
+			}
+
+			@Override
+			public List<EvenementOrganisation> handleEvents(List<EvenementOrganisation> events, EvenementOrganisationProcessingMode mode) throws EvenementOrganisationException {
+				evenementsTraites.addAll(events);
+				return events;
+			}
+		};
+
+		esbHandler.setReceptionHandler(receptionHandler);
+
+		Assert.assertEquals(0, evenementsTraites.size());
+		sender.sendEventWithMultipleOrga(evt, Arrays.asList(1L, 2L , 3L, 4L), "toto", true);
+
+		// On attend le message
+		synchronized (evenementsVusPasser) {
+			while (evenementsVusPasser.size() == 0) {
+				evenementsVusPasser.wait();
+			}
+		}
+		Assert.assertEquals(1, evenementsVusPasser.size());
+		Assert.assertEquals(0, evenementsTraites.size());
+
 	}
 
 	// SIFISC-20423 PROD: Exception à la récéption d'une annonce FOSC de type communication dans la poursuite (Problème de conversion de type)

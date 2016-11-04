@@ -60,7 +60,16 @@ public class EvenementOrganisation extends HibernateEntity {
 	 */
 	private ReferenceAnnonceIDE referenceAnnonceIDE;
 
+	/**
+	 * Flag signalant le fait que cet événement est valable à une date/heure précise antérieure à celle du dernier
+	 * événement reçu dans l'historique d'une organisation.
+	 */
 	private boolean correctionDansLePasse;
+
+	/**
+	 * En tête "messageId" du message dans l'ESB, identifiant technique permettant de détecter un doublon technique.
+	 */
+	private String businessId;
 
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
@@ -198,6 +207,15 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public void setCorrectionDansLePasse(boolean correctionDansLePasse) {
 		this.correctionDansLePasse = correctionDansLePasse;
+	}
+
+	@Column(name = "BUSINESS", length = LengthConstants.EVTORGANISATION_BUSINESS_ID)
+	public String getBusinessId() {
+		return businessId;
+	}
+
+	public void setBusinessId(String messageId) {
+		this.businessId = messageId;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
