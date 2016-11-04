@@ -1,16 +1,18 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.capitastra.common.GrundstueckMitFlaeche;
 import ch.vd.capitastra.grundstueck.Bergwerk;
 import ch.vd.capitastra.grundstueck.GewoehnlichesMiteigentum;
 import ch.vd.capitastra.grundstueck.Grundstueck;
+import ch.vd.capitastra.grundstueck.GrundstueckFlaeche;
 import ch.vd.capitastra.grundstueck.Liegenschaft;
 import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
@@ -20,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.elements.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
@@ -75,23 +78,37 @@ public abstract class ImmeubleRFHelper {
 		}
 		// [/blindage]
 
+		// on vérifie la situation courante
 		final SituationRF situation = immeuble.getSituations().stream()
-				.filter(r -> r.isValidAt(RegDate.get()))
+				.filter(r -> r.isValidAt(null))
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble idRF=[" + immeuble.getIdRF() + "] ne contient pas de situation."));
 
-		// on vérifie la situation courante
 		if (!SituationRFHelper.dataEquals(situation, grundstueck.getGrundstueckNummer())) {
 			return false;
 		}
 
+		// on vérifie l'estimation fiscale courante
 		final EstimationRF estimation = immeuble.getEstimations().stream()
-				.filter(r -> r.isValidAt(RegDate.get()))
+				.filter(r -> r.isValidAt(null))
 				.findFirst()
 				.orElse(null);
 
-		// on vérifie l'estimation fiscale courante
 		if (!EstimationRFHelper.dataEquals(estimation, grundstueck.getAmtlicheBewertung())) {
+			return false;
+		}
+
+		// on vérifie la surface totale courante
+		final SurfaceTotaleRF surfaceTotale = immeuble.getSurfacesTotales().stream()
+				.filter(r -> r.isValidAt(null))
+				.findFirst()
+				.orElse(null);
+		final GrundstueckFlaeche grundstueckFlaeche = Optional.of(grundstueck)
+				.map(g -> g instanceof GrundstueckMitFlaeche ? (GrundstueckMitFlaeche) g : null)    // seuls certains immeubles possèdent une surface totale
+				.map(GrundstueckMitFlaeche::getGrundstueckFlaeche)
+				.orElse(null);
+
+		if (!SurfaceTotaleRFHelper.dataEquals(surfaceTotale, grundstueckFlaeche)) {
 			return false;
 		}
 
@@ -149,6 +166,15 @@ public abstract class ImmeubleRFHelper {
 		if (estimation != null) {
 			immeuble.addEstimation(estimation);
 		}
+
+		// on ajoute la surface totale, si renseignée
+		Optional.of(grundstueck)
+				.map(g -> g instanceof GrundstueckMitFlaeche ? (GrundstueckMitFlaeche) g : null)    // seuls certains immeubles possèdent une surface totale
+				.map(GrundstueckMitFlaeche::getGrundstueckFlaeche)
+				.ifPresent(flaeche -> {
+					final SurfaceTotaleRF surfaceTotale = SurfaceTotaleRFHelper.newSurfaceTotaleRF(flaeche);
+					immeuble.addSurfaceTotale(surfaceTotale);
+				});
 
 		return immeuble;
 	}

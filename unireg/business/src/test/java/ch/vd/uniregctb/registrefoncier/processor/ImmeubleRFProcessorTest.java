@@ -25,6 +25,7 @@ import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 
@@ -173,6 +174,14 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				assertEquals("RG93", estimation0.getReference());
 				assertNull(estimation0.getDateEstimation());
 				assertFalse(estimation0.isEnRevision());
+
+				final Set<SurfaceTotaleRF> surfacesTotales = immeuble0.getSurfacesTotales();
+				assertEquals(1, surfacesTotales.size());
+
+				final SurfaceTotaleRF surface0 = surfacesTotales.iterator().next();
+				assertEquals(RegDate.get(2016, 10, 1), surface0.getDateDebut());
+				assertNull(surface0.getDateFin());
+				assertEquals(707, surface0.getSurface());
 			}
 		});
 	}
@@ -256,10 +265,10 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 	}
 
 	/**
-	 * Ce test vérifie que le processing d'une mutation de modification met bien à jour l'immeuble existant dans la DB
+	 * Ce test vérifie que le processing d'une mutation de modification l'estimation fiscale met bien à jour l'immeuble existant dans la DB
 	 */
 	@Test
-	public void testProcessMutationModification() throws Exception {
+	public void testProcessMutationModificationEstimation() throws Exception {
 
 		// précondition : il y a déjà un immeuble dans la base
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -283,6 +292,11 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				estimation.setReference("RG88");
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
+
+				final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+				surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
+				surfaceTotale.setSurface(707);
+				bienFond.addSurfaceTotale(surfaceTotale);
 
 				immeubleRFDAO.save(bienFond);
 				assertEquals(1, immeubleRFDAO.getAll().size());
@@ -353,6 +367,128 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				assertEquals("RG93", estimation1.getReference());
 				assertNull(estimation1.getDateEstimation());
 				assertFalse(estimation1.isEnRevision());
+
+				// la surface totale n'a pas changé
+				final Set<SurfaceTotaleRF> surfacesTotales = immeuble0.getSurfacesTotales();
+				assertEquals(1, surfacesTotales.size());
+
+				final SurfaceTotaleRF surface0 = surfacesTotales.iterator().next();
+				assertEquals(RegDate.get(1988, 1, 1), surface0.getDateDebut());
+				assertNull(surface0.getDateFin());
+				assertEquals(707, surface0.getSurface());
+			}
+		});
+	}
+
+	/**
+	 * Ce test vérifie que le processing d'une mutation de modification de la surface totale met bien à jour l'immeuble existant dans la DB
+	 */
+	@Test
+	public void testProcessMutationModificationSurfaceTotale() throws Exception {
+
+		// précondition : il y a déjà un immeuble dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final BienFondRF bienFond = new BienFondRF();
+				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
+				bienFond.setEgrid("CH938391457759");
+				bienFond.setCfa(false);
+
+				final SituationRF situation = new SituationRF();
+				situation.setDateDebut(RegDate.get(1988, 1, 1));
+				situation.setNoRfCommune(294);
+				situation.setNoParcelle(5089);
+				bienFond.addSituation(situation);
+
+				final EstimationRF estimation = new EstimationRF();
+				estimation.setDateDebut(RegDate.get(1988, 1, 1));
+				estimation.setMontant(260000L);
+				estimation.setReference("RG93");
+				estimation.setEnRevision(false);
+				bienFond.addEstimation(estimation);
+
+				final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+				surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
+				surfaceTotale.setSurface(532);
+				bienFond.addSurfaceTotale(surfaceTotale);
+
+				immeubleRFDAO.save(bienFond);
+				assertEquals(1, immeubleRFDAO.getAll().size());
+			}
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1));
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation);
+			}
+		});
+
+		// postcondition : la mutation est traitée et l'immeuble est créé en base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(1, immeubles.size());
+
+				final ImmeubleRF immeuble0 = immeubles.get(0);
+				assertEquals("_1f109152381026b501381028a73d1852", immeuble0.getIdRF());
+				assertEquals("CH938391457759", immeuble0.getEgrid());
+
+				// la situation n'a pas changé
+				final Set<SituationRF> situations = immeuble0.getSituations();
+				assertEquals(1, situations.size());
+
+				final SituationRF situation0 = situations.iterator().next();
+				assertEquals(RegDate.get(1988, 1, 1), situation0.getDateDebut());
+				assertNull(situation0.getDateFin());
+				assertEquals(294, situation0.getNoRfCommune());
+				assertEquals(5089, situation0.getNoParcelle());
+				assertNull(situation0.getIndex1());
+				assertNull(situation0.getIndex2());
+				assertNull(situation0.getIndex3());
+
+				// l'estimaiton n'a pas changé
+				final Set<EstimationRF> estimations = immeuble0.getEstimations();
+				assertEquals(1, estimations.size());
+
+				final EstimationRF estimation0 = estimations.iterator().next();
+				assertEquals(RegDate.get(1988, 1, 1), estimation0.getDateDebut());
+				assertNull(estimation0.getDateFin());
+				assertEquals(Long.valueOf(260000), estimation0.getMontant());
+				assertEquals("RG93", estimation0.getReference());
+				assertNull(estimation0.getDateEstimation());
+				assertFalse(estimation0.isEnRevision());
+
+				// par contre, la surface totale a bien changé
+				final Set<SurfaceTotaleRF> surfacesTotales = immeuble0.getSurfacesTotales();
+				assertEquals(2, surfacesTotales.size());
+
+				final List<SurfaceTotaleRF> surfacesList = new ArrayList<>(surfacesTotales);
+				Collections.sort(surfacesList, new DateRangeComparator<>());
+
+				// la première surface doit être fermée la veille de la date d'import
+				final SurfaceTotaleRF surface0 = surfacesList.get(0);
+				assertEquals(RegDate.get(1988, 1, 1), surface0.getDateDebut());
+				assertEquals(RegDate.get(2016, 9, 30), surface0.getDateFin());
+				assertEquals(532, surface0.getSurface());
+
+				// la seconde surface doit commencer à la date de l'import
+				final SurfaceTotaleRF surface1 = surfacesList.get(1);
+				assertEquals(RegDate.get(2016, 10, 1), surface1.getDateDebut());
+				assertNull(surface1.getDateFin());
+				assertEquals(707, surface1.getSurface());
 			}
 		});
 	}

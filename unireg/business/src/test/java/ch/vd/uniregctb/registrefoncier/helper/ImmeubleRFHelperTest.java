@@ -8,6 +8,7 @@ import org.junit.Test;
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.capitastra.grundstueck.Bergwerk;
 import ch.vd.capitastra.grundstueck.GewoehnlichesMiteigentum;
+import ch.vd.capitastra.grundstueck.GrundstueckFlaeche;
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.capitastra.grundstueck.Liegenschaft;
 import ch.vd.capitastra.grundstueck.Quote;
@@ -24,6 +25,7 @@ import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 
 import static ch.vd.uniregctb.common.AbstractSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
@@ -51,12 +53,16 @@ public class ImmeubleRFHelperTest {
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
+		final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+		surfaceTotale.setSurface(1329);
+
 		final BienFondRF immeuble = new BienFondRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
 		immeuble.addSituation(situation);
 		immeuble.addEstimation(estimation);
+		immeuble.addSurfaceTotale(surfaceTotale);
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(2233);
@@ -69,12 +75,16 @@ public class ImmeubleRFHelperTest {
 		amtlicheBewertung.setProtokollDatum(RegDate.get(2015, 7, 1));
 		amtlicheBewertung.setProtokollGueltig(true);
 
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(1329);
+
 		final Liegenschaft grundstueck = new Liegenschaft();
 		grundstueck.setGrundstueckID("382929efa218");
 		grundstueck.setLigUnterartEnum("cfa");
 		grundstueck.setEGrid("CH282891891");
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
 
 		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 	}
@@ -171,6 +181,60 @@ public class ImmeubleRFHelperTest {
 	}
 
 	/**
+	 * Ce test vérifie que deux immeubles avec des surfaces totales différentes sont bien considérés inégaux.
+	 */
+	@Test
+	public void testCurrentDataEqualsSurfacesTotalesDifferentes() throws Exception {
+
+		final SituationRF situation = new SituationRF();
+		situation.setNoRfCommune(2233);
+		situation.setNoParcelle(109);
+		situation.setIndex1(17);
+
+		final EstimationRF estimation = new EstimationRF();
+		estimation.setMontant(120000L);
+		estimation.setReference("2015");
+		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setEnRevision(false);
+		estimation.setDateDebut(RegDate.get(2000, 1, 1));
+
+		final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+		surfaceTotale.setSurface(1329);
+
+		final BienFondRF immeuble = new BienFondRF();
+		immeuble.setIdRF("382929efa218");
+		immeuble.setCfa(true);
+		immeuble.setEgrid("CH282891891");
+		immeuble.addSituation(situation);
+		immeuble.addEstimation(estimation);
+		immeuble.addSurfaceTotale(surfaceTotale);
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(120000L);
+		amtlicheBewertung.setProtokollNr("2015");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2015, 7, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(322);    // <--- différent
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setLigUnterartEnum("cfa");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
+
+		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
+	/**
 	 * Ce test vérifie que deux immeubles sans estimation sont bien considérés égaux.
 	 */
 	@Test
@@ -187,6 +251,7 @@ public class ImmeubleRFHelperTest {
 		immeuble.setEgrid("CH282891891");
 		immeuble.addSituation(situation);
 		immeuble.setEstimations(new HashSet<>());
+		immeuble.setSurfacesTotales(new HashSet<>());
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(2233);
@@ -218,11 +283,15 @@ public class ImmeubleRFHelperTest {
 		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
 		amtlicheBewertung.setProtokollGueltig(true);
 
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(322);
+
 		final Bergwerk grundstueck = new Bergwerk();
 		grundstueck.setGrundstueckID("382929efa218");
 		grundstueck.setEGrid("CH282891891");
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
 
 		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
 		assertEquals(MineRF.class, immeuble.getClass());
@@ -247,6 +316,11 @@ public class ImmeubleRFHelperTest {
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
+
+		final Set<SurfaceTotaleRF> surfacesTotales = mine.getSurfacesTotales();
+		assertEquals(1, surfacesTotales.size());
+		final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+		assertEquals(322, surfaceTotale.getSurface());
 	}
 
 	@Test
@@ -314,12 +388,16 @@ public class ImmeubleRFHelperTest {
 		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
 		amtlicheBewertung.setProtokollGueltig(true);
 
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(322);
+
 		final Liegenschaft grundstueck = new Liegenschaft();
 		grundstueck.setGrundstueckID("382929efa218");
 		grundstueck.setLigUnterartEnum("cfa");
 		grundstueck.setEGrid("CH282891891");
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
 
 		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
 		assertEquals(BienFondRF.class, immeuble.getClass());
@@ -345,6 +423,11 @@ public class ImmeubleRFHelperTest {
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
+
+		final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+		assertEquals(1, surfacesTotales.size());
+		final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+		assertEquals(322, surfaceTotale.getSurface());
 	}
 
 	@Test
@@ -363,11 +446,15 @@ public class ImmeubleRFHelperTest {
 		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
 		amtlicheBewertung.setProtokollGueltig(true);
 
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(322);
+
 		final SDR grundstueck = new SDR();
 		grundstueck.setGrundstueckID("382929efa218");
 		grundstueck.setEGrid("CH282891891");
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
 
 		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
 		assertEquals(DroitDistinctEtPermanentRF.class, immeuble.getClass());
@@ -392,6 +479,11 @@ public class ImmeubleRFHelperTest {
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
 		assertFalse(estimation.isEnRevision());
+
+		final Set<SurfaceTotaleRF> surfacesTotales = ddp.getSurfacesTotales();
+		assertEquals(1, surfacesTotales.size());
+		final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+		assertEquals(322, surfaceTotale.getSurface());
 	}
 
 	@Test

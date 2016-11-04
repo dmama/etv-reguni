@@ -5,8 +5,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.registre.base.date.RegDate;
@@ -16,32 +14,30 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.helper.EstimationRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SituationRFHelper;
+import ch.vd.uniregctb.registrefoncier.helper.SurfaceTotaleRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public class ImmeubleRFProcessor implements MutationRFProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ImmeubleRFProcessor.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(ImmeubleRFProcessor.class);
 
 	@NotNull
 	private final ImmeubleRFDAO immeubleRFDAO;
-
-	@NotNull
-	private final XmlHelperRF xmlHelperRF;
 
 	@NotNull
 	private final Unmarshaller unmarshaller;
 
 	public ImmeubleRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.immeubleRFDAO = immeubleRFDAO;
-		this.xmlHelperRF = xmlHelperRF;
 
 		try {
-			unmarshaller = this.xmlHelperRF.getImmeubleContext().createUnmarshaller();
+			unmarshaller = xmlHelperRF.getImmeubleContext().createUnmarshaller();
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);
@@ -87,15 +83,19 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 		// on va chercher les nouvelles situations et estimations
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
-		if (newSituation == null) {
+		if (newSituation == null) {                                                                  // il ne contient donc qu'un seul élément de chaque collection
 			throw new IllegalArgumentException("L'immeuble idRF=[" + newImmeuble.getIdRF() + "] ne contient pas de situation.");
 		}
-		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());  // il ne contient donc qu'une seule situation et une seule estimation fiscale.
+		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());
+		final SurfaceTotaleRF surfaceTotale = CollectionsUtils.getFirst(newImmeuble.getSurfacesTotales());
 
 		// on renseigne les dates de début
 		newSituation.setDateDebut(dateValeur);
 		if (newEstimation != null) {
 			newEstimation.setDateDebut(dateValeur);
+		}
+		if (surfaceTotale != null) {
+			surfaceTotale.setDateDebut(dateValeur);
 		}
 
 		immeubleRFDAO.save(newImmeuble);
@@ -110,7 +110,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}
 
-		// on va chercher les situations et estimations courantes
+		// on va chercher les situations, estimations et surfaces totales courantes
 		final SituationRF persistedSituation = persisted.getSituations().stream()
 				.filter(s -> s.isValidAt(null))
 				.findFirst()
@@ -121,12 +121,18 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.findFirst()
 				.orElse(null);
 
+		final SurfaceTotaleRF persistedSurfaceTotale = persisted.getSurfacesTotales().stream()
+				.filter(s -> s.isValidAt(null))
+				.findFirst()
+				.orElse(null);
+
 		// on va chercher les nouvelles situations et estimations
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
-		if (newSituation == null) {
+		if (newSituation == null) {                                                                  // il ne contient donc qu'un seul élément de chaque collection
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation.");
 		}
-		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());  // il ne contient donc qu'une seule situation et une seule estimation fiscale.
+		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());
+		final SurfaceTotaleRF newSurfaceTotale = CollectionsUtils.getFirst(newImmeuble.getSurfacesTotales());
 
 		// est-ce que la situation a changé ?
 		if (!SituationRFHelper.dataEquals(persistedSituation, newSituation)) {
@@ -145,6 +151,18 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			if (newEstimation != null) {
 				newEstimation.setDateDebut(dateValeur);
 				persisted.getEstimations().add(newEstimation);
+			}
+		}
+
+		// est-ce que la surface totale changé ?
+		if (!SurfaceTotaleRFHelper.dataEquals(persistedSurfaceTotale, newSurfaceTotale)) {
+			// on ferme l'ancienne surface et on ajoute la nouvelle
+			if (persistedSurfaceTotale != null) {
+				persistedSurfaceTotale.setDateFin(dateValeur.getOneDayBefore());
+			}
+			if (newSurfaceTotale != null) {
+				newSurfaceTotale.setDateDebut(dateValeur);
+				persisted.getSurfacesTotales().add(newSurfaceTotale);
 			}
 		}
 	}

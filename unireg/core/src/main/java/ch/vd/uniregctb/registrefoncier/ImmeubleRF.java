@@ -145,6 +145,13 @@ public abstract class ImmeubleRF {
 		this.surfacesTotales = surfacesTotales;
 	}
 
+	public void addSurfaceTotale(@NotNull SurfaceTotaleRF surfaceTotale) {
+		if (this.surfacesTotales == null) {
+			this.surfacesTotales = new HashSet<>();
+		}
+		this.surfacesTotales.add(surfaceTotale);
+	}
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_SURF_SOL_RF_IMMEUBLE_ID")

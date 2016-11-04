@@ -262,7 +262,7 @@ public class FichierImmeublesRFParserTest {
 
 			final GrundstueckZuGebaeude imm0 = immeubles.get(0);
 			assertEquals("_1f109152380ffd8901380ffe19367d20", imm0.getGrundstueckIDREF());
-			assertEquals(Long.valueOf(157), imm0.getAbschnittFlaeche());
+			assertEquals(Integer.valueOf(157), imm0.getAbschnittFlaeche());
 
 			assertNull(bat0.getFlaeche());
 
@@ -280,9 +280,9 @@ public class FichierImmeublesRFParserTest {
 
 			final GrundstueckZuGebaeude imm0 = immeubles.get(0);
 			assertEquals("_1f109152380ffd8901380ffe07fb2421", imm0.getGrundstueckIDREF());
-			assertEquals(Long.valueOf(107), imm0.getAbschnittFlaeche());
+			assertEquals(Integer.valueOf(107), imm0.getAbschnittFlaeche());
 
-			assertEquals(Long.valueOf(107), bat1.getFlaeche());
+			assertEquals(Integer.valueOf(107), bat1.getFlaeche());
 
 			final List<GebaeudeArt> descriptions = bat1.getGebaeudeArten();
 			assertNotNull(descriptions);
@@ -310,21 +310,21 @@ public class FichierImmeublesRFParserTest {
 		final Bodenbedeckung surface0 = surfaces.get(0);
 		{
 			assertEquals("_1f10915238109122013810973b5b5d7e", surface0.getGrundstueckIDREF());
-			assertEquals(Long.valueOf(1766), surface0.getFlaeche());
+			assertEquals(Integer.valueOf(1766), surface0.getFlaeche());
 			assertEquals("Place-jardin", surface0.getArt().getTextFr());
 		}
 
 		final Bodenbedeckung surface1 = surfaces.get(1);
 		{
 			assertEquals("_1f10915238102ecd01381030e605091e", surface1.getGrundstueckIDREF());
-			assertEquals(Long.valueOf(3457), surface1.getFlaeche());
+			assertEquals(Integer.valueOf(3457), surface1.getFlaeche());
 			assertEquals("Pré-champ", surface1.getArt().getTextFr());
 		}
 
 		final Bodenbedeckung surface2 = surfaces.get(2);
 		{
 			assertEquals("_1f10915238107c1501381081420d5645", surface2.getGrundstueckIDREF());
-			assertEquals(Long.valueOf(3510), surface2.getFlaeche());
+			assertEquals(Integer.valueOf(3510), surface2.getFlaeche());
 			assertEquals("Forêt", surface2.getArt().getTextFr());
 		}
 	}
