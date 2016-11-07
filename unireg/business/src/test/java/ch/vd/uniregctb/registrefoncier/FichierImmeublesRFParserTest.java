@@ -224,9 +224,9 @@ public class FichierImmeublesRFParserTest {
 
 			final GeburtsDatum dateNaissance = prop0.getGeburtsdatum();
 			assertNotNull(dateNaissance);
-			assertEquals(Long.valueOf(21), dateNaissance.getTag());
-			assertEquals(Long.valueOf(5), dateNaissance.getMonat());
-			assertEquals(Long.valueOf(1961), dateNaissance.getJahr());
+			assertEquals(Integer.valueOf(21), dateNaissance.getTag());
+			assertEquals(Integer.valueOf(5), dateNaissance.getMonat());
+			assertEquals(Integer.valueOf(1961), dateNaissance.getJahr());
 		}
 
 		final JuristischePersonstamm prop1 = (JuristischePersonstamm) proprietaires.get(1);
