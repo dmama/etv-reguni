@@ -83,7 +83,9 @@
 
 	<bean id="evenementRFImportDAO" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAOImpl" parent="hibernateDao" />
 	<bean id="evenementRFMutationDAO" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAOImpl" parent="hibernateDao" />
+
 	<bean id="immeubleRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAOImpl" parent="hibernateDao" />
+	<bean id="ayantDroitRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAOImpl" parent="hibernateDao" />
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDao">

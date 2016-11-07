@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -133,6 +134,38 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		immeuble.addEstimation(estimation);
 
 		return immeuble;
+	}
+
+	@NotNull
+	public static PersonnePhysiqueRF newPersonnePhysique(String idRF, long noRF, long noIrole, String nom, String prenom, RegDate dateNaissance) {
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF(idRF);
+		pp.setNoRF(noRF);
+		pp.setNoContribuable(noIrole);
+		pp.setNom(nom);
+		pp.setPrenom(prenom);
+		pp.setDateNaissance(dateNaissance);
+		return pp;
+	}
+
+	@NotNull
+	public static PersonneMoraleRF newPersonneMorale(String idRF, long noRF, long noACI, String name) {
+		final PersonneMoraleRF pm = new PersonneMoraleRF();
+		pm.setIdRF(idRF);
+		pm.setNoRF(noRF);
+		pm.setNoContribuable(noACI);
+		pm.setRaisonSociale(name);
+		return pm;
+	}
+
+	@NotNull
+	public static CollectivitePubliqueRF newCollectivitePublique(String idRF, long noRF, long noACI, String raisonSociale) {
+		final CollectivitePubliqueRF collectivite = new CollectivitePubliqueRF();
+		collectivite.setIdRF(idRF);
+		collectivite.setNoRF(noRF);
+		collectivite.setNoContribuable(noACI);
+		collectivite.setRaisonSociale(raisonSociale);
+		return collectivite;
 	}
 
 	protected static void waitForJobCompletion(JobDefinition job) throws InterruptedException {

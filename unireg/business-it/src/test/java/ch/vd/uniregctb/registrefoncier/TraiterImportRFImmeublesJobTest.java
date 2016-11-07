@@ -25,7 +25,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class TraiterImportRFJobTest extends ImportRFTestClass {
+public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 
 	private BatchScheduler batchScheduler;
 	private EvenementRFImportDAO evenementRFImportDAO;

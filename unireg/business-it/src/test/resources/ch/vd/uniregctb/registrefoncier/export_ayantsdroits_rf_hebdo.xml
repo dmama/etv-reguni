@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+    <PersonstammList>
+        <NatuerlichePersonstamm xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <PersonstammID>3893728273382823</PersonstammID>
+            <Name>Nom</Name>
+            <Gueltig>false</Gueltig>
+            <NoRF>3727</NoRF>
+            <Vorname>Prénom</Vorname>
+            <Geburtsdatum>
+                <Tag>23</Tag>
+                <Monat>1</Monat>
+                <Jahr>1956</Jahr>
+            </Geburtsdatum>
+            <NrIROLE>827288022</NrIROLE>
+        </NatuerlichePersonstamm>
+        <JuristischePersonstamm xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <PersonstammID>48349384890202</PersonstammID>
+            <Name>Raison sociale</Name>
+            <Gueltig>false</Gueltig>
+            <NrACI>827288022</NrACI>
+            <NoRF>3727</NoRF>
+            <Unterart>SchweizerischeJuristischePerson</Unterart>
+        </JuristischePersonstamm>
+        <JuristischePersonstamm xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <PersonstammID>574739202303482</PersonstammID>
+            <Name>Raison sociale</Name>
+            <Gueltig>false</Gueltig>
+            <NrACI>827288022</NrACI>
+            <NoRF>3727</NoRF>
+            <Unterart>OeffentlicheKoerperschaft</Unterart>
+        </JuristischePersonstamm>
+    </PersonstammList>
+</GrundstueckExport>

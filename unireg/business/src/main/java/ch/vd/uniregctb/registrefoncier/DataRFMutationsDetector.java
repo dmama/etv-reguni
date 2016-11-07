@@ -20,9 +20,12 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
+import ch.vd.uniregctb.registrefoncier.helper.AyantDroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
+import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 /**
@@ -34,17 +37,19 @@ public class DataRFMutationsDetector {
 
 	private final XmlHelperRF xmlHelperRF;
 	private final ImmeubleRFDAO immeubleRFDAO;
+	private final AyantDroitRFDAO ayantDroitRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 
 	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
-	                               EvenementRFImportDAO evenementRFImportDAO,
+	                               AyantDroitRFDAO ayantDroitRFDAO, EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager) {
 		this.xmlHelperRF = xmlHelperRF;
 		this.immeubleRFDAO = immeubleRFDAO;
+		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
@@ -114,11 +119,56 @@ public class DataRFMutationsDetector {
 		}
 	}
 
-	public void processProprietaires(long importId, Iterator<Personstamm> iterator) {
-		// TODO (msi) implémenter la détection des mutations des propriétaires
-		while (iterator.hasNext()) {
-			iterator.next();
-		}
+	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator) {
+
+		final ParallelBatchTransactionTemplate<Personstamm> template = new ParallelBatchTransactionTemplate<Personstamm>(iterator, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+			@Override
+			protected int getBlockingQueueCapacity() {
+				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
+				// on sature rapidemment la mémoire de la JVM avec l'entier du fichier d'import.
+				return 10;
+			}
+		};
+
+		template.execute(new BatchCallback<Personstamm>() {
+			@Override
+			public boolean doInTransaction(List<Personstamm> batch) throws Exception {
+				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+				for (Personstamm person : batch) {
+
+					final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(person);
+					final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key);
+
+					// on détermine ce qu'il faut faire
+					final EvenementRFMutation.TypeMutation typeMutation;
+					if (ayantDroitRF == null) {
+						typeMutation = EvenementRFMutation.TypeMutation.CREATION;
+					}
+					else if (!AyantDroitRFHelper.dataEquals(ayantDroitRF, person)) {
+						typeMutation = EvenementRFMutation.TypeMutation.MODIFICATION;
+					}
+					else {
+						// rien à faire
+						continue;
+					}
+
+					// on ajoute l'événement à traiter
+					final String immeubleAsXml = xmlHelperRF.toXMLString(person);
+
+					final EvenementRFMutation mutation = new EvenementRFMutation();
+					mutation.setParentImport(parentImport);
+					mutation.setEtat(EtatEvenementRF.A_TRAITER);
+					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
+					mutation.setTypeMutation(typeMutation);
+					mutation.setXmlContent(immeubleAsXml);
+
+					evenementRFMutationDAO.save(mutation);
+				}
+
+				return true;
+			}
+		}, null);
 	}
 
 	public void processConstructions(long importId, Iterator<Gebaeude> iterator) {
