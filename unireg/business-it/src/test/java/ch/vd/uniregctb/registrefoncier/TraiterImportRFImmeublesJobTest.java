@@ -77,6 +77,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
 		assertNotNull(job);
@@ -380,6 +381,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
 		assertNotNull(job);
@@ -467,6 +469,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
 		assertNotNull(job);
