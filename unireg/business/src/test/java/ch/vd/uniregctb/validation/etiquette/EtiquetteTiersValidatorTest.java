@@ -37,7 +37,7 @@ public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<Etiquette
 	@Test
 	public void testDateDebut() throws Exception {
 		// ça, en gros, c'est pour vérifier que le validateur fait bien appel au DateRangeEntityValidator
-		final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP, null, false);
+		final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP, null);
 		final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(null, null, etiquette);
 		assertValidation(Collections.singletonList("L'étiquette EtiquetteTiers (? - ?) possède une date de début nulle"), null, validate(etiquetteTiers));
 	}
@@ -51,7 +51,7 @@ public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<Etiquette
 		}
 
 		{
-			final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP_MC, null, false);
+			final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP_MC, null);
 			final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(date(2000, 1, 1), null, etiquette);
 			Assert.assertFalse(validate(etiquetteTiers).hasErrors());
 		}

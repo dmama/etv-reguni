@@ -167,6 +167,7 @@ public abstract class LengthConstants {
 	public static final int ETIQUETTE_CODE = 50;
 	public static final int ETIQUETTE_LIBELLE = 100;
 	public static final int ETIQUETTE_TYPE_TIERS = 15;
+	public static final int ETIQUETTE_AUTO_DECES = 255;
 
 	public static final int ETIQUETTE_TIERS_COMMENTAIRE = 200;
 

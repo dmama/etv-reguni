@@ -14,14 +14,19 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.hibernate.ActionAutoEtiquetteUserType;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
 
 @Entity
 @Table(name = "ETIQUETTE")
+@TypeDef(name = "ActionAutoEtiquette", typeClass = ActionAutoEtiquetteUserType.class)
 public class Etiquette extends HibernateEntity {
 
 	private Long id;
@@ -30,7 +35,7 @@ public class Etiquette extends HibernateEntity {
 	private TypeTiersEtiquette typeTiers;
 	private boolean active;
 	private CollectiviteAdministrative collectiviteAdministrative;
-	private boolean autoSurDeces;
+	private ActionAutoEtiquette actionSurDeces;
 
 	@Transient
 	@Override
@@ -41,22 +46,12 @@ public class Etiquette extends HibernateEntity {
 	public Etiquette() {
 	}
 
-	public Etiquette(String code, String libelle, boolean active, TypeTiersEtiquette typeTiers) {
-		this.code = code;
-		this.libelle = libelle;
-		this.active = active;
-		this.typeTiers = typeTiers;
-		this.collectiviteAdministrative = null;
-		this.autoSurDeces = false;
-	}
-
-	public Etiquette(String code, String libelle, boolean active, TypeTiersEtiquette typeTiers, CollectiviteAdministrative collectiviteAdministrative, boolean autoSurDeces) {
+	public Etiquette(String code, String libelle, boolean active, TypeTiersEtiquette typeTiers, @Nullable CollectiviteAdministrative collectiviteAdministrative) {
 		this.code = code;
 		this.libelle = libelle;
 		this.active = active;
 		this.typeTiers = typeTiers;
 		this.collectiviteAdministrative = collectiviteAdministrative;
-		this.autoSurDeces = autoSurDeces;
 	}
 
 	@Id
@@ -120,12 +115,13 @@ public class Etiquette extends HibernateEntity {
 		this.typeTiers = typeTiers;
 	}
 
-	@Column(name = "AUTO_DECES")
-	public boolean isAutoSurDeces() {
-		return autoSurDeces;
+	@Column(name = "AUTO_DECES", length = LengthConstants.ETIQUETTE_AUTO_DECES)
+	@Type(type = "ActionAutoEtiquette")
+	public ActionAutoEtiquette getActionSurDeces() {
+		return actionSurDeces;
 	}
 
-	public void setAutoSurDeces(boolean autoSurDeces) {
-		this.autoSurDeces = autoSurDeces;
+	public void setActionSurDeces(ActionAutoEtiquette actionSurDeces) {
+		this.actionSurDeces = actionSurDeces;
 	}
 }
