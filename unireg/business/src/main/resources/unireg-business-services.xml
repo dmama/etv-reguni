@@ -329,6 +329,25 @@
 		<property name="xmlHelperRF" ref="xmlHelperRF"/>
 	</bean>
 
+	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsDetector">
+		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
+	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsProcessor">
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="immeubleRFProcessor"/>
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
+	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor">
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
 	<bean id="statistiquesEvenementsService" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

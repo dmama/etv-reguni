@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.registrefoncier.TraiterImportsRFJob;
+import ch.vd.uniregctb.registrefoncier.TraiterImportRFJob;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.transaction.TxSyncManager;
@@ -80,9 +80,10 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 		AuthenticationHelper.pushPrincipal("JMS-ImportRF");
 		try {
 			final HashMap<String, Object> params = new HashMap<>();
-			params.put(TraiterImportsRFJob.ID, eventId);
-			params.put(TraiterImportsRFJob.NB_THREADS, 8);
-			batchScheduler.startJob(TraiterImportsRFJob.NAME, params);
+			params.put(TraiterImportRFJob.ID, eventId);
+			params.put(TraiterImportRFJob.NB_THREADS, 8);
+			params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, true);
+			batchScheduler.startJob(TraiterImportRFJob.NAME, params);
 		}
 		catch (JobAlreadyStartedException | SchedulerException e) {
 			LOGGER.error("Le job n'a pas pu être démarré pour la raison suivante :", e);

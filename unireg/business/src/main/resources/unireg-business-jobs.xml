@@ -85,22 +85,27 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-	<!-- [SIFISC-19660] Job de traitement de l'import des immeubles du registre foncier -->
-	<bean id="traiterImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.TraiterImportsRFJob">
+	<!-- [SIFISC-20372] Job de traitement de l'import et de génération des mutations sur les immeubles du registre foncier -->
+	<bean id="traiterImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.TraiterImportRFJob">
 		<constructor-arg value="108"/>
-		<constructor-arg value="Traiter un import des immeubles du registre foncier"/>
-		<property name="xmlHelperRF" ref="xmlHelperRF"/>
+		<constructor-arg value="Traiter un import du registre foncier et générer les mutations"/>
 		<property name="parser" ref="fichierImmeublesRFParser"/>
-		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
+		<property name="mutationsDetector" ref="dataRFMutationsDetector"/>
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
-		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="zipRaftStore" ref="zipRaftEsbStore"/>
 	</bean>
 
+	<!-- [SIFISC-20372] Job de traitement des mutations des immeubles du registre foncier -->
+	<bean id="traiterMutationsRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.TraiterMutationsRFJob">
+		<constructor-arg value="109"/>
+		<constructor-arg value="Traiter les mutations des immeubles du registre foncier"/>
+		<property name="processor" ref="dataRFMutationsProcessor"/>
+	</bean>
+
     <!-- Job qui détermine les mouvements de dossiers en masse des contribuables-->
      <bean id="determinerMouvementsDossiersEnMasseJob" parent="schedulerJob" class="ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseJob">
-        <constructor-arg value="109"/>
+        <constructor-arg value="110"/>
         <constructor-arg value="Déterminer les mouvements de dossiers en masse"/>
         <property name="mouvementService" ref="mouvementService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -109,7 +114,7 @@
 
 	<!-- Job qui Resoud les adresses en fonction du numéro de rue-->
      <bean id="resolutionAdresseJob" parent="schedulerJob" class="ch.vd.uniregctb.adresse.ResolutionAdresseJob">
-        <constructor-arg value="110"/>
+        <constructor-arg value="111"/>
         <constructor-arg value="Résoudre les adresses en fonction du numéro de rue"/>
         <property name="adresseService" ref="adresseService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -117,7 +122,7 @@
 
 	<!-- Job qui compare les situations de famille UNIREG avec celles du civil-->
      <bean id="comparerSituationFamilleJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ComparerSituationFamilleJob">
-        <constructor-arg value="111"/>
+        <constructor-arg value="112"/>
         <constructor-arg value="Comparer les situations de familles"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="situationFamilleService" ref="situationFamilleService"/>
@@ -125,7 +130,7 @@
 
 	<!-- Job qui effectue l'envoi des annonces à l'IDE pour les entreprises sous le contrôle de l'ACI -->
 	<bean id="annonceIDEJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEJob">
-		<constructor-arg value="112"/>
+		<constructor-arg value="113"/>
 		<constructor-arg value="Envoi des annonces à l'IDE pour les entreprises sous le contrôle de l'ACI"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="dialect" ref="hibernateDialect"/>

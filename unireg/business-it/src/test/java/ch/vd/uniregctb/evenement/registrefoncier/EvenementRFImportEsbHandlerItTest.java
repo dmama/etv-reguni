@@ -18,7 +18,7 @@ import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
-import ch.vd.uniregctb.registrefoncier.TraiterImportsRFJob;
+import ch.vd.uniregctb.registrefoncier.TraiterImportRFJob;
 import ch.vd.uniregctb.scheduler.MockBatchScheduler;
 import ch.vd.uniregctb.transaction.MockTxSyncManager;
 
@@ -135,8 +135,8 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		final List<MockBatchScheduler.JobData> started = batchScheduler.getStartedJobs();
 		assertEquals(1, started.size());
 		final MockBatchScheduler.JobData started0 = started.get(0);
-		assertEquals(TraiterImportsRFJob.NAME, started0.getName());
+		assertEquals(TraiterImportRFJob.NAME, started0.getName());
 		final Map<String, Object> params0 = started0.getParams();
-		assertEquals(event.getId(), params0.get(TraiterImportsRFJob.ID));
+		assertEquals(event.getId(), params0.get(TraiterImportRFJob.ID));
 	}
 }
