@@ -26,7 +26,7 @@ public class MockServiceIDEService implements ServiceIDEService {
 	}
 
 	@Override
-	public void validerAnnonceIDE(BaseAnnonceIDE proto) throws ServiceIDEException {
+	public void validerAnnonceIDE(BaseAnnonceIDE proto, Entreprise entreprise) throws ServiceIDEException {
 		throw new UnsupportedOperationException();
 	}
 }

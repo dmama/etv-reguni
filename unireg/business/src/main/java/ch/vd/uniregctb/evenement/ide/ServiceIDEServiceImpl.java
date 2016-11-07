@@ -217,7 +217,9 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			final Organisation organisation = tiersService.getOrganisation(entreprise);
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			if (site != null) {
-				final String message = String.format("Le site apparié à l'établissement n°%s n'est pas un établissement principal.", etablissement.getNumero());
+				final String message = String.format("Entreprise n°%s: le site apparié à l'établissement n°%s n'est pas un établissement principal.",
+				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+				                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()));
 				Audit.error(message);
 				Assert.isTrue(site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_PRINCIPAL,
 				              message);
@@ -247,8 +249,10 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 								On connait déjà le numéro IDE
 							 */
 						if (!numeroIDEFiscalEntreprise.equals(numeroIDESite)) {
-							final String message = String.format("Les numéro IDE de Unireg [%s] et du registre civil [%s] ne correspondent pas pour l'établissement n°%s!",
-							                                    numeroIDEFiscalEntreprise, numeroIDESite, FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
+							final String message = String.format("Entreprise n°%s: les numéro IDE de Unireg [%s] et du registre civil [%s] ne correspondent pas pour l'établissement n°%s!",
+							                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+							                                     numeroIDEFiscalEntreprise, numeroIDESite,
+							                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
 							);
 							Audit.error(message);
 							throw new ServiceIDEException(
@@ -356,8 +360,10 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					}
 				} else {
 					// Cas de notre dernière annonce encore dans l'esb.
-					final String message = "Une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
-							"Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.";
+					final String message = String.format("Entreprise n°%s: une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
+							                                     "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.",
+					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
+					);
 					Audit.warn(message);
 					throw new ServiceIDEException(message);
 				}
@@ -396,7 +402,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			// - Aucune annonce ne sera envoyée pour le seul changement dans la description du secteur d'activité, car il n'est pas surchargé et on n'a pas moyen de savoir s'il est changé.
 			// - La détection de radiation émise fonctionne à minima et échoue si
 
-			validerAnnonceIDE(protoActuel);
+			validerAnnonceIDE(protoActuel, entreprise);
 
 			Audit.info(
 					String.format("Annonce à l'IDE de l'entreprise (%s) n°%s %s, domiciliée à %s, type %s, %s.",
@@ -416,21 +422,27 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 
 	@Override
-	public void validerAnnonceIDE(BaseAnnonceIDE proto) throws ServiceIDEException {
+	public void validerAnnonceIDE(BaseAnnonceIDE proto, Entreprise entreprise) throws ServiceIDEException {
 		final BaseAnnonceIDE.Statut statut = serviceOrganisation.validerAnnonceIDE(proto);
 
 		// Workaround du SIREF-9364, où le statut est "sans erreur" même lorsqu'il y en a.
 		if (statut.getErreurs() != null && !statut.getErreurs().isEmpty()) {
-			throw new AnnonceIDEValidationException("Le modèle d'annonce à l'IDE a échoué à la validation (il y a des erreurs).", statut.getErreurs());
+			throw new AnnonceIDEValidationException(String.format("Entreprise n°%s: le modèle d'annonce à l'IDE a échoué à la validation (il y a des erreurs).",
+			                                                      FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())),
+			                                                      statut.getErreurs()
+			);
 		}
 
 		switch (statut.getStatut()) {
 		case VALIDATION_SANS_ERREUR:
 			break;
 		case REJET_RCENT:
-			throw new AnnonceIDEValidationException("Le modèle d'annonce à l'IDE a échoué à la validation.", statut.getErreurs());
+			throw new AnnonceIDEValidationException(
+					String.format("Entreprise n°%s: le modèle d'annonce à l'IDE a échoué à la validation.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())),
+					statut.getErreurs());
 		default:
-			throw new ServiceIDEException(String.format("Statut d'annonce inattendu retourné par le service de validation du registre civil: %s", statut.getStatut()));
+			throw new ServiceIDEException(String.format("Entreprise n°%s: statut d'annonce inattendu retourné par le service de validation du registre civil: %s",
+			                                            FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), statut.getStatut()));
 		}
 	}
 
