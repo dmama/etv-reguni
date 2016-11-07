@@ -54,10 +54,11 @@ public interface ServiceIDEService {
 	 * Valider le modèle d'annonce. Le service civil organisation est utilisé pour cela.
 	 *
 	 * @param proto le prototype à faire valider.
+	 * @param entreprise l'entreprise pour laquelle l'annonce est effectuée
 	 * @throws ServiceIDEException en cas d'erreur non récupérable, notamment lors de l'accès au service de validation du régistre civil.
 	 * @throws AnnonceIDEValidationException signale l'échec de la validation. Voir la liste des erreurs jointes à l'exception.
 	 */
-	void validerAnnonceIDE(BaseAnnonceIDE proto) throws ServiceIDEException;
+	void validerAnnonceIDE(BaseAnnonceIDE proto, Entreprise entreprise) throws ServiceIDEException;
 
 
 }

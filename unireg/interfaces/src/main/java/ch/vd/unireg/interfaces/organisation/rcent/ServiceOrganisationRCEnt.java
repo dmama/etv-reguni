@@ -175,14 +175,19 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		Assert.notNull(modele, "Modèle d'annonce à valider manquant!");
 
 		final NoticeRequest noticeRequest = RCEntAnnonceIDEHelper.buildNoticeRequest(modele);
-		final NoticeRequestReport noticeReport = client.validateNoticeRequest(noticeRequest);
-		if (noticeReport == null || noticeReport.getNoticeRequest() == null) {
-			final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
-			throw new ServiceOrganisationException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce à l'IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
+		try {
+			final NoticeRequestReport noticeReport = client.validateNoticeRequest(noticeRequest);
+			if (noticeReport == null || noticeReport.getNoticeRequest() == null) {
+				final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
+				throw new ServiceOrganisationException(String.format("Reçu une réponse vide lors de l'appel pour valider le modèle d'annonce à l'IDE (entreprise: %s)", contenu == null ? "" : contenu.getNom()));
+			}
+			final BaseAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.buildProtoAnnonceIDE(noticeReport).getStatut();
+			cleanErreurs(statut);
+			return statut;
 		}
-		final BaseAnnonceIDE.Statut statut = RCEntAnnonceIDEHelper.buildProtoAnnonceIDE(noticeReport).getStatut();
-		cleanErreurs(statut);
-		return statut;
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
+		}
 	}
 
 	/**

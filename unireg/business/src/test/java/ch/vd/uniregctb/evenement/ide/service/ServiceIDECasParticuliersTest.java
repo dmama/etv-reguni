@@ -27,6 +27,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ServiceIDEException;
 import ch.vd.uniregctb.evenement.ide.SingleShotMockAnnonceIDESender;
@@ -135,8 +136,8 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 					serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				}
 				catch (ServiceIDEException e) {
-					assertEquals("Une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
-							             "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.",
+					assertEquals(String.format("Entreprise n°%s: une annonce est en attente de reception par le registre civil des entreprises (RCEnt). " +
+							             "Ce traitement doit avoir lieu avant de pouvoir déterminer s'il faut annoncer de nouveaux changements.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)),
 					             e.getMessage());
 					return null;
 				} catch (Exception e) {
