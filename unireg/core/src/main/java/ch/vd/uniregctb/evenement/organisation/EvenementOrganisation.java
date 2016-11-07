@@ -67,7 +67,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	private boolean correctionDansLePasse;
 
 	/**
-	 * En tête "messageId" du message dans l'ESB, identifiant technique permettant de détecter un doublon technique.
+	 * En tête "businessId" du message dans l'ESB, identifiant métier permettant de détecter les messages en double.
 	 */
 	private String businessId;
 
@@ -209,7 +209,7 @@ public class EvenementOrganisation extends HibernateEntity {
 		this.correctionDansLePasse = correctionDansLePasse;
 	}
 
-	@Column(name = "BUSINESS", length = LengthConstants.EVTORGANISATION_BUSINESS_ID)
+	@Column(name = "BUSINESS_ID", length = LengthConstants.EVTORGANISATION_BUSINESS_ID)
 	public String getBusinessId() {
 		return businessId;
 	}
