@@ -903,4 +903,31 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		Assert.assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, dateLiquidation, MotifFor.DEBUT_EXPLOITATION, MotifFor.FUSION_ENTREPRISES, assujettissements.get(0));
 	}
+
+	/**
+	 * Cas du contribuable 466 qui avait un assujettissement 2011 en 16R3 mais l'a perdu en 16R4 dans le cas d'un déménagement vaudois
+	 * pile sur une date de bouclement...
+	 * (dans les tests, les Mocks présentant une fusion de Cully en Bourg-en-Lavaux en 2010 plutôt que 2011, j'ai tout ramené d'un an aussi...)
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDemenagementVaudois() throws Exception {
+
+		final RegDate dateCreation = date(2009, 1, 1);
+		final RegDate dateDemenagement = date(2011, 1, 1);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRaisonSociale(e, dateCreation, null, "Chauffage SA");
+		addFormeJuridique(e, dateCreation, null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalCH(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalVD(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addBouclement(e, dateCreation, DayMonth.get(12, 31), 12);       // tous les ans au 31.12
+		addForPrincipal(e, dateCreation, MotifFor.DEBUT_EXPLOITATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Cully, GenreImpot.BENEFICE_CAPITAL);
+		addForPrincipal(e, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.BourgEnLavaux, GenreImpot.BENEFICE_CAPITAL);
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(dateCreation, null, MotifFor.DEBUT_EXPLOITATION, null, assujettissements.get(0));
+	}
 }
