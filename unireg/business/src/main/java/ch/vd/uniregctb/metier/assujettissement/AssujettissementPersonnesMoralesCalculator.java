@@ -448,8 +448,9 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		else if (fraction != null) {
 			afin = fraction.getDate().getOneDayBefore();
 		}
-		else if (forPrincipal.getNext() != null && !isDepartOuArriveeHorsCanton(current, forPrincipal.getNext()) && !isDepartOuArriveeHorsSuisse(current, forPrincipal.getNext())) {
+		else if (forPrincipal.getNext() != null && !isDepartOuArriveeHorsCanton(current, forPrincipal.getNext()) && !isDepartOuArriveeHorsSuisse(current, forPrincipal.getNext()) && !isSurBouclement(fin, exercicesCommerciaux)) {
 			// si on change de commune, alors l'assujettissement sera généré par le for suivant...
+			// [SIFISC-21921] (sauf bien-sûr si le départ se produit le dernier jour de l'exercice...)
 			afin = getDernierDebutExercice(exercicesCommerciaux, fin).getOneDayBefore();
 		}
 		else {
@@ -458,6 +459,16 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		}
 
 		return afin;
+	}
+
+	/**
+	 * @param date date à tester par rapport aux dates de bouclement connues
+	 * @param exercicesCommerciaux les exercices commerciaux de l'entreprise
+	 * @return <code>true</code> si la date de fin du for fiscal correspond à une date de fin d'exercice commercial
+	 */
+	private static boolean isSurBouclement(@NotNull RegDate date, List<ExerciceCommercial> exercicesCommerciaux) {
+		final ExerciceCommercial exerciceCourant = DateRangeHelper.rangeAt(exercicesCommerciaux, date);
+		return exerciceCourant != null && exerciceCourant.getDateFin() == date;
 	}
 
 	/**
