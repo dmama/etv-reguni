@@ -2,7 +2,6 @@ package ch.vd.uniregctb.xml;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
@@ -13,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -1153,6 +1150,10 @@ public abstract class DataHelper {
 			case AGENTS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				results.add(TiersDAO.Parts.ADRESSES_MANDATAIRES);
+				break;
+			case LABELS:
+				results.add(TiersDAO.Parts.ETIQUETTES);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:

@@ -25,6 +25,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AdministrationEntreprise;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
@@ -54,6 +55,7 @@ import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v5.BankAccountBuilder;
 import ch.vd.uniregctb.xml.party.v5.ForFiscalComparator;
+import ch.vd.uniregctb.xml.party.v5.LabelBuilder;
 import ch.vd.uniregctb.xml.party.v5.ManagingTaxResidenceBuilder;
 import ch.vd.uniregctb.xml.party.v5.RelationBetweenPartiesBuilder;
 import ch.vd.uniregctb.xml.party.v5.TaxDeclarationBuilder;
@@ -148,6 +150,10 @@ public abstract class PartyStrategy<T extends Party> {
 		if (parts != null && (parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES))) {
 			initTaxDeclarations(left, tiers, parts);
 		}
+
+		if (parts != null && parts.contains(PartyPart.LABELS)) {
+			initLabels(left, tiers, context);
+		}
 	}
 
 	protected void copyParts(T to, T from, @Nullable Set<PartyPart> parts, CopyMode mode) {
@@ -178,6 +184,10 @@ public abstract class PartyStrategy<T extends Party> {
 
 		if ((parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES))) {
 			copyTaxDeclarations(to, from, parts, mode);
+		}
+
+		if (parts.contains(PartyPart.LABELS)) {
+			copyLabels(to, from);
 		}
 	}
 
@@ -685,6 +695,16 @@ public abstract class PartyStrategy<T extends Party> {
 				}
 			}
 		}
+	}
+
+	protected void initLabels(T tiers, Tiers right, Context context) {
+		for (EtiquetteTiers etiquette : right.getEtiquettesNonAnnuleesTriees()) {
+			tiers.getLabels().add(LabelBuilder.newLabel(etiquette, false));
+		}
+	}
+
+	private static void copyLabels(Party to, Party from) {
+		copyColl(to.getLabels(), from.getLabels());
 	}
 
 	protected static <T> void copyColl(List<T> toColl, List<T> fromColl) {

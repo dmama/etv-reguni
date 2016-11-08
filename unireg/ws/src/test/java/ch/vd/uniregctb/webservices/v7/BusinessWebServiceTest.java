@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -119,9 +120,11 @@ import ch.vd.unireg.xml.party.taxresidence.v4.TaxationMethod;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriodType;
+import ch.vd.unireg.xml.party.v5.AdministrativeAuthorityLink;
 import ch.vd.unireg.xml.party.v5.NaturalPersonSubtype;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
+import ch.vd.unireg.xml.party.v5.PartyLabel;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.PartyType;
 import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
@@ -143,6 +146,12 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
+import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
+import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteService;
+import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -182,18 +191,21 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 
 public class BusinessWebServiceTest extends WebserviceTest {
 
 	private BusinessWebService service;
 	private EFactureServiceProxy efactureService;
+	private EtiquetteService etiquetteService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		service = getBean(BusinessWebService.class, "wsv7Business");
 		efactureService = getBean(EFactureServiceProxy.class, "efactureService");
+		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 	}
 
 	private static void assertValidInteger(long value) {
@@ -4405,6 +4417,209 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final OuvertureFor ouverture = (OuvertureFor) xml;
 			Assert.assertEquals(LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY, ouverture.getMotifOuverture());
+		}
+	}
+
+	@Test
+	public void testLabels() throws Exception {
+
+		final String codeHeritage = "HERITAGE";
+		final String codeCollaborateurs = "COLLABORATEURS";
+		final String codeToto = "TOTO";
+		final int noColAdminNouvelleEntite = 25;
+
+		// mise en place des étiquettes
+		final long idCollAdmNouvelleEntite = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative nouvelleEntite = addCollAdm(noColAdminNouvelleEntite);
+				final Etiquette etiquetteHeritage = addEtiquette(codeHeritage, "Héritage", TypeTiersEtiquette.PP, nouvelleEntite);
+				etiquetteHeritage.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+				                                                            new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+
+				addEtiquette(codeCollaborateurs, "DS Collaborateurs", TypeTiersEtiquette.PP, nouvelleEntite);
+				addEtiquette(codeToto, "Etiquette TOTO", TypeTiersEtiquette.PP_MC, null);
+				return nouvelleEntite.getNumero();
+			}
+		});
+
+		final class Ids {
+			int prn;
+			int cjt;
+			int mc;
+		}
+
+		// mise en place des individus avec leur liens d'étiquette
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique prn = addNonHabitant("Albert", "Mucas", null, Sexe.MASCULIN);
+				final PersonnePhysique cjt = addNonHabitant("Françoise", "Mucas", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(prn, cjt, date(2008, 1, 1), null);
+				final MenageCommun menage = couple.getMenage();
+
+				final Etiquette collaborateurs = etiquetteService.getEtiquette(codeCollaborateurs);
+				final Etiquette toto = etiquetteService.getEtiquette(codeToto);
+
+				addEtiquetteTiers(collaborateurs, prn, date(2008, 5, 12), date(2010, 8, 31));
+				addEtiquetteTiers(collaborateurs, prn, date(2015, 2, 1), null);
+				addEtiquetteTiers(collaborateurs, cjt, date(2009, 6, 1), date(2014, 5, 30));
+
+				addEtiquetteTiers(toto, cjt, date(2005, 3, 1), null);
+				addEtiquetteTiers(toto, menage, date(2010, 1, 1), date(2010, 7, 15));
+
+				final Ids ids = new Ids();
+				ids.prn = prn.getNumero().intValue();
+				ids.cjt = cjt.getNumero().intValue();
+				ids.mc = menage.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		// interrogation
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.prn, ids.cjt, ids.mc), EnumSet.of(PartyPart.LABELS));
+		final Map<Integer, Party> mapParties = parties.getEntries().stream()
+				.collect(Collectors.toMap(Entry::getPartyNo, Entry::getParty));
+		Assert.assertEquals(3, mapParties.size());
+
+		// principal
+		{
+			final Party party = mapParties.get(ids.prn);
+			Assert.assertNotNull(party);
+
+			final List<PartyLabel> labels = party.getLabels();
+			Assert.assertNotNull(labels);
+			Assert.assertEquals(2, labels.size());
+			{
+				final PartyLabel label = labels.get(0);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertEquals(date(2010, 8, 31), DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeCollaborateurs, label.getLabel());
+				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertFalse(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNotNull(ca);
+				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+			}
+			{
+				final PartyLabel label = labels.get(1);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeCollaborateurs, label.getLabel());
+				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertFalse(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNotNull(ca);
+				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+			}
+		}
+
+		// conjoint
+		{
+			final Party party = mapParties.get(ids.cjt);
+			Assert.assertNotNull(party);
+
+			final List<PartyLabel> labels = party.getLabels();
+			Assert.assertNotNull(labels);
+			Assert.assertEquals(2, labels.size());
+			{
+				final PartyLabel label = labels.get(0);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2005, 3, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeToto, label.getLabel());
+				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				Assert.assertFalse(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNull(ca);
+			}
+			{
+				final PartyLabel label = labels.get(1);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2009, 6, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeCollaborateurs, label.getLabel());
+				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertFalse(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNotNull(ca);
+				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+			}
+		}
+
+		// ménage
+		{
+			final Party party = mapParties.get(ids.mc);
+			Assert.assertNotNull(party);
+
+			final List<PartyLabel> labels = party.getLabels();
+			Assert.assertNotNull(labels);
+			Assert.assertEquals(5, labels.size());
+			{
+				final PartyLabel label = labels.get(0);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2005, 3, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertEquals(date(2009, 12, 31), DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeToto, label.getLabel());
+				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				Assert.assertTrue(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNull(ca);
+			}
+			{
+				final PartyLabel label = labels.get(1);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeCollaborateurs, label.getLabel());
+				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertTrue(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNotNull(ca);
+				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+			}
+			{
+				final PartyLabel label = labels.get(2);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2010, 1, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertEquals(date(2010, 7, 15), DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeToto, label.getLabel());
+				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				Assert.assertFalse(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNull(ca);
+			}
+			{
+				final PartyLabel label = labels.get(3);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2010, 7, 16), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeToto, label.getLabel());
+				Assert.assertEquals("Etiquette TOTO", label.getDisplayLabel());
+				Assert.assertTrue(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNull(ca);
+			}
+			{
+				final PartyLabel label = labels.get(4);
+				Assert.assertNotNull(label);
+				Assert.assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
+				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
+				Assert.assertEquals(codeCollaborateurs, label.getLabel());
+				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertTrue(label.isVirtual());
+				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
+				Assert.assertNotNull(ca);
+				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
+			}
 		}
 	}
 }

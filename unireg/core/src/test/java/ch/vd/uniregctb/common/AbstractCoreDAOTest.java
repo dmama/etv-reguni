@@ -69,6 +69,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
@@ -939,6 +940,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Etiquette addEtiquette(String code, String libelle, TypeTiersEtiquette typeTiers, @Nullable CollectiviteAdministrative ca) {
 		final Etiquette etiquette = new Etiquette(code, libelle, true, typeTiers, ca);
 		return merge(etiquette);
+	}
+
+	protected EtiquetteTiers addEtiquetteTiers(Etiquette etiquette, Tiers tiers, RegDate dateDebut, RegDate dateFin) {
+		final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(dateDebut, dateFin, etiquette);
+		etiquetteTiers.setTiers(tiers);
+		tiers.addEtiquette(etiquetteTiers);
+		return etiquetteTiers;
 	}
 
 	protected PersonnePhysique addHabitant(long noIndividu) {

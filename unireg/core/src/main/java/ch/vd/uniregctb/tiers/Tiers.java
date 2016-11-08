@@ -1084,6 +1084,13 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return etiquettes;
 	}
 
+	@Transient
+	public List<EtiquetteTiers> getEtiquettesNonAnnuleesTriees() {
+		final List<EtiquetteTiers> nonAnnulees = AnnulableHelper.sansElementsAnnules(etiquettes);
+		Collections.sort(nonAnnulees, DateRangeComparator::compareRanges);
+		return nonAnnulees;
+	}
+
 	/**
 	 * @see java.lang.Object#clone()
 	 */
