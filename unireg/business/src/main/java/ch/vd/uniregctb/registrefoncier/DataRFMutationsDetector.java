@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
@@ -32,6 +34,8 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
  */
 public class DataRFMutationsDetector {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataRFMutationsDetector.class);
 
 	private static final int BATCH_SIZE = 20;
 
@@ -67,8 +71,13 @@ public class DataRFMutationsDetector {
 		};
 
 		template.execute(new BatchCallback<Grundstueck>() {
+
+			private final ThreadLocal<Grundstueck> first = new ThreadLocal<>();
+
 			@Override
 			public boolean doInTransaction(List<Grundstueck> batch) throws Exception {
+				first.set(batch.get(0));
+
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				for (Grundstueck immeuble : batch) {
@@ -109,6 +118,13 @@ public class DataRFMutationsDetector {
 
 				return true;
 			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.error("Exception sur le traitement de l'immeuble idRF=[" + first.get().getGrundstueckID() + "]", e);
+				}
+			}
 		}, null);
 	}
 
@@ -131,8 +147,13 @@ public class DataRFMutationsDetector {
 		};
 
 		template.execute(new BatchCallback<Personstamm>() {
+
+			private final ThreadLocal<Personstamm> first = new ThreadLocal<>();
+
 			@Override
 			public boolean doInTransaction(List<Personstamm> batch) throws Exception {
+				first.set(batch.get(0));
+
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				for (Personstamm person : batch) {
@@ -167,6 +188,13 @@ public class DataRFMutationsDetector {
 				}
 
 				return true;
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.error("Exception sur le traitement du propriétaire idRF=[" + first.get().getPersonstammID() + "]", e);
+				}
 			}
 		}, null);
 	}

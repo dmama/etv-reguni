@@ -19,7 +19,6 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.SubStatusManager;
@@ -82,11 +81,11 @@ public class DataRFMutationsProcessor {
 		final ParallelBatchTransactionTemplate<Long> template = new ParallelBatchTransactionTemplate<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
 		template.execute(new BatchCallback<Long>() {
 
-			private List<Long> mutationsIds;
+			private final ThreadLocal<Long> first = new ThreadLocal<>();
 
 			@Override
 			public boolean doInTransaction(List<Long> mutationsIds) throws Exception {
-				this.mutationsIds = mutationsIds;
+				first.set(mutationsIds.get(0));
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Processing mutations ids={}", Arrays.toString(mutationsIds.toArray()));
 				}
@@ -100,7 +99,7 @@ public class DataRFMutationsProcessor {
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
-					final Long mutId = CollectionsUtils.getFirst(mutationsIds);
+					final Long mutId = first.get();
 					LOGGER.warn("Erreur pendant le traitement de la mutation n°" + mutId, e);
 					if (mutId != null) {
 						updateMutation(mutId, e);
