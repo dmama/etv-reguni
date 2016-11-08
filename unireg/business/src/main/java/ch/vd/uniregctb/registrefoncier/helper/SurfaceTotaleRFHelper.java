@@ -29,17 +29,17 @@ public abstract class SurfaceTotaleRFHelper {
 	}
 
 	@NotNull
-	public static SurfaceTotaleRF newSurfaceTotaleRF(@NotNull GrundstueckFlaeche flaeche) {
+	public static SurfaceTotaleRF newSurfaceTotaleRF(int flaeche) {
 		final SurfaceTotaleRF surface = new SurfaceTotaleRF();
-		surface.setSurface(flaeche.getFlaeche());
+		surface.setSurface(flaeche);
 		return surface;
 	}
 
 	@Nullable
 	public static SurfaceTotaleRF get(@Nullable GrundstueckFlaeche flaeche) {
-		if (flaeche == null) {
+		if (flaeche == null || flaeche.getFlaeche() == null) {
 			return null;
 		}
-		return newSurfaceTotaleRF(flaeche);
+		return newSurfaceTotaleRF(flaeche.getFlaeche());
 	}
 }

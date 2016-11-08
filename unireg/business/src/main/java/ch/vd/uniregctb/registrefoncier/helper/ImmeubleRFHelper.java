@@ -171,6 +171,7 @@ public abstract class ImmeubleRFHelper {
 		Optional.of(grundstueck)
 				.map(g -> g instanceof GrundstueckMitFlaeche ? (GrundstueckMitFlaeche) g : null)    // seuls certains immeubles possèdent une surface totale
 				.map(GrundstueckMitFlaeche::getGrundstueckFlaeche)
+				.map(GrundstueckFlaeche::getFlaeche)
 				.ifPresent(flaeche -> {
 					final SurfaceTotaleRF surfaceTotale = SurfaceTotaleRFHelper.newSurfaceTotaleRF(flaeche);
 					immeuble.addSurfaceTotale(surfaceTotale);

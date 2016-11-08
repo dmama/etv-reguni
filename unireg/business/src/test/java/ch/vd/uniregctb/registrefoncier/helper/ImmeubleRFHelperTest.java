@@ -572,4 +572,43 @@ public class ImmeubleRFHelperTest {
 		final Set<EstimationRF> estimations = ppe.getEstimations();
 		assertEmpty(estimations);
 	}
+
+	/**
+	 * Cas de l'immeuble rfId=_8af806fc3971fea40139902846c13c38 qui possède une surface totale mais sans indication de surface...
+	 */
+	@Test
+	public void testNewImmeubleAvecSurfaceTotaleNulle() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(62);
+		grundstueckNummer.setStammNr(100008);
+
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(null);   // <--- là !
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("_8af806fc3971fea40139902846c13c38");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setGrundstueckFlaeche(flaeche);
+		grundstueck.setLigUnterartEnum("cfa");
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		assertEquals(BienFondRF.class, immeuble.getClass());
+
+		final BienFondRF bf = (BienFondRF) immeuble;
+		assertEquals("_8af806fc3971fea40139902846c13c38", bf.getIdRF());
+		assertNull(bf.getEgrid());
+
+		final Set<SituationRF> situations = bf.getSituations();
+		assertEquals(1, situations.size());
+		final SituationRF situation = situations.iterator().next();
+		assertEquals(62, situation.getNoRfCommune());
+		assertEquals(100008, situation.getNoParcelle());
+		assertNull(situation.getIndex1());
+		assertNull(situation.getIndex2());
+		assertNull(situation.getIndex3());
+
+		assertEmpty(bf.getEstimations());
+		assertEmpty(bf.getSurfacesAuSol());
+	}
 }

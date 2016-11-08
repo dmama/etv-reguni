@@ -53,11 +53,7 @@ public class SurfaceTotaleRFHelperTest {
 
 	@Test
 	public void testNewSurfaceTotaleRF() throws Exception {
-
-		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
-		flaeche.setFlaeche(201);
-
-		final SurfaceTotaleRF surface = SurfaceTotaleRFHelper.newSurfaceTotaleRF(flaeche);
+		final SurfaceTotaleRF surface = SurfaceTotaleRFHelper.newSurfaceTotaleRF(201);
 		assertEquals(201, surface.getSurface());
 	}
 
