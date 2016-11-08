@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -30,6 +33,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
+import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
+import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -59,6 +68,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
@@ -4286,6 +4296,228 @@ public class MetiersServiceTest extends BusinessTest {
 				assertNull(ffpMc.getDateFin());
 				assertNull(ffpMc.getMotifFermeture());
 				assertEquals(ModeImposition.ORDINAIRE, ffpMc.getModeImposition());
+			}
+		});
+	}
+
+	@Test
+	public void testDecesEtEtiquettes() throws Exception {
+
+		final RegDate dateDecesPrincipal = date(2000, 6, 14);
+		final RegDate dateDecesConjoint = dateDecesPrincipal.addDays(54);
+
+		// mise en place d'étiquettes qui réagissent au décès, et d'autres qui ne réagissent pas
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				{
+					final Etiquette etiquette = addEtiquette("TOTO", "Décès PP 2Y fin mois", TypeTiersEtiquette.PP, null);
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_MOIS)));
+				}
+				{
+					final Etiquette etiquette = addEtiquette("TITI", "Décès PM (aucun sens)", TypeTiersEtiquette.PM, null);
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+				}
+				{
+					final Etiquette etiquette = addEtiquette("TATA", "Décès PP sans date de fin", TypeTiersEtiquette.PP_MC, null);
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.SEMAINE, CorrectionSurDate.SANS_CORRECTION), null));
+				}
+				{
+					final Etiquette etiquette = addEtiquette("TÉTÉ", "inactive", TypeTiersEtiquette.PP_MC, null);
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+					etiquette.setActive(false);
+				}
+				{
+					addEtiquette("TUTU", "Sans décès", TypeTiersEtiquette.PP_MC_PM, null);
+				}
+			}
+		});
+
+		final class Ids {
+			long ppPrincipal;
+			long ppConjoint;
+			long mc;
+		}
+
+		// mise en place du ménage commun dont l'un des membre va mourir
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique prn = addNonHabitant("Albert", "Picolo", date(1942, 8, 13), Sexe.MASCULIN);
+				final PersonnePhysique cjt = addNonHabitant("Germaine", "Picolo", date(1945, 12, 5), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(prn, cjt, date(1967, 3, 1), null);
+				final MenageCommun mc = couple.getMenage();
+
+				final Ids ids = new Ids();
+				ids.ppPrincipal = couple.getPrincipal().getNumero();
+				ids.ppConjoint = couple.getConjoint().getNumero();
+				ids.mc = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// traitement du décès du principal
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique defunt = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
+				Assert.assertNotNull(defunt);
+				metierService.deces(defunt, dateDecesPrincipal, null, null);
+			}
+		});
+
+		// vérification des étiquettes assignées aux différents tiers concernés
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// rien sur le ménage
+				final MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.mc);
+				Assert.assertNotNull(menage);
+				Assert.assertEquals(0, menage.getEtiquettes().size());
+
+				// 2 étiquettes sur le principal (= défunt)
+				final PersonnePhysique prn = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
+				Assert.assertNotNull(prn);
+				Assert.assertEquals(2, prn.getEtiquettes().size());
+				final List<EtiquetteTiers> etiquettesPrincipal = prn.getEtiquettes().stream()
+						.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
+						.collect(Collectors.toList());
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(0);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TATA", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+					Assert.assertNull(etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(1);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TOTO", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+
+				// 2 étiquettes (= les mêmes) sur le conjoint survivant
+				final PersonnePhysique cjt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
+				Assert.assertNotNull(cjt);
+				Assert.assertEquals(2, cjt.getEtiquettes().size());
+				final List<EtiquetteTiers> etiquettesConjoint = cjt.getEtiquettes().stream()
+						.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
+						.collect(Collectors.toList());
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(0);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TATA", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+					Assert.assertNull(etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(1);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TOTO", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+			}
+		});
+
+		// traitement du décès du conjoint quelques jours après
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique defunt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
+				Assert.assertNotNull(defunt);
+				metierService.deces(defunt, dateDecesConjoint, null, null);
+			}
+		});
+
+		// vérification des étiquettes assignées aux différents tiers concernés
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// toujours rien sur le ménage
+				final MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.mc);
+				Assert.assertNotNull(menage);
+				Assert.assertEquals(0, menage.getEtiquettes().size());
+
+				// aucune différence sur le défunt précédent
+				final PersonnePhysique prn = (PersonnePhysique) tiersService.getTiers(ids.ppPrincipal);
+				Assert.assertNotNull(prn);
+				Assert.assertEquals(2, prn.getEtiquettes().size());
+				final List<EtiquetteTiers> etiquettesPrincipal = prn.getEtiquettes().stream()
+						.sorted(Comparator.comparing(e -> e.getEtiquette().getCode()))
+						.collect(Collectors.toList());
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(0);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TATA", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+					Assert.assertNull(etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesPrincipal.get(1);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TOTO", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+
+				// petit changement sur le nouveau défunt
+				final PersonnePhysique cjt = (PersonnePhysique) tiersService.getTiers(ids.ppConjoint);
+				Assert.assertNotNull(cjt);
+				Assert.assertEquals(3, cjt.getEtiquettes().size());
+				final Comparator<EtiquetteTiers> comparator = (et1, et2) -> {
+					int comparison = et1.getEtiquette().getCode().compareTo(et2.getEtiquette().getCode());
+					if (comparison == 0) {
+						comparison = DateRangeComparator.compareRanges(et1, et2);
+					}
+					return comparison;
+				};
+				final List<EtiquetteTiers> etiquettesConjoint = cjt.getEtiquettes().stream()
+						.sorted(comparator)
+						.collect(Collectors.toList());
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(0);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TATA", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(7), etiquetteTiers.getDateDebut());
+					Assert.assertNull(etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(1);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TOTO", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addDays(1), etiquetteTiers.getDateDebut());
+					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
+				{
+					final EtiquetteTiers etiquetteTiers = etiquettesConjoint.get(2);
+					final Etiquette etiquette = etiquetteTiers.getEtiquette();
+					Assert.assertEquals("TOTO", etiquette.getCode());
+					Assert.assertEquals(dateDecesPrincipal.addYears(2).getLastDayOfTheMonth().getOneDayAfter(), etiquetteTiers.getDateDebut());
+					Assert.assertEquals(dateDecesConjoint.addYears(2).getLastDayOfTheMonth(), etiquetteTiers.getDateFin());
+					Assert.assertFalse(etiquetteTiers.isAnnule());
+					Assert.assertNull(etiquetteTiers.getCommentaire());
+				}
 			}
 		});
 	}

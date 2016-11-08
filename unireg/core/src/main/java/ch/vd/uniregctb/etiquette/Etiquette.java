@@ -65,6 +65,9 @@ public class Etiquette extends HibernateEntity {
 		this.id = id;
 	}
 
+	/**
+	 * format "[A-Z][A-Z0-9_]*"
+	 */
 	@Column(name = "CODE", nullable = false, unique = true, length = LengthConstants.ETIQUETTE_CODE)
 	@Index(name = "IDX_ETIQ_CODE", columnNames = "CODE")
 	public String getCode() {

@@ -112,6 +112,7 @@
 		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="eFactureService" ref="efactureService" />
 		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="etiquetteService" ref="etiquetteService" />
 	</bean>
 
 	<bean id="metierServicePM" class="ch.vd.uniregctb.metier.MetierServicePMImpl">

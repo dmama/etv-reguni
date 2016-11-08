@@ -68,6 +68,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
@@ -147,6 +148,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.uniregctb.type.TypeTiersEtiquette;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -932,6 +934,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		TacheControleDossier controle = new TacheControleDossier(etat, date(2010, 1, 1), ctb, ca);
 		controle = merge(controle);
 		return controle;
+	}
+
+	protected Etiquette addEtiquette(String code, String libelle, TypeTiersEtiquette typeTiers, @Nullable CollectiviteAdministrative ca) {
+		final Etiquette etiquette = new Etiquette(code, libelle, true, typeTiers, ca);
+		return merge(etiquette);
 	}
 
 	protected PersonnePhysique addHabitant(long noIndividu) {

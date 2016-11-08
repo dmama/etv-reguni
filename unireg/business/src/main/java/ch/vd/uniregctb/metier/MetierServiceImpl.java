@@ -5,14 +5,20 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -38,6 +44,9 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteService;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -100,6 +109,7 @@ public class MetierServiceImpl implements MetierService {
 	private ValidationInterceptor validationInterceptor;
 	private EFactureService eFactureService;
 	private ParametreAppService parametreAppService;
+	private EtiquetteService etiquetteService;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -166,6 +176,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;
+	}
+
+	public void setEtiquetteService(EtiquetteService etiquetteService) {
+		this.etiquetteService = etiquetteService;
 	}
 
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
@@ -2276,9 +2290,6 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
-
-
-
 	public void validateForOfVeuvage(PersonnePhysique veuf, RegDate date, EnsembleTiersCouple couple, ValidationResults results) {
 		if (couple != null) {
 
@@ -2310,6 +2321,57 @@ public class MetierServiceImpl implements MetierService {
 				results.addError("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?");
 			}
 		}
+	}
+
+	/**
+	 * Ajout d'un étiquetage "décès" sur la personne physique donnée à partir de la date de référence fournie (= date de décès)
+	 * @param pp la persone physique sur laquelle les étiquettes doivent être posées
+	 * @param dateDeces la date de référence
+	 */
+	private void ajoutEtiquettesDeces(PersonnePhysique pp, RegDate dateDeces) {
+		// pas de personne physique, pas d'étiquette à générer
+		if (pp == null) {
+			return;
+		}
+
+		// par code étiquette, liste triée des étiquettes tiers non-annulées de la personne physique
+		final Map<String, List<EtiquetteTiers>> existing;
+		if (pp.getEtiquettes() != null && !pp.getEtiquettes().isEmpty()) {
+			existing = pp.getEtiquettes().stream()
+					.filter(etiqTiers -> !etiqTiers.isAnnule())
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toMap(etiqTiers -> etiqTiers.getEtiquette().getCode(),
+					                          Collections::singletonList,
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+		}
+		else {
+			existing = Collections.emptyMap();
+		}
+
+		// recherche des étiquettes disponibles et construction des manquantes
+		etiquetteService.getAllEtiquettes().stream()
+				.filter(Etiquette::isActive)                                                            // on ne joue pas avec les étiquettes inactives
+				.filter(etiq -> etiq.getTypeTiers().isForClass(PersonnePhysique.class))                 // seules les étiquettes activables sur une personne physique sont éligibles
+				.filter(etiq -> etiq.getActionSurDeces() != null)                                       // on ne prends compte que des étiquettes qui ont un trigger sur le décès
+				.map(etiq -> Pair.of(etiq, etiq.getActionSurDeces().rangeFromDate(dateDeces)))          // calcul du range de l'étiquetage
+				.filter(pair -> pair.getRight().getDateDebut() == null || pair.getRight().getDateFin() == null || pair.getRight().getDateDebut().isBeforeOrEqual(pair.getRight().getDateFin()))     // on ne garde que les ranges valides
+				.forEach(pair -> {
+					final Etiquette etiquette = pair.getLeft();
+					final DateRange rangeSouhaite = pair.getRight();
+
+					// pour cette étiquette-là, la personne physique a peut-être déjà des plages de temps couvertes
+					final List<EtiquetteTiers> dejaLa = Optional.of(etiquette.getCode())
+							.map(existing::get)
+							.orElseGet(Collections::emptyList);
+
+					// que manque-t-il pour couvrir le range souhaité ?
+					final List<DateRange> manquants = DateRangeHelper.subtract(rangeSouhaite, dejaLa);
+					if (manquants != null && !manquants.isEmpty()) {
+						manquants.stream()
+								.map(range -> new EtiquetteTiers(range.getDateDebut(), range.getDateFin(), etiquette))
+								.forEach(pp::addEtiquette);
+					}
+				});
 	}
 
 	/**
@@ -2352,6 +2414,10 @@ public class MetierServiceImpl implements MetierService {
 				defunt = menageComplet.getConjoint(veuf);
 			}
 		}
+
+		// ajout des étiquettes actives au moment d'un décès sur le décédé et le veuf
+		ajoutEtiquettesDeces(defunt, date);
+		ajoutEtiquettesDeces(veuf, date);
 
 		// si le défunt avait déjà un for qui s'ouvre au lendemain de sa date de décès pour le motif VEUVAGE,
 		// alors c'est que son conjoint est également décédé le même jour que lui, mais on ne le savait pas
