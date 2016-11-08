@@ -440,6 +440,33 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="displayLabel" type="xs:token">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Libellé affichable de l'étiquette.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="administrativeAuthority" type="party:administrativeAuthorityLinkType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Lien éventuel vers une collectivité administrative.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="virtual" type="xs:boolean">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Indique si l'étiquette est virtuelle (= transmise depuis un autre tiers) ou pas (= directement assignée au tiers).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
@@ -452,6 +479,29 @@
 			<xs:pattern value="[A-Z][A-Z0-9_]*"/>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="administrativeAuthorityLinkType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Lien vers une collectivité administrative</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+		<xs:attribute name="partyNumber" type="common:partyNumberType" use="required">
+			<xs:annotation>
+				<xs:documentation>Numéro de tiers de la collectivité administrative (pour obtenir une adresse, par exemple).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="administrativeAuthorityId" type="xs:int" use="required">
+			<xs:annotation>
+				<xs:documentation>Numéro de la collectivité administrative.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 
 	<xs:complexType name="partyInfoType">
 		<xs:annotation>
@@ -925,13 +975,11 @@
 					<xs:documentation>Les informations de mandataires.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<!-- Cette part viendra plus tard quand l'implémentation sera prête dans Unireg
 			<xs:enumeration value="LABELS">
 				<xs:annotation>
 					<xs:documentation>Les étiquettes associées au tiers.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			-->
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
