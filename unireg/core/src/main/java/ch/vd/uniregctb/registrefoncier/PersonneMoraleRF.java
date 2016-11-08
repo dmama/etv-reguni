@@ -18,4 +18,12 @@ public class PersonneMoraleRF extends TiersRF {
 	public void setRaisonSociale(String raisonSociale) {
 		this.raisonSociale = raisonSociale;
 	}
+
+	@Override
+	public void copyDataTo(AyantDroitRF right) {
+		super.copyDataTo(right);
+		final PersonneMoraleRF collRight = (PersonneMoraleRF) right;
+		collRight.raisonSociale = this.raisonSociale;
+	}
+
 }

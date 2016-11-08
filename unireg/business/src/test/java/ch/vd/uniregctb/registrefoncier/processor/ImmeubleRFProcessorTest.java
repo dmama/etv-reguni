@@ -14,11 +14,10 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -34,9 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-public class ImmeubleRFProcessorTest extends BusinessTest {
+public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 
-	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 
 	private ImmeubleRFDAO immeubleRFDAO;
@@ -45,10 +43,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
-		this.evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		this.evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
-
 		this.immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		final XmlHelperRF xmlHelperRF = getBean(XmlHelperRF.class, "xmlHelperRF");
 
@@ -109,25 +104,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = doInNewTransaction(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-
-				EvenementRFImport parentImport = new EvenementRFImport();
-				parentImport.setEtat(EtatEvenementRF.A_TRAITER);
-				parentImport.setDateEvenement(RegDate.get(2016, 10, 1));
-				parentImport = evenementRFImportDAO.save(parentImport);
-
-				final EvenementRFMutation mutation = new EvenementRFMutation();
-				mutation.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mutation.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
-				mutation.setEtat(EtatEvenementRF.A_TRAITER);
-				mutation.setParentImport(parentImport);
-				mutation.setXmlContent(xml);
-
-				return evenementRFMutationDAO.save(mutation).getId();
-			}
-		});
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -204,25 +181,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = doInNewTransaction(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-
-				EvenementRFImport parentImport = new EvenementRFImport();
-				parentImport.setEtat(EtatEvenementRF.A_TRAITER);
-				parentImport.setDateEvenement(RegDate.get(2016, 10, 1));
-				parentImport = evenementRFImportDAO.save(parentImport);
-
-				final EvenementRFMutation mutation = new EvenementRFMutation();
-				mutation.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mutation.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
-				mutation.setEtat(EtatEvenementRF.A_TRAITER);
-				mutation.setParentImport(parentImport);
-				mutation.setXmlContent(xml);
-
-				return evenementRFMutationDAO.save(mutation).getId();
-			}
-		});
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -307,7 +266,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1));
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -347,7 +306,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				final Set<EstimationRF> estimations = immeuble0.getEstimations();
 				assertEquals(2, estimations.size());
 
-				final List<EstimationRF> estimationList = new ArrayList<EstimationRF>(estimations);
+				final List<EstimationRF> estimationList = new ArrayList<>(estimations);
 				Collections.sort(estimationList, new DateRangeComparator<>());
 
 				// la première estimation doit être fermée la veille de la date d'import
@@ -423,7 +382,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1));
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -531,7 +490,7 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1));
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -579,28 +538,6 @@ public class ImmeubleRFProcessorTest extends BusinessTest {
 				assertEquals("RG88", estimation0.getReference());
 				assertNull(estimation0.getDateEstimation());
 				assertFalse(estimation0.isEnRevision());
-			}
-		});
-	}
-
-	private Long insertMutation(final String xml, final RegDate dateEvenement) throws Exception {
-		return doInNewTransaction(new ch.vd.registre.base.tx.TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-
-				EvenementRFImport parentImport = new EvenementRFImport();
-				parentImport.setEtat(EtatEvenementRF.A_TRAITER);
-				parentImport.setDateEvenement(dateEvenement);
-				parentImport = evenementRFImportDAO.save(parentImport);
-
-				final EvenementRFMutation mutation = new EvenementRFMutation();
-				mutation.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mutation.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
-				mutation.setEtat(EtatEvenementRF.A_TRAITER);
-				mutation.setParentImport(parentImport);
-				mutation.setXmlContent(xml);
-
-				return evenementRFMutationDAO.save(mutation).getId();
 			}
 		});
 	}

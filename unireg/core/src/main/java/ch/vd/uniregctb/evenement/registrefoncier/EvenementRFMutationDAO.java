@@ -11,10 +11,10 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	/**
 	 * Recherche les mutations d'un import qui sont dans un ou plusieurs états.
 	 *
-	 * @param importId l'id de l'import considéré
-	 * @param etats    un ou plusieurs états
-	 * @return les ids des mutations correspondantes.
+	 * @param importId   l'id de l'import considéré
+	 * @param typeEntite filtre sur les types de mutations
+	 * @param etats      un ou plusieurs états  @return les ids des mutations correspondantes.
 	 */
 	@NotNull
-	List<Long> findIds(long importId, @NotNull EtatEvenementRF... etats);
+	List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats);
 }

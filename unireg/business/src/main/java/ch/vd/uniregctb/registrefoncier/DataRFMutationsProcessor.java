@@ -20,10 +20,13 @@ import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
+import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -37,11 +40,13 @@ public class DataRFMutationsProcessor {
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final MutationRFProcessor immeubleProcessor;
+	private final AyantDroitRFProcessor ayantDroitRFProcessor;
 
 	public DataRFMutationsProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
 	                                @NotNull MutationRFProcessor immeubleRFProcessor,
-	                                @NotNull PlatformTransactionManager transactionManager) {
+	                                AyantDroitRFProcessor ayantDroitRFProcessor, @NotNull PlatformTransactionManager transactionManager) {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
+		this.ayantDroitRFProcessor = ayantDroitRFProcessor;
 		this.transactionManager = transactionManager;
 		this.immeubleProcessor = immeubleRFProcessor;
 	}
@@ -55,11 +60,22 @@ public class DataRFMutationsProcessor {
 	 */
 	public void processImport(long importId, int nbThreads, @Nullable StatusManager statusManager) {
 
-		final List<Long> ids = findIdsMutationsATraiter(importId);
+		if (statusManager == null) {
+			statusManager = new LoggingStatusManager(LOGGER);
+		}
 
+		processMutations(importId, EvenementRFMutation.TypeEntite.IMMEUBLE, nbThreads, new SubStatusManager(0, 50, statusManager));
+		processMutations(importId, EvenementRFMutation.TypeEntite.AYANT_DROIT, nbThreads, new SubStatusManager(50, 100, statusManager));
+	}
+
+	private void processMutations(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, int nbThreads, @NotNull final StatusManager statusManager) {
+
+		final List<Long> ids = findIdsMutationsATraiter(importId, typeEntite);
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Mutations to process = {}", Arrays.toString(ids.toArray()));
 		}
+
+		final MutationRFProcessor proc = getProcessor(typeEntite);
 
 		// TODO (msi) générer un rapport
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
@@ -74,12 +90,10 @@ public class DataRFMutationsProcessor {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Processing mutations ids={}", Arrays.toString(mutationsIds.toArray()));
 				}
-				if (statusManager != null) {
-					statusManager.setMessage("Traitement des mutations...", monitor.getProgressInPercent());
-				}
+				statusManager.setMessage("Traitement des mutations...", monitor.getProgressInPercent());
 				mutationsIds.stream()
 						.map(id -> getMutation(id))
-						.forEach(mut -> processMutation(mut));
+						.forEach(mut -> processMutation(mut, proc));
 				return true;
 			}
 
@@ -96,13 +110,11 @@ public class DataRFMutationsProcessor {
 		}, monitor);
 	}
 
-	private void processMutation(@NotNull EvenementRFMutation mut) {
-
+	private void processMutation(@NotNull EvenementRFMutation mut, @NotNull MutationRFProcessor proc) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Processing mutation id=[{}]", mut.getId());
 		}
 
-		final MutationRFProcessor proc = getProcessor(mut);
 		proc.process(mut);
 
 		// on met-à-jour le statut de la mutation
@@ -119,11 +131,10 @@ public class DataRFMutationsProcessor {
 	}
 
 	@NotNull
-	private MutationRFProcessor getProcessor(@NotNull EvenementRFMutation mut) {
-		switch (mut.getTypeEntite()) {
+	private MutationRFProcessor getProcessor(@NotNull EvenementRFMutation.TypeEntite typeEntite) {
+		switch (typeEntite) {
 		case AYANT_DROIT:
-			// TODO (msi)
-			throw new NotImplementedException();
+			return ayantDroitRFProcessor;
 		case BATIMENT:
 			// TODO (msi)
 			throw new NotImplementedException();
@@ -136,18 +147,18 @@ public class DataRFMutationsProcessor {
 			// TODO (msi)
 			throw new NotImplementedException();
 		default:
-			throw new IllegalArgumentException("Type d'entité RF inconnue = [" + mut.getTypeEntite() + "]");
+			throw new IllegalArgumentException("Type d'entité RF inconnue = [" + typeEntite + "]");
 		}
 	}
 
 	@NotNull
-	private List<Long> findIdsMutationsATraiter(long importId) {
+	private List<Long> findIdsMutationsATraiter(long importId, EvenementRFMutation.TypeEntite typeEntite) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(new TxCallback<List<Long>>() {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
-				return evenementRFMutationDAO.findIds(importId, EtatEvenementRF.A_TRAITER);
+				return evenementRFMutationDAO.findIds(importId, typeEntite, EtatEvenementRF.A_TRAITER);
 			}
 		});
 	}

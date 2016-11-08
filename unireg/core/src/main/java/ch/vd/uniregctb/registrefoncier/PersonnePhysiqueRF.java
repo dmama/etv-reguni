@@ -43,4 +43,13 @@ public class PersonnePhysiqueRF extends TiersRF {
 	public void setDateNaissance(RegDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
+
+	@Override
+	public void copyDataTo(AyantDroitRF right) {
+		super.copyDataTo(right);
+		final PersonnePhysiqueRF ppRight = (PersonnePhysiqueRF) right;
+		ppRight.nom = this.nom;
+		ppRight.prenom = this.prenom;
+		ppRight.dateNaissance = this.dateNaissance;
+	}
 }

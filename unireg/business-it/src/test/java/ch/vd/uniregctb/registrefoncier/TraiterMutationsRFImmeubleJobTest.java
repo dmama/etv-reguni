@@ -27,7 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class TraiterMutationsRFJobTest extends ImportRFTestClass {
+public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 
 	private BatchScheduler batchScheduler;
 	private EvenementRFImportDAO evenementRFImportDAO;

@@ -341,11 +341,17 @@
 	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsProcessor">
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="immeubleRFProcessor"/>
+		<constructor-arg ref="ayantDroitRFProcessor"/>
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
 	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor">
 		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="ayantDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor">
+		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 

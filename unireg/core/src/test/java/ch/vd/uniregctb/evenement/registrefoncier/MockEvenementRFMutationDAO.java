@@ -75,7 +75,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@NotNull
 	@Override
-	public List<Long> findIds(long importId, @NotNull EtatEvenementRF... etats) {
+	public List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats) {
 		throw new NotImplementedException();
 	}
 }

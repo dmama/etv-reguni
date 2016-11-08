@@ -18,4 +18,11 @@ public class CollectivitePubliqueRF extends TiersRF {
 	public void setRaisonSociale(String raisonSociale) {
 		this.raisonSociale = raisonSociale;
 	}
+
+	@Override
+	public void copyDataTo(AyantDroitRF right) {
+		super.copyDataTo(right);
+		final CollectivitePubliqueRF collRight = (CollectivitePubliqueRF) right;
+		collRight.raisonSociale = this.raisonSociale;
+	}
 }

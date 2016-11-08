@@ -11,6 +11,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
 
 import static org.junit.Assert.assertEquals;
@@ -21,12 +22,14 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 	private DataRFMutationsProcessor processor;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
+	private AyantDroitRFProcessor ayantDroitRFProcessor;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
+		ayantDroitRFProcessor = getBean(AyantDroitRFProcessor.class, "ayantDroitRFProcessor");
 	}
 
 	/**
@@ -44,7 +47,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
@@ -82,7 +85,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné

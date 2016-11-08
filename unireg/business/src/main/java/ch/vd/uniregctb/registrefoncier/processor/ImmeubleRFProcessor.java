@@ -23,6 +23,9 @@ import ch.vd.uniregctb.registrefoncier.helper.SituationRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SurfaceTotaleRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
+/**
+ * Processeur spécialisé pour traiter les mutations sur les immeubles.
+ */
 public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(ImmeubleRFProcessor.class);

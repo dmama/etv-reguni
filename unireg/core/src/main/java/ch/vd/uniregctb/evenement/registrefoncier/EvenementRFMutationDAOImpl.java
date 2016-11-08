@@ -14,10 +14,12 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 
 	@NotNull
 	@Override
-	public List<Long> findIds(long importId, @NotNull EtatEvenementRF... etats) {
-		final Query query = getCurrentSession().createQuery("select id from EvenementRFMutation where parentImport.id = :importId and etat in (:etats)");
+	public List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats) {
+		final Query query = getCurrentSession().createQuery("select id from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and etat in (:etats)");
 		query.setParameter("importId", importId);
+		query.setParameter("typeEntite", typeEntite);
 		query.setParameterList("etats", etats);
+		//noinspection unchecked
 		return query.list();
 	}
 }

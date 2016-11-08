@@ -11,6 +11,7 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -152,5 +153,59 @@ public class AyantDroitRFHelperTest {
 		personStamm.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
 
 		assertFalse(AyantDroitRFHelper.dataEquals(coll, personStamm));
+	}
+
+	@Test
+	public void testNewAyantDroitPP() throws Exception {
+
+		final NatuerlichePersonstamm natuerliche = new NatuerlichePersonstamm();
+		natuerliche.setPersonstammID("3893728273382823");
+		natuerliche.setNoRF(3727L);
+		natuerliche.setNrIROLE(827288022L);
+		natuerliche.setName("Nom");
+		natuerliche.setVorname("Prénom");
+		natuerliche.setGeburtsdatum(new GeburtsDatum(23, 1, 1956));
+
+		final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) AyantDroitRFHelper.newAyantDroitRF(natuerliche);
+		assertEquals("3893728273382823", pp.getIdRF());
+		assertEquals(3727L, pp.getNoRF());
+		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
+		assertEquals("Nom", pp.getNom());
+		assertEquals("Prénom", pp.getPrenom());
+		assertEquals(RegDate.get(1956, 1, 23), pp.getDateNaissance());
+	}
+
+	@Test
+	public void testNewAyantDroitPM() throws Exception {
+
+		final JuristischePersonstamm juristische = new JuristischePersonstamm();
+		juristische.setPersonstammID("48349384890202");
+		juristische.setNoRF(3727L);
+		juristische.setNrACI(827288022L);
+		juristische.setName("Raison sociale");
+		juristische.setUnterart(JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
+
+		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		assertEquals("48349384890202", pp.getIdRF());
+		assertEquals(3727L, pp.getNoRF());
+		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
+		assertEquals("Raison sociale", pp.getRaisonSociale());
+	}
+
+	@Test
+	public void testNewAyantDroitColl() throws Exception {
+
+		final JuristischePersonstamm juristische = new JuristischePersonstamm();
+		juristische.setPersonstammID("574739202303482");
+		juristische.setNoRF(3727L);
+		juristische.setNrACI(827288022L);
+		juristische.setName("Raison sociale");
+		juristische.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
+
+		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		assertEquals("574739202303482", coll.getIdRF());
+		assertEquals(3727L, coll.getNoRF());
+		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
+		assertEquals("Raison sociale", coll.getRaisonSociale());
 	}
 }

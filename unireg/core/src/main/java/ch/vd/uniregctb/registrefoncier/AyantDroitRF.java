@@ -80,4 +80,8 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	public void setDroits(Set<DroitRF> droits) {
 		this.droits = droits;
 	}
+
+	public void copyDataTo(AyantDroitRF right) {
+		right.idRF = this.idRF;
+	}
 }

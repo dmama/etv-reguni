@@ -90,6 +90,46 @@ public abstract class AyantDroitRFHelper {
 		return new AyantDroitRFKey(person.getPersonstammID());
 	}
 
+	@NotNull
+	public static AyantDroitRF newAyantDroitRF(@NotNull Personstamm person) {
+
+		final AyantDroitRF ayantDroitRF;
+		if (person instanceof NatuerlichePersonstamm) {
+			final NatuerlichePersonstamm natuerliche = (NatuerlichePersonstamm) person;
+			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+			pp.setIdRF(natuerliche.getPersonstammID());
+			pp.setNoRF(natuerliche.getNoRF());
+			pp.setNoContribuable(getNoContribuable(natuerliche));
+			pp.setPrenom(natuerliche.getVorname());
+			pp.setNom(natuerliche.getName());
+			pp.setDateNaissance(getRegDate(natuerliche.getGeburtsdatum()));
+			ayantDroitRF = pp;
+		}
+		else if (person instanceof JuristischePersonstamm) {
+			final JuristischePersonstamm juri = (JuristischePersonstamm) person;
+			if (juri.getUnterart() == JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT) {
+				final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
+				coll.setIdRF(juri.getPersonstammID());
+				coll.setNoRF(juri.getNoRF());
+				coll.setNoContribuable(juri.getNrACI());
+				coll.setRaisonSociale(juri.getName());
+				ayantDroitRF = coll;
+			}
+			else {
+				final PersonneMoraleRF pm = new PersonneMoraleRF();
+				pm.setIdRF(juri.getPersonstammID());
+				pm.setNoRF(juri.getNoRF());
+				pm.setNoContribuable(juri.getNrACI());
+				pm.setRaisonSociale(juri.getName());
+				ayantDroitRF = pm;
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + person.getClass() + "]");
+		}
+		return ayantDroitRF;
+	}
+
 	private static RegDate getRegDate(@Nullable GeburtsDatum geburtsdatum) {
 		if (geburtsdatum == null) {
 			return null;
@@ -101,7 +141,7 @@ public abstract class AyantDroitRFHelper {
 	private static Long getNoContribuable(@NotNull Personstamm right) {
 		Long no = right.getNrACI();
 		if (no == null && right instanceof NatuerlichePersonstamm) {
-			no = ((NatuerlichePersonstamm)right).getNrIROLE();
+			no = ((NatuerlichePersonstamm) right).getNrIROLE();
 		}
 		return no;
 	}

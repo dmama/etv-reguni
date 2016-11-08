@@ -40,4 +40,12 @@ public abstract class TiersRF extends AyantDroitRF {
 	public void setNoContribuable(@Nullable Long noContribuable) {
 		this.noContribuable = noContribuable;
 	}
+
+	@Override
+	public void copyDataTo(AyantDroitRF right) {
+		super.copyDataTo(right);
+		final TiersRF tiersRight = (TiersRF) right;
+		tiersRight.noRF = this.noRF;
+		tiersRight.noContribuable = this.noContribuable;
+	}
 }
