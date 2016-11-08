@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 
@@ -61,6 +62,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.id = id;
 	}
 
+	@Index(name = "IDX_AYANTDROIT_ID_RF")
 	@Column(name = "ID_RF", nullable = false)
 	public String getIdRF() {
 		return idRF;

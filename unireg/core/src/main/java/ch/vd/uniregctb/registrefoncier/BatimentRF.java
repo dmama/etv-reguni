@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Set;
 
+import org.hibernate.annotations.Index;
+
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
 /**
@@ -70,6 +72,7 @@ public class BatimentRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
+	@Index(name = "IDX_BATIMENT_ID_RF")
 	@Column(name = "ID_RF", nullable = false)
 	public String getIdRF() {
 		return idRF;
