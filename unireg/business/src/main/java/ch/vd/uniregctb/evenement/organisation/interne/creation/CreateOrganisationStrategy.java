@@ -131,10 +131,23 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 						return new CreateEntreprisePM(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 					// Associations personne morale
 					case APM:
-						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseAPM(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
-
+						/*
+						 SIFISC-19723 Pour éviter les doublons lors de la mauvaise identification d'APM créées à la main par l'ACI et simultanément enregistrée par SiTi,
+						 pas de création automatique des APM, sauf lorsque l'inscription provient du RC, qui dans ce cas est nécessairement l'institution émettrice.
+						 SIFISC-21588 et SIFISC-19660: le traitement manuel s'impose car on ne peut établir automatiquement si l'association doit être créée ou non.
+						  */
+						if (organisation.isInscriteAuRC(dateEvenement)) {
+							LOGGER.info("L'organisation inscrite au RC n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+							info = extraireInformationDeDateEtDeCreation(event, organisation);
+							return new CreateEntrepriseAPMAuRC(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
+						}
+						else {
+							LOGGER.info("L'organisation n°{}, installée sur Vaud, n'est pas inscrite au RC. Catégorie [{}] -> Traitement manurel.", organisation.getNumeroOrganisation(), category);
+							final String message = String.format("Pas de création automatique de l'APM n°%d [%s] non inscrite au RC (risque de création de doublon). " +
+									                                     "Veuillez vérifier et le cas échéant créer le tiers associé à la main.",
+							                                     organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement));
+							return new TraitementManuel(event, organisation, null, context, options, message);
+						}
 					// Fonds de placements
 					case FP:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);

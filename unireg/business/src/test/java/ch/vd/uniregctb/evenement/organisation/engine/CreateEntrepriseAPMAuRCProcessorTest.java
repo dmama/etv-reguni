@@ -31,9 +31,9 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreateEntrepriseAPMAuRCProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
-	public CreateEntrepriseAPMProcessorTest() {
+	public CreateEntrepriseAPMAuRCProcessorTest() {
 		setWantIndexationTiers(true);
 	}
 
@@ -143,12 +143,12 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
 				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
 
-				                             Assert.assertEquals(String.format("Pas de création automatique de l'APM n°%d [Association bidule] non inscrite au RC (risque de création de doublon). Veuillez vérifier et le cas échéant créer le tiers associé.", noOrganisation)
-						                             , evt.getErreurs().get(2).getMessage());
+				                             Assert.assertEquals(String.format("Pas de création automatique de l'APM n°%d [Association bidule] non inscrite au RC (risque de création de doublon). Veuillez vérifier et le cas échéant créer le tiers associé à la main.", noOrganisation)
+						                             , evt.getErreurs().get(1).getMessage());
 
 				                             return null;
 			                             }
