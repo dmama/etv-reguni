@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.FichierImpressionDocument;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -181,7 +183,10 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 
 		String getLocaliteExpedition(DeclarationImpotOrdinaire di) throws EditiqueException {
 
-			final Integer oid =  tiersService.getOfficeImpotId(di.getTiers());
+			// [SIFISC-20149] l'expéditeur de la sommation de DI PP est la nouvelle entité, si applicable
+			final Integer oid = Optional.ofNullable(getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(di.getTiers(), RegDate.get()))
+										.orElseGet(() -> tiersService.getOfficeImpotId(di.getTiers()));
+
 			String sLocalite = "Lausanne";
 			if (oid == null) {
 				LOGGER.warn(String.format("oid null pour le tiers %s, Localité d'expedition par defaut : %s", di.getTiers().getNumero(), sLocalite));
@@ -243,21 +248,26 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 
 
 		void ajouteInfoEnteteDocument(Document document, ImpressionSommationDIHelperParams params) throws AdresseException, EditiqueException {
-			InfoEnteteDocument infoEnteteDocument = document.addNewInfoEnteteDocument();
+			final InfoEnteteDocument infoEnteteDocument = document.addNewInfoEnteteDocument();
 			legacyEditiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
-			Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurACI(infoEnteteDocument);
-			ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
+
+			// [SIFISC-20149] l'expéditeur de la sommation de DI PP doit être la nouvelle entité si applicable, sinon, l'ACI
+			final int noCaExpeditrice = Optional.ofNullable(getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(params.getDi().getTiers(), RegDate.get())).orElse(ServiceInfrastructureService.noACI);
+			final ch.vd.uniregctb.tiers.CollectiviteAdministrative caExpeditrice = tiersService.getCollectiviteAdministrative(noCaExpeditrice);
+
+			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteur(caExpeditrice, infoEnteteDocument);
+			final ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
 			expNilValues.init(expediteur);
 			if (params.isBatch()) {
-				expediteur.setDateExpedition(
-						RegDateHelper.toIndexString(
-								delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(params.getDateTraitement())));
-			} else {
+				expediteur.setDateExpedition(RegDateHelper.toIndexString(delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(params.getDateTraitement())));
+			}
+			else {
 				expediteur.setDateExpedition(RegDateHelper.toIndexString(params.getDateTraitement()));
 			}
 			if (params.isOnline() && !StringUtils.isEmpty(params.getNoTelephone())) {
 				expNilValues.setNumTelephone(params.getNoTelephone());
-			} else {
+			}
+			else {
 				expNilValues.setNumTelephone(serviceInfrastructureService.getCAT().getNoTelephone());
 				expNilValues.setNumFax(serviceInfrastructureService.getCAT().getNoFax());
 			}

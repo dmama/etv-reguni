@@ -179,8 +179,8 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		adresseEnvoi.addLine(ca.getNomComplet1());
 		adresseEnvoi.addLine(ca.getNomComplet2());
 		adresseEnvoi.addLine(ca.getNomComplet3());
-		adresseEnvoi.addLine(adresse.getRue());
-		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
+		adresseEnvoi.addLine(adresse != null ? adresse.getRue() : null);
+		adresseEnvoi.addLine(adresse != null ? adresse.getNumeroPostal() + ' ' + adresse.getLocalite() : null);
 		remplitAdresse(adresseEnvoi, adresseExpediteur);
 		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
 		expNilValues.setAdrMes(ca.getAdresseEmail());

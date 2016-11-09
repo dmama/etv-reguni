@@ -29,13 +29,13 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null,
 					"CEDI");
 	public static final MockCollectiviteAdministrative CAT =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT, null, "Administration cantonale des impôts", null, null, "CAT", "0213160000", "0213162140");
+			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT, new MockAdresse(), "Administration cantonale des impôts", null, null, "CAT", "0213160000", "0213162140");
 	public static final MockCollectiviteAdministrative ACI =
 			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACI, new MockAdresse("Route de Berne 46", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null,
 					null, "ACI");
 	public static final MockCollectiviteAdministrative ACI_NOUVELLE_ENTITE =
 			new MockCollectiviteAdministrative(noNouvelleEntite, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"),
-					"Administration cantonale des impôts (Nouvelle entité)", null, null, "ACI-NOUVELLE-ENTITE");
+					"Administration cantonale des impôts", "NOUVELLE ENTITÉ", null, "ACI-NOUVELLE-ENTITE");
 	public static final MockCollectiviteAdministrative ACIIMPOTSOURCE =
 			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"),
 					"Administration cantonale des impôts", "IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE", "0213162065", "0213162898");

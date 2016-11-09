@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -28,7 +29,11 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.DelaisService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -57,6 +62,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	private DelaisService delaisService;
 	private PeriodeFiscale periodeFiscale;
 	private ModeleDocument modeleDocument;
+	private EtiquetteService etiquetteService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -68,6 +74,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		delaisService =  getBean(DelaisService.class, "delaisService");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		impressionSommationDIHelper = new ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
+		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 
 		final Object[] res = doInTransaction(new TransactionCallback<Object[]>() {
 			@Override
@@ -511,6 +518,88 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 					assertTrue(doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().isSetMontantEmolument());
 					assertEquals(46, doc.getFichierImpression().getDocumentArray(0).getSommationDI().getLettreSom().getMontantEmolument());
 				}
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testExpediteurSansEtiquette() throws Exception {
+
+		final int annee = 2005;
+
+		// mise en place fiscale : DI 2005 non-retournée et étiquette récente
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Fernando", "Albinos", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Morges);
+
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+				assertNotNull(cedi);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 20));
+
+				return di.getId();
+			}
+		});
+
+		// sommation de la DI
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+				assertEquals(MockCollectiviteAdministrative.ACI.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+				assertEquals(MockCollectiviteAdministrative.ACI.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testExpediteurAvecEtiquette() throws Exception {
+
+		final int annee = 2005;
+
+		// mise en place fiscale : DI 2005 non-retournée et étiquette récente
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Fernando", "Albinos", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Morges);
+
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+				assertNotNull(cedi);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 20));
+
+				final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
+				assertNotNull(collaborateur);
+				addEtiquetteTiers(collaborateur, pp, date(2011, 6, 12), null);
+
+				return di.getId();
+			}
+		});
+
+		// sommation de la DI
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
+				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
+				assertEquals(MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+				assertEquals(MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
 				return null;
 			}
 		});

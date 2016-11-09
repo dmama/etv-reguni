@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import noNamespace.ConfirmationDelaiDocument;
 import noNamespace.ConfirmationDelaiDocument.ConfirmationDelai;
@@ -31,6 +32,8 @@ import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiPPHelper {
@@ -46,12 +49,11 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params, String idArchivage) throws EditiqueException {
 		try {
 			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
-			TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
-			InfoDocument infoDocument = remplitInfoDocument(params);
-			InfoArchivageDocument.InfoArchivage infoArchivage = remplitInfoArchivage(params, idArchivage);
-			InfoEnteteDocument infoEnteteDocument;
-			infoEnteteDocument = remplitEnteteDocument(params);
-			Document document = typeFichierImpression.addNewDocument();
+			final TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
+			final InfoDocument infoDocument = remplitInfoDocument(params);
+			final InfoArchivageDocument.InfoArchivage infoArchivage = remplitInfoArchivage(params, idArchivage);
+			final InfoEnteteDocument infoEnteteDocument = remplitEnteteDocument(params);
+			final Document document = typeFichierImpression.addNewDocument();
 			document.setConfirmationDelai(remplitSpecifiqueConfirmationDelai(params));
 			document.setInfoEnteteDocument(infoEnteteDocument);
 			document.setInfoDocument(infoDocument);
@@ -93,7 +95,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 	}
 
 	private InfoEnteteDocument remplitEnteteDocument(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
-		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
+		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		try {
 			infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
@@ -101,7 +103,11 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 			final TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
+			// [SIFISC-20149] l'expéditeur de la confirmation de délai de DI PP doit être la nouvelle entité si applicable, sinon, le CAT
+			final int noCaExpeditrice = Optional.ofNullable(getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(params.getDi().getTiers(), RegDate.get())).orElse(ServiceInfrastructureService.noCAT);
+			final CollectiviteAdministrative caExpeditrice = tiersService.getCollectiviteAdministrative(noCaExpeditrice);
+
+			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteur(caExpeditrice, infoEnteteDocument);
 			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
 
@@ -113,7 +119,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 			}
 
 			infoEnteteDocument.setExpediteur(expediteur);
-			Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
+			final Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setDestinataire(destinataire);
 		}
 		catch (Exception e) {
