@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.processor;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
@@ -22,7 +23,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 		this.evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 	}
 
-	protected Long insertMutation(final String xml, final RegDate dateEvenement, final EvenementRFMutation.TypeEntite typeEntite, final EvenementRFMutation.TypeMutation typeMutation) throws Exception {
+	protected Long insertMutation(final String xml, final RegDate dateEvenement, final EvenementRFMutation.TypeEntite typeEntite, final EvenementRFMutation.TypeMutation typeMutation, @Nullable String idRF) throws Exception {
 		return doInNewTransaction(new ch.vd.registre.base.tx.TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -35,6 +36,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setTypeEntite(typeEntite);
 				mutation.setTypeMutation(typeMutation);
+				mutation.setIdImmeubleRF(idRF);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setParentImport(parentImport);
 				mutation.setXmlContent(xml);

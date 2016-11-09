@@ -64,6 +64,11 @@ public class EvenementRFMutation extends HibernateEntity {
 	private TypeMutation typeMutation;
 
 	/**
+	 * L'id de l'immeuble associé à la mutation (pas toujours renseigné)
+	 */
+	private String idImmeubleRF;
+
+	/**
 	 * Le représentation XML de l'entité.
 	 */
 	private String xmlContent;
@@ -131,6 +136,16 @@ public class EvenementRFMutation extends HibernateEntity {
 
 	public void setTypeMutation(TypeMutation typeMutation) {
 		this.typeMutation = typeMutation;
+	}
+
+	@Index(name = "IDX_EV_RF_IMMEUBLE_ID_RF")
+	@Column(name = "ID_RF")
+	public String getIdImmeubleRF() {
+		return idImmeubleRF;
+	}
+
+	public void setIdImmeubleRF(String idImmeubleRF) {
+		this.idImmeubleRF = idImmeubleRF;
 	}
 
 	@Column(name = "XML_CONTENT")   // la colonne doit être nullable car - techniquement - Hibernate fait un insert avec le blob nul puis un update pour insérer le contenu.

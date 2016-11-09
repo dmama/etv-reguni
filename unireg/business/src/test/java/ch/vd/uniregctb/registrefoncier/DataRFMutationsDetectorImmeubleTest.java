@@ -148,6 +148,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+		assertEquals("382929efa218", mut0.getIdImmeubleRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
@@ -172,6 +173,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+		assertEquals("23af3efe44", mut1.getIdImmeubleRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
@@ -295,6 +297,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
+		assertEquals("382929efa218", mut0.getIdImmeubleRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
@@ -319,6 +322,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
+		assertEquals("23af3efe44", mut1.getIdImmeubleRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +

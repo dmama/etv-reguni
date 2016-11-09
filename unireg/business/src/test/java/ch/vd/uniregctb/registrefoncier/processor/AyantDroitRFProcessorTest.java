@@ -94,7 +94,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.CREATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.CREATION, null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -137,7 +137,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.MODIFICATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.MODIFICATION, null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {

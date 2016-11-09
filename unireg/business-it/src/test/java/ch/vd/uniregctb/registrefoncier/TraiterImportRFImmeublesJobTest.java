@@ -109,6 +109,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+				assertEquals("_1f109152381026b501381028a73d1852", mut0.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_1f109152381026b501381028a73d1852</GrundstueckID>\n" +
@@ -157,6 +158,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+				assertEquals("_8af806cc3971feb60139e36d062130f3", mut1.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
@@ -217,6 +219,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut2.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
+				assertEquals("_8af806fc45d223e60149c23f475365d5", mut2.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_8af806fc45d223e60149c23f475365d5</GrundstueckID>\n" +
@@ -272,6 +275,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut3.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
+				assertEquals("_8af806cc5043853201508e1e8a3a1a71", mut3.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +
@@ -502,6 +506,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
+				assertEquals("_8af806cc3971feb60139e36d062130f3", mut0.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
@@ -563,6 +568,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
+				assertEquals("_8af806cc5043853201508e1e8a3a1a71", mut1.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +

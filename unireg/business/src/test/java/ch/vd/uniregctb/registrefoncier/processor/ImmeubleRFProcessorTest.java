@@ -104,7 +104,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION, "1f109152381026b501381028a74018e1");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -181,7 +181,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION, "_8af80e62567f816f01571d91f3e56a38");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -266,7 +266,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION, "_1f109152381026b501381028a73d1852");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -382,7 +382,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION, "_1f109152381026b501381028a73d1852");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -490,7 +490,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.MODIFICATION, "_8af80e62567f816f01571d91f3e56a38");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {

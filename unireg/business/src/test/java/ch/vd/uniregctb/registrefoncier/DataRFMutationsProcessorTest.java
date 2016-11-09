@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -112,9 +113,9 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		return doInNewTransaction(status -> {
 			EvenementRFImport parentImport = addParentImport(EtatEvenementRF.A_TRAITER, RegDate.get(2000, 1, 1));
 
-			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, null);
-			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, null);
-			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, null);
+			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "389383", null);
+			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "482922", null);
+			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "492308", null);
 
 			return parentImport.getId();
 		});
@@ -127,11 +128,12 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		return evenementRFImportDAO.save(parentImport);
 	}
 
-	private EvenementRFMutation addMutation(EvenementRFImport parentImport, EtatEvenementRF etat, EvenementRFMutation.TypeEntite typeEntite, EvenementRFMutation.TypeMutation typeMutation, String content) {
+	private EvenementRFMutation addMutation(EvenementRFImport parentImport, EtatEvenementRF etat, EvenementRFMutation.TypeEntite typeEntite, EvenementRFMutation.TypeMutation typeMutation, @Nullable String idRF, String content) {
 		final EvenementRFMutation mutation = new EvenementRFMutation();
 		mutation.setEtat(etat);
 		mutation.setTypeEntite(typeEntite);
 		mutation.setTypeMutation(typeMutation);
+		mutation.setIdImmeubleRF(idRF);
 		mutation.setParentImport(parentImport);
 		mutation.setXmlContent(content);
 		return evenementRFMutationDAO.save(mutation);

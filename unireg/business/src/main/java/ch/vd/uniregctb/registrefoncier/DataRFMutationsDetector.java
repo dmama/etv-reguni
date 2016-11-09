@@ -116,6 +116,7 @@ public class DataRFMutationsDetector {
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
 					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
 					mutation.setTypeMutation(typeMutation);
+					mutation.setIdImmeubleRF(key.getIdRF());
 					mutation.setXmlContent(immeubleAsXml);
 
 					evenementRFMutationDAO.save(mutation);
@@ -186,6 +187,7 @@ public class DataRFMutationsDetector {
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
 					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
+					mutation.setIdImmeubleRF(null); // par définition
 					mutation.setTypeMutation(typeMutation);
 					mutation.setXmlContent(immeubleAsXml);
 
@@ -263,6 +265,7 @@ public class DataRFMutationsDetector {
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
 					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
+					mutation.setIdImmeubleRF(key.getIdRF());
 					mutation.setTypeMutation(typeMutation);
 					mutation.setXmlContent(immeubleAsXml);
 
