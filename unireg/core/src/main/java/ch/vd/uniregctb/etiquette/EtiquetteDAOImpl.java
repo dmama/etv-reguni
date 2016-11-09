@@ -3,12 +3,22 @@ package ch.vd.uniregctb.etiquette;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.FlushMode;
+
 import ch.vd.uniregctb.common.BaseDAOImpl;
 
 public class EtiquetteDAOImpl extends BaseDAOImpl<Etiquette, Long> implements EtiquetteDAO {
 
 	public EtiquetteDAOImpl() {
 		super(Etiquette.class);
+	}
+
+	@Override
+	public List<Etiquette> getAll(boolean doNotAutoflush) {
+		if (!doNotAutoflush) {
+			return getAll();
+		}
+		return find("from Etiquette", Collections.emptyMap(), FlushMode.MANUAL);
 	}
 
 	@Override

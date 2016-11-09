@@ -21,6 +21,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	//Mapping oid Region
 	public static final Map<Integer, Integer> regions = initRegions();
 
+	public static final int noNouvelleEntite = 25;
 
 	public static final MockCollectiviteAdministrative OTG =
 			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
@@ -32,9 +33,9 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	public static final MockCollectiviteAdministrative ACI =
 			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACI, new MockAdresse("Route de Berne 46", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null,
 					null, "ACI");
-	public static final MockCollectiviteAdministrative ACISUCCESSIONS =
-			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"),
-					"Administration cantonale des impôts SUCCESSIONS", "SUCCESSIONS", null, "ACI-SUCCESSIONS");
+	public static final MockCollectiviteAdministrative ACI_NOUVELLE_ENTITE =
+			new MockCollectiviteAdministrative(noNouvelleEntite, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"),
+					"Administration cantonale des impôts (Nouvelle entité)", null, null, "ACI-NOUVELLE-ENTITE");
 	public static final MockCollectiviteAdministrative ACIIMPOTSOURCE =
 			new MockCollectiviteAdministrative(ServiceInfrastructureRaw.noACIImpotSource, new MockAdresse("Rue Caroline 9bis", "9bis", "1014", "Lausanne Adm cant"),
 					"Administration cantonale des impôts", "IMPOT A LA SOURCE", null, "ACI-IMPOT-SOURCE", "0213162065", "0213162898");

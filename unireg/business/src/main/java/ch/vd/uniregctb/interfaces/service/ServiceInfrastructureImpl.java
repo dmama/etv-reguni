@@ -270,14 +270,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
-		if (aciSuccessions == null) {
-			aciSuccessions = rawService.getCollectivite(ServiceInfrastructureService.noACISuccessions);
-		}
-		return aciSuccessions;
-	}
-
-	@Override
 	public CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException {
 		if (aciOfficeImpotPersonnesMorales == null) {
 			aciOfficeImpotPersonnesMorales = rawService.getCollectivite(ServiceInfrastructureService.noOIPM);

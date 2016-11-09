@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -47,6 +48,8 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -128,6 +131,7 @@ public class TacheServiceImpl implements TacheService {
 	private HibernateTemplate hibernateTemplate;
 	private ServiceInfrastructureService serviceInfra;
 	private TiersService tiersService;
+	private EtiquetteService etiquetteService;
 	private PlatformTransactionManager transactionManager;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
@@ -625,9 +629,14 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private void executeActions(Long ctbId, List<SynchronizeAction> actions, TacheSyncResults results) {
-		final CollectiviteAdministrative officeSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
-		if (officeSuccessions == null) {
-			throw new IllegalArgumentException("Impossible de trouver l'office des successions !");
+		final CollectiviteAdministrative officeApresDeces = etiquetteService.getAllEtiquettes(true).stream()
+				.filter(e -> !e.isAnnule() && e.isActive() && e.getActionSurDeces() != null)
+				.map(Etiquette::getCollectiviteAdministrative)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
+		if (officeApresDeces == null) {
+			throw new IllegalArgumentException("Impossible de trouver la collectivité administrative à utiliser après un décès !");
 		}
 
 		final Tiers tiers = tiersService.getTiers(ctbId);
@@ -636,7 +645,7 @@ public class TacheServiceImpl implements TacheService {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 
-			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametres);
+			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeApresDeces, tiersService, diDAO, qsncDAO, pfDAO, parametres);
 			for (SynchronizeAction action : actions) {
 				action.execute(context);
 				results.addAction(ctbId, action);
@@ -1769,6 +1778,10 @@ public class TacheServiceImpl implements TacheService {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setEtiquetteService(EtiquetteService etiquetteService) {
+		this.etiquetteService = etiquetteService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

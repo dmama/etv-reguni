@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -520,7 +521,7 @@ public class TacheServiceTest extends BusinessTest {
 		final CollectiviteAdministrative aciSuccessions = doInNewTransaction(new TxCallback<CollectiviteAdministrative>() {
 			@Override
 			public CollectiviteAdministrative execute(TransactionStatus status) throws Exception {
-				return tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
+				return tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 			}
 		});
 

@@ -44,6 +44,12 @@ import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
+import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.Decalage;
+import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexer;
 import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
@@ -105,6 +111,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
@@ -191,11 +198,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 					@Override
 					protected void doInTransactionWithoutResult(TransactionStatus status) {
 						for (MockCollectiviteAdministrative collAdm : MockCollectiviteAdministrative.getAll()) {
+							final CollectiviteAdministrative ca;
 							if (collAdm instanceof MockOfficeImpot) {
-								addCollAdm((MockOfficeImpot) collAdm);
+								ca = addCollAdm((MockOfficeImpot) collAdm);
 							}
 							else {
-								addCollAdm(collAdm);
+								ca = addCollAdm(collAdm);
+							}
+
+							// [SIFISC-20149] on va également créer les étiquettes qui vont bien si la bonne collectivité adminstrative est là
+							if (collAdm.getNoColAdm() == MockCollectiviteAdministrative.noNouvelleEntite) {
+								final Etiquette heritage = addEtiquette("HERITAGE", "Héritage", TypeTiersEtiquette.PP, ca);
+								heritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
+								                                                   new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+								addEtiquette("COLLABORATEUR", "DS Collaborateur", TypeTiersEtiquette.PP, ca);
 							}
 						}
 					}

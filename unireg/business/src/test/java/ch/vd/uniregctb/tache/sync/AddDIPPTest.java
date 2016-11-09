@@ -12,7 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -134,7 +134,7 @@ public class AddDIPPTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
+				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
 				Assert.assertNotNull(periodesImposition);
 				Assert.assertEquals(1, periodesImposition.size());
@@ -142,7 +142,7 @@ public class AddDIPPTest extends BusinessTest {
 				Assert.assertNotNull(periodeImposition);
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 				add.execute(ctx);
 				return null;
@@ -226,7 +226,7 @@ public class AddDIPPTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
+				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
 				Assert.assertNotNull(periodesImposition);
 				Assert.assertEquals(1, periodesImposition.size());
@@ -234,7 +234,7 @@ public class AddDIPPTest extends BusinessTest {
 				Assert.assertNotNull(periodeImposition);
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 				add.execute(ctx);
 				return null;
@@ -309,7 +309,7 @@ public class AddDIPPTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
+				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(pp, currentYear);
 				Assert.assertNotNull(periodesImposition);
 				Assert.assertEquals(1, periodesImposition.size());
@@ -317,7 +317,7 @@ public class AddDIPPTest extends BusinessTest {
 				Assert.assertNotNull(periodeImposition);
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 				add.execute(ctx);
 				return null;
@@ -418,7 +418,7 @@ public class AddDIPPTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final RegDate ref = date(currentYear + 1, 1, 2);
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
+				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 
 				// contribuable ordinaire
 				{
@@ -431,7 +431,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 					add.execute(ctx);
 				}
@@ -447,7 +447,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 					add.execute(ctx);
 				}
@@ -568,7 +568,7 @@ public class AddDIPPTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final CollectiviteAdministrative caSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
+				final CollectiviteAdministrative caDeces = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 
 				// contribuable ordinaire
 				{
@@ -581,7 +581,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 					add.execute(ctx);
 				}
@@ -597,7 +597,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caDeces, tiersService, diDAO, qsncDAO, pfDAO, parametreAppService);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 					add.execute(ctx);
 				}

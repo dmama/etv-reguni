@@ -21,6 +21,11 @@ public class EtiquetteServiceImpl implements EtiquetteService {
 	}
 
 	@Override
+	public List<Etiquette> getAllEtiquettes(boolean doNotAutoflush) {
+		return etiquetteDAO.getAll(doNotAutoflush);
+	}
+
+	@Override
 	public Etiquette getEtiquette(long id) {
 		return etiquetteDAO.get(id);
 	}

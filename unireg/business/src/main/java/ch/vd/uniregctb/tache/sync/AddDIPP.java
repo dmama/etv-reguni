@@ -28,9 +28,9 @@ public class AddDIPP extends AddDI<PeriodeImpositionPersonnesPhysiques> {
 		final RegDate dateEcheance;
 		final CollectiviteAdministrative collectivite;
 		if (periodeImposition.getCauseFermeture() == PeriodeImposition.CauseFermeture.VEUVAGE_DECES) {
-			// [UNIREG-2305] En cas de décès, l'échéance de la tâche est poussée 30 jours plus tard et on assigne la tâche à l'office des successions
+			// [UNIREG-2305] En cas de décès, l'échéance de la tâche est poussée 30 jours plus tard et on assigne la tâche à la collectivité ad'hoc
 			dateEcheance = periodeImposition.getDateFin().addDays(30);
-			collectivite = context.officeSuccessions;
+			collectivite = context.caApresDeces;
 		}
 		else {
 			final RegDate today = getToday();

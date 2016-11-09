@@ -38,6 +38,7 @@ import ch.vd.uniregctb.etiquette.CorrectionSurDate;
 import ch.vd.uniregctb.etiquette.Decalage;
 import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
 import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteDAO;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -90,6 +91,7 @@ import static org.junit.Assert.fail;
 public class MetiersServiceTest extends BusinessTest {
 
 	private TiersDAO tiersDAO;
+	private EtiquetteDAO etiquetteDAO;
 	private MetierService metierService;
 
 	@Override
@@ -97,6 +99,7 @@ public class MetiersServiceTest extends BusinessTest {
 		super.onSetUp();
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		etiquetteDAO = getBean(EtiquetteDAO.class, "etiquetteDAO");
 		metierService = getBean(MetierService.class, "metierService");
 	}
 
@@ -4311,6 +4314,10 @@ public class MetiersServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// on enlève d'abord toutes les étiquettes "automatiques" générées dans la construction par défaut des tests
+				etiquetteDAO.getAll().forEach(hibernateTemplate::delete);
+
+				// ajout des étiquettes qui nous intéressent
 				{
 					final Etiquette etiquette = addEtiquette("TOTO", "Décès PP 2Y fin mois", TypeTiersEtiquette.PP, null);
 					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),

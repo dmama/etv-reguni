@@ -32,7 +32,6 @@ public interface ServiceInfrastructureService {
 	int noOIPM = ServiceInfrastructureRaw.noOIPM;
 	int noACI = ServiceInfrastructureRaw.noACI;
 	int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
-	int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;
 	int noCEDI = ServiceInfrastructureRaw.noCEDI;
 	int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
 	int noCAT = ServiceInfrastructureRaw.noCAT;
@@ -241,12 +240,6 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	CollectiviteAdministrative getACIImpotSource() throws ServiceInfrastructureException;
-
-	/**
-	 * @return la collectivite administrative  SUCCESSION, service de l'ACI
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException;
 
 	/**
 	 * @return la collectivite administrative OIPM, service de l'ACI

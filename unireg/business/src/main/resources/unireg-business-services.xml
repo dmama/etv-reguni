@@ -84,6 +84,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="etiquetteService" ref="etiquetteService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="adresseService" ref="adresseService" />

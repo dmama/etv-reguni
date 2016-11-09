@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -61,13 +61,13 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 			}
 		});
 
-		// création d'une tâche sur ce contribuable mais associée à l'OID 1344 (SUCCESSIONS)
+		// création d'une tâche sur ce contribuable mais associée à la nouvelle entité
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
-				final CollectiviteAdministrative successions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACISuccessions);
-				addTacheControle(pp, TypeEtatTache.EN_INSTANCE, successions);
+				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
+				addTacheControle(pp, TypeEtatTache.EN_INSTANCE, ca);
 				return null;
 			}
 		});
@@ -80,7 +80,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 			}
 		});
 
-		// dans les statistiques, la tâche doit être placée sur l'OID 22 même si le tiers est lié à l'OID 7...
+		// dans les statistiques, la tâche doit être placée sur la nouvelle entité même si le tiers est lié à l'OID 7...
 
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1.0, res.getNombreTacheMoyen(), 1e-12);
@@ -91,7 +91,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 
 		final ListeTachesEnInstanceParOID.LigneTacheInstance ligne = lignes.get(0);
 		Assert.assertNotNull(ligne);
-		Assert.assertEquals(ServiceInfrastructureRaw.noACISuccessions, ligne.getNumeroOID());
+		Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ligne.getNumeroOID());
 		Assert.assertEquals(TacheControleDossier.class.getSimpleName(), ligne.getTypeTache());
 		Assert.assertEquals(1, ligne.getNombreTache());
 	}

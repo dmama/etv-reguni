@@ -29,7 +29,6 @@ public interface ServiceInfrastructureRaw {
 	int noOIPM = 21;
 	int noACI = 22;
 	int noACIImpotSource = 47;
-	int noACISuccessions = 1344;
 	int noCEDI = 1012;
 	int noTuteurGeneral = 1013;
 	int noCAT = 1341;

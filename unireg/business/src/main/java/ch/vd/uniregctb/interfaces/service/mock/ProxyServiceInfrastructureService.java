@@ -183,11 +183,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
-		return target.getACISuccessions();
-	}
-
-	@Override
 	public CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException {
 		return target.getACIOIPM();
 	}

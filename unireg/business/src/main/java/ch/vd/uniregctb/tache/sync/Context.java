@@ -17,19 +17,19 @@ public class Context {
 	public final TacheDAO tacheDAO;
 	public final TiersService tiersService;
 	public final DeclarationImpotService diService;
-	public final CollectiviteAdministrative officeSuccessions;
+	public final CollectiviteAdministrative caApresDeces;
 	public final DeclarationImpotOrdinaireDAO diDAO;
 	public final QuestionnaireSNCDAO qsncDAO;
 	public final PeriodeFiscaleDAO periodeFiscaleDAO;
 	public final ParametreAppService parametreAppService;
 
-	public Context(Contribuable contribuable, CollectiviteAdministrative collectivite, TacheDAO tacheDAO, DeclarationImpotService diService, CollectiviteAdministrative officeSuccessions,
+	public Context(Contribuable contribuable, CollectiviteAdministrative collectivite, TacheDAO tacheDAO, DeclarationImpotService diService, CollectiviteAdministrative caApresDeces,
 	               TiersService tiersService, DeclarationImpotOrdinaireDAO diDAO, QuestionnaireSNCDAO qsncDAO, PeriodeFiscaleDAO periodeFiscaleDAO, ParametreAppService parametreAppService) {
 		this.contribuable = contribuable;
 		this.collectivite = collectivite;
 		this.tacheDAO = tacheDAO;
 		this.diService = diService;
-		this.officeSuccessions = officeSuccessions;
+		this.caApresDeces = caApresDeces;
 		this.tiersService = tiersService;
 		this.diDAO = diDAO;
 		this.qsncDAO = qsncDAO;

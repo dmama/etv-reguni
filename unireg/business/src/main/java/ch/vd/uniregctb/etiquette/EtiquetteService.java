@@ -13,6 +13,12 @@ public interface EtiquetteService {
 	List<Etiquette> getAllEtiquettes();
 
 	/**
+	 * @param doNotAutoflush <code>true</code> s'il ne faut pas laisser la session subir un autoflush pendant la requête de récupération des données en base
+	 * @return la liste de toutes les étiquettes existantes
+	 */
+	List<Etiquette> getAllEtiquettes(boolean doNotAutoflush);
+
+	/**
 	 * @param id identifiant de l'étiquette
 	 * @return l'étiquette correspondant à l'identifiant, ou <code>null</code> s'il n'y en a pas
 	 */

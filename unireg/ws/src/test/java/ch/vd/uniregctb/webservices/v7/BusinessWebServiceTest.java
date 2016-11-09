@@ -146,13 +146,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
-import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
-import ch.vd.uniregctb.etiquette.CorrectionSurDate;
-import ch.vd.uniregctb.etiquette.Decalage;
-import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteService;
-import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -4424,22 +4419,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	@Test
 	public void testLabels() throws Exception {
 
-		final String codeHeritage = "HERITAGE";
-		final String codeCollaborateurs = "COLLABORATEURS";
+		final String codeCollaborateur = CODE_ETIQUETTE_COLLABORATEUR;
 		final String codeToto = "TOTO";
-		final int noColAdminNouvelleEntite = 25;
 
-		// mise en place des étiquettes
+		// mise en place des étiquettes manquantes (héritage et collaborateur sont mis en place par le AbstractBusinessTest...)
 		final long idCollAdmNouvelleEntite = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative nouvelleEntite = addCollAdm(noColAdminNouvelleEntite);
-				final Etiquette etiquetteHeritage = addEtiquette(codeHeritage, "Héritage", TypeTiersEtiquette.PP, nouvelleEntite);
-				etiquetteHeritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
-				                                                            new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
-
-				addEtiquette(codeCollaborateurs, "DS Collaborateurs", TypeTiersEtiquette.PP, nouvelleEntite);
 				addEtiquette(codeToto, "Etiquette TOTO", TypeTiersEtiquette.PP_MC, null);
+
+				final CollectiviteAdministrative nouvelleEntite = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.noNouvelleEntite);
 				return nouvelleEntite.getNumero();
 			}
 		});
@@ -4459,7 +4448,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(prn, cjt, date(2008, 1, 1), null);
 				final MenageCommun menage = couple.getMenage();
 
-				final Etiquette collaborateurs = etiquetteService.getEtiquette(codeCollaborateurs);
+				final Etiquette collaborateurs = etiquetteService.getEtiquette(codeCollaborateur);
 				final Etiquette toto = etiquetteService.getEtiquette(codeToto);
 
 				addEtiquetteTiers(collaborateurs, prn, date(2008, 5, 12), date(2010, 8, 31));
@@ -4497,12 +4486,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(label);
 				Assert.assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
 				Assert.assertEquals(date(2010, 8, 31), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateurs, label.getLabel());
-				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertEquals(codeCollaborateur, label.getLabel());
+				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
 				Assert.assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
 				Assert.assertNotNull(ca);
-				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
 				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 			{
@@ -4510,12 +4499,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(label);
 				Assert.assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
 				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateurs, label.getLabel());
-				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertEquals(codeCollaborateur, label.getLabel());
+				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
 				Assert.assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
 				Assert.assertNotNull(ca);
-				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
 				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}
@@ -4544,12 +4533,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(label);
 				Assert.assertEquals(date(2009, 6, 1), DataHelper.webToRegDate(label.getDateFrom()));
 				Assert.assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateurs, label.getLabel());
-				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertEquals(codeCollaborateur, label.getLabel());
+				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
 				Assert.assertFalse(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
 				Assert.assertNotNull(ca);
-				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
 				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}
@@ -4578,12 +4567,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(label);
 				Assert.assertEquals(date(2008, 5, 12), DataHelper.webToRegDate(label.getDateFrom()));
 				Assert.assertEquals(date(2014, 5, 30), DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateurs, label.getLabel());
-				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertEquals(codeCollaborateur, label.getLabel());
+				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
 				Assert.assertTrue(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
 				Assert.assertNotNull(ca);
-				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
 				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 			{
@@ -4613,12 +4602,12 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(label);
 				Assert.assertEquals(date(2015, 2, 1), DataHelper.webToRegDate(label.getDateFrom()));
 				Assert.assertNull(DataHelper.webToRegDate(label.getDateTo()));
-				Assert.assertEquals(codeCollaborateurs, label.getLabel());
-				Assert.assertEquals("DS Collaborateurs", label.getDisplayLabel());
+				Assert.assertEquals(codeCollaborateur, label.getLabel());
+				Assert.assertEquals("DS Collaborateur", label.getDisplayLabel());
 				Assert.assertTrue(label.isVirtual());
 				final AdministrativeAuthorityLink ca = label.getAdministrativeAuthority();
 				Assert.assertNotNull(ca);
-				Assert.assertEquals(noColAdminNouvelleEntite, ca.getAdministrativeAuthorityId());
+				Assert.assertEquals(MockCollectiviteAdministrative.noNouvelleEntite, ca.getAdministrativeAuthorityId());
 				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}

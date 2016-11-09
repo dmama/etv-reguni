@@ -310,8 +310,8 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return MockCollectiviteAdministrative.ACIIMPOTSOURCE;
 	}
 
-	public CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException {
-		return MockCollectiviteAdministrative.ACISUCCESSIONS;
+	public CollectiviteAdministrative getACINouvelleEntite() throws ServiceInfrastructureException {
+		return MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE;
 	}
 
 	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
