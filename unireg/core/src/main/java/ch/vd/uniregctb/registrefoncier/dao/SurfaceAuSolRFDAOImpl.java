@@ -15,8 +15,8 @@ public class SurfaceAuSolRFDAOImpl extends BaseDAOImpl<SurfaceAuSolRF, Long> imp
 
 	@Nullable
 	@Override
-	public SurfaceAuSolRF find(@NotNull SurfaceAuSolRFKey key) {
-		final Query query = getCurrentSession().createQuery("from SurfaceAuSolRF where immeuble.idRF = :idRF and type = :type and surface = :surface");
+	public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
+		final Query query = getCurrentSession().createQuery("from SurfaceAuSolRF where immeuble.idRF = :idRF and type = :type and surface = :surface and dateFin is null");
 		query.setParameter("idRF", key.getIdRF());
 		query.setParameter("type", key.getType());
 		query.setParameter("surface", key.getSurface());

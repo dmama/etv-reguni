@@ -235,7 +235,7 @@ public class DataRFMutationsDetector {
 				for (Bodenbedeckung surface : batch) {
 
 					final SurfaceAuSolRFKey key = SurfaceAuSolRFHelper.newKey(surface);
-					final SurfaceAuSolRF surfaceRF = surfaceAuSolRFDAO.find(key);
+					final SurfaceAuSolRF surfaceRF = surfaceAuSolRFDAO.findActive(key);
 
 					//
 					// Note : il n'y a pas d'identifiant technique d'une surface au sol dans le fichier d'export du RF. La clé d'identifiant

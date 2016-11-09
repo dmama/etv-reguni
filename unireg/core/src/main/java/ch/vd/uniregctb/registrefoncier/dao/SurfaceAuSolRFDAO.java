@@ -9,6 +9,10 @@ import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
 
 public interface SurfaceAuSolRFDAO extends GenericDAO<SurfaceAuSolRF, Long> {
 
+	/**
+	 * @param key une clé d'identification d'une surface au sol
+	 * @return la surface au sol <b>active</b> (c'est-à-dire avec une date de fin nulle) qui correspond à la clé spécifiée.
+	 */
 	@Nullable
-	SurfaceAuSolRF find(@NotNull SurfaceAuSolRFKey key);
+	SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key);
 }

@@ -259,6 +259,8 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 	public void testImportSurfacesAuSolDejaAJour() throws Exception {
 
 		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
+		final RegDate dateSecondImport = RegDate.get(2010, 1, 1);
+		final RegDate dateTroisiemeImport = RegDate.get(2016, 10, 1);
 
 		// on va chercher le fichier d'import
 		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_surfaceausol_rf_hebdo.xml");
@@ -276,7 +278,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+				importEvent.setDateEvenement(dateTroisiemeImport);
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl(raftUrl);
 				return evenementRFImportDAO.save(importEvent).getId();
@@ -294,12 +296,20 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
 				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
 
-				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFond1, "Pâturage", 1125519, dateImportInitial);
-				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateImportInitial);
-				SurfaceAuSolRF surface3 = newSurfaceAuSol(bienFond2, "Pré-champ", 17814, dateImportInitial);
-				surfaceAuSolRFDAO.save(surface1);
-				surfaceAuSolRFDAO.save(surface2);
-				surfaceAuSolRFDAO.save(surface3);
+				// quelques données historiques (qui doivent être ignorées)
+				SurfaceAuSolRF surface1_1 = newSurfaceAuSol(bienFond1, "Pâturage pluvial", 1125519, dateImportInitial, dateSecondImport.getOneDayBefore());
+				SurfaceAuSolRF surface2_1 = newSurfaceAuSol(bienFond1, "Pré-champ", 270, dateImportInitial, dateSecondImport.getOneDayBefore());
+				SurfaceAuSolRF surface3_1 = newSurfaceAuSol(bienFond2, "Pré-champ-cathédrale", 17814, dateImportInitial, dateSecondImport.getOneDayBefore());
+				surfaceAuSolRFDAO.save(surface1_1);
+				surfaceAuSolRFDAO.save(surface2_1);
+				surfaceAuSolRFDAO.save(surface3_1);
+
+				SurfaceAuSolRF surface1_2 = newSurfaceAuSol(bienFond1, "Pâturage", 1125519, dateSecondImport, null);
+				SurfaceAuSolRF surface2_2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateSecondImport, null);
+				SurfaceAuSolRF surface3_2 = newSurfaceAuSol(bienFond2, "Pré-champ", 17814, dateSecondImport, null);
+				surfaceAuSolRFDAO.save(surface1_2);
+				surfaceAuSolRFDAO.save(surface2_2);
+				surfaceAuSolRFDAO.save(surface3_2);
 			}
 		});
 
@@ -381,11 +391,11 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
 
 				// - surface différente
-				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFond1, "Pâturage", 660066, dateImportInitial);
+				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFond1, "Pâturage", 660066, dateImportInitial, null);
 				// (identique)
-				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateImportInitial);
+				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateImportInitial, null);
 				// - désignation différente
-				SurfaceAuSolRF surface3 = newSurfaceAuSol(bienFond2, "Décharge nucléaire", 17814, dateImportInitial);
+				SurfaceAuSolRF surface3 = newSurfaceAuSol(bienFond2, "Décharge nucléaire", 17814, dateImportInitial, null);
 				surfaceAuSolRFDAO.save(surface1);
 				surfaceAuSolRFDAO.save(surface2);
 				surfaceAuSolRFDAO.save(surface3);

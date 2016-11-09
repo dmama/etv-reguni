@@ -65,7 +65,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
 			@Nullable
 			@Override
-			public SurfaceAuSolRF find(@NotNull SurfaceAuSolRFKey key) {
+			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
 				return null;
 			}
 		};
@@ -159,7 +159,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
 			@Nullable
 			@Override
-			public SurfaceAuSolRF find(@NotNull SurfaceAuSolRFKey key) {
+			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
 				if (key.equals(new SurfaceAuSolRFKey(s1))) {
 					return s1;
 				}
@@ -253,7 +253,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
 			@Nullable
 			@Override
-			public SurfaceAuSolRF find(@NotNull SurfaceAuSolRFKey key) {
+			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
 				if (key.equals(new SurfaceAuSolRFKey(s1))) {
 					return s1;
 				}

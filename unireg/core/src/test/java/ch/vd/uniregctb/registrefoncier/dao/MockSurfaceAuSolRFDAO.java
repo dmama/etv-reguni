@@ -14,7 +14,7 @@ import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
 public class MockSurfaceAuSolRFDAO implements SurfaceAuSolRFDAO {
 	@Nullable
 	@Override
-	public SurfaceAuSolRF find(@NotNull SurfaceAuSolRFKey key) {
+	public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
 		throw new NotImplementedException();
 	}
 

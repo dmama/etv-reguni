@@ -169,12 +169,13 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	@NotNull
-	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondRF immeuble, String type, int surface, RegDate dateValeur) {
+	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondRF immeuble, String type, int surface, RegDate dateDebut, RegDate dateFin) {
 		final SurfaceAuSolRF sur = new SurfaceAuSolRF();
 		sur.setImmeuble(immeuble);
 		sur.setType(type);
 		sur.setSurface(surface);
-		sur.setDateDebut(dateValeur);
+		sur.setDateDebut(dateDebut);
+		sur.setDateFin(dateFin);
 		return sur;
 	}
 
