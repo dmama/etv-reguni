@@ -24,6 +24,7 @@ import ch.vd.uniregctb.common.StringParser;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
 import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.Decalage;
 import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
 import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 
@@ -56,6 +57,7 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 		final Map<String, Class<? extends Function<RegDate, RegDate>>> byName = new HashMap<>();
 		final Map<Class<? extends Function<RegDate, RegDate>>, String> byFunction = new HashMap<>();
 
+		registerDateFunctionNameMapping(byName, byFunction, "Decalage", Decalage.class);
 		registerDateFunctionNameMapping(byName, byFunction, "DecalageAvecCorrection", DecalageAvecCorrection.class);
 
 		functionsByName = byName;
@@ -98,6 +100,7 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 
 	private static Map<Class<? extends Function<RegDate, RegDate>>, StringRenderer<?>> buildRenderers() {
 		final Map<Class<? extends Function<RegDate, RegDate>>, StringRenderer<?>> map = new HashMap<>();
+		registerRenderer(map, Decalage.class, ActionAutoEtiquetteUserType::renderDecalageSimple);
 		registerRenderer(map, DecalageAvecCorrection.class, ActionAutoEtiquetteUserType::renderDecalageAvecCorrection);
 		return map;
 	}
@@ -107,10 +110,15 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 		return (StringRenderer<Object>) renderers.get(clazz);
 	}
 
-	private static String renderDecalageAvecCorrection(DecalageAvecCorrection decalage) {
-		return String.format("%+d%s/%s",
+	private static String renderDecalageSimple(Decalage decalage) {
+		return String.format("%+d%s",
 		                     decalage.getDecalage(),
-		                     decalage.getUniteDecalage().getCode(),
+		                     decalage.getUniteDecalage().getCode());
+	}
+
+	private static String renderDecalageAvecCorrection(DecalageAvecCorrection decalage) {
+		return String.format("%s/%s",
+		                     renderDecalageSimple(decalage),
 		                     decalage.getCorrection().getCode());
 	}
 
@@ -128,6 +136,7 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 
 	private static Map<Class<? extends Function<RegDate, RegDate>>, StringParser<?>> buildParsers() {
 		final Map<Class<? extends Function<RegDate, RegDate>>, StringParser<?>> map = new HashMap<>();
+		registerParser(map, Decalage.class, ActionAutoEtiquetteUserType::parseDecalageSimple);
 		registerParser(map, DecalageAvecCorrection.class, ActionAutoEtiquetteUserType::parseDecalageAvecCorrection);
 		return map;
 	}
@@ -141,19 +150,32 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 	 * Un pattern qui matche ce qui est pondu par le renderer de {@link #renderDecalageAvecCorrection(DecalageAvecCorrection)}
 	 */
 	private static final Pattern DECALAGE_AVEC_CORRECTION_PATTERN = buildDecalageAvecCorrectionPattern();
+	private static final Pattern DECALAGE_SIMPLE_PATTERN = buildDecalageSimplePattern();
 
-	private static Pattern buildDecalageAvecCorrectionPattern() {
-		final String unitPattern = Stream.of(UniteDecalageDate.values())
-				.map(UniteDecalageDate::getCode)
-				.map(Pattern::quote)
-				.collect(Collectors.joining("|"));
-
+	private static String buildDecalageAvecCorrectionRegexp() {
 		final String correctionPattern = Stream.of(CorrectionSurDate.values())
 				.map(CorrectionSurDate::getCode)
 				.map(Pattern::quote)
 				.collect(Collectors.joining("|"));
 
-		return Pattern.compile(String.format("([+-]?[0-9]{1,9})(%s)/(%s)", unitPattern, correctionPattern));
+		return String.format("%s/(%s)", buildDecalageSimpleRegexp(), correctionPattern);
+	}
+
+	private static Pattern buildDecalageAvecCorrectionPattern() {
+		return Pattern.compile(buildDecalageAvecCorrectionRegexp());
+	}
+
+	private static String buildDecalageSimpleRegexp() {
+		final String unitPattern = Stream.of(UniteDecalageDate.values())
+				.map(UniteDecalageDate::getCode)
+				.map(Pattern::quote)
+				.collect(Collectors.joining("|"));
+
+		return String.format("([+-]?[0-9]{1,9})(%s)", unitPattern);
+	}
+
+	private static Pattern buildDecalageSimplePattern() {
+		return Pattern.compile(buildDecalageSimpleRegexp());
 	}
 
 	private static DecalageAvecCorrection parseDecalageAvecCorrection(String string) {
@@ -163,6 +185,19 @@ public class ActionAutoEtiquetteUserType extends GenericUserType implements User
 			final UniteDecalageDate unite = UniteDecalageDate.valueOfCode(matcher.group(2));
 			final CorrectionSurDate correction = CorrectionSurDate.valueOfCode(matcher.group(3));
 			return new DecalageAvecCorrection(decalage, unite, correction);
+		}
+		else {
+			LOGGER.warn("Valeur ignorée : '" + string + "'");
+			return null;
+		}
+	}
+
+	private static Decalage parseDecalageSimple(String string) {
+		final Matcher matcher = DECALAGE_SIMPLE_PATTERN.matcher(string);
+		if (matcher.matches()) {
+			final int decalage = Integer.parseInt(matcher.group(1));
+			final UniteDecalageDate unite = UniteDecalageDate.valueOfCode(matcher.group(2));
+			return new Decalage(decalage, unite);
 		}
 		else {
 			LOGGER.warn("Valeur ignorée : '" + string + "'");

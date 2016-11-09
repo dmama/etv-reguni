@@ -14,6 +14,10 @@ import ch.vd.uniregctb.type.TypeTiersEtiquette;
 
 public class EtiquetteTest extends CoreDAOTest {
 
+	private static Decalage buildDecalage(int decalage, UniteDecalageDate uniteDecalage) {
+		return new Decalage(decalage, uniteDecalage);
+	}
+
 	private static DecalageAvecCorrection buildDecalage(int decalage, UniteDecalageDate uniteDecalage, CorrectionSurDate correction) {
 		return new DecalageAvecCorrection(decalage, uniteDecalage, correction);
 	}
@@ -29,7 +33,7 @@ public class EtiquetteTest extends CoreDAOTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Etiquette etiquette = new Etiquette("TEST", "Test étiquette", true, TypeTiersEtiquette.PP_MC, null);
-				etiquette.setActionSurDeces(buildActionAuto(buildDecalage(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+				etiquette.setActionSurDeces(buildActionAuto(buildDecalage(1, UniteDecalageDate.JOUR),
 				                                            buildDecalage(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
 				return hibernateTemplate.merge(etiquette).getId();
 			}
@@ -51,12 +55,11 @@ public class EtiquetteTest extends CoreDAOTest {
 				{
 					final Function<RegDate, RegDate> fn = actionDeces.getDateDebut();
 					Assert.assertNotNull(fn);
-					Assert.assertEquals(DecalageAvecCorrection.class, fn.getClass());
+					Assert.assertEquals(Decalage.class, fn.getClass());
 
-					final DecalageAvecCorrection dac = (DecalageAvecCorrection) fn;
-					Assert.assertEquals(1, dac.getDecalage());
-					Assert.assertEquals(UniteDecalageDate.JOUR, dac.getUniteDecalage());
-					Assert.assertEquals(CorrectionSurDate.SANS_CORRECTION, dac.getCorrection());
+					final Decalage d = (Decalage) fn;
+					Assert.assertEquals(1, d.getDecalage());
+					Assert.assertEquals(UniteDecalageDate.JOUR, d.getUniteDecalage());
 				}
 				{
 					final Function<RegDate, RegDate> fn = actionDeces.getDateFin();

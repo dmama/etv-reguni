@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
 import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.Decalage;
 import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
@@ -4312,21 +4313,21 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				{
 					final Etiquette etiquette = addEtiquette("TOTO", "Décès PP 2Y fin mois", TypeTiersEtiquette.PP, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
 					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_MOIS)));
 				}
 				{
 					final Etiquette etiquette = addEtiquette("TITI", "Décès PM (aucun sens)", TypeTiersEtiquette.PM, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
 					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
 				}
 				{
 					final Etiquette etiquette = addEtiquette("TATA", "Décès PP sans date de fin", TypeTiersEtiquette.PP_MC, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.SEMAINE, CorrectionSurDate.SANS_CORRECTION), null));
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.SEMAINE), null));
 				}
 				{
 					final Etiquette etiquette = addEtiquette("TÉTÉ", "inactive", TypeTiersEtiquette.PP_MC, null);
-					etiquette.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+					etiquette.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
 					                                                    new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
 					etiquette.setActive(false);
 				}

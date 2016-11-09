@@ -148,6 +148,7 @@ import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
 import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
 import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.Decalage;
 import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteService;
@@ -4434,7 +4435,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final CollectiviteAdministrative nouvelleEntite = addCollAdm(noColAdminNouvelleEntite);
 				final Etiquette etiquetteHeritage = addEtiquette(codeHeritage, "Héritage", TypeTiersEtiquette.PP, nouvelleEntite);
-				etiquetteHeritage.setActionSurDeces(new ActionAutoEtiquette(new DecalageAvecCorrection(1, UniteDecalageDate.JOUR, CorrectionSurDate.SANS_CORRECTION),
+				etiquetteHeritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
 				                                                            new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
 
 				addEtiquette(codeCollaborateurs, "DS Collaborateurs", TypeTiersEtiquette.PP, nouvelleEntite);
