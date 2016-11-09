@@ -416,7 +416,6 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		if (col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) { // Cas spécial pour le CEDI
 			final Integer officeImpot = getNumeroOfficeImpotRetour(informationsDocument);
 
-
 			Assert.notNull(officeImpot);
 			remplitAdresseRetourCEDI(adresseRetour, officeImpot);
 		}
@@ -443,11 +442,16 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	 * UNIREG-3059  Pour ce qui concerne le gros numéro en gras, l'adresse CEDI XX, et le code à barre : l'OID doit être l'OID de gestion valable au 31.12 de l'année N-1 (N étant la période lors de
 	 * laquel l'édition du document a lieu) -> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de
 	 * l'édition du docuement.
-	 *
-	 * @return
 	 */
 	protected Integer getNumeroOfficeImpotRetour(InformationsDocumentAdapter informationsDocument) {
 
+		// Si le tiers a déjà un expéditeur de document au travers des étiquettes liées, c'est celui-ci qu'il faut utiliser
+		final Integer selonEtiquettes = getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(informationsDocument.getTiers(), RegDate.get());
+		if (selonEtiquettes != null) {
+			return selonEtiquettes;
+		}
+
+		// sinon, on fait comme avant...
 		final int anneeCourante = RegDate.get().year();
 
 		final RegDate finPeriodeCourante = RegDate.get(anneeCourante, 12, 31);
@@ -522,7 +526,6 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	}
 
 	private CollectiviteAdministrative getRetourCollectiviteAdministrative(InformationsDocumentAdapter informationsDocument) {
-
 
 		final Long collId = informationsDocument.getCollId();
 		CollectiviteAdministrative collAdm = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
@@ -771,8 +774,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	private String calculNooid(InformationsDocumentAdapter infoAdapter) {
 
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = getNumeroOfficeImpotRetour(infoAdapter);
-		Assert.notNull(officeImpotId);
+		final Integer noColAdministrativeRetour = getNumeroOfficeImpotRetour(infoAdapter);
 
 		// [SIFISC-2100] Dès la DI 2011, la chaîne ne doit plus être déduite de la qualification, mais d'un code "segment" directement fourni par TAO
 		final int suffixe;
@@ -799,7 +801,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 			}
 		}
 
-		return String.format("%02d-%d", officeImpotId, suffixe);
+		return String.format("%02d-%d", noColAdministrativeRetour, suffixe);
 	}
 
 	private void remplitContribuables(InformationsDocumentAdapter informationsDocument, DIRetourCivil didp) throws EditiqueException {

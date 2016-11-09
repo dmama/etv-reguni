@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.uniregctb.common.AbstractBusinessTest;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -29,6 +30,12 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.etiquette.ActionAutoEtiquette;
+import ch.vd.uniregctb.etiquette.CorrectionSurDate;
+import ch.vd.uniregctb.etiquette.Decalage;
+import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.UniteDecalageDate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -61,6 +68,7 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeTiersEtiquette;
 
 public abstract class EvenementScenario extends NorentesScenario {
 
@@ -79,6 +87,8 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 	private TransactionStatus tx;
 
+	public static final String CODE_ETIQUETTE_HERITAGE = AbstractBusinessTest.CODE_ETIQUETTE_HERITAGE;
+	public static final String CODE_ETIQUETTE_COLLABORATEUR = AbstractBusinessTest.CODE_ETIQUETTE_COLLABORATEUR;
 
 	@Override
 	public void onInitialize() {
@@ -162,7 +172,19 @@ public abstract class EvenementScenario extends NorentesScenario {
 						ca.setIdentifiantRegionFiscale(((MockOfficeImpot) collAdm).getIdentifiantRegion());
 					}
 					ca.setNumeroCollectiviteAdministrative(collAdm.getNoColAdm());
-					currentSession.merge(ca);
+					final CollectiviteAdministrative savedCA = (CollectiviteAdministrative) currentSession.merge(ca);
+
+					// [SIFISC-20149] on va également créer les étiquettes qui vont bien si la bonne collectivité adminstrative est là
+					if (collAdm.getNoColAdm() == MockCollectiviteAdministrative.noNouvelleEntite) {
+						final Etiquette heritage = new Etiquette(CODE_ETIQUETTE_HERITAGE, "Héritage", true, TypeTiersEtiquette.PP, savedCA);
+						heritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
+						                                                   new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
+						currentSession.merge(heritage);
+
+						final Etiquette collaborateur = new Etiquette(CODE_ETIQUETTE_COLLABORATEUR, "DS Collaborateur", true, TypeTiersEtiquette.PP, savedCA);
+						currentSession.merge(collaborateur);
+					}
+
 				}
 			}
 		});

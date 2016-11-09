@@ -157,6 +157,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected ValidationInterceptor validationInterceptor;
 	protected ParentesSynchronizerInterceptor parentesSynchronizer;
 
+	public final static String CODE_ETIQUETTE_HERITAGE = "HERITAGE";
+	public final static String CODE_ETIQUETTE_COLLABORATEUR = "COLLABORATEUR";
+
 	static {
 		forceLoadAllCollectivitesAdministratives();
 	}
@@ -208,10 +211,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 							// [SIFISC-20149] on va également créer les étiquettes qui vont bien si la bonne collectivité adminstrative est là
 							if (collAdm.getNoColAdm() == MockCollectiviteAdministrative.noNouvelleEntite) {
-								final Etiquette heritage = addEtiquette("HERITAGE", "Héritage", TypeTiersEtiquette.PP, ca);
+								final Etiquette heritage = addEtiquette(CODE_ETIQUETTE_HERITAGE, "Héritage", TypeTiersEtiquette.PP, ca);
 								heritage.setActionSurDeces(new ActionAutoEtiquette(new Decalage(1, UniteDecalageDate.JOUR),
 								                                                   new DecalageAvecCorrection(2, UniteDecalageDate.ANNEE, CorrectionSurDate.FIN_ANNEE)));
-								addEtiquette("COLLABORATEUR", "DS Collaborateur", TypeTiersEtiquette.PP, ca);
+								addEtiquette(CODE_ETIQUETTE_COLLABORATEUR, "DS Collaborateur", TypeTiersEtiquette.PP, ca);
 							}
 						}
 					}

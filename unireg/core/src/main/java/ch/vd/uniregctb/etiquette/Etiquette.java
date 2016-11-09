@@ -35,6 +35,7 @@ public class Etiquette extends HibernateEntity {
 	private TypeTiersEtiquette typeTiers;
 	private boolean active;
 	private CollectiviteAdministrative collectiviteAdministrative;
+	private boolean expediteurDocuments;
 	private ActionAutoEtiquette actionSurDeces;
 
 	@Transient
@@ -52,6 +53,7 @@ public class Etiquette extends HibernateEntity {
 		this.active = active;
 		this.typeTiers = typeTiers;
 		this.collectiviteAdministrative = collectiviteAdministrative;
+		this.expediteurDocuments = collectiviteAdministrative != null;      // par défaut
 	}
 
 	@Id
@@ -106,6 +108,15 @@ public class Etiquette extends HibernateEntity {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	@Column(name = "EXPEDITEUR_DOCS")
+	public boolean isExpediteurDocuments() {
+		return expediteurDocuments;
+	}
+
+	public void setExpediteurDocuments(boolean expediteurDocuments) {
+		this.expediteurDocuments = expediteurDocuments;
 	}
 
 	@Column(name = "TYPE_TIERS", length = LengthConstants.ETIQUETTE_TYPE_TIERS, nullable = false)

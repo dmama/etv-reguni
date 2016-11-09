@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.editique;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import noNamespace.InfoDocumentDocument1;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +23,11 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -149,4 +156,29 @@ public abstract class EditiqueAbstractLegacyHelper {
 		return lignes.isEmpty() ? null : new CTypeAdresse(lignes);
 	}
 
+	@Nullable
+	protected Integer getNoCollectiviteAdministrativeEmettriceSelonEtiquettes(Tiers tiers, @Nullable RegDate dateReference) {
+
+		final Stream.Builder<Tiers> streamBuilder = Stream.builder();
+		streamBuilder.add(tiers);
+		if (tiers instanceof MenageCommun) {
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
+			streamBuilder.add(ensemble.getPrincipal());
+			streamBuilder.add(ensemble.getConjoint());
+		}
+
+		return streamBuilder.build()                                                                            // les tiers un par un
+				.filter(Objects::nonNull)                                                                       // seulement ceux qui existent
+				.map(Tiers::getEtiquettes)                                                                      // extraction des étiquettes tiers des tiers
+				.filter(Objects::nonNull)                                                                       // seulement celles qui existent
+				.flatMap(Collection::stream)                                                                    // mise à plat des étiquettes extraites
+				.filter(e -> e.isValidAt(dateReference))                                                        // seulement les étiquetages non-annulés valides aujourd'hui
+				.map(EtiquetteTiers::getEtiquette)                                                              // passage à l'étiquette elle-même
+				.filter(e -> e.isActive() && e.isExpediteurDocuments() && !e.isAnnule())                        // seulement si étiquette valide, non-annulée, et marquée comme intéressante pour l'envoi de documents
+				.map(Etiquette::getCollectiviteAdministrative)                                                  // passage à la collectivité administrative liée
+				.filter(Objects::nonNull)                                                                       // seulement si une telle collectivité administrative existe
+				.map(ch.vd.uniregctb.tiers.CollectiviteAdministrative::getNumeroCollectiviteAdministrative)     // extraction du numéro de la collectivité administrative
+				.findFirst()                                                                                    // on prend de tout de façon le premier qui sort
+				.orElse(null);
+	}
 }

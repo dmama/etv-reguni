@@ -35,6 +35,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -51,6 +52,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
+import ch.vd.uniregctb.etiquette.Etiquette;
+import ch.vd.uniregctb.etiquette.EtiquetteService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -87,6 +90,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
 	private LegacyEditiqueHelper editiqueHelper;
+	private EtiquetteService etiquetteService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -99,6 +103,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		editiqueHelper = getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		impressionDIPPHelper = new ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService, situationFamilleService, editiqueHelper);
+		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 	}
 
 	@Test
@@ -1606,8 +1611,6 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
 				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
 
-				final String numCtb = String.format("%09d", pp.getNumero());
-
 				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
 				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
 				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
@@ -1628,5 +1631,54 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 				assertEquals("10",document.getInfoDocument().getIdEnvoi());
 			}
 		});
+	}
+
+	@Test
+	public void testAvecEtiquette() throws Exception {
+
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
+				assertNotNull(cedi);
+
+				// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+				final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+				addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
+
+				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
+				declaration2012.setRetourCollectiviteAdministrativeId(cedi.getId());
+
+				// étiquette qui va bien
+				final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
+				assertNotNull(collaborateur);
+				addEtiquetteTiers(collaborateur, pp, date(RegDate.get().year(), 1, 1), null);
+
+				return declaration2012.getId();
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
+				final TypFichierImpression.Document document= impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),
+				                                                                                               TypFichierImpression.Factory.newInstance(),
+				                                                                                               null,
+				                                                                                               false);
+				assertNotNull(document);
+				assertEquals(String.valueOf(MockOfficeImpot.OID_MORGES.getNoColAdm()), document.getInfoDocument().getIdEnvoi());
+				assertEquals(String.format("CEDI %d", MockCollectiviteAdministrative.noNouvelleEntite), document.getDI().getAdresseRetour().getADRES3RETOUR());
+				assertEquals(String.format("%d-0", MockCollectiviteAdministrative.noNouvelleEntite), document.getDI().getInfoDI().getNOOID());
+
+				assertEquals(MockOfficeImpot.OID_MORGES.getNomComplet1(), document.getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+				assertEquals(MockOfficeImpot.OID_MORGES.getNomComplet2(), document.getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+			}
+		});
+
 	}
 }
