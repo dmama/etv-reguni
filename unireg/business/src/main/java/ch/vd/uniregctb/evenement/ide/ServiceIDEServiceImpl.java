@@ -180,6 +180,11 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		Assert.notNull(entreprise, "Impossible de synchroniser l'IDE sans une entreprise!");
 
 		Audit.info(String.format("Evaluation de l'entreprise n°%s dont les données civiles pertinentes ont changé.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
+		if (entreprise.isIdeDesactive()) {
+			final String message = String.format("Annonces au registre IDE désactivées en base Unireg pour l'entreprise n°%s", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
+			Audit.warn(message);
+			throw new ServiceIDEException(message);
+		}
 
 		final Etablissement etablissement = tiersService.getEtablissementPrincipal(entreprise, date);
 
