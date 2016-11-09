@@ -168,6 +168,16 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return collectivite;
 	}
 
+	@NotNull
+	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondRF immeuble, String type, int surface, RegDate dateValeur) {
+		final SurfaceAuSolRF sur = new SurfaceAuSolRF();
+		sur.setImmeuble(immeuble);
+		sur.setType(type);
+		sur.setSurface(surface);
+		sur.setDateDebut(dateValeur);
+		return sur;
+	}
+
 	protected static void waitForJobCompletion(JobDefinition job) throws InterruptedException {
 		int count = 0;
 		while (job.isRunning()) {

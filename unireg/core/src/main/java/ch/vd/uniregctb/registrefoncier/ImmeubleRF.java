@@ -152,9 +152,7 @@ public abstract class ImmeubleRF {
 		this.surfacesTotales.add(surfaceTotale);
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_SURF_SOL_RF_IMMEUBLE_ID")
+	@OneToMany(mappedBy = "immeuble")
 	public Set<SurfaceAuSolRF> getSurfacesAuSol() {
 		return surfacesAuSol;
 	}

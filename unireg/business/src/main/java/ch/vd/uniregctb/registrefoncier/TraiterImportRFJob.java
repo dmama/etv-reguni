@@ -129,7 +129,7 @@ public class TraiterImportRFJob extends JobDefinition {
 			mutationsDetector.processDroits(importId, dataAdapter.getDroitsIterator());
 			mutationsDetector.processProprietaires(importId, nbThreads, dataAdapter.getProprietairesIterator());
 			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator());
-			mutationsDetector.processSurfaces(importId, dataAdapter.getSurfacesIterator());
+			mutationsDetector.processSurfaces(importId, nbThreads, dataAdapter.getSurfacesIterator());
 
 			// on attend que le parsing soit terminé
 			ecs.take().get();

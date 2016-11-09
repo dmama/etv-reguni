@@ -142,7 +142,7 @@ public class DataRFMutationsProcessor {
 			throw new NotImplementedException();
 		case IMMEUBLE:
 			return immeubleProcessor;
-		case SURFACE:
+		case SURFACE_AU_SOL:
 			// TODO (msi)
 			throw new NotImplementedException();
 		default:

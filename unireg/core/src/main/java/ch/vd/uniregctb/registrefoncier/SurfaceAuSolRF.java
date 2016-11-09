@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -36,7 +37,7 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 	/**
 	 * Le type de surface.
 	 */
-	private CodeRF type;
+	private String type;
 
 	/**
 	 * La surface en mètre carrés (m2).
@@ -64,18 +65,17 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
-	@AttributeOverrides({
-			@AttributeOverride(name = "code", column = @Column(name = "TYPE_CODE", nullable = false)),
-			@AttributeOverride(name = "description", column = @Column(name = "TYPE_DESCRIPTION"))
-	})
-	public CodeRF getType() {
+	@Index(name = "IDX_SURF_SOL_RF_TYPE")
+	@Column(name = "TYPE", nullable = false)
+	public String getType() {
 		return type;
 	}
 
-	public void setType(CodeRF type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
+	@Index(name = "IDX_SURF_SOL_RF_SURFACE")
 	@Column(name = "SURFACE", nullable = false)
 	public int getSurface() {
 		return surface;
@@ -85,10 +85,9 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 		this.surface = surface;
 	}
 
-	@ManyToOne(cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
-	})
-	@JoinColumn(name = "IMMEUBLE_ID", insertable = false, updatable = false, nullable = false)
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
+	@ForeignKey(name = "FK_SURF_SOL_RF_IMMEUBLE_ID")
 	@Index(name = "IDX_SURF_SOL_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;

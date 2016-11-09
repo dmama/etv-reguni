@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+	<GrundstueckList>
+		<Liegenschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<GrundstueckID>_1f109152381009be0138100bc9f139e0</GrundstueckID>
+			<EGrid>CH938383459516</EGrid>
+			<GrundstueckNummer VersionID="1f109152381009be0138100bc9f33a1a">
+				<BfsNr>273</BfsNr>
+				<Gemeindenamen>Rances</Gemeindenamen>
+				<StammNr>3</StammNr>
+			</GrundstueckNummer>
+			<IstKopie>false</IstKopie>
+			<AmtlicheBewertung VersionID="1f109152381009be0138100cfd906087">
+				<AmtlicherWert>1100000</AmtlicherWert>
+				<Ertragswert>0</Ertragswert>
+				<ProtokollNr>RG96</ProtokollNr>
+				<ProtokollGueltig>true</ProtokollGueltig>
+				<MitEwKomponente>unbekannt</MitEwKomponente>
+			</AmtlicheBewertung>
+			<GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+			<BeschreibungUebergeben>true</BeschreibungUebergeben>
+			<EigentumUebergeben>true</EigentumUebergeben>
+			<PfandrechtUebergeben>true</PfandrechtUebergeben>
+			<DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+			<GrundlastUebergeben>true</GrundlastUebergeben>
+			<AnmerkungUebergeben>true</AnmerkungUebergeben>
+			<VormerkungUebergeben>true</VormerkungUebergeben>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<BereitZurVerifikation>false</BereitZurVerifikation>
+			<NutzungLandwirtschaft>unbekannt</NutzungLandwirtschaft>
+			<NutzungWald>unbekannt</NutzungWald>
+			<NutzungEisenbahn>nein</NutzungEisenbahn>
+			<NutzungVerwaltungsvermoegen>unbekannt</NutzungVerwaltungsvermoegen>
+			<GrundstueckFlaeche VersionID="1f109152381009be0138100dbd7c1856" MasterID="1f109152381009be0138100dbd7c1855">
+				<Flaeche>2969451</Flaeche>
+				<Qualitaet>
+					<TextDe>*numérisé</TextDe>
+					<TextFr>numérisé</TextFr>
+				</Qualitaet>
+				<ProjektMutation>false</ProjektMutation>
+				<GeometrischDarstellbar>false</GeometrischDarstellbar>
+				<UeberlagerndeRechte>false</UeberlagerndeRechte>
+			</GrundstueckFlaeche>
+		</Liegenschaft>
+		<Liegenschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<GrundstueckID>_1f109152381037590138103b73cf579a</GrundstueckID>
+			<EGrid>CH344583712491</EGrid>
+			<GrundstueckNummer VersionID="1f109152381037590138103b73d157ef">
+				<BfsNr>71</BfsNr>
+				<Gemeindenamen>Penthalaz</Gemeindenamen>
+				<StammNr>428</StammNr>
+			</GrundstueckNummer>
+			<IstKopie>false</IstKopie>
+			<AmtlicheBewertung VersionID="1f109152381037590138103e0e937938">
+				<AmtlicherWert>14000</AmtlicherWert>
+				<Ertragswert>0</Ertragswert>
+				<ProtokollNr>EF01</ProtokollNr>
+				<ProtokollGueltig>true</ProtokollGueltig>
+				<MitEwKomponente>unbekannt</MitEwKomponente>
+			</AmtlicheBewertung>
+			<GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+			<BeschreibungUebergeben>true</BeschreibungUebergeben>
+			<EigentumUebergeben>true</EigentumUebergeben>
+			<PfandrechtUebergeben>true</PfandrechtUebergeben>
+			<DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+			<GrundlastUebergeben>true</GrundlastUebergeben>
+			<AnmerkungUebergeben>true</AnmerkungUebergeben>
+			<VormerkungUebergeben>true</VormerkungUebergeben>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<BereitZurVerifikation>false</BereitZurVerifikation>
+			<NutzungLandwirtschaft>ja</NutzungLandwirtschaft>
+			<NutzungWald>unbekannt</NutzungWald>
+			<NutzungEisenbahn>nein</NutzungEisenbahn>
+			<NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>
+			<GrundstueckFlaeche VersionID="1f109152381037590138103fe09a0ba1" MasterID="1f109152381037590138103fe09a0ba0">
+				<Flaeche>17814</Flaeche>
+				<Qualitaet>
+					<TextDe>*numérisé</TextDe>
+					<TextFr>numérisé</TextFr>
+				</Qualitaet>
+				<ProjektMutation>false</ProjektMutation>
+				<GeometrischDarstellbar>false</GeometrischDarstellbar>
+				<UeberlagerndeRechte>false</UeberlagerndeRechte>
+			</GrundstueckFlaeche>
+		</Liegenschaft>
+	</GrundstueckList>
+    <BodenbedeckungList>
+        <Bodenbedeckung VersionID="1f109152381009be0138100ce8190795" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>
+            <Art>
+                <TextDe>*Pâturage</TextDe>
+                <TextFr>Pâturage</TextFr>
+            </Art>
+            <Flaeche>1125519</Flaeche>
+        </Bodenbedeckung>
+        <Bodenbedeckung VersionID="1f109152381009be0138100ce7df0741" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>
+            <Art>
+                <TextDe>*Pré-champ</TextDe>
+                <TextFr>Pré-champ</TextFr>
+            </Art>
+            <Flaeche>570</Flaeche>
+        </Bodenbedeckung>
+        <Bodenbedeckung VersionID="1f109152381037590138103dd5f12466" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <GrundstueckIDREF>_1f109152381037590138103b73cf579a</GrundstueckIDREF>
+            <Art>
+                <TextDe>*Pré-champ</TextDe>
+                <TextFr>Pré-champ</TextFr>
+            </Art>
+            <Flaeche>17814</Flaeche>
+        </Bodenbedeckung>
+    </BodenbedeckungList>
+</GrundstueckExport>

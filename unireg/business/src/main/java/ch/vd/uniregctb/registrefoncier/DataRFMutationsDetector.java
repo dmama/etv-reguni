@@ -24,11 +24,14 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.helper.AyantDroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
+import ch.vd.uniregctb.registrefoncier.helper.SurfaceAuSolRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
+import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
 
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
@@ -42,18 +45,20 @@ public class DataRFMutationsDetector {
 	private final XmlHelperRF xmlHelperRF;
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final AyantDroitRFDAO ayantDroitRFDAO;
+	private final SurfaceAuSolRFDAO surfaceAuSolRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 
 	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
-	                               AyantDroitRFDAO ayantDroitRFDAO, EvenementRFImportDAO evenementRFImportDAO,
+	                               AyantDroitRFDAO ayantDroitRFDAO, SurfaceAuSolRFDAO surfaceAuSolRFDAO, EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager) {
 		this.xmlHelperRF = xmlHelperRF;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
+		this.surfaceAuSolRFDAO = surfaceAuSolRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
@@ -206,10 +211,73 @@ public class DataRFMutationsDetector {
 		}
 	}
 
-	public void processSurfaces(long importId, Iterator<Bodenbedeckung> iterator) {
-		// TODO (msi) implémenter la détection des mutations des surfaces
-		while (iterator.hasNext()) {
-			iterator.next();
-		}
+	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator) {
+
+		final ParallelBatchTransactionTemplate<Bodenbedeckung> template = new ParallelBatchTransactionTemplate<Bodenbedeckung>(iterator, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+			@Override
+			protected int getBlockingQueueCapacity() {
+				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
+				// on sature rapidemment la mémoire de la JVM avec l'entier du fichier d'import.
+				return 10;
+			}
+		};
+
+		template.execute(new BatchCallback<Bodenbedeckung>() {
+
+			private final ThreadLocal<Bodenbedeckung> first = new ThreadLocal<>();
+
+			@Override
+			public boolean doInTransaction(List<Bodenbedeckung> batch) throws Exception {
+				first.set(batch.get(0));
+
+				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+				for (Bodenbedeckung surface : batch) {
+
+					final SurfaceAuSolRFKey key = SurfaceAuSolRFHelper.newKey(surface);
+					final SurfaceAuSolRF surfaceRF = surfaceAuSolRFDAO.find(key);
+
+					//
+					// Note : il n'y a pas d'identifiant technique d'une surface au sol dans le fichier d'export du RF. La clé d'identifiant
+					//        utilisée est donc les valeurs métier de la surface au sol. Il y a donc deux cas de figure :
+					//        1) on n'a pas trouvé la surface : elle peut être nouvelle ou une valeur peut avoir changé, mais on est incapable
+					//           de l'analyser sans parcourir toutes les autres surfaces attachées à l'immeuble. Dans le doute, on la flag en
+					//           tant que CREATION. Tâche est donnéée au processeur de traitement d'y voir clair...
+					//        2) on a trouvé la surface : elle est strictement identique à l'ancienne et il n'y a rien à faire
+					//
+
+					// on détermine ce qu'il faut faire
+					final EvenementRFMutation.TypeMutation typeMutation;
+					if (surfaceRF == null) {
+						typeMutation = EvenementRFMutation.TypeMutation.CREATION;
+					}
+					else {
+						// rien à faire
+						continue;
+					}
+
+					// on ajoute l'événement à traiter
+					final String immeubleAsXml = xmlHelperRF.toXMLString(surface);
+
+					final EvenementRFMutation mutation = new EvenementRFMutation();
+					mutation.setParentImport(parentImport);
+					mutation.setEtat(EtatEvenementRF.A_TRAITER);
+					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
+					mutation.setTypeMutation(typeMutation);
+					mutation.setXmlContent(immeubleAsXml);
+
+					evenementRFMutationDAO.save(mutation);
+				}
+
+				return true;
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.error("Exception sur le traitement de la surface au sol VersionID=[" + first.get().getVersionID() + "]", e);
+				}
+			}
+		}, null);
 	}
 }
