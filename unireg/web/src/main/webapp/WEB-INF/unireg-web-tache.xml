@@ -24,6 +24,8 @@
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="tacheService" ref="tacheService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 	
 	<bean id="postItController" class="ch.vd.uniregctb.tache.PostItController">

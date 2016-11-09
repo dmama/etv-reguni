@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -135,9 +136,11 @@ public class TacheServiceImpl implements TacheService {
 	private PlatformTransactionManager transactionManager;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
+	private AdresseService adresseService;
+
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<>();
 	private Map<TypeTache, List<String>> commentairesDistincts = new EnumMap<>(TypeTache.class);
-	private AdresseService adresseService;
+	private Set<Integer> oidsAvecTaches = new HashSet<>();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
@@ -186,12 +189,7 @@ public class TacheServiceImpl implements TacheService {
 		final long start = System.nanoTime();
 
 		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-		final Map<Integer, TacheStats> stats = template.execute(new TransactionCallback<Map<Integer, TacheStats>>() {
-			@Override
-			public Map<Integer, TacheStats> doInTransaction(TransactionStatus status) {
-				return tacheDAO.getTacheStats();
-			}
-		});
+		final Map<Integer, TacheStats> stats = template.execute(status -> tacheDAO.getTacheStats());
 
 		final long end = System.nanoTime();
 
@@ -227,24 +225,31 @@ public class TacheServiceImpl implements TacheService {
 		//
 		// on va aussi aller chercher les valeurs des commentaires disponibles par type de tache
 		//
-		commentairesDistincts = template.execute(new TransactionCallback<Map<TypeTache, List<String>>>() {
-			@Override
-			public Map<TypeTache, List<String>> doInTransaction(TransactionStatus status) {
-				return tacheDAO.getCommentairesDistincts();
-			}
-		});
+		commentairesDistincts = template.execute(status -> tacheDAO.getCommentairesDistincts());
+
+		//
+		// et aussi la liste des collectivités administratives auxquelles des tâches (quel que soit leur état) sont attachées
+		//
+		oidsAvecTaches = template.execute(status -> tacheDAO.getCollectivitesAvecTaches());
 	}
 
 	@NotNull
 	@Override
 	public List<String> getCommentairesDistincts(TypeTache typeTache) {
-		// on tape dans le cache, en le supposant rafraîchit de temps en temps
+		// on tape dans le cache, en le supposant rafraîchi de temps en temps
 		if (commentairesDistincts.containsKey(typeTache)) {
 			return commentairesDistincts.get(typeTache);
 		}
 		else {
 			return Collections.emptyList();
 		}
+	}
+
+	@NotNull
+	@Override
+	public Set<Integer> getCollectivitesAdministrativesAvecTaches() {
+		// on tape dans le cache, en le supposant rafraîchi de temps en temps
+		return Collections.unmodifiableSet(oidsAvecTaches);
 	}
 
 	@Override

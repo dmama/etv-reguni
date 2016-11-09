@@ -15,7 +15,6 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -25,9 +24,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.security.SecurityDebugConfig;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
 import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
@@ -221,41 +218,6 @@ public class TacheListManagerImpl implements TacheListManager {
 		else {
 			coreCriteria.setInvertTypeTache(false);
 		}
-
-		if (coreCriteria.getOid() == null) { //l'utilisateur a choisit TOUS =>  Filtre sur les OID de l'utilisateur
-
-			if (!SecurityDebugConfig.isIamDebug()) {
-
-				List<ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur> collectivites = null;
-				try {
-					collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
-				}
-				catch (ServiceSecuriteException e) {
-					// si le visa n'existe pas, l'ejb lève une sécurité exception au lieu de retourner une collection vide...
-					collectivites = Collections.emptyList();
-				}
-
-				List<Integer> oids = new ArrayList<>(collectivites.size());
-
-				for (ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c:collectivites) {
-					if (c.isACI()) {
-						// les personnes de l'ACI voient toutes les tâches sans restriction
-						oids = null;
-						break;
-					}
-					else {
-						oids.add(c.getNoColAdm());
-					}
-				}
-				if (oids != null) {
-					coreCriteria.setOidUser(oids.toArray(new Integer[oids.size()]));
-				}
-			}
-		}
-		else if (coreCriteria.getOid() == serviceInfrastructureService.getACI().getNoColAdm()) {//ACI == tous)
-			coreCriteria.setOid(null);
-		}
-
 		return coreCriteria;
 	}
 

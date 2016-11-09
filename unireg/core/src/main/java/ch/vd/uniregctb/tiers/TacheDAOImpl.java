@@ -7,9 +7,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -346,6 +348,14 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 			Collections.sort(list);
 		}
 		return map;
+	}
+
+	@Override
+	public Set<Integer> getCollectivitesAvecTaches() {
+		final String hql = "select distinct t.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative from Tache t";
+		final Query query = getCurrentSession().createQuery(hql);
+		//noinspection unchecked
+		return new HashSet<>((List<Integer>) query.list());
 	}
 
 	@Override

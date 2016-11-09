@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -21,6 +24,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.security.SecurityDebugConfig;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -34,10 +38,10 @@ public class TacheMapHelper extends CommonMapHelper {
 	private Map<TypeTache, String> mapTypeTache;
 
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
-
     private ServiceSecuriteService serviceSecurite;
-
 	private PlatformTransactionManager transactionManager;
+	private TacheService tacheService;
+	private ServiceInfrastructureService infraService;
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
@@ -49,6 +53,14 @@ public class TacheMapHelper extends CommonMapHelper {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setTacheService(TacheService tacheService) {
+		this.tacheService = tacheService;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	/**
@@ -146,6 +158,20 @@ public class TacheMapHelper extends CommonMapHelper {
 		final Map<Integer, String> treeMap = new TreeMap<>(new ValueComparator<>(map));
 		treeMap.putAll(map);
 		return Collections.unmodifiableMap(treeMap);
+	}
+
+	/**
+	 * @return une map, triée par nom court, des mappings entre numéro de collectivité et nom court, des collectivités administratives sur lesquelles on a des tâches
+	 */
+	public Map<Integer, String> initMapCollectivitesAvecTaches() {
+		final Set<Integer> cols = tacheService.getCollectivitesAdministrativesAvecTaches();
+		return cols.stream()
+				.map(infraService::getCollectivite)
+				.sorted(Comparator.comparing(CollectiviteAdministrative::getNomCourt))
+				.collect(Collectors.toMap(CollectiviteAdministrative::getNoColAdm,
+				                          CollectiviteAdministrative::getNomCourt,
+				                          (s1, s2) -> { throw new IllegalArgumentException("Plusieurs collectivités administratives avec le même numéro ?"); },
+				                          LinkedHashMap::new));
 	}
 
 	/**

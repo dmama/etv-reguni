@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tache.validator.TachesValidator;
 import ch.vd.uniregctb.tache.view.ImpressionNouveauxDossiersView;
@@ -173,7 +174,7 @@ public class TacheController {
 	private String showSearchTaches(Model model, TacheCriteriaView criteria, boolean forceEmptyResult) {
 		model.addAttribute(COMMAND_NAME, criteria);
 		model.addAttribute(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
-		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapOfficeImpotUtilisateur());
+		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapCollectivitesAvecTaches());
 		model.addAttribute(ETAT_TACHE_MAP_NAME, tacheMapHelper.initMapEtatTache());
 		model.addAttribute(TYPE_TACHE_MAP_NAME, tacheMapHelper.initMapTypeTache());
 		model.addAttribute(COMMENTAIRE_CTRL_MAP_NAME, tacheListManager.getCommentairesDistincts(TypeTache.TacheControleDossier));
@@ -260,11 +261,11 @@ public class TacheController {
 	}
 
 	/**
-	 * @return le sigle de l'office d'impôt utilisé actuellement par l'utilisateur, ou <code>null</code> si le sigle ne peut être déterminé.
+	 * @return le sigle de l'office d'impôt utilisé actuellement par l'utilisateur, ou <code>null</code> si le sigle ne peut être déterminé (ou si cet office d'impôt est l'ACI).
 	 */
 	protected static String getDefaultOID() {
 		final Integer officeImpot = AuthenticationHelper.getCurrentOID();
-		if (officeImpot == null) {
+		if (officeImpot == null || officeImpot == ServiceInfrastructureService.noACI) {
 			return null;
 		}
 		return officeImpot.toString();

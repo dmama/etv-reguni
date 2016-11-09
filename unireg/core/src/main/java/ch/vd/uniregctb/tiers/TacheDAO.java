@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -119,6 +120,11 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 * @return la liste (triée par ordre alphabétique), par type de tâche, des commentaires distincts non-vides
 	 */
 	Map<TypeTache, List<String>> getCommentairesDistincts();
+
+	/**
+	 * @return l'ensemble des numéros des collectivités administratives pour lesquelles on a des tâches, quel que soit leur état
+	 */
+	Set<Integer> getCollectivitesAvecTaches();
 
 	/**
 	 * Retourne la liste de toutes les tâches du type spécifié pour le contribuable spécifié.

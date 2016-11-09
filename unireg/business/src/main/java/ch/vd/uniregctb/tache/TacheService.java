@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tache;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -143,4 +144,10 @@ public interface TacheService {
 	 */
 	@NotNull
 	List<String> getCommentairesDistincts(TypeTache typeTache);
+
+	/**
+	 * @return l'ensemble des numéros de collectivités administratives sur lesquelles des tâches existent
+	 */
+	@NotNull
+	Set<Integer> getCollectivitesAdministrativesAvecTaches();
 }

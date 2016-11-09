@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tache;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -87,5 +88,11 @@ public class MockTacheService implements TacheService {
 	@Override
 	public List<String> getCommentairesDistincts(TypeTache typeTache) {
 		return Collections.emptyList();
+	}
+
+	@NotNull
+	@Override
+	public Set<Integer> getCollectivitesAdministrativesAvecTaches() {
+		return Collections.emptySet();
 	}
 }
