@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -12,10 +14,16 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public class MockImmeubleRFDAO implements ImmeubleRFDAO {
+
+	private final List<ImmeubleRF> db = new ArrayList<>();
+
 	@Nullable
 	@Override
 	public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(m -> Objects.equals(m.getId(), key.getIdRF()))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -25,7 +33,10 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Override
 	public ImmeubleRF get(Long id) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(m -> Objects.equals(m.getId(),id))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -40,7 +51,9 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Override
 	public ImmeubleRF save(ImmeubleRF object) {
-		throw new NotImplementedException();
+		db.add(object);
+		object.setId((long) db.size());
+		return object;
 	}
 
 	@Override

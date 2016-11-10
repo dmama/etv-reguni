@@ -3,9 +3,11 @@ package ch.vd.uniregctb.registrefoncier;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
@@ -104,8 +106,8 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(5, mutations.size());    // il y a 2 immeuble + 3 surfaces dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				assertEquals(4, mutations.size());    // il y a 2 immeuble + 3 surfaces (dont deux sur le même immeuble, donc une seule mutation) dans le fichier d'import et la DB était vide
+				Collections.sort(mutations, new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
@@ -212,46 +214,42 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
 				assertEquals("_1f109152381009be0138100bc9f139e0", mut2.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<Bodenbedeckung VersionID=\"1f109152381009be0138100ce8190795\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
-						             "    <Art>\n" +
-						             "        <TextDe>*Pâturage</TextDe>\n" +
-						             "        <TextFr>Pâturage</TextFr>\n" +
-						             "    </Art>\n" +
-						             "    <Flaeche>1125519</Flaeche>\n" +
-						             "</Bodenbedeckung>\n", mut2.getXmlContent());
+						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <Bodenbedeckung VersionID=\"1f109152381009be0138100ce8190795\">\n" +
+						             "        <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
+						             "        <Art>\n" +
+						             "            <TextDe>*Pâturage</TextDe>\n" +
+						             "            <TextFr>Pâturage</TextFr>\n" +
+						             "        </Art>\n" +
+						             "        <Flaeche>1125519</Flaeche>\n" +
+						             "    </Bodenbedeckung>\n" +
+						             "    <Bodenbedeckung VersionID=\"1f109152381009be0138100ce7df0741\">\n" +
+						             "        <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
+						             "        <Art>\n" +
+						             "            <TextDe>*Pré-champ</TextDe>\n" +
+						             "            <TextFr>Pré-champ</TextFr>\n" +
+						             "        </Art>\n" +
+						             "        <Flaeche>570</Flaeche>\n" +
+						             "    </Bodenbedeckung>\n" +
+						             "</BodenbedeckungList>\n", mut2.getXmlContent());
 
 				final EvenementRFMutation mut3 = mutations.get(3);
 				assertEquals(importId, mut3.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut3.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
-				assertEquals("_1f109152381009be0138100bc9f139e0", mut3.getIdImmeubleRF());
+				assertEquals("_1f109152381037590138103b73cf579a", mut3.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<Bodenbedeckung VersionID=\"1f109152381009be0138100ce7df0741\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
-						             "    <Art>\n" +
-						             "        <TextDe>*Pré-champ</TextDe>\n" +
-						             "        <TextFr>Pré-champ</TextFr>\n" +
-						             "    </Art>\n" +
-						             "    <Flaeche>570</Flaeche>\n" +
-						             "</Bodenbedeckung>\n", mut3.getXmlContent());
-
-				final EvenementRFMutation mut4 = mutations.get(4);
-				assertEquals(importId, mut4.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut4.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut4.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut4.getTypeMutation());
-				assertEquals("_1f109152381037590138103b73cf579a", mut4.getIdImmeubleRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<Bodenbedeckung VersionID=\"1f109152381037590138103dd5f12466\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <GrundstueckIDREF>_1f109152381037590138103b73cf579a</GrundstueckIDREF>\n" +
-						             "    <Art>\n" +
-						             "        <TextDe>*Pré-champ</TextDe>\n" +
-						             "        <TextFr>Pré-champ</TextFr>\n" +
-						             "    </Art>\n" +
-						             "    <Flaeche>17814</Flaeche>\n" +
-						             "</Bodenbedeckung>\n", mut4.getXmlContent());
+						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <Bodenbedeckung VersionID=\"1f109152381037590138103dd5f12466\">\n" +
+						             "        <GrundstueckIDREF>_1f109152381037590138103b73cf579a</GrundstueckIDREF>\n" +
+						             "        <Art>\n" +
+						             "            <TextDe>*Pré-champ</TextDe>\n" +
+						             "            <TextFr>Pré-champ</TextFr>\n" +
+						             "        </Art>\n" +
+						             "        <Flaeche>17814</Flaeche>\n" +
+						             "    </Bodenbedeckung>\n" +
+						             "</BodenbedeckungList>\n", mut3.getXmlContent());
 			}
 		});
 
@@ -263,7 +261,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 	@Test
 	public void testImportSurfacesAuSolDejaAJour() throws Exception {
 
-		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
+		final RegDate dateImportInitial = RegDate.get(2008, 1, 1);
 		final RegDate dateSecondImport = RegDate.get(2010, 1, 1);
 		final RegDate dateTroisiemeImport = RegDate.get(2016, 10, 1);
 
@@ -436,41 +434,86 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(2, mutations.size());    // les 2 surfaces au sol dans le fichier d'import sont différentes
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				Collections.sort(mutations, new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut0.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
 				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<Bodenbedeckung VersionID=\"1f109152381009be0138100ce8190795\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
-						             "    <Art>\n" +
-						             "        <TextDe>*Pâturage</TextDe>\n" +
-						             "        <TextFr>Pâturage</TextFr>\n" +
-						             "    </Art>\n" +
-						             "    <Flaeche>1125519</Flaeche>\n" +
-						             "</Bodenbedeckung>\n", mut0.getXmlContent());
+						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <Bodenbedeckung VersionID=\"1f109152381009be0138100ce8190795\">\n" +
+						             "        <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
+						             "        <Art>\n" +
+						             "            <TextDe>*Pâturage</TextDe>\n" +
+						             "            <TextFr>Pâturage</TextFr>\n" +
+						             "        </Art>\n" +
+						             "        <Flaeche>1125519</Flaeche>\n" +
+						             "    </Bodenbedeckung>\n" +
+						             "    <Bodenbedeckung VersionID=\"1f109152381009be0138100ce7df0741\">\n" +
+						             "        <GrundstueckIDREF>_1f109152381009be0138100bc9f139e0</GrundstueckIDREF>\n" +
+						             "        <Art>\n" +
+						             "            <TextDe>*Pré-champ</TextDe>\n" +
+						             "            <TextFr>Pré-champ</TextFr>\n" +
+						             "        </Art>\n" +
+						             "        <Flaeche>570</Flaeche>\n" +
+						             "    </Bodenbedeckung>\n" +
+						             "</BodenbedeckungList>\n", mut0.getXmlContent());
 
 				final EvenementRFMutation mut1 = mutations.get(1);
 				assertEquals(importId, mut1.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut1.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
 				assertEquals("_1f109152381037590138103b73cf579a", mut1.getIdImmeubleRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<Bodenbedeckung VersionID=\"1f109152381037590138103dd5f12466\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <GrundstueckIDREF>_1f109152381037590138103b73cf579a</GrundstueckIDREF>\n" +
-						             "    <Art>\n" +
-						             "        <TextDe>*Pré-champ</TextDe>\n" +
-						             "        <TextFr>Pré-champ</TextFr>\n" +
-						             "    </Art>\n" +
-						             "    <Flaeche>17814</Flaeche>\n" +
-						             "</Bodenbedeckung>\n", mut1.getXmlContent());
+						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <Bodenbedeckung VersionID=\"1f109152381037590138103dd5f12466\">\n" +
+						             "        <GrundstueckIDREF>_1f109152381037590138103b73cf579a</GrundstueckIDREF>\n" +
+						             "        <Art>\n" +
+						             "            <TextDe>*Pré-champ</TextDe>\n" +
+						             "            <TextFr>Pré-champ</TextFr>\n" +
+						             "        </Art>\n" +
+						             "        <Flaeche>17814</Flaeche>\n" +
+						             "    </Bodenbedeckung>\n" +
+						             "</BodenbedeckungList>\n", mut1.getXmlContent());
 			}
 		});
+	}
+
+	/**
+	 * Trie par type, par idRF et par id pour avoir qqch de stable.
+ 	 */
+	private static class MutationComparator implements Comparator<EvenementRFMutation> {
+		@Override
+		public int compare(EvenementRFMutation o1, EvenementRFMutation o2) {
+			final int c1 = o1.getTypeEntite().compareTo(o2.getTypeEntite());
+			if (c1 != 0) {
+				return c1;
+			}
+			final int c2 = compareString(o1.getIdImmeubleRF(), o2.getIdImmeubleRF());
+			if (c2 != 0) {
+				return c2;
+			}
+			return o1.getId().compareTo(o2.getId());
+		}
+	}
+
+	private static int compareString(@Nullable String idRF1, @Nullable String idRF2) {
+		if (idRF1 == null && idRF2 == null) {
+			return 0;
+		}
+		else if (idRF1 == null) {
+			return -1;
+		}
+		else if (idRF2 == null) {
+			return 1;
+		}
+		else {
+			return idRF1.compareTo(idRF2);
+		}
 	}
 
 }

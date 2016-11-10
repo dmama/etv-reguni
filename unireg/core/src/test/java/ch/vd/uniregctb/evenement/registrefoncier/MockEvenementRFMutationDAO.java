@@ -3,9 +3,13 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 
@@ -19,7 +23,10 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public EvenementRFMutation get(Long id) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(m -> Objects.equals(m.getId(),id))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -35,6 +42,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	@Override
 	public EvenementRFMutation save(EvenementRFMutation object) {
 		db.add(object);
+		object.setId((long) db.size());
 		return object;
 	}
 
@@ -45,7 +53,13 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public void remove(Long id) {
-		throw new NotImplementedException();
+		final Iterator<EvenementRFMutation> iterator = db.iterator();
+		while (iterator.hasNext()){
+			if (iterator.next().getId().equals(id)) {
+				iterator.remove();
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -76,6 +90,22 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	@NotNull
 	@Override
 	public List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(mut -> mut.getParentImport().getId().equals(importId))
+				.filter(mut -> mut.getTypeEntite() == typeEntite)
+				.filter(mut -> ArrayUtils.contains(etats, mut.getEtat()))
+				.map(EvenementRFMutation::getId)
+				.collect(Collectors.toList());
+	}
+
+	@Nullable
+	@Override
+	public EvenementRFMutation find(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull String idImmeubleRF) {
+		return db.stream()
+				.filter(mut -> mut.getParentImport().getId().equals(importId))
+				.filter(mut -> mut.getTypeEntite() == typeEntite)
+				.filter(mut -> Objects.equals(mut.getIdImmeubleRF(), idImmeubleRF))
+				.findFirst()
+				.orElse(null);
 	}
 }

@@ -5,6 +5,7 @@ import javax.xml.bind.JAXBContext;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
+import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 
@@ -39,6 +40,11 @@ public interface XmlHelperRF {
 	JAXBContext getSurfaceContext();
 
 	/**
+	 * @return le context JAXB pour les listes de surfaces
+	 */
+	JAXBContext getSurfaceListContext();
+
+	/**
 	 * @return le context JAXB pour les droits contenus dans le fichier qui contient les usufruitiers et les bénéficiaires de droits d'habitation.
 	 */
 	JAXBContext getAutreDroitContext();
@@ -67,4 +73,9 @@ public interface XmlHelperRF {
 	 * Converti la surface spécifiée dans sa représentation XML.
 	 */
 	String toXMLString(Bodenbedeckung obj);
+
+	/**
+	 * Converti la liste de surfaces spécifiée dans sa représentation XML (élément = BodenbedeckungListElement)
+	 */
+	String toXMLString(GrundstueckExport.BodenbedeckungList surfaces);
 }

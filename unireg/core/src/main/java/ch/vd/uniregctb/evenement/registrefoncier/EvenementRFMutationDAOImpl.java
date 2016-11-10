@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.BaseDAOImpl;
 
@@ -21,5 +22,16 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		query.setParameterList("etats", etats);
 		//noinspection unchecked
 		return query.list();
+	}
+
+	@Nullable
+	@Override
+	public EvenementRFMutation find(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull String idImmeubleRF) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and idImmeubleRF = :idImmeubleRF");
+		query.setParameter("importId", importId);
+		query.setParameter("typeEntite", typeEntite);
+		query.setParameter("idImmeubleRF", idImmeubleRF);
+		//noinspection unchecked
+		return (EvenementRFMutation) query.uniqueResult();
 	}
 }
