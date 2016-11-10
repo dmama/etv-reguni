@@ -35,12 +35,12 @@ public interface XmlHelperRF {
 	JAXBContext getBatimentContext();
 
 	/**
-	 * @return le context JAXB pour les surface
+	 * @return le context JAXB pour les surfaces au sol.
 	 */
-	JAXBContext getSurfaceContext();
+	JAXBContext getSurfacesAuSolContext();
 
 	/**
-	 * @return le context JAXB pour les listes de surfaces
+	 * @return le context JAXB pour les listes de surfaces au sol
 	 */
 	JAXBContext getSurfaceListContext();
 

@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
+import ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -24,6 +25,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 	private AyantDroitRFProcessor ayantDroitRFProcessor;
+	private SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -31,6 +33,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 		ayantDroitRFProcessor = getBean(AyantDroitRFProcessor.class, "ayantDroitRFProcessor");
+		surfaceAuSolRFProcessor = getBean(SurfaceAuSolRFProcessor.class, "surfaceAuSolRFProcessor");
 	}
 
 	/**
@@ -48,7 +51,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
@@ -86,7 +89,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné

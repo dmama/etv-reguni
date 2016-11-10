@@ -165,8 +165,24 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 	@Test
 	public void testTraiterMutationsModification() throws Exception {
 
-		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
-		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+
+		// on insère les données de l'import initial dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// données partiellement différentes de celles du fichier export_ayantsdroits_rf_hebdo.xm.xml
+				//  - no RF différent
+				final PersonnePhysiqueRF pp = newPersonnePhysique("3893728273382823", 48322L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
+				// - raison sociale différente
+				final PersonneMoraleRF pm = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale différente");
+				// - no CTB différent
+				final CollectivitePubliqueRF coll = newCollectivitePublique("574739202303482", 3727L, 584323450L, "Raison sociale");
+				ayantDroitRFDAO.save(pp);
+				ayantDroitRFDAO.save(pm);
+				ayantDroitRFDAO.save(coll);
+			}
+		});
 
 		// on insère les données du second import dans la base
 		final Long importId = doInNewTransaction(new TxCallback<Long>() {
@@ -174,7 +190,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setDateEvenement(dateSecondImport);
+				importEvent.setDateEvenement(dateImport);
 				importEvent.setEtat(EtatEvenementRF.TRAITE);
 				importEvent.setFileUrl("http://turlututu");
 				importEvent = evenementRFImportDAO.save(importEvent);
@@ -236,23 +252,6 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 			}
 		});
 		assertNotNull(importId);
-
-		// on insère les données des immeubles dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				// données partiellement différentes de celles du fichier export_ayantsdroits_rf_hebdo.xm.xml
-				//  - no RF différent
-				final PersonnePhysiqueRF pp = newPersonnePhysique("3893728273382823", 48322L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
-				// - raison sociale différente
-				final PersonneMoraleRF pm = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale différente");
-				// - no CTB différent
-				final CollectivitePubliqueRF coll = newCollectivitePublique("574739202303482", 3727L, 584323450L, "Raison sociale");
-				ayantDroitRFDAO.save(pp);
-				ayantDroitRFDAO.save(pm);
-				ayantDroitRFDAO.save(coll);
-			}
-		});
 
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();

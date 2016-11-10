@@ -23,7 +23,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext droitContext;
 	private final JAXBContext proprietaireContext;
 	private final JAXBContext batimentContext;
-	private final JAXBContext surfaceContext;
+	private final JAXBContext surfacesAuSolContext;
 	private final JAXBContext surfaceListContext;
 	private final JAXBContext autreDroitContext;
 
@@ -34,7 +34,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
 		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
 		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
-		surfaceContext = JAXBContext.newInstance(BodenbedeckungElement.class);
+		surfacesAuSolContext = JAXBContext.newInstance(BodenbedeckungElement.class);
 		surfaceListContext = JAXBContext.newInstance(BodenbedeckungListElement.class);
 		autreDroitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 	}
@@ -60,8 +60,8 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
-	public JAXBContext getSurfaceContext() {
-		return surfaceContext;
+	public JAXBContext getSurfacesAuSolContext() {
+		return surfacesAuSolContext;
 	}
 
 	public JAXBContext getSurfaceListContext() {
@@ -136,7 +136,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public String toXMLString(Bodenbedeckung obj) {
 		try {
-			final Marshaller m = surfaceContext.createMarshaller();
+			final Marshaller m = surfacesAuSolContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
 			final QName name = buildQName(obj);

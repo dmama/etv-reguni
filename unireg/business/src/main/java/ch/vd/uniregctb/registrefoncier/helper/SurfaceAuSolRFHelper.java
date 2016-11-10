@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,13 @@ public abstract class SurfaceAuSolRFHelper {
 
 	public static SurfaceAuSolRFKey newKey(@NotNull Bodenbedeckung surface) {
 		return new SurfaceAuSolRFKey(surface.getGrundstueckIDREF(), surface.getArt().getTextFr(), surface.getFlaeche());
+	}
+
+	public static SurfaceAuSolRF newSurfaceAuSolRF(@NotNull Bodenbedeckung bodenbedeckung) {
+		final SurfaceAuSolRF surface = new SurfaceAuSolRF();
+		surface.setSurface(bodenbedeckung.getFlaeche());
+		surface.setType(bodenbedeckung.getArt().getTextFr());
+		return surface;
 	}
 
 	public static boolean dataEquals(@Nullable Set<SurfaceAuSolRF> surfaces, @Nullable List<Bodenbedeckung> bodenbedeckung) {
@@ -43,5 +51,10 @@ public abstract class SurfaceAuSolRFHelper {
 				.map(SurfaceAuSolRFHelper::newKey).collect(Collectors.toSet());
 
 		return existantes.equals(nouvelles);
+	}
+
+	public static boolean dataEquals(@NotNull SurfaceAuSolRF left, @NotNull SurfaceAuSolRF right) {
+		return left.getSurface() == right.getSurface() &&
+				Objects.equals(left.getType(), right.getType());
 	}
 }

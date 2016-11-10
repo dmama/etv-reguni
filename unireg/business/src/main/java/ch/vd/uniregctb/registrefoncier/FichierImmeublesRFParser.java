@@ -543,7 +543,7 @@ public class FichierImmeublesRFParser {
 	 */
 	private void processSurfaces(@NotNull XMLStreamReader xmlStreamReader, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
-		final Unmarshaller unmarshaller = xmlHelperRF.getSurfaceContext().createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getSurfacesAuSolContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();

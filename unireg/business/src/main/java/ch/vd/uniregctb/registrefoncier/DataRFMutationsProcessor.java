@@ -27,6 +27,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
+import ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
@@ -40,14 +41,18 @@ public class DataRFMutationsProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final MutationRFProcessor immeubleProcessor;
 	private final AyantDroitRFProcessor ayantDroitRFProcessor;
+	private final SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 
 	public DataRFMutationsProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
 	                                @NotNull MutationRFProcessor immeubleRFProcessor,
-	                                AyantDroitRFProcessor ayantDroitRFProcessor, @NotNull PlatformTransactionManager transactionManager) {
+	                                @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
+	                                @NotNull SurfaceAuSolRFProcessor surfaceAuSolRFProcessor,
+	                                @NotNull PlatformTransactionManager transactionManager) {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.ayantDroitRFProcessor = ayantDroitRFProcessor;
-		this.transactionManager = transactionManager;
 		this.immeubleProcessor = immeubleRFProcessor;
+		this.surfaceAuSolRFProcessor = surfaceAuSolRFProcessor;
+		this.transactionManager = transactionManager;
 	}
 
 	/**
@@ -63,8 +68,9 @@ public class DataRFMutationsProcessor {
 			statusManager = new LoggingStatusManager(LOGGER);
 		}
 
-		processMutations(importId, EvenementRFMutation.TypeEntite.IMMEUBLE, nbThreads, new SubStatusManager(0, 50, statusManager));
-		processMutations(importId, EvenementRFMutation.TypeEntite.AYANT_DROIT, nbThreads, new SubStatusManager(50, 100, statusManager));
+		processMutations(importId, EvenementRFMutation.TypeEntite.IMMEUBLE, nbThreads, new SubStatusManager(0, 33, statusManager));
+		processMutations(importId, EvenementRFMutation.TypeEntite.AYANT_DROIT, nbThreads, new SubStatusManager(33, 66, statusManager));
+		processMutations(importId, EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, nbThreads, new SubStatusManager(66, 100, statusManager));
 	}
 
 	private void processMutations(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, int nbThreads, @NotNull final StatusManager statusManager) {
@@ -143,8 +149,7 @@ public class DataRFMutationsProcessor {
 		case IMMEUBLE:
 			return immeubleProcessor;
 		case SURFACE_AU_SOL:
-			// TODO (msi)
-			throw new NotImplementedException();
+			return surfaceAuSolRFProcessor;
 		default:
 			throw new IllegalArgumentException("Type d'entité RF inconnue = [" + typeEntite + "]");
 		}

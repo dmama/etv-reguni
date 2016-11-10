@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<BodenbedeckungList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<Bodenbedeckung>
+		<GrundstueckIDREF>382929efa218</GrundstueckIDREF>
+		<Art>
+			<TextDe></TextDe>
+			<TextFr>Forêt</TextFr>
+		</Art>
+		<Flaeche>37823</Flaeche>
+	</Bodenbedeckung>
+	<Bodenbedeckung>
+		<GrundstueckIDREF>382929efa218</GrundstueckIDREF>
+		<Art>
+			<TextDe></TextDe>
+			<TextFr>Paturage</TextFr>
+		</Art>
+		<Flaeche>4728211</Flaeche>
+	</Bodenbedeckung>
+</BodenbedeckungList>
