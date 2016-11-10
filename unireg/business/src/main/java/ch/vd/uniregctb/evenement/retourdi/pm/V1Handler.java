@@ -235,7 +235,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		final String indicatifTel = extractTelephone(info.getContactMandataireTelephoneIndicatif());
 		final String noTel = extractTelephone(info.getContactMandataireTelephoneNumero());
 		final InformationMandataire.AdresseCourrier adresseMandataire = info.getAdresseCourrier();
-		final String ideMandataire = adresseMandataire != null ? extractStringIde(adresseMandataire.getIdeMandataire()) : null;
+		final String ideMandataire = null;      // Consigne PMD 07.11.2016: one n'utilise pas ce numéro IDE (attention si un jour on doit l'utiliser, il peut être à deux endroits : dans l'adresse courrier et dans l'organisation de l'adresse structurée)
 		final TypAdresse adresse = adresseMandataire != null ? adresseMandataire.getAdresseMandataire() : null;
 		return new InformationsMandataire(ideMandataire,
 		                                  extractAdresse(adresse, info.getAdresseCourrierStructuree(), false),
