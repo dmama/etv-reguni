@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.io.FileInputStream;
-import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,13 +19,15 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 
 /**
  * Cette application permet d'envoyer un fichier d'import du registre foncier (Capitrastra) vers la queue JMS écoutée par Unireg.
- *
+ * <p>
  * Exemple d'utilisation :
  * <pre>
  *     RfExportSender -username smx -password smx -env dev -export /home/msi/bidon/unireg/hebdo_import.xml -destination=unireg.rf.import.zsimsn
@@ -35,6 +38,8 @@ public class RfExportSender {
 	private static final String ESB_BROKER_URL_INT = "failover:(tcp://esb-broker-ina.etat-de-vaud.ch:50900)";
 	private static final String ESB_BROKEN_URL_DEV = "failover:(tcp://esb-dev.etat-de-vaud.ch:60900)";
 	private static final String RAFT_URL_INT = "http://raft-in.etat-de-vaud.ch/raft-fs/store";
+
+	private static final Pattern DATED_FILENAME = Pattern.compile(".*([0-9]{8})\\.xml");
 
 	public static void main(String[] args) throws Exception {
 
@@ -49,6 +54,7 @@ public class RfExportSender {
 		final String password = line.getOptionValue("password");
 		final String env = line.getOptionValue("env");
 		final String filename = line.getOptionValue("export");
+		final RegDate date = determineDateValeur(line);
 
 		// établissement du context
 		final GenericXmlApplicationContext context = new GenericXmlApplicationContext();
@@ -72,7 +78,8 @@ public class RfExportSender {
 		try (FileInputStream is = new FileInputStream(filename)) {
 			final EsbMessage message = EsbMessageFactory.createMessage();
 			message.addAttachment("data", is);
-			message.setBusinessId("rf-export-unireg-" + new Date().getTime());
+			message.addHeader("dateValeur", RegDateHelper.toIndexString(date));
+			message.setBusinessId("rf-export-unireg-" + RegDateHelper.toIndexString(date));
 			message.setServiceDestination(serviceDestination);
 			message.setBusinessUser("RfExportSender");
 			message.setContext("importRF");
@@ -81,6 +88,33 @@ public class RfExportSender {
 
 		System.out.println("terminé.");
 		context.destroy();
+	}
+
+	/**
+	 * Détermine la date de valeur du fichier, soit à partir du paramètre '-date', soit à partir du nom du fichier lui-même.
+	 */
+	@NotNull
+	private static RegDate determineDateValeur(CommandLine line) {
+
+		String dateAsString = line.getOptionValue("date");
+		if (StringUtils.isBlank(dateAsString)) {
+			// on essaie de trouver une date incluse dans le nom du fichier, par exemple : ull_export_20161102.xml -> le 2 novembre 2016
+			final Matcher matcher = DATED_FILENAME.matcher(line.getOptionValue("export"));
+			if (!matcher.matches()) {
+				System.err.println("Le paramètre -date doit être spécifié ou le nom du fichier doit contenir la date selon le format filename_yyyyMMdd.xml");
+				System.exit(1);
+			}
+
+			dateAsString = matcher.group(1);
+		}
+
+		final RegDate date = RegDateHelper.indexStringToDate(dateAsString);
+		if (date == null) {
+			System.err.println("La date du fichier (" + dateAsString + ") n'est pas une date valide.");
+			System.exit(1);
+		}
+
+		return date;
 	}
 
 	@NotNull
@@ -100,6 +134,7 @@ public class RfExportSender {
 			Option username = OptionBuilder.withArgName("username").hasArg().withDescription("nom de l'utilisateur ESB").create("username");
 			Option password = OptionBuilder.withArgName("password").hasArg().withDescription("mot-de-passe de l'utilisateur ESB").create("password");
 			Option export = OptionBuilder.withArgName("file").hasArg().withDescription("fichier d'import à envoyer").create("export");
+			Option date = OptionBuilder.withArgName("yyyyMMdd").hasArg().withDescription("date de valeur du fichier").create("date");
 			Option command = OptionBuilder.withArgName("name").hasArg().withDescription("l'environnement de destination (dev|int)").create("env");
 			Option destination = OptionBuilder.withArgName("queue").hasArg().withDescription("la queue JMS de destination (défaut: 'unireg.rf.import')").create("destination");
 
@@ -108,6 +143,7 @@ public class RfExportSender {
 			options.addOption(username);
 			options.addOption(password);
 			options.addOption(export);
+			options.addOption(date);
 			options.addOption(command);
 			options.addOption(destination);
 

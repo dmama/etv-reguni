@@ -311,5 +311,7 @@ public class DataRFMutationsDetector {
 				}
 			}
 		}, null);
+
+		// TODO (msi) faut-il détecter les immeubles qui perdraient toutes les surfaces au sol ?
 	}
 }

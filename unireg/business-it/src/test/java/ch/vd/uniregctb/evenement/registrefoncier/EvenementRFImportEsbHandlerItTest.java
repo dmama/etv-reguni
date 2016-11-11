@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jms.connection.JmsTransactionManager;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -83,7 +84,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
-	private void sendRfMessage(String queueName, final String raftUrl) throws Exception {
+	private void sendRfMessage(String queueName, final String raftUrl, String dateValeur) throws Exception {
 		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
@@ -100,6 +101,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 				return raftUrl;
 			}
 		});
+		m.addHeader("dateValeur", dateValeur);
 		esbTemplate.send(m);
 	}
 
@@ -113,7 +115,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		assertEquals(0, evenementRFImportDAO.getCount(EvenementRFImport.class));
 
 		// on envoie l'événement
-		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu");
+		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu", "20161001");
 
 		// on attend que le traitement du message soit terminé
 		synchronized (receivedCount) {
@@ -129,6 +131,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		final EvenementRFImport event = list.get(0);
 		assertNotNull(event);
 		assertEquals(EtatEvenementRF.A_TRAITER, event.getEtat());
+		assertEquals(RegDate.get(2016, 10, 1), event.getDateEvenement());
 		assertEquals("http://example.com/turlututu", event.getFileUrl());
 
 		// le batch doit être démarré

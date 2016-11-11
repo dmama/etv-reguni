@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -51,10 +52,16 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 		AuthenticationHelper.pushPrincipal("JMS-ImportRF");
 		try {
 			final String dataUrl = message.getAttachmentRef("data");
+			final String dateAsString = message.getHeader("dateValeur");
+
+			final RegDate dateValeur = RegDateHelper.indexStringToDate(dateAsString);
+			if (dateValeur == null) {
+				throw new IllegalArgumentException("La date de valeur de l'import n'est pas renseignée ou invalide (" + dateAsString + ")");
+			}
 
 			// on crée et insère l'événement en base
 			final EvenementRFImport event = new EvenementRFImport();
-			event.setDateEvenement(RegDate.get());  // TODO (msi) on devrait obtenir cette information depuis le message
+			event.setDateEvenement(dateValeur);
 			event.setEtat(EtatEvenementRF.A_TRAITER);
 			event.setFileUrl(dataUrl);
 			final Long eventId = evenementRFImportDAO.save(event).getId();
