@@ -67,7 +67,7 @@ public class ReferenceAnnonceIDE extends HibernateEntity {
 	@JoinColumn(name = "ETABLISSEMENT_ID", nullable = false)
 	@ManyToOne(fetch = FetchType.EAGER)
 	@ForeignKey(name = "FK_REFANNIDE_ETAB_ID")
-	@Index(name = "IDX_REFANNIDE_ETAB_ID")
+	@Index(name = "IDX_EVTANNIDE_ETAB_ID")
 	public Etablissement getEtablissement() {
 		return etablissement;
 	}
@@ -77,7 +77,7 @@ public class ReferenceAnnonceIDE extends HibernateEntity {
 	}
 
 	@Column(name = "MSG_BUSINESS_ID", length = LengthConstants.REFANNONCEIDE_BUSINESS_ID)
-	@Index(name = "IDX_REFANNIDE_BUSINESS_ID")
+	@Index(name = "IDX_EVTANNIDE_BUSINESS_ID")
 	public String getMsgBusinessId() {
 		return msgBusinessId;
 	}
