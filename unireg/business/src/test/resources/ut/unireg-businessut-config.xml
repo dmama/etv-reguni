@@ -6,7 +6,6 @@
 
 	<bean id="uniregModeHelper" class="ch.vd.uniregctb.utils.UniregModeHelper">
 		<property name="testMode" value="true" />
-		<property name="standalone" value="false" />
 		<property name="environnement" value="UT" />
 		<property name="efactureEnabled" value="false" />
 		<property name="reqdesEnabled" value="true" />

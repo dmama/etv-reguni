@@ -91,7 +91,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	@Override
 	public boolean isVisible() {
 		final String environnement = UniregModeHelper.getEnvironnement();
-		return environnement.equals("Developpement") || environnement.equals("Standalone");
+		return environnement.equals("Developpement");
 	}
 
 	@Override

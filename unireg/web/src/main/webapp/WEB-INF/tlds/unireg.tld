@@ -496,12 +496,6 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<description>Affiche le contenu en mode standalone</description>
-			<name>standalone</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
 			<description>Affiche le contenu en validation</description>
 			<name>validation</name>
 			<required>false</required>

@@ -68,7 +68,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
-		final boolean inDev = environnement.equals("Developpement") || environnement.equals("Standalone");
+		final boolean inDev = environnement.equals("Developpement");
 
 		final Action a = getAction(request);
 		if (a != null) {

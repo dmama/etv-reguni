@@ -17,7 +17,6 @@ public class JspTagIfEnv extends TagSupport {
 	private boolean hudson;
 	private boolean integration;
 	private boolean integrationPo;
-	private boolean standalone;
 	private boolean validation;
 	private boolean preProduction;
 	private boolean production;
@@ -30,7 +29,6 @@ public class JspTagIfEnv extends TagSupport {
 				|| ("Hudson".equals(environnement) && hudson)
 				|| ("Integration".equals(environnement) && integration)
 				|| ("Integration-Post-Production".equals(environnement) && integrationPo)
-				|| ("Standalone".equals(environnement) && standalone)
 				|| ("Validation".equals(environnement) && validation)
 				|| ("Pre-Production".equals(environnement) && preProduction)
 				|| ("Production".equals(environnement) && production)
@@ -59,11 +57,6 @@ public class JspTagIfEnv extends TagSupport {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIntegrationPo(boolean integrationPo) {
 		this.integrationPo = integrationPo;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setStandalone(boolean standalone) {
-		this.standalone = standalone;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

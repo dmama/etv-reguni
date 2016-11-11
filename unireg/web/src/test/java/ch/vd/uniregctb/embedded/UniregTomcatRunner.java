@@ -51,7 +51,6 @@ public class UniregTomcatRunner {
 		System.setProperty("project.description", "UniregCTB, Le registre unifie de l'Etat de Vaud - Web");
 
 		System.setProperty("unireg-web.appname", "unireg-web");
-		System.setProperty("unireg.standalone", "false");
 		System.setProperty("interfaces-mode", "direct");
 		System.setProperty("unireg.log4j.location", "file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j.xml");
 

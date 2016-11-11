@@ -114,7 +114,7 @@ public class TiersImportController {
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
-		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement) && !"Standalone".equals(environnement)) {
+		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
 			return "redirect:list.do";
 		}
@@ -152,7 +152,7 @@ public class TiersImportController {
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
-		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement) && !"Standalone".equals(environnement)) {
+		if (!"Developpement".equals(environnement) && !"Hudson".equals(environnement)) {
 			Flash.error("Cette fonctionalité n'est disponible qu'en développement !");
 			return "redirect:list.do";
 		}

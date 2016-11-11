@@ -34,7 +34,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DevSecurityBypassProcessingFilter.class);
 	
-	private static final Set<String> DEV_ENVS = new HashSet<>(Arrays.asList("Developpement", "Hudson", "Standalone", "Integration TE"));
+	private static final Set<String> DEV_ENVS = new HashSet<>(Arrays.asList("Developpement", "Hudson", "Integration TE"));
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

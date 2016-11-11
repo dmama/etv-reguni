@@ -281,7 +281,7 @@
 						<unireg:testMode>
 						<li><fmt:message key="label.action.testing" />
 							<ul>
-								<unireg:ifEnv devel="true" standalone="true">
+								<unireg:ifEnv devel="true">
 									<li><a href="<c:url value='/admin/tiersImport/list.do'/>"><fmt:message key="title.charger.tiers" /></a></li>
 								</unireg:ifEnv>
 								<li><a href="<c:url value='/admin/dbpreview.do'/>"><fmt:message key="title.preview.tiers" /></a></li>

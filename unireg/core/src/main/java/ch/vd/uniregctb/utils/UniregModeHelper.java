@@ -19,7 +19,6 @@ public class UniregModeHelper implements InitializingBean {
 	private static boolean reqdesEnabled = false;
 	private static boolean efactureEnabled = false;
 	private static boolean testMode = false;
-	private static boolean standalone = false;
 	private static String environnement;
 
 	/**
@@ -40,23 +39,12 @@ public class UniregModeHelper implements InitializingBean {
 		return testMode;
 	}
 
-	/**
-	 * @return <i>vrai</i> si Unireg est compilé en mode standalone (= host-interface et l'esb mockés); <i>faux</i> autrement.
-	 */
-	public static boolean isStandalone() {
-		return standalone;
-	}
-
 	public static String getEnvironnement() {
 		return environnement;
 	}
 
 	public void setTestMode(String v) {
 		testMode = ("true".equalsIgnoreCase(v) || "1".equals(v) || "yes".equalsIgnoreCase(v));
-	}
-
-	public void setStandalone(boolean v) {
-		standalone = v;
 	}
 
 	public void setEnvironnement(String environnement) {

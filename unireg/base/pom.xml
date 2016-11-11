@@ -578,16 +578,6 @@
 		<!-- =================== Environnement profiles -->
 		
 		<profile>
-			<!-- version standalone d'Unireg qui ne nécessite qu'une base de données Oracle pour fonctionner (pas de host, pas d'esb, ...) -->
-			<id>env.standalone</id>
-			<properties>
-				<unireg.standalone>true</unireg.standalone>
-				<unireg.webxml>web.standalone.xml</unireg.webxml>
-				<unireg.webreleasexml>release.standalone.xml</unireg.webreleasexml>
-			</properties>
-		</profile>
-
-		<profile>
 			<id>build.source</id>
 			<build>
 				<plugins>
@@ -624,7 +614,6 @@
 		<unireg-web.appname>unireg-web</unireg-web.appname>
 		<unireg-ws.appname>unireg-ws</unireg-ws.appname>
 		<unireg-nexus.appname>unireg-nexus</unireg-nexus.appname>
-		<unireg.standalone>false</unireg.standalone>
 		<unireg.webxml>web.normal.xml</unireg.webxml>
 		<unireg.webreleasexml>release.xml</unireg.webreleasexml>
 

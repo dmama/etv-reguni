@@ -48,7 +48,6 @@ public class NexusTomcatRunner {
 		System.setProperty("project.description", "Nexus : le cache unifié d'Unireg");
 
 		System.setProperty("unireg-nexus.appname", "unireg-nexus");
-		System.setProperty("unireg.standalone", "false");
 		System.setProperty("unireg-nexus.log4j.location", "file:${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg-log4j.xml");
 
 		final String propertiesPath = String.format("%s/%s/config/unireg.properties", appDir, System.getProperty("unireg-nexus.appname"));
