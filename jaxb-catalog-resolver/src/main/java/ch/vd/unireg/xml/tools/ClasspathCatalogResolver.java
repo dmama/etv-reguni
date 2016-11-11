@@ -26,22 +26,24 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 	private static Map<String, String> resolvedCache = Collections.synchronizedMap(new HashMap<String, String>());
 
 	static {
-		System.out.println("Loading ClasspathCatalogResolver ...");
-
 		// Création d'un répertoire de travail temporaire
+		final String tempDirPath;
 		try {
 			tempDir = File.createTempFile("ClasspathCatalogResolver", "");
+			tempDirPath = tempDir.getCanonicalPath();
 			if (!tempDir.delete()) {
-				throw new RuntimeException("Cannot delete file " + tempDir.getCanonicalPath());
+				throw new RuntimeException("Cannot delete file " + tempDirPath);
 			}
 			if (!tempDir.mkdir()) {
-				throw new RuntimeException("Cannot create directory " + tempDir.getCanonicalPath());
+				throw new RuntimeException("Cannot create directory " + tempDirPath);
 			}
 		}
 		catch (Exception e) {
 			System.err.println(e.getMessage());
 			throw new RuntimeException(e);
 		}
+
+		System.out.println("ClasspathCatalogResolver loaded. XSDs will be stored here : " + tempDirPath);
 	}
 
 	@Override
@@ -94,7 +96,7 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 			resource = Thread.currentThread().getContextClassLoader().getResource(resourceLookup);
 			if (resource != null) {
 				final URL path = createTempFile(resourceLookup, resource);
-				System.out.println("Resolved systemId [" + systemId + "] to [" + path.toString() + "]");
+				//System.out.println("Resolved systemId [" + systemId + "] to [" + path.toString() + "]");
 				return path.toString();
 			}
 		}
