@@ -298,22 +298,6 @@
 				</dependencies>
 
 				<executions>
-
-					<!-- Task ANT qui copie web.xml.xyz sur web.xml -->
-					<execution>
-						<id>copy-web-xml</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<tasks>
-								<echo message="Copying ${unireg.webxml} to web.xml" />
-								<copy overwrite="true" file="src/main/webapp/WEB-INF/${unireg.webxml}" tofile="src/main/webapp/WEB-INF/web.xml" />
-							</tasks>
-						</configuration>
-					</execution>
-
 					<!-- Task ANT qui génère la javadoc des classes exposées par le web-service tiers v2 -->
 					<execution>
 						<id>ws.tiers2.javadoc</id>
@@ -481,7 +465,7 @@
 				<configuration>
 					<finalName>unireg-ws</finalName>
 					<descriptors>
-						<descriptor>${unireg.webreleasexml}</descriptor>
+						<descriptor>release.xml</descriptor>
 					</descriptors>
 				</configuration>
 			</plugin>

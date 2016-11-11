@@ -614,8 +614,6 @@
 		<unireg-web.appname>unireg-web</unireg-web.appname>
 		<unireg-ws.appname>unireg-ws</unireg-ws.appname>
 		<unireg-nexus.appname>unireg-nexus</unireg-nexus.appname>
-		<unireg.webxml>web.normal.xml</unireg.webxml>
-		<unireg.webreleasexml>release.xml</unireg.webreleasexml>
 
 		<interfaces-mode>nexus</interfaces-mode>
 

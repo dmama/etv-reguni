@@ -362,26 +362,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<!-- Task ANT qui copie web.xml.xyz sur web.xml -->
-					<execution>
-						<id>copy-web-xml</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<tasks>
-								<echo message="Copying ${unireg.webxml} to web.xml" />
-								<copy overwrite="true" file="src/main/webapp/WEB-INF/${unireg.webxml}" tofile="src/main/webapp/WEB-INF/web.xml" />
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<version>1.4</version>
@@ -512,7 +492,7 @@
 				<configuration>
 					<finalName>unireg-web</finalName>
 					<descriptors>
-						<descriptor>${unireg.webreleasexml}</descriptor>
+						<descriptor>release.xml</descriptor>
 					</descriptors>
 				</configuration>
 			</plugin>
