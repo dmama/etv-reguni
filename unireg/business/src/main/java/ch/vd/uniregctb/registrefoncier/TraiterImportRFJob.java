@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -30,6 +29,7 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamLong;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job de traitement d'un import des immeubles du registre foncier

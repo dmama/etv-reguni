@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -25,12 +26,9 @@ import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.MockSurfaceAuSolRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
 import static org.junit.Assert.assertEquals;
@@ -63,15 +61,6 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 	@Test
 	public void testNouvellesSurfaces() throws Exception {
 
-		// un mock de DAO qui simule une base vide
-		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
-			@Nullable
-			@Override
-			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
-				return null;
-			}
-		};
-
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
 			@Override
@@ -85,7 +74,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouvelles surfaces
 		Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
@@ -130,15 +119,6 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 	@Test
 	public void testNouvellesSurfacesPlusieursImmeublesDansLeDesordre() throws Exception {
 
-		// un mock de DAO qui simule une base vide
-		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
-			@Nullable
-			@Override
-			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
-				return null;
-			}
-		};
-
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
 			@Override
@@ -152,7 +132,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(1, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(1, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie quatre nouvelles surfaces appartenant à deux immeubles
 		Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
@@ -165,6 +145,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// on devrait avoir deux événements de mutation de type CREATION qui concernent chacun des immeubles
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
+		Collections.sort(mutations, (o1, o2) -> o1.getIdImmeubleRF().compareTo(o2.getIdImmeubleRF()));
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -252,23 +233,6 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 			}
 		};
 
-		// un mock de DAO qui simule l'existence des deux surfaces au sol
-		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
-			@Nullable
-			@Override
-			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
-				if (key.equals(new SurfaceAuSolRFKey(s1))) {
-					return s1;
-				}
-				else if (key.equals(new SurfaceAuSolRFKey(s2))) {
-					return s2;
-				}
-				else {
-					return null;
-				}
-			}
-		};
-
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
 			@Override
@@ -282,7 +246,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux surfaces aves des modifications
 		// - type différent
@@ -356,23 +320,6 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 			}
 		};
 
-		// un mock de DAO qui simule l'existence des deux surfaces au sol
-		final SurfaceAuSolRFDAO surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO() {
-			@Nullable
-			@Override
-			public SurfaceAuSolRF findActive(@NotNull SurfaceAuSolRFKey key) {
-				if (key.equals(new SurfaceAuSolRFKey(s1))) {
-					return s1;
-				}
-				else if (key.equals(new SurfaceAuSolRFKey(s2))) {
-					return s2;
-				}
-				else {
-					return null;
-				}
-			}
-		};
-
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
 			@Override
@@ -386,7 +333,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux surfaces avec les données que celles dans la DB
 		final Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);

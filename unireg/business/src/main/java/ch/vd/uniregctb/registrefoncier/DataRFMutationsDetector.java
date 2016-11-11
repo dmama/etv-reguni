@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,25 +21,23 @@ import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.technical.esb.util.StringSource;
 import ch.vd.uniregctb.common.AuthenticationInterface;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.helper.AyantDroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SurfaceAuSolRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
@@ -53,27 +50,23 @@ public class DataRFMutationsDetector {
 	private final XmlHelperRF xmlHelperRF;
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final AyantDroitRFDAO ayantDroitRFDAO;
-	private final SurfaceAuSolRFDAO surfaceAuSolRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
-	private final ThreadLocal<Unmarshaller> surfaceListUnmarshaller;
 
 	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               AyantDroitRFDAO ayantDroitRFDAO,
-	                               SurfaceAuSolRFDAO surfaceAuSolRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager) {
-		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 	}
 
 	public DataRFMutationsDetector(int batchSize,
 	                               XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               AyantDroitRFDAO ayantDroitRFDAO,
-	                               SurfaceAuSolRFDAO surfaceAuSolRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager) {
@@ -81,19 +74,9 @@ public class DataRFMutationsDetector {
 		this.xmlHelperRF = xmlHelperRF;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
-		this.surfaceAuSolRFDAO = surfaceAuSolRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
-
-		surfaceListUnmarshaller = ThreadLocal.withInitial(() -> {
-			try {
-				return xmlHelperRF.getSurfaceListContext().createUnmarshaller();
-			}
-			catch (JAXBException e) {
-				throw new RuntimeException(e);
-			}
-		});
 	}
 
 	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator) {
@@ -128,12 +111,12 @@ public class DataRFMutationsDetector {
 					final ImmeubleRF immeubleRF = immeubleRFDAO.find(key);
 
 					// on détermine ce qu'il faut faire
-					final EvenementRFMutation.TypeMutation typeMutation;
+					final TypeMutation typeMutation;
 					if (immeubleRF == null) {
-						typeMutation = EvenementRFMutation.TypeMutation.CREATION;
+						typeMutation = TypeMutation.CREATION;
 					}
 					else if (!ImmeubleRFHelper.currentDataEquals(immeubleRF, immeuble)) {
-						typeMutation = EvenementRFMutation.TypeMutation.MODIFICATION;
+						typeMutation = TypeMutation.MODIFICATION;
 					}
 					else {
 						// rien à faire
@@ -146,7 +129,7 @@ public class DataRFMutationsDetector {
 					final EvenementRFMutation mutation = new EvenementRFMutation();
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
+					mutation.setTypeEntite(TypeEntite.IMMEUBLE);
 					mutation.setTypeMutation(typeMutation);
 					mutation.setIdImmeubleRF(key.getIdRF());
 					mutation.setXmlContent(immeubleAsXml);
@@ -200,12 +183,12 @@ public class DataRFMutationsDetector {
 					final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key);
 
 					// on détermine ce qu'il faut faire
-					final EvenementRFMutation.TypeMutation typeMutation;
+					final TypeMutation typeMutation;
 					if (ayantDroitRF == null) {
-						typeMutation = EvenementRFMutation.TypeMutation.CREATION;
+						typeMutation = TypeMutation.CREATION;
 					}
 					else if (!AyantDroitRFHelper.dataEquals(ayantDroitRF, person)) {
-						typeMutation = EvenementRFMutation.TypeMutation.MODIFICATION;
+						typeMutation = TypeMutation.MODIFICATION;
 					}
 					else {
 						// rien à faire
@@ -218,7 +201,7 @@ public class DataRFMutationsDetector {
 					final EvenementRFMutation mutation = new EvenementRFMutation();
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
+					mutation.setTypeEntite(TypeEntite.AYANT_DROIT);
 					mutation.setIdImmeubleRF(null); // par définition
 					mutation.setTypeMutation(typeMutation);
 					mutation.setXmlContent(immeubleAsXml);
@@ -247,132 +230,86 @@ public class DataRFMutationsDetector {
 
 	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator) {
 
-		// msi : on ne peut pas utiliser le ParallelBatchTransactionTemplate parce qu'on peut se retrouver à éditer la même mutation dans deux threads différents.
-		final BatchTransactionTemplate<Bodenbedeckung> t1 = new BatchTransactionTemplate<>(iterator, batchSize, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null);
-		t1.execute(new BatchCallback<Bodenbedeckung>() {
+		// on regroupe toutes les surfaces (en mémoire, il y a en ~400'00 mais elles sont petites et la consommation mesurée est d'environ 160Mb)
+		final Map<String, List<Bodenbedeckung>> map = new TreeMap<>();
+		while (iterator.hasNext()) {
+			final Bodenbedeckung bodenbedeckung = iterator.next();
+			if (bodenbedeckung == null) {
+				break;
+			}
+			final String idRF = bodenbedeckung.getGrundstueckIDREF();
+			map.computeIfAbsent(idRF, k -> new ArrayList<>()).add(bodenbedeckung);
+		}
 
-			private final ThreadLocal<Bodenbedeckung> first = new ThreadLocal<>();
+		// on détecte les mutations qui doivent être générées
+		final ParallelBatchTransactionTemplate<Map.Entry<String, List<Bodenbedeckung>>> template
+				= new ParallelBatchTransactionTemplate<Map.Entry<String, List<Bodenbedeckung>>>(map.entrySet().iterator(), batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+			@Override
+			protected int getBlockingQueueCapacity() {
+				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
+				// on sature rapidemment la mémoire de la JVM avec l'entier du fichier d'import.
+				return 10;
+			}
+		};
+		template.execute(new BatchCallback<Map.Entry<String, List<Bodenbedeckung>>>() {
+
+			private final ThreadLocal<Map.Entry<String, List<Bodenbedeckung>>> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Bodenbedeckung> batch) throws Exception {
+			public boolean doInTransaction(List<Map.Entry<String, List<Bodenbedeckung>>> batch) throws Exception {
 				first.set(batch.get(0));
 
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-				// on regroupe les surfaces par immeubles
-				final Map<String, ListImmeuble<Bodenbedeckung>> map = new HashMap<>();
-				batch.forEach(b -> {
-					final String idRF = b.getGrundstueckIDREF();
-					ListImmeuble<Bodenbedeckung> list = map.get(idRF);
-					if (list == null) {
-						list = new ListImmeuble<>(idRF);
-						map.put(idRF, list);
-					}
-					list.add(b);
-				});
+				batch.forEach(e -> {
 
-				// pour chaque immeuble, on génère une seule mutation qui doit contenir la liste de toutes les surfaces au sol.
-				map.values().forEach(surfaces -> {
-					final String idImmeubleRF = surfaces.get(0).getGrundstueckIDREF();
-					// on va chercher l'éventuelle mutation déjà existante (on a pu la recevoir dans un autre batch)
-					EvenementRFMutation mut = evenementRFMutationDAO.find(importId, EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, idImmeubleRF);
-					if (mut == null) {
-						// la mutation n'existe pas, on la crée
-						mut = new EvenementRFMutation();
+					final String idRF = e.getKey();
+					final List<Bodenbedeckung> nouvellesSurfaces = e.getValue();
+
+					final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF));
+					if (immeuble == null) {
+						// l'immeuble n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
+						final EvenementRFMutation mut = new EvenementRFMutation();
 						mut.setParentImport(parentImport);
 						mut.setEtat(EtatEvenementRF.A_TRAITER);
-						mut.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
-						mut.setIdImmeubleRF(idImmeubleRF);
-						mut.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
-						mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(surfaces)));
+						mut.setTypeEntite(TypeEntite.SURFACE_AU_SOL);
+						mut.setIdImmeubleRF(idRF);
+						mut.setTypeMutation(TypeMutation.CREATION);
+						mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(nouvellesSurfaces)));
 						evenementRFMutationDAO.save(mut);
 					}
 					else {
-						// si elle existe, on la complète avec les surfaces
-						final GrundstueckExport.BodenbedeckungList list = parseAsBodenbedeckungList(mut.getXmlContent());
-						list.getBodenbedeckung().addAll(surfaces);
-						mut.setXmlContent(xmlHelperRF.toXMLString(list));
+						// on récupère les surfaces actives actuelles
+						final Set<SurfaceAuSolRF> activesSurfaces = immeuble.getSurfacesAuSol().stream()
+								.filter(s -> s.isValidAt(null))
+								.collect(Collectors.toSet());
+
+						//noinspection StatementWithEmptyBody
+						if (!SurfaceAuSolRFHelper.dataEquals(activesSurfaces, nouvellesSurfaces)) {
+							// les surfaces sont différentes : on sauve une mutation en mode modification
+							final EvenementRFMutation mut = new EvenementRFMutation();
+							mut.setParentImport(parentImport);
+							mut.setEtat(EtatEvenementRF.A_TRAITER);
+							mut.setTypeEntite(TypeEntite.SURFACE_AU_SOL);
+							mut.setIdImmeubleRF(idRF);
+							mut.setTypeMutation(TypeMutation.MODIFICATION);
+							mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(nouvellesSurfaces)));
+							evenementRFMutationDAO.save(mut);
+						}
+						else {
+							// les surfaces sont égales : rien à faire
+						}
 					}
 				});
-
 				return true;
 			}
 
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
-					LOGGER.error("Exception sur le traitement de la surface au sol VersionID=[" + first.get().getVersionID() + "]", e);
+					LOGGER.error("Exception sur le traitement des surfaces au sol de l'immeuble idRF=[" + first.get().getKey() + "]", e);
 				}
 			}
 		}, null);
-
-		// une fois que toutes les surfaces sont renseignées, on reprend la liste pour supprimer les mutations
-		// qui portent sur des immeubles dont les surfaces n'ont pas changé (il n'a pas moyen de faire autrement
-		// parce que les surfaces ne sont pas identifiées formellement et qu'elles arrivent dans le désordre)
-
-		TransactionTemplate t2 = new TransactionTemplate(transactionManager);
-		t2.setReadOnly(true);
-		final List<Long> ids = t2.execute(status -> evenementRFMutationDAO.findIds(importId, EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, EtatEvenementRF.A_TRAITER));
-
-		final ParallelBatchTransactionTemplate<Long> t3 = new ParallelBatchTransactionTemplate<>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE);
-		t3.execute(new BatchCallback<Long>() {
-
-			private final ThreadLocal<Long> first = new ThreadLocal<>();
-
-			@Override
-			public boolean doInTransaction(List<Long> ids) throws Exception {
-				first.set(ids.get(0));
-
-				ids.forEach(id -> {
-
-					final EvenementRFMutation mut = evenementRFMutationDAO.get(id);
-					if (mut == null) {
-						throw new IllegalArgumentException("La mutation avec l'id=[" + id + "] n'existe pas.");
-					}
-					final String idRF = mut.getIdImmeubleRF();
-
-					final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF));
-					if (immeuble == null) {
-						// l'immeuble n'existe pas, c'est qu'il doit encore être créé : toutes les mutations sur les surfaces au sol sont correctes et on ne fait rien.
-						return;
-					}
-
-					final Set<SurfaceAuSolRF> activesSurfaces = immeuble.getSurfacesAuSol().stream()
-							.filter(s -> s.isValidAt(null))
-							.collect(Collectors.toSet());
-
-					// on récupère les nouvelles surfaces
-					final GrundstueckExport.BodenbedeckungList list = parseAsBodenbedeckungList(mut.getXmlContent());
-					if (SurfaceAuSolRFHelper.dataEquals(activesSurfaces, list.getBodenbedeckung())) {
-						// les surfaces sont égales : les mutations sont superflues et on les supprime
-						evenementRFMutationDAO.remove(id);
-					}
-					else {
-						// les surfaces sont différentes : on garde les mutations et on les passe en modification
-						mut.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
-					}
-				});
-				return false;
-			}
-
-			@Override
-			public void afterTransactionRollback(Exception e, boolean willRetry) {
-				if (!willRetry) {
-					LOGGER.error("Exception sur le traitement de la mutation de surface au sol id=[" + first.get() + "]", e);
-				}
-			}
-
-		}, null);
-	}
-
-	private GrundstueckExport.BodenbedeckungList parseAsBodenbedeckungList(String xmlContent) {
-		GrundstueckExport.BodenbedeckungList list;
-		try {
-			list = (GrundstueckExport.BodenbedeckungList) surfaceListUnmarshaller.get().unmarshal(new StringSource(xmlContent));
-		}
-		catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-		return list;
 	}
 }

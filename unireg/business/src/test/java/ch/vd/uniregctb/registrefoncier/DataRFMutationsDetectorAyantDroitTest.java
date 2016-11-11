@@ -28,8 +28,6 @@ import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.MockSurfaceAuSolRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
@@ -44,14 +42,12 @@ public class DataRFMutationsDetectorAyantDroitTest {
 	private XmlHelperRF xmlHelperRF;
 	private PlatformTransactionManager transactionManager;
 	private ImmeubleRFDAO immeubleRFDAO;
-	private SurfaceAuSolRFDAO surfaceAuSolRFDAO;
 
 	@Before
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
 		transactionManager = new MockTransactionManager();
 		immeubleRFDAO = new MockImmeubleRFDAO();
-		surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -88,7 +84,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie trois nouveaux ayant-droits
 		final NatuerlichePersonstamm natuerliche = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
@@ -250,7 +246,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec des modifications
 		// - nouveau prénom
@@ -381,7 +377,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, surfaceAuSolRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
 		final NatuerlichePersonstamm natuerliche = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));

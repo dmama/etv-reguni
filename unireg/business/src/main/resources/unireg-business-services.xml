@@ -334,7 +334,6 @@
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="ayantDroitRFDAO"/>
-		<constructor-arg ref="surfaceAuSolRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="transactionManager"/>
