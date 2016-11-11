@@ -125,6 +125,7 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
         BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
         BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
+        BusinessTestingConstants.UNIREG_BUSINESS_RF,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_ORGANISATION,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,

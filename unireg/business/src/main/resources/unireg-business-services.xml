@@ -315,54 +315,6 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 	
-	<bean id="registreFoncierService" class="ch.vd.uniregctb.rf.RegistreFoncierServiceImpl">
-		<property name="adresseService" ref="adresseService" />
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="immeubleDAO" ref="immeubleDAO" />
-		<property name="serviceCivilService" ref="serviceCivilService" />
-		<property name="tiersService" ref="tiersService"/>
-	</bean>
-
-	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl"/>
-
-	<bean id="fichierImmeublesRFParser" class="ch.vd.uniregctb.registrefoncier.FichierImmeublesRFParser">
-		<property name="xmlHelperRF" ref="xmlHelperRF"/>
-	</bean>
-
-	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsDetector">
-		<constructor-arg ref="xmlHelperRF"/>
-		<constructor-arg ref="immeubleRFDAO"/>
-		<constructor-arg ref="ayantDroitRFDAO"/>
-		<constructor-arg ref="evenementRFImportDAO" />
-		<constructor-arg ref="evenementRFMutationDAO" />
-		<constructor-arg ref="transactionManager"/>
-	</bean>
-
-	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsProcessor">
-		<constructor-arg ref="evenementRFMutationDAO" />
-		<constructor-arg ref="immeubleRFProcessor"/>
-		<constructor-arg ref="ayantDroitRFProcessor"/>
-		<constructor-arg ref="surfaceAuSolRFProcessor"/>
-		<constructor-arg ref="transactionManager"/>
-	</bean>
-
-	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor">
-		<constructor-arg ref="immeubleRFDAO"/>
-		<constructor-arg ref="xmlHelperRF"/>
-	</bean>
-
-	<bean id="ayantDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor">
-		<constructor-arg ref="ayantDroitRFDAO"/>
-		<constructor-arg ref="xmlHelperRF"/>
-	</bean>
-
-	<bean id="surfaceAuSolRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor">
-		<constructor-arg ref="immeubleRFDAO"/>
-		<constructor-arg ref="surfaceAuSolRFDAO"/>
-		<constructor-arg ref="xmlHelperRF"/>
-	</bean>
-
 	<bean id="statistiquesEvenementsService" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
