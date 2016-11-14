@@ -73,7 +73,7 @@ public class BatimentRF extends HibernateDateRangeEntity {
 	}
 
 	@Index(name = "IDX_BATIMENT_ID_RF")
-	@Column(name = "ID_RF", nullable = false)
+	@Column(name = "ID_RF", nullable = false, length = 33)
 	public String getIdRF() {
 		return idRF;
 	}

@@ -69,7 +69,7 @@ public class Immeuble extends HibernateDateRangeEntity implements LinkedEntity {
 	/**
 	 * @return l'identifiant technique de l'immeuble du RF (à ne pas confondre avec le numéro d'immeuble)
 	 */
-	@Column(name = "ID_RF", nullable = false, length = 40)
+	@Column(name = "ID_RF", nullable = false, length = 33)
 	public String getIdRF() {
 		return idRF;
 	}

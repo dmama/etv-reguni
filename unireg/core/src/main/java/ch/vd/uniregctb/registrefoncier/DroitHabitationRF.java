@@ -31,7 +31,7 @@ public class DroitHabitationRF extends DroitRF {
 		super.setAyantDroit(ayantDroit);
 	}
 
-	@Column(name = "ID_RF")
+	@Column(name = "ID_RF", length = 33)
 	public String getIdRF() {
 		return idRF;
 	}

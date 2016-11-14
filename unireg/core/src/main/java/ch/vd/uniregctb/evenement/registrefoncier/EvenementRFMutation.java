@@ -139,7 +139,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	}
 
 	@Index(name = "IDX_EV_RF_IMMEUBLE_ID_RF")
-	@Column(name = "ID_RF")
+	@Column(name = "ID_RF", length = 33)
 	public String getIdImmeubleRF() {
 		return idImmeubleRF;
 	}

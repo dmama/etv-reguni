@@ -63,7 +63,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	}
 
 	@Index(name = "IDX_AYANTDROIT_ID_RF")
-	@Column(name = "ID_RF", nullable = false)
+	@Column(name = "ID_RF", nullable = false, length = 33)
 	public String getIdRF() {
 		return idRF;
 	}

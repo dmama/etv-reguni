@@ -89,7 +89,7 @@ public abstract class ImmeubleRF {
 	}
 
 	@Index(name = "IDX_IMMEUBLE_ID_RF")
-	@Column(name = "ID_RF", nullable = false)
+	@Column(name = "ID_RF", nullable = false, length = 33)
 	public String getIdRF() {
 		return idRF;
 	}
