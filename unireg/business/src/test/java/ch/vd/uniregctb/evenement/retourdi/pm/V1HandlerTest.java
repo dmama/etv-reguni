@@ -71,6 +71,25 @@ public class V1HandlerTest extends BusinessTest {
 	}
 
 	@Test
+	public void testPriseEnCompteContactMandataire() throws Exception {
+		final InformationMandataire info = new InformationMandataire();
+		final OrganisationMailAddressInfo organisation = new OrganisationMailAddressInfo(null, "Chez Bernard", null, null, "Monsieur", "François", "Rollin");
+		final AddressInformation addressInformation = new AddressInformation(null, null, null, "Avenue de la Gare", "12", null, null, "Lausanne", null, 1003L, null, null, null, null);
+		final MailAddress address = new MailAddress(organisation, null, addressInformation, Boolean.TRUE);
+		info.setAdresseCourrierStructuree(address);
+		final InformationsMandataire infoExtraite = handler.extractInformationsMandataire(info);
+		Assert.assertNotNull(infoExtraite);
+		Assert.assertNull(infoExtraite.getIdeMandataire());
+		Assert.assertNotNull(infoExtraite.getAdresse());
+		Assert.assertEquals("Monsieur François Rollin", infoExtraite.getContact());
+
+		final Pair<String, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
+		Assert.assertNotNull(split);
+		Assert.assertEquals("Chez Bernard", split.getLeft());
+		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
+	}
+
+	@Test
 	public void testNonPriseEnCompteNumeroIDEMandataireAdresseStructuree() throws Exception {
 		final String ide = "CHE-116.311.185";
 		Assert.assertTrue(NumeroIDEHelper.isValid(ide));

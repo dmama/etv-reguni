@@ -6755,4 +6755,84 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-22031] Prise en compte du prénom/nom du contact mandataire, oublié jusque là...
+	 */
+	@Test
+	public void testNomPrenomContactMandataire() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2009, 8, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 18);
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee, 7, 5));
+				addEtatDeclarationRetournee(di, dateQuittance);
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// réception des données de retour
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, "Mon Mande-à-Terre", null, null, "Madame Delphine Rapon");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, MockRue.Lausanne.CheminDeMornex.getNoRue(), null, "25 bis", null, null, MockLocalite.Lausanne1003.getNPA(), null, MockLocalite.Lausanne1003.getNoOrdre());
+		final InformationsMandataire infoMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, "0213161111");
+		final RetourDI retour = new RetourDI(id, annee, 1, null, infoMandataire);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+				Assert.assertNotNull(adressesMandataires);
+				Assert.assertEquals(1, adressesMandataires.size());
+				final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
+				Assert.assertNotNull(adresseMandataire);
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresseMandataire.getClass());
+				final AdresseMandataireSuisse adresseMandataireSuisse = (AdresseMandataireSuisse) adresseMandataire;
+				Assert.assertEquals(MockRue.Lausanne.CheminDeMornex.getNoRue(), adresseMandataireSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseMandataireSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals("Mon Mande-à-Terre", adresseMandataire.getNomDestinataire());
+				Assert.assertEquals("0213161111", adresseMandataire.getNoTelephoneContact());
+				Assert.assertEquals("Madame Delphine Rapon", adresseMandataire.getNomPersonneContact());
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(0, tachesControle.size());
+			}
+		});
+
+	}
 }
