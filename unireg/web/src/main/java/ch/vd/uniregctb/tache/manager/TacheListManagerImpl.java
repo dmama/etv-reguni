@@ -229,6 +229,9 @@ public class TacheListManagerImpl implements TacheListManager {
 				List<CollectiviteAdministrativeUtilisateur> collectivites;
 				try {
 					collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+					if (collectivites == null) {
+						collectivites = Collections.emptyList();
+					}
 				}
 				catch (ServiceSecuriteException e) {
 					// si le visa n'existe pas, l'ejb lève une sécurité exception au lieu de retourner une collection vide...
