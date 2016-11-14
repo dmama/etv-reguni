@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -174,7 +175,7 @@ public class TacheController {
 	private String showSearchTaches(Model model, TacheCriteriaView criteria, boolean forceEmptyResult) {
 		model.addAttribute(COMMAND_NAME, criteria);
 		model.addAttribute(PERIODE_FISCALE_MAP_NAME, tacheMapHelper.initMapPeriodeFiscale());
-		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, tacheMapHelper.initMapCollectivitesAvecTaches());
+		model.addAttribute(OFFICE_IMPOT_UTILISATEUR_MAP_NAME, initMapCollectivites());
 		model.addAttribute(ETAT_TACHE_MAP_NAME, tacheMapHelper.initMapEtatTache());
 		model.addAttribute(TYPE_TACHE_MAP_NAME, tacheMapHelper.initMapTypeTache());
 		model.addAttribute(COMMENTAIRE_CTRL_MAP_NAME, tacheListManager.getCommentairesDistincts(TypeTache.TacheControleDossier));
@@ -183,6 +184,16 @@ public class TacheController {
 			model.addAttribute(RESULT_SIZE_NAME, 0);
 		}
 		return "tache/list";
+	}
+
+	private Map<Integer, String> initMapCollectivites() {
+		final Integer oidConnexion = AuthenticationHelper.getCurrentOID();
+		if (oidConnexion == null || oidConnexion == ServiceInfrastructureService.noACI) {
+			return tacheMapHelper.initMapCollectivitesAvecTaches();
+		}
+		else {
+			return tacheMapHelper.initMapOfficeImpotUtilisateur();
+		}
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.POST)

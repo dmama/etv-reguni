@@ -188,7 +188,7 @@
 					</authz:authorize>
 
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_PM">
+					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_PM, ROLE_DI_EMIS_PP, ROLE_DI_EMIS_PM, ROLE_QSNC_EMISSION">
 						<li><a href="<c:url value='/tache/list.do'/>"><fmt:message key="title.taches" /></a></li>
 					</authz:authorize>
 					</authz:authorize>

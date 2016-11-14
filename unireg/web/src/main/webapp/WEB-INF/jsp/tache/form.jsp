@@ -36,7 +36,9 @@
 		<td width="25%"><fmt:message key="label.office.impot" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="officeImpot">
-				<form:option value=""><fmt:message key="option.TOUS" /></form:option>
+				<c:if test="${fn:length(officesImpotUtilisateur) > 1}">
+					<form:option value=""><fmt:message key="option.TOUS" /></form:option>
+				</c:if>
 				<form:options items="${officesImpotUtilisateur}" />
 			</form:select>	
 		</td>
