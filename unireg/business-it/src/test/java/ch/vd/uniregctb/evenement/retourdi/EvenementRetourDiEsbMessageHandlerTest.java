@@ -736,7 +736,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		assertEquals("Chemin de Bellevue", ((AdresseRaisonSociale.StructureeSuisse) q.getEntreprise().getAdresseCourrier()).getRue());
 
 		assertNotNull(q.getMandataire());
-		assertEquals("CHE111111113", q.getMandataire().getIdeMandataire());
+		assertNull(q.getMandataire().getIdeMandataire());       // le numéro IDE du mandataire, même valide, est maintenant ignoré...
 		assertEquals(Boolean.TRUE, q.getMandataire().getSansCopieMandataire());
 		assertEquals("0218887766", q.getMandataire().getNoTelContact());
 		assertNotNull(q.getMandataire().getAdresse());
