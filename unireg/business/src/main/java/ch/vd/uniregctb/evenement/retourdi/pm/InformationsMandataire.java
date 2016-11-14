@@ -46,6 +46,10 @@ public class InformationsMandataire {
 		return noTelContact;
 	}
 
+	public String getContact() {
+		return adresse != null ? adresse.getContact() : null;
+	}
+
 	public boolean isNumeroIdeMandataireUtilisable() {
 		return ideMandataire != null && !"CHE".equalsIgnoreCase(ideMandataire);
 	}
