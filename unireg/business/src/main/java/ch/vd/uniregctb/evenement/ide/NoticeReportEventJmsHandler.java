@@ -18,7 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.NoticeRequestReport;
-import ch.vd.evd0023.v3.ObjectFactory;
+import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
