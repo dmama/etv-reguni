@@ -34,7 +34,7 @@ public class NoticeReportEventJmsHandlerTest extends WithoutSpringTest {
 
 	@Test
 	public void testRapportSansErreur() throws Exception {
-		final String message = "<eVD-0023:noticeRequestReport xmlns:eVD-0023=\"http://evd.vd.ch/xmlns/eVD-0023/3\">\n" +
+		final String message = "<eVD-0024:noticeRequestReport xmlns:eVD-0024=\"http://evd.vd.ch/xmlns/eVD-0024/3\">\n" +
 				"\t<noticeRequest xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/3\">\n" +
 				"\t\t<eVD-0022-3:noticeRequestHeader xmlns:eVD-0022-3=\"http://evd.vd.ch/xmlns/eVD-0022/3\">\n" +
 				"\t\t\t<eVD-0022-3:noticeRequestIdentification>\n" +
@@ -65,7 +65,7 @@ public class NoticeReportEventJmsHandlerTest extends WithoutSpringTest {
 				"\t\t<noticeRequestStatusCode>5</noticeRequestStatusCode>\n" +
 				"\t\t<noticeRequestStatusDate>2016-09-15T10:34:54</noticeRequestStatusDate>\n" +
 				"\t</noticeRequestStatus>\n" +
-				"</eVD-0023:noticeRequestReport>";
+				"</eVD-0024:noticeRequestReport>";
 
 		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessId("test-buid");
