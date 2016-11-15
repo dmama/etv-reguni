@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.uniregctb.cache.ObjectKey;
+import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -58,13 +61,15 @@ public class DataRFMutationsDetector {
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 
+	private final PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+
 	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               AyantDroitRFDAO ayantDroitRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
-	                               PlatformTransactionManager transactionManager) {
-		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+	                               PlatformTransactionManager transactionManager, PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
+		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 	}
 
 	public DataRFMutationsDetector(int batchSize,
@@ -73,7 +78,7 @@ public class DataRFMutationsDetector {
 	                               AyantDroitRFDAO ayantDroitRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
-	                               PlatformTransactionManager transactionManager) {
+	                               PlatformTransactionManager transactionManager, PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
 		this.immeubleRFDAO = immeubleRFDAO;
@@ -81,6 +86,7 @@ public class DataRFMutationsDetector {
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
+		this.cacheDroits = cacheDroits;
 	}
 
 	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator) {
@@ -155,21 +161,31 @@ public class DataRFMutationsDetector {
 
 	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator) {
 
-		// FIXME (msi) ça ne tiendra pas en mémoire en prod (~900 Mb nécessaire) à changer
+
 		// on regroupe toutes les droits
-		final Map<String, List<PersonEigentumAnteil>> map = new TreeMap<>();
+		cacheDroits.clear();    // on utilise un cache persistant pour limiter l'utilisation mémoire, mais on est pas
+		// du tout intéressé par le côté persistent des données, on commence donc par tout effacer.
 		while (iterator.hasNext()) {
 			final PersonEigentumAnteil eigentumAnteil = iterator.next();
 			if (eigentumAnteil == null) {
 				break;
 			}
+
 			final String idRF = DroitRFHelper.getIdRF(eigentumAnteil);
-			map.computeIfAbsent(idRF, k -> new ArrayList<>()).add(eigentumAnteil);
+			final IdRfKey key = new IdRfKey(idRF);
+			ArrayList<PersonEigentumAnteil> list = cacheDroits.get(key);
+			if (list == null) {
+				list = new ArrayList<>();
+			}
+			list.add(eigentumAnteil);
+			cacheDroits.put(key, list);
 		}
 
 		// on détecte les mutations qui doivent être générées
-		final ParallelBatchTransactionTemplate<Map.Entry<String, List<PersonEigentumAnteil>>> template
-				= new ParallelBatchTransactionTemplate<Map.Entry<String, List<PersonEigentumAnteil>>>(map.entrySet().iterator(), batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> template
+				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>>(cacheDroits.entrySet().iterator(), batchSize, nbThreads,
+				                                                                                              Behavior.REPRISE_AUTOMATIQUE, transactionManager, null,
+				                                                                                              AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
@@ -179,18 +195,18 @@ public class DataRFMutationsDetector {
 		};
 
 		// détection des mutations de type CREATION et MODIFICATION
-		template.execute(new BatchCallback<Map.Entry<String, List<PersonEigentumAnteil>>>() {
+		template.execute(new BatchCallback<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>>() {
 
-			private final ThreadLocal<Map.Entry<String, List<PersonEigentumAnteil>>> first = new ThreadLocal<>();
+			private final ThreadLocal<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Map.Entry<String, List<PersonEigentumAnteil>>> batch) throws Exception {
+			public boolean doInTransaction(List<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> batch) throws Exception {
 				first.set(batch.get(0));
 
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				batch.forEach(e -> {
-					final String idRF = e.getKey();
+					final String idRF = ((IdRfKey) e.getKey()).getIdRF();
 					final List<PersonEigentumAnteil> nouveauxDroits = e.getValue();
 
 					final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
@@ -243,7 +259,7 @@ public class DataRFMutationsDetector {
 			}
 
 			@Override
-			public void afterTransactionRollback (Exception e,boolean willRetry){
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
 					LOGGER.error("Exception sur le traitement des droits de l'ayant-droit idRF=[" + first.get().getKey() + "]", e);
 				}
@@ -256,7 +272,9 @@ public class DataRFMutationsDetector {
 			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 			final Set<String> existingAyantsDroits = ayantDroitRFDAO.findAvecDroitsActifs();
-			final Set<String> nouveauAyantsDroits = map.keySet();
+			final Set<String> nouveauAyantsDroits = cacheDroits.keySet().stream()
+					.map(k -> ((IdRfKey) k).getIdRF())
+					.collect(Collectors.toSet());
 
 			// on ne garde que les ayants-droits existants dans la DB qui n'existent pas dans le fichier XML
 			existingAyantsDroits.removeAll(nouveauAyantsDroits);
@@ -438,5 +456,45 @@ public class DataRFMutationsDetector {
 		}, null);
 
 		// TODO (msi) faut-il détecter les immeubles qui perdraient toutes les surfaces au sol ?
+	}
+
+	private static class IdRfKey implements ObjectKey {
+
+		private static final long serialVersionUID = 261902516311503497L;
+
+		@NotNull
+		private final String idRF;
+
+		public IdRfKey(@NotNull String idRF) {
+			this.idRF = idRF;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final IdRfKey idRfKey = (IdRfKey) o;
+			return Objects.equals(idRF, idRfKey.idRF);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(idRF);
+		}
+
+		@NotNull
+		public String getIdRF() {
+			return idRF;
+		}
+
+		@Override
+		public long getId() {
+			return 0;
+		}
+
+		@Override
+		public String getComplement() {
+			return idRF;
+		}
 	}
 }

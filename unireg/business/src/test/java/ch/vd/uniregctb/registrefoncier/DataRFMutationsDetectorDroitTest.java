@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,8 @@ import ch.vd.capitastra.grundstueck.PersonEigentumsform;
 import ch.vd.capitastra.grundstueck.Quote;
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.MockPersistentCache;
+import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -32,8 +35,6 @@ import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.MockSurfaceAuSolRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
@@ -50,7 +51,7 @@ public class DataRFMutationsDetectorDroitTest {
 	private PlatformTransactionManager transactionManager;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
-	private SurfaceAuSolRFDAO surfaceAuSolRFDAO;
+	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
 
 	@Before
 	public void setUp() throws Exception {
@@ -58,7 +59,7 @@ public class DataRFMutationsDetectorDroitTest {
 		transactionManager = new MockTransactionManager();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
 		immeubleRFDAO = new MockImmeubleRFDAO();
-		surfaceAuSolRFDAO = new MockSurfaceAuSolRFDAO();
+		cacheDroits = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -86,7 +87,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie trois nouveaux droits sur deux propriétaires qui concernent deux immeubles
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
@@ -204,7 +205,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		final String idRfPP1 = "029191d4fec44";
 		final String idRfPP2 = "37838sc9d94de";
@@ -445,7 +446,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie trois droits différents sur les mêmes propriétaires et immeubles
 		//  - part différente
@@ -646,7 +647,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie les trois mêmes droits sur les mêmes propriétaires et immeubles
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
@@ -760,7 +761,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie une liste de droits vide
 		detector.processDroits(IMPORT_ID, 2, Collections.<PersonEigentumAnteil>emptyList().iterator());

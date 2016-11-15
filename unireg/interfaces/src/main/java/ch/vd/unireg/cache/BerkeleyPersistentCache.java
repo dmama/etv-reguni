@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.sleepycat.bind.EntryBinding;
@@ -14,6 +15,7 @@ import com.sleepycat.collections.StoredMap;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Durability;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
@@ -48,6 +50,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	private int cachePercent = 5;
 	private long lockTimeout = 500; // valeur par défaut de Berkeley DB
 	private final SimpleCacheStats stats = new SimpleCacheStats();
+	private boolean syncOnCommit = true;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHomeDirectory(String homeDirectory) {
@@ -78,6 +81,10 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		this.lockTimeout = lockTimeout;
 	}
 
+	public void setSyncOnCommit(boolean syncOnCommit) {
+		this.syncOnCommit = syncOnCommit;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
@@ -86,6 +93,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		envConfig.setAllowCreate(true);
 		envConfig.setCachePercent(cachePercent);
 		envConfig.setLockTimeout(lockTimeout, TimeUnit.MILLISECONDS);
+		envConfig.setDurability(syncOnCommit ? Durability.COMMIT_SYNC : Durability.COMMIT_NO_SYNC);
 
 		final File dir = new File(homeDirectory);
 		//noinspection ResultOfMethodCallIgnored
@@ -238,5 +246,20 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	@Override
 	public CacheStats buildStats() {
 		return new SimpleCacheStats(stats);
+	}
+
+	@Override
+	public Set<Map.Entry<ObjectKey, T>> entrySet() {
+		return map.entrySet();
+	}
+
+	@Override
+	public Set<ObjectKey> keySet() {
+		return map.keySet();
+	}
+
+	@Override
+	public int size() {
+		return map.size();
 	}
 }

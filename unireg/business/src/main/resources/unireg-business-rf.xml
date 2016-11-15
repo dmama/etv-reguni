@@ -25,6 +25,7 @@
 		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="transactionManager"/>
+		<constructor-arg ref="tempRFCacheDroits"/>
 	</bean>
 
 	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsProcessor">

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,11 +15,14 @@ import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.capitastra.grundstueck.Liegenschaft;
+import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Quote;
 import ch.vd.capitastra.grundstueck.StammGrundstueck;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.cache.MockPersistentCache;
+import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -44,12 +48,14 @@ public class DataRFMutationsDetectorImmeubleTest {
 	private XmlHelperRF xmlHelperRF;
 	private PlatformTransactionManager transactionManager;
 	private AyantDroitRFDAO ayantDroitRFDAO;
+	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
 
 	@Before
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
 		transactionManager = new MockTransactionManager();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
+		cacheDroits = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -86,7 +92,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie deux nouveaux immeubles
 		final UnbekanntesGrundstueck kopie0 = newKopie(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
@@ -127,7 +133,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie deux nouveaux immeubles
 		final Liegenschaft bienfond = newBienFond(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
@@ -274,7 +280,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie les immeubles avec des modifications
 		// - nouvelle estimation fiscale
@@ -423,7 +429,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
 		final Liegenschaft bienfondImport = newBienFond(2233, 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);

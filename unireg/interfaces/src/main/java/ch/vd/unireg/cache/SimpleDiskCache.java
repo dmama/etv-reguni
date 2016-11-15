@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.ObjectKey;
 import ch.vd.uniregctb.cache.PersistentCache;
@@ -292,5 +294,20 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 	@Override
 	public CacheStats buildStats() {
 		return new SimpleCacheStats(stats);
+	}
+
+	@Override
+	public Set<Map.Entry<ObjectKey, T>> entrySet() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Set<ObjectKey> keySet() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int size() {
+		throw new NotImplementedException();
 	}
 }
