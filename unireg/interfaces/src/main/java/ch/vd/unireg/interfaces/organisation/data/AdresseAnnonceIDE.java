@@ -20,6 +20,7 @@ public interface AdresseAnnonceIDE {
 	String getTexteCasePostale();
 	String getVille();
 	Integer getNpa();
+	Integer getNumeroOrdrePostal();
 	Pays getPays();
 
 	interface Pays {

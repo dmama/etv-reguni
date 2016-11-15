@@ -92,7 +92,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 						                                            null, null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            RCEntAnnonceIDEHelper
-								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
+								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 								                                                                                MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 								                                                                                null, null), null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 
@@ -173,7 +173,8 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
 				assertEquals("1", adresse.getNumero());
 				assertNull(adresse.getNumeroAppartement());
-				assertEquals(1020, adresse.getNpa().intValue());
+				assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
+				assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
 				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
 
 				assertNull(adresse.getNumeroCasePostale());
@@ -249,7 +250,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			protected void init() {
 
 				final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
-						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(),
+						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(),
 						                              MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
 						                              null, null, null);
 
@@ -346,7 +347,8 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
 				assertEquals("1", adresse.getNumero());
 				assertNull(adresse.getNumeroAppartement());
-				assertEquals(1020, adresse.getNpa().intValue());
+				assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
+				assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
 				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
 
 				assertNull(adresse.getNumeroCasePostale());

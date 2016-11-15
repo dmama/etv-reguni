@@ -205,6 +205,7 @@ public class AnnonceIDEControllerTest {
 				adresse.setTexteCasePostale("Case postale jolie");
 				adresse.setNumeroCasePostale(101);
 				adresse.setNpa(1020);
+				adresse.setNumeroOrdrePostal(165);
 				adresse.setVille("Renens");
 
 				final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();
