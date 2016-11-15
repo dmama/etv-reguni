@@ -106,7 +106,7 @@ public class ReponseIDEProcessorTest extends BusinessTest {
 				                                       new NumeroIDE("CHE111111114"), null, null, null, null, null,
 				                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 				                                       RCEntAnnonceIDEHelper
-						                                       .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
+						                                       .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 						                                                                     MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 						                                                                     null, null),
 				                                       new AnnonceIDEData.StatutImpl(StatutAnnonce.ACCEPTE_IDE, DateHelper.getDateTime(2016, 9, 5, 12, 0, 0), null), RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
@@ -200,7 +200,7 @@ public class ReponseIDEProcessorTest extends BusinessTest {
 				                                       new NumeroIDE("CHE111111114"), new NumeroIDE("CHE222222224"), null, null, null, null,
 				                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 				                                       RCEntAnnonceIDEHelper
-						                                       .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, 1020, MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
+						                                       .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 						                                                                     MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 						                                                                     null, null),
 				                                       new AnnonceIDEData.StatutImpl(StatutAnnonce.REFUSE_IDE, DateHelper.getDateTime(2016, 9, 5, 12, 0, 0), null), RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);

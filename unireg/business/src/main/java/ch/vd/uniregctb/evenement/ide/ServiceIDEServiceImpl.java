@@ -482,6 +482,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					.createAdresseAnnonceIDERCEnt(adresse.getRue(), adresse.getNumero(),
 					                              adresse.getNumeroAppartement() == null ? null : adresse.getNumeroAppartement(),
 					                              numeroPostal,
+					                              adresse.getNumeroOrdrePostal(),
 					                              adresse.getLocalite(),
 					                              pays == null ? null : pays.getNoOfsEtatSouverain(), pays == null ? null : pays.getCodeIso2(), pays == null ? null : pays.getNomCourt(),
 					                              casePostale == null ? null : casePostale.getNumero(), casePostale == null ? null : String.valueOf(casePostale.getType()),

@@ -33,6 +33,7 @@ import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
@@ -272,7 +273,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	public void testValidateProtoAnnonceIDE() throws ParseException {
 
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
-				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, 1201, "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, MockLocalite.Geneve.getNPA(), MockLocalite.Geneve.getNoOrdre(), "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    null, null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques",

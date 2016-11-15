@@ -12,20 +12,20 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 	/*
 		Numéro fédéral du bâtiment
 	 */
-	protected Integer egid;
+	private Integer egid;
 
 	/*
 		La rue
 	 */
-	protected String rue;
+	private String rue;
 	/*
 		Numéro de la maison
 	 */
-	protected String numero;
+	private String numero;
 	/*
 		Numéro de l'appartement
 	 */
-	protected String numeroAppartement;
+	private String numeroAppartement;
 
 	/*
 		Numéro de la case postale
@@ -39,16 +39,21 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 	/*
 		Localité postale. Désignation du lieu.
 	 */
-	protected String ville;
+	private String ville;
 	/*
 		Numéro postal d'acheminement.
 	 */
-	protected Integer npa;
+	private Integer npa;
+
+	/*
+		Le numéro d'ordre postal (SwissZipCodeId pour RCEnt)
+	 */
+	private Integer numeroOrdrePostal;
 
 	/*
 		Le pays.
 	 */
-	protected AdresseAnnonceIDE.Pays pays;
+	private AdresseAnnonceIDE.Pays pays;
 
 
 	@Override
@@ -124,6 +129,15 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 	}
 
 	@Override
+	public Integer getNumeroOrdrePostal() {
+		return numeroOrdrePostal;
+	}
+
+	public void setNumeroOrdrePostal(Integer numeroOrdrePostal) {
+		this.numeroOrdrePostal = numeroOrdrePostal;
+	}
+
+	@Override
 	public Pays getPays() {
 		return pays;
 	}
@@ -147,6 +161,7 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 		if (getTexteCasePostale() != null ? !getTexteCasePostale().equals(that.getTexteCasePostale()) : that.getTexteCasePostale() != null) return false;
 		if (getVille() != null ? !getVille().equals(that.getVille()) : that.getVille() != null) return false;
 		if (getNpa() != null ? !getNpa().equals(that.getNpa()) : that.getNpa() != null) return false;
+		if (getNumeroOrdrePostal() != null ? !getNumeroOrdrePostal().equals(that.getNumeroOrdrePostal()) : that.getNumeroOrdrePostal() != null) return false;
 		return getPays() != null ? getPays().equals(that.getPays()) : that.getPays() == null;
 
 	}
@@ -161,10 +176,10 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 		result = 31 * result + (getTexteCasePostale() != null ? getTexteCasePostale().hashCode() : 0);
 		result = 31 * result + (getVille() != null ? getVille().hashCode() : 0);
 		result = 31 * result + (getNpa() != null ? getNpa().hashCode() : 0);
+		result = 31 * result + (getNumeroOrdrePostal() != null ? getNumeroOrdrePostal().hashCode() : 0);
 		result = 31 * result + (getPays() != null ? getPays().hashCode() : 0);
 		return result;
 	}
-
 
 	public static class PaysRCEnt implements AdresseAnnonceIDE.Pays, Serializable {
 

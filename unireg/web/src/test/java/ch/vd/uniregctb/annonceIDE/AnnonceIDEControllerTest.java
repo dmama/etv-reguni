@@ -1,12 +1,5 @@
 package ch.vd.uniregctb.annonceIDE;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +36,13 @@ import ch.vd.uniregctb.common.MockMessageSource;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AnnonceIDEControllerTest {
 
@@ -205,6 +205,7 @@ public class AnnonceIDEControllerTest {
 				adresse.setTexteCasePostale("Case postale jolie");
 				adresse.setNumeroCasePostale(101);
 				adresse.setNpa(1020);
+				adresse.setNumeroOrdrePostal(165);
 				adresse.setVille("Renens");
 
 				final AnnonceIDEData.ContenuImpl contenu = new AnnonceIDEData.ContenuImpl();

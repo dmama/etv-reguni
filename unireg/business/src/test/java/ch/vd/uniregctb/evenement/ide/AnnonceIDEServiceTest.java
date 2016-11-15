@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
@@ -45,7 +46,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 
 		// le prototype d'annonce
 		final AdresseAnnonceIDERCEnt adresseAnnonce = RCEntAnnonceIDEHelper
-				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, 1020, "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
 		final ProtoAnnonceIDE annonce =
