@@ -140,10 +140,10 @@ public class Job {
 
 	private static void doJob(@Nullable Party party, int tiersNumber, @Nullable Object erreur, PrintStream ps) {
 		if (party == null) {
-			System.err.println(String.format("%d n'a pas été trouvé (%s)", tiersNumber, erreur));
+			System.err.println(String.format("%d : tiers non-trouvé (%s)", tiersNumber, erreur));
 		}
 		else if (!(party instanceof Taxpayer)) {
-			System.err.println(String.format("%d n'est pas un contribuable, il est donc exclu d'office (%s)", tiersNumber, party.getClass().getSimpleName()));
+			System.err.println(String.format("%d : pas un contribuable, il est donc exclu d'office (%s)", tiersNumber, party.getClass().getSimpleName()));
 		}
 		else {
 			// il faut d'abord vérifier qu'il y a bien une période d'imposition d'un jour en premier
@@ -154,13 +154,13 @@ public class Job {
 				// le premier for fiscal commence-t-il à cette date ?
 				final Date dateDebutPremierForFiscal = extractDateDebutPremierForFiscal(taxpayer.getMainTaxResidences(), taxpayer.getOtherTaxResidences());
 				if (dateDebutPremierForFiscal == null) {
-					System.err.println(String.format("%d n'a pas de 'premier for fiscal' vaudois...", tiersNumber));
+					System.err.println(String.format("%d : pas de 'premier for fiscal' vaudois...", tiersNumber));
 				}
 				else {
 					// y a-t-il une DI non-annulée sur cette période ?
 					final List<TaxDeclaration> dis = getNonCanceledRangesAt(taxpayer.getTaxDeclarations(), dateDebutPremierForFiscal);
 					if (!dis.isEmpty()) {
-						System.err.println(String.format("%d possède une déclaration non-annulée sur la période d'imposition d'un jour...", tiersNumber));
+						System.err.println(String.format("%d : une déclaration non-annulée est présente sur la période d'imposition d'un jour...", tiersNumber));
 					}
 					else {
 						final RegDate nouveauDebut = DataHelper.xmlToCore(dateDebutPremierForFiscal).getOneDayAfter();
@@ -216,12 +216,13 @@ public class Job {
 	@Nullable
 	private static Date extractPeriodeImpositionUnJour(int tiersNumber, List<TaxationPeriod> periodesImposition) {
 		if (periodesImposition == null || periodesImposition.isEmpty()) {
-			System.err.println(String.format("%d n'a aucune période d'imposition", tiersNumber));
+			System.err.println(String.format("%d : aucune période d'imposition", tiersNumber));
 			return null;
 		}
 
 		final TaxationPeriod pi = periodesImposition.get(0);
 		if (pi == null) {
+			System.err.println(String.format("%d : première période d'imposition nulle...", tiersNumber));
 			return null;
 		}
 		if (!pi.getDateFrom().equals(pi.getDateTo())) {
