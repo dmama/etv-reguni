@@ -1,24 +1,22 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 
@@ -63,7 +61,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	}
 
 	@Index(name = "IDX_AYANTDROIT_ID_RF")
-	@Column(name = "ID_RF", nullable = false, length = 33)
+	@Column(name = "ID_RF", nullable = false, length = 33, unique = true)
 	public String getIdRF() {
 		return idRF;
 	}
@@ -72,15 +70,20 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.idRF = idRF;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "AYANT_DROIT_ID", nullable = false)
-	@ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID")
+	@OneToMany(mappedBy = "ayantDroit")
 	public Set<DroitRF> getDroits() {
 		return droits;
 	}
 
 	public void setDroits(Set<DroitRF> droits) {
 		this.droits = droits;
+	}
+
+	public void addDroit(@NotNull DroitRF droit) {
+		if (this.droits == null) {
+			this.droits = new HashSet<>();
+		}
+		this.droits.add(droit);
 	}
 
 	public void copyDataTo(AyantDroitRF right) {

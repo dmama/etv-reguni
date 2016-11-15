@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
@@ -32,12 +33,15 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutatio
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.elements.PersonEigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.helper.AyantDroitRFHelper;
+import ch.vd.uniregctb.registrefoncier.helper.DroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SurfaceAuSolRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
@@ -131,7 +135,7 @@ public class DataRFMutationsDetector {
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
 					mutation.setTypeEntite(TypeEntite.IMMEUBLE);
 					mutation.setTypeMutation(typeMutation);
-					mutation.setIdImmeubleRF(key.getIdRF());
+					mutation.setIdRF(key.getIdRF());
 					mutation.setXmlContent(immeubleAsXml);
 
 					evenementRFMutationDAO.save(mutation);
@@ -149,11 +153,128 @@ public class DataRFMutationsDetector {
 		}, null);
 	}
 
-	public void processDroits(long importId, Iterator<PersonEigentumAnteil> iterator) {
-		// TODO (msi) implémenter la détection des mutations des droits
+	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator) {
+
+		// FIXME (msi) ça ne tiendra pas en mémoire en prod (~900 Mb nécessaire) à changer
+		// on regroupe toutes les droits
+		final Map<String, List<PersonEigentumAnteil>> map = new TreeMap<>();
 		while (iterator.hasNext()) {
-			iterator.next();
+			final PersonEigentumAnteil eigentumAnteil = iterator.next();
+			if (eigentumAnteil == null) {
+				break;
+			}
+			final String idRF = DroitRFHelper.getIdRF(eigentumAnteil);
+			map.computeIfAbsent(idRF, k -> new ArrayList<>()).add(eigentumAnteil);
 		}
+
+		// on détecte les mutations qui doivent être générées
+		final ParallelBatchTransactionTemplate<Map.Entry<String, List<PersonEigentumAnteil>>> template
+				= new ParallelBatchTransactionTemplate<Map.Entry<String, List<PersonEigentumAnteil>>>(map.entrySet().iterator(), batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+			@Override
+			protected int getBlockingQueueCapacity() {
+				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
+				// on sature rapidemment la mémoire de la JVM avec l'entier du fichier d'import.
+				return 10;
+			}
+		};
+
+		// détection des mutations de type CREATION et MODIFICATION
+		template.execute(new BatchCallback<Map.Entry<String, List<PersonEigentumAnteil>>>() {
+
+			private final ThreadLocal<Map.Entry<String, List<PersonEigentumAnteil>>> first = new ThreadLocal<>();
+
+			@Override
+			public boolean doInTransaction(List<Map.Entry<String, List<PersonEigentumAnteil>>> batch) throws Exception {
+				first.set(batch.get(0));
+
+				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+				batch.forEach(e -> {
+					final String idRF = e.getKey();
+					final List<PersonEigentumAnteil> nouveauxDroits = e.getValue();
+
+					final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
+					if (ayantDroit == null) {
+						// l'ayant-droit n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
+						final EvenementRFMutation mutation = new EvenementRFMutation();
+						mutation.setParentImport(parentImport);
+						mutation.setEtat(EtatEvenementRF.A_TRAITER);
+						mutation.setTypeEntite(TypeEntite.DROIT);
+						mutation.setTypeMutation(TypeMutation.CREATION);
+						mutation.setIdRF(idRF); // idRF de l'ayant-droit
+						mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(nouveauxDroits)));
+						evenementRFMutationDAO.save(mutation);
+					}
+					else {
+						// on récupère les droits actives actuelles
+						final Set<DroitRF> activesDroits = ayantDroit.getDroits().stream()
+								.filter(s -> s.isValidAt(null))
+								.collect(Collectors.toSet());
+
+						//noinspection StatementWithEmptyBody
+						if (!DroitRFHelper.dataEquals(activesDroits, nouveauxDroits)) {
+							// les droits sont différents : on sauve une mutation en mode modification
+							final EvenementRFMutation mutation = new EvenementRFMutation();
+							mutation.setParentImport(parentImport);
+							mutation.setEtat(EtatEvenementRF.A_TRAITER);
+							mutation.setTypeEntite(TypeEntite.DROIT);
+							mutation.setTypeMutation(TypeMutation.MODIFICATION);
+							mutation.setIdRF(idRF); // idRF de l'ayant-droit
+							mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(nouveauxDroits)));
+							evenementRFMutationDAO.save(mutation);
+						}
+						else {
+							// les droits sont égaux : rien à faire
+						}
+					}
+
+					// on traite aussi toutes les communautés que l'on trouve
+
+					// Note : dans l'export du registre foncier, les communautés ne sont pas fournies dans la liste des propriétaires. A la place,
+					//        elles sont fournies en tant qu'entité implicite dans la liste des droits. Dans Unireg, nous sommes partis sur le principe
+					//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
+					nouveauxDroits.stream()
+							.map(PersonEigentumAnteil::getGemeinschaft)
+							.filter(g -> g != null)
+							.forEach(g -> processAyantDroit(parentImport, g));
+				});
+
+				return true;
+			}
+
+			@Override
+			public void afterTransactionRollback (Exception e,boolean willRetry){
+				if (!willRetry) {
+					LOGGER.error("Exception sur le traitement des droits de l'ayant-droit idRF=[" + first.get().getKey() + "]", e);
+				}
+			}
+		}, null);
+
+		// détection des mutations de type SUPRESSION
+		final TransactionTemplate t1 = new TransactionTemplate(transactionManager);
+		t1.execute(s -> {
+			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+			final Set<String> existingAyantsDroits = ayantDroitRFDAO.findAvecDroitsActifs();
+			final Set<String> nouveauAyantsDroits = map.keySet();
+
+			// on ne garde que les ayants-droits existants dans la DB qui n'existent pas dans le fichier XML
+			existingAyantsDroits.removeAll(nouveauAyantsDroits);
+
+			// on crée des mutations de suppression de droits pour tous ces ayants-droits
+			existingAyantsDroits.forEach(idRF -> {
+				final EvenementRFMutation mutation = new EvenementRFMutation();
+				mutation.setParentImport(parentImport);
+				mutation.setEtat(EtatEvenementRF.A_TRAITER);
+				mutation.setTypeEntite(TypeEntite.DROIT);
+				mutation.setTypeMutation(TypeMutation.SUPPRESSION);
+				mutation.setIdRF(idRF); // idRF de l'ayant-droit
+				mutation.setXmlContent(null);
+				evenementRFMutationDAO.save(mutation);
+			});
+
+			return null;
+		});
 	}
 
 	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator) {
@@ -178,35 +299,7 @@ public class DataRFMutationsDetector {
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				for (Personstamm person : batch) {
-
-					final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(person);
-					final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key);
-
-					// on détermine ce qu'il faut faire
-					final TypeMutation typeMutation;
-					if (ayantDroitRF == null) {
-						typeMutation = TypeMutation.CREATION;
-					}
-					else if (!AyantDroitRFHelper.dataEquals(ayantDroitRF, person)) {
-						typeMutation = TypeMutation.MODIFICATION;
-					}
-					else {
-						// rien à faire
-						continue;
-					}
-
-					// on ajoute l'événement à traiter
-					final String immeubleAsXml = xmlHelperRF.toXMLString(person);
-
-					final EvenementRFMutation mutation = new EvenementRFMutation();
-					mutation.setParentImport(parentImport);
-					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(TypeEntite.AYANT_DROIT);
-					mutation.setIdImmeubleRF(null); // par définition
-					mutation.setTypeMutation(typeMutation);
-					mutation.setXmlContent(immeubleAsXml);
-
-					evenementRFMutationDAO.save(mutation);
+					processAyantDroit(parentImport, person);
 				}
 
 				return true;
@@ -219,6 +312,38 @@ public class DataRFMutationsDetector {
 				}
 			}
 		}, null);
+	}
+
+	private void processAyantDroit(EvenementRFImport parentImport, Rechteinhaber rechteinhaber) {
+
+		final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(rechteinhaber);
+		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key);
+
+		// on détermine ce qu'il faut faire
+		final TypeMutation typeMutation;
+		if (ayantDroitRF == null) {
+			typeMutation = TypeMutation.CREATION;
+		}
+		else if (!AyantDroitRFHelper.dataEquals(ayantDroitRF, rechteinhaber)) {
+			typeMutation = TypeMutation.MODIFICATION;
+		}
+		else {
+			// rien à faire
+			return;
+		}
+
+		// on ajoute l'événement à traiter
+		final String immeubleAsXml = xmlHelperRF.toXMLString(rechteinhaber);
+
+		final EvenementRFMutation mutation = new EvenementRFMutation();
+		mutation.setParentImport(parentImport);
+		mutation.setEtat(EtatEvenementRF.A_TRAITER);
+		mutation.setTypeEntite(TypeEntite.AYANT_DROIT);
+		mutation.setIdRF(key.getIdRF());
+		mutation.setTypeMutation(typeMutation);
+		mutation.setXmlContent(immeubleAsXml);
+
+		evenementRFMutationDAO.save(mutation);
 	}
 
 	public void processConstructions(long importId, Iterator<Gebaeude> iterator) {
@@ -273,7 +398,7 @@ public class DataRFMutationsDetector {
 						mut.setParentImport(parentImport);
 						mut.setEtat(EtatEvenementRF.A_TRAITER);
 						mut.setTypeEntite(TypeEntite.SURFACE_AU_SOL);
-						mut.setIdImmeubleRF(idRF);
+						mut.setIdRF(idRF);
 						mut.setTypeMutation(TypeMutation.CREATION);
 						mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(nouvellesSurfaces)));
 						evenementRFMutationDAO.save(mut);
@@ -291,7 +416,7 @@ public class DataRFMutationsDetector {
 							mut.setParentImport(parentImport);
 							mut.setEtat(EtatEvenementRF.A_TRAITER);
 							mut.setTypeEntite(TypeEntite.SURFACE_AU_SOL);
-							mut.setIdImmeubleRF(idRF);
+							mut.setIdRF(idRF);
 							mut.setTypeMutation(TypeMutation.MODIFICATION);
 							mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(nouvellesSurfaces)));
 							evenementRFMutationDAO.save(mut);

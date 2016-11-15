@@ -22,6 +22,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
 @Entity
@@ -41,6 +42,11 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	private Long id;
 
 	/**
+	 * Identifiant technique de l'immeuble au registre foncier.
+	 */
+	private String masterIdRF;
+
+	/**
 	 * L'ayant-droit concerné par le droit.
 	 */
 	private AyantDroitRF ayantDroit;
@@ -51,15 +57,20 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	private ImmeubleRF immeuble;
 
 	/**
+	 * Le motif de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
+	 */
+	private RegDate dateDebutOfficielle;
+
+	/**
 	 * Le motif de début du droit.
 	 */
-	private CodeRF motifDebut;
+	private String motifDebut;
 
 	/**
 	 * Le motif de fin du droit.
 	 */
 	@Nullable
-	private CodeRF motifFin;
+	private String motifFin;
 
 	/**
 	 * Le numéro d'affaire.
@@ -82,11 +93,20 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
-	@ManyToOne(cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
-	})
-	@JoinColumn(name = "AYANT_DROIT_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_DROIT_MASTER_ID_RF")
+	@Column(name = "MASTER_ID_RF", nullable = false)
+	public String getMasterIdRF() {
+		return masterIdRF;
+	}
+
+	public void setMasterIdRF(String masterIdRF) {
+		this.masterIdRF = masterIdRF;
+	}
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "AYANT_DROIT_ID", nullable = false)
 	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
+	@ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID")
 	public AyantDroitRF getAyantDroit() {
 		return ayantDroit;
 	}
@@ -117,28 +137,32 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		this.numeroAffaire = numeroAffaire;
 	}
 
-	@AttributeOverrides({
-			@AttributeOverride(name = "code", column = @Column(name = "MOTIF_DEBUT_CODE", nullable = false)),
-			@AttributeOverride(name = "description", column = @Column(name = "MOTIF_DEBUT_DESCRIPTION"))
-	})
-	public CodeRF getMotifDebut() {
+	@Column(name = "DATE_DEBUT_OFFICIELLE", nullable = false)
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDebutOfficielle() {
+		return dateDebutOfficielle;
+	}
+
+	public void setDateDebutOfficielle(RegDate dateDebutOfficielle) {
+		this.dateDebutOfficielle = dateDebutOfficielle;
+	}
+
+	@Column(name = "MOTIF_DEBUT_CODE", nullable = false)
+	public String getMotifDebut() {
 		return motifDebut;
 	}
 
-	public void setMotifDebut(CodeRF motifDebut) {
+	public void setMotifDebut(String motifDebut) {
 		this.motifDebut = motifDebut;
 	}
 
 	@Nullable
-	@AttributeOverrides({
-			@AttributeOverride(name = "code", column = @Column(name = "MOTIF_FIN_CODE", nullable = false)),
-			@AttributeOverride(name = "description", column = @Column(name = "MOTIF_FIN_DESCRIPTION"))
-	})
-	public CodeRF getMotifFin() {
+	@Column(name = "MOTIF_FIN_CODE")
+	public String getMotifFin() {
 		return motifFin;
 	}
 
-	public void setMotifFin(@Nullable CodeRF motifFin) {
+	public void setMotifFin(@Nullable String motifFin) {
 		this.motifFin = motifFin;
 	}
 }

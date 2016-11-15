@@ -128,6 +128,14 @@
 			<inheritance:implements>ch.vd.capitastra.common.GrundstueckMitFlaeche</inheritance:implements>
 		</jxb:bindings>
 
+		<jxb:bindings node="//xs:complexType[@name='PersonstammType']">
+			<inheritance:implements>ch.vd.capitastra.common.Rechteinhaber</inheritance:implements>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='GemeinschaftType']">
+			<inheritance:implements>ch.vd.capitastra.common.Rechteinhaber</inheritance:implements>
+		</jxb:bindings>
+
 		<!--<jxb:bindings node="//xs:simpleType[@name='PersonEigentumsformType']">-->
 			<!--<jxb:typesafeEnumClass name="PersonEigentumsform">-->
 				<!--<jxb:typesafeEnumMember name="PROPRIETE_INDIVIDUELLE" value="alleineigentum"/>-->

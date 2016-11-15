@@ -3,11 +3,9 @@ package ch.vd.uniregctb.registrefoncier;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
@@ -114,7 +112,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
-				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdImmeubleRF());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_1f109152381009be0138100bc9f139e0</GrundstueckID>\n" +
@@ -163,7 +161,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
-				assertEquals("_1f109152381037590138103b73cf579a", mut1.getIdImmeubleRF());
+				assertEquals("_1f109152381037590138103b73cf579a", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_1f109152381037590138103b73cf579a</GrundstueckID>\n" +
@@ -212,7 +210,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut2.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
-				assertEquals("_1f109152381009be0138100bc9f139e0", mut2.getIdImmeubleRF());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut2.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <Bodenbedeckung VersionID=\"1f109152381009be0138100ce8190795\">\n" +
@@ -238,7 +236,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut3.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
-				assertEquals("_1f109152381037590138103b73cf579a", mut3.getIdImmeubleRF());
+				assertEquals("_1f109152381037590138103b73cf579a", mut3.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <Bodenbedeckung VersionID=\"1f109152381037590138103dd5f12466\">\n" +
@@ -441,7 +439,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut0.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
-				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdImmeubleRF());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <Bodenbedeckung VersionID=\"1f109152381009be0138100ce8190795\">\n" +
@@ -467,7 +465,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut1.getTypeEntite());
 				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
-				assertEquals("_1f109152381037590138103b73cf579a", mut1.getIdImmeubleRF());
+				assertEquals("_1f109152381037590138103b73cf579a", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <Bodenbedeckung VersionID=\"1f109152381037590138103dd5f12466\">\n" +
@@ -482,38 +480,4 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			}
 		});
 	}
-
-	/**
-	 * Trie par type, par idRF et par id pour avoir qqch de stable.
- 	 */
-	private static class MutationComparator implements Comparator<EvenementRFMutation> {
-		@Override
-		public int compare(EvenementRFMutation o1, EvenementRFMutation o2) {
-			final int c1 = o1.getTypeEntite().compareTo(o2.getTypeEntite());
-			if (c1 != 0) {
-				return c1;
-			}
-			final int c2 = compareString(o1.getIdImmeubleRF(), o2.getIdImmeubleRF());
-			if (c2 != 0) {
-				return c2;
-			}
-			return o1.getId().compareTo(o2.getId());
-		}
-	}
-
-	private static int compareString(@Nullable String idRF1, @Nullable String idRF2) {
-		if (idRF1 == null && idRF2 == null) {
-			return 0;
-		}
-		else if (idRF1 == null) {
-			return -1;
-		}
-		else if (idRF2 == null) {
-			return 1;
-		}
-		else {
-			return idRF1.compareTo(idRF2);
-		}
-	}
-
 }

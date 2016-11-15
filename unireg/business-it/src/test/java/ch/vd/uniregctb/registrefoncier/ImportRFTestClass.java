@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -8,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 import static org.junit.Assert.fail;
@@ -169,6 +171,14 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	@NotNull
+	public static CommunauteRF newCommunauté(String idRF, TypeCommunaute type) {
+		final CommunauteRF com = new CommunauteRF();
+		com.setIdRF(idRF);
+		com.setType(type);
+		return com;
+	}
+
+	@NotNull
 	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondRF immeuble, String type, int surface, RegDate dateDebut, RegDate dateFin) {
 		final SurfaceAuSolRF sur = new SurfaceAuSolRF();
 		sur.setImmeuble(immeuble);
@@ -177,6 +187,46 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		sur.setDateDebut(dateDebut);
 		sur.setDateFin(dateFin);
 		return sur;
+	}
+
+	@NotNull
+	protected static DroitProprietePersonnePhysiqueRF newDroitPP(@NotNull String idRfDroit, @NotNull PersonnePhysiqueRF personnePhysique, @NotNull ImmeubleRF immeuble, @Nullable CommunauteRF communaute, @NotNull Fraction part,
+	                                                             @NotNull GenrePropriete regime, @NotNull RegDate dateDebutOfficielle, @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut,
+	                                                             @Nullable RegDate dateFin) {
+
+		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setDateDebut(dateDebut);
+		droit.setMotifDebut(motifDebut);
+		droit.setDateFin(dateFin);
+		droit.setImmeuble(immeuble);
+		droit.setAyantDroit(personnePhysique);
+		droit.setCommunaute(communaute);
+		droit.setMasterIdRF(idRfDroit);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setNumeroAffaire(affaire);
+		droit.setPart(part);
+		droit.setRegime(regime);
+
+		return droit;
+	}
+
+	@NotNull
+	protected static DroitProprieteCommunauteRF newDroitColl(@NotNull String idRfDroit, @NotNull CommunauteRF communaute, @NotNull ImmeubleRF immeuble, @NotNull Fraction part, @NotNull GenrePropriete regime, @NotNull RegDate dateDebutOfficielle,
+	                                                         @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut, @Nullable RegDate dateFin) {
+
+		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setDateDebut(dateDebut);
+		droit.setMotifDebut(motifDebut);
+		droit.setDateFin(dateFin);
+		droit.setImmeuble(immeuble);
+		droit.setAyantDroit(communaute);
+		droit.setMasterIdRF(idRfDroit);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setNumeroAffaire(affaire);
+		droit.setPart(part);
+		droit.setRegime(regime);
+
+		return droit;
 	}
 
 	protected static void waitForJobCompletion(JobDefinition job) throws InterruptedException {

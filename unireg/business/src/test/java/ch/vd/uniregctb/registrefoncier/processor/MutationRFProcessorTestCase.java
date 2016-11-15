@@ -52,7 +52,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setTypeEntite(typeEntite);
 				mutation.setTypeMutation(typeMutation);
-				mutation.setIdImmeubleRF(idRF);
+				mutation.setIdRF(idRF);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setParentImport(parentImport);
 				mutation.setXmlContent(xml);

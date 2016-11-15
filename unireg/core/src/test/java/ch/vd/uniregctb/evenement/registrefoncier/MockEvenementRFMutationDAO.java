@@ -104,7 +104,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 		return db.stream()
 				.filter(mut -> mut.getParentImport().getId().equals(importId))
 				.filter(mut -> mut.getTypeEntite() == typeEntite)
-				.filter(mut -> Objects.equals(mut.getIdImmeubleRF(), idImmeubleRF))
+				.filter(mut -> Objects.equals(mut.getIdRF(), idImmeubleRF))
 				.findFirst()
 				.orElse(null);
 	}

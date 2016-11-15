@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -12,14 +16,20 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
+
+	private final List<AyantDroitRF> db = new ArrayList<>();
+
 	@Override
 	public List<AyantDroitRF> getAll() {
-		throw new NotImplementedException();
+		return db;
 	}
 
 	@Override
 	public AyantDroitRF get(Long id) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(a -> Objects.equals(a.getId(), id))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -34,7 +44,9 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 
 	@Override
 	public AyantDroitRF save(AyantDroitRF object) {
-		throw new NotImplementedException();
+		this.db.add(object);
+		object.setId((long) db.size());
+		return object;
 	}
 
 	@Override
@@ -75,6 +87,17 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 	@Nullable
 	@Override
 	public AyantDroitRF find(@NotNull AyantDroitRFKey key) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(a -> Objects.equals(a.getIdRF(), key.getIdRF()))
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Override
+	public Set<String> findAvecDroitsActifs() {
+		return db.stream()
+				.filter(a -> !a.getDroits().isEmpty())
+				.map(AyantDroitRF::getIdRF)
+				.collect(Collectors.toSet());
 	}
 }

@@ -2,8 +2,10 @@ package ch.vd.uniregctb.registrefoncier.elements;
 
 import javax.xml.bind.JAXBContext;
 
+import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
+import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
@@ -78,4 +80,19 @@ public interface XmlHelperRF {
 	 * Converti la liste de surfaces spécifiée dans sa représentation XML (élément = BodenbedeckungListElement)
 	 */
 	String toXMLString(GrundstueckExport.BodenbedeckungList surfaces);
+
+	/**
+	 * Converti la communauté spécifiée dans sa représentation XML.
+	 */
+	String toXMLString(Gemeinschaft gemeinschaft);
+
+	/**
+	 * Converti la communauté spécifiée dans sa représentation XML.
+	 */
+	String toXMLString(PersonEigentumAnteilListElement gemeinschaft);
+
+	/**
+	 * Converti l'ayant-droit spécifié dans sa représentation XML.
+	 */
+	String toXMLString(Rechteinhaber rechteinhaber);
 }

@@ -34,7 +34,6 @@ import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class DataRFMutationsDetectorAyantDroitTest {
 
@@ -102,7 +101,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut0.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
-		assertNull(mut0.getIdImmeubleRF());
+		assertEquals("3893728273382823", mut0.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonstammID>3893728273382823</PersonstammID>\n" +
@@ -123,7 +122,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut1.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
-		assertNull(mut1.getIdImmeubleRF());
+		assertEquals("48349384890202", mut1.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonstammID>48349384890202</PersonstammID>\n" +
@@ -139,7 +138,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut2.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
-		assertNull(mut2.getIdImmeubleRF());
+		assertEquals("574739202303482", mut2.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonstammID>574739202303482</PersonstammID>\n" +
@@ -267,7 +266,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut0.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
-		assertNull(mut0.getIdImmeubleRF());
+		assertEquals("3893728273382823", mut0.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonstammID>3893728273382823</PersonstammID>\n" +
@@ -288,7 +287,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut1.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
-		assertNull(mut1.getIdImmeubleRF());
+		assertEquals("48349384890202", mut1.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonstammID>48349384890202</PersonstammID>\n" +
@@ -304,7 +303,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
 		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut2.getTypeEntite());
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut2.getTypeMutation());
-		assertNull(mut2.getIdImmeubleRF());
+		assertEquals("574739202303482", mut2.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonstammID>574739202303482</PersonstammID>\n" +

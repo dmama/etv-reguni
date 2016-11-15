@@ -5,7 +5,10 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
+import ch.vd.capitastra.grundstueck.Gemeinschaft;
+import ch.vd.capitastra.grundstueck.GemeinschaftsArt;
 import ch.vd.capitastra.grundstueck.JuristischePersonUnterart;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
@@ -18,11 +21,24 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public abstract class AyantDroitRFHelper {
 
 	private AyantDroitRFHelper() {
+	}
+
+	public static boolean dataEquals(@NotNull AyantDroitRF left, @NotNull Rechteinhaber right) {
+		if (right instanceof Personstamm) {
+			return dataEquals(left, (Personstamm) right);
+		}
+		else if (right instanceof Gemeinschaft) {
+			return dataEquals(left, (Gemeinschaft) right);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + right.getClass() + "]");
+		}
 	}
 
 	/**
@@ -66,6 +82,46 @@ public abstract class AyantDroitRFHelper {
 		}
 	}
 
+	/**
+	 * @return <b>vrai</b> si les deux ayant-droits spécifiés possèdent les mêmes données; <b>faux</b> autrement.
+	 */
+	public static boolean dataEquals(@NotNull AyantDroitRF left, @NotNull Gemeinschaft right) {
+		if (!left.getIdRF().equals(right.getGemeinschatID())) {
+			// erreur de programmation, on ne devrait jamais comparer deux ayant-droit avec des IDRef différents
+			throw new ProgrammingException();
+		}
+
+		// [blindage] les valeurs suivantes ne doivent jamais changer (le modèle est construit sur ce prédicat)
+		if (!(left instanceof CommunauteRF)) {
+			throw new IllegalArgumentException("Le type de l'ayant-droit idRF=[" + left.getIdRF() + "] a changé.");
+		}
+		// [/blindage]
+
+		final CommunauteRF communaute = (CommunauteRF) left;
+		return communaute.getType() == getTypeCommunaute(right.getArt());
+	}
+
+	@Nullable
+	private static TypeCommunaute getTypeCommunaute(@Nullable GemeinschaftsArt art) {
+		if (art == null) {
+			return null;
+		}
+		switch (art) {
+		case EINFACHE_GESELLSCHAFT:
+			return TypeCommunaute.SOCIETE_SIMPLE;
+		case ERBENGEMEINSCHAFT:
+			return TypeCommunaute.COMMUNAUTE_HEREDITAIRE;
+		case GUETERGEMEINSCHAFT:
+			return TypeCommunaute.COMMUNAUTE_DE_BIENS;
+		case GEMEINDERSCHAFT:
+			return TypeCommunaute.INDIVISION;
+		case UNBEKANNT:
+			return TypeCommunaute.INCONNU;
+		default:
+			throw new IllegalArgumentException("Type de communauté inconnu=[" + art + "]");
+		}
+	}
+
 	public static boolean dataEquals(@NotNull PersonnePhysiqueRF left, @NotNull NatuerlichePersonstamm right) {
 		return left.getNoRF() == right.getNoRF() &&
 				(Objects.equals(left.getNoContribuable(), getNoContribuable(right))) &&
@@ -86,8 +142,16 @@ public abstract class AyantDroitRFHelper {
 				Objects.equals(left.getRaisonSociale(), right.getName());
 	}
 
-	public static AyantDroitRFKey newAyantDroitKey(@NotNull Personstamm person) {
-		return new AyantDroitRFKey(person.getPersonstammID());
+	public static AyantDroitRFKey newAyantDroitKey(@NotNull Rechteinhaber rechteinhaber) {
+		if (rechteinhaber instanceof Personstamm) {
+			return new AyantDroitRFKey(((Personstamm) rechteinhaber).getPersonstammID());
+		}
+		else if (rechteinhaber instanceof Gemeinschaft) {
+			return new AyantDroitRFKey(((Gemeinschaft) rechteinhaber).getGemeinschatID());
+		}
+		else {
+			throw new IllegalArgumentException("Type d'ayan-droit inconnu = [" + rechteinhaber.getClass() + "]");
+		}
 	}
 
 	@NotNull

@@ -9,8 +9,10 @@ import java.io.StringWriter;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
+import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
@@ -21,22 +23,26 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 
 	private final JAXBContext immeubleContext;
 	private final JAXBContext droitContext;
+	private final JAXBContext droitListContext;
 	private final JAXBContext proprietaireContext;
 	private final JAXBContext batimentContext;
 	private final JAXBContext surfacesAuSolContext;
 	private final JAXBContext surfaceListContext;
 	private final JAXBContext autreDroitContext;
+	private final JAXBContext communauteContext;
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
 		                                          LiegenschaftElement.class, SdrElement.class, StockwerksEinheitElement.class,
 		                                          UnbekanntesGrundstueckElement.class);
 		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class);
+		droitListContext = JAXBContext.newInstance(PersonEigentumAnteilListElement.class);
 		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
 		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
 		surfacesAuSolContext = JAXBContext.newInstance(BodenbedeckungElement.class);
 		surfaceListContext = JAXBContext.newInstance(BodenbedeckungListElement.class);
 		autreDroitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
+		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
 	}
 
 	@Override
@@ -160,6 +166,50 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		}
 		catch (JAXBException e) {
 			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(Gemeinschaft gemeinschaft) {
+		try {
+			final Marshaller m = communauteContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(gemeinschaft);
+			m.marshal(new JAXBElement<>(name, (Class<Gemeinschaft>) gemeinschaft.getClass(), null, gemeinschaft), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(PersonEigentumAnteilListElement obj) {
+		try {
+			final Marshaller m = droitListContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<>(name, (Class<PersonEigentumAnteilListElement>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(Rechteinhaber rechteinhaber) {
+		if (rechteinhaber instanceof Personstamm) {
+			return toXMLString((Personstamm) rechteinhaber);
+		}
+		else if (rechteinhaber instanceof Gemeinschaft) {
+			return toXMLString((Gemeinschaft) rechteinhaber);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");
 		}
 	}
 

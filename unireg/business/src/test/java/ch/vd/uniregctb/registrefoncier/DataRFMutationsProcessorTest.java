@@ -136,7 +136,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		mutation.setEtat(etat);
 		mutation.setTypeEntite(typeEntite);
 		mutation.setTypeMutation(typeMutation);
-		mutation.setIdImmeubleRF(idRF);
+		mutation.setIdRF(idRF);
 		mutation.setParentImport(parentImport);
 		mutation.setXmlContent(content);
 		return evenementRFMutationDAO.save(mutation);

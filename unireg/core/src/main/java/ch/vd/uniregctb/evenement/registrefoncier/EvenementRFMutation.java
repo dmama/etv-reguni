@@ -55,7 +55,11 @@ public class EvenementRFMutation extends HibernateEntity {
 		/**
 		 * La mutation est une modification d'une entité existante.
 		 */
-		MODIFICATION
+		MODIFICATION,
+		/**
+		 * La mutation est une suppression d'une ou plusieurs entités existantes.
+		 */
+		SUPPRESSION
 	}
 
 	/**
@@ -66,7 +70,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	/**
 	 * L'id de l'immeuble associé à la mutation (pas toujours renseigné)
 	 */
-	private String idImmeubleRF;
+	private String idRF;
 
 	/**
 	 * Le représentation XML de l'entité.
@@ -138,14 +142,25 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.typeMutation = typeMutation;
 	}
 
-	@Index(name = "IDX_EV_RF_IMMEUBLE_ID_RF")
+	/**
+	 * Valeur de l'id RF en fonction du type d'entité :
+	 * <ul>
+	 *     <li>AYANT_DROIT : l'idRF de l'ayant-droit lui-même</li>
+	 *     <li>DROIT : idRF de l'ayant-droit qui possède le droit</li>
+	 *     <li>IMMEUBLE : idRF de l'immeuble lui-même</li>
+	 *     <li>SURFACE_AU_SOL : idRF de l'immeuble qui possède les surfaces au sol</li>
+	 *     <li>BATIMENT : null</li>
+	 * </ul>
+	 * @return l'idRF de l'entité liée à la mutation.
+	 */
+	@Index(name = "IDX_EV_RF_ID_RF")
 	@Column(name = "ID_RF", length = 33)
-	public String getIdImmeubleRF() {
-		return idImmeubleRF;
+	public String getIdRF() {
+		return idRF;
 	}
 
-	public void setIdImmeubleRF(String idImmeubleRF) {
-		this.idImmeubleRF = idImmeubleRF;
+	public void setIdRF(String idRF) {
+		this.idRF = idRF;
 	}
 
 	@Column(name = "XML_CONTENT")   // la colonne doit être nullable car - techniquement - Hibernate fait un insert avec le blob nul puis un update pour insérer le contenu.

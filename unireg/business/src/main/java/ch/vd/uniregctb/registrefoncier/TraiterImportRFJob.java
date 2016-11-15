@@ -126,7 +126,7 @@ public class TraiterImportRFJob extends JobDefinition {
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
 			mutationsDetector.processImmeubles(importId, nbThreads, dataAdapter.getImmeublesIterator());   // <-- consommateur des données
-			mutationsDetector.processDroits(importId, dataAdapter.getDroitsIterator());
+			mutationsDetector.processDroits(importId, nbThreads, dataAdapter.getDroitsIterator());
 			mutationsDetector.processProprietaires(importId, nbThreads, dataAdapter.getProprietairesIterator());
 			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator());
 			mutationsDetector.processSurfaces(importId, nbThreads, dataAdapter.getSurfacesIterator());

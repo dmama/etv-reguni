@@ -3,13 +3,17 @@ package ch.vd.uniregctb.registrefoncier.helper;
 import org.junit.Test;
 
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
+import ch.vd.capitastra.grundstueck.Gemeinschaft;
+import ch.vd.capitastra.grundstueck.GemeinschaftsArt;
 import ch.vd.capitastra.grundstueck.JuristischePersonUnterart;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -153,6 +157,40 @@ public class AyantDroitRFHelperTest {
 		personStamm.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
 
 		assertFalse(AyantDroitRFHelper.dataEquals(coll, personStamm));
+	}
+
+	/**
+	 * Ce test vérifie que deux communautés identiques sont bien considérées comme égales.
+	 */
+	@Test
+	public void testEqualsCommunaute() throws Exception {
+
+		final CommunauteRF comm = new CommunauteRF();
+		comm.setIdRF("3893728273382823");
+		comm.setType(TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+
+		final Gemeinschaft gemeinschaft = new Gemeinschaft();
+		gemeinschaft.setGemeinschatID("3893728273382823");
+		gemeinschaft.setArt(GemeinschaftsArt.ERBENGEMEINSCHAFT);
+
+		assertTrue(AyantDroitRFHelper.dataEquals(comm, gemeinschaft));
+	}
+
+	/**
+	 * Ce test vérifie que deux communautés avec des types différents sont bien considérées comme inégales.
+	 */
+	@Test
+	public void testNotEqualsCommunaute() throws Exception {
+
+		final CommunauteRF comm = new CommunauteRF();
+		comm.setIdRF("3893728273382823");
+		comm.setType(TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+
+		final Gemeinschaft gemeinschaft = new Gemeinschaft();
+		gemeinschaft.setGemeinschatID("3893728273382823");
+		gemeinschaft.setArt(GemeinschaftsArt.GUETERGEMEINSCHAFT);
+
+		assertFalse(AyantDroitRFHelper.dataEquals(comm, gemeinschaft));
 	}
 
 	@Test

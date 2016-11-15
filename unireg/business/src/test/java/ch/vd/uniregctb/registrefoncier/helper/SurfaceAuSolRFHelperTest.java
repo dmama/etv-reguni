@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 public class SurfaceAuSolRFHelperTest {
 
 	@Test
-	public void testDataEqualsNullity() throws Exception {
+	public void testDataEqualsListNullity() throws Exception {
 
 		assertTrue(SurfaceAuSolRFHelper.dataEquals((Set<SurfaceAuSolRF>) null, null));
 		assertTrue(SurfaceAuSolRFHelper.dataEquals(Collections.emptySet(), null));
@@ -33,8 +33,9 @@ public class SurfaceAuSolRFHelperTest {
 	}
 
 	@Test
-	public void testDataEqualsDifferentSizes() throws Exception {
-		assertFalse(SurfaceAuSolRFHelper.dataEquals(Collections.singleton(new SurfaceAuSolRF()), Arrays.asList(new Bodenbedeckung(), new Bodenbedeckung())));
+	public void testDataEqualsListDifferentSizes() throws Exception {
+		assertFalse(SurfaceAuSolRFHelper.dataEquals(Collections.singleton(new SurfaceAuSolRF()),
+		                                            Arrays.asList(new Bodenbedeckung(), new Bodenbedeckung())));
 	}
 
 	@Test

@@ -81,7 +81,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
 				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
 				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
-				mut0.setIdImmeubleRF("382929efa218");
+				mut0.setIdRF("382929efa218");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <Bodenbedeckung>\n" +
@@ -108,7 +108,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
 				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
 				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
-				mut1.setIdImmeubleRF("58390029228");
+				mut1.setIdRF("58390029228");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <Bodenbedeckung>\n" +
@@ -272,7 +272,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
 				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
 				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
-				mut0.setIdImmeubleRF("382929efa218");
+				mut0.setIdRF("382929efa218");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <Bodenbedeckung>\n" +
@@ -299,7 +299,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
 				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
 				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
-				mut1.setIdImmeubleRF("58390029228");
+				mut1.setIdRF("58390029228");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <Bodenbedeckung>\n" +

@@ -61,7 +61,7 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 
-		final String idImmeubleRF = mutation.getIdImmeubleRF();
+		final String idImmeubleRF = mutation.getIdRF();
 		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idImmeubleRF));
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble avec l'idRF=[" + idImmeubleRF + "] n'existe pas.");

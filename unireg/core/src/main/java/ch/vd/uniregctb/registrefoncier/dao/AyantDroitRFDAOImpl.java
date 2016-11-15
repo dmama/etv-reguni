@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,5 +22,12 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 		final Query query = getCurrentSession().createQuery("from AyantDroitRF where idRF = :idRF");
 		query.setParameter("idRF", key.getIdRF());
 		return (AyantDroitRF) query.uniqueResult();
+	}
+
+	@Override
+	public Set<String> findAvecDroitsActifs() {
+		final Query query = getCurrentSession().createQuery("select a.idRF from AyantDroitRF a left join a.droits d where d.dateFin is null and a.droits is not empty");
+		//noinspection unchecked
+		return new HashSet<>(query.list());
 	}
 }
