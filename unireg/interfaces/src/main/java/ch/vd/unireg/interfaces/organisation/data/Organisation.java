@@ -35,6 +35,17 @@ public interface Organisation {
 	String getNumeroIDE(RegDate date);
 
 	/**
+	 * @return l'historique des identifiants RC
+	 */
+	List<DateRanged<String>> getNumeroRC();
+
+	/**
+	 * @param date date de référence
+	 * @return l'identifiant RC à la date donnée, ou <code>null</code> si aucun
+	 */
+	String getNumeroRC(RegDate date);
+
+	/**
 	 * @return historique des raisons sociales de l'organisation
 	 */
 	List<DateRanged<String>> getNom();

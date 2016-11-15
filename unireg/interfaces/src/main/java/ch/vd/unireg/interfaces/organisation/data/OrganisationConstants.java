@@ -10,4 +10,9 @@ public abstract class OrganisationConstants {
 	 */
 	public static final String CLE_IDE = "CH.IDE";
 
+	/**
+	 * La clé de l'identifiant "ancien numéro RC" (cet identifiant est très pratique car il est connu du RF...
+	 */
+	public static final String CLE_RC = "CH.RC";
+
 }

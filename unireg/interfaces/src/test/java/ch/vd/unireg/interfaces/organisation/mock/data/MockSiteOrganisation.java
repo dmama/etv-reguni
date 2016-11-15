@@ -49,6 +49,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
 	private final NavigableMap<RegDate, String> nomAdditionnel = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
+	private final NavigableMap<RegDate, String> rc = new TreeMap<>();
 	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> domicile = new TreeMap<>();
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
@@ -97,6 +98,14 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	public void addNumeroIDE(RegDate dateDebut, RegDate dateFin, String nouveauNumeroIDE) {
 		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
+	}
+
+	public void changeNumeroRC(RegDate date, String nouveauNumeroRC) {
+		MockOrganisationHelper.changeRangedData(rc, date, nouveauNumeroRC);
+	}
+
+	public void addNumeroRC(RegDate dateDebut, RegDate dateFin, String nouveauNumeroRC) {
+		MockOrganisationHelper.addRangedData(rc, dateDebut, dateFin, nouveauNumeroRC);
 	}
 
 	public void addPublicationBusiness(RegDate dateDebut, List<PublicationBusiness> nouvelleListePublicationBusiness) {
@@ -164,6 +173,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	@Override
 	public String getNumeroIDE(RegDate date) {
 		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNumeroRC() {
+		return MockOrganisationHelper.getHisto(rc);
 	}
 
 	@Override

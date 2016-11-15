@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
  */
 public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
-	private static final long serialVersionUID = -1541055814375872909L;
+	private static final long serialVersionUID = 3583385556567048114L;
 
 	/**
 	 * Le numéro technique du site pour Unireg
@@ -28,6 +28,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	private final List<DateRanged<String>> nom;
 	private final List<DateRanged<String>> numeroIDE;
+	private final List<DateRanged<String>> numeroRC;
 
 	private final List<DateRanged<String>> nomAdditionnel;
 	private final List<DateRanged<TypeDeSite>> typeDeSite;
@@ -72,6 +73,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.burTransfereA = burTransfereA;
 		this.burTransferDe = burTransferDe;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
+		this.numeroRC = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_RC);
 		this.nom = nom;
 		this.rc = rc;
 		this.ree = ree;
@@ -103,6 +105,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	@Override
 	public String getNumeroIDE(RegDate date) {
 		return OrganisationHelper.valueForDate(numeroIDE, date);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNumeroRC() {
+		return numeroRC;
 	}
 
 	@Override

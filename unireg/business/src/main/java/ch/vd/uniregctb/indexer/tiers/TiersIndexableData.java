@@ -65,7 +65,8 @@ public class TiersIndexableData extends IndexableData {
 	public static final String MODE_IMPOSITION = "S_MODE_IMPOSITION";
 	public static final String NO_SYMIC = "S_NO_SYMIC";
 	public static final String TIERS_ACTIF = "S_TIERS_ACTIF";
-	public static final String IDE = "S_IDE";
+	public static final String NUM_IDE = "S_IDE";
+	public static final String NUM_RC = "S_RC";
 	public static final String TOUT = "S_TOUT";
 	public static final String ETAT_ENTREPRISE_COURANT = "S_ETAT_ENTREPRISE_COURANT";
 	public static final String ETATS_ENTREPRISE = "S_ETATS_ENTREPRISE";
@@ -128,6 +129,7 @@ public class TiersIndexableData extends IndexableData {
 	private Boolean annule;
 	private Boolean debiteurInactif;
 	private String ide;                     // identifiant d'entreprise [SIFISC-11689]
+	private String numeroRC;                // ancien identifiant d'entreprise au RC, pratique car il est connu au RF
 	private TypeEtatEntreprise etatEntrepriseCourant;
 	private Set<TypeEtatEntreprise> etatsEntreprise;
 	private TypeEtatInscriptionRC etatInscriptionRC;
@@ -198,7 +200,8 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif, BOOLEAN_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule, BOOLEAN_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif, BOOLEAN_RENDERER);
-		addAnalyzedValue(d, TiersIndexableData.IDE, ide);
+		addAnalyzedValue(d, TiersIndexableData.NUM_IDE, ide);
+		addAnalyzedValue(d, TiersIndexableData.NUM_RC, numeroRC);
 		addNotAnalyzedValue(d, TiersIndexableData.ETAT_ENTREPRISE_COURANT, etatEntrepriseCourant, ENUM_RENDERER);
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.ETATS_ENTREPRISE, etatsEntreprise, ENUM_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.INSCRIPTION_RC, etatInscriptionRC, ENUM_RENDERER);
@@ -693,6 +696,18 @@ public class TiersIndexableData extends IndexableData {
 
 	public void addIde(String ide) {
 		this.ide = add(this.ide, IndexerFormatHelper.noIdeToString(ide));
+	}
+
+	public String getNumeroRC() {
+		return numeroRC;
+	}
+
+	public void setNumeroRC(String numeroRC) {
+		this.numeroRC = numeroRC;
+	}
+
+	public void addNumeroRC(String numeroRC) {
+		this.numeroRC = add(this.numeroRC, IndexerFormatHelper.numRCToString(numeroRC));
 	}
 
 	public TypeEtatEntreprise getEtatEntrepriseCourant() {

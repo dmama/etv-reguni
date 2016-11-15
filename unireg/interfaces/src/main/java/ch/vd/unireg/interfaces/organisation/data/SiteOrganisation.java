@@ -29,6 +29,11 @@ public interface SiteOrganisation {
 	String getNumeroIDE(RegDate date);
 
 	/**
+	 * @return l'historique des identifiants au RC (ancienne identification avant l'IDE, mais pratique car connue au RF)
+	 */
+	List<DateRanged<String>> getNumeroRC();
+
+	/**
 	 * @return les données historisées en provenance du registre IDE
 	 */
 	DonneesRegistreIDE getDonneesRegistreIDE();

@@ -305,15 +305,20 @@ public abstract class OrganisationHelper {
 	 *
 	 * @return La succession de plage contenant l'information des numéros IDE.
 	 */
+	@NotNull
 	public static List<DateRanged<String>> getNumerosIDEPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<String>>>() {
-			@Override
-			public List<DateRanged<String>> extractData(SiteOrganisation site) {
-				return site.getNumeroIDE();
-			}
-		});
+		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNumeroIDE);
 	}
 
+	/**
+	 * Prépare une liste de plages temporelles avec la succession des numéros RC des établissements principaux
+	 * @param donneesSites données des établissements connus
+	 * @return la liste des plages temporelles des numéros RC
+	 */
+	@NotNull
+	public static List<DateRanged<String>> getNumerosRCPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
+		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNumeroRC);
+	}
 
 	/**
 	 * Extrait les entrées de journal publiées à la FOSC à la date correspondant.

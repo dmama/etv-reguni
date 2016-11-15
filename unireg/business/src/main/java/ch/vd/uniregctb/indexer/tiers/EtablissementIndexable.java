@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -108,6 +109,18 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 		for (RapportEntreTiers ret : tiers.getRapportsObjet()) {
 			if (ret instanceof ActiviteEconomique) {
 				data.addTypeEtablissement(((ActiviteEconomique) ret).isPrincipal() ? TypeEtablissement.PRINCIPAL : TypeEtablissement.SECONDAIRE);
+			}
+		}
+
+		// éventuels identifiants RC (en provenance du civil seulement)
+		if (site != null) {
+			final List<DateRanged<String>> all = site.getNumeroRC();
+			if (all != null) {
+				all.stream()
+						.map(DateRanged::getPayload)
+						.map(IndexerFormatHelper::numRCToString)
+						.distinct()
+						.forEach(data::addNumeroRC);
 			}
 		}
 	}

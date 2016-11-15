@@ -20,7 +20,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
  */
 public class OrganisationRCEnt implements Organisation, Serializable {
 
-	private static final long serialVersionUID = -1369195090559377725L;
+	private static final long serialVersionUID = -6557832925666607189L;
 
 	/**
 	 * Le numéro technique de l'organisation pour Unireg
@@ -58,6 +58,16 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	@Override
 	public String getNumeroIDE(RegDate date) {
 		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNumeroRC() {
+		return OrganisationHelper.getNumerosRCPrincipaux(donneesSites);
+	}
+
+	@Override
+	public String getNumeroRC(RegDate date) {
+		return OrganisationHelper.valueForDate(getNumeroRC(), date);
 	}
 
 	/**

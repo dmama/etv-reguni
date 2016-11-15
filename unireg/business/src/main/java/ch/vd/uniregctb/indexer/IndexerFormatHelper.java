@@ -120,6 +120,16 @@ public class IndexerFormatHelper {
 	};
 
 	/**
+	 * Supression des blancs, points et autres tirets
+	 */
+	public static final StringRenderer<String> NUM_RC_RENDERER = new AbstractStringRendererImpl<String>() {
+		@Override
+		protected String toStringFromNotNull(@NotNull String object) {
+			return DOT_DASH_BLANK.matcher(object).replaceAll(StringUtils.EMPTY);
+		}
+	};
+
+	/**
 	 * Utilisation de {@link Constants#OUI} et {@link Constants#NON}
 	 */
 	public static final StringRenderer<Boolean> BOOLEAN_RENDERER = new AbstractStringRendererImpl<Boolean>() {
@@ -184,6 +194,10 @@ public class IndexerFormatHelper {
 
 	public static String noIdeToString(String ide) {
 		return IDE_RENDERER.toString(ide);
+	}
+
+	public static String numRCToString(String numeroRC) {
+		return NUM_RC_RENDERER.toString(numeroRC);
 	}
 
 	private static String dateToSearchableString(RegDate date) {

@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.avatar.TypeAvatar;
-import ch.vd.uniregctb.common.StringParser;
 import ch.vd.uniregctb.indexer.lucene.DocumentExtractorHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -93,7 +92,7 @@ public class TiersIndexedData implements Serializable {
 		modeCommunication = DocumentExtractorHelper.getEnumValue(TiersIndexableData.MODE_COMMUNICATION, doc, ModeCommunication.class);
 		assujettissementPP = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PP, doc, TypeAssujettissement.class);
 		assujettissementPM = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PM, doc, TypeAssujettissement.class);
-		numerosIDE = DocumentExtractorHelper.getList(DocumentExtractorHelper.getDocValue(TiersIndexableData.IDE, doc));
+		numerosIDE = DocumentExtractorHelper.getList(DocumentExtractorHelper.getDocValue(TiersIndexableData.NUM_IDE, doc));
 		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
 		etatEntreprise = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ETAT_ENTREPRISE_COURANT, doc, TypeEtatEntreprise.class);
 		tousEtatsEntreprise = DocumentExtractorHelper.getEnumSet(DocumentExtractorHelper.getDocValues(TiersIndexableData.ETATS_ENTREPRISE, doc), TypeEtatEntreprise.class);

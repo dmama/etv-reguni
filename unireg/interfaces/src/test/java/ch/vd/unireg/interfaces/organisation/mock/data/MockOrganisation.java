@@ -66,7 +66,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<SiteOrganisation> getDonneesSites() {
-		return new ArrayList<SiteOrganisation>(sites.values());
+		return new ArrayList<>(sites.values());
 	}
 
 	@Override
@@ -77,6 +77,16 @@ public class MockOrganisation implements Organisation {
 	@Override
 	public String getNumeroIDE(RegDate date) {
 		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNumeroRC() {
+		return OrganisationHelper.getNumerosRCPrincipaux(sites);
+	}
+
+	@Override
+	public String getNumeroRC(RegDate date) {
+		return OrganisationHelper.valueForDate(getNumeroRC(), date);
 	}
 
 	@Override

@@ -151,6 +151,18 @@ public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesI
 		}
 		data.setCorporationSplit(isSplit);
 		data.setCorporationTransferedPatrimony(hasTransferedPatrimony);
+
+		// éventuels identifiants RC (en provenance du civil seulement)
+		if (organisation != null) {
+			final List<DateRanged<String>> all = organisation.getNumeroRC();
+			if (all != null) {
+				all.stream()
+						.map(DateRanged::getPayload)
+						.map(IndexerFormatHelper::numRCToString)
+						.distinct()
+						.forEach(data::addNumeroRC);
+			}
+		}
 	}
 
 	@Override

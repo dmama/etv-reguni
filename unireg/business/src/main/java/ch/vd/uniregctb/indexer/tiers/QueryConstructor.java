@@ -525,7 +525,7 @@ public class QueryConstructor {
 	private static void addNumeroIDE(BooleanQuery fullQuery, TiersCriteria criteria) throws IndexerException {
 
 		if (StringUtils.isNotBlank(criteria.getNumeroIDE())) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.IDE, IndexerFormatHelper.noIdeToString(criteria.getNumeroIDE()).toLowerCase(Locale.getDefault())));
+			final Query q = new TermQuery(new Term(TiersIndexableData.NUM_IDE, IndexerFormatHelper.noIdeToString(criteria.getNumeroIDE()).toLowerCase(Locale.getDefault())));
 			fullQuery.add(q, must);
 		}
 	}
