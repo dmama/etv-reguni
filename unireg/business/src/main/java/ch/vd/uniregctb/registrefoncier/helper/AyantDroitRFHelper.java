@@ -185,6 +185,7 @@ public abstract class AyantDroitRFHelper {
 				pm.setNoRF(juri.getNoRF());
 				pm.setNoContribuable(juri.getNrACI());
 				pm.setRaisonSociale(juri.getName());
+				pm.setNumeroRC(juri.getFirmenNr());
 				ayantDroitRF = pm;
 			}
 		}

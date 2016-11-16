@@ -210,6 +210,7 @@
 		<value>ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
+		<value>ch.vd.uniregctb.registrefoncier.RapprochementRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.AyantDroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.BatimentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.BienFondRF</value>

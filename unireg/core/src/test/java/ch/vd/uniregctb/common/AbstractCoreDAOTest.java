@@ -74,6 +74,11 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.PartPropriete;
@@ -149,6 +154,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
 
 import static org.junit.Assert.assertEquals;
@@ -1507,5 +1513,46 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 			}
 		}
 		return filtered;
+	}
+
+	protected PersonnePhysiqueRF addPersonnePhysiqueRF(String prenom, String nom, RegDate dateNaissance, String idRf, long noRf, Long numeroContribuable) {
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setDateNaissance(dateNaissance);
+		pp.setIdRF(idRf);
+		pp.setNoRF(noRf);
+		pp.setPrenom(prenom);
+		pp.setNom(nom);
+		pp.setNoContribuable(numeroContribuable);
+		return merge(pp);
+	}
+
+	protected CollectivitePubliqueRF addCollectivitePubliqueRF(String raisonSociale, String idRf, long noRf, Long numeroContribuable) {
+		final CollectivitePubliqueRF c = new CollectivitePubliqueRF();
+		c.setRaisonSociale(raisonSociale);
+		c.setIdRF(idRf);
+		c.setNoRF(noRf);
+		c.setNoContribuable(numeroContribuable);
+		return merge(c);
+	}
+
+	protected PersonneMoraleRF addPersonneMoraleRF(String raisonSociale, String numeroRC, String idRf, long noRf, Long numeroContribuable) {
+		final PersonneMoraleRF pm = new PersonneMoraleRF();
+		pm.setRaisonSociale(raisonSociale);
+		pm.setIdRF(idRf);
+		pm.setNoRF(noRf);
+		pm.setNoContribuable(numeroContribuable);
+		pm.setNumeroRC(numeroRC);
+		return merge(pm);
+	}
+
+	protected RapprochementRF addRapprochementRF(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, TypeRapprochementRF type, Contribuable ctb, TiersRF tiersRF, boolean annule) {
+		final RapprochementRF rrf = new RapprochementRF();
+		rrf.setAnnule(annule);
+		rrf.setDateDebut(dateDebut);
+		rrf.setDateFin(dateFin);
+		rrf.setContribuable(ctb);
+		rrf.setTiersRF(tiersRF);
+		rrf.setTypeRapprochement(type);
+		return merge(rrf);
 	}
 }

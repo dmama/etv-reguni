@@ -150,16 +150,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-
-				PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
-				pp.setIdRF("3893728273382823");
-				pp.setNoRF(3727);
-				pp.setNom("Nom");
-				pp.setPrenom("Autre prénom");
-				pp.setDateNaissance(RegDate.get(1956,1,23));
-				pp.setNoContribuable(827288022L);
-				ayantDroitRFDAO.save(pp);
-
+				addPersonnePhysiqueRF("Autre prénom", "Nom", date(1956, 1, 23), "3893728273382823", 3727, 827288022L);
 				assertEquals(1, ayantDroitRFDAO.getAll().size());
 			}
 		});

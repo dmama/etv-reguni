@@ -1,0 +1,42 @@
+package ch.vd.uniregctb.registrefoncier.dao;
+
+import java.util.List;
+
+import org.hibernate.Query;
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
+
+public class RapprochementRFDAOImpl extends BaseDAOImpl<RapprochementRF, Long> implements RapprochementRFDAO {
+
+	public RapprochementRFDAOImpl() {
+		super(RapprochementRF.class);
+	}
+
+	@NotNull
+	@Override
+	public List<RapprochementRF> findByContribuable(long ctbId) {
+		final Query query = getCurrentSession().createQuery("FROM RapprochementRF rrf WHERE rrf.contribuable.id=:ctbId ORDER BY rrf.id");
+		query.setParameter("ctbId", ctbId);
+		//noinspection unchecked
+		return query.list();
+	}
+
+	@NotNull
+	@Override
+	public List<TiersRF> findTiersRFSansRapprochement(RegDate dateReference) {
+		final Query query;
+		if (dateReference == null) {
+			query = getCurrentSession().createQuery("FROM TiersRF trf WHERE NOT EXISTS (SELECT 1 FROM RapprochementRF rrf WHERE rrf.tiersRF = trf AND rrf.annulationDate IS NULL)");
+		}
+		else {
+			query = getCurrentSession().createQuery("FROM TiersRF trf WHERE NOT EXISTS (SELECT 1 FROM RapprochementRF rrf WHERE rrf.tiersRF = trf AND rrf.annulationDate IS NULL AND (rrf.dateDebut IS NULL OR rrf.dateDebut <= :dateReference) AND (rrf.dateFin IS NULL OR rrf.dateFin >= :dateReference))");
+			query.setParameter("dateReference", dateReference);
+		}
+		//noinspection unchecked
+		return query.list();
+	}
+}
