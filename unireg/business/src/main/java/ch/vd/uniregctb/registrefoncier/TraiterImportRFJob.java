@@ -120,16 +120,16 @@ public class TraiterImportRFJob extends JobDefinition {
 			// on parse le fichier (dans un thread séparé)
 			ExecutorCompletionService<Boolean> ecs = new ExecutorCompletionService<>(Executors.newFixedThreadPool(1));
 			ecs.submit(() -> {
-				parser.processFile(is, dataAdapter, new SubStatusManager(0, 50, statusManager));    // <-- émetteur des données
+				parser.processFile(is, dataAdapter);    // <-- émetteur des données
 				return true;
 			});
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
-			mutationsDetector.processImmeubles(importId, nbThreads, dataAdapter.getImmeublesIterator());   // <-- consommateur des données
-			mutationsDetector.processDroits(importId, nbThreads, dataAdapter.getDroitsIterator());
-			mutationsDetector.processProprietaires(importId, nbThreads, dataAdapter.getProprietairesIterator());
-			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator());
-			mutationsDetector.processSurfaces(importId, nbThreads, dataAdapter.getSurfacesIterator());
+			mutationsDetector.processImmeubles(importId, nbThreads, dataAdapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
+			mutationsDetector.processDroits(importId, nbThreads, dataAdapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
+			mutationsDetector.processProprietaires(importId, nbThreads, dataAdapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
+			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
+			mutationsDetector.processSurfaces(importId, nbThreads, dataAdapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
 
 			// on attend que le parsing soit terminé
 			ecs.take().get();

@@ -13,14 +13,12 @@ import java.util.Set;
 
 import org.codehaus.stax2.XMLInputFactory2;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 
 /**
@@ -95,11 +93,10 @@ public class FichierImmeublesRFParser {
 	 *
 	 * @param is            le flux du fichier à parser
 	 * @param callback      une interface de callback pour recevoir en flux tendu les éléments parsés.
-	 * @param statusManager un status manager pour suivre la progression du traitement
 	 * @throws XMLStreamException exception levée si le fichier n'est pas valide XML
 	 * @throws JAXBException      exception levée si JAXB n'arrive pas interpréter le fichier XML
 	 */
-	public void processFile(@NotNull InputStream is, @NotNull Callback callback, @Nullable StatusManager statusManager) throws XMLStreamException, JAXBException {
+	public void processFile(@NotNull InputStream is, @NotNull Callback callback) throws XMLStreamException, JAXBException {
 
 		final XMLInputFactory2 factory = (XMLInputFactory2) XMLInputFactory.newInstance();
 		factory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
@@ -118,33 +115,18 @@ public class FichierImmeublesRFParser {
 				final String localName = xmlStreamReader.getLocalName();
 				switch (localName) {
 				case LIST_IMMEUBLES:
-					if (statusManager != null) {
-						statusManager.setMessage("Détection des mutations sur les immeubles...", 0);
-					}
 					processImmeubles(xmlStreamReader, callback);
 					break;
 				case LIST_DROITS:
-					if (statusManager != null) {
-						statusManager.setMessage("Détection des mutations sur les droits...", 20);
-					}
 					processDroits(xmlStreamReader, callback);
 					break;
 				case LIST_PROPRIETAIRES:
-					if (statusManager != null) {
-						statusManager.setMessage("Détection des mutations sur les propriétaires...", 40);
-					}
 					processProprietaires(xmlStreamReader, callback);
 					break;
 				case LIST_BATIMENTS:
-					if (statusManager != null) {
-						statusManager.setMessage("Détection des mutations sur les bâtiments...", 60);
-					}
 					processBatiments(xmlStreamReader, callback);
 					break;
 				case LIST_SURFACES:
-					if (statusManager != null) {
-						statusManager.setMessage("Détection des mutations sur les surfaces...", 80);
-					}
 					processSurfaces(xmlStreamReader, callback);
 					break;
 				default:
@@ -155,9 +137,6 @@ public class FichierImmeublesRFParser {
 				xmlStreamReader.next();
 			}
 
-		}
-		if (statusManager != null) {
-			statusManager.setMessage("Détection des mutations terminé.", 100);
 		}
 		callback.done();
 		xmlStreamReader.close();

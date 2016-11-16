@@ -95,7 +95,7 @@ public class DataRFMutationsProcessor {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Processing mutations ids={}", Arrays.toString(mutationsIds.toArray()));
 				}
-				statusManager.setMessage("Traitement des mutations...", monitor.getProgressInPercent());
+				statusManager.setMessage("Traitement des mutations " + typeEntite.name() + "...", monitor.getProgressInPercent());
 				mutationsIds.stream()
 						.map(id -> getMutation(id))
 						.forEach(mut -> processMutation(mut, proc));

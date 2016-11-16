@@ -96,7 +96,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		final JuristischePersonstamm juristische = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale");
 		final JuristischePersonstamm collectivite = newCollectivitePublique("574739202303482", 3727L, 827288022L, "Raison sociale");
 		final List<Personstamm> proprietaires = Arrays.asList(natuerliche, juristische, collectivite);
-		detector.processProprietaires(IMPORT_ID, 2, proprietaires.iterator());
+		detector.processProprietaires(IMPORT_ID, 2, proprietaires.iterator(), null);
 
 		// on devrait avoir trois événements de mutation de type CREATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -261,7 +261,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// - nouveau noACI
 		final JuristischePersonstamm collectivite = newCollectivitePublique(idRFColl, 3727L, 183482392L, "Raison sociale");
 		final List<Personstamm> proprietaires = Arrays.asList(natuerliche, juristische, collectivite);
-		detector.processProprietaires(IMPORT_ID, 2, proprietaires.iterator());
+		detector.processProprietaires(IMPORT_ID, 2, proprietaires.iterator(), null);
 
 		// on devrait avoir trois événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -389,7 +389,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		final JuristischePersonstamm juristische = newPersonneMorale("48349384890202", 3727L, 827288022L, "Raison sociale");
 		final JuristischePersonstamm collectivite = newCollectivitePublique("574739202303482", 3727L, 827288022L, "Raison sociale");
 		final List<Personstamm> proprietaires = Arrays.asList(natuerliche, juristische, collectivite);
-		detector.processProprietaires(IMPORT_ID, 2, proprietaires.iterator());
+		detector.processProprietaires(IMPORT_ID, 2, proprietaires.iterator(), null);
 
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();

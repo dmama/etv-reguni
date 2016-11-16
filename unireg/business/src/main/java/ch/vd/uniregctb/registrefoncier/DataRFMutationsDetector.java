@@ -7,9 +7,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -23,6 +25,7 @@ import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.cache.ObjectKey;
 import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationInterface;
@@ -89,7 +92,11 @@ public class DataRFMutationsDetector {
 		this.cacheDroits = cacheDroits;
 	}
 
-	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator) {
+	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator, @Nullable StatusManager statusManager) {
+
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les immeubles...");
+		}
 
 		final ParallelBatchTransactionTemplate<Grundstueck> template = new ParallelBatchTransactionTemplate<Grundstueck>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
 			@Override
@@ -99,6 +106,8 @@ public class DataRFMutationsDetector {
 				return 10;
 			}
 		};
+
+		final AtomicInteger processed = new AtomicInteger();
 
 		template.execute(new BatchCallback<Grundstueck>() {
 
@@ -147,6 +156,11 @@ public class DataRFMutationsDetector {
 					evenementRFMutationDAO.save(mutation);
 				}
 
+				processed.addAndGet(batch.size());
+				if (statusManager != null) {
+					statusManager.setMessage("Détection des mutations sur les immeubles... (" + processed.get() + " processés)");
+				}
+
 				return true;
 			}
 
@@ -159,8 +173,11 @@ public class DataRFMutationsDetector {
 		}, null);
 	}
 
-	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator) {
+	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, @Nullable StatusManager statusManager) {
 
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les droits... (regroupement)");
+		}
 
 		// on regroupe toutes les droits
 		cacheDroits.clear();    // on utilise un cache persistant pour limiter l'utilisation mémoire, mais on est pas
@@ -181,6 +198,10 @@ public class DataRFMutationsDetector {
 			cacheDroits.put(key, list);
 		}
 
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les droits...", 50);
+		}
+
 		// on détecte les mutations qui doivent être générées
 		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> template
 				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>>(cacheDroits.entrySet().iterator(), batchSize, nbThreads,
@@ -193,6 +214,8 @@ public class DataRFMutationsDetector {
 				return 10;
 			}
 		};
+
+		final AtomicInteger processed = new AtomicInteger();
 
 		// détection des mutations de type CREATION et MODIFICATION
 		template.execute(new BatchCallback<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>>() {
@@ -253,7 +276,13 @@ public class DataRFMutationsDetector {
 							.map(PersonEigentumAnteil::getGemeinschaft)
 							.filter(g -> g != null)
 							.forEach(g -> processAyantDroit(parentImport, g));
+
 				});
+
+				processed.addAndGet(batch.size());
+				if (statusManager != null) {
+					statusManager.setMessage("Détection des mutations sur les droits... (" + processed.get() + " processés)", 50);
+				}
 
 				return true;
 			}
@@ -295,7 +324,11 @@ public class DataRFMutationsDetector {
 		});
 	}
 
-	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator) {
+	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator, @Nullable StatusManager statusManager) {
+
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les propriétaires...");
+		}
 
 		final ParallelBatchTransactionTemplate<Personstamm> template = new ParallelBatchTransactionTemplate<Personstamm>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
 			@Override
@@ -305,6 +338,8 @@ public class DataRFMutationsDetector {
 				return 10;
 			}
 		};
+
+		final AtomicInteger processed = new AtomicInteger();
 
 		template.execute(new BatchCallback<Personstamm>() {
 
@@ -318,6 +353,11 @@ public class DataRFMutationsDetector {
 
 				for (Personstamm person : batch) {
 					processAyantDroit(parentImport, person);
+				}
+
+				processed.addAndGet(batch.size());
+				if (statusManager != null) {
+					statusManager.setMessage("Détection des mutations sur les propriétaires... (" + processed.get() + " processés)");
 				}
 
 				return true;
@@ -364,14 +404,23 @@ public class DataRFMutationsDetector {
 		evenementRFMutationDAO.save(mutation);
 	}
 
-	public void processConstructions(long importId, Iterator<Gebaeude> iterator) {
+	public void processConstructions(long importId, Iterator<Gebaeude> iterator, @Nullable StatusManager statusManager) {
+
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les bâtiments...");
+		}
+
 		// TODO (msi) implémenter la détection des mutations des bâtiments
 		while (iterator.hasNext()) {
 			iterator.next();
 		}
 	}
 
-	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator) {
+	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator, @Nullable StatusManager statusManager) {
+
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les surfaces... (regroupement)");
+		}
 
 		// on regroupe toutes les surfaces (en mémoire, il y a en ~400'00 mais elles sont petites et la consommation mesurée est d'environ 160Mb)
 		final Map<String, List<Bodenbedeckung>> map = new TreeMap<>();
@@ -384,6 +433,10 @@ public class DataRFMutationsDetector {
 			map.computeIfAbsent(idRF, k -> new ArrayList<>()).add(bodenbedeckung);
 		}
 
+		if (statusManager != null) {
+			statusManager.setMessage("Détection des mutations sur les surfaces...", 50);
+		}
+
 		// on détecte les mutations qui doivent être générées
 		final ParallelBatchTransactionTemplate<Map.Entry<String, List<Bodenbedeckung>>> template
 				= new ParallelBatchTransactionTemplate<Map.Entry<String, List<Bodenbedeckung>>>(map.entrySet().iterator(), batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
@@ -394,6 +447,9 @@ public class DataRFMutationsDetector {
 				return 10;
 			}
 		};
+
+		final AtomicInteger processed = new AtomicInteger();
+
 		template.execute(new BatchCallback<Map.Entry<String, List<Bodenbedeckung>>>() {
 
 			private final ThreadLocal<Map.Entry<String, List<Bodenbedeckung>>> first = new ThreadLocal<>();
@@ -443,7 +499,14 @@ public class DataRFMutationsDetector {
 							// les surfaces sont égales : rien à faire
 						}
 					}
+
 				});
+
+				processed.addAndGet(batch.size());
+				if (statusManager != null) {
+					statusManager.setMessage("Détection des mutations sur les surfaces... (" + processed.get() + " processées)", 50);
+				}
+
 				return true;
 			}
 

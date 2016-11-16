@@ -86,7 +86,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
 		Bodenbedeckung surface2 = newSurfaceAuSol("382929efa218", "Paturage", 4728211);
 		List<Bodenbedeckung> surfaces = Arrays.asList(surface1, surface2);
-		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator());
+		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator(), null);
 
 		// on devrait avoir seul événement de mutation de type CREATION qui concerne un immeuble
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -146,7 +146,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		Bodenbedeckung surface3 = newSurfaceAuSol("382929efa218", "Paturage", 478323);
 		Bodenbedeckung surface4 = newSurfaceAuSol("457372892821", "Paturage", 4728211);
 		List<Bodenbedeckung> surfaces = Arrays.asList(surface1, surface2, surface3, surface4);
-		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator());
+		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator(), null);
 
 		// on devrait avoir deux événements de mutation de type CREATION qui concernent chacun des immeubles
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -260,7 +260,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// - surface différent
 		final Bodenbedeckung surface2 = newSurfaceAuSol("382929efa218", "Paturage", 2);
 		final List<Bodenbedeckung> surfaces = Arrays.asList(surface1, surface2);
-		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator());
+		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator(), null);
 
 		// on devrait avoir un seul événement de mutation de type MODIFICATION à l'état A_TRAITER dans la base
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -345,7 +345,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
 		final Bodenbedeckung surface2 = newSurfaceAuSol("382929efa218", "Paturage", 4728211);
 		final List<Bodenbedeckung> surfaces = Arrays.asList(surface1, surface2);
-		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator());
+		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator(), null);
 
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();

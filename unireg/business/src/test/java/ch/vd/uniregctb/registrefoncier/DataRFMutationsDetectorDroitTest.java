@@ -95,7 +95,7 @@ public class DataRFMutationsDetectorDroitTest {
 		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
 		List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
-		detector.processDroits(IMPORT_ID, 2, droits.iterator());
+		detector.processDroits(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir deux événements de mutation de type CREATION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -220,7 +220,7 @@ public class DataRFMutationsDetectorDroitTest {
 		final PersonEigentumAnteil droit3 = newDroitColl("38458fa0ac3", idRFCommunaute, idRfImmeuble, GemeinschaftsArt.ERBENGEMEINSCHAFT, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
 
 		List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
-		detector.processDroits(IMPORT_ID, 2, droits.iterator());
+		detector.processDroits(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir 4 événements de mutation de type CREATION :
 		//  - 3 pour chacun droits (2 propriétaires pp + 1 propriétaire communauté)
@@ -457,7 +457,7 @@ public class DataRFMutationsDetectorDroitTest {
 		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.GESAMTEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
 		List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
-		detector.processDroits(IMPORT_ID, 2, droits.iterator());
+		detector.processDroits(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir deux événements de mutation de type MODIFICATION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -655,7 +655,7 @@ public class DataRFMutationsDetectorDroitTest {
 		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
 		List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
-		detector.processDroits(IMPORT_ID, 2, droits.iterator());
+		detector.processDroits(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -764,7 +764,7 @@ public class DataRFMutationsDetectorDroitTest {
 		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
 
 		// on envoie une liste de droits vide
-		detector.processDroits(IMPORT_ID, 2, Collections.<PersonEigentumAnteil>emptyList().iterator());
+		detector.processDroits(IMPORT_ID, 2, Collections.<PersonEigentumAnteil>emptyList().iterator(), null);
 
 		// on devrait avoir deux événements de mutation de type SUPPRESSION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
