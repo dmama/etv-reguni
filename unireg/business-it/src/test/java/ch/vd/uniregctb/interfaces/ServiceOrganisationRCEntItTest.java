@@ -22,6 +22,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
@@ -217,6 +218,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
+	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testDirectGetAnnonceIDE() throws Exception {
 		String url = baseUrl + BASE_PATH_ANNONCE_IDE + "?noticeRequestId=" + ID_ANNONCE;
@@ -228,6 +230,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	}
 
+	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testRCEntClientGetAnnonceIDE() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
@@ -237,6 +240,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(1, listOfNoticeRequest.getNumberOfResults());
 	}
 
+	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testGetAnnonceIDE() throws Exception {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
@@ -245,6 +249,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(1L, annonceIDE.getNumero().longValue());
 	}
 
+	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testValidateAnnonceIDE() throws ParseException {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
@@ -269,6 +274,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(3, statut.getErreurs().size());
 	}
 
+	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testValidateProtoAnnonceIDE() throws ParseException {
 
