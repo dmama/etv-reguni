@@ -79,7 +79,7 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "RF_TIERS_ID", updatable = false, nullable = false)
+	@JoinColumn(name = "RF_TIERS_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_RFAPP_RFTIERS_ID")
 	public TiersRF getTiersRF() {
 		return tiersRF;
@@ -90,7 +90,7 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "CTB_ID", updatable = false, nullable = false)
+	@JoinColumn(name = "CTB_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_RFAPP_CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;

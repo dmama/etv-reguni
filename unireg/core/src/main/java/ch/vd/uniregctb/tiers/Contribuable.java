@@ -12,9 +12,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
@@ -28,6 +30,7 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -42,6 +45,7 @@ public abstract class Contribuable extends Tiers {
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 	private Set<DecisionAci> decisionsAci;
 	private Set<DroitAcces> droitsAccesAppliques;
+	private Set<RapprochementRF> rapprochementsRF;
 
 	public Contribuable() {
 	}
@@ -461,5 +465,36 @@ public abstract class Contribuable extends Tiers {
 			}
 		}
 		super.addDeclaration(declaration);
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "CTB_ID", nullable = false)
+	@ForeignKey(name = "FK_RAPPRF_CTB_ID")
+	public Set<RapprochementRF> getRapprochementsRF() {
+		return rapprochementsRF;
+	}
+
+	public void setRapprochementsRF(Set<RapprochementRF> rapprochementsRF) {
+		this.rapprochementsRF = rapprochementsRF;
+	}
+
+	public void addRapprochementRF(RapprochementRF rapprochement) {
+		if (rapprochementsRF == null) {
+			rapprochementsRF = new HashSet<>();
+		}
+		rapprochement.setContribuable(this);
+		rapprochementsRF.add(rapprochement);
+	}
+
+	@NotNull
+	@Transient
+	public List<RapprochementRF> getRapprochementsRFNonAnnulesTries() {
+		if (rapprochementsRF == null || rapprochementsRF.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return rapprochementsRF.stream()
+				.filter(r -> !r.isAnnule())
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 }

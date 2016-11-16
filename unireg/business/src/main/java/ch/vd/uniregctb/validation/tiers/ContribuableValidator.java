@@ -60,6 +60,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 			vr.merge(validateDecisions(ctb));
 			vr.merge(validateAdressesMandataires(ctb));
 			vr.merge(validateChevauchementsMandats(ctb));
+			vr.merge(validateRapprochementsRF(ctb));
 		}
 		return vr;
 	}
@@ -335,5 +336,22 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 	private static <K, V> void consolidateInMap(Map<K, List<V>> map, K key, V value) {
 		final List<V> list = map.computeIfAbsent(key, k -> new LinkedList<>());
 		list.add(value);
+	}
+
+	private ValidationResults validateRapprochementsRF(Contribuable ctb) {
+
+		final ValidationResults vr = new ValidationResults();
+		final ValidationService service = getValidationService();
+
+		// TODO peuvent-ils se chevaucher ? (que se passe-t-il en cas de doublon au RF ?...)
+
+		// il vaut valider les rapprochements chacun pour soi de toute façon
+		if (ctb.getRapprochementsRF() != null) {
+			ctb.getRapprochementsRF().stream()
+					.map(service::validate)
+					.forEach(vr::merge);
+		}
+
+		return vr;
 	}
 }
