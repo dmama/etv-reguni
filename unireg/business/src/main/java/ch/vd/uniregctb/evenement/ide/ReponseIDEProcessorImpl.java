@@ -76,10 +76,16 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 		final RegDate date = RegDateHelper.get(annonceIDE.getDateAnnonce());
 		final Etablissement etablissement = referenceAnnonceIDE.getEtablissement();
 
-		if (annonceIDE.getStatut().getStatut() == StatutAnnonce.ACCEPTE_IDE) {
+		final StatutAnnonce statut = annonceIDE.getStatut().getStatut();
+		if (statut == null) {
+			throw new ReponseIDEProcessorException(
+					String.format("Fatal: impossible de déterminer le statut de l'annonce à l'IDE numéro %d jointe à la réponse!", annonceIDE.getNumero()));
+		}
+
+		if (statut == StatutAnnonce.ACCEPTE_IDE || statut == StatutAnnonce.TRANSMIS) {
 			Objects.requireNonNull(annonceIDE.getNoIde(),
 			                       String.format("Fatal: l'annonce à l'IDE numéro %d jointe à la réponse est de statut %s mais ne contient pas le numéro IDE de l'entité concernée.",
-			                                     annonceIDE.getNumero(), annonceIDE.getStatut().getStatut())
+			                                     annonceIDE.getNumero(), statut)
 			);
 			final Entreprise entreprise = tiersService.getEntreprise(etablissement, date);
 			if (entreprise == null) {
@@ -123,7 +129,7 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 						              DateHelper.dateTimeToDisplayString(annonceIDE.getDateAnnonce())));
 			}
 		}
-		else if (annonceIDE.getStatut().getStatut() == StatutAnnonce.REFUSE_IDE) {
+		else if (statut == StatutAnnonce.REFUSE_IDE) {
 			final NumeroIDE noIdeRemplacant = annonceIDE.getNoIdeRemplacant();
 			/* Cas de dédoublonnage */
 			if (noIdeRemplacant != null) {
@@ -140,7 +146,7 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 				);
 			}
 		}
-		else if (annonceIDE.getStatut().getStatut() == StatutAnnonce.REJET_RCENT) {
+		else if (statut == StatutAnnonce.REJET_RCENT) {
 			Audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'établissement n°%s par RCEnt. (Voir les erreurs ci-dessus)",
 			                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
 			           )
@@ -149,7 +155,7 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 		else {
 			Audit.warn(annonceIDE.getNumero(), String.format("L'annonce à l'IDE portant sur l'établissement n°%s par RCEnt est passée à l'état %s. Aucune action à entreprendre.",
 			                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
-			                                                 annonceIDE.getStatut().getStatut()
+			                                                 statut
 			           )
 			);
 		}
