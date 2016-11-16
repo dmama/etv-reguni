@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
+import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckNummer;
 import ch.vd.capitastra.grundstueck.Liegenschaft;
@@ -49,6 +50,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 	private PlatformTransactionManager transactionManager;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
 	@Before
 	public void setUp() throws Exception {
@@ -56,6 +58,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		transactionManager = new MockTransactionManager();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
 		cacheDroits = new MockPersistentCache<>();
+		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -92,7 +95,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouveaux immeubles
 		final UnbekanntesGrundstueck kopie0 = newKopie(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
@@ -133,7 +136,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouveaux immeubles
 		final Liegenschaft bienfond = newBienFond(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
@@ -280,7 +283,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec des modifications
 		// - nouvelle estimation fiscale
@@ -429,7 +432,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
 		final Liegenschaft bienfondImport = newBienFond(2233, 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);

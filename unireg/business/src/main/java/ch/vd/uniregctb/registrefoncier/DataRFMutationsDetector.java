@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -65,14 +64,17 @@ public class DataRFMutationsDetector {
 	private final PlatformTransactionManager transactionManager;
 
 	private final PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+	private final PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
 	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               AyantDroitRFDAO ayantDroitRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
-	                               PlatformTransactionManager transactionManager, PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
-		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+	                               PlatformTransactionManager transactionManager,
+	                               PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits,
+	                               PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces) {
+		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 	}
 
 	public DataRFMutationsDetector(int batchSize,
@@ -81,7 +83,9 @@ public class DataRFMutationsDetector {
 	                               AyantDroitRFDAO ayantDroitRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
-	                               PlatformTransactionManager transactionManager, PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
+	                               PlatformTransactionManager transactionManager,
+	                               PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits,
+	                               PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
 		this.immeubleRFDAO = immeubleRFDAO;
@@ -90,6 +94,7 @@ public class DataRFMutationsDetector {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
 		this.cacheDroits = cacheDroits;
+		this.cacheSurfaces = cacheSurfaces;
 	}
 
 	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator, @Nullable StatusManager statusManager) {
@@ -322,6 +327,9 @@ public class DataRFMutationsDetector {
 
 			return null;
 		});
+
+		// inutile de garder des données en mémoire ou sur le disque
+		cacheDroits.clear();
 	}
 
 	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator, @Nullable StatusManager statusManager) {
@@ -422,15 +430,24 @@ public class DataRFMutationsDetector {
 			statusManager.setMessage("Détection des mutations sur les surfaces... (regroupement)");
 		}
 
-		// on regroupe toutes les surfaces (en mémoire, il y a en ~400'00 mais elles sont petites et la consommation mesurée est d'environ 160Mb)
-		final Map<String, List<Bodenbedeckung>> map = new TreeMap<>();
+		// on regroupe toutes les droits
+		// Note: on utilise un cache persistant pour limiter l'utilisation mémoire, mais on est pas
+		//       du tout intéressé par le côté persistent des données, on commence donc par tout effacer.
+		cacheSurfaces.clear();
 		while (iterator.hasNext()) {
 			final Bodenbedeckung bodenbedeckung = iterator.next();
 			if (bodenbedeckung == null) {
 				break;
 			}
+
 			final String idRF = bodenbedeckung.getGrundstueckIDREF();
-			map.computeIfAbsent(idRF, k -> new ArrayList<>()).add(bodenbedeckung);
+			final IdRfKey key = new IdRfKey(idRF);
+			ArrayList<Bodenbedeckung> list = cacheSurfaces.get(key);
+			if (list == null) {
+				list = new ArrayList<>();
+			}
+			list.add(bodenbedeckung);
+			cacheSurfaces.put(key, list);
 		}
 
 		if (statusManager != null) {
@@ -438,8 +455,10 @@ public class DataRFMutationsDetector {
 		}
 
 		// on détecte les mutations qui doivent être générées
-		final ParallelBatchTransactionTemplate<Map.Entry<String, List<Bodenbedeckung>>> template
-				= new ParallelBatchTransactionTemplate<Map.Entry<String, List<Bodenbedeckung>>>(map.entrySet().iterator(), batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>> template
+				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>>(cacheSurfaces.entrySet().iterator(), batchSize, nbThreads,
+				                                                                                        Behavior.REPRISE_AUTOMATIQUE, transactionManager, null,
+				                                                                                        AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
@@ -450,19 +469,19 @@ public class DataRFMutationsDetector {
 
 		final AtomicInteger processed = new AtomicInteger();
 
-		template.execute(new BatchCallback<Map.Entry<String, List<Bodenbedeckung>>>() {
+		template.execute(new BatchCallback<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>>() {
 
-			private final ThreadLocal<Map.Entry<String, List<Bodenbedeckung>>> first = new ThreadLocal<>();
+			private final ThreadLocal<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Map.Entry<String, List<Bodenbedeckung>>> batch) throws Exception {
+			public boolean doInTransaction(List<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>> batch) throws Exception {
 				first.set(batch.get(0));
 
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				batch.forEach(e -> {
 
-					final String idRF = e.getKey();
+					final String idRF = ((IdRfKey) e.getKey()).getIdRF();
 					final List<Bodenbedeckung> nouvellesSurfaces = e.getValue();
 
 					final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF));
@@ -517,6 +536,9 @@ public class DataRFMutationsDetector {
 				}
 			}
 		}, null);
+
+		// inutile de garder des données en mémoire ou sur le disque
+		cacheSurfaces.clear();
 
 		// TODO (msi) faut-il détecter les immeubles qui perdraient toutes les surfaces au sol ?
 	}

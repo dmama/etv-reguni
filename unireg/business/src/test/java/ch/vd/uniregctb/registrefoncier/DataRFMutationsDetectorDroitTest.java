@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.GemeinschaftsArt;
@@ -52,6 +53,7 @@ public class DataRFMutationsDetectorDroitTest {
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
 	@Before
 	public void setUp() throws Exception {
@@ -60,6 +62,7 @@ public class DataRFMutationsDetectorDroitTest {
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
 		immeubleRFDAO = new MockImmeubleRFDAO();
 		cacheDroits = new MockPersistentCache<>();
+		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -87,7 +90,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie trois nouveaux droits sur deux propriétaires qui concernent deux immeubles
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
@@ -205,7 +208,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		final String idRfPP1 = "029191d4fec44";
 		final String idRfPP2 = "37838sc9d94de";
@@ -217,7 +220,8 @@ public class DataRFMutationsDetectorDroitTest {
 		droit1.getNatuerlichePersonGb().setGemeinschatIDREF(idRFCommunaute);
 		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", idRfPP2, idRfImmeuble, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
 		droit2.getNatuerlichePersonGb().setGemeinschatIDREF(idRFCommunaute);
-		final PersonEigentumAnteil droit3 = newDroitColl("38458fa0ac3", idRFCommunaute, idRfImmeuble, GemeinschaftsArt.ERBENGEMEINSCHAFT, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
+		final PersonEigentumAnteil droit3 =
+				newDroitColl("38458fa0ac3", idRFCommunaute, idRfImmeuble, GemeinschaftsArt.ERBENGEMEINSCHAFT, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
 
 		List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
 		detector.processDroits(IMPORT_ID, 2, droits.iterator(), null);
@@ -446,7 +450,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie trois droits différents sur les mêmes propriétaires et immeubles
 		//  - part différente
@@ -647,7 +651,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les trois mêmes droits sur les mêmes propriétaires et immeubles
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
@@ -761,7 +765,7 @@ public class DataRFMutationsDetectorDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie une liste de droits vide
 		detector.processDroits(IMPORT_ID, 2, Collections.<PersonEigentumAnteil>emptyList().iterator(), null);

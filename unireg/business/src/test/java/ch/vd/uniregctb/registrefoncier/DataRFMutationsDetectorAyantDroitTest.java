@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
 import ch.vd.capitastra.grundstueck.JuristischePersonUnterart;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
@@ -46,6 +47,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 	private PlatformTransactionManager transactionManager;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
 	@Before
 	public void setUp() throws Exception {
@@ -53,6 +55,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		transactionManager = new MockTransactionManager();
 		immeubleRFDAO = new MockImmeubleRFDAO();
 		cacheDroits = new MockPersistentCache<>();
+		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -89,7 +92,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie trois nouveaux ayant-droits
 		final NatuerlichePersonstamm natuerliche = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
@@ -251,7 +254,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec des modifications
 		// - nouveau prénom
@@ -382,7 +385,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
 		final NatuerlichePersonstamm natuerliche = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));

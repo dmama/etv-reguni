@@ -45,6 +45,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
 	@Before
 	public void setUp() throws Exception {
@@ -53,6 +54,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
 		immeubleRFDAO = new MockImmeubleRFDAO();
 		cacheDroits = new MockPersistentCache<>();
+		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -80,7 +82,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouvelles surfaces
 		Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
@@ -138,7 +140,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(1, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(1, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie quatre nouvelles surfaces appartenant à deux immeubles
 		Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
@@ -252,7 +254,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouveaux surfaces aves des modifications
 		// - type différent
@@ -339,7 +341,7 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouveaux surfaces avec les données que celles dans la DB
 		final Bodenbedeckung surface1 = newSurfaceAuSol("382929efa218", "Forêt", 37823);
