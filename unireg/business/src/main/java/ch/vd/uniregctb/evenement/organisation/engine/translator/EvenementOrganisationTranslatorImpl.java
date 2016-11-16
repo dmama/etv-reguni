@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.StringsUtils;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -269,7 +270,17 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				);
 			}
 
-			evenements.add(new RetourAnnonceIDE(event, organisation, entreprise, context, options, serviceOrganisationService.getAnnonceIDE(noAnnonceIDE)));
+			final AnnonceIDEEnvoyee annonceIDE = serviceOrganisationService.getAnnonceIDE(noAnnonceIDE);
+			if (annonceIDE == null) {
+				throw new EvenementOrganisationException(
+						String.format(
+								"Fatal: Impossible de traiter l'événement de retour d'annonce à l'IDE n°%d: impossible de retrouver l'annonce à l'IDE %d à l'origine de l'événement! " +
+										"Le rapport entre tiers a peut être changé depuis?",
+								event.getNoEvenement(), noAnnonceIDE
+						)
+				);
+			}
+			evenements.add(new RetourAnnonceIDE(event, organisation, entreprise, context, options, annonceIDE));
 			// Pas question de traiter normallement, on connait déjà les changements.
 			evaluateStrategies = false;
 		}
