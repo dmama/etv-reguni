@@ -49,10 +49,6 @@ public class TraiterImportRFJob extends JobDefinition {
 	private EsbStore zipRaftStore;
 	private DataRFMutationsDetector mutationsDetector;
 
-	public TraiterImportRFJob(String name, JobCategory categorie, int sortOrder, String description) {
-		super(name, categorie, sortOrder, description);
-	}
-
 	public void setParser(FichierImmeublesRFParser parser) {
 		this.parser = parser;
 	}

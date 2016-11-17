@@ -25,10 +25,6 @@ public class TraiterMutationsRFJob extends JobDefinition {
 
 	private DataRFMutationsProcessor processor;
 
-	public TraiterMutationsRFJob(String name, JobCategory categorie, int sortOrder, String description) {
-		super(name, categorie, sortOrder, description);
-	}
-
 	public void setProcessor(DataRFMutationsProcessor processor) {
 		this.processor = processor;
 	}

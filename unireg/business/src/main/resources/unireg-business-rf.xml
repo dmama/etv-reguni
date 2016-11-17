@@ -61,6 +61,15 @@
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 
+	<bean id="rapprochementTiersRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFProcessor">
+		<constructor-arg ref="transactionManager"/>
+		<constructor-arg ref="tiersService"/>
+		<constructor-arg ref="adresseService"/>
+		<constructor-arg ref="rapprochementRFDAO"/>
+		<constructor-arg ref="hibernateTemplate"/>
+		<constructor-arg ref="identCtbService"/>
+	</bean>
+
 	<bean id="estimationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidator" parent="dateRangeEntityValidator"/>
 	<bean id="situationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SituationRFValidator" parent="dateRangeEntityValidator"/>
 	<bean id="surfaceTotaleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceTotaleRFValidator" parent="dateRangeEntityValidator"/>

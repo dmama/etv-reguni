@@ -35,7 +35,68 @@ import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AnnoncesIDERapport;
+import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
+import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
+import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
+import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
+import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
+import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPMRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
+import ch.vd.uniregctb.document.DeterminationQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
+import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.DocumentService;
+import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
+import ch.vd.uniregctb.document.EchoirDIsPMRapport;
+import ch.vd.uniregctb.document.EchoirDIsPPRapport;
+import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
+import ch.vd.uniregctb.document.EnvoiLRsRapport;
+import ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport;
+import ch.vd.uniregctb.document.EnvoiQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.EnvoiRappelsQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
+import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
+import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.ListeAssujettisRapport;
+import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
+import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
+import ch.vd.uniregctb.document.ListeNoteRapport;
+import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
+import ch.vd.uniregctb.document.ListesNominativesRapport;
+import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
+import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
+import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RecalculTachesRapport;
+import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
+import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
+import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
+import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolesCommunesPMRapport;
+import ch.vd.uniregctb.document.RolesCommunesPPRapport;
+import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.RolesOIPMRapport;
+import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
+import ch.vd.uniregctb.document.StatistiquesDIsRapport;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
+import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
+import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.uniregctb.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
@@ -56,6 +117,7 @@ import ch.vd.uniregctb.metier.piis.DumpPeriodesImpositionImpotSourceResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
+import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
@@ -1487,6 +1549,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(AppariementEtablissementsSecondairesRapport doc, OutputStream os) throws Exception {
 					final PdfAppariementEtablissementsSecondairesRapport document = new PdfAppariementEtablissementsSecondairesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RapprochementTiersRFRapport generateRapport(final RapprochementTiersRFResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRapprochementTiersRF";
+		final String description = "Rapport d'exécution du job de rapprochement des tiers RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RapprochementTiersRFRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RapprochementTiersRFRapport>() {
+				@Override
+				public void writeDoc(RapprochementTiersRFRapport doc, OutputStream os) throws Exception {
+					final PdfRapprochementTiersRFRapport document = new PdfRapprochementTiersRFRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
