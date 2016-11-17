@@ -78,7 +78,6 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
 		tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
 		tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
-		// TODO: Fermer les adresses en surcharge!
 
 		warnings.addWarning("Réinscription de l’entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.");
 	}

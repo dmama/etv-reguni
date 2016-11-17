@@ -96,7 +96,6 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 		// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
 		tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
 		tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
-		// TODO: Fermer les adresses en surcharge!
 
 		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscal.");
 		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
