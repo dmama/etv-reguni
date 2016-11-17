@@ -112,50 +112,50 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>2</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Achat</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>029191d4fec44</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>miteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
 				             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>1</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>202930c0e0f3</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Achat</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-03-28</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>28</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>4</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>029191d4fec44</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>alleineigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>28</BelegNummer>\n" +
+				             "                <BelegNummerIndex>4</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut0.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
@@ -164,29 +164,29 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>2</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Achat</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>37838sc9d94de</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>miteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>37838sc9d94de</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut1.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
 	}
 
 	/**
@@ -240,30 +240,30 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
 		assertEquals(idRfPP1, mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>2</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:GemeinschatIDREF>72828ce8f830a</ns2:GemeinschatIDREF>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Héritage</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>029191d4fec44</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>miteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <GemeinschatIDREF>72828ce8f830a</GemeinschatIDREF>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Héritage</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut0.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
@@ -272,30 +272,30 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
 		assertEquals(idRfPP2, mut1.getIdRF());  // le deuxième propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>2</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:GemeinschatIDREF>72828ce8f830a</ns2:GemeinschatIDREF>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Héritage</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>37838sc9d94de</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>miteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <GemeinschatIDREF>72828ce8f830a</GemeinschatIDREF>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Héritage</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>37838sc9d94de</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut1.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
 
 		final EvenementRFMutation mut2 = mutations.get(2);
 		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
@@ -304,30 +304,30 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
 		assertEquals(idRFCommunaute, mut2.getIdRF());  // le troisième propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>1</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:Gemeinschaft>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Héritage</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:GemeinschatID>72828ce8f830a</ns2:GemeinschatID>\n" +
-				             "            <ns2:Art>Erbengemeinschaft</ns2:Art>\n" +
-				             "        </ns2:Gemeinschaft>\n" +
-				             "        <ns2:PersonEigentumsForm>alleineigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <Gemeinschaft>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Héritage</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <GemeinschatID>72828ce8f830a</GemeinschatID>\n" +
+				             "            <Art>Erbengemeinschaft</Art>\n" +
+				             "        </Gemeinschaft>\n" +
+				             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut2.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut2.getXmlContent());
 
 		final EvenementRFMutation mut3 = mutations.get(3);
 		assertEquals(IMPORT_ID, mut3.getParentImport().getId());
@@ -475,50 +475,50 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>2</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Vol autorisé</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>029191d4fec44</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>miteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Vol autorisé</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
 				             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>1</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>1</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>202930c0e0f3</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Achat</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-03-28</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>28</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>4</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>029191d4fec44</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>gesamteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>28</BelegNummer>\n" +
+				             "                <BelegNummerIndex>4</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>gesamteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut0.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
@@ -527,29 +527,29 @@ public class DataRFMutationsDetectorDroitTest {
 		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<ns2:PersonEigentumAnteilList xmlns:ns2=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
-				             "        <ns2:Quote>\n" +
-				             "            <ns2:AnteilZaehler>2</ns2:AnteilZaehler>\n" +
-				             "            <ns2:AnteilNenner>5</ns2:AnteilNenner>\n" +
-				             "        </ns2:Quote>\n" +
-				             "        <ns2:BelastetesGrundstueckIDREF>382929efa218</ns2:BelastetesGrundstueckIDREF>\n" +
-				             "        <ns2:NatuerlichePersonGb>\n" +
-				             "            <ns2:Rechtsgruende>\n" +
-				             "                <ns2:AmtNummer>6</ns2:AmtNummer>\n" +
-				             "                <ns2:RechtsgrundCode>\n" +
-				             "                    <ns2:TextFr>Achat</ns2:TextFr>\n" +
-				             "                </ns2:RechtsgrundCode>\n" +
-				             "                <ns2:BelegDatum>2010-04-23</ns2:BelegDatum>\n" +
-				             "                <ns2:BelegJahr>2013</ns2:BelegJahr>\n" +
-				             "                <ns2:BelegNummer>33</ns2:BelegNummer>\n" +
-				             "                <ns2:BelegNummerIndex>1</ns2:BelegNummerIndex>\n" +
-				             "            </ns2:Rechtsgruende>\n" +
-				             "            <ns2:PersonstammIDREF>37838sc9d94de</ns2:PersonstammIDREF>\n" +
-				             "        </ns2:NatuerlichePersonGb>\n" +
-				             "        <ns2:PersonEigentumsForm>miteigentum</ns2:PersonEigentumsForm>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>2</AnteilZaehler>\n" +
+				             "            <AnteilNenner>5</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegJahr>2013</BelegJahr>\n" +
+				             "                <BelegNummer>33</BelegNummer>\n" +
+				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>37838sc9d94de</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</ns2:PersonEigentumAnteilList>\n", mut1.getXmlContent());
+				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
 	}
 
 	/**

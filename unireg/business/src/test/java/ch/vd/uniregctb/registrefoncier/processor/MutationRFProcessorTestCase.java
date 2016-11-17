@@ -12,10 +12,13 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 
 public abstract class MutationRFProcessorTestCase extends BusinessTest {
 
+	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
@@ -23,9 +26,24 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		this.ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
 		this.immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		this.evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		this.evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
+	}
+
+	protected Long insertPP(String idRF, String nom, String prenom, RegDate dateNaissance) throws Exception {
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+				pp.setIdRF(idRF);
+				pp.setNom(nom);
+				pp.setPrenom(prenom);
+				pp.setDateNaissance(dateNaissance);
+				return ayantDroitRFDAO.save(pp).getId();
+			}
+		});
 	}
 
 	protected Long insertImmeuble(@NotNull String idImmeubleRF) throws Exception {

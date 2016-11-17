@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PersonEigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<PersonEigentumAnteil VersionID="8af806fa4a4dd302014b16fc17256a06" MasterID="8af806fa4a4dd302014b16fc17266a0b">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>2</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_8af806fc4a35927c014ae2a6e76041b8</BelastetesGrundstueckIDREF>
+		<NatuerlichePersonGb VersionID="8af806fa4a4dd302014b16fc17266a0a" MasterID="8af806fa4a4dd302014b16fc17276a0e">
+			<Name>Schulz</Name>
+			<Status>definitiv</Status>
+			<Rechtsgruende>
+				<AmtNummer>6</AmtNummer>
+				<RechtsgrundCode>
+					<TextDe>*Achat</TextDe>
+					<TextFr>Achat</TextFr>
+				</RechtsgrundCode>
+				<BelegDatum>2014-12-23</BelegDatum>
+				<BelegJahr>2014</BelegJahr>
+				<BelegNummer>9593</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Rechtsgruende>
+			<Vorname>Alodie</Vorname>
+			<Geburtsdatum>
+				<Tag>5</Tag>
+				<Monat>11</Monat>
+				<Jahr>1987</Jahr>
+			</Geburtsdatum>
+			<Zivilstand>unbekannt</Zivilstand>
+			<NameEltern>Claude Patrick</NameEltern>
+			<WeitereVornamen>Lydia</WeitereVornamen>
+			<PersonstammIDREF>_1f109152381009be0138100a1d442eee</PersonstammIDREF>
+		</NatuerlichePersonGb>
+		<PersonEigentumsForm>miteigentum</PersonEigentumsForm>
+	</PersonEigentumAnteil>
+	<PersonEigentumAnteil VersionID="1f109152381009be0138100e4c7c00e5" MasterID="1f109152381009be0138100c87276e68">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>1</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_1f109152381009be0138100ba7e31031</BelastetesGrundstueckIDREF>
+		<NatuerlichePersonGb VersionID="1f109152381009be0138100c87296e9a" MasterID="1f109152381009be0138100e4c7c00e6">
+			<Name>Schulz</Name>
+			<Status>definitiv</Status>
+			<Rechtsgruende>
+				<AmtNummer>13</AmtNummer>
+				<RechtsgrundCode>
+					<TextDe>*Donation</TextDe>
+					<TextFr>Donation</TextFr>
+				</RechtsgrundCode>
+				<BelegDatum>2007-02-07</BelegDatum>
+				<BelegJahr>2007</BelegJahr>
+				<BelegNummer>173</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Rechtsgruende>
+			<Vorname>Alodie</Vorname>
+			<Geburtsdatum>
+				<Tag>5</Tag>
+				<Monat>11</Monat>
+				<Jahr>1987</Jahr>
+			</Geburtsdatum>
+			<Zivilstand>unbekannt</Zivilstand>
+			<NameEltern>Claude</NameEltern>
+			<WeitereVornamen>Lydia</WeitereVornamen>
+			<PersonstammIDREF>_1f109152381009be0138100a1d442eee</PersonstammIDREF>
+		</NatuerlichePersonGb>
+		<PersonEigentumsForm>alleineigentum</PersonEigentumsForm>
+		<AnzahlPaquiers>0</AnzahlPaquiers>
+	</PersonEigentumAnteil>
+</PersonEigentumAnteilList>

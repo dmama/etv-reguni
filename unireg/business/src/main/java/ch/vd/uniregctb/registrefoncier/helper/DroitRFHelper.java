@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,20 +15,17 @@ import ch.vd.capitastra.grundstueck.JuristischePersonGb;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonGb;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumsform;
-import ch.vd.capitastra.grundstueck.Quote;
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
-import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
@@ -57,7 +55,7 @@ public class DroitRFHelper {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
 				DroitRF droitRF = remaining.get(i);
-				if (droitRF.getMasterIdRF().equals(e.getMasterID()) &&  dataEquals(droitRF, e)) {
+				if (dataEquals(droitRF, e)) {
 					remaining.remove(i);
 					found = true;
 					break;
@@ -73,95 +71,86 @@ public class DroitRFHelper {
 	}
 
 	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
+		return dataEquals(droitRF, get(personEigentumAnteil, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
+	}
 
-		if (!droitRF.getMasterIdRF().equals(personEigentumAnteil.getMasterID())) {
-			// erreur de programmation, on ne devrait jamais comparer deux droit avec des masterIDRef différents
-			throw new ProgrammingException();
+	/**
+	 * Provider d'ayant-droit simplifié au maximum pour retourner un ayant-droit avec juste l'idRF de renseigné.
+	 */
+	@NotNull
+	private static AyantDroitRF simplisticAyantDroitProvider(String idRef) {
+		final AyantDroitRF i = new AyantDroitRF() {
+		};
+		i.setIdRF(idRef);
+		return i;
+	}
+
+	/**
+	 * Provider d'immeuble simplifié au maximum pour retourner un immeuble avec juste l'idRF de renseigné.
+	 */
+	@NotNull
+	private static ImmeubleRF simplisticImmeubleProvider(String idRef) {
+		final ImmeubleRF i = new ImmeubleRF() {
+		};
+		i.setIdRF(idRef);
+		return i;
+	}
+
+	/**
+	 * Provider de communauté simplifié au maximum pour retourner une communauté avec juste l'idRF de renseigné.
+	 */
+	@Nullable
+	private static CommunauteRF simplisticCommunauteProvider(@Nullable String idRf) {
+		if (idRf == null) {
+			return null;
+		}
+		final CommunauteRF c = new CommunauteRF();
+		c.setIdRF(idRf);
+		return c;
+	}
+
+	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
+
+		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
+			return false;
 		}
 
-		// [blindage] les valeurs suivantes ne doivent jamais changer (le modèle est construit sur ce prédicat)
-		if (droitRF instanceof DroitProprietePersonnePhysiqueRF && personEigentumAnteil.getNatuerlichePersonGb() == null) {
-			throw new IllegalArgumentException("Le type du droit masterIdRF=[" + droitRF.getMasterIdRF() + "] a changé.");
+		if (!left.getClass().equals(right.getClass())) {
+			return false;
 		}
-		if (droitRF instanceof DroitProprietePersonneMoraleRF && personEigentumAnteil.getJuristischePersonGb() == null) {
-			throw new IllegalArgumentException("Le type du droit masterIdRF=[" + droitRF.getMasterIdRF() + "] a changé.");
-		}
-		if (droitRF instanceof DroitProprieteCommunauteRF && personEigentumAnteil.getGemeinschaft() == null) {
-			throw new IllegalArgumentException("Le type du droit masterIdRF=[" + droitRF.getMasterIdRF() + "] a changé.");
-		}
-		if (droitRF instanceof UsufruitRF || droitRF instanceof DroitHabitationRF) {
-			// erreur de programmation, les usufruits et droits d'habitation ne sont pas définis avec le type ch.vd.capitastra.grundstueck.PersonEigentumAnteil
-			throw new ProgrammingException();
-		}
-		// [/blindage]
 
-		if (droitRF instanceof DroitProprietePersonnePhysiqueRF) {
-			return dataEquals((DroitProprietePersonnePhysiqueRF) droitRF, personEigentumAnteil);
+		if (left instanceof DroitProprietePersonnePhysiqueRF) {
+			return equalsDroitPropPP((DroitProprietePersonnePhysiqueRF) left, (DroitProprietePersonnePhysiqueRF) right);
 		}
-		else if (droitRF instanceof DroitProprietePersonneMoraleRF) {
-			return dataEquals((DroitProprietePersonneMoraleRF) droitRF, personEigentumAnteil);
+		else if (left instanceof DroitProprietePersonneMoraleRF) {
+			return equalsDroitPropPM((DroitProprietePersonneMoraleRF) left, (DroitProprietePersonneMoraleRF) right);
 		}
-		else if (droitRF instanceof DroitProprieteCommunauteRF) {
-			return dataEquals((DroitProprieteCommunauteRF) droitRF, personEigentumAnteil);
+		else if (left instanceof DroitProprieteCommunauteRF) {
+			return equalsDroitProp((DroitProprieteCommunauteRF) left, (DroitProprieteCommunauteRF) right);
 		}
 		else {
-			throw new IllegalArgumentException("Type de tiers RF inconnu=[" + droitRF.getClass() + "]");
+			throw new IllegalArgumentException("Type de tiers RF inconnu=[" + left.getClass() + "]");
 		}
 	}
 
-	private static boolean dataEquals(DroitProprietePersonnePhysiqueRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
-
-		final NatuerlichePersonGb natuerlichePersonGb = personEigentumAnteil.getNatuerlichePersonGb();
-		if (natuerlichePersonGb == null) {
-			throw new ProgrammingException();
-		}
-
-		final Rechtsgrund rechtsgrund = getDroitDeReference(natuerlichePersonGb.getRechtsgruende());
-
-		return communauteEquals(droitRF.getCommunaute(), natuerlichePersonGb.getGemeinschatIDREF()) &&
-				ayantDroitEquals(droitRF.getAyantDroit(), natuerlichePersonGb.getPersonstammIDREF()) &&
-				immeubleEquals(droitRF.getImmeuble(), personEigentumAnteil.getBelastetesGrundstueckIDREF()) &&
-				numeroAffaireEquals(droitRF.getNumeroAffaire(), rechtsgrund) &&
-				partEquals(droitRF.getPart(), personEigentumAnteil.getQuote()) &&
-				regimeEquals(droitRF.getRegime(), personEigentumAnteil.getPersonEigentumsForm()) &&
-				droitRF.getDateDebutOfficielle() == rechtsgrund.getBelegDatum() &&
-				motifEquals(droitRF.getMotifDebut(), rechtsgrund.getRechtsgrundCode());
+	private static boolean equalsDroitPropPP(@NotNull DroitProprietePersonnePhysiqueRF left, @NotNull DroitProprietePersonnePhysiqueRF right) {
+		return communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
+				equalsDroitProp(left, right);
 	}
 
-	private static boolean dataEquals(DroitProprietePersonneMoraleRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
-
-		final JuristischePersonGb juristischePersonGb = personEigentumAnteil.getJuristischePersonGb();
-		if (juristischePersonGb == null) {
-			throw new ProgrammingException();
-		}
-		final Rechtsgrund rechtsgrund = getDroitDeReference(juristischePersonGb.getRechtsgruende());
-
-		return communauteEquals(droitRF.getCommunaute(), juristischePersonGb.getGemeinschatIDREF()) &&
-				ayantDroitEquals(droitRF.getAyantDroit(), juristischePersonGb.getPersonstammIDREF()) &&
-				immeubleEquals(droitRF.getImmeuble(), personEigentumAnteil.getBelastetesGrundstueckIDREF()) &&
-				numeroAffaireEquals(droitRF.getNumeroAffaire(), rechtsgrund) &&
-				partEquals(droitRF.getPart(), personEigentumAnteil.getQuote()) &&
-				regimeEquals(droitRF.getRegime(), personEigentumAnteil.getPersonEigentumsForm()) &&
-				droitRF.getDateDebutOfficielle() == rechtsgrund.getBelegDatum() &&
-				motifEquals(droitRF.getMotifDebut(), rechtsgrund.getRechtsgrundCode());
+	private static boolean equalsDroitPropPM(@NotNull DroitProprietePersonneMoraleRF left, @NotNull DroitProprietePersonneMoraleRF right) {
+		return communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
+				equalsDroitProp(left, right);
 	}
 
-	private static boolean dataEquals(DroitProprieteCommunauteRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
-
-		final Gemeinschaft gemeinschaft = personEigentumAnteil.getGemeinschaft();
-		if (gemeinschaft == null) {
-			throw new ProgrammingException();
-		}
-
-		final Rechtsgrund rechtsgrund = getDroitDeReference(gemeinschaft.getRechtsgruende());
-
-		return ayantDroitEquals(droitRF.getAyantDroit(), gemeinschaft.getGemeinschatID()) &&
-				immeubleEquals(droitRF.getImmeuble(), personEigentumAnteil.getBelastetesGrundstueckIDREF()) &&
-				numeroAffaireEquals(droitRF.getNumeroAffaire(), rechtsgrund) &&
-				partEquals(droitRF.getPart(), personEigentumAnteil.getQuote()) &&
-				regimeEquals(droitRF.getRegime(), personEigentumAnteil.getPersonEigentumsForm()) &&
-				droitRF.getDateDebutOfficielle() == rechtsgrund.getBelegDatum() &&
-				motifEquals(droitRF.getMotifDebut(), rechtsgrund.getRechtsgrundCode());
+	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right) {
+		return ayantDroitEquals(left.getAyantDroit(), right.getAyantDroit()) &&
+				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
+				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
+				partEquals(left.getPart(), right.getPart()) &&
+				left.getRegime() == right.getRegime() &&
+				left.getDateDebutOfficielle() == right.getDateDebutOfficielle() &&
+				Objects.equals(left.getMotifDebut(), right.getMotifDebut());
 	}
 
 	public static GenrePropriete getRegime(@Nullable PersonEigentumsform form) {
@@ -183,56 +172,52 @@ public class DroitRFHelper {
 	/**
 	 * @return le droit de référence à utiliser, c'est-à-dire le droit le plus ancien (selon la spécification "Récupérer l'immeuble").
 	 */
-	@NotNull
-	public static Rechtsgrund getDroitDeReference(@NotNull List<Rechtsgrund> rechtsgruende) {
+	@Nullable
+	public static Rechtsgrund getDroitDeReference(@Nullable List<Rechtsgrund> rechtsgruende) {
+		if (rechtsgruende == null || rechtsgruende.isEmpty()) {
+			return null;
+		}
 		Rechtsgrund oldest = null;
 		for (Rechtsgrund rechtsgrund : rechtsgruende) {
 			if (oldest == null || rechtsgrund.getBelegDatum().isBefore(oldest.getBelegDatum())) {
 				oldest = rechtsgrund;
 			}
 		}
-		if (oldest == null) {
-			throw new IllegalArgumentException("Il n'y a pas de droit sur le lien");
-		}
 		return oldest;
 	}
 
-	private static boolean motifEquals(@NotNull String motif, @NotNull CapiCode rechtsgrundCode) {
-		return Objects.equals(motif, rechtsgrundCode.getTextFr());
-	}
-
-	private static boolean regimeEquals(@NotNull GenrePropriete regime, @NotNull PersonEigentumsform personEigentumsForm) {
-		return regime == getRegime(personEigentumsForm);
-	}
-
-	private static boolean partEquals(@Nullable Fraction part, @Nullable Quote quote) {
+	private static boolean partEquals(@Nullable Fraction part, @Nullable Fraction quote) {
 		if (part == null || quote == null) {
 			return part == null && quote == null;
 		}
 		else {
-			return part.getNumerateur() == quote.getAnteilZaehler().intValue() &&
-					part.getDenominateur() == quote.getAnteilNenner().intValue();
+			return part.getNumerateur() == quote.getNumerateur() &&
+					part.getDenominateur() == quote.getDenominateur();
 		}
 	}
 
-	private static boolean numeroAffaireEquals(@NotNull IdentifiantAffaireRF numeroAffaire, @NotNull Rechtsgrund rechtsgrund) {
-		return numeroAffaire.getNumeroOffice() == rechtsgrund.getAmtNummer() &&
-				numeroAffaire.getAnnee() == rechtsgrund.getBelegJahr() &&
-				numeroAffaire.getNumero() == rechtsgrund.getBelegNummer() &&
-				numeroAffaire.getIndex() == rechtsgrund.getBelegNummerIndex();
+	private static boolean numeroAffaireEquals(@NotNull IdentifiantAffaireRF left, @NotNull IdentifiantAffaireRF right) {
+		return left.getNumeroOffice() == right.getNumeroOffice() &&
+				left.getAnnee() == right.getAnnee() &&
+				left.getNumero() == right.getNumero() &&
+				left.getIndex() == right.getIndex();
 	}
 
-	private static boolean immeubleEquals(@NotNull ImmeubleRF immeuble, @NotNull String grundstueckIDREF) {
-		return immeuble.getIdRF().equals(grundstueckIDREF);
+	private static boolean immeubleEquals(@NotNull ImmeubleRF left, @NotNull ImmeubleRF right) {
+		return Objects.equals(left.getIdRF(), right.getIdRF());
 	}
 
-	private static boolean communauteEquals(@Nullable CommunauteRF communaute, @Nullable String gemeinschatIDREF) {
-		final String idRF = communaute == null ? null : communaute.getIdRF();
-		return Objects.equals(idRF, gemeinschatIDREF);
+	private static boolean communauteEquals(@Nullable CommunauteRF left, @Nullable CommunauteRF right) {
+		if (left == null || right == null) {
+			return left == null && right == null;
+		}
+		else {
+			return Objects.equals(left.getIdRF(), right.getIdRF());
+		}
 	}
 
-	private static boolean ayantDroitEquals(@NotNull AyantDroitRF ayantDroit, @NotNull String personstammIDREF) {
-		return ayantDroit.getIdRF().equals(personstammIDREF);
+	private static boolean ayantDroitEquals(@NotNull AyantDroitRF left, @NotNull AyantDroitRF right) {
+		return Objects.equals(left.getIdRF(), right.getIdRF());
 	}
 
 	public static String getIdRF(@NotNull PersonEigentumAnteil eigentumAnteil) {
@@ -251,7 +236,107 @@ public class DroitRFHelper {
 			return juristischePerson.getPersonstammIDREF();
 		}
 		else {
-			throw new IllegalArgumentException("Type de droit inconnu masterIdRF=[" + eigentumAnteil.getMasterID()+"]");
+			throw new IllegalArgumentException("Type de droit inconnu masterIdRF=[" + eigentumAnteil.getMasterID() + "]");
 		}
+	}
+
+	@NotNull
+	public static DroitProprieteRF newDroitRF(@NotNull PersonEigentumAnteil eigentumAnteil,
+	                                          @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
+	                                          @NotNull Function<String, CommunauteRF> communauteProvider,
+	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider) {
+
+		final NatuerlichePersonGb natuerlichePerson = eigentumAnteil.getNatuerlichePersonGb();
+		final JuristischePersonGb juristischePerson = eigentumAnteil.getJuristischePersonGb();
+		final Gemeinschaft gemeinschaft = eigentumAnteil.getGemeinschaft();
+
+		final DroitProprieteRF droit;
+		if (natuerlichePerson != null) {
+
+			final DroitProprietePersonnePhysiqueRF d = new DroitProprietePersonnePhysiqueRF();
+			final Rechtsgrund rechtsgrund = getDroitDeReference(natuerlichePerson.getRechtsgruende());
+
+			d.setMasterIdRF(eigentumAnteil.getMasterID());
+			d.setAyantDroit(ayantDroitProvider.apply(natuerlichePerson.getPersonstammIDREF()));
+			d.setCommunaute(communauteProvider.apply(natuerlichePerson.getGemeinschatIDREF()));
+			d.setImmeuble(immeubleProvider.apply(eigentumAnteil.getBelastetesGrundstueckIDREF()));
+			d.setNumeroAffaire(getAffaire(rechtsgrund));
+			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
+			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
+			if (rechtsgrund != null) {
+				d.setDateDebutOfficielle(rechtsgrund.getBelegDatum());
+				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
+			}
+
+			droit = d;
+		}
+		else if (juristischePerson != null) {
+
+			final DroitProprietePersonneMoraleRF d = new DroitProprietePersonneMoraleRF();
+			final Rechtsgrund rechtsgrund = getDroitDeReference(juristischePerson.getRechtsgruende());
+
+			d.setMasterIdRF(eigentumAnteil.getMasterID());
+			d.setAyantDroit(ayantDroitProvider.apply(juristischePerson.getPersonstammIDREF()));
+			d.setCommunaute(communauteProvider.apply(juristischePerson.getGemeinschatIDREF()));
+			d.setImmeuble(immeubleProvider.apply(eigentumAnteil.getBelastetesGrundstueckIDREF()));
+			d.setNumeroAffaire(getAffaire(rechtsgrund));
+			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
+			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
+			if (rechtsgrund != null) {
+				d.setDateDebutOfficielle(rechtsgrund.getBelegDatum());
+				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
+			}
+
+			droit = d;
+		}
+		else if (gemeinschaft != null) {
+
+			final DroitProprieteCommunauteRF d = new DroitProprieteCommunauteRF();
+			final Rechtsgrund rechtsgrund = getDroitDeReference(gemeinschaft.getRechtsgruende());
+
+			d.setMasterIdRF(eigentumAnteil.getMasterID());
+			d.setAyantDroit(ayantDroitProvider.apply(gemeinschaft.getGemeinschatID()));
+			d.setImmeuble(immeubleProvider.apply(eigentumAnteil.getBelastetesGrundstueckIDREF()));
+			d.setNumeroAffaire(getAffaire(rechtsgrund));
+			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
+			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
+			if (rechtsgrund != null) {
+				d.setDateDebutOfficielle(rechtsgrund.getBelegDatum());
+				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
+			}
+			droit = d;
+		}
+		else {
+			throw new IllegalArgumentException("Type de droit inconnu masterIdRf=[" + eigentumAnteil.getMasterID() + "]");
+		}
+
+		return droit;
+	}
+
+	@Nullable
+	private static String getMotif(@Nullable CapiCode code) {
+		if (code == null) {
+			return null;
+		}
+		return code.getTextFr();
+	}
+
+	@Nullable
+	private static IdentifiantAffaireRF getAffaire(@Nullable Rechtsgrund rechtsgrund) {
+		if (rechtsgrund == null) {
+			return null;
+		}
+		return new IdentifiantAffaireRF(rechtsgrund.getAmtNummer(), rechtsgrund.getBelegJahr(), rechtsgrund.getBelegNummer(), rechtsgrund.getBelegNummerIndex());
+	}
+
+	@Nullable
+	public static DroitProprieteRF get(@Nullable PersonEigentumAnteil eigentumAnteil,
+	                                   @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
+	                                   @NotNull Function<String, CommunauteRF> communauteProvider,
+	                                   @NotNull Function<String, ImmeubleRF> immeubleProvider) {
+		if (eigentumAnteil == null) {
+			return null;
+		}
+		return newDroitRF(eigentumAnteil, ayantDroitProvider, communauteProvider, immeubleProvider);
 	}
 }

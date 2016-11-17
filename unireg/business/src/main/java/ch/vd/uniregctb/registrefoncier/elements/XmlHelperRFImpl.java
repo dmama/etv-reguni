@@ -56,6 +56,11 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
+	public JAXBContext getDroitListContext() {
+		return droitListContext;
+	}
+
+	@Override
 	public JAXBContext getProprietaireContext() {
 		return proprietaireContext;
 	}

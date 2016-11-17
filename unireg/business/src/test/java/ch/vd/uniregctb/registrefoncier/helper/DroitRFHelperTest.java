@@ -29,10 +29,8 @@ import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class DroitRFHelperTest {
 
@@ -283,10 +281,10 @@ public class DroitRFHelperTest {
 	}
 
 	/**
-	 * Vérifie qu'un droit sur une personne physique ne peut pas se changer en droit sur une personne morale.
+	 * Vérifie qu'un droit sur une personne physique n'est pas égal au droit sur une personne morale.
 	 */
 	@Test
-	public void testDataNotEqualsDroitPPChanged() throws Exception {
+	public void testDataTypeNotEqualsDroitPP() throws Exception {
 
 		final DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
 		droitPP.setMasterIdRF("9a9c9e94923");
@@ -295,20 +293,14 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setJuristischePersonGb(new JuristischePersonGb());
 
-		try {
-			DroitRFHelper.dataEquals(droitPP, eigentumAnteil);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Le type du droit masterIdRF=[9a9c9e94923] a changé.", e.getMessage());
-		}
+		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil));
 	}
 
 	/**
-	 * Vérifie qu'un droit sur une personne morale ne peut pas se changer en droit sur une personne physique.
+	 * Vérifie qu'un droit sur une personne morale n'est pas égal au droit sur une personne physique.
 	 */
 	@Test
-	public void testDataNotEqualsDroitPMChanged() throws Exception {
+	public void testDataTypeNotEqualsDroitPM() throws Exception {
 
 		final DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
 		droitPM.setMasterIdRF("9a9c9e94923");
@@ -317,20 +309,14 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		try {
-			DroitRFHelper.dataEquals(droitPM, eigentumAnteil);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Le type du droit masterIdRF=[9a9c9e94923] a changé.", e.getMessage());
-		}
+		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil));
 	}
 
 	/**
-	 * Vérifie qu'un droit sur une communauté ne peut pas se changer en droit sur une personne physique.
+	 * Vérifie qu'un droit sur une communauté n'est pas égal au droit sur une personne physique.
 	 */
 	@Test
-	public void testDataNotEqualsDroitCommunauteChanged() throws Exception {
+	public void testDataTypeNotEqualsDroitCommunaute() throws Exception {
 
 		final DroitProprieteCommunauteRF droitComm = new DroitProprieteCommunauteRF();
 		droitComm.setMasterIdRF("9a9c9e94923");
@@ -339,12 +325,6 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		try {
-			DroitRFHelper.dataEquals(droitComm, eigentumAnteil);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Le type du droit masterIdRF=[9a9c9e94923] a changé.", e.getMessage());
-		}
+		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
 	}
 }

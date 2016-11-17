@@ -27,6 +27,11 @@ public interface XmlHelperRF {
 	JAXBContext getDroitContext();
 
 	/**
+	 * @return le context JAXB pour les droits
+	 */
+	JAXBContext getDroitListContext();
+
+	/**
 	 * @return le context JAXB pour les propriétaires
 	 */
 	JAXBContext getProprietaireContext();
