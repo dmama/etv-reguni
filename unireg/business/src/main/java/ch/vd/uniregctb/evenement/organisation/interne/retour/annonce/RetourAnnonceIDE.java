@@ -116,8 +116,10 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		} else {
 			// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
 			tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
-			// TODO: Fermer les adresses en surcharge!
 		}
+		// Fermeture des surcharges d'adresse, sauf les permanentes. On "détourne" les méthodes du changement d'adresse, car il doit se passer la même chose que lorsque l'adresse change.
+		traiteTransitionAdresseEffective(warnings, suivis, this.dateApres, false);
+		traiteTransitionAdresseLegale(warnings, suivis, this.dateApres);
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(getEntreprise(), false);
 		final RaisonSocialeHisto raisonSocialeHisto = RangeUtil.getAssertLast(raisonsSociales, getDateApres());

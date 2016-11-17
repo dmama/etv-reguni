@@ -17,7 +17,10 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -50,6 +53,7 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
@@ -1045,4 +1049,82 @@ public abstract class EvenementOrganisationInterne {
 	protected boolean hasCapital(Organisation organisation, RegDate date) {
 		return organisation.getCapital(date) != null && organisation.getCapital(date).getCapitalLibere().longValue() > 0;
 	}
+
+	protected void traiteTransitionAdresseEffective(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis, RegDate date,
+	                                                boolean utiliserCommeAdressePoursuite) throws EvenementOrganisationException {
+		final AdresseSupplementaire adresseCourrier = getAdresseTiers(TypeAdresseTiers.COURRIER, date);
+		if (adresseCourrier != null) {
+			if (adresseCourrier.isPermanente()) {
+				warnings.addWarning("L'adresse fiscale de courrier, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE).");
+			} else {
+				context.getAdresseService().fermerAdresse(adresseCourrier, date.getOneDayBefore());
+				suivis.addSuivi("L'adresse fiscale de courrier, non-permanente, a été fermée. L'adresse de courrier est maintenant donnée par l'adresse effective civile (issue de l'IDE).");
+			}
+		} else {
+			suivis.addSuivi("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).");
+		}
+		final AdresseSupplementaire adresseRepresentation = getAdresseTiers(TypeAdresseTiers.REPRESENTATION, date);
+		if (adresseRepresentation != null) {
+			if (adresseRepresentation.isPermanente()) {
+				warnings.addWarning("L'adresse fiscale de représentation, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE).");
+			} else {
+				context.getAdresseService().fermerAdresse(adresseRepresentation, date.getOneDayBefore());
+				suivis.addSuivi("L'adresse fiscale de représentation, non-permanente, a été fermée. L'adresse de représentation est maintenant donnée par l'adresse effective civile (issue de l'IDE).");
+			}
+		} else {
+			suivis.addSuivi("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).");
+		}
+		final AdresseSupplementaire adressePoursuite = getAdresseTiers(TypeAdresseTiers.POURSUITE, date);
+		if (utiliserCommeAdressePoursuite) {
+			if (adressePoursuite != null) {
+				if (adressePoursuite.isPermanente()) {
+					warnings.addWarning("L'adresse fiscale poursuite, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
+				}
+				else {
+					context.getAdresseService().fermerAdresse(adressePoursuite, date.getOneDayBefore());
+					suivis.addSuivi("L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
+				}
+			}
+			else {
+				suivis.addSuivi("L'adresse de poursuite a changé suite au changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
+			}
+		}
+	}
+
+	protected void traiteTransitionAdresseLegale(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis, RegDate date) throws EvenementOrganisationException {
+		final AdresseSupplementaire adressePoursuite = getAdresseTiers(TypeAdresseTiers.POURSUITE, date);
+		if (adressePoursuite != null) {
+			if (adressePoursuite.isPermanente()) {
+				warnings.addWarning("L'adresse fiscale de poursuite, permanente, est maintenue malgré le changement de l'adresse légale civile (issue du RC).");
+			} else {
+				context.getAdresseService().fermerAdresse(adressePoursuite, date.getOneDayBefore());
+				suivis.addSuivi("L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse légale civile (issue du RC).");
+			}
+		} else {
+			suivis.addSuivi("L'adresse de poursuite a changé suite au changement de l'adresse légale civile (issue du RC).");
+		}
+	}
+
+	@Nullable
+	private AdresseSupplementaire getAdresseTiers(TypeAdresseTiers type, RegDate date) throws EvenementOrganisationException {
+		final List<AdresseTiers> adressesTiersSorted = AnnulableHelper.sansElementsAnnules(getEntreprise().getAdressesTiersSorted(type));
+		if (adressesTiersSorted.isEmpty()) {
+			return null;
+		}
+		final AdresseTiers adresseTiers = DateRangeHelper.rangeAt(adressesTiersSorted, date);
+		if (adresseTiers != null) {
+			if (adresseTiers.getDateFin() != null) {
+				return null;
+			}
+			if (adresseTiers.getDateDebut().isAfter(date)) { // SIFISC-19483 - N'est plus censé se produire
+				throw new EvenementOrganisationException(String.format("L'adresse valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
+			}
+			if (adresseTiers instanceof AdresseSupplementaire) {
+				return (AdresseSupplementaire) adresseTiers;
+			}
+			throw new EvenementOrganisationException(String.format("l'adresse %s trouvée n'est pas de type AdresseSupplementaire! Elle est de type %s", type, adresseTiers.getClass()));
+		}
+		return null;
+	}
+
 }
