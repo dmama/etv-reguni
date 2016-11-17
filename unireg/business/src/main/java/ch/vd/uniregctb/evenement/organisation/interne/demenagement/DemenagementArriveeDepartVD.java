@@ -11,6 +11,8 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -65,11 +67,21 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
 
+		final TiersService tiersService = getContext().getTiersService();
+		final Etablissement etablissementPrincipal = tiersService.getEtablissementPrincipal(getEntreprise(), getDateApres());
+
 		// Création & vérification de la surcharge corrective s'il y a lieu
 		if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
 			SurchargeCorrectiveRange surchargeCorrectiveRange = new SurchargeCorrectiveRange(dateDebutNouveauSiege, getDateEvt().getOneDayBefore());
 			verifieSurchargeAcceptable(dateDebutNouveauSiege, surchargeCorrectiveRange);
+			tiersService.fermeSurchargesCiviles(getEntreprise(), surchargeCorrectiveRange.getDateDebut().getOneDayBefore());
+			tiersService.fermeSurchargesCiviles(etablissementPrincipal, surchargeCorrectiveRange.getDateDebut().getOneDayBefore());
+			// TODO: Fermer les adresses en surcharge!
 			appliqueDonneesCivilesSurPeriode(getEntreprise(), surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
+		} else {
+			tiersService.fermeSurchargesCiviles(getEntreprise(), getDateEvt().getOneDayBefore());
+			tiersService.fermeSurchargesCiviles(etablissementPrincipal, getDateEvt().getOneDayBefore());
+			// TODO: Fermer les adresses en surcharge!
 		}
 
 		effectueChangementSiege(motifFor, dateDebutNouveauSiege, warnings, suivis);

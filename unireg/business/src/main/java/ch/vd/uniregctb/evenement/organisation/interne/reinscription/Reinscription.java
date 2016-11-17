@@ -18,6 +18,8 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * @author Raphaël Marmier, 2015-11-11
@@ -36,6 +38,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	private final RegDate dateRadiationAvant;
 	private final RegDate dateRadiationApres;
+
+	private final Etablissement etablissementPrincipal;
 
 	public Reinscription(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                     EvenementOrganisationContext context,
@@ -56,6 +60,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 		dateRadiationAvant = inscriptionAvant != null ? inscriptionAvant.getDateRadiationCH() : null;
 		dateRadiationApres = inscriptionApres != null ? inscriptionApres.getDateRadiationCH() : null;
+
+		etablissementPrincipal = context.getTiersService().getEtablissementPrincipal(entreprise, dateApres);
 	}
 
 	@Override
@@ -66,6 +72,14 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+
+		final TiersService tiersService = getContext().getTiersService();
+
+		// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
+		tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
+		tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
+		// TODO: Fermer les adresses en surcharge!
+
 		warnings.addWarning("Réinscription de l’entreprise au RC. Veuillez vérifier et faire le nécessaire à la main.");
 	}
 
