@@ -95,8 +95,8 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 		// Rattacher ?
 		if (getEntreprise().getNumeroEntreprise() == null) {
-			// oui rattacher (sans fermer les surcharges civiles, à la demande de l'ACI)
-			tiersService.apparier(getEntreprise(), getOrganisation(), false);
+			// apparier et fermer les surcharges civiles
+			tiersService.apparier(getEntreprise(), getOrganisation(), true);
 
 			// Appariement sans fermeture de surcharge de l'établissement principal, car on doit pouvoir garder le domicile différent.
 			etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
@@ -115,7 +115,8 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			);
 		} else {
 			// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
-			//tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore()); // Finallement non (ACI)
+			tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
+			// TODO: Fermer les adresses en surcharge!
 		}
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(getEntreprise(), false);
@@ -165,9 +166,10 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 			/* Si RCEnt propose la même commune qu'Unireg comme commune de siège, on peut fermer la surcharge. */
 			if (numeroOfsFiscal.equals(numeroOfsCivil)) {
-				// Finallement, pas de fermeture de surcharge (ACI)
-				//tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
-			} else {
+				tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
+			}
+			/* Sinon, la surcharge doit rester ouverte. */
+			else {
 				warnings.addWarning(
 						String.format("Le domicile [%s] présent dans le registre civil est different de celui trouvé [%s] dans Unireg. " +
 								              "Le domicile Unireg prime et la surcharge fiscale reste ouverte. Veuillez vérifier la situation de l'entreprise.",

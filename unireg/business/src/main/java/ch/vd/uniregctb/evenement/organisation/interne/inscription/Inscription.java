@@ -19,6 +19,8 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
@@ -41,6 +43,8 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 	private RegDate dateRadiationAvant = null;
 	private final RegDate dateRadiationApres;
+
+	private final Etablissement etablissementPrincipal;
 
 	public Inscription(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                   EvenementOrganisationContext context,
@@ -74,6 +78,8 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 			dateInscriptionApres = null;
 			dateRadiationApres = null;
 		}
+
+		etablissementPrincipal = context.getTiersService().getEtablissementPrincipal(entreprise, dateApres);
 	}
 
 	@Override
@@ -84,6 +90,13 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+
+		final TiersService tiersService = getContext().getTiersService();
+
+		// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
+		tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
+		tiersService.fermeSurchargesCiviles(etablissementPrincipal, getEvenement().getDateEvenement().getOneDayBefore());
+		// TODO: Fermer les adresses en surcharge!
 
 		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscal.");
 		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -88,6 +89,9 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 				addRegimeFiscalVD(entreprise, date(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, date(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+
+				final Etablissement etablissement = addEtablissement(3000001L);
+				addActiviteEconomique(entreprise,  etablissement, date(2010, 6, 25), null, true);
 				return entreprise;
 			}
 		});
