@@ -160,6 +160,78 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 	}
 
 	/**
+	 * Ce test vérifie que les mutations de type CREATION qui concernent des communautés sont bien traitées.
+	 */
+	@Test
+	public void testTraiterMutationsCreationCommunaute() throws Exception {
+
+		// on insère les données de l'import dans la base
+		final Long importId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+				importEvent.setEtat(EtatEvenementRF.TRAITE);
+				importEvent.setFileUrl("http://turlututu");
+				importEvent = evenementRFImportDAO.save(importEvent);
+
+				final EvenementRFMutation mut0 = new EvenementRFMutation();
+				mut0.setParentImport(importEvent);
+				mut0.setEtat(EtatEvenementRF.A_TRAITER);
+				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
+				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<Gemeinschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <Rechtsgruende>\n" +
+						                   "        <AmtNummer>6</AmtNummer>\n" +
+						                   "        <RechtsgrundCode>\n" +
+						                   "            <TextFr>Héritage</TextFr>\n" +
+						                   "        </RechtsgrundCode>\n" +
+						                   "        <BelegDatum>2010-04-23</BelegDatum>\n" +
+						                   "        <BelegJahr>2013</BelegJahr>\n" +
+						                   "        <BelegNummer>33</BelegNummer>\n" +
+						                   "        <BelegNummerIndex>1</BelegNummerIndex>\n" +
+						                   "    </Rechtsgruende>\n" +
+						                   "    <GemeinschatID>72828ce8f830a</GemeinschatID>\n" +
+						                   "    <Art>Erbengemeinschaft</Art>\n" +
+						                   "</Gemeinschaft>\n");
+				evenementRFMutationDAO.save(mut0);
+
+				return importEvent.getId();
+			}
+		});
+		assertNotNull(importId);
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterMutationsRFJob.ID, importId);
+		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit se terminer correctement
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+
+		// on vérifie que la mutation a bien été traitée
+		assertEtatMutations(1, EtatEvenementRF.TRAITE); // il y a 1 ayant-droits dans le fichier d'import
+
+		// on vérifie que la communauté a bien été créée
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final CommunauteRF pp = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey("72828ce8f830a"));
+				assertNotNull(pp);
+				assertEquals("72828ce8f830a", pp.getIdRF());
+				assertEquals(TypeCommunaute.COMMUNAUTE_HEREDITAIRE, pp.getType());
+			}
+		});
+	}
+
+	/**
 	 * Ce test vérifie que des mutations sont bien créées lorsqu'on importe un fichier RF et que les immeubles dans la base ne correspondent pas.
 	 */
 	@Test

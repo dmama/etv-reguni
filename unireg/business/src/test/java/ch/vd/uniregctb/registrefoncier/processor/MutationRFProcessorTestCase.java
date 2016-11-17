@@ -1,20 +1,29 @@
 package ch.vd.uniregctb.registrefoncier.processor;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public abstract class MutationRFProcessorTestCase extends BusinessTest {
 
@@ -76,6 +85,42 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				mutation.setXmlContent(xml);
 
 				return evenementRFMutationDAO.save(mutation).getId();
+			}
+		});
+	}
+
+	protected void assertOnePersonnePhysiqueInDB(final String idRF, final int noRF, final String nom, final String prenom, final RegDate dateNaissance, final long noCtb) throws Exception {
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<AyantDroitRF> ayantsDroits = ayantDroitRFDAO.getAll();
+				assertEquals(1, ayantsDroits.size());
+
+				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantsDroits.get(0);
+				assertNotNull(pp);
+				assertEquals(idRF, pp.getIdRF());
+				assertEquals(noRF, pp.getNoRF());
+				assertEquals(nom, pp.getNom());
+				assertEquals(prenom, pp.getPrenom());
+				assertEquals(dateNaissance, pp.getDateNaissance());
+				assertEquals(Long.valueOf(noCtb), pp.getNoContribuable());
+			}
+		});
+	}
+
+	protected void assertOneCommunauteInDB(final String idRF, final TypeCommunaute type) throws Exception {
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<AyantDroitRF> ayantsDroits = ayantDroitRFDAO.getAll();
+				assertEquals(1, ayantsDroits.size());
+
+				final CommunauteRF pp = (CommunauteRF) ayantsDroits.get(0);
+				assertNotNull(pp);
+				assertEquals(idRF, pp.getIdRF());
+				assertEquals(type, pp.getType());
 			}
 		});
 	}

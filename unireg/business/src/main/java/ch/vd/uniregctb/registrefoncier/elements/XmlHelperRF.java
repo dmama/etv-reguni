@@ -57,6 +57,11 @@ public interface XmlHelperRF {
 	JAXBContext getAutreDroitContext();
 
 	/**
+	 * @return le context JAXB pour les droits contenus dans le fichier qui contient les communautés.
+	 */
+	JAXBContext getCommunauteContext();
+
+	/**
 	 * Converti l'immeuble spécifié dans sa représentation XML.
 	 */
 	String toXMLString(Grundstueck obj);

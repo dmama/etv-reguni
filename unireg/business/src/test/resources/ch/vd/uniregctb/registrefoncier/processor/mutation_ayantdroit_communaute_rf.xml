@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Gemeinschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<Rechtsgruende>
+		<AmtNummer>6</AmtNummer>
+		<RechtsgrundCode>
+			<TextFr>Héritage</TextFr>
+		</RechtsgrundCode>
+		<BelegDatum>2010-04-23</BelegDatum>
+		<BelegJahr>2013</BelegJahr>
+		<BelegNummer>33</BelegNummer>
+		<BelegNummerIndex>1</BelegNummerIndex>
+	</Rechtsgruende>
+	<GemeinschatID>72828ce8f830a</GemeinschatID>
+	<Art>Erbengemeinschaft</Art>
+</Gemeinschaft>

@@ -85,6 +85,11 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
+	public JAXBContext getCommunauteContext() {
+		return communauteContext;
+	}
+
+	@Override
 	public String toXMLString(Grundstueck obj) {
 		try {
 			final Marshaller m = immeubleContext.createMarshaller();

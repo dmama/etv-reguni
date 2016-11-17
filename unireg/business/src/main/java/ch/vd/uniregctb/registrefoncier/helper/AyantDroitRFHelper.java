@@ -155,11 +155,11 @@ public abstract class AyantDroitRFHelper {
 	}
 
 	@NotNull
-	public static AyantDroitRF newAyantDroitRF(@NotNull Personstamm person) {
+	public static AyantDroitRF newAyantDroitRF(@NotNull Rechteinhaber rechteinhaber) {
 
 		final AyantDroitRF ayantDroitRF;
-		if (person instanceof NatuerlichePersonstamm) {
-			final NatuerlichePersonstamm natuerliche = (NatuerlichePersonstamm) person;
+		if (rechteinhaber instanceof NatuerlichePersonstamm) {
+			final NatuerlichePersonstamm natuerliche = (NatuerlichePersonstamm) rechteinhaber;
 			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 			pp.setIdRF(natuerliche.getPersonstammID());
 			pp.setNoRF(natuerliche.getNoRF());
@@ -169,8 +169,8 @@ public abstract class AyantDroitRFHelper {
 			pp.setDateNaissance(getRegDate(natuerliche.getGeburtsdatum()));
 			ayantDroitRF = pp;
 		}
-		else if (person instanceof JuristischePersonstamm) {
-			final JuristischePersonstamm juri = (JuristischePersonstamm) person;
+		else if (rechteinhaber instanceof JuristischePersonstamm) {
+			final JuristischePersonstamm juri = (JuristischePersonstamm) rechteinhaber;
 			if (juri.getUnterart() == JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT) {
 				final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
 				coll.setIdRF(juri.getPersonstammID());
@@ -188,8 +188,15 @@ public abstract class AyantDroitRFHelper {
 				ayantDroitRF = pm;
 			}
 		}
+		else if (rechteinhaber instanceof Gemeinschaft) {
+			final Gemeinschaft gemeinschaft = (Gemeinschaft) rechteinhaber;
+			CommunauteRF communaute = new CommunauteRF();
+			communaute.setIdRF(gemeinschaft.getGemeinschatID());
+			communaute.setType(getTypeCommunaute(gemeinschaft.getArt()));
+			ayantDroitRF = communaute;
+		}
 		else {
-			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + person.getClass() + "]");
+			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");
 		}
 		return ayantDroitRF;
 	}

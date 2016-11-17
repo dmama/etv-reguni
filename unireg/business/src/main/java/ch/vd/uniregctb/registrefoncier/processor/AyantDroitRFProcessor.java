@@ -6,6 +6,8 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.capitastra.common.Rechteinhaber;
+import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
@@ -24,15 +26,24 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 	private final AyantDroitRFDAO ayantDroitRFDAO;
 
 	@NotNull
-	private final ThreadLocal<Unmarshaller> unmarshaller;
+	private final ThreadLocal<Unmarshaller> proprietaireUnmarshaller;
+	private final ThreadLocal<Unmarshaller> communauteUnmarshaller;
 
 	public AyantDroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 
 		// TODO (msi) effacer les données du thread-local lorsque le processor est détruit
-		unmarshaller = ThreadLocal.withInitial(() -> {
+		proprietaireUnmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getProprietaireContext().createUnmarshaller();
+			}
+			catch (JAXBException e) {
+				throw new RuntimeException(e);
+			}
+		});
+		communauteUnmarshaller = ThreadLocal.withInitial(() -> {
+			try {
+				return xmlHelperRF.getCommunauteContext().createUnmarshaller();
 			}
 			catch (JAXBException e) {
 				throw new RuntimeException(e);
@@ -48,17 +59,25 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 		}
 
 		// on interpète le XML
-		final Personstamm proprietaireImport;
+		Rechteinhaber ayantDroitImport;
 		try {
+			// on essaie pour voir si on a un propriétaire
 			final StringSource source = new StringSource(mutation.getXmlContent());
-			proprietaireImport = (Personstamm) unmarshaller.get().unmarshal(source);
+			ayantDroitImport = (Personstamm) proprietaireUnmarshaller.get().unmarshal(source);
 		}
-		catch (JAXBException e) {
-			throw new RuntimeException(e);
+		catch (JAXBException e1) {
+			try {
+				// c'est pas un propriétaire, c'est peut-être une communauté
+				final StringSource source = new StringSource(mutation.getXmlContent());
+				ayantDroitImport = (Gemeinschaft) communauteUnmarshaller.get().unmarshal(source);
+			}
+			catch (JAXBException e2) {
+				throw new RuntimeException(e2);
+			}
 		}
 
 		// on crée l'ayant-droit en mémoire
-		final AyantDroitRF ayantDroit = AyantDroitRFHelper.newAyantDroitRF(proprietaireImport);
+		final AyantDroitRF ayantDroit = AyantDroitRFHelper.newAyantDroitRF(ayantDroitImport);
 
 		// on l'insère en DB
 		switch (mutation.getTypeMutation()) {
