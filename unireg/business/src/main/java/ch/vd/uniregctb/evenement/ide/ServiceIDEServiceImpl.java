@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -200,6 +201,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final RaisonSocialeHisto raisonsSocialeHisto = getRaisonSociale(entreprise, date);
 		final FormeLegaleHisto formeLegaleHisto = getFormeLegale(entreprise, date);
 		final AdresseGenerique adresseGenerique = getAdresse(entreprise, date);
+		final AdresseEnvoiDetaillee adresseEnvoiDetaillee;
 		final String secteurActiviteActuel = entreprise.getSecteurActivite();
 
 		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null || secteurActiviteActuel == null) {
@@ -215,7 +217,15 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					message
 			);
 		}
+
 		final FormeLegale formeLegale = formeLegaleHisto.getFormeLegale();
+
+		try {
+			adresseEnvoiDetaillee = adresseService.buildAdresseEnvoi(entreprise, adresseGenerique, date);
+		}
+		catch (AdresseException e) {
+			throw new ServiceIDEException("Erreur lors de la récupération de l'adresse actuelle du tiers: " + e.getMessage(), e);
+		}
 
 		if (isServiceIDEObligEtendues(entreprise, date)) {
 
@@ -330,7 +340,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			if (formeLegaleHisto.getSource() == Source.FISCALE) {
 				surchargeEnVigueure = true;
 			}
-			if (adresseGenerique.getSource().getType() != AdresseGenerique.SourceType.CIVILE_ORG) {
+			if (adresseEnvoiDetaillee.getSource() != AdresseGenerique.SourceType.CIVILE_ORG) {
 				surchargeEnVigueure = true;
 			}
 
@@ -341,7 +351,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 			final String raisonSocialeActuelle = raisonsSocialeHisto.getRaisonSociale();
 			final FormeLegale formeLegaleActuelle = formeLegaleHisto.getFormeLegale();
-			final AdresseAnnonceIDERCEnt adresseActuelle = getAdresseAnnonceIDERCEnt(adresseGenerique, date);
+			final AdresseAnnonceIDERCEnt adresseActuelle = getAdresseAnnonceIDERCEnt(adresseEnvoiDetaillee);
 
 			ProtoAnnonceIDE protoActuel =
 					RCEntAnnonceIDEHelper.createProtoAnnonceIDE(typeAnnonce, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, raisonDeRadiationRegistreIDE, null,
@@ -472,18 +482,18 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	}
 
 	@Nullable
-	private AdresseAnnonceIDERCEnt getAdresseAnnonceIDERCEnt(AdresseGenerique adresse, RegDate date) {
+	private AdresseAnnonceIDERCEnt getAdresseAnnonceIDERCEnt(AdresseEnvoiDetaillee adresse) {
 		final AdresseAnnonceIDERCEnt adresseAnnonce;
 		if (adresse != null) {
-			final Pays pays = infraService.getPays(adresse.getNoOfsPays(), date);
+			final Pays pays = adresse.getPays();
 			final CasePostale casePostale = adresse.getCasePostale();
-			final Integer numeroPostal = Integer.parseInt(adresse.getNumeroPostal());
 			adresseAnnonce = RCEntAnnonceIDEHelper
-					.createAdresseAnnonceIDERCEnt(adresse.getRue(), adresse.getNumero(),
+					.createAdresseAnnonceIDERCEnt(adresse.getRueEtNumero().getRue(),
+					                              adresse.getRueEtNumero().getNumero(),
 					                              adresse.getNumeroAppartement() == null ? null : adresse.getNumeroAppartement(),
-					                              numeroPostal,
+					                              Integer.parseInt(adresse.getNpaEtLocalite().getNpa()),
 					                              adresse.getNumeroOrdrePostal(),
-					                              adresse.getLocalite(),
+					                              adresse.getNpaEtLocalite().getLocalite(),
 					                              pays == null ? null : pays.getNoOfsEtatSouverain(), pays == null ? null : pays.getCodeIso2(), pays == null ? null : pays.getNomCourt(),
 					                              casePostale == null ? null : casePostale.getNumero(), casePostale == null ? null : String.valueOf(casePostale.getType()),
 					                              adresse.getEgid());
