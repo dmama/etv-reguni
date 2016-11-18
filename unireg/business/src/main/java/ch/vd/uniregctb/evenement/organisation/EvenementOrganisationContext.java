@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 public class EvenementOrganisationContext {
 
 	private final ServiceOrganisationService serviceOrganisation;
+	private final EvenementOrganisationService evenementOrganisationService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final DataEventService dataEventService;
 	private final TiersService tiersService;
@@ -30,6 +31,7 @@ public class EvenementOrganisationContext {
 
 	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO) {
 		this.serviceOrganisation = serviceOrganisation;
+		this.evenementOrganisationService = null;
 		this.serviceInfra = serviceInfra;
 		this.tiersDAO = tiersDAO;
 		this.dataEventService = null;
@@ -43,10 +45,11 @@ public class EvenementOrganisationContext {
 		this.parametreAppService = null;
 	}
 
-	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
+	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, EvenementOrganisationService evenementOrganisationService,ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
 	                             MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,  AssujettissementService assujettissementService,
 	                                    AppariementService appariementService, ParametreAppService parametreAppService) {
 		this.serviceOrganisation = serviceOrganisation;
+		this.evenementOrganisationService = evenementOrganisationService;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
 		this.tiersService = tiersService;
@@ -62,6 +65,10 @@ public class EvenementOrganisationContext {
 
 	public final ServiceOrganisationService getServiceOrganisation() {
 		return serviceOrganisation;
+	}
+
+	public EvenementOrganisationService getEvenementOrganisationService() {
+		return evenementOrganisationService;
 	}
 
 	public final ServiceInfrastructureService getServiceInfra() {

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
@@ -29,6 +30,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	protected MetierServicePM metierService;
 
 	protected EvenementOrganisationContext context;
+	protected EvenementOrganisationService evenementOrganisationService;
 	protected DataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
 	protected AssujettissementService assujettissementService;
@@ -40,6 +42,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
+		evenementOrganisationService = getBean(EvenementOrganisationService.class, "evtOrganisationService");
 		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierServicePM.class, "metierServicePM");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
@@ -50,7 +53,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		eventSender.count = 0;
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementOrganisationContext(serviceOrganisation, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
+		context = new EvenementOrganisationContext(serviceOrganisation, evenementOrganisationService, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 		options = buildOptions();
 	}
 

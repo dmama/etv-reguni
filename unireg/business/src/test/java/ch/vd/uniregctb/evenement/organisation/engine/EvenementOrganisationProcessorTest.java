@@ -1525,7 +1525,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(1, listEvtInterne.size());
+		Assert.assertEquals(3, listEvtInterne.size());
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -1616,7 +1616,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(1, listEvtInterne.size());
+		Assert.assertEquals(3, listEvtInterne.size());
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

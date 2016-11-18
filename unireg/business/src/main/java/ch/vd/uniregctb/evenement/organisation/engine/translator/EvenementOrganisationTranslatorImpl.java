@@ -152,7 +152,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementOrganisationContext(serviceOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
+		context = new EvenementOrganisationContext(serviceOrganisationService, evenementOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
 		                                           evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 
 		// Construction des stratégies
@@ -228,10 +228,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprises (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
-
-		// Vérification que l'événement n'est pas un événement de correction, c'est à dire un événement qui survient avant le dernier événement de l'historique
-		// des données civiles tel qu'on le connait actellement.
-		checkEvenementDansPasse(event, organisation);
 
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
 		Audit.info(event.getNoEvenement(), String.format("Organisation trouvée: %s", organisationDescription));
@@ -432,36 +428,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
-	}
-
-	/**
-	 * Protection contre les événements dans le passé.
-	 * Si on trouve le flag de correction dans le passé sur l'événement, ou si la date de valeur de l'événement reçu est antérieure à celle du dernier événement,
-	 * on lève une erreur.
-	 *
-	 * @param event l'événement à inspecter
-	 * @param organisation l'organisation concernée, dont le numéro d'organisation doit correspondre à celui stocké dans l'événement
-	 * @throws EvenementOrganisationException au cas où on est en présence d'un événement dans le passé
-	 */
-	protected void checkEvenementDansPasse(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
-
-		final String message = "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d %s. Traitement automatique impossible.";
-		final String fragmentMessage;
-
-		if (event.getCorrectionDansLePasse()) {
-			fragmentMessage = "est marqué comme événement de correction dans le passé";
-			throw new EvenementOrganisationException(
-					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
-			);
-		}
-
-		final boolean evenementDateValeurDansLePasse = evenementOrganisationService.isEvenementDateValeurDansLePasse(event);
-		if (evenementDateValeurDansLePasse) {
-			fragmentMessage = "possède une date de valeur antérieure à la date portée par un autre événement reçu avant";
-			throw new EvenementOrganisationException(
-					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
-			);
-		}
 	}
 
 	private static EvenementOrganisationInterne buildEvenementInterneCapping(EvenementOrganisation event, Organisation organisation, Entreprise entreprise,
