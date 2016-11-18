@@ -1106,7 +1106,7 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	@Nullable
-	private AdresseSupplementaire getAdresseTiers(TypeAdresseTiers type, RegDate date) throws EvenementOrganisationException {
+	protected AdresseSupplementaire getAdresseTiers(TypeAdresseTiers type, RegDate date) throws EvenementOrganisationException {
 		final List<AdresseTiers> adressesTiersSorted = AnnulableHelper.sansElementsAnnules(getEntreprise().getAdressesTiersSorted(type));
 		if (adressesTiersSorted.isEmpty()) {
 			return null;

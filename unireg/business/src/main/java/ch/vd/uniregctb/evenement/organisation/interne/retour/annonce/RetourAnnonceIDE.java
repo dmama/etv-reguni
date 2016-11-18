@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.CandidatAppariement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.utils.RangeUtil;
 
 /**
@@ -118,8 +120,15 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
 		}
 		// Fermeture des surcharges d'adresse, sauf les permanentes. On "détourne" les méthodes du changement d'adresse, car il doit se passer la même chose que lorsque l'adresse change.
-		traiteTransitionAdresseEffective(warnings, suivis, this.dateApres, false);
-		traiteTransitionAdresseLegale(warnings, suivis, this.dateApres);
+		final AdresseSupplementaire adresseCourrier = getAdresseTiers(TypeAdresseTiers.COURRIER, this.dateApres);
+		final AdresseSupplementaire adresseRepresentation = getAdresseTiers(TypeAdresseTiers.REPRESENTATION, this.dateApres);
+		if (adresseCourrier != null || adresseRepresentation != null) {
+			traiteTransitionAdresseEffective(warnings, suivis, this.dateApres, false);
+		}
+		final AdresseSupplementaire adressePoursuite = getAdresseTiers(TypeAdresseTiers.POURSUITE, this.dateApres);
+		if (adressePoursuite != null) {
+			traiteTransitionAdresseLegale(warnings, suivis, this.dateApres);
+		}
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(getEntreprise(), false);
 		final RaisonSocialeHisto raisonSocialeHisto = RangeUtil.getAssertLast(raisonsSociales, getDateApres());
