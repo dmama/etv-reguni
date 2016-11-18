@@ -59,11 +59,13 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	/**
 	 * Le motif de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
 	 */
+	@Nullable
 	private RegDate dateDebutOfficielle;
 
 	/**
 	 * Le motif de début du droit.
 	 */
+	@Nullable
 	private String motifDebut;
 
 	/**
@@ -75,6 +77,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	/**
 	 * Le numéro d'affaire.
 	 */
+	@Nullable
 	private IdentifiantAffaireRF numeroAffaire;
 
 	@Transient
@@ -127,32 +130,35 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		this.immeuble = immeuble;
 	}
 
-	@Column(name = "NO_AFFAIRE", nullable = false)
+	@Nullable
+	@Column(name = "NO_AFFAIRE")
 	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType")
 	public IdentifiantAffaireRF getNumeroAffaire() {
 		return numeroAffaire;
 	}
 
-	public void setNumeroAffaire(IdentifiantAffaireRF numeroAffaire) {
+	public void setNumeroAffaire(@Nullable IdentifiantAffaireRF numeroAffaire) {
 		this.numeroAffaire = numeroAffaire;
 	}
 
-	@Column(name = "DATE_DEBUT_OFFICIELLE", nullable = false)
+	@Nullable
+	@Column(name = "DATE_DEBUT_OFFICIELLE")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebutOfficielle() {
 		return dateDebutOfficielle;
 	}
 
-	public void setDateDebutOfficielle(RegDate dateDebutOfficielle) {
+	public void setDateDebutOfficielle(@Nullable RegDate dateDebutOfficielle) {
 		this.dateDebutOfficielle = dateDebutOfficielle;
 	}
 
-	@Column(name = "MOTIF_DEBUT_CODE", nullable = false)
+	@Nullable
+	@Column(name = "MOTIF_DEBUT_CODE")
 	public String getMotifDebut() {
 		return motifDebut;
 	}
 
-	public void setMotifDebut(String motifDebut) {
+	public void setMotifDebut(@Nullable String motifDebut) {
 		this.motifDebut = motifDebut;
 	}
 

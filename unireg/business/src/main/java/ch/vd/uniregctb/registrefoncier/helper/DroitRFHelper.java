@@ -196,11 +196,16 @@ public class DroitRFHelper {
 		}
 	}
 
-	private static boolean numeroAffaireEquals(@NotNull IdentifiantAffaireRF left, @NotNull IdentifiantAffaireRF right) {
-		return left.getNumeroOffice() == right.getNumeroOffice() &&
-				left.getAnnee() == right.getAnnee() &&
-				left.getNumero() == right.getNumero() &&
-				left.getIndex() == right.getIndex();
+	private static boolean numeroAffaireEquals(@Nullable IdentifiantAffaireRF left, @Nullable IdentifiantAffaireRF right) {
+		if (left == null || right == null) {
+			return left == null && right == null;
+		}
+		else {
+			return left.getNumeroOffice() == right.getNumeroOffice() &&
+					Objects.equals(left.getAnnee(), right.getAnnee()) &&
+					Objects.equals(left.getNumero(), right.getNumero()) &&
+					Objects.equals(left.getIndex(), right.getIndex());
+		}
 	}
 
 	private static boolean immeubleEquals(@NotNull ImmeubleRF left, @NotNull ImmeubleRF right) {
