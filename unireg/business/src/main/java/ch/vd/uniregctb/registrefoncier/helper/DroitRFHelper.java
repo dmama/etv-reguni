@@ -16,6 +16,8 @@ import ch.vd.capitastra.grundstueck.NatuerlichePersonGb;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumsform;
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -179,7 +181,7 @@ public class DroitRFHelper {
 		}
 		Rechtsgrund oldest = null;
 		for (Rechtsgrund rechtsgrund : rechtsgruende) {
-			if (oldest == null || rechtsgrund.getBelegDatum().isBefore(oldest.getBelegDatum())) {
+			if (oldest == null || RegDateHelper.isBefore(rechtsgrund.getBelegDatum(), oldest.getBelegDatum(), NullDateBehavior.EARLIEST)) {
 				oldest = rechtsgrund;
 			}
 		}

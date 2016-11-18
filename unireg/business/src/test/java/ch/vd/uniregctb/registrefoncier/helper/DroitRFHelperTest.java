@@ -30,6 +30,8 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class DroitRFHelperTest {
@@ -49,7 +51,7 @@ public class DroitRFHelperTest {
 	@Test
 	public void testDataEqualsListDifferentSizes() throws Exception {
 		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()),
-		                                            Arrays.asList(new PersonEigentumAnteil(), new PersonEigentumAnteil())));
+		                                     Arrays.asList(new PersonEigentumAnteil(), new PersonEigentumAnteil())));
 	}
 
 	@Test
@@ -326,5 +328,30 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
 		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
+	}
+
+	@Test
+	public void testGetDroitDeReference() throws Exception {
+
+		final Rechtsgrund droit1 = new Rechtsgrund(1, null, null, RegDate.get(2010, 1, 22), null, null, null, null, null);
+		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
+
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2)));
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit2, droit1)));
+	}
+
+	@Test
+	public void testGetDroitDeReferenceListVide() throws Exception {
+		assertNull(DroitRFHelper.getDroitDeReference(Collections.emptyList()));
+	}
+
+	@Test
+	public void testGetDroitDeReferenceAnneeNulle() throws Exception {
+
+		final Rechtsgrund droit1 = new Rechtsgrund(1, null, null, null, null, null, null, null, null);
+		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
+
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2)));
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit2, droit1)));
 	}
 }
