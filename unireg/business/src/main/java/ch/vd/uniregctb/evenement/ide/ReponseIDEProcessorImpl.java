@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.ide;
 
-import java.util.Collections;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -19,7 +18,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.IdentificationEntreprise;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -103,20 +102,22 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 				On est en train d'agir sur un établissement principal.
 			 */
 			if (etablissement.getNumero().equals(etablissementPrincipal.getNumero())) {
-
-				if (etablissementPrincipal.getNumeroEtablissement() == null) {
-					final IdentificationEntreprise identEtablissement = new IdentificationEntreprise(annonceIDE.getNoIde().getValeur());
-					etablissementPrincipal.setIdentificationsEntreprise(Collections.singleton(identEtablissement));
-					Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers n°%s établissement principal non encore apparié.",
-					                                                 identEtablissement.getNumeroIde(),
-					                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+				try {
+					if (etablissementPrincipal.getNumeroEtablissement() == null) {
+						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers n°%s établissement principal non encore apparié.",
+						                                                 annonceIDE.getNoIde().getValeur(),
+						                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+						tiersService.setIdentifiantEntreprise(etablissementPrincipal, annonceIDE.getNoIde().getValeur());
+					}
+					if (entreprise.getNumeroEntreprise() == null) {
+						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers n°%s entreprise non encore apparié.",
+						                                                 annonceIDE.getNoIde().getValeur(),
+						                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+						tiersService.setIdentifiantEntreprise(entreprise, annonceIDE.getNoIde().getValeur());
+					}
 				}
-				if (entreprise.getNumeroEntreprise() == null) {
-					final IdentificationEntreprise identEntreprise = new IdentificationEntreprise(annonceIDE.getNoIde().getValeur());
-					entreprise.setIdentificationsEntreprise(Collections.singleton(identEntreprise));
-					Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers n°%s entreprise non encore apparié.",
-					                                                 identEntreprise.getNumeroIde(),
-					                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+				catch (TiersException e) {
+					throw new ReponseIDEProcessorException("Impossible d'assigner le numéro IDE à l'entreprise: " + e.getMessage(), e);
 				}
 			}
 			/*
