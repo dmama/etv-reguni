@@ -3,10 +3,12 @@ package ch.vd.uniregctb.registrefoncier;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -100,12 +102,34 @@ public class TraiterImportRFJob extends JobDefinition {
 		final long importId = getLongValue(params, ID);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final boolean startMutationJob = getBooleanValue(params, CONTINUE_WITH_MUTATIONS_JOB);
+
+		// vérification de cohérence
 		final EvenementRFImport event = getEvent(importId);
 		if (event == null) {
 			throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + importId + "] n'existe pas.");
 		}
+		if (event.getEtat() != EtatEvenementRF.A_TRAITER && event.getEtat() != EtatEvenementRF.EN_ERREUR) {
+			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] a déjà été traité.");
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			throw exception;
+		}
+		final EvenementRFImport nextToProcess = getNextImportToProcess();
+		if (!Objects.equals(event.getId(), nextToProcess.getId())) {
+			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			throw exception;
+		}
 
-		try (InputStream is = zipRaftStore.get(event.getFileUrl())) {
+		// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
+		// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
+		deleteExistingMutations(importId);
+
+		// on peut maintenant processer l'import
+		processImport(importId, event.getFileUrl(), nbThreads, startMutationJob);
+	}
+
+	private void processImport(long importId, String fileUrl, int nbThreads, boolean startMutationJob) {
+		try (InputStream is = zipRaftStore.get(fileUrl)) {
 
 			final StatusManager statusManager = getStatusManager();
 			statusManager.setMessage("Détection des mutations...");
@@ -150,12 +174,52 @@ public class TraiterImportRFJob extends JobDefinition {
 	@Nullable
 	private EvenementRFImport getEvent(final long eventId) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 		return template.execute(new TxCallback<EvenementRFImport>() {
 			@Override
 			public EvenementRFImport execute(TransactionStatus status) throws Exception {
 				return evenementRFImportDAO.get(eventId);
 			}
 		});
+	}
+
+	/**
+	 * @return le prochain import qui doit être processé en respectant les états et les dates chronologiques d'import.
+	 */
+	@NotNull
+	private EvenementRFImport getNextImportToProcess() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TxCallback<EvenementRFImport>() {
+			@Override
+			public EvenementRFImport execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport next = evenementRFImportDAO.findNextImportToProcess();
+				if (next == null) {
+					throw new IllegalArgumentException("Il n'y a pas de prochain rapport à processer.");
+				}
+				return next;
+			}
+		});
+	}
+
+	private void deleteExistingMutations(long importId) {
+
+		final StatusManager statusManager = getStatusManager();
+		statusManager.setMessage("Effacement des mutations préexistantes...");
+
+		final MutableBoolean loop = new MutableBoolean(true);
+		// on efface les mutations par lot de 1'000 pour éviter de saturer le rollback log de la DB
+		while (loop.booleanValue()) {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+			template.execute(new TxCallbackWithoutResult() {
+				@Override
+				public void execute(TransactionStatus status) throws Exception {
+					final int count = evenementRFImportDAO.deleteMutationsFor(importId, 1000);
+					loop.setValue(count > 0);   // on boucle tant qu'il y a des mutations à supprimer
+				}
+			});
+		}
 	}
 
 	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable String errorMessage) {

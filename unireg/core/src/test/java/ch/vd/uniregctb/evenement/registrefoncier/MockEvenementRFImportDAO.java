@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 
@@ -77,4 +78,14 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 		throw new NotImplementedException();
 	}
 
+	@Nullable
+	@Override
+	public EvenementRFImport findNextImportToProcess() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int deleteMutationsFor(long importId, int maxResults) {
+		throw new NotImplementedException();
+	}
 }
