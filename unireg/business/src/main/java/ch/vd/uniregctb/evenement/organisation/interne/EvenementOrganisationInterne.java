@@ -1113,9 +1113,6 @@ public abstract class EvenementOrganisationInterne {
 		}
 		final AdresseTiers adresseTiers = DateRangeHelper.rangeAt(adressesTiersSorted, date);
 		if (adresseTiers != null) {
-			if (adresseTiers.getDateFin() != null) {
-				return null;
-			}
 			if (adresseTiers.getDateDebut().isAfter(date)) { // SIFISC-19483 - N'est plus censé se produire
 				throw new EvenementOrganisationException(String.format("L'adresse valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
 			}
