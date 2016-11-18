@@ -1555,7 +1555,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rrf.setTypeRapprochement(type);
 		final RapprochementRF saved = merge(rrf);
 		ctb.addRapprochementRF(saved);
-		tiersRF.addRapprochementRF(saved);
 		return saved;
 	}
 }

@@ -467,9 +467,7 @@ public abstract class Contribuable extends Tiers {
 		super.addDeclaration(declaration);
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "CTB_ID", nullable = false)
-	@ForeignKey(name = "FK_RAPPRF_CTB_ID")
+	@OneToMany(mappedBy = "contribuable", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	public Set<RapprochementRF> getRapprochementsRF() {
 		return rapprochementsRF;
 	}

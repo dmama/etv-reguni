@@ -202,7 +202,6 @@ public class RapprochementTiersRFProcessor {
 			rapprochement.setTypeRapprochement(typeRapprochement);
 
 			final RapprochementRF saved = hibernateTemplate.merge(rapprochement);
-			tiersRF.addRapprochementRF(saved);
 			ctb.addRapprochementRF(saved);
 
 			rapport.addNouveauRapprochement(saved);

@@ -75,11 +75,8 @@
 	<bean id="surfaceTotaleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceTotaleRFValidator" parent="dateRangeEntityValidator"/>
 	<bean id="surfaceAuSolRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceAuSolRFValidator" parent="dateRangeEntityValidator"/>
 	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" parent="dateRangeEntityValidator"/>
-	<bean id="rapprochementRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.RapprochementRFValidator" parent="dateRangeEntityValidator"/>
-
-	<bean id="tiersRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.TiersRFValidator" abstract="true" parent="entityValidator"/>
-	<bean id="personnePhysiqueRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.PersonnePhysiqueRFValidator" parent="tiersRFValidator"/>
-	<bean id="collectivitePubliqueRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CollectivitePubliqueRFValidator" parent="tiersRFValidator"/>
-	<bean id="personneMoraleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.PersonneMoraleRFValidator" parent="tiersRFValidator"/>
+	<bean id="rapprochementRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.RapprochementRFValidator" parent="dateRangeEntityValidator">
+		<property name="rapprochementDAO" ref="rapprochementRFDAO"/>
+	</bean>
 
 </beans>

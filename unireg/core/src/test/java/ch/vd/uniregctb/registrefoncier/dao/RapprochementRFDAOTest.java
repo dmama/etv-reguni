@@ -38,7 +38,7 @@ public class RapprochementRFDAOTest extends CoreDAOTest {
 		addRapprochementRF(date(2015, 3, 1), null, TypeRapprochementRF.MANUEL, pp, pprf1, false);
 		addRapprochementRF(date(2015, 2, 25), null, TypeRapprochementRF.AUTO, pp, pprf2, true);
 
-		final List<RapprochementRF> pourContribuable = dao.findByContribuable(pp.getNumero());
+		final List<RapprochementRF> pourContribuable = dao.findByContribuable(pp.getNumero(), false);
 		Assert.assertNotNull(pourContribuable);
 		Assert.assertEquals(2, pourContribuable.size());
 		final List<RapprochementRF> triesPourContribuable = pourContribuable.stream()

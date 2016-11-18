@@ -2,7 +2,9 @@ package ch.vd.uniregctb.registrefoncier.dao;
 
 import java.util.List;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,11 +20,40 @@ public class RapprochementRFDAOImpl extends BaseDAOImpl<RapprochementRF, Long> i
 
 	@NotNull
 	@Override
-	public List<RapprochementRF> findByContribuable(long ctbId) {
-		final Query query = getCurrentSession().createQuery("FROM RapprochementRF rrf WHERE rrf.contribuable.id=:ctbId ORDER BY rrf.id");
-		query.setParameter("ctbId", ctbId);
-		//noinspection unchecked
-		return query.list();
+	public List<RapprochementRF> findByContribuable(long ctbId, boolean noAutoFlush) {
+		final Session session = getCurrentSession();
+		final FlushMode oldMode = session.getFlushMode();
+		if (noAutoFlush) {
+			session.setFlushMode(FlushMode.MANUAL);
+		}
+		try {
+			final Query query = session.createQuery("FROM RapprochementRF rrf WHERE rrf.contribuable.id=:ctbId ORDER BY rrf.id");
+			query.setParameter("ctbId", ctbId);
+			//noinspection unchecked
+			return query.list();
+		}
+		finally {
+			session.setFlushMode(oldMode);
+		}
+	}
+
+	@NotNull
+	@Override
+	public List<RapprochementRF> findByTiersRF(long tiersRFId, boolean noAutoFlush) {
+		final Session session = getCurrentSession();
+		final FlushMode oldMode = session.getFlushMode();
+		if (noAutoFlush) {
+			session.setFlushMode(FlushMode.MANUAL);
+		}
+		try {
+			final Query query = session.createQuery("FROM RapprochementRF rrf WHERE rrf.tiersRF.id=:tiersRFId ORDER BY rrf.id");
+			query.setParameter("tiersRFId", tiersRFId);
+			//noinspection unchecked
+			return query.list();
+		}
+		finally {
+			session.setFlushMode(oldMode);
+		}
 	}
 
 	@NotNull
