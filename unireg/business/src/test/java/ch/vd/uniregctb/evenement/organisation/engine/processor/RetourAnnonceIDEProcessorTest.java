@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.evenement.organisation.engine.processor;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -24,10 +27,13 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.engine.AbstractEvenementOrganisationProcessorTest;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -70,14 +76,14 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), null, "Syntruc Asso");
-				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 1), null, "Syntruc Asso");
+				addFormeJuridique(entreprise, date(2016, 9, 1), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
 				addIdentificationEntreprise(entreprise, "CHE999999996");
 
 				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 1), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
 
 				return entreprise.getNumero();
@@ -92,8 +98,8 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
 				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
+				addDomicileEtablissement(etablissement, date(2016, 9, 1), null, MockCommune.Renens);
+				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 1), null, true);
 
 				return etablissement.getNumero();
 			}
@@ -122,7 +128,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 				// Annonce existante
 				AnnonceIDE annonce =
 						RCEntAnnonceIDEHelper
-								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 								                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
 								                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 								                  adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
@@ -174,7 +180,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 						                             String.format(
 								                             "Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant être aligné sur celui d'Unireg.",
 								                             idReferenceAnnonce,
-								                             DateHelper.dateTimeToDisplayString(DateHelper.getDateTime(2016, 9, 5, 11, 0, 0)),
+								                             DateHelper.dateTimeToDisplayString(DateHelper.getDateTime(2016, 9, 1, 11, 0, 0)),
 								                             FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()
 								                             )
 						                             ),
@@ -189,6 +195,23 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 						                             ),
 						                             evt.getErreurs().get(2).getMessage()
 				                             );
+
+				                             // Vérification de la fermeture des surcharges fiscales des données civiles
+				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementPrincipal(entreprise, date(2016, 9, 5));
+				                             final DomicileEtablissement domicileEtablissement = DateRangeHelper.rangeAt(etablissementPrincipal.getSortedDomiciles(false), date(2016, 9, 4));
+				                             Assert.assertNotNull(domicileEtablissement);
+				                             Assert.assertNotNull(domicileEtablissement.getDateFin());
+				                             Assert.assertEquals(date(2016, 9, 4), domicileEtablissement.getDateFin());
+
+				                             final List<AdresseTiers> adressesTiersSorted = AnnulableHelper.sansElementsAnnules(entreprise.getAdressesTiersSorted(TypeAdresseTiers.COURRIER));
+				                             if (adressesTiersSorted.isEmpty()) {
+					                             return null;
+				                             }
+				                             final AdresseTiers adresseTiersCourrier = DateRangeHelper.rangeAt(adressesTiersSorted, date(2016, 9, 4));
+				                             Assert.assertNotNull(adresseTiersCourrier);
+				                             Assert.assertNotNull(adresseTiersCourrier.getDateFin());
+				                             Assert.assertEquals(date(2016, 9, 4), adresseTiersCourrier.getDateFin());
+
 
 				                             return null;
 			                             }
