@@ -10,12 +10,14 @@ public class IdentifiantAffaireRFTest {
 	@Test
 	public void testToString() throws Exception {
 		assertEquals("006-2006/1402/0", new IdentifiantAffaireRF(6, 2006, 1402, 0).toString());
+		assertEquals("006", new IdentifiantAffaireRF(6, null, null, null).toString());
 	}
 
 	@Test
 	public void testParse() throws Exception {
 
 		assertEquals(new IdentifiantAffaireRF(6, 2006, 1402, 0), IdentifiantAffaireRF.parse("006-2006/1402/0"));
+		assertEquals(new IdentifiantAffaireRF(6, null, null, null), IdentifiantAffaireRF.parse("006"));
 
 		try {
 			IdentifiantAffaireRF.parse("6-2006/1402/0");

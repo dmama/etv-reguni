@@ -20,22 +20,25 @@ public class IdentifiantAffaireRF {
 	/**
 	 * L'année de l'affaire.
 	 */
-	private int annee;
+	@Nullable
+	private Integer annee;
 
 	/**
 	 * Le numéro de l'affaire.
 	 */
-	private int numero;
+	@Nullable
+	private Integer numero;
 
 	/**
 	 * L'index de l'affaire.
 	 */
-	private int index;
+	@Nullable
+	private Integer index;
 
 	public IdentifiantAffaireRF() {
 	}
 
-	public IdentifiantAffaireRF(int numeroOffice, int annee, int numero, int index) {
+	public IdentifiantAffaireRF(int numeroOffice, @Nullable Integer annee, @Nullable Integer numero, @Nullable Integer index) {
 		this.numeroOffice = numeroOffice;
 		this.annee = annee;
 		this.numero = numero;
@@ -50,27 +53,30 @@ public class IdentifiantAffaireRF {
 		this.numeroOffice = numeroOffice;
 	}
 
-	public int getAnnee() {
+	@Nullable
+	public Integer getAnnee() {
 		return annee;
 	}
 
-	public void setAnnee(int annee) {
+	public void setAnnee(@Nullable Integer annee) {
 		this.annee = annee;
 	}
 
-	public int getNumero() {
+	@Nullable
+	public Integer getNumero() {
 		return numero;
 	}
 
-	public void setNumero(int numero) {
+	public void setNumero(@Nullable Integer numero) {
 		this.numero = numero;
 	}
 
-	public int getIndex() {
+	@Nullable
+	public Integer getIndex() {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	public void setIndex(@Nullable Integer index) {
 		this.index = index;
 	}
 
@@ -80,9 +86,9 @@ public class IdentifiantAffaireRF {
 		if (o == null || getClass() != o.getClass()) return false;
 		final IdentifiantAffaireRF that = (IdentifiantAffaireRF) o;
 		return numeroOffice == that.numeroOffice &&
-				annee == that.annee &&
-				numero == that.numero &&
-				index == that.index;
+				Objects.equals(annee, that.annee) &&
+				Objects.equals(numero, that.numero) &&
+				Objects.equals(index, that.index);
 	}
 
 	@Override
@@ -92,10 +98,15 @@ public class IdentifiantAffaireRF {
 
 	@Override
 	public String toString() {
-		return String.format("%03d-%4d/%d/%d", numeroOffice, annee, numero, index);
+		if (annee == null || numero == null || index == null) { // une analyse des données à montré que si l'année est nulle, alors le numéro et l'index le sont aussi.
+			return String.format("%03d", numeroOffice);
+		}
+		else {
+			return String.format("%03d-%4d/%d/%d", numeroOffice, annee, numero, index);
+		}
 	}
 
-	private static final Pattern PATTERN = Pattern.compile("([0-9]{3})-([0-9]{4})/([0-9]+)/([0-9]+)");
+	private static final Pattern PATTERN = Pattern.compile("([0-9]{3})(?:-([0-9]{4})/([0-9]+)/([0-9]+))?");
 
 	@Nullable
 	public static IdentifiantAffaireRF parse(@Nullable String value) {
@@ -110,9 +121,16 @@ public class IdentifiantAffaireRF {
 		}
 
 		int numeroOffice = Integer.parseInt(matcher.group(1));
-		int annee = Integer.parseInt(matcher.group(2));
-		int numero = Integer.parseInt(matcher.group(3));
-		int index = Integer.parseInt(matcher.group(4));
+		Integer annee = null;
+		Integer numero = null;
+		Integer index = null;
+
+		final String anneeAsString = matcher.group(2);
+		if (StringUtils.isNotBlank(anneeAsString)) {
+			annee = Integer.parseInt(anneeAsString);
+			numero = Integer.parseInt(matcher.group(3));
+			index = Integer.parseInt(matcher.group(4));
+		}
 
 		return new IdentifiantAffaireRF(numeroOffice, annee, numero, index);
 	}
