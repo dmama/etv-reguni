@@ -348,21 +348,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				//Assert.assertTrue(file != null && file.exists());
-
-				// initialize your database connection here
-				Connection sql = DataSourceUtils.getConnection(dataSource);
-				// initialize your dataset here
-				try {
+				try (Connection sql = DataSourceUtils.getConnection(dataSource)) {
 					IDatabaseConnection connection = createNewConnection(sql);
 					IDataSet dataSet = getSrcDataSet(file, getProducerType(), false);
 					DatabaseOperation.INSERT.execute(connection, dataSet);
 				}
 				catch (Exception e) {
 					throw new RuntimeException(e);
-				}
-				finally {
-					DataSourceUtils.releaseConnection(sql, dataSource);
 				}
 				return null;
 			}
