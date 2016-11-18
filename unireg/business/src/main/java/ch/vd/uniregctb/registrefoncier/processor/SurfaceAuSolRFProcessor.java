@@ -41,7 +41,6 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.surfaceAuSolRFDAO = surfaceAuSolRFDAO;
 
-		// TODO (msi) effacer les données du thread-local lorsque le processor est détruit
 		unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getSurfaceListContext().createUnmarshaller();

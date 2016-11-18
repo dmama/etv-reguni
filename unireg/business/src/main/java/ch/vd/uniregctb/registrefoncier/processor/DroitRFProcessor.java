@@ -52,7 +52,6 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.droitRFDAO = droitRFDAO;
 
-		// TODO (msi) effacer les données du thread-local lorsque le processor est détruit
 		unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getDroitListContext().createUnmarshaller();

@@ -39,7 +39,6 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 	public ImmeubleRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.immeubleRFDAO = immeubleRFDAO;
 
-		// TODO (msi) effacer les données du thread-local lorsque le processor est détruit
 		unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getImmeubleContext().createUnmarshaller();

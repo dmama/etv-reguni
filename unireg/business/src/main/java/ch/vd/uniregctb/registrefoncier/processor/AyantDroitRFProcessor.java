@@ -32,7 +32,6 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 	public AyantDroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 
-		// TODO (msi) effacer les données du thread-local lorsque le processor est détruit
 		proprietaireUnmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getProprietaireContext().createUnmarshaller();
