@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
@@ -38,7 +39,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTraitement {
 
 	/**
-	 * Exception lancée dans le cadre de la validation de fin de traitement et qui demande implicitement de
+	 * Exception lancée dans le cadre de la validation de debut de traitement et qui demande implicitement de
 	 * conserver les messages du traitement.
 	 */
 	public static class ValideurDebutDeTraitementException extends EvenementOrganisationAbortException {
@@ -65,6 +66,10 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
+		// Vérification que l'événement n'est pas un événement de correction, c'est à dire un événement qui survient avant le dernier événement de l'historique
+		// des données civiles tel qu'on le connait actellement.
+		checkEvenementDansPasse(getEvenement(), getOrganisation());
+
 		// On doit connaître la catégorie pour continuer en mode automatique
 		final Organisation organisation = getOrganisation();
 		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, getDateEvt());
@@ -79,6 +84,36 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 			verifieNonPreexistanteVD();
 		}
 
+	}
+
+	/**
+	 * Protection contre les événements dans le passé.
+	 * Si on trouve le flag de correction dans le passé sur l'événement, ou si la date de valeur de l'événement reçu est antérieure à celle du dernier événement,
+	 * on lève une erreur.
+	 *
+	 * @param event l'événement à inspecter
+	 * @param organisation l'organisation concernée, dont le numéro d'organisation doit correspondre à celui stocké dans l'événement
+	 * @throws EvenementOrganisationException au cas où on est en présence d'un événement dans le passé
+	 */
+	protected void checkEvenementDansPasse(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+
+		final String message = "Correction dans le passé: l'événement n°%d [%s] reçu de RCEnt pour l'organisation %d %s. Traitement automatique impossible.";
+		final String fragmentMessage;
+
+		if (event.getCorrectionDansLePasse()) {
+			fragmentMessage = "est marqué comme événement de correction dans le passé";
+			throw new EvenementOrganisationException(
+					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+			);
+		}
+
+		final boolean evenementDateValeurDansLePasse = getContext().getEvenementOrganisationService().isEvenementDateValeurDansLePasse(event);
+		if (evenementDateValeurDansLePasse) {
+			fragmentMessage = "possède une date de valeur antérieure à la date portée par un autre événement reçu avant";
+			throw new EvenementOrganisationException(
+					String.format(message, event.getNoEvenement(), RegDateHelper.dateToDisplayString(event.getDateEvenement()), organisation.getNumeroOrganisation(), fragmentMessage)
+			);
+		}
 	}
 
 	// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
