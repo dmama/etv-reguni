@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
@@ -23,6 +24,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
@@ -139,6 +141,10 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(),
 				                                                                        null, null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
+				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getDonneesSites().get(0).getDonneesRegistreIDE();
+				donneesRegistreIDE.addAdresseEffective(date(2016, 9, 5), null, new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
+				                                                                                         MockLocalite.Renens.getNPA().toString(),null, MockPays.Suisse.getNoOfsEtatSouverain(),
+				                                                                                         MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));
 				addOrganisation(org);
 			}
 		});

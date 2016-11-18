@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.retour.annonce;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -9,12 +10,15 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -119,15 +123,34 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			// Fermer les surcharges  civiles ouvertes sur l'entreprise. Cela permet de prendre en compte d'éventuels changements survenus dans l'interval.
 			tiersService.fermeSurchargesCiviles(getEntreprise(), getEvenement().getDateEvenement().getOneDayBefore());
 		}
-		// Fermeture des surcharges d'adresse, sauf les permanentes. On "détourne" les méthodes du changement d'adresse, car il doit se passer la même chose que lorsque l'adresse change.
-		final AdresseSupplementaire adresseCourrier = getAdresseTiers(TypeAdresseTiers.COURRIER, this.dateApres);
-		final AdresseSupplementaire adresseRepresentation = getAdresseTiers(TypeAdresseTiers.REPRESENTATION, this.dateApres);
-		if (adresseCourrier != null || adresseRepresentation != null) {
-			traiteTransitionAdresseEffective(warnings, suivis, this.dateApres, false);
+		// Fermeture des surcharges d'adresse, sauf les permanentes. A la condition qu'il doit exister une adresse effective dans RCEnt.
+		final AdresseEffectiveRCEnt adresseEffective = sitePrincipal.getDonneesRegistreIDE().getAdresseEffective(this.dateApres);
+		if (adresseEffective != null) {
+			final AdresseSupplementaire adresseCourrier = getAdresseTiers(TypeAdresseTiers.COURRIER, this.dateApres);
+			final AdresseSupplementaire adresseRepresentation = getAdresseTiers(TypeAdresseTiers.REPRESENTATION, this.dateApres);
+			if (adresseCourrier != null || adresseRepresentation != null) {
+				traiteTransitionAdresseEffective(warnings, suivis, this.dateApres, false);
+				// S'il y a un doute sur l'équivalence de l'adresse effective par rapport à l'adresse annoncée, on met à vérifier.
+				if (!checkAdressesEffectiveCommeAnnoncee(adresseEffective, annonceIDE)) {
+					warnings.addWarning(
+							String.format("L'adresse effective [%s] présente dans le registre civil est differente de celle annoncée [%s] à l'IDE par Unireg. " +
+									              "Un autre service IDE a peut-être effectué une modification concurrente. Veuillez vérifier la situation de l'entreprise.",
+							              detailSimpleAdresse(adresseEffective.getRue(), adresseEffective.getNumero(), adresseEffective.getNumeroPostal()),
+							              detailSimpleAdresse(annonceIDE))
+					);
+
+				}
+				final AdresseSupplementaire adressePoursuite = getAdresseTiers(TypeAdresseTiers.POURSUITE, this.dateApres);
+				if (adressePoursuite != null) {
+					traiteTransitionAdresseLegale(warnings, suivis, this.dateApres);
+				}
+			}
 		}
-		final AdresseSupplementaire adressePoursuite = getAdresseTiers(TypeAdresseTiers.POURSUITE, this.dateApres);
-		if (adressePoursuite != null) {
-			traiteTransitionAdresseLegale(warnings, suivis, this.dateApres);
+		else {
+			warnings.addWarning(
+					"Pas d'adresse effective trouvée dans le registre civil. Pas de fermeture d'adresse(s) fiscale(s). (N'y a-t-il qu'une adresse de boîte postale dans RCEnt?)" +
+							"Un autre service IDE a peut-être effectué une modification concurrente. Veuillez vérifier la situation de l'entreprise."
+			);
 		}
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(getEntreprise(), false);
@@ -190,6 +213,37 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 			}
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
+	private boolean checkAdressesEffectiveCommeAnnoncee(AdresseEffectiveRCEnt adresseEffective, AnnonceIDEEnvoyee annonceIDE) {
+		final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+		if (contenu == null) {
+			return false;
+		}
+		final AdresseAnnonceIDE adresseAnnonce = contenu.getAdresse();
+		return adresseAnnonce != null &&
+				ComparisonHelper.areEqual(adresseAnnonce.getNumeroOrdrePostal(), adresseEffective.getNumeroOrdrePostal()) &&
+				ComparisonHelper.areEqual(adresseAnnonce.getNumero(), adresseEffective.getNumero()) &&
+				ComparisonHelper.areEqual(adresseAnnonce.getRue(), adresseEffective.getRue());
+	}
+
+	private String detailSimpleAdresse(String rue, String numero, String npa) {
+		String rueString = rue == null ? "" : "rue: " + rue;
+		String numeroString = numero == null ? "" : "numéro: " + numero;
+		String npaString = npa == null ? "" : "npa: " + npa;
+		return String.join(", ", rueString, numeroString, npaString);
+	}
+
+	@NotNull
+	private String detailSimpleAdresse(AnnonceIDEEnvoyee annonceIDE) {
+		final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
+		if (contenu != null) {
+			final AdresseAnnonceIDE adresse = contenu.getAdresse();
+			if (adresse != null) {
+				return detailSimpleAdresse(adresse.getRue(), adresse.getNumero(), adresse.getNpa().toString());
+			}
+		}
+		return "";
 	}
 
 	@Override
