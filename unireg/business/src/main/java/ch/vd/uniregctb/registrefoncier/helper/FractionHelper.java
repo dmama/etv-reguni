@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
+import java.util.regex.Pattern;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Quote;
@@ -22,11 +24,29 @@ public abstract class FractionHelper {
 		}
 	}
 
+	// support des fractions en pourcent (e.g. "2%", "15%", ...)
+	private static final Pattern PATTERN_FRACTION_PERCENT = Pattern.compile("[0-9]?[0-9]%");
+
 	@Nullable
 	public static Fraction get(@Nullable Quote quote) {
+
 		if (quote == null) {
 			return null;
 		}
-		return new Fraction(quote.getAnteilZaehler().intValue(), quote.getAnteilNenner().intValue());
+
+		final Long numerateur = quote.getAnteilZaehler();
+		final Long denominateur = quote.getAnteilNenner();
+		final String quoteInProsa = quote.getQuoteInProsa();
+
+		if (numerateur != null && denominateur != null) {
+			return new Fraction(numerateur.intValue(), denominateur.intValue());
+		}
+		else if (quoteInProsa != null && PATTERN_FRACTION_PERCENT.matcher(quoteInProsa).matches()) {
+			final String percentAsString = quoteInProsa.substring(0, quoteInProsa.length() - 1);    // suppression du pourcent
+			return new Fraction(Integer.parseInt(percentAsString), 100);
+		}
+		else {
+			return null;
+		}
 	}
 }

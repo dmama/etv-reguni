@@ -86,5 +86,7 @@ public class FractionHelperTest {
 	public void testGet() throws Exception {
 		assertNull(FractionHelper.get(null));
 		assertEquals(new Fraction(2, 5), FractionHelper.get(new Quote(2L, 5L, null, null)));
+		assertEquals(new Fraction(15, 100), FractionHelper.get(new Quote(null, null, "15%", null)));
+		assertNull(FractionHelper.get(new Quote(null, null, "deux pourcents", null)));
 	}
 }
