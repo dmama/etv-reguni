@@ -232,12 +232,13 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			final Organisation organisation = tiersService.getOrganisation(entreprise);
 			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			if (site != null) {
-				final String message = String.format("Entreprise n°%s: le site apparié à l'établissement n°%s n'est pas un établissement principal.",
-				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-				                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()));
-				Audit.error(message);
-				Assert.isTrue(site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_PRINCIPAL,
-				              message);
+				if (site.getTypeDeSite(date) != TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+					final String message = String.format("Entreprise n°%s: le site apparié à l'établissement n°%s n'est pas un établissement principal.",
+					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+					                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()));
+					Audit.error(message);
+					throw new ServiceIDEException(message);
+				}
 			}
 
 			final StatusRegistreIDE statusRegistreIDE = site == null ? null : site.getDonneesRegistreIDE().getStatus(date);
