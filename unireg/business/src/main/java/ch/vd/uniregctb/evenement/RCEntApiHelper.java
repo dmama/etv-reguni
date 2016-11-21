@@ -68,12 +68,15 @@ public class RCEntApiHelper {
 		if (noticeRequestIdent != null) {
 			final String applicationId = noticeRequestIdent.getReportingApplication().getId();
 			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
+			if (ideSource == null || ideSource.getOrganisationId() == null || ideSource.getOrganisationId().isEmpty()) {
+				throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est issu d'une annonce, mais le numéro IDE de l'institution source n'est pas inclu! Impossible de vérifier l'origine de l'annonce.", notice.getNoticeId().longValue()));
+			}
 			if (RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
 				final String noticeRequestId = noticeRequestIdent.getNoticeRequestId();
 				if (noticeRequestId != null) {
 					return Long.parseLong(noticeRequestId);
 				} else {
-					throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est réputé issu d'une annonce à l'IDE d'Unireg, mais le numéro d'annonce n'est pas inclu!", notice.getNoticeId().longValue()));
+					throw new EvenementOrganisationException(String.format("L'événement organisation n°%s semble provenir d'une annonce à l'IDE d'Unireg, mais le numéro d'annonce n'est pas inclus!", notice.getNoticeId().longValue()));
 				}
 			}
 		}
