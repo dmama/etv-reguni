@@ -19,7 +19,7 @@ public interface InboxService {
 
 	/**
 	 * @param uuid identifiant du message à récupérer
-	 * @return le message trouvé correspondant à l'indentifiant indiqué, ou <code>null</code> si le document est absent (jamais vu ou expiré)
+	 * @return le message trouvé correspondant à l'identifiant indiqué, ou <code>null</code> si le document est absent (jamais vu ou expiré)
 	 */
 	InboxElement getInboxElement(UUID uuid);
 

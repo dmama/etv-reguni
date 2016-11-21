@@ -974,7 +974,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 			final String nom = "RapportRelanceIdentification";
-			final String description = String.format("Rapport d'exécution du job de relance de l'indentification des contribuables. Date de traitement = %s",
+			final String description = String.format("Rapport d'exécution du job de relance de l'identification des contribuables. Date de traitement = %s",
 			                                         RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			final Date dateGeneration = DateHelper.getCurrentDate();
 

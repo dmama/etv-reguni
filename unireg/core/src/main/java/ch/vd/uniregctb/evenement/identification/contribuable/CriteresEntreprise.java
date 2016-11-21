@@ -1,13 +1,8 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-
 /**
  * Contient les critères d'identification utilisés pour une entreprise
  */
-@Embeddable
 public class CriteresEntreprise {
 
 	/**
@@ -25,7 +20,11 @@ public class CriteresEntreprise {
 	 */
 	private CriteresAdresse adresse;
 
-	@Column(name = "IDE")
+	/**
+	 * Le numéro RC/FOSC
+	 */
+	private String numeroRC;
+
 	public String getIde() {
 		return ide;
 	}
@@ -34,7 +33,6 @@ public class CriteresEntreprise {
 		this.ide = ide;
 	}
 
-	@Column(name = "RAISON_SOCIALE")
 	public String getRaisonSociale() {
 		return raisonSociale;
 	}
@@ -43,7 +41,6 @@ public class CriteresEntreprise {
 		this.raisonSociale = raisonSociale;
 	}
 
-	@Embedded
 	public CriteresAdresse getAdresse() {
 		return adresse;
 	}
@@ -52,8 +49,16 @@ public class CriteresEntreprise {
 		this.adresse = adresse;
 	}
 
+	public String getNumeroRC() {
+		return numeroRC;
+	}
+
+	public void setNumeroRC(String numeroRC) {
+		this.numeroRC = numeroRC;
+	}
+
 	@Override
 	public String toString() {
-		return String.format("IDE: %s, Raison sociale: %s", ide, raisonSociale);
+		return String.format("IDE: %s, RC: %s, Raison sociale: %s", ide, numeroRC, raisonSociale);
 	}
 }

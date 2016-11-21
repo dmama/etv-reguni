@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -252,26 +253,37 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
-		return inscription != null ? inscription.getDateInscriptionCH() : null;
+		return getInscriptonRC(date)
+				.map(InscriptionRC::getDateInscriptionCH)
+				.orElse(null);
 	}
 
 	@Override
 	public RegDate getDateInscriptionRCVd(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
-		return inscription != null ? inscription.getDateInscriptionVD() : null;
+		return getInscriptonRC(date)
+				.map(InscriptionRC::getDateInscriptionVD)
+				.orElse(null);
 	}
 
 	@Override
 	public RegDate getDateRadiationRC(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
-		return inscription != null ? inscription.getDateRadiationCH() : null;
+		return getInscriptonRC(date)
+				.map(InscriptionRC::getDateRadiationCH)
+				.orElse(null);
 	}
 
 	@Override
 	public RegDate getDateRadiationRCVd(RegDate date) {
-		final InscriptionRC inscription = OrganisationHelper.valueForDate(this.getDonneesRC().getInscription(), date);
-		return inscription != null ? inscription.getDateRadiationVD() : null;
+		return getInscriptonRC(date)
+				.map(InscriptionRC::getDateRadiationVD)
+				.orElse(null);
+	}
+
+	private Optional<InscriptionRC> getInscriptonRC(RegDate date) {
+		return Optional.of(this)
+				.map(MockSiteOrganisation::getDonneesRC)
+				.map(MockDonneesRC::getInscription)
+				.map(i -> OrganisationHelper.valueForDate(i, date));
 	}
 
 	@Override

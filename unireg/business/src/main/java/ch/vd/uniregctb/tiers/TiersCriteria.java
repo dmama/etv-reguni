@@ -284,9 +284,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Long ancienNumeroSourcier;
 
 	/**
-	 * Numéro IDE assotié au tiers
+	 * Numéro IDE associé au tiers
 	 */
 	private String numeroIDE;
+
+	/**
+	 * Numéro RC/FOSC associé au tiers
+	 */
+	private String numeroRC;
 
 	/**
 	 * Types d'états entreprise non-présents (si présent, ce critère excluera de la liste de résultats toutes les
@@ -362,6 +367,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& tiersActif == null
 				&& ancienNumeroSourcier == null
 				&& StringUtils.isBlank(numeroIDE)
+				&& StringUtils.isBlank(numeroRC)
 				&& etatInscriptionRC == null
 				&& etatEntrepriseCourant == null;
 	}
@@ -770,6 +776,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setNumeroIDE(String numeroIDE) {
 		this.numeroIDE = numeroIDE;
+	}
+
+	public String getNumeroRC() {
+		return numeroRC;
+	}
+
+	public void setNumeroRC(String numeroRC) {
+		this.numeroRC = numeroRC;
 	}
 
 	public Set<TypeEtatEntreprise> getEtatsEntrepriseInterdits() {

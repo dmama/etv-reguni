@@ -13,6 +13,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
@@ -20,11 +26,13 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
@@ -573,6 +581,94 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 
 				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
 				Assert.assertEquals(3, tousRapprochements.size());      // les deux préparés dans l'initialisation, plus le nouveau
+			}
+		});
+	}
+
+	@Test
+	public void testRapprochementEntrepriseParNumeroRC() throws Exception {
+
+		final String numeroRC = "CH-550.1.051.910-3";
+		final RegDate dateDebut = date(2009, 1, 1);
+		final long noCantonalEntreprise = 423784356372L;
+		final long noCantonalEtablissementPrincipal = 7964324789623L;
+
+		final class Ids {
+			long pm;
+			long tiersRF;
+		}
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateDebut, null, null, null);
+				sitePrincipal.changeNumeroRC(dateDebut, numeroRC);
+				sitePrincipal.changeTypeDeSite(dateDebut, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeDomicile(dateDebut, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+				sitePrincipal.changeFormeLegale(dateDebut, FormeLegale.N_0106_SOCIETE_ANONYME);
+				sitePrincipal.changeNom(dateDebut, "Machin bidule truc SA");
+			}
+		});
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+
+				// on en crée une autre avec le même nom pour être certain que ce n'est pas le nom qui est déterminant
+				final Entreprise leure = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(leure, dateDebut, null, "Machin bidule chose SA");
+				addFormeJuridique(leure, dateDebut, null, FormeJuridiqueEntreprise.SA);
+
+				final TiersRF tiersRF = addPersonneMoraleRF("Machin bidule SA", numeroRC, "548354837lJDFSGZ", 235643L, null);
+				final Ids ids = new Ids();
+				ids.pm = entreprise.getNumero();
+				ids.tiersRF = tiersRF.getId();
+				return ids;
+			}
+		});
+
+		// indexation...
+		globalTiersIndexer.sync();
+
+		// lancement du rapprochement
+		final RapprochementTiersRFResults results = processor.run(null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDossiersInspectes());
+		Assert.assertEquals(Collections.emptyList(), results.getErreurs());
+		Assert.assertEquals(0, results.getNbNonIdentifications());
+		Assert.assertEquals(1, results.getNbIdentifications());
+
+		final RapprochementTiersRFResults.NouveauRapprochement rapprochement = results.getNouveauxRapprochements().get(0);
+		Assert.assertNotNull(rapprochement);
+		Assert.assertEquals(ids.pm, rapprochement.idContribuable);
+		Assert.assertEquals(ids.tiersRF, rapprochement.idTiersRF);
+		Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.type);
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
+				Assert.assertNotNull(pm);
+
+				final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
+				Assert.assertNotNull(rapprochementsRF);
+				Assert.assertEquals(1, rapprochementsRF.size());
+
+				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+				Assert.assertNotNull(rapprochementRF);
+				Assert.assertFalse(rapprochementRF.isAnnule());
+				Assert.assertEquals((Long) ids.tiersRF, rapprochementRF.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
+				Assert.assertNull(rapprochementRF.getDateDebut());
+				Assert.assertNull(rapprochementRF.getDateFin());
+
+				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+				Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
 			}
 		});
 	}

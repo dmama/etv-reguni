@@ -116,7 +116,7 @@ public class RapprochementTiersRFProcessor {
 		public List<Long> identify(PersonneMoraleRF tiersRF, IdentificationContribuableService identificationService) throws TooManyIdentificationPossibilitiesException {
 			final CriteresEntreprise criteres = new CriteresEntreprise();
 			criteres.setRaisonSociale(tiersRF.getRaisonSociale());
-			// TODO numéro RC...
+			criteres.setNumeroRC(tiersRF.getNumeroRC());
 			return identificationService.identifieEntreprise(criteres);
 		}
 	}

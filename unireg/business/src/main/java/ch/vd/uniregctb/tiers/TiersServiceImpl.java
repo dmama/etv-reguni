@@ -634,7 +634,7 @@ public class TiersServiceImpl implements TiersService {
 		    habitant.setOrigine(null);
 	    }
 
-        // indentification navs11 et numRCE
+        // identification navs11 et numRCE
         setIdentifiantsPersonne(habitant, ind.getNoAVS11(), ind.getNumeroRCE());
 
         habitant.setHabitant(false);

@@ -530,6 +530,14 @@ public class QueryConstructor {
 		}
 	}
 
+	private static void addNumeroRC(BooleanQuery fullQuery, TiersCriteria criteria) throws IndexerException {
+
+		if (StringUtils.isNotBlank(criteria.getNumeroRC())) {
+			final Query q = new TermQuery(new Term(TiersIndexableData.NUM_RC, IndexerFormatHelper.numRCToString(criteria.getNumeroRC()).toLowerCase(Locale.getDefault())));
+			fullQuery.add(q, must);
+		}
+	}
+
 	private void addCategorieDebiteurIs(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getCategorieDebiteurIs() != null) {
@@ -580,6 +588,7 @@ public class QueryConstructor {
 			addCategorieDebiteurIs(fullQuery);
 			addTiersActif(fullQuery, criteria);
 			addNumeroIDE(fullQuery, criteria);
+			addNumeroRC(fullQuery, criteria);
 
 			final Set<TypeTiers> typesTiersUtilisateur = criteria.getTypesTiers();
 			if (typesTiersUtilisateur != null && !typesTiersUtilisateur.isEmpty()) {

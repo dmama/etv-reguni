@@ -353,11 +353,26 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			LOGGER.info("L'identification par numéro IDE a fourni un résultat : " + FormatNumeroHelper.numeroCTBToDisplay(indexedIde.get(0).getNumero()));
 			if (checkRaisonSocialeEntreprise(criteres.getRaisonSociale(), indexedIde.get(0))) {
 				// c'est lui !
-				LOGGER.info("Indentification par phase IDE réussie.");
+				LOGGER.info("Identification par phase IDE réussie.");
 				return buildIdListFromIndex(indexedIde);
 			}
 			else {
 				LOGGER.info("Identification par numéro IDE rejetée pour cause de raisons sociales différentes");
+			}
+		}
+
+		// 2. phase numéro RC
+		final List<TiersIndexedData> indexedNumeroRC = findByNumeroRC(criteres);
+		if (indexedNumeroRC != null && indexedNumeroRC.size() == 1) {
+			// 1 seul résultat, c'est peut-être lui,,,
+			LOGGER.info("L'identification par numéro RC a fourni un résultat : " + FormatNumeroHelper.numeroCTBToDisplay(indexedNumeroRC.get(0).getNumero()));
+			if (checkRaisonSocialeEntreprise(criteres.getRaisonSociale(), indexedNumeroRC.get(0))) {
+				// ok, c'est lui !
+				LOGGER.info("Identification par phase NuméroRC réussie.");
+				return buildIdListFromIndex(indexedNumeroRC);
+			}
+			else {
+				LOGGER.info("Identification par numéro RC rejetée pour cause de raisons sociales différentes");
 			}
 		}
 
@@ -383,6 +398,21 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 			catch (TooManyResultsIndexerException e) {
 				// dans la phase IDE, trop de résultats = aucun résultat
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	private List<TiersIndexedData> findByNumeroRC(CriteresEntreprise criteres) {
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.ENTREPRISE));
+		criteria.setNumeroRC(criteres.getNumeroRC());
+		if (!criteria.isEmpty()) {
+			try {
+				return searcher.search(criteria);
+			}
+			catch (TooManyResultsIndexerException e) {
+				// dans la phase 'numéro RC', trop de résultats = aucun résultat
 			}
 		}
 		return Collections.emptyList();

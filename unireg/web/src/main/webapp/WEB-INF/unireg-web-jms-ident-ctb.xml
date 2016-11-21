@@ -65,7 +65,7 @@
 		<property name="messageListener" ref="identCtbMessageListener" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
-		<property name="description" value="Reception en masse des demandes d'indentification de contribuable"/>
+		<property name="description" value="Reception en masse des demandes d'identification de contribuable"/>
 	</bean>
 
 	<!-- Demandes d'identification de contribuable, cannal prioritaire (= online) -->
@@ -88,7 +88,7 @@
 		<property name="messageListener" ref="identCtbMessageListenerOnline" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.online.enabled}" />
-		<property name="description" value="Reception avec une priorité de traitement élevée des demandes d'indentification de contribuable"/>
+		<property name="description" value="Reception avec une priorité de traitement élevée des demandes d'identification de contribuable"/>
 	</bean>
 
 </beans>
