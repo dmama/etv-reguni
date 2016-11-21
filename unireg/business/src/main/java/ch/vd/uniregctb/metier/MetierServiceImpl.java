@@ -38,6 +38,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -2338,7 +2339,7 @@ public class MetierServiceImpl implements MetierService {
 		final Map<String, List<EtiquetteTiers>> existing;
 		if (pp.getEtiquettes() != null && !pp.getEtiquettes().isEmpty()) {
 			existing = pp.getEtiquettes().stream()
-					.filter(etiqTiers -> !etiqTiers.isAnnule())
+					.filter(AnnulableHelper::nonAnnule)
 					.sorted(DateRangeComparator::compareRanges)
 					.collect(Collectors.toMap(etiqTiers -> etiqTiers.getEtiquette().getCode(),
 					                          Collections::singletonList,

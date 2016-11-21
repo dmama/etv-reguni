@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
@@ -100,7 +101,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		if (data != null && data.size() > 1) {
 			// filtrage des éléments intéressants
 			final List<T> concernes = data.stream()
-					.filter(d -> !d.isAnnule())
+					.filter(AnnulableHelper::nonAnnule)
 					.filter(filter)
 					.collect(Collectors.toList());
 
@@ -125,7 +126,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		if (data != null && data.size() > 1) {
 			// on construit d'abord une map des valeurs regroupées par la clé du groupe
 			final Map<K, List<T>> groups = data.stream()
-					.filter(d -> !d.isAnnule())
+					.filter(AnnulableHelper::nonAnnule)
 					.filter(filter)
 					.collect(Collectors.toMap(groupKeyExtractor,
 					                          Collections::singletonList,

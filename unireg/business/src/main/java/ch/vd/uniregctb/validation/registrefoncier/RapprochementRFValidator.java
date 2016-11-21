@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
@@ -68,7 +69,7 @@ public class RapprochementRFValidator extends DateRangeEntityValidator<Rapproche
 				// allons donc y voir !
 				final List<RapprochementRF> tous = rapprochementDAO.findByTiersRF(entity.getTiersRF().getId(), true);
 				final Map<Long, RapprochementRF> tousParId = Stream.concat(tous.stream(), Stream.of(entity))
-						.filter(r -> !r.isAnnule())
+						.filter(AnnulableHelper::nonAnnule)
 						.collect(Collectors.toMap(RapprochementRF::getId,
 						                          Function.identity(),
 						                          (r1, r2) -> r1));         // on ne conserve que le premier venu avec un identifiant donné

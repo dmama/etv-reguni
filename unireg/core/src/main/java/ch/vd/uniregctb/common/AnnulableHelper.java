@@ -91,4 +91,14 @@ public abstract class AnnulableHelper {
 		}
 		return res.size() == 0 ? Collections.<T>emptyList() : res;
 	}
+
+	/**
+	 * Méthode utilisable dans des constructions du type .filter(AnnulableHelper::nonAnnule)
+	 * pour ne conserver que les éléments non-annulés d'un stream
+	 * @param annulable l'entité à tester
+	 * @return <code>true</code> si l'entité n'est pas annulée
+	 */
+	public static boolean nonAnnule(Annulable annulable) {
+		return !annulable.isAnnule();
+	}
 }

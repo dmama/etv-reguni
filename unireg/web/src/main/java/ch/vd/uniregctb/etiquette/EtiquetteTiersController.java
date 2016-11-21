@@ -139,7 +139,7 @@ public class EtiquetteTiersController {
 
 		// on prend de base les étiquettes prévues pour le tiers en question
 		final List<Etiquette> allowed = etiquetteService.getAllEtiquettes().stream()
-				.filter(etiq -> !etiq.isAnnule())
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(Etiquette::isActive)
 				.filter(etiq -> etiq.getTypeTiers().isForClass(clazz))
 				.collect(Collectors.toCollection(LinkedList::new));

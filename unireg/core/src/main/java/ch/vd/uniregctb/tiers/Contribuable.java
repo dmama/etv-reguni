@@ -26,6 +26,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
@@ -491,7 +492,7 @@ public abstract class Contribuable extends Tiers {
 			return Collections.emptyList();
 		}
 		return rapprochementsRF.stream()
-				.filter(r -> !r.isAnnule())
+				.filter(AnnulableHelper::nonAnnule)
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());
 	}
