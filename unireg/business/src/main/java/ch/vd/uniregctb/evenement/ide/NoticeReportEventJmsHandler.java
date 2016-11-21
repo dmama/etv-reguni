@@ -27,6 +27,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.RCEntApiHelper;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -44,6 +45,8 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 
 	private JAXBContext jaxbContext;
 
+	private HibernateTemplate hibernateTemplate;
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -52,6 +55,10 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setReponseIDEProcessor(ReponseIDEProcessor reponseIDEProcessor) {
 		this.reponseIDEProcessor = reponseIDEProcessor;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -68,6 +75,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 		try {
 			final Source content = message.getBodyAsSource();
 			onEvenementRapportAnnonceIDE(content);
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (EsbBusinessException e) {
 			// on a un truc qui a sauté au moment de l'arrivée de l'événement (test métier)
