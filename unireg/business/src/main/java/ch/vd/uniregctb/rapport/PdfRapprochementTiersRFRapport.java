@@ -93,6 +93,7 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("ID_RF_TIERS").append(COMMA);
+					b.append("NO_RF").append(COMMA);
 					b.append("ID_CTB").append(COMMA);
 					b.append("TYPE_RAPPROCHEMENT");
 				}
@@ -100,6 +101,7 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, RapprochementTiersRFResults.NouveauRapprochement elt) {
 					b.append(elt.idTiersRF).append(COMMA);
+					b.append(elt.noRF).append(COMMA);
 					b.append(elt.idContribuable).append(COMMA);
 					b.append(elt.type);
 					return true;
@@ -116,12 +118,22 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("ID_RF_TIERS").append(COMMA);
+					b.append("NO_RF").append(COMMA);
+					b.append("ID_CONTRIBUABLE_RF").append(COMMA);
+					b.append("NOM_RAISON_SOCIALE_RF").append(COMMA);
+					b.append("PRENOM_RF").append(COMMA);
+					b.append("DATE_NAISSANCE_RF").append(COMMA);
 					b.append("CANDIDATS");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, RapprochementTiersRFResults.NonIdentification elt) {
 					b.append(elt.idTiersRF).append(COMMA);
+					b.append(Optional.ofNullable(elt.noRF).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(Optional.ofNullable(elt.noContribuableRF).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.nomRaisonSocialeRF)).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.prenomRF)).append(COMMA);
+					b.append(elt.dateNaissanceRF).append(COMMA);
 					b.append(elt.candidats.stream().sorted().map(String::valueOf).collect(Collectors.joining(" / ")));
 					return true;
 				}
@@ -137,13 +149,23 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("ID_RF_TIERS").append(COMMA);
-					b.append("ID_CTB").append(COMMA);
+					b.append("NO_RF").append(COMMA);
+					b.append("ID_CONTRIBUABLE_RF").append(COMMA);
+					b.append("NOM_RAISON_SOCIALE_RF").append(COMMA);
+					b.append("PRENOM_RF").append(COMMA);
+					b.append("DATE_NAISSANCE_RF").append(COMMA);
+					b.append("ID_CONTRIBUABLE_UNIREG").append(COMMA);
 					b.append("MESSAGE");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, RapprochementTiersRFResults.ErreurRapprochement elt) {
 					b.append(elt.idTiersRF).append(COMMA);
+					b.append(Optional.ofNullable(elt.noRF).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(Optional.ofNullable(elt.noContribuableRF).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.nomRaisonSocialeRF)).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.prenomRF)).append(COMMA);
+					b.append(elt.dateNaissanceRF).append(COMMA);
 					b.append(Optional.ofNullable(elt.idContribuable).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 					b.append(CsvHelper.asCsvField(elt.message));
 					return true;

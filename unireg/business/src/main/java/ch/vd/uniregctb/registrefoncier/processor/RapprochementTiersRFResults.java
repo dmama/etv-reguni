@@ -2,10 +2,23 @@ package ch.vd.uniregctb.registrefoncier.processor;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -23,11 +36,13 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 
 	public static final class NouveauRapprochement {
 		public final long idTiersRF;
+		public final long noRF;
 		public final long idContribuable;
 		public final TypeRapprochementRF type;
 
 		public NouveauRapprochement(RapprochementRF rapprochement) {
 			this.idTiersRF = rapprochement.getTiersRF().getId();
+			this.noRF = rapprochement.getTiersRF().getNoRF();
 			this.idContribuable = rapprochement.getContribuable().getNumero();
 			this.type = rapprochement.getTypeRapprochement();
 		}
@@ -36,48 +51,128 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 		public String toString() {
 			return "NouveauRapprochement{" +
 					"idTiersRF=" + idTiersRF +
+					", noRF=" + noRF +
 					", idContribuable=" + idContribuable +
 					", type=" + type +
 					'}';
 		}
 	}
 
-	public static final class ErreurRapprochement {
+	public static abstract class NonRapprochement {
 		public final long idTiersRF;
 		public final Long idContribuable;
+
+		// données du RF
+		public final Long noRF;
+		public final String nomRaisonSocialeRF;
+		public final String prenomRF;
+		public final RegDate dateNaissanceRF;
+		public final Long noContribuableRF;
+
+		public NonRapprochement(TiersRF tiersRF, Long idContribuable) {
+			this.idTiersRF = tiersRF.getId();
+			this.idContribuable = idContribuable;
+
+			this.noContribuableRF = tiersRF.getNoContribuable();
+			this.noRF = tiersRF.getNoRF();
+
+			if (tiersRF instanceof PersonnePhysiqueRF) {
+				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) tiersRF;
+				this.nomRaisonSocialeRF = pp.getNom();
+				this.prenomRF = pp.getPrenom();
+				this.dateNaissanceRF = pp.getDateNaissance();
+			}
+			else if (tiersRF instanceof PersonneMoraleRF) {
+				final PersonneMoraleRF pm = (PersonneMoraleRF) tiersRF;
+				this.nomRaisonSocialeRF = pm.getRaisonSociale();
+				this.prenomRF = null;
+				this.dateNaissanceRF = null;
+			}
+			else if (tiersRF instanceof CollectivitePubliqueRF) {
+				final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) tiersRF;
+				this.nomRaisonSocialeRF = coll.getRaisonSociale();
+				this.prenomRF = null;
+				this.dateNaissanceRF = null;
+			}
+			else {
+				this.nomRaisonSocialeRF = null;
+				this.prenomRF = null;
+				this.dateNaissanceRF = null;
+			}
+		}
+
+		public NonRapprochement(long idTiersRF) {
+			this.idTiersRF = idTiersRF;
+			this.idContribuable = null;
+			this.noContribuableRF = null;
+			this.noRF = null;
+			this.nomRaisonSocialeRF = null;
+			this.prenomRF = null;
+			this.dateNaissanceRF = null;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("%s{%s}", getClass().getSimpleName(), getDataString());
+		}
+
+		protected String getDataString() {
+			return String.format("idTiersRF=%d, noRF=%s, noContribuableRF=%s, nomRaisonSocialeRF=%s, prenomRF=%s, dateNaissanceRF=%s",
+			                     idTiersRF,
+			                     toString(noRF, StringRenderer.DEFAULT),
+			                     toString(noContribuableRF, StringRenderer.DEFAULT),
+			                     toString(nomRaisonSocialeRF, NonRapprochement::quote),
+			                     toString(prenomRF, NonRapprochement::quote),
+			                     toString(dateNaissanceRF, RegDateHelper::dateToDisplayString));
+		}
+
+		protected static <T> String toString(T obj, StringRenderer<? super T> renderer) {
+			return Optional.ofNullable(obj)
+					.map(renderer::toString)
+					.orElse(StringUtils.EMPTY);
+		}
+
+		protected static String quote(String str) {
+			return Stream.of(str)
+					.filter(Objects::nonNull)
+					.collect(Collectors.joining(null, "'", "'"));
+		}
+	}
+
+	public static final class ErreurRapprochement extends NonRapprochement {
 		public final String message;
 
-		public ErreurRapprochement(long idTiersRF, Long idContribuable, String message) {
-			this.idTiersRF = idTiersRF;
-			this.idContribuable = idContribuable;
+		public ErreurRapprochement(TiersRF tiersRF, Long idContribuable, String message) {
+			super(tiersRF, idContribuable);
+			this.message = message;
+		}
+
+		public ErreurRapprochement(long idTiersRF, String message) {
+			super(idTiersRF);
 			this.message = message;
 		}
 
 		@Override
-		public String toString() {
-			return "ErreurRapprochement{" +
-					"idTiersRF=" + idTiersRF +
-					", idContribuable=" + idContribuable +
-					", message='" + message + '\'' +
-					'}';
+		protected String getDataString() {
+			return String.format("%s, message=%s",
+			                     super.getDataString(),
+			                     quote(message));
 		}
 	}
 
-	public static final class NonIdentification {
-		public final long idTiersRF;
+	public static final class NonIdentification extends NonRapprochement {
 		public final List<Long> candidats;
 
-		public NonIdentification(long idTiersRF, List<Long> candidats) {
-			this.idTiersRF = idTiersRF;
+		public NonIdentification(TiersRF tiersRF, List<Long> candidats) {
+			super(tiersRF, null);
 			this.candidats = candidats;
 		}
 
 		@Override
-		public String toString() {
-			return "NonIdentification{" +
-					"idTiersRF=" + idTiersRF +
-					", candidats=" + candidats +
-					'}';
+		protected String getDataString() {
+			return String.format("%s, candidats=%s",
+			                     super.getDataString(),
+		                         toString(candidats, lst -> CollectionsUtils.toString(lst, StringRenderer.DEFAULT, "/")));
 		}
 	}
 
@@ -129,20 +224,20 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 	}
 
 	@Override
-	public void addErrorException(Long idTiersRF, Exception e) {
-		erreurs.add(new ErreurRapprochement(idTiersRF, null, String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.extractCallStack(e))));
+	public void addErrorException(Long tiersRF, Exception e) {
+		erreurs.add(new ErreurRapprochement(tiersRF, String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.extractCallStack(e))));
 	}
 
 	public void addTiersNonIdentifie(TiersRF tiersRF, List<Long> candidats) {
-		nonIdentifications.add(new NonIdentification(tiersRF.getId(), candidats));
+		nonIdentifications.add(new NonIdentification(tiersRF, candidats));
 	}
 
 	public void addErrorTiersIdentifiePasContribuable(TiersRF tiersRF, long idTiersUnireg) {
-		erreurs.add(new ErreurRapprochement(tiersRF.getId(), idTiersUnireg, ERREUR_TIERS_IDENTIFIE_NON_CONTRIBUABLE));
+		erreurs.add(new ErreurRapprochement(tiersRF, idTiersUnireg, ERREUR_TIERS_IDENTIFIE_NON_CONTRIBUABLE));
 	}
 
 	public void addErrorRapprochementDejaPresentADateTraitement(TiersRF tiersRF) {
-		erreurs.add(new ErreurRapprochement(tiersRF.getId(), null, ERREUR_TIERS_RF_DEJA_RAPPROCHE_A_DATE_DE_TRAITEMENT));
+		erreurs.add(new ErreurRapprochement(tiersRF, null, ERREUR_TIERS_RF_DEJA_RAPPROCHE_A_DATE_DE_TRAITEMENT));
 	}
 
 	public void addNouveauRapprochement(RapprochementRF rapprochement) {

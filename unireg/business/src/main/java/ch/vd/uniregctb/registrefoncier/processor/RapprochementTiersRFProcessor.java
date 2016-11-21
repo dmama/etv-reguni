@@ -125,6 +125,8 @@ public class RapprochementTiersRFProcessor {
 		final StatusManager s = status != null ? status : new LoggingStatusManager(LOGGER);
 		final RegDate dateTraitement = RegDate.get();
 
+		final RapprochementTiersRFResults rapportFinal = new RapprochementTiersRFResults(tiersService, adresseService);
+
 		// récupération des données à rapprocher...
 		s.setMessage("Récupération des tiers RF à identifier...");
 		final List<Long> idsTiersRF = getIdsTiersRFSansRapprochement(dateTraitement);
@@ -132,7 +134,6 @@ public class RapprochementTiersRFProcessor {
 		// traitement de ces données
 		s.setMessage("Rapprochements en cours...");
 
-		final RapprochementTiersRFResults rapportFinal = new RapprochementTiersRFResults(tiersService, adresseService);
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final BatchTransactionTemplateWithResults<Long, RapprochementTiersRFResults> template = new BatchTransactionTemplateWithResults<>(idsTiersRF, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
 		final boolean nonInterrompu = template.execute(rapportFinal, new BatchWithResultsCallback<Long, RapprochementTiersRFResults>() {
