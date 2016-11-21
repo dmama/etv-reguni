@@ -29,6 +29,7 @@
 			classpath*:/unireg-business-annonce-ide.xml,
 			classpath*:/unireg-business-jobs4webit.xml,
 			classpath*:/unireg-business-rf.xml,
+			classpath*:/unireg-business-registrefoncier.xml,
 			/WEB-INF/unireg-web-*.xml
 		</param-value>
 		<!-- Pour permettre une analyse des perfs, -->

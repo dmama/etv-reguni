@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl"/>
+
+	<bean id="fichierImmeublesRFParser" class="ch.vd.uniregctb.registrefoncier.FichierImmeublesRFParser">
+		<property name="xmlHelperRF" ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsDetector">
+		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
+		<constructor-arg ref="tempRFCacheDroits"/>
+		<constructor-arg ref="tempRFCacheSurfaces"/>
+	</bean>
+
+	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsProcessor">
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="immeubleRFProcessor"/>
+		<constructor-arg ref="ayantDroitRFProcessor"/>
+		<constructor-arg ref="droitRFProcessor"/>
+		<constructor-arg ref="surfaceAuSolRFProcessor"/>
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
+	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor">
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="ayantDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor">
+		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="droitRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.DroitRFProcessor">
+		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="droitRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="surfaceAuSolRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor">
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="surfaceAuSolRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="rapprochementTiersRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFProcessor">
+		<constructor-arg ref="transactionManager"/>
+		<constructor-arg ref="tiersService"/>
+		<constructor-arg ref="adresseService"/>
+		<constructor-arg ref="rapprochementRFDAO"/>
+		<constructor-arg ref="hibernateTemplate"/>
+		<constructor-arg ref="identCtbService"/>
+	</bean>
+
+	<bean id="estimationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidator" parent="dateRangeEntityValidator"/>
+	<bean id="situationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SituationRFValidator" parent="dateRangeEntityValidator"/>
+	<bean id="surfaceTotaleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceTotaleRFValidator" parent="dateRangeEntityValidator"/>
+	<bean id="surfaceAuSolRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceAuSolRFValidator" parent="dateRangeEntityValidator"/>
+	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" parent="dateRangeEntityValidator"/>
+	<bean id="rapprochementRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.RapprochementRFValidator" parent="dateRangeEntityValidator">
+		<property name="rapprochementDAO" ref="rapprochementRFDAO"/>
+	</bean>
+
+</beans>

@@ -126,6 +126,7 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
         BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
         BusinessTestingConstants.UNIREG_BUSINESS_RF,
+        BusinessTestingConstants.UNIREG_BUSINESS_REGISTREFONCIER,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_ORGANISATION,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
@@ -138,7 +139,7 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_UT_CLIENT_WEBSERVICE,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_ADRESSES,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_RF
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_REGISTREFONCIER
 })
 public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
