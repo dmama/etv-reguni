@@ -88,4 +88,10 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	public int deleteMutationsFor(long importId, int maxResults) {
 		throw new NotImplementedException();
 	}
+
+	@Nullable
+	@Override
+	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId) {
+		throw new NotImplementedException();
+	}
 }

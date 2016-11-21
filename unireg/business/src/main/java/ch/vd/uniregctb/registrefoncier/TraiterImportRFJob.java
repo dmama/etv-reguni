@@ -108,17 +108,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		if (event == null) {
 			throw new ObjectNotFoundException("L'événement d'import RF avec l'id = [" + importId + "] n'existe pas.");
 		}
-		if (event.getEtat() != EtatEvenementRF.A_TRAITER && event.getEtat() != EtatEvenementRF.EN_ERREUR) {
-			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] a déjà été traité.");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
-			throw exception;
-		}
-		final EvenementRFImport nextToProcess = getNextImportToProcess();
-		if (!Objects.equals(event.getId(), nextToProcess.getId())) {
-			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
-			throw exception;
-		}
+		checkPreconditions(event);
 
 		// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
 		// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
@@ -126,6 +116,27 @@ public class TraiterImportRFJob extends JobDefinition {
 
 		// on peut maintenant processer l'import
 		processImport(importId, event.getFileUrl(), nbThreads, startMutationJob);
+	}
+
+	private void checkPreconditions(@NotNull EvenementRFImport event) {
+		final long importId = event.getId();
+		if (event.getEtat() != EtatEvenementRF.A_TRAITER && event.getEtat() != EtatEvenementRF.EN_ERREUR) {
+			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] a déjà été traité.");
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			throw exception;
+		}
+		final EvenementRFImport nextToProcess = getNextImportToProcess();
+		if (!Objects.equals(importId, nextToProcess.getId())) {
+			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			throw exception;
+		}
+		final Long unprocessedImport = findOldestImportWithUnprocessedMutations(importId);
+		if (unprocessedImport != null) {
+			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + unprocessedImport + "] n'ont pas été traitées.");
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			throw exception;
+		}
 	}
 
 	private void processImport(long importId, String fileUrl, int nbThreads, boolean startMutationJob) {
@@ -198,6 +209,23 @@ public class TraiterImportRFJob extends JobDefinition {
 					throw new IllegalArgumentException("Il n'y a pas de prochain rapport à processer.");
 				}
 				return next;
+			}
+		});
+	}
+
+	/**
+	 * @param importId l'id de l'import courant
+	 * @return retourne l'id de l'import le plus anciens qui possède encore des mutations à traiter (A_TRAITER ou EN_ERREUR)
+	 */
+	@Nullable
+	private Long findOldestImportWithUnprocessedMutations(long importId) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport previous = evenementRFImportDAO.findOldestImportWithUnprocessedMutations(importId);
+				return previous == null ? null : previous.getId();
 			}
 		});
 	}

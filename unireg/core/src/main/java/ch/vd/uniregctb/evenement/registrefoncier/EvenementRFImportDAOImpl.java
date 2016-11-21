@@ -44,4 +44,13 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 		// query.setMaxResults(maxResults); le maxResults ne fonctionne *pas* avec les deletes !
 		return query.executeUpdate();
 	}
+
+	@Nullable
+	@Override
+	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFImport where id in (select parentImport.id from EvenementRFMutation where parentImport.id != :importId and etat in ('A_TRAITER', 'EN_ERREUR')) order by dateEvenement asc");
+		query.setParameter("importId", importId);
+		query.setMaxResults(1);
+		return (EvenementRFImport) query.uniqueResult();
+	}
 }
