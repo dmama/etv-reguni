@@ -4,7 +4,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 
-import ch.ech.ech0097.v2.NamedOrganisationId;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -67,11 +66,16 @@ public class RCEntApiHelper {
 		final NoticeRequestIdentification noticeRequestIdent = notice.getNoticeRequest();
 		if (noticeRequestIdent != null) {
 			final String applicationId = noticeRequestIdent.getReportingApplication().getId();
+			final String applicationName = noticeRequestIdent.getReportingApplication().getApplicationName();
+/*  SIFISC-9682 en cours: le no IDE source n'est pas encore ajouté par RCEnt. Cas en cours pour 17L1. Pour l'instant, on se contente de l'identifiant de l'application, qui suffit.
 			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
 			if (ideSource == null || ideSource.getOrganisationId() == null || ideSource.getOrganisationId().isEmpty()) {
 				throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est issu d'une annonce, mais le numéro IDE de l'institution source n'est pas inclu! Impossible de vérifier l'origine de l'annonce.", notice.getNoticeId().longValue()));
 			}
 			if (RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
+*/
+			// TODO: Spécifier le mapping de l'énumération de reportingApplication dans jaxb2.
+			if (RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId) && applicationName != null && applicationName.equals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)) {
 				final String noticeRequestId = noticeRequestIdent.getNoticeRequestId();
 				if (noticeRequestId != null) {
 					return Long.parseLong(noticeRequestId);
