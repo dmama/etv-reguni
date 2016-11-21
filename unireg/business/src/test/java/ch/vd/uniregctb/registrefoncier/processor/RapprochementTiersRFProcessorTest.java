@@ -491,4 +491,89 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * Cas du tiers RF déjà rapproché à un contribuable unireg mais sur une période qui ne comprend pas
+	 * la date du jour : il est donc candidat à un nouveau rapprochement qui, s'il est positif, ne doit
+	 * bien-sûr pas être valide sur la période de l'ancien rapprochement...
+	 */
+	@Test
+	public void testRapprochementComplementaire() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate finAnneeDerniere = date(today.year() - 1, 12, 31);
+
+		final class Ids {
+			long pp1;
+			long pp2;
+			long idTiersRF;
+		}
+
+		// mise en place préliminaire
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				// l'ancien
+				final PersonnePhysique pp1 = addNonHabitant("Alfred", "Jacquart", null, Sexe.MASCULIN);
+
+				// le nouveau candidat
+				final RegDate dateNaissance = date(1964, 7, 23);
+				final PersonnePhysique pp2 = addNonHabitant("Alfredo", "Jacquouille", dateNaissance, Sexe.MASCULIN);
+
+				// le tiers RF
+				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alfredo", "Jacquouille", dateNaissance, "547835673zg", 3224L, pp1.getNumero());
+
+				// il existe déjà un rapprochement entre pp1 l'ancien et le tiers RF (automatique puis réduit manuellement - dédoublonage)
+				addRapprochementRF(null, null, TypeRapprochementRF.AUTO_MULTIPLE, pp1, tiersRF, true);
+				addRapprochementRF(null, finAnneeDerniere, TypeRapprochementRF.MANUEL, pp1, tiersRF, false);
+
+				final Ids ids = new Ids();
+				ids.pp1 = pp1.getNumero();
+				ids.pp2 = pp2.getNumero();
+				ids.idTiersRF = tiersRF.getId();
+				return ids;
+			}
+		});
+
+		// attente de la fin de l'indexation
+		globalTiersIndexer.sync();
+
+		// lancement du rapprochement
+		final RapprochementTiersRFResults results = processor.run(null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDossiersInspectes());
+		Assert.assertEquals(Collections.emptyList(), results.getErreurs());
+		Assert.assertEquals(0, results.getNbNonIdentifications());
+		Assert.assertEquals(1, results.getNbIdentifications());
+
+		final RapprochementTiersRFResults.NouveauRapprochement rapprochement = results.getNouveauxRapprochements().get(0);
+		Assert.assertNotNull(rapprochement);
+		Assert.assertEquals(ids.pp2, rapprochement.idContribuable);
+		Assert.assertEquals(ids.idTiersRF, rapprochement.idTiersRF);
+		Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.type);
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
+				Assert.assertNotNull(pp);
+
+				final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
+				Assert.assertNotNull(rapprochementsRF);
+				Assert.assertEquals(1, rapprochementsRF.size());
+
+				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+				Assert.assertNotNull(rapprochementRF);
+				Assert.assertFalse(rapprochementRF.isAnnule());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
+				Assert.assertEquals(finAnneeDerniere.getOneDayAfter(), rapprochementRF.getDateDebut());
+				Assert.assertNull(rapprochementRF.getDateFin());
+
+				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+				Assert.assertEquals(3, tousRapprochements.size());      // les deux préparés dans l'initialisation, plus le nouveau
+			}
+		});
+	}
 }

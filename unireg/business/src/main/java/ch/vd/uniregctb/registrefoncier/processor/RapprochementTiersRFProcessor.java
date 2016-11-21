@@ -11,12 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
@@ -120,10 +123,11 @@ public class RapprochementTiersRFProcessor {
 
 	public RapprochementTiersRFResults run(StatusManager status) {
 		final StatusManager s = status != null ? status : new LoggingStatusManager(LOGGER);
+		final RegDate dateTraitement = RegDate.get();
 
 		// récupération des données à rapprocher...
 		s.setMessage("Récupération des tiers RF à identifier...");
-		final List<Long> idsTiersRF = getIdsTiersRFSansRapprochement();
+		final List<Long> idsTiersRF = getIdsTiersRFSansRapprochement(dateTraitement);
 
 		// traitement de ces données
 		s.setMessage("Rapprochements en cours...");
@@ -137,7 +141,7 @@ public class RapprochementTiersRFProcessor {
 				s.setMessage("Rapprochements en cours...", progressMonitor.getProgressInPercent());
 				for (Long idTiersRF : batch) {
 					final TiersRF tiersRF = hibernateTemplate.get(TiersRF.class, idTiersRF);
-					traiterTiersRF(tiersRF, rapport);
+					traiterTiersRF(tiersRF, dateTraitement, rapport);
 					if (s.interrupted()) {
 						break;
 					}
@@ -158,13 +162,13 @@ public class RapprochementTiersRFProcessor {
 		return rapportFinal;
 	}
 
-	private void traiterTiersRF(TiersRF tiersRF, RapprochementTiersRFResults rapport) {
+	private void traiterTiersRF(TiersRF tiersRF, RegDate dateTraitement, RapprochementTiersRFResults rapport) {
 		List<Long> resultatIdentification;
 		try {
 			resultatIdentification = identifie(tiersRF);
 			if (resultatIdentification.size() == 1) {
 				// c'est le bon !!
-				creerRapprochement(tiersRF, resultatIdentification.get(0), TypeRapprochementRF.AUTO, rapport);
+				creerRapprochement(tiersRF, resultatIdentification.get(0), TypeRapprochementRF.AUTO, dateTraitement, rapport);
 				return;
 			}
 			else if (resultatIdentification.size() > 1 && tiersRF.getNoContribuable() != null) {
@@ -173,7 +177,7 @@ public class RapprochementTiersRFProcessor {
 						.findFirst()
 						.orElse(null);
 				if (idUnireg != null) {
-					creerRapprochement(tiersRF, idUnireg, TypeRapprochementRF.AUTO_MULTIPLE, rapport);
+					creerRapprochement(tiersRF, idUnireg, TypeRapprochementRF.AUTO_MULTIPLE, dateTraitement, rapport);
 					return;
 				}
 			}
@@ -188,17 +192,38 @@ public class RapprochementTiersRFProcessor {
 		rapport.addTiersNonIdentifie(tiersRF, resultatIdentification);
 	}
 
-	private void creerRapprochement(TiersRF tiersRF, long idContribuableUnireg, TypeRapprochementRF typeRapprochement, RapprochementTiersRFResults rapport) {
+	private void creerRapprochement(TiersRF tiersRF, long idContribuableUnireg, TypeRapprochementRF typeRapprochement, RegDate dateTraitement, RapprochementTiersRFResults rapport) {
 		final Contribuable ctb = hibernateTemplate.get(Contribuable.class, idContribuableUnireg);
 		if (ctb == null) {
 			rapport.addErrorTiersIdentifiePasContribuable(tiersRF, idContribuableUnireg);
 		}
 		else {
+
+			// il faut déterminer la période de validité du nouveau rapprochement généré :
+			// - en principe, on devrait avoir la période ] BigBang -> BigCrunch [ comme période de validité...
+			// - MAIS si le tiers RF est déjà rapproché à un contribuable sur une période non-vide, alors ça ne joue pas
+			//      --> il ne faut prendre que la période continue sans rapprochement qui contient la date de traitement
+
+			final DateRange full = new DateRangeHelper.Range(null, null);
+			final List<RapprochementRF> covered = AnnulableHelper.sansElementsAnnules(rapprochementDAO.findByTiersRF(tiersRF.getId(), false));
+			final DateRange relevant;
+			if (covered.isEmpty()) {
+				relevant = full;
+			}
+			else {
+				final List<DateRange> uncovered = DateRangeHelper.subtract(full, covered);
+				relevant = DateRangeHelper.rangeAt(uncovered, dateTraitement);
+				if (relevant == null) {
+					rapport.addErrorRapprochementDejaPresentADateTraitement(tiersRF);
+					return;
+				}
+			}
+
 			final RapprochementRF rapprochement = new RapprochementRF();
 			rapprochement.setTiersRF(tiersRF);
 			rapprochement.setContribuable(ctb);
-			rapprochement.setDateDebut(null);
-			rapprochement.setDateFin(null);
+			rapprochement.setDateDebut(relevant.getDateDebut());
+			rapprochement.setDateFin(relevant.getDateFin());
 			rapprochement.setTypeRapprochement(typeRapprochement);
 
 			final RapprochementRF saved = hibernateTemplate.merge(rapprochement);
@@ -213,10 +238,10 @@ public class RapprochementTiersRFProcessor {
 		return identifier.identify(tiers, identificationService);
 	}
 
-	private List<Long> getIdsTiersRFSansRapprochement() {
+	private List<Long> getIdsTiersRFSansRapprochement(RegDate dateTraitement) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		return template.execute(status -> rapprochementDAO.findTiersRFSansRapprochement(RegDate.get()).stream()
+		return template.execute(status -> rapprochementDAO.findTiersRFSansRapprochement(dateTraitement).stream()
 				.map(TiersRF::getId)
 				.collect(Collectors.toCollection(LinkedList::new)));
 	}

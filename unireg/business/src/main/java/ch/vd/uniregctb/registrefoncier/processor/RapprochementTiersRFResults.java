@@ -14,6 +14,7 @@ import ch.vd.uniregctb.type.TypeRapprochementRF;
 public class RapprochementTiersRFResults extends JobResults<Long, RapprochementTiersRFResults> {
 
 	private static final String ERREUR_TIERS_IDENTIFIE_NON_CONTRIBUABLE = "Le tiers identifié n'est pas un contribuable.";
+	private static final String ERREUR_TIERS_RF_DEJA_RAPPROCHE_A_DATE_DE_TRAITEMENT = "Le tiers RF possède déjà un rapprochement valide à la date de traitement.";
 
 	private boolean interrompu = false;
 	private final List<NouveauRapprochement> nouveauxRapprochements = new LinkedList<>();
@@ -30,6 +31,15 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 			this.idContribuable = rapprochement.getContribuable().getNumero();
 			this.type = rapprochement.getTypeRapprochement();
 		}
+
+		@Override
+		public String toString() {
+			return "NouveauRapprochement{" +
+					"idTiersRF=" + idTiersRF +
+					", idContribuable=" + idContribuable +
+					", type=" + type +
+					'}';
+		}
 	}
 
 	public static final class ErreurRapprochement {
@@ -42,6 +52,15 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 			this.idContribuable = idContribuable;
 			this.message = message;
 		}
+
+		@Override
+		public String toString() {
+			return "ErreurRapprochement{" +
+					"idTiersRF=" + idTiersRF +
+					", idContribuable=" + idContribuable +
+					", message='" + message + '\'' +
+					'}';
+		}
 	}
 
 	public static final class NonIdentification {
@@ -51,6 +70,14 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 		public NonIdentification(long idTiersRF, List<Long> candidats) {
 			this.idTiersRF = idTiersRF;
 			this.candidats = candidats;
+		}
+
+		@Override
+		public String toString() {
+			return "NonIdentification{" +
+					"idTiersRF=" + idTiersRF +
+					", candidats=" + candidats +
+					'}';
 		}
 	}
 
@@ -112,6 +139,10 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 
 	public void addErrorTiersIdentifiePasContribuable(TiersRF tiersRF, long idTiersUnireg) {
 		erreurs.add(new ErreurRapprochement(tiersRF.getId(), idTiersUnireg, ERREUR_TIERS_IDENTIFIE_NON_CONTRIBUABLE));
+	}
+
+	public void addErrorRapprochementDejaPresentADateTraitement(TiersRF tiersRF) {
+		erreurs.add(new ErreurRapprochement(tiersRF.getId(), null, ERREUR_TIERS_RF_DEJA_RAPPROCHE_A_DATE_DE_TRAITEMENT));
 	}
 
 	public void addNouveauRapprochement(RapprochementRF rapprochement) {
