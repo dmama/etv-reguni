@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
 import javax.transaction.Status;
-import java.util.HashMap;
 
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
@@ -13,8 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.registrefoncier.TraiterImportRFJob;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.transaction.TxSyncManager;
 
@@ -26,19 +24,19 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementRFImportEsbHandler.class);
 
 	private TxSyncManager txSyncManager;
-	private BatchScheduler batchScheduler;
 	private EvenementRFImportDAO evenementRFImportDAO;
+	private RegistreFoncierService serviceRF;
 
 	public void setTxSyncManager(TxSyncManager txSyncManager) {
 		this.txSyncManager = txSyncManager;
 	}
 
-	public void setBatchScheduler(BatchScheduler batchScheduler) {
-		this.batchScheduler = batchScheduler;
-	}
-
 	public void setEvenementRFImportDAO(EvenementRFImportDAO evenementRFImportDAO) {
 		this.evenementRFImportDAO = evenementRFImportDAO;
+	}
+
+	public void setServiceRF(RegistreFoncierService serviceRF) {
+		this.serviceRF = serviceRF;
 	}
 
 	@Override
@@ -86,11 +84,7 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 	private void startBatch(@NotNull Long eventId) {
 		AuthenticationHelper.pushPrincipal("JMS-ImportRF");
 		try {
-			final HashMap<String, Object> params = new HashMap<>();
-			params.put(TraiterImportRFJob.ID, eventId);
-			params.put(TraiterImportRFJob.NB_THREADS, 8);
-			params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, true);
-			batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+			serviceRF.startImport(eventId);
 		}
 		catch (JobAlreadyStartedException | SchedulerException e) {
 			LOGGER.error("Le job n'a pas pu être démarré pour la raison suivante :", e);

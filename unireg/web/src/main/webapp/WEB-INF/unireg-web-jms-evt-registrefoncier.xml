@@ -11,8 +11,8 @@
 
 	<bean id="evtRFImportEventEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportEsbHandler">
 		<property name="txSyncManager" ref="txSyncManager" />
-		<property name="batchScheduler" ref="batchScheduler" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
+		<property name="serviceRF" ref="serviceRF"/>
 	</bean>
 
 	<bean id="evtRFImportEventEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

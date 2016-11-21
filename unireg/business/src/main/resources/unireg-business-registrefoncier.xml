@@ -3,6 +3,13 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+	<bean id="serviceRF" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
+		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO"/>
+		<property name="batchScheduler" ref="batchScheduler"/>
+	</bean>
+
 	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl"/>
 
 	<bean id="fichierImmeublesRFParser" class="ch.vd.uniregctb.registrefoncier.FichierImmeublesRFParser">

@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -45,11 +44,16 @@ public class TraiterImportRFJob extends JobDefinition {
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String CONTINUE_WITH_MUTATIONS_JOB = "CONTINUE_WITH_MUTATIONS_JOB";
 
+	private RegistreFoncierService serviceRF;
 	private FichierImmeublesRFParser parser;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private PlatformTransactionManager transactionManager;
 	private EsbStore zipRaftStore;
 	private DataRFMutationsDetector mutationsDetector;
+
+	public void setServiceRF(RegistreFoncierService serviceRF) {
+		this.serviceRF = serviceRF;
+	}
 
 	public void setParser(FichierImmeublesRFParser parser) {
 		this.parser = parser;
@@ -235,19 +239,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		final StatusManager statusManager = getStatusManager();
 		statusManager.setMessage("Effacement des mutations préexistantes...");
 
-		final MutableBoolean loop = new MutableBoolean(true);
-		// on efface les mutations par lot de 1'000 pour éviter de saturer le rollback log de la DB
-		while (loop.booleanValue()) {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setReadOnly(true);
-			template.execute(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final int count = evenementRFImportDAO.deleteMutationsFor(importId, 1000);
-					loop.setValue(count > 0);   // on boucle tant qu'il y a des mutations à supprimer
-				}
-			});
-		}
+		serviceRF.deleteExistingMutations(importId);
 	}
 
 	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable String errorMessage) {

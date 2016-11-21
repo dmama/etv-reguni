@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import javax.activation.DataHandler;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Before;
@@ -19,8 +18,7 @@ import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
-import ch.vd.uniregctb.registrefoncier.TraiterImportRFJob;
-import ch.vd.uniregctb.scheduler.MockBatchScheduler;
+import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierService;
 import ch.vd.uniregctb.transaction.MockTxSyncManager;
 
 import static org.junit.Assert.assertEquals;
@@ -31,10 +29,10 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 	private EvenementRFImportDAO evenementRFImportDAO;
 
 	private String INPUT_QUEUE;
-	private MockBatchScheduler batchScheduler;
 	private EvenementRFImportEsbHandler handler;
 
 	private final MutableInt receivedCount = new MutableInt(0);
+	private MockRegistreFoncierService serviceRF;
 
 	@Before
 	public void setup() throws Exception {
@@ -55,7 +53,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		evenementRFImportDAO = new MockEvenementRFImportDAO();
-		batchScheduler = new MockBatchScheduler();
+		serviceRF = new MockRegistreFoncierService();
 
 		handler = new EvenementRFImportEsbHandler() {
 			@Override
@@ -74,7 +72,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		};
 		handler.setEvenementRFImportDAO(evenementRFImportDAO);
 		handler.setTxSyncManager(new MockTxSyncManager());
-		handler.setBatchScheduler(batchScheduler);
+		handler.setServiceRF(serviceRF);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
@@ -135,11 +133,8 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		assertEquals("http://example.com/turlututu", event.getFileUrl());
 
 		// le batch doit être démarré
-		final List<MockBatchScheduler.JobData> started = batchScheduler.getStartedJobs();
+		final List<Long> started = serviceRF.getStartedImports();
 		assertEquals(1, started.size());
-		final MockBatchScheduler.JobData started0 = started.get(0);
-		assertEquals(TraiterImportRFJob.NAME, started0.getName());
-		final Map<String, Object> params0 = started0.getParams();
-		assertEquals(event.getId(), params0.get(TraiterImportRFJob.ID));
+		assertEquals(event.getId(), started.get(0));
 	}
 }
