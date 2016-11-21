@@ -21,6 +21,7 @@ import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.documentfiscal.TypeAutreDocumentFiscalEmettableManuellement;
+import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
@@ -121,6 +122,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeAutreDocumentFiscalEmettableManuellement, String> mapTypesAutreDocumentFiscalEmettableManuellement;
 	private Map<TypeAnnonce, String> mapTypeAnnonce;
 	private Map<StatutAnnonce, String> mapStatutAnnonce;
+	private Map<EtatEvenementRF, String> mapEtatEvenementRF;
 
 	private ServiceInfrastructureService infraService;
 
@@ -857,5 +859,12 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapStatutAnnonce = initMapEnum("option.statut.annonce.", StatutAnnonce.class);
 		}
 		return mapStatutAnnonce;
+	}
+
+	public Map<EtatEvenementRF, String> getEtatEvenementRF() {
+		if (mapEtatEvenementRF == null) {
+			mapEtatEvenementRF = initMapEnum("option.rf.etat.evenement.", EtatEvenementRF.class);
+		}
+		return mapEtatEvenementRF;
 	}
 }

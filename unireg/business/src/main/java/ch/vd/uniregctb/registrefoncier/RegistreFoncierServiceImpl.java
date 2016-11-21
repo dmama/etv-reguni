@@ -10,6 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
@@ -76,5 +77,22 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		params.put(TraiterImportRFJob.NB_THREADS, 8);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, true);
 		batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+	}
+
+	@Override
+	public void forceImport(long importId) {
+
+		final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+		if (importEvent== null) {
+			throw new ObjectNotFoundException("L'omport RF avec l'identifiant " + importId + " est inconnu");
+		}
+
+		if (importEvent.getEtat() != EtatEvenementRF.EN_ERREUR) {
+			throw new IllegalArgumentException("L'import à forcer n'est pas en erreur.");
+		}
+
+		// on force le job et les mutations
+		importEvent.setEtat(EtatEvenementRF.FORCE);
+		evenementRFMutationDAO.forceMutations(importId);
 	}
 }

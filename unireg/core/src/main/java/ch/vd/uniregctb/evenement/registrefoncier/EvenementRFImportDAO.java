@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
+import ch.vd.uniregctb.common.ParamPagination;
 
 public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long> {
 
@@ -27,4 +31,19 @@ public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long
 	 */
 	@Nullable
 	EvenementRFImport findOldestImportWithUnprocessedMutations(long importId);
+
+	/**
+	 * Recherche des événements d'import qui correspondent aux critères spécifiés.
+	 *
+	 * @param etats       le ou les états des événements (optionnel)
+	 * @param pagination le numéro de page
+	 * @return les événements d'import correspondants
+	 */
+	List<EvenementRFImport> find(@Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination);
+
+	/**
+	 * @param etats       le ou les états des événements (optionnel)
+	 * @return le nombre d'événements qui correspondent aux critères spécifiés.
+	 */
+	int count(@Nullable List<EtatEvenementRF> etats);
 }

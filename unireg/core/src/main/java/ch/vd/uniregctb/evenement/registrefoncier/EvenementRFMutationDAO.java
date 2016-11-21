@@ -29,4 +29,11 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 */
 	@Nullable
 	EvenementRFMutation find(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull String idImmeubleRF);
+
+	/**
+	 * Passe à l'état FORCE toutes les mutations non traitées de l'import spécifié.
+	 * @param importId     l'id de l'import
+	 * @return le nombre de mutations modifiées.
+	 */
+	int forceMutations(long importId);
 }

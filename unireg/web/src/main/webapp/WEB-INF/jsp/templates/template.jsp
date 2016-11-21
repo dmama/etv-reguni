@@ -180,6 +180,9 @@
 									<li><a href="<c:url value='/evenement/reqdes/list.do'/>"><fmt:message key="title.evenements.reqdes"/></a></li>
 								</unireg:ifReqDes>
 							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_EVEN">
+								<li><a href="<c:url value='/registrefoncier/import/list.do'/>"><fmt:message key="title.evenements.registrefoncier"/></a></li>
+							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_SUIVI_ANNONCES_IDE">
 								<li><a href="<c:url value='/annonceIDE/find.do'/>"><fmt:message key="title.suivi.demandes.menu"/></a></li>
 							</authz:authorize>

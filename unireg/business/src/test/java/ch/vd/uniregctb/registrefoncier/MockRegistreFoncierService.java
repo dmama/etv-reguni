@@ -22,6 +22,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 		startedImports.add(importId);
 	}
 
+	@Override
+	public void forceImport(long importId) {
+		startedImports.add(importId);
+	}
+
 	public List<Long> getStartedImports() {
 		return startedImports;
 	}

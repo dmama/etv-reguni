@@ -23,6 +23,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
@@ -83,7 +84,8 @@ public class ConsultLogController {
 		SituationFamille(SituationFamille.class),
 		Tache(Tache.class),
 		Tiers(Tiers.class),
-		UniteTraitementReqDes(UniteTraitement.class);
+		UniteTraitementReqDes(UniteTraitement.class),
+		EvenementRFImport(EvenementRFImport.class);
 
 		private final Class<? extends HibernateEntity> entityClass;
 

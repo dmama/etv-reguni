@@ -34,4 +34,11 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		//noinspection unchecked
 		return (EvenementRFMutation) query.uniqueResult();
 	}
+
+	@Override
+	public int forceMutations(long importId) {
+		final Query query = getCurrentSession().createQuery("update EvenementRFMutation set etat = 'FORCE' where parentImport.id = :importId and etat in ('A_TRAITER', 'EN_ERREUR')");
+		query.setParameter("importId", importId);
+		return query.executeUpdate();
+	}
 }

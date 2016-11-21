@@ -5,9 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.ParamPagination;
 
 public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
@@ -92,6 +94,16 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	@Nullable
 	@Override
 	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<EvenementRFImport> find(@Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int count(@Nullable List<EtatEvenementRF> etats) {
 		throw new NotImplementedException();
 	}
 }

@@ -108,4 +108,9 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 				.findFirst()
 				.orElse(null);
 	}
+
+	@Override
+	public int forceMutations(long importId) {
+		throw new NotImplementedException();
+	}
 }
