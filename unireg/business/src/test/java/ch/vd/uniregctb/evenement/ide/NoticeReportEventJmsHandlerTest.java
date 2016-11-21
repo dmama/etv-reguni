@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +30,11 @@ public class NoticeReportEventJmsHandlerTest extends WithoutSpringTest {
 	public void setUp() throws Exception {
 		handler = new NoticeReportEventJmsHandler();
 		handler.setReponseIDEProcessor(rapportAnnonceIDEProcessor);
+		handler.setHibernateTemplate(new HibernateTemplateImpl() {
+			@Override
+			public void flush() {
+			}
+		});
 		handler.afterPropertiesSet();
 	}
 
