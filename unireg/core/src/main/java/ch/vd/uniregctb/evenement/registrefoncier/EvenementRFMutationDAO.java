@@ -44,4 +44,13 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 * @return le nombre de mutations pour chaque état
 	 */
 	Map<EtatEvenementRF, Integer> countByState(long importId);
+
+	/**
+	 * Efface toutes les mutations associées avec l'import spécifié.
+	 *
+	 * @param importId   l'id d'un import
+	 * @param maxResults le nombre maximal de mutations à supprimer d'un coup
+	 * @return le nombre de mutations supprimées
+	 */
+	int deleteMutationsFor(long importId, int maxResults);
 }

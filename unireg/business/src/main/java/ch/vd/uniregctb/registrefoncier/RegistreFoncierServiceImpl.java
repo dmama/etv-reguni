@@ -54,7 +54,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 			template.execute(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus status) throws Exception {
-					final int count = evenementRFImportDAO.deleteMutationsFor(importId, 1000);
+					final int count = evenementRFMutationDAO.deleteMutationsFor(importId, 1000);
 					loop.setValue(count > 0);   // on boucle tant qu'il y a des mutations à supprimer
 					deleted.add(count);
 				}

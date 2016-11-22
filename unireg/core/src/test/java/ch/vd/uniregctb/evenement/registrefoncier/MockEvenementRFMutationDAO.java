@@ -119,4 +119,9 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	public Map<EtatEvenementRF, Integer> countByState(long importId) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public int deleteMutationsFor(long importId, int maxResults) {
+		throw new NotImplementedException();
+	}
 }
