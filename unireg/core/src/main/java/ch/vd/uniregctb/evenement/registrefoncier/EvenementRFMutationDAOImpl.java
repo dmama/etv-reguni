@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
@@ -40,5 +42,21 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		final Query query = getCurrentSession().createQuery("update EvenementRFMutation set etat = 'FORCE' where parentImport.id = :importId and etat in ('A_TRAITER', 'EN_ERREUR')");
 		query.setParameter("importId", importId);
 		return query.executeUpdate();
+	}
+
+	@Override
+	public Map<EtatEvenementRF, Integer> countByState(long importId) {
+		final Query query = getCurrentSession().createQuery("select etat, count(*) from EvenementRFMutation where parentImport.id = :importId group by etat");
+		query.setParameter("importId", importId);
+		final List<?> list = query.list();
+
+		final Map<EtatEvenementRF, Integer> res = new HashMap<>();
+		list.forEach(o -> {
+			Object[] row = (Object[]) o;
+			final EtatEvenementRF key = (EtatEvenementRF) row[0];
+			final Number count = (Number) row[1];
+			res.merge(key, count.intValue(), (a, b) -> a + b);
+		});
+		return res;
 	}
 }

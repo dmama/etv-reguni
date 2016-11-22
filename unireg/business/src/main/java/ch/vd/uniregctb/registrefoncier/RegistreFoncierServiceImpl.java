@@ -67,13 +67,8 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public void startImport(long importId) throws JobAlreadyStartedException, SchedulerException {
 
-		final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-		if (importEvent == null) {
-			throw new ObjectNotFoundException("L'omport RF avec l'identifiant " + importId + " est inconnu");
-		}
-
 		final HashMap<String, Object> params = new HashMap<>();
-		params.put(TraiterImportRFJob.ID, importEvent);
+		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 8);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, true);
 		batchScheduler.startJob(TraiterImportRFJob.NAME, params);
@@ -84,7 +79,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
 		if (importEvent== null) {
-			throw new ObjectNotFoundException("L'omport RF avec l'identifiant " + importId + " est inconnu");
+			throw new ObjectNotFoundException("L'import RF avec l'identifiant " + importId + " est inconnu");
 		}
 
 		if (importEvent.getEtat() != EtatEvenementRF.EN_ERREUR) {
@@ -93,6 +88,21 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		// on force le job et les mutations
 		importEvent.setEtat(EtatEvenementRF.FORCE);
+		evenementRFMutationDAO.forceMutations(importId);
+	}
+
+	@Override
+	public void startMutations(long importId) throws JobAlreadyStartedException, SchedulerException {
+
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterMutationsRFJob.ID, importId);
+		params.put(TraiterMutationsRFJob.NB_THREADS, 8);
+		batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
+	}
+
+	@Override
+	public void forceMutations(long importId) {
+		// on force les mutations
 		evenementRFMutationDAO.forceMutations(importId);
 	}
 }

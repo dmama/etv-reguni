@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -111,6 +112,11 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public int forceMutations(long importId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Map<EtatEvenementRF, Integer> countByState(long importId) {
 		throw new NotImplementedException();
 	}
 }

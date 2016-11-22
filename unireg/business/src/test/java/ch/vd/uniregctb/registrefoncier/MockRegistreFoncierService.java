@@ -11,6 +11,7 @@ import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	private final List<Long> startedImports = new ArrayList<>();
+	private final List<Long> startedMutations = new ArrayList<>();
 
 	@Override
 	public int deleteExistingMutations(long importId) {
@@ -24,10 +25,24 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public void forceImport(long importId) {
-		startedImports.add(importId);
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void startMutations(long importId) {
+		startedMutations.add(importId);
+	}
+
+	@Override
+	public void forceMutations(long importId) {
+		throw new NotImplementedException();
 	}
 
 	public List<Long> getStartedImports() {
 		return startedImports;
+	}
+
+	public List<Long> getStartedMutations() {
+		return startedMutations;
 	}
 }

@@ -22,6 +22,7 @@
 		<property name="serviceRF" ref="serviceRF" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
+		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
 	</bean>
 
 </beans>

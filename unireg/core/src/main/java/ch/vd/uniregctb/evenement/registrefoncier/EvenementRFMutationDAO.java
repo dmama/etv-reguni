@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,8 +33,15 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 
 	/**
 	 * Passe à l'état FORCE toutes les mutations non traitées de l'import spécifié.
-	 * @param importId     l'id de l'import
+	 *
+	 * @param importId l'id de l'import
 	 * @return le nombre de mutations modifiées.
 	 */
 	int forceMutations(long importId);
+
+	/**
+	 * @param importId l'id d'un import
+	 * @return le nombre de mutations pour chaque état
+	 */
+	Map<EtatEvenementRF, Integer> countByState(long importId);
 }

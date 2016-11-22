@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -15,12 +16,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
@@ -44,6 +47,7 @@ public class ImportRFController {
 	private RegistreFoncierService serviceRF;
 	private TiersMapHelper tiersMapHelper;
 	private EvenementRFImportDAO evenementRFImportDAO;
+	private EvenementRFMutationDAO evenementRFMutationDAO;
 
 	public void setServiceRF(RegistreFoncierService serviceRF) {
 		this.serviceRF = serviceRF;
@@ -55,6 +59,10 @@ public class ImportRFController {
 
 	public void setEvenementRFImportDAO(EvenementRFImportDAO evenementRFImportDAO) {
 		this.evenementRFImportDAO = evenementRFImportDAO;
+	}
+
+	public void setEvenementRFMutationDAO(EvenementRFMutationDAO evenementRFMutationDAO) {
+		this.evenementRFMutationDAO = evenementRFMutationDAO;
 	}
 
 	/**
@@ -92,28 +100,66 @@ public class ImportRFController {
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/import/restart.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String restart(@RequestParam(value = "importId") long importId) {
+	public String restartImport(@RequestParam(value = "importId") long importId) {
 
 		try {
 			serviceRF.startImport(importId);
-			Flash.message("Le job est démarré.");
-			return "redirect:/registrefoncier/list.do";
+			Flash.message("Le job de traitement de l'import n°" + importId + " est démarré.");
+			return "redirect:/registrefoncier/import/list.do";
 		}
 		catch (JobAlreadyStartedException | SchedulerException e) {
 			Flash.error("Le job n'a pas pu être démarré pour la raison suivante :" + e.getMessage());
-			return "redirect:/registrefoncier/list.do";
+			return "redirect:/registrefoncier/import/list.do";
 		}
 	}
 
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/import/force.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String force(@RequestParam(value = "importId") long importId) {
+	public String forceImport(@RequestParam(value = "importId") long importId) {
 
 		// on force le job
 		serviceRF.forceImport(importId);
 
 		Flash.message("Le job n°" + importId + " a été forcé.");
-		return "redirect:/registrefoncier/list.do";
+		return "redirect:/registrefoncier/import/list.do";
+	}
+
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@RequestMapping(value = "/mutation/restart.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String restartMutations(@RequestParam(value = "importId") long importId) {
+
+		try {
+			serviceRF.startMutations(importId);
+			Flash.message("Le job de traitement des mutations de l'import n°" + importId + " est démarré.");
+			return "redirect:/registrefoncier/import/list.do";
+		}
+		catch (JobAlreadyStartedException | SchedulerException e) {
+			Flash.error("Le job n'a pas pu être démarré pour la raison suivante :" + e.getMessage());
+			return "redirect:/registrefoncier/import/list.do";
+		}
+	}
+
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@RequestMapping(value = "/mutation/force.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String forceMutations(@RequestParam(value = "importId") long importId) {
+
+		// on force le job
+		serviceRF.forceMutations(importId);
+
+		Flash.message("Les mutations du job n°" + importId + " on été forcées.");
+		return "redirect:/registrefoncier/import/list.do";
+	}
+
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@RequestMapping(value = "/import/stats.do", method = RequestMethod.GET)
+	@ResponseBody
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public ImportRFStatsView stats(@RequestParam(value = "importId") long importId) {
+
+		final Map<EtatEvenementRF, Integer> countByState = evenementRFMutationDAO.countByState(importId);
+		return new ImportRFStatsView(countByState);
 	}
 }
