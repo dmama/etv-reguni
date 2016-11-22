@@ -68,7 +68,6 @@ public class ImportRFController {
 	/**
 	 * Affiche l'écran de suivi des annonces. L'écran de suivi contient un formulaire de recherche et des résultats paginés.
 	 */
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/import/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String list(HttpServletRequest request, @ModelAttribute(value = "view") ImportRFCriteriaView view, BindingResult bindingResult, Model model) {
@@ -77,7 +76,7 @@ public class ImportRFController {
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("list", Collections.<EvenementRFImportView>emptyList());
-			model.addAttribute("count", (int) 0);
+			model.addAttribute("count", 0);
 			return "registrefoncier/import/list";
 		}
 
@@ -97,10 +96,12 @@ public class ImportRFController {
 		return "registrefoncier/import/list";
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/import/restart.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String restartImport(@RequestParam(value = "importId") long importId) {
+
+		LOGGER.info("Relance du job de traitement de l'import du registre foncier sur l'import id=[" + importId + "]");
 
 		try {
 			serviceRF.startImport(importId);
@@ -113,10 +114,12 @@ public class ImportRFController {
 		}
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/import/force.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String forceImport(@RequestParam(value = "importId") long importId) {
+
+		LOGGER.info("Forçage de l'import du registre foncier avec l'id=[" + importId + "]");
 
 		// on force le job
 		serviceRF.forceImport(importId);
@@ -125,10 +128,12 @@ public class ImportRFController {
 		return "redirect:/registrefoncier/import/list.do";
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/mutation/restart.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String restartMutations(@RequestParam(value = "importId") long importId) {
+
+		LOGGER.info("Relance du job de traitement des mutations du registre foncier sur l'import id=[" + importId + "]");
 
 		try {
 			serviceRF.startMutations(importId);
@@ -141,10 +146,12 @@ public class ImportRFController {
 		}
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/mutation/force.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String forceMutations(@RequestParam(value = "importId") long importId) {
+
+		LOGGER.info("Forçage des mutations du registre foncier correspondant à l'import id=[" + importId + "]");
 
 		// on force le job
 		serviceRF.forceMutations(importId);
@@ -153,7 +160,6 @@ public class ImportRFController {
 		return "redirect:/registrefoncier/import/list.do";
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/import/stats.do", method = RequestMethod.GET)
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)

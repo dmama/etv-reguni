@@ -165,7 +165,7 @@
 					</li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_EVEN, ROLE_EVEN_PM, ROLE_SUIVI_ANNONCES_IDE">
+					<authz:authorize ifAnyGranted="ROLE_EVEN, ROLE_EVEN_PM, ROLE_SUIVI_IMPORT_RF, ROLE_SUIVI_ANNONCES_IDE">
 					<li><fmt:message key="title.evenements" />
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_EVEN">
@@ -180,7 +180,7 @@
 									<li><a href="<c:url value='/evenement/reqdes/list.do'/>"><fmt:message key="title.evenements.reqdes"/></a></li>
 								</unireg:ifReqDes>
 							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_EVEN">
+							<authz:authorize ifAnyGranted="ROLE_SUIVI_IMPORT_RF">
 								<li><a href="<c:url value='/registrefoncier/import/list.do'/>"><fmt:message key="title.evenements.registrefoncier"/></a></li>
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_SUIVI_ANNONCES_IDE">
