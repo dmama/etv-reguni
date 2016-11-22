@@ -22,7 +22,6 @@ import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.KeyValueDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
@@ -150,7 +149,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		final Element element = cache.get(key);
 		if (element == null) {
 			resultat = target.getCollectivitesUtilisateur(visaOperateur);
-			cache.put(new Element(key, resultat));
+			if (resultat != null && !resultat.isEmpty()) {      // on ne sauvegarde que les résultats non-vides
+				cache.put(new Element(key, resultat));
+			}
 		}
 		else {
 			resultat = (List<CollectiviteAdministrativeUtilisateur>) element.getObjectValue();
@@ -215,7 +216,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		final Element element = cache.get(key);
 		if (element == null) {
 			resultat = target.getProfileUtilisateur(visaOperateur, codeCollectivite);
-			cache.put(new Element(key, resultat));
+			if (resultat != null) {      // on ne sauvegarde que les résultats non-vides
+				cache.put(new Element(key, resultat));
+			}
 		}
 		else {
 			resultat = (IfoSecProfil) element.getObjectValue();
@@ -276,7 +279,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		final Element element = cache.get(key);
 		if (element == null) {
 			resultat = target.getUtilisateurs(typesCollectivite);
-			cache.put(new Element(key, resultat));
+			if (resultat != null && !resultat.isEmpty()) {      // on ne sauvegarde que les résultats non-vides
+				cache.put(new Element(key, resultat));
+			}
 		}
 		else {
 			resultat = (List<Operateur>) element.getObjectValue();
@@ -329,7 +334,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		final Element element = cache.get(key);
 		if (element == null) {
 			resultat = target.getOperateur(individuNoTechnique);
-			cache.put(new Element(key, resultat));
+			if (resultat != null) {      // on ne sauvegarde que les résultats non-vides
+				cache.put(new Element(key, resultat));
+			}
 		}
 		else {
 			resultat = (Operateur) element.getObjectValue();
@@ -388,7 +395,9 @@ public class ServiceSecuriteCache implements UniregCacheInterface, KeyDumpableCa
 		final Element element = cache.get(key);
 		if (element == null) {
 			resultat = target.getOperateur(visa);
-			cache.put(new Element(key, resultat));
+			if (resultat != null) {      // on ne sauvegarde que les résultats non-vides
+				cache.put(new Element(key, resultat));
+			}
 		}
 		else {
 			resultat = (Operateur) element.getObjectValue();
