@@ -120,6 +120,17 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		return DataAccessUtils.intResult(find(query, criteria, null));
 	}
 
+	@Override
+	public List<IdentificationContribuable> find(TypeDemande typeDemande, String emetteur, String businessIdStart) {
+		final String hql = "FROM IdentificationContribuable ic WHERE ic.demande.typeDemande=:typeDemande AND ic.demande.emetteurId=:emetteur AND ic.header.businessId LIKE :businessIdStart";
+		final Query query = getCurrentSession().createQuery(hql);
+		query.setParameter("typeDemande", typeDemande);
+		query.setParameter("emetteur", emetteur);
+		query.setParameter("businessIdStart", businessIdStart + '%');
+		//noinspection unchecked
+		return query.list();
+	}
+
 	/**
 	 * @param typeDemande
 	 */
@@ -170,33 +181,13 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		T buildValue(Object o);
 	}
 
-	private static final Unmarshaller<Integer> INTEGER_UNMARSHALLER = new Unmarshaller<Integer>() {
-		@Override
-		public Integer buildValue(Object o) {
-			return ((Number) o).intValue();
-		}
-	};
+	private static final Unmarshaller<Integer> INTEGER_UNMARSHALLER = o -> ((Number) o).intValue();
 
-	private static final Unmarshaller<String> STRING_UNMARSHALLER = new Unmarshaller<String>() {
-		@Override
-		public String buildValue(Object o) {
-			return (String) o;
-		}
-	};
+	private static final Unmarshaller<String> STRING_UNMARSHALLER = o -> (String) o;
 
-	private static final Unmarshaller<Etat> ETAT_UNMARSHALLER = new Unmarshaller<Etat>() {
-		@Override
-		public Etat buildValue(Object o) {
-			return (Etat) o;
-		}
-	};
+	private static final Unmarshaller<Etat> ETAT_UNMARSHALLER = o -> (Etat) o;
 
-	private static final Unmarshaller<PrioriteEmetteur> PRIORITE_UNMARSHALLER = new Unmarshaller<PrioriteEmetteur>() {
-		@Override
-		public PrioriteEmetteur buildValue(Object o) {
-			return (PrioriteEmetteur) o;
-		}
-	};
+	private static final Unmarshaller<PrioriteEmetteur> PRIORITE_UNMARSHALLER = o -> (PrioriteEmetteur) o;
 
 	/**
 	 * Récupère la liste des valeurs d'un champ particulier par état de la demande d'identification

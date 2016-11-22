@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -226,7 +227,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		asynchronousFlowSearchExecutor.shutdown();
 	}
 
-	private static enum PhaseRechercheSurNomPrenom {
+	private enum PhaseRechercheSurNomPrenom {
 
 		/**
 		 * Première phase de recherche sur le nom et le prénom
@@ -261,7 +262,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		SANS_DERNIER_PRENOM_SANS_E
 	}
 
-	private static enum PhaseRechercheSurRaisonSociale {
+	private enum PhaseRechercheSurRaisonSociale {
 
 		/**
 		 * Première phase de recherche sur la raison sociale
@@ -1102,6 +1103,19 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		identifie(identificationContribuable, personne, etat);
 	}
 
+	private final Map<TypeDemande, Consumer<IdentificationContribuable>> MAP_SOUMISSION = buildMapSoumission();
+
+	@NotNull
+	private Map<TypeDemande, Consumer<IdentificationContribuable>> buildMapSoumission() {
+		final Map<TypeDemande, Consumer<IdentificationContribuable>> map = new EnumMap<>(TypeDemande.class);
+		map.put(TypeDemande.MELDEWESEN, this::soumettreMessageMeldewesen);
+		map.put(TypeDemande.NCS, this::soumettreMessageNCS);
+		map.put(TypeDemande.E_FACTURE, this::soumettreMessageEfacture);
+		map.put(TypeDemande.IMPOT_SOURCE, this::soumettreMessageImpotSource);
+		map.put(TypeDemande.RAPPROCHEMENT_RF, this::soumettreMessageRapprochementProprietaireRF);
+		return Collections.unmodifiableMap(map);
+	}
+
 	/**
 	 * Soumet le message à l'identification
 	 *
@@ -1112,21 +1126,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final Demande demande = message.getDemande();
 		Assert.notNull(demande, "Le message ne contient aucune demande.");
 		final TypeDemande typeDemande = demande.getTypeDemande();
-		switch (typeDemande) {
-		case MELDEWESEN:
-			soumettreMessageMeldewesen(message);
-			break;
-		case NCS:
-			soumettreMessageNCS(message);
-			break;
-		case E_FACTURE:
-			soumettreMessageEfacture(message);
-			break;
-
-		case IMPOT_SOURCE:
-			soumettreMessageImpotSource(message);
-			break;
-		default:
+		final Consumer<IdentificationContribuable> soumission = MAP_SOUMISSION.get(typeDemande);
+		if (soumission != null) {
+			soumission.accept(message);
+		}
+		else {
 			traiterException(message, new IllegalArgumentException("Type de demande inconnue"));
 		}
 	}
@@ -1146,13 +1150,17 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		soumettreMessage(message);
 	}
 
-
 	private void soumettreMessageImpotSource(IdentificationContribuable message) {
 		LOGGER.info("Le message n°" + message.getId() + " passe en traitement Impot source.");
 		soumettreMessage(message);
 	}
 
-	private static enum IdentificationResultKind {
+	private void soumettreMessageRapprochementProprietaireRF(IdentificationContribuable message) {
+		LOGGER.info("Le message n°" + message.getId() + " passe en traitement Rapprochement RF");
+		soumettreMessage(message);
+	}
+
+	private enum IdentificationResultKind {
 		FOUND_NONE,
 		FOUND_ONE,
 		FOUND_SEVERAL,

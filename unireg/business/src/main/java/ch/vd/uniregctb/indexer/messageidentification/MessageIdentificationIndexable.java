@@ -9,7 +9,6 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.indexer.Indexable;
-import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 
 public class MessageIdentificationIndexable implements Indexable {
@@ -31,7 +30,7 @@ public class MessageIdentificationIndexable implements Indexable {
 	}
 
 	@Override
-	public IndexableData getIndexableData() {
+	public MessageIdentificationIndexableData getIndexableData() {
 
 		final Demande demande = message.getDemande();
 		final CriteresPersonne criteresPersonne = demande.getPersonne();

@@ -1,22 +1,32 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
 /**
- @author
+ * Différents types de demande d'identification de contribuable
  */
 public enum TypeDemande {
-	MELDEWESEN("MELDEWESEN"),
-	NCS("NCS"),
-	IMPOT_SOURCE("IMPOT_SOURCE"),
-	E_FACTURE("E_FACTURE");
 
+	/**
+	 * Demande d'identification de provenance extra-cantonale, Meldewesen
+	 */
+	MELDEWESEN,
 
-	private final String name;
+	/**
+	 * Certificats de salaire
+	 */
+	NCS,
 
-	TypeDemande(String name) {
-		this.name = name;
-	}
+	/**
+	 * Demande d'identification pour les listes récapitulatives de l'IS
+	 */
+	IMPOT_SOURCE,
 
-	public String getName() {
-		return name;
-	}
+	/**
+	 * Demande d'identification liée à la e-Facture (????)
+	 */
+	E_FACTURE,
+
+	/**
+	 * Demande d'identification liée au rapprochement des propriétaires du registre foncier
+	 */
+	RAPPROCHEMENT_RF
 }

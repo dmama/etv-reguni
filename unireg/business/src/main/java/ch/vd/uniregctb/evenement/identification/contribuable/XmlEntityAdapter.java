@@ -2,10 +2,15 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.math.BigInteger;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.xmlbeans.XmlException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +46,28 @@ public abstract class XmlEntityAdapter {
 	public static final String TYPE_MESSAGE_EFACTURE = "CYBER_EFACTURE";
 	public static final String TYPE_MESSAGE_LISTE_IS = "LISTE_IS";
 	private static final Logger LOGGER = LoggerFactory.getLogger(XmlEntityAdapter.class);
+
+	private static final Map<String, TypeDemande> TYPES_DEMANDE_PAR_TYPE_MESSAGE = buildTypeDemandeParTypeMessageMap();
+
+	@NotNull
+	private static Map<String, TypeDemande> buildTypeDemandeParTypeMessageMap() {
+		final Map<String, TypeDemande> map = new HashMap<>();
+		map.put(TYPE_MESSAGE_NCS, TypeDemande.NCS);
+		map.put(TYPE_MESSAGE_EFACTURE, TypeDemande.E_FACTURE);
+		map.put(TYPE_MESSAGE_LISTE_IS, TypeDemande.IMPOT_SOURCE);
+		return Collections.unmodifiableMap(map);
+	}
+
+	private static final Map<ModeIdentificationType.Enum, Demande.ModeIdentificationType> MODE_IDENTIFICATION_MAPPING = buildModeIdentificationMapping();
+
+	@NotNull
+	private static Map<ModeIdentificationType.Enum, Demande.ModeIdentificationType> buildModeIdentificationMapping() {
+		final Map<ModeIdentificationType.Enum, Demande.ModeIdentificationType> map = new HashMap<>();
+		map.put(ModeIdentificationType.SANS_MANUEL, Demande.ModeIdentificationType.SANS_MANUEL);
+		map.put(ModeIdentificationType.MANUEL_SANS_ACK, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		map.put(ModeIdentificationType.MANUEL_AVEC_ACK, Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		return Collections.unmodifiableMap(map);
+	}
 
 	public static IdentificationCTBDocument entity2xml(IdentificationContribuable message) {
 
@@ -207,6 +234,7 @@ public abstract class XmlEntityAdapter {
 		return entity;
 	}
 
+
 	private static Demande xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande xml) throws XmlException {
 		if (xml == null) {
 			return null;
@@ -231,35 +259,18 @@ public abstract class XmlEntityAdapter {
 			entity.setMontant(montant.longValue());
 		}
 
-		//TODO(BNM) à adapter en fonction du type de demande reçu. En attente d'une nouvelle XSD
-		if (TYPE_MESSAGE_NCS.equals(xml.getDemande().getTypeMessage())) {
-			entity.setTypeDemande(TypeDemande.NCS);
-		}
-		else if (TYPE_MESSAGE_EFACTURE.equals(xml.getDemande().getTypeMessage())) {
-			entity.setTypeDemande(TypeDemande.E_FACTURE);
-		}
-		else if (TYPE_MESSAGE_LISTE_IS.equals(xml.getDemande().getTypeMessage())) {
-			entity.setTypeDemande(TypeDemande.IMPOT_SOURCE);
-		}
-		else {
-			entity.setTypeDemande(TypeDemande.MELDEWESEN);
-		}
+		final TypeDemande typeDemande = Optional.of(xml)
+				.map(IdentificationCTB.Demande::getDemande)
+				.map(Demande2::getTypeMessage)
+				.map(TYPES_DEMANDE_PAR_TYPE_MESSAGE::get)
+				.orElse(TypeDemande.MELDEWESEN);
+		entity.setTypeDemande(typeDemande);
 
 		return entity;
 	}
 
 	private static Demande.ModeIdentificationType translateModeIdentification(ModeIdentificationType.Enum modeIdentification) {
-		if (ModeIdentificationType.SANS_MANUEL.equals(modeIdentification)) {
-			return Demande.ModeIdentificationType.SANS_MANUEL;
-		}
-		if (ModeIdentificationType.MANUEL_AVEC_ACK.equals(modeIdentification)) {
-			return Demande.ModeIdentificationType.MANUEL_AVEC_ACK;
-		}
-		if (ModeIdentificationType.MANUEL_SANS_ACK.equals(modeIdentification)) {
-			return Demande.ModeIdentificationType.MANUEL_SANS_ACK;
-		}
-		return null;
-
+		return MODE_IDENTIFICATION_MAPPING.get(modeIdentification);
 	}
 
 	private static CriteresPersonne xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Personne xml) throws XmlException {

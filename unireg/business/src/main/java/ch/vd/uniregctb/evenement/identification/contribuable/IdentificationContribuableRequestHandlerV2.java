@@ -44,7 +44,7 @@ public class IdentificationContribuableRequestHandlerV2 implements Identificatio
 		this.tiersService = tiersService;
 	}
 
-	private static enum IdentificationResult {
+	private enum IdentificationResult {
 		FOUND_ONE,
 		FOUND_NONE,
 		FOUND_SEVERAL,

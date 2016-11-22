@@ -2,6 +2,8 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 
 public class IdentificationContribuableCriteria {
@@ -155,23 +157,22 @@ public class IdentificationContribuableCriteria {
 	public void setDateTraitementFin(Date dateTraitementFin) {
 		this.dateTraitementFin = dateTraitementFin;
 	}
+
 	public boolean isEmpty(){
-		return dateMessageDebut==null &&
-				dateMessageFin==null &&
+		return dateMessageDebut == null &&
+				dateMessageFin == null &&
 				dateNaissance == null &&
 				dateTraitementDebut == null &&
 				dateTraitementFin == null &&
-				emetteurId == null &&
-				NAVS11 == null &&
-				etatMessage ==null &&
-				NAVS13 == null &&
-				nom == null &&
-				periodeFiscale == null &&
-				prenoms == null &&
+				StringUtils.isBlank(emetteurId) &&
+				StringUtils.isBlank(NAVS11) &&
 				etatMessage == null &&
-				prioriteEmetteur == null&&
-				typeMessage == null &&
-				traitementUser == null;
-
+				StringUtils.isBlank(NAVS13) &&
+				StringUtils.isBlank(nom) &&
+				periodeFiscale == null &&
+				StringUtils.isBlank(prenoms) &&
+				prioriteEmetteur == null &&
+				StringUtils.isBlank(typeMessage) &&
+				StringUtils.isBlank(traitementUser);
 	}
 }

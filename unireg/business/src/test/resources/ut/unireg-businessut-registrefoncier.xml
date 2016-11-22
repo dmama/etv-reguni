@@ -3,6 +3,8 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<!-- Import des données du RF -->
+
 	<bean id="tempRFCacheDroits" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
 		<property name="homeDirectory" value="${testprop.rf.import.cache.homedir}/droits" />
 		<property name="clazz" value="java.util.ArrayList" />
@@ -18,5 +20,9 @@
 		<property name="lockTimeout" value="${testprop.rf.import.cache.lockTimeout}" />
 		<property name="syncOnCommit" value="false" />
 	</bean>
+
+	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
+
+	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService"/>
 
 </beans>

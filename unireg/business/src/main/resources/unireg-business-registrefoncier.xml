@@ -75,6 +75,7 @@
 		<constructor-arg ref="rapprochementRFDAO"/>
 		<constructor-arg ref="hibernateTemplate"/>
 		<constructor-arg ref="identCtbService"/>
+		<constructor-arg ref="rapprochementManuelTiersRFService"/>
 	</bean>
 
 	<bean id="estimationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidator" parent="dateRangeEntityValidator"/>

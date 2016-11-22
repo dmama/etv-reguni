@@ -24,18 +24,27 @@ public enum IdentificationContribuableEtatFilter {
 		}
 	},
 
-	SEULEMENT_A_TRAITER_MANUELLEMENT{
+	SEULEMENT_A_TRAITER_MANUELLEMENT {
 		@Override
 		public boolean isIncluded(IdentificationContribuable.Etat etat) {
 			return IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT == etat;
 		}
 	},
-	SEULEMENT_NON_TRAITES_ET_EN_EXEPTION{
+
+	SEULEMENT_NON_TRAITES_ET_EN_EXEPTION {
 		@Override
 		public boolean isIncluded(IdentificationContribuable.Etat etat) {
 			return ETATS_NON_TRAITES_ET_EN_EXCEPTION.contains(etat);
 		}
 	},
+
+	SEULEMENT_NON_FINAUX {
+		@Override
+		public boolean isIncluded(IdentificationContribuable.Etat etat) {
+			return ETATS_NON_FINAUX.contains(etat);
+		}
+	},
+
 	TOUS {
 		@Override
 		public boolean isIncluded(IdentificationContribuable.Etat etat) {
@@ -52,11 +61,17 @@ public enum IdentificationContribuableEtatFilter {
 	                                                                                         IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT);
 
 	private static final Set<IdentificationContribuable.Etat> ETATS_NON_TRAITES_ET_EN_EXCEPTION = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
-																							IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
-																							IdentificationContribuable.Etat.EXCEPTION);
+	                                                                                                         IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
+	                                                                                                         IdentificationContribuable.Etat.EXCEPTION);
 
 	private static final Set<IdentificationContribuable.Etat> ETATS_SUSPENDUS = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
-			IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU);
+	                                                                                       IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU);
+
+	private static final Set<IdentificationContribuable.Etat> ETATS_NON_FINAUX = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
+	                                                                                        IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
+	                                                                                        IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
+	                                                                                        IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
+	                                                                                        IdentificationContribuable.Etat.EXCEPTION);
 
 	public abstract boolean isIncluded(IdentificationContribuable.Etat etat);
 }

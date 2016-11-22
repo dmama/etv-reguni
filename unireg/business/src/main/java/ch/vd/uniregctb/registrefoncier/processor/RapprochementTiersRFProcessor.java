@@ -32,6 +32,7 @@ import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibil
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
@@ -52,6 +53,7 @@ public class RapprochementTiersRFProcessor {
 	private final RapprochementRFDAO rapprochementDAO;
 	private final HibernateTemplate hibernateTemplate;
 	private final IdentificationContribuableService identificationService;
+	private final RapprochementManuelTiersRFService rapprochementManuelService;
 
 	private final Map<Class<? extends TiersRF>, Identifier<? extends TiersRF>> identifiers;
 
@@ -61,13 +63,14 @@ public class RapprochementTiersRFProcessor {
 	}
 
 	public RapprochementTiersRFProcessor(PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService, RapprochementRFDAO rapprochementDAO, HibernateTemplate hibernateTemplate,
-	                                     IdentificationContribuableService identificationService) {
+	                                     IdentificationContribuableService identificationService, RapprochementManuelTiersRFService rapprochementManuelService) {
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.rapprochementDAO = rapprochementDAO;
 		this.hibernateTemplate = hibernateTemplate;
 		this.identificationService = identificationService;
+		this.rapprochementManuelService = rapprochementManuelService;
 		this.identifiers = buildIdentifierMap();
 	}
 
@@ -199,8 +202,11 @@ public class RapprochementTiersRFProcessor {
 			}
 		}
 
-		// on n'a rien identifier... il faut faire une demande d'identification manuelle...
-		// TODO à faire : création d'une demande d'identification manuelle de contribuable
+		// on n'a rien identifié... il faut faire une demande d'identification manuelle...
+		// (si elle n'existe pas déjà, évidemment...)
+		rapprochementManuelService.genererDemandeIdentificationManuelle(tiersRF);
+
+		// et on l'indique comme ça dans le rapport
 		rapport.addTiersNonIdentifie(tiersRF, resultatIdentification);
 	}
 

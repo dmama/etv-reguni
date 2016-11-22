@@ -25,6 +25,7 @@ import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableSer
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
@@ -53,7 +54,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		rapprochementDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");
 		final IdentificationContribuableService identificationService = getBean(IdentificationContribuableService.class, "identCtbService");
-		processor = new RapprochementTiersRFProcessor(transactionManager, tiersService, adresseService, rapprochementDAO, hibernateTemplate, identificationService);
+		final RapprochementManuelTiersRFService rapprochementManuelService = getBean(RapprochementManuelTiersRFService.class, "rapprochementManuelTiersRFService");
+		processor = new RapprochementTiersRFProcessor(transactionManager, tiersService, adresseService, rapprochementDAO, hibernateTemplate, identificationService, rapprochementManuelService);
 	}
 
 	/**

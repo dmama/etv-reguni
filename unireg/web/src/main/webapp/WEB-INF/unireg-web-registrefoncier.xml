@@ -2,6 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+	<!-- Import des données du RF -->
+
 	<bean id="tempRFCacheDroits" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
 		<property name="homeDirectory" value="${extprop.rf.import.cache.homedir}/droits" />
 		<property name="clazz" value="java.util.ArrayList" />
@@ -22,6 +24,15 @@
 		<property name="serviceRF" ref="serviceRF" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
+	</bean>
+
+	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
+
+	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFServiceImpl">
+		<property name="queueRetourPourIdentification" value="${extprop.jms.queue.evtRapprochementTiersRF}"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="emetteurDemandeIdentification" value="UNIREG"/>
+		<property name="identCtbDAO" ref="identCtbDAO"/>
 	</bean>
 
 </beans>
