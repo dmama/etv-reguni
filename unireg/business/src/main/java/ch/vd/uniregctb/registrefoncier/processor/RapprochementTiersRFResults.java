@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.processor;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +32,7 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 	private static final String ERREUR_TIERS_RF_DEJA_RAPPROCHE_A_DATE_DE_TRAITEMENT = "Le tiers RF possède déjà un rapprochement valide à la date de traitement.";
 
 	private boolean interrompu = false;
+	private final int nbThreads;
 	private final List<NouveauRapprochement> nouveauxRapprochements = new LinkedList<>();
 	private final List<ErreurRapprochement> erreurs = new LinkedList<>();
 	private final List<NonIdentification> nonIdentifications = new LinkedList<>();
@@ -176,8 +179,9 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 		}
 	}
 
-	public RapprochementTiersRFResults(TiersService tiersService, AdresseService adresseService) {
+	public RapprochementTiersRFResults(int nbThreads, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
+		this.nbThreads = nbThreads;
 	}
 
 	public List<NouveauRapprochement> getNouveauxRapprochements() {
@@ -213,6 +217,18 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 		nouveauxRapprochements.addAll(right.nouveauxRapprochements);
 		erreurs.addAll(right.erreurs);
 		nonIdentifications.addAll(right.nonIdentifications);
+	}
+
+	@Override
+	public void end() {
+		Collections.sort(nouveauxRapprochements, Comparator.comparingLong(r -> r.noRF));
+		Collections.sort(nonIdentifications, Comparator.comparingLong(r -> r.noRF));
+		Collections.sort(erreurs, Comparator.comparingLong(e -> e.idTiersRF));
+		super.end();
+	}
+
+	public int getNbThreads() {
+		return nbThreads;
 	}
 
 	public boolean isInterrompu() {

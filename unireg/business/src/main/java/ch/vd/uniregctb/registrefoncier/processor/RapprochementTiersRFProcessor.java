@@ -20,8 +20,9 @@ import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -121,11 +122,11 @@ public class RapprochementTiersRFProcessor {
 		}
 	}
 
-	public RapprochementTiersRFResults run(StatusManager status) {
+	public RapprochementTiersRFResults run(final int nbThreads, StatusManager status) {
 		final StatusManager s = status != null ? status : new LoggingStatusManager(LOGGER);
 		final RegDate dateTraitement = RegDate.get();
 
-		final RapprochementTiersRFResults rapportFinal = new RapprochementTiersRFResults(tiersService, adresseService);
+		final RapprochementTiersRFResults rapportFinal = new RapprochementTiersRFResults(nbThreads, tiersService, adresseService);
 
 		// récupération des données à rapprocher...
 		s.setMessage("Récupération des tiers RF à identifier...");
@@ -135,7 +136,8 @@ public class RapprochementTiersRFProcessor {
 		s.setMessage("Rapprochements en cours...");
 
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<Long, RapprochementTiersRFResults> template = new BatchTransactionTemplateWithResults<>(idsTiersRF, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		final ParallelBatchTransactionTemplateWithResults<Long, RapprochementTiersRFResults> template = new ParallelBatchTransactionTemplateWithResults<>(idsTiersRF, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                                  transactionManager, s, AuthenticationInterface.INSTANCE);
 		final boolean nonInterrompu = template.execute(rapportFinal, new BatchWithResultsCallback<Long, RapprochementTiersRFResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, RapprochementTiersRFResults rapport) throws Exception {
@@ -152,7 +154,7 @@ public class RapprochementTiersRFProcessor {
 
 			@Override
 			public RapprochementTiersRFResults createSubRapport() {
-				return new RapprochementTiersRFResults(tiersService, adresseService);
+				return new RapprochementTiersRFResults(nbThreads, tiersService, adresseService);
 			}
 		}, progressMonitor);
 

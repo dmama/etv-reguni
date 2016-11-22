@@ -33,6 +33,14 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 		// Titre
 		addTitrePrincipal("Rapport d'exécution du job de rapprochement des tiers RF");
 
+		// Paramètres
+		addEntete1("Paramètres");
+		{
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
+			});
+		}
+
 		// Résultats
 		addEntete1("Résultats");
 		{

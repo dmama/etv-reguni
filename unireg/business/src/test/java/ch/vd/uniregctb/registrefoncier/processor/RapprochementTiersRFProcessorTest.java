@@ -94,7 +94,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(0, results.getNbErreurs());
@@ -170,7 +170,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(0, results.getNbErreurs());
@@ -249,7 +249,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(0, results.getNbErreurs());
@@ -329,7 +329,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(0, results.getNbErreurs());
@@ -412,7 +412,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(0, results.getNbErreurs());
@@ -478,7 +478,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(0, results.getNbErreurs());
@@ -547,7 +547,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(Collections.emptyList(), results.getErreurs());
@@ -635,7 +635,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// lancement du rapprochement
-		final RapprochementTiersRFResults results = processor.run(null);
+		final RapprochementTiersRFResults results = processor.run(1, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDossiersInspectes());
 		Assert.assertEquals(Collections.emptyList(), results.getErreurs());
