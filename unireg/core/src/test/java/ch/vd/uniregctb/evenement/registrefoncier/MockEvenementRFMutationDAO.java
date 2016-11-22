@@ -124,4 +124,10 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	public int deleteMutationsFor(long importId, int maxResults) {
 		throw new NotImplementedException();
 	}
+
+	@Nullable
+	@Override
+	public Long findNextMutationsToProcess() {
+		throw new NotImplementedException();
+	}
 }

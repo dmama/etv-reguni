@@ -19,6 +19,7 @@ import ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class DataRFMutationsProcessorTest extends BusinessTest {
 
@@ -113,6 +114,51 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 			assertContains("java.lang.RuntimeException: Exception de test", mut2.getErrorMessage());
 			return null;
 		});
+	}
+
+	/**
+	 * Ce test vérifie que le processeur lève une exception s'il existe des mutations non-traitées (A_TRAITER ou EN_ERREUR) d'un import précédent.
+	 */
+	@Test
+	public void testProcessErreurMutationsPrecedentesNonTraitees() throws Exception {
+
+		class Ids {
+			long precedent;
+			long suivant;
+		}
+		final Ids ids = new Ids();
+
+		// on insère quelques mutations
+		doInNewTransaction(status -> {
+
+			final EvenementRFImport importPrecedent = addParentImport(EtatEvenementRF.TRAITE, RegDate.get(2010, 1, 1));
+			addMutation(importPrecedent, EtatEvenementRF.EN_ERREUR, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "389383", null);
+			addMutation(importPrecedent, EtatEvenementRF.EN_ERREUR, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "482922", null);
+			addMutation(importPrecedent, EtatEvenementRF.TRAITE, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "492308", null);
+			ids.precedent = importPrecedent.getId();
+
+			final EvenementRFImport importSuivant = addParentImport(EtatEvenementRF.A_TRAITER, RegDate.get(2010, 3, 1));
+			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "389383", null);
+			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "482922", null);
+			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "492308", null);
+			ids.suivant = importSuivant.getId();
+
+			return null;
+		});
+
+		// un processor de mutations qui ne fait rien
+		final MutationRFProcessor immeubleRFProcessor = mutation -> {
+		};
+
+		// on devrait avoir une exception parce que les mutations de l'import précédent ne sont pas toutes traitées
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
+		try {
+			processor.processImport(ids.suivant, 2, null);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("Les mutations de l'import RF avec l'id = [" + ids.suivant + "] ne peuvent être traitées car les mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées.", e.getMessage());
+		}
 	}
 
 	private Long addImportAndThreeMutations() throws Exception {

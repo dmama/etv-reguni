@@ -72,10 +72,26 @@ public class DataRFMutationsProcessor {
 			statusManager = new LoggingStatusManager(LOGGER);
 		}
 
+		checkPreconditions(importId);
+
 		processMutations(importId, EvenementRFMutation.TypeEntite.IMMEUBLE, nbThreads, new SubStatusManager(0, 25, statusManager));
 		processMutations(importId, EvenementRFMutation.TypeEntite.AYANT_DROIT, nbThreads, new SubStatusManager(25, 50, statusManager));
 		processMutations(importId, EvenementRFMutation.TypeEntite.DROIT, nbThreads, new SubStatusManager(50, 75, statusManager));
 		processMutations(importId, EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, nbThreads, new SubStatusManager(75, 100, statusManager));
+	}
+
+	private void checkPreconditions(long importId) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.execute(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Long nextMutationsToProcess = evenementRFMutationDAO.findNextMutationsToProcess();
+				if (nextMutationsToProcess != null && nextMutationsToProcess != importId) {
+					throw new IllegalArgumentException("Les mutations de l'import RF avec l'id = [" + importId + "] ne peuvent être traitées car les mutations de l'import RF avec l'id = [" + nextMutationsToProcess + "] n'ont pas été traitées.");
+				}
+			}
+		});
 	}
 
 	private void processMutations(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, int nbThreads, @NotNull final StatusManager statusManager) {

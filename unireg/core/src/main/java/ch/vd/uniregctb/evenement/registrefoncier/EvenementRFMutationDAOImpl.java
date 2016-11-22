@@ -86,4 +86,12 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		// query.setMaxResults(maxResults); le maxResults ne fonctionne *pas* avec les deletes !
 		return query.executeUpdate();
 	}
+
+	@Nullable
+	@Override
+	public Long findNextMutationsToProcess() {
+		final Query query = getCurrentSession().createQuery("select parentImport.id from EvenementRFMutation where etat in ('A_TRAITER', 'EN_ERREUR') order by parentImport.dateEvenement asc");
+		query.setMaxResults(1);
+		return ((Number) query.uniqueResult()).longValue();
+	}
 }

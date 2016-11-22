@@ -53,4 +53,10 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 * @return le nombre de mutations supprimées
 	 */
 	int deleteMutationsFor(long importId, int maxResults);
+
+	/**
+	 * @return l'id de l'import des prochaines mutations à processer, c'est-à-dire les mutations non-traitées les plus anciennes (par date de valeur de l'import).
+	 */
+	@Nullable
+	Long findNextMutationsToProcess();
 }
