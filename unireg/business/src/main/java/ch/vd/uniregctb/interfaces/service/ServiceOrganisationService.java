@@ -103,7 +103,7 @@ public interface ServiceOrganisationService {
 	 * @param annonceIDE l'annonce candidate
 	 * @return le statut résultant contenant les éventuelles erreurs rapportées par le service civil.
 	 */
-	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE);
+	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) throws ServiceOrganisationException;
 
 	@NotNull
 	String createOrganisationDescription(Organisation organisation, RegDate date);

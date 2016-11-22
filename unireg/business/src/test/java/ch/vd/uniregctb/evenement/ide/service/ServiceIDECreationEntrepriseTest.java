@@ -30,6 +30,7 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.uniregctb.evenement.ide.ServiceIDEException;
 import ch.vd.uniregctb.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -283,82 +284,14 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				try {
 					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				} catch (Exception e) {
-					fail(String.format("Le service IDE a rencontré un problème lors de la synchronisation IDE: %s", e.getMessage()));
+					String expectedMessage = String.format("L'entreprise n°%s non appariée a été annoncée au registre IDE mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.", noEntreprise);
+					if (e instanceof ServiceIDEException) {
+						Assert.assertEquals(expectedMessage, e.getMessage());
+						return null;
+					}
+					fail(String.format("Une erreur non attendue est survenue signifiant l'échec du test: %s", e.getMessage()));
 					return null;
 				}
-			}
-		});
-
-		// Vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
-
-				assertNotNull(annonceIDE.getNumero());
-				final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(annonceIDE.getNumero());
-				Assert.assertNotNull(referenceAnnonceIDE);
-
-				assertNotNull(annonceIDESender.getMsgBusinessIdUtilisee());
-				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
-
-				assertEquals(TypeAnnonce.MUTATION, annonceIDE.getType());
-				assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeDeSite());
-
-				final NumeroIDE noIde = annonceIDE.getNoIde();
-				assertNotNull(noIde);
-				assertEquals("CHE999999996", noIde.getValeur());
-				assertNull(annonceIDE.getNoIdeRemplacant());
-				assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
-
-				assertNull(annonceIDE.getRaisonDeRadiation());
-
-				assertEquals("Généré automatiquement suite à la mise à jour des données civiles du contribuable.", annonceIDE.getCommentaire());
-
-				final BaseAnnonceIDE.Statut statut = annonceIDE.getStatut();
-				assertNull(statut);
-
-				final BaseAnnonceIDE.InfoServiceIDEObligEtendues infoServiceIDEObligEtendues = annonceIDE.getInfoServiceIDEObligEtendues();
-				assertNotNull(infoServiceIDEObligEtendues);
-				assertEquals(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, infoServiceIDEObligEtendues.getNoIdeServiceIDEObligEtendues());
-				assertEquals(RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationId());
-				assertEquals(RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG, infoServiceIDEObligEtendues.getApplicationName());
-
-				final BaseAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
-				assertNotNull(informationOrganisation);
-				assertNull(informationOrganisation.getNumeroOrganisation());
-				assertNull(informationOrganisation.getNumeroSite());
-				assertNull(informationOrganisation.getNumeroSiteRemplacant());
-
-				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
-				assertNotNull(utilisateur);
-				assertNull(utilisateur.getUserId());
-				assertNull(utilisateur.getTelephone());
-
-				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
-				assertNotNull(contenu);
-				assertEquals("Rienavoir Asso", contenu.getNom());
-				assertNull(contenu.getNomAdditionnel());
-				assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
-				assertEquals("Fabrication d'objets synthétiques", contenu.getSecteurActivite());
-
-				final AdresseAnnonceIDE adresse = contenu.getAdresse();
-				assertNotNull(adresse);
-				assertEquals(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), adresse.getRue());
-				assertEquals("1", adresse.getNumero());
-				assertNull(adresse.getNumeroAppartement());
-				assertEquals(MockLocalite.Renens.getNPA().intValue(), adresse.getNpa().intValue());
-				assertEquals(MockLocalite.Renens.getNoOrdre().intValue(), adresse.getNumeroOrdrePostal().intValue());
-				assertEquals(MockLocalite.Renens.getNom(), adresse.getVille());
-
-				assertNull(adresse.getNumeroCasePostale());
-				assertNull(adresse.getTexteCasePostale());
-
-				final AdresseAnnonceIDE.Pays pays = adresse.getPays();
-				assertNotNull(pays);
-				assertEquals(MockPays.Suisse.getNoOFS(), pays.getNoOfs().intValue());
-				assertEquals(MockPays.Suisse.getCodeIso2(), pays.getCodeISO2());
-				assertEquals(MockPays.Suisse.getNomCourt(), pays.getNomCourt());
 			}
 		});
 	}
