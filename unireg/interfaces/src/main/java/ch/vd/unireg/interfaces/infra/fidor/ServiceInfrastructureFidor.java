@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -414,19 +415,47 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
 		try {
+
 			final List<CommuneFiscale> communes = fidorClient.findCommuneByNomOfficiel(nomOfficiel, date);
 			if (communes.isEmpty()) {
 				return null;
 			}
-			if (communes.size() > 1) {
-				throw new ServiceInfrastructureException("Plusieurs communes (" + communes.size() + ") avec le nom [" + nomOfficiel + "] ont été trouvées.");
+
+			// on filtre les communes faîtières/fractions si nécessaire
+			final List<CommuneFiscale> communesFiltrees = communes.stream()
+					.filter(c -> filterCommune(c, includeFaitieres, includeFractions))
+					.collect(Collectors.toList());
+
+			if (communesFiltrees.size() > 1) {
+				throw new ServiceInfrastructureException("Plusieurs communes (" + communesFiltrees.size() + ") avec le nom [" + nomOfficiel + "] ont été trouvées.");
 			}
-			return CommuneImpl.get(communes.get(0));
+
+			return CommuneImpl.get(communesFiltrees.get(0));
 		}
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	private static boolean filterCommune(@NotNull CommuneFiscale c, boolean includeFaitieres, boolean includeFractions) {
+		if (!c.isEstUneCommuneFaitiere() && !c.isEstUneFractionDeCommune()) {
+			// la commune n'est pas du tout fractionnée, on la garde dans tous les cas
+			return true;
+		}
+		else if (includeFaitieres && c.isEstUneCommuneFaitiere()) {
+			// c'est une faîtière et on veut les faîtières
+			return true;
+		}
+		else //noinspection RedundantIfStatement
+			if (includeFractions && c.isEstUneFractionDeCommune()) {
+			// c'est une fraction et on veut les fractions
+			return true;
+		}
+		else {
+			// dans tous les autres cas, on ne veut pas la commune
+			return false;
 		}
 	}
 

@@ -114,7 +114,7 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}
 

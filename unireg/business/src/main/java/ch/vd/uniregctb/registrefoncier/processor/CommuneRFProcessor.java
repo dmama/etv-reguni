@@ -107,9 +107,15 @@ public class CommuneRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private Integer findNoOfs(@NotNull String nomCommune, @Nullable RegDate dateValeur) {
-		final Commune commune = infraService.findCommuneByNomOfficiel(nomCommune, dateValeur);
+		// le RF ne connaît pas les fractions de communes fiscales, on doit donc utiliser les communes faîtières dans tous les cas.
+		Commune commune = infraService.findCommuneByNomOfficiel(nomCommune, true, false, dateValeur);
 		if (commune == null) {
-			throw new IllegalArgumentException("La commune RF avec le nom=[" + nomCommune + "] est introuvable dans l'infrastructure fiscale.");
+			// la commune n'existe pas : il s'agit peut-être d'une commune déjà fusionnée au civil mais pas encore au fiscal -> on recherche dans l'historique
+			commune = infraService.findCommuneByNomOfficiel(nomCommune, true, false, null /* tout l'historique */);
+			if (commune == null) {
+				// elle n'existe vraiment pas
+				throw new IllegalArgumentException("La commune RF avec le nom=[" + nomCommune + "] est introuvable dans l'infrastructure fiscale.");
+			}
 		}
 		return commune.getNoOFS();
 	}

@@ -258,7 +258,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'findCommuneByNomOfficiel' ne doit pas être appelée sur le service host-interfaces.");
 	}
 

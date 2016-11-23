@@ -198,7 +198,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
 		return communes.stream()
 				.filter(c -> c.getNomOfficiel().equals(nomOfficiel))
 				.filter(c -> c.isValidAt(date))

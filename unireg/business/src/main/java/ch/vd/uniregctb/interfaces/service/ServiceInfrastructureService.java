@@ -67,7 +67,7 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @param numeroOFS un numéro Ofs de pays.
-	 * @param date date de référence pour la validité du pays
+	 * @param date      date de référence pour la validité du pays
 	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
@@ -107,7 +107,7 @@ public interface ServiceInfrastructureService {
 	List<Localite> getLocalites() throws ServiceInfrastructureException;
 
 	/**
-	 * @param onrp le numéro technique de la localité
+	 * @param onrp          le numéro technique de la localité
 	 * @param dateReference on cherche une localité valide à la date donnée, ou en tout cas la plus proche
 	 * @return la localité qui corresponds à numéro technique spécifié
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
@@ -140,8 +140,8 @@ public interface ServiceInfrastructureService {
 	/**
 	 * Retourne le numéro Ofs de la commune sur laquelle un bâtiment est construit.
 	 *
-	 * @param egid             un numéro de bâtiment
-	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
+	 * @param egid un numéro de bâtiment
+	 * @param date la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
 	 * @return le numéro Ofs de la commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
@@ -157,12 +157,14 @@ public interface ServiceInfrastructureService {
 	/**
 	 * Recherche une commune par nom officiel.
 	 *
-	 * @param nomOfficiel le nom officiel de la commune
-	 * @param date        la date de valeur de la commune (null = aujourd'hui)
+	 * @param nomOfficiel      le nom officiel de la commune
+	 * @param includeFaitieres vrai s'il faut inclure les communes faîtières
+	 * @param includeFractions vrai s'il faut inclure les fractions de commune
+	 * @param date             la date de valeur de la commune (null = recherche dans tous l'historique)
 	 * @return la commune trouvée ou <b>null</b> si aucune commune n'a été trouvée.
 	 */
 	@Nullable
-	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException;
+	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt
@@ -200,7 +202,7 @@ public interface ServiceInfrastructureService {
 	/**
 	 * Permet de retourner une ou plusieurs localités à partir d'un npa
 	 *
-	 * @param npa le npa
+	 * @param npa           le npa
 	 * @param dateReference la date de référence
 	 * @return la liste des localités ciblées
 	 * @throws ServiceInfrastructureException en cas de problème
@@ -230,11 +232,12 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	List<Logiciel> getTousLesLogiciels();
+
 	/**
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)
-	 * @param date une date de référence pour la validité du pays
+	 * @param date     une date de référence pour la validité du pays
 	 * @return le pays avec le code pays spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
@@ -379,8 +382,8 @@ public interface ServiceInfrastructureService {
 	/**
 	 * Retourne la commune sur laquelle un bâtiment est construit.
 	 *
-	 * @param egid             un numéro de bâtiment
-	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
+	 * @param egid un numéro de bâtiment
+	 * @param date la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
 	 * @return une commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
@@ -411,7 +414,6 @@ public interface ServiceInfrastructureService {
 	boolean estDansLeCanton(final Commune commune) throws ServiceInfrastructureException;
 
 	/**
-	 *
 	 * @param adresse une adresse générique
 	 * @return <b>true</b> si l'adresse spécifiée est dans le canton de Vaud
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure

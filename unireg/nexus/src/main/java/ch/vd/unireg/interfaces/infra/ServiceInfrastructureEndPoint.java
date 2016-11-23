@@ -225,10 +225,10 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("findCommuneByNomOfficiel", "nomOfficiel", nomOfficiel, "date", date));
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("findCommuneByNomOfficiel", new String[]{"nomOfficiel", "includeFaitieres", "includeFractions", "date"}, new Object[]{nomOfficiel, includeFaitieres, includeFractions, date}));
 		try {
-			return target.findCommuneByNomOfficiel(nomOfficiel, date);
+			return target.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 		}
 		finally {
 			loadMeter.end();

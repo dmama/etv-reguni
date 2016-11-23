@@ -173,11 +173,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.findCommuneByNomOfficiel(nomOfficiel, date);
+			return target.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -187,7 +187,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			tracing.end(time, t, "findCommuneByNomOfficiel", new Object() {
 				@Override
 				public String toString() {
-					return String.format("nom=%s, date=%s", nomOfficiel, date);
+					return String.format("nom=%s, includeFaitieres=%s, includeFractions=%s, date=%s", nomOfficiel, includeFaitieres, includeFractions, date);
 				}
 			});
 		}

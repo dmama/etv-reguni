@@ -127,8 +127,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return fidorService.findCommuneByNomOfficiel(nomOfficiel, date);
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return fidorService.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 	}
 
 	@Override

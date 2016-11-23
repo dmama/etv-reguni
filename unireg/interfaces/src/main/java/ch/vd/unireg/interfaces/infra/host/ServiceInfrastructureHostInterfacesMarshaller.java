@@ -141,8 +141,8 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return getClient().findCommuneByNomOfficiel(nomOfficiel, date);
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return getClient().findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 	}
 
 	@Override

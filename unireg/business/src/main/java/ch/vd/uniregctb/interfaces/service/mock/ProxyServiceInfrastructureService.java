@@ -291,8 +291,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return target.findCommuneByNomOfficiel(nomOfficiel, date);
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return target.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 	}
 
 	@Override

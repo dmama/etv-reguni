@@ -56,7 +56,7 @@ public interface ServiceInfrastructureRaw {
 
 	/**
 	 * @param numeroOFS un numéro Ofs de pays.
-	 * @param date la date de référence, ou <b>null</b> pour la date du jour
+	 * @param date      la date de référence, ou <b>null</b> pour la date du jour
 	 * @return le pays avec le numéro Ofs spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
@@ -73,7 +73,7 @@ public interface ServiceInfrastructureRaw {
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)
-	 * @param date la date de référence, ou <b>null</b> pour la date du jour
+	 * @param date     la date de référence, ou <b>null</b> pour la date du jour
 	 * @return le pays avec le code pays spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
@@ -134,7 +134,6 @@ public interface ServiceInfrastructureRaw {
 	List<Rue> getRues(Localite localite) throws ServiceInfrastructureException;
 
 	/**
-	 *
 	 * @param numero le numéro technique d'une rue (= estrid)
 	 * @return l'historique des rues qui ont porté ce numéro à travers les âges
 	 * @throws ServiceInfrastructureException
@@ -143,7 +142,7 @@ public interface ServiceInfrastructureRaw {
 
 	/**
 	 * @param numero le numéro technique d'une rue (= estrid)
-	 * @param date la date de référence
+	 * @param date   la date de référence
 	 * @return la rue qui correspond au numéro technique spécifié.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
@@ -159,10 +158,10 @@ public interface ServiceInfrastructureRaw {
 	List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException;
 
 	/**
-	 * Retourne le numéro Ofs de la commune sur laquelle un bâtiment est construit.
+	 * Retourne le numéro Ofs de la commune (non-faîtières) sur laquelle un bâtiment est construit.
 	 *
-	 * @param egid             un numéro de bâtiment
-	 * @param date             la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
+	 * @param egid un numéro de bâtiment
+	 * @param date la date à laquelle on se place pour faire la recherche (en cas de fusion de communes, un bâtiment peut être sur une commune un jour donné, et sur une autre le lendemain).
 	 * @return le numéro Ofs de la commune, ou <code>null</code> si le bâtiment est inconnu.
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
@@ -178,12 +177,14 @@ public interface ServiceInfrastructureRaw {
 	/**
 	 * Recherche une commune par nom officiel.
 	 *
-	 * @param nomOfficiel le nom officiel de la commune
-	 * @param date        la date de valeur de la commune (null = aujourd'hui)
+	 * @param nomOfficiel      le nom officiel de la commune
+	 * @param includeFaitieres vrai s'il faut inclure les communes faîtières
+	 * @param includeFractions vrai s'il faut inclure les fractions de commune
+	 * @param date             la date de valeur de la commune (null = recherche dans tous l'historique)
 	 * @return la commune trouvée ou <b>null</b> si aucune commune n'a été trouvée.
 	 */
 	@Nullable
-	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException;
+	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @return tous les offices d'impôt de district du canton de Vaud
@@ -226,7 +227,8 @@ public interface ServiceInfrastructureRaw {
 
 	/**
 	 * Permet de retourner une plusieurs localités à partir d'un npa
-	 * @param npa le npa
+	 *
+	 * @param npa           le npa
 	 * @param dateReference date de référence
 	 * @return les localités trouvées pour ce NPA
 	 * @throws ServiceInfrastructureException en cas de problème

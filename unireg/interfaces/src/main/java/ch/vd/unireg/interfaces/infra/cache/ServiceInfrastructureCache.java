@@ -358,11 +358,15 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 		@NotNull
 		private final String nomOfficiel;
+		private boolean includeFaitieres;
+		private boolean includeFractions;
 		@Nullable
 		private final RegDate date;
 
-		public KeyFindCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) {
+		public KeyFindCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) {
 			this.nomOfficiel = nomOfficiel;
+			this.includeFaitieres = includeFaitieres;
+			this.includeFractions = includeFractions;
 			this.date = date;
 		}
 
@@ -371,19 +375,23 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			final KeyFindCommuneByNomOfficiel that = (KeyFindCommuneByNomOfficiel) o;
-			return Objects.equals(nomOfficiel, that.nomOfficiel) &&
+			return includeFaitieres == that.includeFaitieres &&
+					includeFractions == that.includeFractions &&
+					Objects.equals(nomOfficiel, that.nomOfficiel) &&
 					Objects.equals(date, that.date);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(nomOfficiel, date);
+			return Objects.hash(nomOfficiel, includeFaitieres, includeFractions, date);
 		}
 
 		@Override
 		public String toString() {
 			return "KeyFindCommuneByNomOfficiel{" +
 					"nomOfficiel='" + nomOfficiel + '\'' +
+					", includeFaitieres=" + includeFaitieres +
+					", includeFractions=" + includeFractions +
 					", date=" + date +
 					'}';
 		}
@@ -391,14 +399,14 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
 
 		final Commune resultat;
 
-		final KeyFindCommuneByNomOfficiel key = new KeyFindCommuneByNomOfficiel(nomOfficiel, date);
+		final KeyFindCommuneByNomOfficiel key = new KeyFindCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.findCommuneByNomOfficiel(nomOfficiel, date);
+			resultat = target.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 			cache.put(new Element(key, resultat));
 		}
 		else {

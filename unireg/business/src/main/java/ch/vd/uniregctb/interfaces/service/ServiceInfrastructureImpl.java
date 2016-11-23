@@ -590,8 +590,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Nullable
 	@Override
-	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
-		return rawService.findCommuneByNomOfficiel(nomOfficiel, date);
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, boolean includeFaitieres, boolean includeFractions, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return rawService.findCommuneByNomOfficiel(nomOfficiel, includeFaitieres, includeFractions, date);
 	}
 
 	/**
