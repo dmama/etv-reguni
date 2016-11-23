@@ -15,28 +15,28 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEData;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.evenement.ide.ServiceIDEException;
 import ch.vd.uniregctb.evenement.ide.SingleShotMockAnnonceIDESender;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +47,7 @@ import static org.junit.Assert.fail;
 /**
  * @author Raphaël Marmier, 2016-09-14, <raphael.marmier@vd.ch>
  */
-public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceTest {
+public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServiceTest {
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -57,15 +57,19 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 	@Test
 	public void testCreationSimple() throws Exception {
 		/*
-			Une nouvelle entité vient d'être créée dans Unireg. Une annonce de création doit partir vers le registre IDE.
+			Une entité existante et appariée vient d'être modifiée dans Unireg. Une annonce de mutation doit partir vers le registre IDE.
 		 */
+
+		final Long noOrganisation = 1111L;
+		final Long noSite = noOrganisation + 1000000;
 
 		// Création de l'entreprise
 		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
+				etablissement.setNumeroEtablissement(noSite);
 
 				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
 
@@ -73,7 +77,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
 				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
 
-				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
+				//entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
 				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
@@ -86,13 +90,18 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			@Override
 			protected void init() {
 
+				// l'association existante
+				addOrganisation(
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association bidule", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996"));
 				// Annonce existante
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                            null, null, null, null, null, null,
-						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						                                            new NumeroIDE("CHE999999996"), null, null, noSite, noOrganisation, null,
+						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, null,
 						                                            RCEntAnnonceIDEHelper
 								                                                  .createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(), MockPays.Suisse.getNoOfsEtatSouverain(),
 								                                                                                MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
@@ -132,10 +141,11 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertNotNull(annonceIDESender.getMsgBusinessIdUtilisee());
 				assertTrue(annonceIDESender.getMsgBusinessIdUtilisee().startsWith("unireg-req-" + referenceAnnonceIDE.getId().toString()));
 
-				assertEquals(TypeAnnonce.CREATION, annonceIDE.getType());
+				assertEquals(TypeAnnonce.MUTATION, annonceIDE.getType());
 				assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, annonceIDE.getTypeDeSite());
 
-				assertNull(annonceIDE.getNoIde());
+				assertNotNull(annonceIDE.getNoIde());
+				assertEquals("CHE999999996", annonceIDE.getNoIde().getValeur());
 				assertNull(annonceIDE.getNoIdeRemplacant());
 				assertNull(annonceIDE.getNoIdeEtablissementPrincipal());
 
@@ -154,8 +164,10 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final BaseAnnonceIDE.InformationOrganisation informationOrganisation = annonceIDE.getInformationOrganisation();
 				assertNotNull(informationOrganisation);
-				assertNull(informationOrganisation.getNumeroOrganisation());
-				assertNull(informationOrganisation.getNumeroSite());
+				assertNotNull(informationOrganisation.getNumeroOrganisation());
+				assertEquals(noOrganisation, informationOrganisation.getNumeroOrganisation());
+				assertNotNull(informationOrganisation.getNumeroSite());
+				assertEquals(noSite, informationOrganisation.getNumeroSite());
 				assertNull(informationOrganisation.getNumeroSiteRemplacant());
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
@@ -168,7 +180,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				assertEquals("Syntruc Asso", contenu.getNom());
 				assertNull(contenu.getNomAdditionnel());
 				assertEquals(FormeLegale.N_0109_ASSOCIATION, contenu.getFormeLegale());
-				assertEquals("Fabrication d'objets synthétiques", contenu.getSecteurActivite());
+				assertNull(contenu.getSecteurActivite());
 
 				final AdresseAnnonceIDE adresse = contenu.getAdresse();
 				assertNotNull(adresse);
@@ -190,112 +202,4 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 			}
 		});
 	}
-
-	@Test
-	public void testCreationModificationSimple() throws Exception {
-		/*
-			Une nouvelle entité créée hier dans Unireg vient d'être modifiée alors que sa création est provisoire à l'IDE.
-			On envoie une mutation vers le registre IDE. (A voir si RCEnt est d'accord, avec dans le cas contraire une erreur lors de la validation qui sera remontée.)
-		 */
-
-		// Création de l'entreprise
-		final Long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseInconnueAuCivil();
-
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 5), date(2016, 9, 5), "Syntruc Asso");
-				addRaisonSocialeFiscaleEntreprise(entreprise, date(2016, 9, 6), null, "Rienavoir Asso"); // Changement de nom, il y avait une erreur.
-				addFormeJuridique(entreprise, date(2016, 9, 5), null, FormeJuridiqueEntreprise.ASSOCIATION);
-
-				addIdentificationEntreprise(entreprise, "CHE999999996");
-
-				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
-
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
-				adresseSuisse.setNumeroMaison("1");
-
-				return entreprise.getNumero();
-			}
-		});
-
-		// Création de l'établissement
-		final Long noEtablissement = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
-
-				Etablissement etablissement = addEtablissement();
-				addDomicileEtablissement(etablissement, date(2016, 9, 5), null, MockCommune.Renens);
-				addActiviteEconomique(entreprise, etablissement, date(2016, 9, 5), null, true);
-
-				return etablissement.getNumero();
-			}
-		});
-
-		// Ajout de la référence d'annonce
-		final Long idReferenceAnnonce = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				Etablissement etablissement = (Etablissement) tiersDAO.get(noEtablissement);
-
-				final ReferenceAnnonceIDE refAnnonce = addReferenceAnnonceIDE("test_business_id", etablissement);
-
-				return refAnnonce.getId();
-			}
-		});
-
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-
-				final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
-						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(),
-						                              MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
-						                              null, null, null);
-
-				// Annonce existante
-				AnnonceIDE annonce =
-						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                       new NumeroIDE("CHE999999996"), null, null, null, null, null,
-						                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                       adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
-				this.addAnnonceIDE(annonce);
-
-				// Validation
-				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
-						                                            "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
-						                                            adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
-
-				AnnonceIDEEnvoyee.Statut statut = new AnnonceIDEData.StatutImpl(StatutAnnonce.VALIDATION_SANS_ERREUR, DateHelper.getDateTime(2016, 9, 6, 11, 0, 1), new ArrayList<Pair<String, String>>());
-				this.addStatutAnnonceIDEAttentu(proto, statut);
-			}
-		});
-
-		// Exécute la synchronisation IDE
-		final SingleShotMockAnnonceIDESender annonceIDESender = new SingleShotMockAnnonceIDESender();
-		annonceIDEService.setAnnonceIDESender(annonceIDESender);
-		final AnnonceIDEEnvoyee annonceIDE = doInNewTransactionAndSession(new TransactionCallback<AnnonceIDEEnvoyee>() {
-			@Override
-			public AnnonceIDEEnvoyee doInTransaction(TransactionStatus transactionStatus) {
-				try {
-					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
-				} catch (Exception e) {
-					String expectedMessage = String.format("L'entreprise n°%s non appariée a été annoncée au registre IDE mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.",
-					                                       FormatNumeroHelper.numeroCTBToDisplay(noEntreprise));
-					if (e instanceof ServiceIDEException) {
-						Assert.assertEquals(expectedMessage, e.getMessage());
-						return null;
-					}
-					fail(String.format("Une erreur non attendue est survenue signifiant l'échec du test: %s", e.getMessage()));
-					return null;
-				}
-			}
-		});
-	}
-
 }
