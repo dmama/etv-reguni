@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0007.v1.ExtendedCanton;
@@ -253,6 +256,33 @@ public class FidorClientImpl implements FidorClient {
 			final ListOfFiscalEntities list = wc.get(ListOfFiscalEntities.class);
 			if (list == null || list.getNumberOfResults() == 0) {
 				return null;
+			}
+			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@NotNull
+	@Override
+	public List<CommuneFiscale> findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) {
+
+		final WebClient wc = createWebClient(600000); // 10 minutes
+		wc.path(communesPath);
+
+		// l'id
+		wc.query("nomOfficiel", nomOfficiel);
+
+		// la date
+		if (date != null) {
+			wc.query("dateReference", RegDateHelper.dateToDisplayString(date));
+		}
+
+		try {
+			final ListOfFiscalEntities list = wc.get(ListOfFiscalEntities.class);
+			if (list == null || list.getNumberOfResults() == 0) {
+				return Collections.emptyList();
 			}
 			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
 		}

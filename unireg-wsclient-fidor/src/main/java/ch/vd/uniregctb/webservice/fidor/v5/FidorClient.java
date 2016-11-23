@@ -3,6 +3,9 @@ package ch.vd.uniregctb.webservice.fidor.v5;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0007.v1.ExtendedCanton;
 import ch.vd.evd0012.v1.CommuneFiscale;
@@ -55,6 +58,16 @@ public interface FidorClient {
 	 * @return toutes les communes existantes ou ayant existé.
 	 */
 	List<CommuneFiscale> getToutesLesCommunes();
+
+	/**
+	 * Recherche une commune par nom officiel.
+	 *
+	 * @param nomOfficiel le nom officiel de la commune
+	 * @param date        la date de valeur de la commune (null = tout l'historique)
+	 * @return la commune trouvée ou <b>null</b> si aucune commune n'a été trouvée.
+	 */
+	@NotNull
+	List<CommuneFiscale> findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date);
 
 	/**
 	 * @return tous les cantons suisses
