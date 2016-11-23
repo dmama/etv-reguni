@@ -109,7 +109,7 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	@Override
 	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) {
 		final BaseAnnonceIDE.Statut statut = annoncesIDEValidations.get(modele.getContenu());
-		Assert.notNull(statut, "Objet statut introuvable pour l'objet modèle passé. Le statut à renvoyer pour un modèle d'annonce précis doit être configuré au début du test. La comparaison se base sur ProtoAnnonceIDE.Contenu.");
+		Assert.notNull(statut, "Objet statut introuvable pour le prototype reçu. Le statut à renvoyer pour un proto d'annonce précis doit être configuré au début du test. La comparaison se base sur ProtoAnnonceIDE.Contenu.");
 		return statut;
 	}
 
