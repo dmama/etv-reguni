@@ -219,13 +219,12 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		/*
 			Vérifier qu'on a toutes les cartes en main
 		 */
-		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null || secteurActiviteActuel == null) {
-			final String message = String.format("Entreprise n°%s: impossible de communiquer des changements à l'IDE car il manque des données obligatoires: %s%s%s%s.",
+		if (raisonsSocialeHisto == null || formeLegaleHisto == null || adresseGenerique == null) {
+			final String message = String.format("Entreprise n°%s: impossible de communiquer des changements à l'IDE car il manque des données obligatoires: %s%s%s.",
 			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 			                                     raisonsSocialeHisto != null ? "" : "[raison sociale]",
 			                                     formeLegaleHisto != null ? "" : "[forme juridique]",
-			                                     adresseGenerique != null ? "" : "[adresse]",
-			                                     secteurActiviteActuel != null ? "" : "[secteur d'activite]"
+			                                     adresseGenerique != null ? "" : "[adresse]"
 			);
 			Audit.error(message);
 			throw new ServiceIDEException(message);
@@ -415,6 +414,17 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			}
 		}
 
+		/*
+			On peut maintenant contrôler la présence du secteur d'activité
+		 */
+		if (secteurActiviteActuel == null && typeAnnonce == TypeAnnonce.CREATION) {
+			final String message = String.format("Entreprise n°%s: impossible de communiquer des changements à l'IDE car il manque le secteur d'activité.",
+			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
+			);
+			Audit.error(message);
+			throw new ServiceIDEException(message);
+		}
+
 		final String raisonSocialeActuelle = raisonsSocialeHisto.getRaisonSociale();
 		final FormeLegale formeLegaleActuelle = formeLegaleHisto.getFormeLegale();
 		final AdresseAnnonceIDERCEnt adresseActuelle = getAdresseAnnonceIDERCEnt(adresseEnvoiDetaillee);
@@ -544,8 +554,8 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			final Pays pays = adresse.getPays();
 			final CasePostale casePostale = adresse.getCasePostale();
 			adresseAnnonce = RCEntAnnonceIDEHelper
-					.createAdresseAnnonceIDERCEnt(adresse.getRueEtNumero().getRue(),
-					                              adresse.getRueEtNumero().getNumero(),
+					.createAdresseAnnonceIDERCEnt(adresse.getRueEtNumero() == null ? "" : adresse.getRueEtNumero().getRue(),
+					                              adresse.getRueEtNumero() == null ? "" : adresse.getRueEtNumero().getNumero(),
 					                              adresse.getNumeroAppartement() == null ? null : adresse.getNumeroAppartement(),
 					                              Integer.parseInt(adresse.getNpaEtLocalite().getNpa()),
 					                              adresse.getNumeroOrdrePostal(),
