@@ -465,10 +465,13 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			throw new ServiceIDEException(message);
 		}
 
-		if (derniereAnnonceEmise != null && derniereAnnonceEmise.getType() == TypeAnnonce.REACTIVATION && protoActuel.getType() == TypeAnnonce.REACTIVATION) {
-			final String message = String.format("L'entreprise n°%s a déjà été annoncée au registre IDE comme réactivée, mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.",
-			                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
-			Audit.warn(message);
+		/*
+			Code de neutralisation de la réactivation, qui n'est pas supportée à ce stade.
+		 */
+		if (typeAnnonce == TypeAnnonce.REACTIVATION) {
+			String message = String.format("L'entreprise n°%s doit être réactivée au registre IDE avant de pouvoir annoncée des modifications. La réactivation doit être effectuée auprès de l'IDE directement.",
+			                               FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
+			Audit.error(message);
 			throw new ServiceIDEException(message);
 		}
 
@@ -479,6 +482,9 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			return null;
 		}
 
+		/*
+			Valider l'annonce auprès de RCEnt et indirectement de l'IDE.
+		 */
 		try {
 			validerAnnonceIDE(protoActuel, entreprise);
 		}
