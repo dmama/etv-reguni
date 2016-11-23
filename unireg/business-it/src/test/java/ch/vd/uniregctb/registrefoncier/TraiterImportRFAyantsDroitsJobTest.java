@@ -102,7 +102,7 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				Collections.sort(mutations, new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
@@ -162,7 +162,7 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 	}
 
 	/**
-	 * Ce test vérifie qu'aucune mutation n'est créées lorsqu'on importe un fichier RF et que les immeubles dans la base sont déjà à jour.
+	 * Ce test vérifie qu'aucune mutation n'est créées lorsqu'on importe un fichier RF et que les ayant-droits dans la base sont déjà à jour.
 	 */
 	@Test
 	public void testImportAyantsDroitsDejaAJour() throws Exception {
@@ -191,7 +191,7 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		});
 		assertNotNull(importId);
 
-		// on insère les données des immeubles dans la base
+		// on insère les données des ayant-droits dans la base
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -239,7 +239,7 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 	}
 
 	/**
-	 * Ce test vérifie que des mutations sont bien créées lorsqu'on importe un fichier RF et que les immeubles dans la base ne correspondent pas.
+	 * Ce test vérifie que des mutations sont bien créées lorsqu'on importe un fichier RF et que les ayant-droits dans la base ne correspondent pas.
 	 */
 	@Test
 	public void testImportAyantsDroitsAvecModifications() throws Exception {
@@ -271,7 +271,7 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 		});
 		assertNotNull(importId);
 
-		// on insère les données des immeubles dans la base
+		// on insère les données des ayant-droits dans la base
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -317,7 +317,7 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // les 3 ayants-droits dans le fichier d'import sont tous différents
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				Collections.sort(mutations, new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());

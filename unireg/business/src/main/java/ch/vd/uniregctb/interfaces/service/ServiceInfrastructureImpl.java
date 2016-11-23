@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -585,6 +586,12 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		return rawService.getCommuneByLocalite(localite);
+	}
+
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return rawService.findCommuneByNomOfficiel(nomOfficiel, date);
 	}
 
 	/**

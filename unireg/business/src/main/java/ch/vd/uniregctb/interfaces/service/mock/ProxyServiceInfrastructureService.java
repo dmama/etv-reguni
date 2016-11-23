@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.service.mock;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -286,6 +287,12 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		return target.getCommuneByLocalite(localite);
+	}
+
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return target.findCommuneByNomOfficiel(nomOfficiel, date);
 	}
 
 	@Override

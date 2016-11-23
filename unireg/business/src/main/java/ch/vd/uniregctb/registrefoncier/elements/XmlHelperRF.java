@@ -62,6 +62,11 @@ public interface XmlHelperRF {
 	JAXBContext getCommunauteContext();
 
 	/**
+	 * @return le context JAXB pour les liste de communes.
+	 */
+	JAXBContext getCommuneContext();
+
+	/**
 	 * Converti l'immeuble spécifié dans sa représentation XML.
 	 */
 	String toXMLString(Grundstueck obj);
@@ -105,4 +110,9 @@ public interface XmlHelperRF {
 	 * Converti l'ayant-droit spécifié dans sa représentation XML.
 	 */
 	String toXMLString(Rechteinhaber rechteinhaber);
+
+	/**
+	 * Converti l'information de la commune (représenté ici par le numéro d'immeuble, parce qu'il n'y avait pas d'autre élément disponible dans le XSD) dans sa représentation XML.
+	 */
+	String toXMLString(GrundstueckNummerElement grundstueckNummer);
 }

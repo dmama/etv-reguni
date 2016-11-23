@@ -40,12 +40,14 @@ public class DataRFMutationsProcessor {
 
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
-	private final MutationRFProcessor immeubleProcessor;
+	private final MutationRFProcessor communeRFProcessor;
+	private final MutationRFProcessor immeubleRFProcessor;
 	private final AyantDroitRFProcessor ayantDroitRFProcessor;
 	private final DroitRFProcessor droitRFProcessor;
 	private final SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 
 	public DataRFMutationsProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
+	                                @NotNull MutationRFProcessor communeRFProcessor,
 	                                @NotNull MutationRFProcessor immeubleRFProcessor,
 	                                @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
 	                                @NotNull DroitRFProcessor droitRFProcessor,
@@ -53,10 +55,11 @@ public class DataRFMutationsProcessor {
 	                                @NotNull PlatformTransactionManager transactionManager) {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.ayantDroitRFProcessor = ayantDroitRFProcessor;
-		this.immeubleProcessor = immeubleRFProcessor;
+		this.immeubleRFProcessor = immeubleRFProcessor;
 		this.droitRFProcessor = droitRFProcessor;
 		this.surfaceAuSolRFProcessor = surfaceAuSolRFProcessor;
 		this.transactionManager = transactionManager;
+		this.communeRFProcessor = communeRFProcessor;
 	}
 
 	/**
@@ -74,6 +77,7 @@ public class DataRFMutationsProcessor {
 
 		checkPreconditions(importId);
 
+		processMutations(importId, EvenementRFMutation.TypeEntite.COMMUNE, nbThreads, new SubStatusManager(0, 25, statusManager));
 		processMutations(importId, EvenementRFMutation.TypeEntite.IMMEUBLE, nbThreads, new SubStatusManager(0, 25, statusManager));
 		processMutations(importId, EvenementRFMutation.TypeEntite.AYANT_DROIT, nbThreads, new SubStatusManager(25, 50, statusManager));
 		processMutations(importId, EvenementRFMutation.TypeEntite.DROIT, nbThreads, new SubStatusManager(50, 75, statusManager));
@@ -164,10 +168,12 @@ public class DataRFMutationsProcessor {
 		case BATIMENT:
 			// TODO (msi)
 			throw new NotImplementedException();
+		case COMMUNE:
+			return communeRFProcessor;
 		case DROIT:
 			return droitRFProcessor;
 		case IMMEUBLE:
-			return immeubleProcessor;
+			return immeubleRFProcessor;
 		case SURFACE_AU_SOL:
 			return surfaceAuSolRFProcessor;
 		default:

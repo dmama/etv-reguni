@@ -112,6 +112,12 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 		throw new NotImplementedException();
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		throw new NotImplementedException();

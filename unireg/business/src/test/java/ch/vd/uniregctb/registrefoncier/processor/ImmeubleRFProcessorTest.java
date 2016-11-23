@@ -20,11 +20,13 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 
@@ -37,17 +39,19 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 
+	private CommuneRFDAO communeRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private ImmeubleRFProcessor processor;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		this.communeRFDAO = getBean(CommuneRFDAO.class, "communeRFDAO");
 		this.evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 		this.immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		final XmlHelperRF xmlHelperRF = getBean(XmlHelperRF.class, "xmlHelperRF");
 
-		this.processor = new ImmeubleRFProcessor(immeubleRFDAO, xmlHelperRF);
+		this.processor = new ImmeubleRFProcessor(communeRFDAO, immeubleRFDAO, xmlHelperRF);
 	}
 
 	/**
@@ -103,6 +107,9 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
+		// on insère la commune qui correspond à l'immeuble
+		insertCommune(294, "Oron", 5555);
+
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION, "1f109152381026b501381028a74018e1");
 
@@ -135,7 +142,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final SituationRF situation0 = situations.iterator().next();
 				assertEquals(RegDate.get(2016, 10, 1), situation0.getDateDebut());
 				assertNull(situation0.getDateFin());
-				assertEquals(294, situation0.getNoRfCommune());
+				assertEquals(294, situation0.getCommune().getNoRf());
 				assertEquals(5089, situation0.getNoParcelle());
 				assertNull(situation0.getIndex1());
 				assertNull(situation0.getIndex2());
@@ -180,6 +187,9 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
+		// on insère la commune qui correspond à l'immeuble
+		insertCommune(13, "Roche (VD)", 5555);
+
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.IMMEUBLE, TypeMutation.CREATION, "_8af80e62567f816f01571d91f3e56a38");
 
@@ -211,7 +221,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final SituationRF situation0 = situations.iterator().next();
 				assertEquals(RegDate.get(2016, 10, 1), situation0.getDateDebut());
 				assertNull(situation0.getDateFin());
-				assertEquals(13, situation0.getNoRfCommune());
+				assertEquals(13, situation0.getCommune().getNoRf());
 				assertEquals(917, situation0.getNoParcelle());
 				assertEquals(Integer.valueOf(106), situation0.getIndex1());
 				assertNull(situation0.getIndex2());
@@ -234,6 +244,12 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(294);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
 				final BienFondRF bienFond = new BienFondRF();
 				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
 				bienFond.setEgrid("CH938391457759");
@@ -241,7 +257,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
-				situation.setNoRfCommune(294);
+				situation.setCommune(commune);
 				situation.setNoParcelle(5089);
 				bienFond.addSituation(situation);
 
@@ -296,7 +312,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final SituationRF situation0 = situations.iterator().next();
 				assertEquals(RegDate.get(1988, 1, 1), situation0.getDateDebut());
 				assertNull(situation0.getDateFin());
-				assertEquals(294, situation0.getNoRfCommune());
+				assertEquals(294, situation0.getCommune().getNoRf());
 				assertEquals(5089, situation0.getNoParcelle());
 				assertNull(situation0.getIndex1());
 				assertNull(situation0.getIndex2());
@@ -350,6 +366,12 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(294);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
 				final BienFondRF bienFond = new BienFondRF();
 				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
 				bienFond.setEgrid("CH938391457759");
@@ -357,7 +379,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
-				situation.setNoRfCommune(294);
+				situation.setCommune(commune);
 				situation.setNoParcelle(5089);
 				bienFond.addSituation(situation);
 
@@ -412,7 +434,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final SituationRF situation0 = situations.iterator().next();
 				assertEquals(RegDate.get(1988, 1, 1), situation0.getDateDebut());
 				assertNull(situation0.getDateFin());
-				assertEquals(294, situation0.getNoRfCommune());
+				assertEquals(294, situation0.getCommune().getNoRf());
 				assertEquals(5089, situation0.getNoParcelle());
 				assertNull(situation0.getIndex1());
 				assertNull(situation0.getIndex2());
@@ -463,13 +485,19 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(13);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
 				final ProprieteParEtageRF bienFond = new ProprieteParEtageRF();
 				bienFond.setIdRF("_8af80e62567f816f01571d91f3e56a38");
 				bienFond.setEgrid("CH776584246539");
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
-				situation.setNoRfCommune(13);
+				situation.setCommune(commune);
 				situation.setNoParcelle(917);
 				situation.setIndex1(106);
 				bienFond.addSituation(situation);
@@ -520,7 +548,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final SituationRF situation0 = situations.iterator().next();
 				assertEquals(RegDate.get(1988, 1, 1), situation0.getDateDebut());
 				assertNull(situation0.getDateFin());
-				assertEquals(13, situation0.getNoRfCommune());
+				assertEquals(13, situation0.getCommune().getNoRf());
 				assertEquals(917, situation0.getNoParcelle());
 				assertEquals(Integer.valueOf(106), situation0.getIndex1());
 				assertNull(situation0.getIndex2());

@@ -23,12 +23,20 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ImportRFTestClass.class);
 
-	protected static BienFondRF newBienFondRF(String idRF, String egrid, int noRfCommune, int noParcelle,
+	protected static CommuneRF newCommuneRF(int noRf, String nomRf, int noOFS) {
+		CommuneRF commune = new CommuneRF();
+		commune.setNoRf(noRf);
+		commune.setNomRf(nomRf);
+		commune.setNoOfs(noOFS);
+		return commune;
+	}
+
+	protected static BienFondRF newBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
 	                                          Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                          boolean enRevision, boolean cfa, RegDate dateValeur, int surface) {
 
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(noRfCommune);
+		situation.setCommune(commune);
 		situation.setNoParcelle(noParcelle);
 		situation.setDateDebut(dateValeur);
 
@@ -54,12 +62,12 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return immeuble;
 	}
 
-	protected static DroitDistinctEtPermanentRF newDroitDistinctEtPermanentRF(String idRF, String egrid, int noRfCommune, int noParcelle,
+	protected static DroitDistinctEtPermanentRF newDroitDistinctEtPermanentRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
 	                                                                          Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                                                          boolean enRevision, RegDate dateValeur, int surface) {
 
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(noRfCommune);
+		situation.setCommune(commune);
 		situation.setNoParcelle(noParcelle);
 		situation.setDateDebut(dateValeur);
 
@@ -84,12 +92,12 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return immeuble;
 	}
 
-	protected static ProprieteParEtageRF newProprieteParEtageRF(String idRF, String egrid, int noRfCommune, int noParcelle, Integer index1,
+	protected static ProprieteParEtageRF newProprieteParEtageRF(String idRF, String egrid, CommuneRF commune, int noParcelle, Integer index1,
 	                                                            Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                                            boolean enRevision, Fraction quotePart, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(noRfCommune);
+		situation.setCommune(commune);
 		situation.setNoParcelle(noParcelle);
 		situation.setIndex1(index1);
 		situation.setDateDebut(dateValeur);
@@ -111,12 +119,12 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return immeuble;
 	}
 
-	protected static PartCoproprieteRF newPartCoproprieteRF(String idRF, String egrid, int noRfCommune, int noParcelle, Integer index1, Integer index2,
+	protected static PartCoproprieteRF newPartCoproprieteRF(String idRF, String egrid, CommuneRF commune, int noParcelle, Integer index1, Integer index2,
 	                                                        Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                                        boolean enRevision, Fraction quotePart, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(noRfCommune);
+		situation.setCommune(commune);
 		situation.setNoParcelle(noParcelle);
 		situation.setIndex1(index1);
 		situation.setIndex2(index2);

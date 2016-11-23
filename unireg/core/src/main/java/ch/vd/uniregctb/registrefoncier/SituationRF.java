@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -54,14 +55,9 @@ public class SituationRF extends HibernateDateRangeEntity {
 	private Integer index3;
 
 	/**
-	 * Le numéro RF de la commune de la parcelle (il s'agit en fait de l'ancien numéro cantonal de commune, mais la situation n'est pas claire concernant les nouvelles communes fusionnées).
+	 * La commune sur laquelle est sis l'immeuble.
 	 */
-	private int noRfCommune;
-
-	/**
-	 * Le numéro Ofs de la commune de la parcelle.
-	 */
-	private int noOfsCommune;
+	private CommuneRF commune;
 
 	/**
 	 * L'immeuble concerné par la situation.
@@ -120,22 +116,16 @@ public class SituationRF extends HibernateDateRangeEntity {
 		this.index3 = index3;
 	}
 
-	@Column(name = "NO_RF_COMMUNE", nullable = false)
-	public int getNoRfCommune() {
-		return noRfCommune;
+	@ManyToOne
+	@JoinColumn(name = "COMMUNE_ID", nullable = false)
+	@ForeignKey(name = "FK_SITUATION_RF_COMMUNE_ID")
+	@Index(name = "IDX_SITUATION_RF_COMMUNE_ID", columnNames = "COMMUNE_ID")
+	public CommuneRF getCommune() {
+		return commune;
 	}
 
-	public void setNoRfCommune(int noRfCommune) {
-		this.noRfCommune = noRfCommune;
-	}
-
-	@Column(name = "NO_OFS_COMMUNE", nullable = false)
-	public int getNoOfsCommune() {
-		return noOfsCommune;
-	}
-
-	public void setNoOfsCommune(int noOfsCommune) {
-		this.noOfsCommune = noOfsCommune;
+	public void setCommune(CommuneRF commune) {
+		this.commune = commune;
 	}
 
 	@ManyToOne(cascade = {

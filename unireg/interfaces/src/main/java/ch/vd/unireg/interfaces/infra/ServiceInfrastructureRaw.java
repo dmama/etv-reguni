@@ -176,6 +176,16 @@ public interface ServiceInfrastructureRaw {
 	Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
 
 	/**
+	 * Recherche une commune par nom officiel.
+	 *
+	 * @param nomOfficiel le nom officiel de la commune
+	 * @param date        la date de valeur de la commune (null = aujourd'hui)
+	 * @return la commune trouvée ou <b>null</b> si aucune commune n'a été trouvée.
+	 */
+	@Nullable
+	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException;
+
+	/**
 	 * @return tous les offices d'impôt de district du canton de Vaud
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */

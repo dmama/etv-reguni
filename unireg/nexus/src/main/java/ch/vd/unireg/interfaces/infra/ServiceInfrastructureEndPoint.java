@@ -223,6 +223,18 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 		}
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("findCommuneByNomOfficiel", "nomOfficiel", nomOfficiel, "date", date));
+		try {
+			return target.findCommuneByNomOfficiel(nomOfficiel, date);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getOfficesImpot"));

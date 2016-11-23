@@ -30,6 +30,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext surfaceListContext;
 	private final JAXBContext autreDroitContext;
 	private final JAXBContext communauteContext;
+	private final JAXBContext communeContext;
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
@@ -43,6 +44,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		surfaceListContext = JAXBContext.newInstance(BodenbedeckungListElement.class);
 		autreDroitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
+		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
 	}
 
 	@Override
@@ -87,6 +89,11 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public JAXBContext getCommunauteContext() {
 		return communauteContext;
+	}
+
+	@Override
+	public JAXBContext getCommuneContext() {
+		return communeContext;
 	}
 
 	@Override
@@ -220,6 +227,22 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");
+		}
+	}
+
+	@Override
+	public String toXMLString(GrundstueckNummerElement obj) {
+		try {
+			final Marshaller m = communeContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<>(name, (Class<GrundstueckNummerElement>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			e.printStackTrace();
+			return e.getMessage();
 		}
 	}
 

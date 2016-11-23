@@ -125,6 +125,12 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 		return fidorService.getCommuneByLocalite(localite);
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return fidorService.findCommuneByNomOfficiel(nomOfficiel, date);
+	}
+
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		return hostService.getCollectivitesAdministratives(typesCollectivite);

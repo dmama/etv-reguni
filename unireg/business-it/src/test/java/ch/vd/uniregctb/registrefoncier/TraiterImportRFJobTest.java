@@ -239,7 +239,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				Collections.sort(mutations, new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());

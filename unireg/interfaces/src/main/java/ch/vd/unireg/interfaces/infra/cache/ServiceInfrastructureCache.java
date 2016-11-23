@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.cache;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
@@ -14,7 +15,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -250,6 +250,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetCollectivitesAdministrativesByTypes {
 
+		@NotNull
 		final Set<TypeCollectivite> types;
 
 		public KeyGetCollectivitesAdministrativesByTypes(List<TypeCollectivite> types) {
@@ -257,35 +258,22 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 
 		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((types == null) ? 0 : types.hashCode());
-			return result;
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final KeyGetCollectivitesAdministrativesByTypes that = (KeyGetCollectivitesAdministrativesByTypes) o;
+			return Objects.equals(types, that.types);
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetCollectivitesAdministrativesByTypes other = (KeyGetCollectivitesAdministrativesByTypes) obj;
-			if (types == null) {
-				if (other.types != null)
-					return false;
-			}
-			else if (!types.equals(other.types))
-				return false;
-			return true;
+		public int hashCode() {
+			return Objects.hash(types);
 		}
 
 		@Override
 		public String toString() {
 			return "KeyGetCollectivitesAdministrativesByTypes{" +
-					"types=" + Arrays.toString(types.toArray(new EnumTypeCollectivite[types.size()])) +
+					"types=" + Arrays.toString(types.toArray(new TypeCollectivite[types.size()])) +
 					'}';
 		}
 	}
@@ -358,6 +346,60 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		if (element == null) {
 			resultat = target.getCommuneByLocalite(localite);
 			shortLivedCache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (Commune) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyFindCommuneByNomOfficiel {
+
+		@NotNull
+		private final String nomOfficiel;
+		@Nullable
+		private final RegDate date;
+
+		public KeyFindCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) {
+			this.nomOfficiel = nomOfficiel;
+			this.date = date;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final KeyFindCommuneByNomOfficiel that = (KeyFindCommuneByNomOfficiel) o;
+			return Objects.equals(nomOfficiel, that.nomOfficiel) &&
+					Objects.equals(date, that.date);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(nomOfficiel, date);
+		}
+
+		@Override
+		public String toString() {
+			return "KeyFindCommuneByNomOfficiel{" +
+					"nomOfficiel='" + nomOfficiel + '\'' +
+					", date=" + date +
+					'}';
+		}
+	}
+
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+
+		final Commune resultat;
+
+		final KeyFindCommuneByNomOfficiel key = new KeyFindCommuneByNomOfficiel(nomOfficiel, date);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.findCommuneByNomOfficiel(nomOfficiel, date);
+			cache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (Commune) element.getObjectValue();

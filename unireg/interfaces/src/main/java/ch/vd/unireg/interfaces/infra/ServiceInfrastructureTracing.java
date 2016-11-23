@@ -56,10 +56,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -75,10 +71,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getCollectivite(noColAdm);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -104,10 +96,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -126,10 +114,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			final List<CollectiviteAdministrative> list = target.getCollectivitesAdministratives(typesCollectivite);
 			items = list == null ? 0 : list.size();
 			return list;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -152,10 +136,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getNoOfsCommuneByEgid(egid, date);
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -177,10 +157,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getCommuneByLocalite(localite);
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -195,6 +171,28 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.findCommuneByNomOfficiel(nomOfficiel, date);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "findCommuneByNomOfficiel", new Object() {
+				@Override
+				public String toString() {
+					return String.format("nom=%s, date=%s", nomOfficiel, date);
+				}
+			});
+		}
+	}
+
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(final int noOfsCommune) throws ServiceInfrastructureException {
 		Throwable t = null;
@@ -204,10 +202,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			final List<Commune> list = target.getCommuneHistoByNumeroOfs(noOfsCommune);
 			items = list == null ? 0 : list.size();
 			return list;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -233,10 +227,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -255,10 +245,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			final List<Commune> list = target.getListeCommunes(canton);
 			items = list == null ? 0 : list.size();
 			return list;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -284,10 +270,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -303,10 +285,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getLocalitesByONRP(onrp);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -332,10 +310,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -354,10 +328,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			final List<OfficeImpot> list = target.getOfficesImpot();
 			items = list == null ? 0 : list.size();
 			return list;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -378,10 +348,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -397,10 +363,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getPaysHisto(numeroOFS);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -423,10 +385,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getPays(numeroOFS, date);
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -448,10 +406,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getPays(codePays, date);
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -472,10 +426,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getRueByNumero(numero, date);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -501,10 +451,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -529,10 +475,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -553,10 +495,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getInstitutionFinanciere(id);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -581,10 +519,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			final List<InstitutionFinanciere> list = target.getInstitutionsFinancieres(noClearing);
 			items = list == null ? 0 : list.size();
 			return list;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -624,10 +558,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = liste == null ? 0 : liste.size();
 			return liste;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -649,10 +579,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getUrlVers(application, tiersId, oid);
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -673,10 +599,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getLogiciel(idLogiciel);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -702,10 +624,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -721,10 +639,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			return target.getDistrict(code);
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -747,10 +661,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getRegion(code);
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -772,10 +682,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getTousLesRegimesFiscaux();
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -792,10 +698,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			return target.getTousLesGenresImpotMandataires();
 		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -811,10 +713,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		final long time = tracing.start();
 		try {
 			target.ping();
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -152,6 +153,16 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
+
+	/**
+	 * Recherche une commune par nom officiel.
+	 *
+	 * @param nomOfficiel le nom officiel de la commune
+	 * @param date        la date de valeur de la commune (null = aujourd'hui)
+	 * @return la commune trouvée ou <b>null</b> si aucune commune n'a été trouvée.
+	 */
+	@Nullable
+	Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt

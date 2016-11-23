@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -33,6 +34,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
+	private CommuneRFDAO communeRFDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -41,6 +43,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 		evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 		immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
+		communeRFDAO = getBean(CommuneRFDAO.class, "communeRFDAO");
 	}
 
 	/**
@@ -284,6 +287,45 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 						                   "</GewoehnlichesMiteigentum>\n");
 				evenementRFMutationDAO.save(mut3);
 
+				final EvenementRFMutation mut4 = new EvenementRFMutation();
+				mut4.setParentImport(importEvent);
+				mut4.setEtat(EtatEvenementRF.A_TRAITER);
+				mut4.setTypeEntite(EvenementRFMutation.TypeEntite.COMMUNE);
+				mut4.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut4.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <BfsNr>190</BfsNr>\n" +
+						                   "    <Gemeindenamen>Boulens</Gemeindenamen>\n" +
+						                   "    <StammNr>0</StammNr>\n" +
+						                   "</GrundstueckNummer>\n");
+				evenementRFMutationDAO.save(mut4);
+
+				final EvenementRFMutation mut5 = new EvenementRFMutation();
+				mut5.setParentImport(importEvent);
+				mut5.setEtat(EtatEvenementRF.A_TRAITER);
+				mut5.setTypeEntite(EvenementRFMutation.TypeEntite.COMMUNE);
+				mut5.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut5.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <BfsNr>294</BfsNr>\n" +
+						                   "    <Gemeindenamen>Oron</Gemeindenamen>\n" +
+						                   "    <StammNr>0</StammNr>\n" +
+						                   "</GrundstueckNummer>\n");
+				evenementRFMutationDAO.save(mut5);
+
+				final EvenementRFMutation mut6 = new EvenementRFMutation();
+				mut6.setParentImport(importEvent);
+				mut6.setEtat(EtatEvenementRF.A_TRAITER);
+				mut6.setTypeEntite(EvenementRFMutation.TypeEntite.COMMUNE);
+				mut6.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut6.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <BfsNr>308</BfsNr>\n" +
+						                   "    <Gemeindenamen>Corcelles-près-Payerne</Gemeindenamen>\n" +
+						                   "    <StammNr>0</StammNr>\n" +
+						                   "</GrundstueckNummer>\n");
+				evenementRFMutationDAO.save(mut6);
+
 				return importEvent.getId();
 			}
 		});
@@ -306,12 +348,15 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(4, mutations.size());    // il y a 4 immeubles dans le fichier d'import et 4 immeubles dans le DB, dont 2 sont ont des données différentes
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				assertEquals(7, mutations.size());    // il y a 4 immeubles + 3 communes dans le fichier d'import et 4 immeubles + 3 communes dans le DB, dont 2 immeubles ont des données différentes
+				Collections.sort(mutations, new MutationComparator());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(0).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(1).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(2).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(3).getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(4).getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(5).getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(6).getEtat());
 			}
 		});
 
@@ -333,7 +378,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(294, situation.getNoRfCommune());
+					assertEquals(294, situation.getCommune().getNoRf());
 					assertEquals(5089, situation.getNoParcelle());
 					assertNull(situation.getIndex1());
 					assertNull(situation.getIndex2());
@@ -363,7 +408,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(294, situation.getNoRfCommune());
+					assertEquals(294, situation.getCommune().getNoRf());
 					assertEquals(692, situation.getNoParcelle());
 					assertNull(situation.getIndex1());
 					assertNull(situation.getIndex2());
@@ -394,7 +439,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(190, situation.getNoRfCommune());
+					assertEquals(190, situation.getCommune().getNoRf());
 					assertEquals(19, situation.getNoParcelle());
 					assertEquals(Integer.valueOf(4), situation.getIndex1());
 					assertNull(situation.getIndex2());
@@ -425,7 +470,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(308, situation.getNoRfCommune());
+					assertEquals(308, situation.getCommune().getNoRf());
 					assertEquals(3601, situation.getNoParcelle());
 					assertEquals(Integer.valueOf(7), situation.getIndex1());
 					assertEquals(Integer.valueOf(13), situation.getIndex2());
@@ -700,15 +745,19 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
+				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
+				final CommuneRF boulens = communeRFDAO.save(newCommuneRF(190, "Boulens", 5556));
+				final CommuneRF corcelles = communeRFDAO.save(newCommuneRF(308, "Corcelles-près-Payerne", 5557));
+
 				// données partiellement différentes de celles du fichier export_immeubles_rf_hebdo.xml
 				// - données identiques
-				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", 294, 5089, 260000L, "RG93", null, false, false, dateImportInitial, 707);
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, false, false, dateImportInitial, 707);
 				// - estimation fiscale différente
-				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", 294, 692, 2000000L, "2015", RegDate.get(2015, 1, 1), false, dateImportInitial, 4896);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2000000L, "2015", RegDate.get(2015, 1, 1), false, dateImportInitial, 4896);
 				// - données identiques
-				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", 190, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), dateImportInitial);
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), dateImportInitial);
 				// - numéro de parcelle différente
-				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", 308, 777, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), dateImportInitial);
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 777, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), dateImportInitial);
 
 				immeubleRFDAO.save(bienFond);
 				immeubleRFDAO.save(droitDistinctEtPermanent);
@@ -735,7 +784,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(4, mutations.size());    // il y a 4 immeubles dans le fichier d'import et 4 immeubles dans le DB, dont 2 sont ont des données différentes
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				Collections.sort(mutations, new MutationComparator());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(0).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(1).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(2).getEtat());
@@ -762,7 +811,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(dateImportInitial, situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(294, situation.getNoRfCommune());
+					assertEquals(294, situation.getCommune().getNoRf());
 					assertEquals(5089, situation.getNoParcelle());
 					assertNull(situation.getIndex1());
 					assertNull(situation.getIndex2());
@@ -793,7 +842,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(dateImportInitial, situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(294, situation.getNoRfCommune());
+					assertEquals(294, situation.getCommune().getNoRf());
 					assertEquals(692, situation.getNoParcelle());
 					assertNull(situation.getIndex1());
 					assertNull(situation.getIndex2());
@@ -836,7 +885,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation = situations.iterator().next();
 					assertEquals(dateImportInitial, situation.getDateDebut());
 					assertNull(situation.getDateFin());
-					assertEquals(190, situation.getNoRfCommune());
+					assertEquals(190, situation.getCommune().getNoRf());
 					assertEquals(19, situation.getNoParcelle());
 					assertEquals(Integer.valueOf(4), situation.getIndex1());
 					assertNull(situation.getIndex2());
@@ -871,7 +920,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation0 = situationList.get(0);
 					assertEquals(dateImportInitial, situation0.getDateDebut());
 					assertEquals(dateSecondImport.getOneDayBefore(), situation0.getDateFin());
-					assertEquals(308, situation0.getNoRfCommune());
+					assertEquals(308, situation0.getCommune().getNoRf());
 					assertEquals(777, situation0.getNoParcelle());
 					assertEquals(Integer.valueOf(7), situation0.getIndex1());
 					assertEquals(Integer.valueOf(13), situation0.getIndex2());
@@ -880,7 +929,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final SituationRF situation1 = situationList.get(1);
 					assertEquals(dateSecondImport, situation1.getDateDebut());
 					assertNull(situation1.getDateFin());
-					assertEquals(308, situation1.getNoRfCommune());
+					assertEquals(308, situation1.getCommune().getNoRf());
 					assertEquals(3601, situation1.getNoParcelle());
 					assertEquals(Integer.valueOf(7), situation1.getIndex1());
 					assertEquals(Integer.valueOf(13), situation1.getIndex2());

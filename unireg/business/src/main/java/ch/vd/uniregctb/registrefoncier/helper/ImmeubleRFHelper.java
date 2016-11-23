@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.helper;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +16,7 @@ import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -124,7 +126,7 @@ public abstract class ImmeubleRFHelper {
 	}
 
 	@NotNull
-	public static ImmeubleRF newImmeubleRF(@NotNull Grundstueck grundstueck) {
+	public static ImmeubleRF newImmeubleRF(@NotNull Grundstueck grundstueck, @NotNull Function<Integer, CommuneRF> communeProvider) {
 
 		final ImmeubleRF immeuble;
 
@@ -161,7 +163,7 @@ public abstract class ImmeubleRFHelper {
 		// on ajoute les données communes
 		immeuble.setIdRF(grundstueck.getGrundstueckID());
 		immeuble.setEgrid(grundstueck.getEGrid());
-		immeuble.addSituation(SituationRFHelper.newSituationRF(grundstueck.getGrundstueckNummer()));
+		immeuble.addSituation(SituationRFHelper.newSituationRF(grundstueck.getGrundstueckNummer(), communeProvider));
 		final EstimationRF estimation = EstimationRFHelper.get(grundstueck.getAmtlicheBewertung());
 		if (estimation != null) {
 			immeuble.addEstimation(estimation);

@@ -9,18 +9,22 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.helper.EstimationRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SituationRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SurfaceTotaleRFHelper;
+import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 /**
@@ -31,15 +35,18 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 	//private static final Logger LOGGER = LoggerFactory.getLogger(ImmeubleRFProcessor.class);
 
 	@NotNull
+	private final CommuneRFDAO communeRFDAO;
+
+	@NotNull
 	private final ImmeubleRFDAO immeubleRFDAO;
 
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public ImmeubleRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	public ImmeubleRFProcessor(@NotNull CommuneRFDAO communeRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+		this.communeRFDAO = communeRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
-
-		unmarshaller = ThreadLocal.withInitial(() -> {
+		this.unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getImmeubleContext().createUnmarshaller();
 			}
@@ -69,7 +76,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		}
 
 		// on crée l'immeuble en mémoire
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(immeubleImport);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(immeubleImport, this::findCommune);
 
 		// on l'insère en DB
 		switch (mutation.getTypeMutation()) {
@@ -82,6 +89,15 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		default:
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
 		}
+	}
+
+	@NotNull
+	private CommuneRF findCommune(@NotNull Integer noRf) {
+		final CommuneRF commune = communeRFDAO.findActive(new CommuneRFKey(noRf));
+		if (commune == null) {
+			throw new ObjectNotFoundException("La commune RF avec le noRF=[" + noRf + "] n'existe pas dans la base.");
+		}
+		return commune;
 	}
 
 	private void processCreation(RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {

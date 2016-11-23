@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
@@ -22,6 +25,7 @@ import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -37,7 +41,9 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.elements.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.elements.PersonEigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.helper.AyantDroitRFHelper;
@@ -45,6 +51,7 @@ import ch.vd.uniregctb.registrefoncier.helper.DroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.helper.SurfaceAuSolRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -61,6 +68,7 @@ public class DataRFMutationsDetector {
 	private final AyantDroitRFDAO ayantDroitRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
+	private final CommuneRFDAO communeRFDAO;
 	private final PlatformTransactionManager transactionManager;
 
 	private final PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
@@ -69,18 +77,20 @@ public class DataRFMutationsDetector {
 	public DataRFMutationsDetector(XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               AyantDroitRFDAO ayantDroitRFDAO,
+	                               CommuneRFDAO communeRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager,
 	                               PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits,
 	                               PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces) {
-		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		this(20, xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 	}
 
 	public DataRFMutationsDetector(int batchSize,
 	                               XmlHelperRF xmlHelperRF,
 	                               ImmeubleRFDAO immeubleRFDAO,
 	                               AyantDroitRFDAO ayantDroitRFDAO,
+	                               CommuneRFDAO communeRFDAO,
 	                               EvenementRFImportDAO evenementRFImportDAO,
 	                               EvenementRFMutationDAO evenementRFMutationDAO,
 	                               PlatformTransactionManager transactionManager,
@@ -92,6 +102,7 @@ public class DataRFMutationsDetector {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
+		this.communeRFDAO = communeRFDAO;
 		this.transactionManager = transactionManager;
 		this.cacheDroits = cacheDroits;
 		this.cacheSurfaces = cacheSurfaces;
@@ -112,8 +123,10 @@ public class DataRFMutationsDetector {
 			}
 		};
 
+		final Map<Integer, String> communes = Collections.synchronizedMap(new HashMap<>());
 		final AtomicInteger processed = new AtomicInteger();
 
+		// on détecte les mutations sur les immeubles
 		template.execute(new BatchCallback<Grundstueck>() {
 
 			private final ThreadLocal<Grundstueck> first = new ThreadLocal<>();
@@ -131,6 +144,12 @@ public class DataRFMutationsDetector {
 						continue;
 					}
 
+					// on renseigne la map des communes pour détecter les éventuelles mutations (en fin de traitement)
+					final int noRf = immeuble.getGrundstueckNummer().getBfsNr();
+					final String nom = immeuble.getGrundstueckNummer().getGemeindenamen();
+					communes.putIfAbsent(noRf, nom);
+
+					// on va voir si l'immeuble existe dans la base
 					final ImmeubleRFKey key = ImmeubleRFHelper.newImmeubleRFKey(immeuble);
 					final ImmeubleRF immeubleRF = immeubleRFDAO.find(key);
 
@@ -176,6 +195,49 @@ public class DataRFMutationsDetector {
 				}
 			}
 		}, null);
+
+		// on détecte les mutations sur les communes (ajout, fusion, annexion par milice armée, ...)
+		final TransactionTemplate t2 = new TransactionTemplate(transactionManager);
+		t2.execute(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+				communes.entrySet().forEach(e -> {
+
+					final Integer noRf = e.getKey();
+					final String nom = e.getValue();
+
+					final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noRf));
+
+					final TypeMutation typeMutation;
+					if (communeRF == null) {
+						typeMutation = TypeMutation.CREATION;
+					}
+					else if (!Objects.equals(communeRF.getNomRf(), nom)) {
+						typeMutation = TypeMutation.MODIFICATION;
+					}
+					else {
+						// rien à faire
+						return;
+					}
+
+					// on ajoute l'événement à traiter
+					final String communeAsXml = xmlHelperRF.toXMLString(new GrundstueckNummerElement(noRf, nom));
+
+					final EvenementRFMutation mutation = new EvenementRFMutation();
+					mutation.setParentImport(parentImport);
+					mutation.setEtat(EtatEvenementRF.A_TRAITER);
+					mutation.setTypeEntite(TypeEntite.COMMUNE);
+					mutation.setTypeMutation(typeMutation);
+					mutation.setIdRF(String.valueOf(noRf));
+					mutation.setXmlContent(communeAsXml);
+
+					evenementRFMutationDAO.save(mutation);
+				});
+			}
+		});
 	}
 
 	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, @Nullable StatusManager statusManager) {
@@ -250,7 +312,7 @@ public class DataRFMutationsDetector {
 						evenementRFMutationDAO.save(mutation);
 					}
 					else {
-						// on récupère les droits actives actuelles
+						// on récupère les droits actifs actuels
 						final Set<DroitRF> activesDroits = ayantDroit.getDroits().stream()
 								.filter(s -> s.isValidAt(null))
 								.collect(Collectors.toSet());

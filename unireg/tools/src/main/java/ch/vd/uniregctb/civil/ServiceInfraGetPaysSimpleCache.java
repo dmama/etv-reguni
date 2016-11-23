@@ -430,6 +430,12 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 		return target.getCommuneByLocalite(localite);
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return target.findCommuneByNomOfficiel(nomOfficiel, date);
+	}
+
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		return target.getOfficesImpot();

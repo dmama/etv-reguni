@@ -17,6 +17,7 @@ import ch.vd.capitastra.grundstueck.StammGrundstueck;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -40,9 +41,12 @@ public class ImmeubleRFHelperTest {
 	 */
 	@Test
 	public void testCurrentDataEquals() throws Exception {
+		
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
 
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(2233);
+		situation.setCommune(commune);
 		situation.setNoParcelle(109);
 		situation.setIndex1(17);
 
@@ -95,8 +99,11 @@ public class ImmeubleRFHelperTest {
 	@Test
 	public void testCurrentDataEqualsSituationsDifferentes() throws Exception {
 
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(2233);
+		situation.setCommune(commune);
 		situation.setNoParcelle(109);
 		situation.setIndex1(17);
 
@@ -140,8 +147,11 @@ public class ImmeubleRFHelperTest {
 	@Test
 	public void testCurrentDataEqualsEstimationsDifferentes() throws Exception {
 
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(2233);
+		situation.setCommune(commune);
 		situation.setNoParcelle(109);
 		situation.setIndex1(17);
 
@@ -186,8 +196,11 @@ public class ImmeubleRFHelperTest {
 	@Test
 	public void testCurrentDataEqualsSurfacesTotalesDifferentes() throws Exception {
 
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(2233);
+		situation.setCommune(commune);
 		situation.setNoParcelle(109);
 		situation.setIndex1(17);
 
@@ -240,8 +253,11 @@ public class ImmeubleRFHelperTest {
 	@Test
 	public void testCurrentDataEqualsSansEstimation() throws Exception {
 
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
 		final SituationRF situation = new SituationRF();
-		situation.setNoRfCommune(2233);
+		situation.setCommune(commune);
 		situation.setNoParcelle(109);
 		situation.setIndex1(17);
 
@@ -293,7 +309,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 		grundstueck.setGrundstueckFlaeche(flaeche);
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(MineRF.class, immeuble.getClass());
 
 		final MineRF mine = (MineRF) immeuble;
@@ -303,7 +319,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = mine.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(2233, situation.getCommune().getNoRf());
 		assertEquals(109, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(17), situation.getIndex1());
 		assertEquals(Integer.valueOf(37823), situation.getIndex2());
@@ -346,7 +362,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(1L, 3L, null, null), null, null));
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(PartCoproprieteRF.class, immeuble.getClass());
 
 		final PartCoproprieteRF copro = (PartCoproprieteRF) immeuble;
@@ -357,7 +373,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = copro.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(2233, situation.getCommune().getNoRf());
 		assertEquals(109, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(17), situation.getIndex1());
 		assertEquals(Integer.valueOf(37823), situation.getIndex2());
@@ -399,7 +415,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 		grundstueck.setGrundstueckFlaeche(flaeche);
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(BienFondRF.class, immeuble.getClass());
 
 		final BienFondRF bienFond = (BienFondRF) immeuble;
@@ -410,7 +426,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = bienFond.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(2233, situation.getCommune().getNoRf());
 		assertEquals(109, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(17), situation.getIndex1());
 		assertEquals(Integer.valueOf(37823), situation.getIndex2());
@@ -456,7 +472,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 		grundstueck.setGrundstueckFlaeche(flaeche);
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(DroitDistinctEtPermanentRF.class, immeuble.getClass());
 
 		final DroitDistinctEtPermanentRF ddp = (DroitDistinctEtPermanentRF) immeuble;
@@ -466,7 +482,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = ddp.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(2233, situation.getCommune().getNoRf());
 		assertEquals(109, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(17), situation.getIndex1());
 		assertEquals(Integer.valueOf(37823), situation.getIndex2());
@@ -509,7 +525,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
 		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(1L, 3L, null, null), null, null));
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(ProprieteParEtageRF.class, immeuble.getClass());
 
 		final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
@@ -520,7 +536,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = ppe.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(2233, situation.getNoRfCommune());
+		assertEquals(2233, situation.getCommune().getNoRf());
 		assertEquals(109, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(17), situation.getIndex1());
 		assertEquals(Integer.valueOf(37823), situation.getIndex2());
@@ -552,7 +568,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(8L, 1000L, null, null), null, null));
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(ProprieteParEtageRF.class, immeuble.getClass());
 
 		final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
@@ -563,7 +579,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = ppe.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(13, situation.getNoRfCommune());
+		assertEquals(13, situation.getCommune().getNoRf());
 		assertEquals(917, situation.getNoParcelle());
 		assertEquals(Integer.valueOf(106), situation.getIndex1());
 		assertNull(situation.getIndex2());
@@ -592,7 +608,7 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setGrundstueckFlaeche(flaeche);
 		grundstueck.setLigUnterartEnum("cfa");
 
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck);
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
 		assertEquals(BienFondRF.class, immeuble.getClass());
 
 		final BienFondRF bf = (BienFondRF) immeuble;
@@ -602,7 +618,7 @@ public class ImmeubleRFHelperTest {
 		final Set<SituationRF> situations = bf.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
-		assertEquals(62, situation.getNoRfCommune());
+		assertEquals(62, situation.getCommune().getNoRf());
 		assertEquals(100008, situation.getNoParcelle());
 		assertNull(situation.getIndex1());
 		assertNull(situation.getIndex2());
@@ -610,5 +626,11 @@ public class ImmeubleRFHelperTest {
 
 		assertEmpty(bf.getEstimations());
 		assertEmpty(bf.getSurfacesAuSol());
+	}
+
+	private static CommuneRF simplisticCommuneProvider(Integer noRf) {
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(noRf);
+		return commune;
 	}
 }

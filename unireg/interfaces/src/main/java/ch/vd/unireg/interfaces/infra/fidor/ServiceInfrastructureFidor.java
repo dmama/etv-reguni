@@ -412,6 +412,24 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		return localite.getCommuneLocalite();
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		try {
+			final List<CommuneFiscale> communes = fidorClient.findCommuneByNomOfficiel(nomOfficiel, date);
+			if (communes.isEmpty()) {
+				return null;
+			}
+			if (communes.size() > 1) {
+				throw new ServiceInfrastructureException("Plusieurs communes (" + communes.size() + ") avec le nom [" + nomOfficiel + "] ont été trouvées.");
+			}
+			return CommuneImpl.get(communes.get(0));
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		throw new NotImplementedException("Pas encore implémenté dans Fidor");

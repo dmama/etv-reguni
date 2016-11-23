@@ -17,9 +17,11 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 
 import static org.junit.Assert.assertEquals;
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 
 public abstract class MutationRFProcessorTestCase extends BusinessTest {
 
+	private CommuneRFDAO communeRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private EvenementRFImportDAO evenementRFImportDAO;
@@ -35,10 +38,21 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		this.communeRFDAO = getBean(CommuneRFDAO.class, "communeRFDAO");
 		this.ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
 		this.immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		this.evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		this.evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
+	}
+
+	protected Long insertCommune(int noRF, @NotNull String nomRF, int noOfs) throws Exception {
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final CommuneRF commune = new CommuneRF(noRF, nomRF, noOfs);
+				return communeRFDAO.save(commune).getId();
+			}
+		});
 	}
 
 	protected Long insertPP(String idRF, String nom, String prenom, RegDate dateNaissance) throws Exception {

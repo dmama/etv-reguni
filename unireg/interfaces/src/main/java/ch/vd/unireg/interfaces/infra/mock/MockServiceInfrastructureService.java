@@ -196,6 +196,16 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			return communesHorsCanton;
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return communes.stream()
+				.filter(c -> c.getNomOfficiel().equals(nomOfficiel))
+				.filter(c -> c.isValidAt(date))
+				.findFirst()
+				.orElse(null);
+	}
+
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		return localites;

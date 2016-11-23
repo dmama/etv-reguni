@@ -39,7 +39,8 @@ public class EvenementRFMutation extends HibernateEntity {
 		DROIT,
 		IMMEUBLE,
 		SURFACE_AU_SOL,
-		BATIMENT
+		BATIMENT,
+		COMMUNE
 	}
 
 	/**

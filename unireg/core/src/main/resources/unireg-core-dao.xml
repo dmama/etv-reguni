@@ -88,6 +88,7 @@
 		<property name="dialect" ref="hibernateDialect"/>
 	</bean>
 
+	<bean id="communeRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAOImpl" parent="hibernateDao" />
 	<bean id="immeubleRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAOImpl" parent="hibernateDao" />
 	<bean id="droitRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.DroitRFDAOImpl" parent="hibernateDao" />
 	<bean id="ayantDroitRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAOImpl" parent="hibernateDao" />

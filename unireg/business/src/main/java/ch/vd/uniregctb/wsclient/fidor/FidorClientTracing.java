@@ -3,6 +3,8 @@ package ch.vd.uniregctb.wsclient.fidor;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -172,6 +174,31 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		}
 		finally {
 			tracing.end(time, t, "getToutesLesCommunes", items, null);
+		}
+	}
+
+	@NotNull
+	@Override
+	public List<CommuneFiscale> findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<CommuneFiscale> communes = target.findCommuneByNomOfficiel(nomOfficiel, date);
+			items = communes.size();
+			return communes;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "findCommuneByNomOfficiel", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("nom=%s, date=%s", nomOfficiel, ServiceTracing.toString(date));
+				}
+			});
 		}
 	}
 

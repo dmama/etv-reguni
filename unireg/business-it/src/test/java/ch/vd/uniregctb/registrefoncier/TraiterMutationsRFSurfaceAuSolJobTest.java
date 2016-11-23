@@ -406,7 +406,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(count, mutations.size());
-				Collections.sort(mutations, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+				Collections.sort(mutations, new MutationComparator());
 				for (EvenementRFMutation mutation : mutations) {
 					assertEquals(etat, mutation.getEtat());
 				}

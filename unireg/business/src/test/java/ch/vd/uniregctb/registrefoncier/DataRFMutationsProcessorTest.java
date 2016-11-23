@@ -29,6 +29,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 	private AyantDroitRFProcessor ayantDroitRFProcessor;
 	private DroitRFProcessor droitRFProcessor;
 	private SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
+	private MutationRFProcessor communeRFProcessor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -38,6 +39,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		ayantDroitRFProcessor = getBean(AyantDroitRFProcessor.class, "ayantDroitRFProcessor");
 		droitRFProcessor = getBean(DroitRFProcessor.class, "droitRFProcessor");
 		surfaceAuSolRFProcessor = getBean(SurfaceAuSolRFProcessor.class, "surfaceAuSolRFProcessor");
+		communeRFProcessor = getBean(MutationRFProcessor.class, "communeRFProcessor");
 	}
 
 	/**
@@ -55,7 +57,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
@@ -93,7 +95,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné
@@ -151,7 +153,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on devrait avoir une exception parce que les mutations de l'import précédent ne sont pas toutes traitées
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
+		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, transactionManager);
 		try {
 			processor.processImport(ids.suivant, 2, null);
 			fail();

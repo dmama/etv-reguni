@@ -33,8 +33,10 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.MockCommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
@@ -49,6 +51,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 	private XmlHelperRF xmlHelperRF;
 	private PlatformTransactionManager transactionManager;
 	private AyantDroitRFDAO ayantDroitRFDAO;
+	private CommuneRFDAO communeRFDAO;
 	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
 	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
@@ -57,6 +60,9 @@ public class DataRFMutationsDetectorImmeubleTest {
 		xmlHelperRF = new XmlHelperRFImpl();
 		transactionManager = new MockTransactionManager();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
+		communeRFDAO = new MockCommuneRFDAO(new CommuneRF(2233, "Le-gros-du-lac", 5555),
+		                                    new CommuneRF(238, "Lausanne", 5586),
+		                                    new CommuneRF(273, "Thierrens", 5689));
 		cacheDroits = new MockPersistentCache<>();
 		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
@@ -95,11 +101,11 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouveaux immeubles
-		final UnbekanntesGrundstueck kopie0 = newKopie(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
-		final UnbekanntesGrundstueck kopie1 = newKopie(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002");
+		final UnbekanntesGrundstueck kopie0 = newKopie(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
+		final UnbekanntesGrundstueck kopie1 = newKopie(238, "Lausanne", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002");
 		final List<Grundstueck> immeubles = Arrays.asList(kopie0, kopie1);
 		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator(), null);
 
@@ -136,11 +142,11 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie deux nouveaux immeubles
-		final Liegenschaft bienfond = newBienFond(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
-		final StockwerksEinheit ppe = newPPE(5586, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002", new Fraction(1, 1));
+		final Liegenschaft bienfond = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
+		final StockwerksEinheit ppe = newPPE(238, "Lausanne", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeubles = Arrays.asList(bienfond, ppe);
 		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator(), null);
 
@@ -160,6 +166,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 				             "    <EGrid>CH282891891</EGrid>\n" +
 				             "    <GrundstueckNummer>\n" +
 				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <Gemeindenamen>Le-gros-du-lac</Gemeindenamen>\n" +
 				             "        <StammNr>109</StammNr>\n" +
 				             "        <IndexNr1>17</IndexNr1>\n" +
 				             "    </GrundstueckNummer>\n" +
@@ -184,7 +191,8 @@ public class DataRFMutationsDetectorImmeubleTest {
 				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
 				             "    <EGrid>CH8383820002</EGrid>\n" +
 				             "    <GrundstueckNummer>\n" +
-				             "        <BfsNr>5586</BfsNr>\n" +
+				             "        <BfsNr>238</BfsNr>\n" +
+				             "        <Gemeindenamen>Lausanne</Gemeindenamen>\n" +
 				             "        <StammNr>1022</StammNr>\n" +
 				             "    </GrundstueckNummer>\n" +
 				             "    <IstKopie>false</IstKopie>\n" +
@@ -213,62 +221,8 @@ public class DataRFMutationsDetectorImmeubleTest {
 		final String idRfBienFond = "382929efa218";
 		final String idRfPPE = "23af3efe44";
 
-		final BienFondRF bienFond = new BienFondRF();
-		{
-			final SituationRF situation = new SituationRF();
-			situation.setNoRfCommune(2233);
-			situation.setNoParcelle(109);
-			situation.setIndex1(17);
-
-			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(450000L);
-			estimation.setReference("2015");
-			estimation.setDateEstimation(RegDate.get(2015, 7, 1));
-			estimation.setEnRevision(false);
-			estimation.setDateDebut(RegDate.get(2000, 1, 1));
-
-			bienFond.setIdRF(idRfBienFond);
-			bienFond.setCfa(true);
-			bienFond.setEgrid("CH282891891");
-			bienFond.addSituation(situation);
-			bienFond.addEstimation(estimation);
-		}
-
-		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
-		{
-			final SituationRF situation = new SituationRF();
-			situation.setNoRfCommune(5689); // Thierrens
-			situation.setNoParcelle(46);
-
-			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(250000L);
-			estimation.setReference("RG97");
-			estimation.setDateEstimation(RegDate.get(1997, 1, 1));
-			estimation.setEnRevision(false);
-			estimation.setDateDebut(RegDate.get(2000, 1, 1));
-
-			ppe.setIdRF(idRfPPE);
-			ppe.setQuotePart(new Fraction(1, 1));
-			ppe.setEgrid("CH8383820002");
-			ppe.addSituation(situation);
-			ppe.addEstimation(estimation);
-		}
-
-
 		// un mock de DAO qui simule l'existence des deux immeubles
-		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
-			@Nullable
-			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
-				if (key.getIdRF().equals(idRfBienFond)) {
-					return bienFond;
-				}
-				else if (key.getIdRF().equals(idRfPPE)) {
-					return ppe;
-				}
-				return null;
-			}
-		};
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFond, idRfPPE);
 
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
@@ -283,13 +237,13 @@ public class DataRFMutationsDetectorImmeubleTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec des modifications
 		// - nouvelle estimation fiscale
-		final Liegenschaft bienfondImport = newBienFond(2233, 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), false, idRfBienFond, "CH282891891", true);
-		// - fusion de commune (Thierrens -> Montanair) et changement de numéro de parcelle
-		final StockwerksEinheit ppeImport = newPPE(5693 /* Montanair */, 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
+		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), false, idRfBienFond, "CH282891891", true);
+		// - changement de numéro de parcelle
+		final StockwerksEinheit ppeImport = newPPE(273, "Thierrens", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
 		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
 		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
 
@@ -309,6 +263,7 @@ public class DataRFMutationsDetectorImmeubleTest {
 				             "    <EGrid>CH282891891</EGrid>\n" +
 				             "    <GrundstueckNummer>\n" +
 				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <Gemeindenamen>Le-gros-du-lac</Gemeindenamen>\n" +
 				             "        <StammNr>109</StammNr>\n" +
 				             "        <IndexNr1>17</IndexNr1>\n" +
 				             "    </GrundstueckNummer>\n" +
@@ -333,7 +288,8 @@ public class DataRFMutationsDetectorImmeubleTest {
 				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
 				             "    <EGrid>CH8383820002</EGrid>\n" +
 				             "    <GrundstueckNummer>\n" +
-				             "        <BfsNr>5693</BfsNr>\n" +
+				             "        <BfsNr>273</BfsNr>\n" +
+				             "        <Gemeindenamen>Thierrens</Gemeindenamen>\n" +
 				             "        <StammNr>1022</StammNr>\n" +
 				             "    </GrundstueckNummer>\n" +
 				             "    <IstKopie>false</IstKopie>\n" +
@@ -354,18 +310,332 @@ public class DataRFMutationsDetectorImmeubleTest {
 	}
 
 	/**
-	 * Ce test vérifie qu'aucune mutation n'est créée si les données des immeubles dans l'import sont identiques avec l'état courant des immeubles stockés dans la DB.
+	 * Ce test vérifie qu'aucune mutation n'est créée si les données des immeubles et des communes dans l'import sont identiques avec les états courants des immeubles et des communes stockés dans la DB.
 	 */
 	@Test
-	public void testImmeublesIdentiques() throws Exception {
+	public void testImmeublesEtCommunesIdentiques() throws Exception {
 
 		final String idRfBienFond = "382929efa218";
 		final String idRfPPE = "23af3efe44";
 
+		// un mock de DAO qui simule l'existence des deux immeubles
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFond, idRfPPE);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+
+		// on envoie les immeubles avec les mêmes données que celles dans la DB
+		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
+		final StockwerksEinheit ppeImport = newPPE(273, "Thierrens", 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
+
+		// on ne devrait pas avoir de mutation
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(0, mutations.size());
+	}
+
+	@NotNull
+	private ProprieteParEtageRF newProprieteParEtageRFThierrens(String idRfPPE) {
+		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+		{
+			final CommuneRF commune = new CommuneRF();
+			commune.setNoRf(273);
+			commune.setNomRf("Thierrens");
+
+			final SituationRF situation = new SituationRF();
+			situation.setCommune(commune); // Thierrens
+			situation.setNoParcelle(46);
+
+			final EstimationRF estimation = new EstimationRF();
+			estimation.setMontant(250000L);
+			estimation.setReference("RG97");
+			estimation.setDateEstimation(RegDate.get(1997, 1, 1));
+			estimation.setEnRevision(false);
+			estimation.setDateDebut(RegDate.get(2000, 1, 1));
+
+			ppe.setIdRF(idRfPPE);
+			ppe.setQuotePart(new Fraction(1, 1));
+			ppe.setEgrid("CH8383820002");
+			ppe.addSituation(situation);
+			ppe.addEstimation(estimation);
+		}
+		return ppe;
+	}
+
+	/**
+	 * Ce test vérifie que des mutations de type CREATION sur les communes sont bien créées lorsqu'aucune des communes dans l'import n'existe dans la base de données.
+	 */
+	@Test
+	public void testNouvellesCommunes() throws Exception {
+
+		final String idRfBienFond = "382929efa218";
+		final String idRfPPE = "23af3efe44";
+
+		// des mocks de DAO qui simulent une base vide
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
+			@Nullable
+			@Override
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+				return null;
+			}
+		};
+		communeRFDAO = new MockCommuneRFDAO();
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+		
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+
+		// on envoie deux nouveaux immeubles sur deux nouvelles communes
+		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
+		final StockwerksEinheit ppeImport = newPPE(273, "Thierrens", 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
+
+		// on devrait avoir quatre événements de mutation de type CREATION à l'état A_TRAITER dans la base (deux pour les immeubles et deux pour les communes)
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(4, mutations.size());
+
+		final EvenementRFMutation mut0 = mutations.get(0);
+		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+		assertEquals("382929efa218", mut0.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
+				             "    <EGrid>CH282891891</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <Gemeindenamen>Le-gros-du-lac</Gemeindenamen>\n" +
+				             "        <StammNr>109</StammNr>\n" +
+				             "        <IndexNr1>17</IndexNr1>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>450000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>2015</ProtokollNr>\n" +
+				             "        <ProtokollDatum>2015-07-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <LigUnterartEnum>cfa</LigUnterartEnum>\n" +
+				             "</Liegenschaft>\n", mut0.getXmlContent());
+
+		final EvenementRFMutation mut1 = mutations.get(1);
+		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+		assertEquals("23af3efe44", mut1.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
+				             "    <EGrid>CH8383820002</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>273</BfsNr>\n" +
+				             "        <Gemeindenamen>Thierrens</Gemeindenamen>\n" +
+				             "        <StammNr>46</StammNr>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>250000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>RG97</ProtokollNr>\n" +
+				             "        <ProtokollDatum>1997-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <StammGrundstueck>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+				             "        </Quote>\n" +
+				             "    </StammGrundstueck>\n" +
+				             "</StockwerksEinheit>\n", mut1.getXmlContent());
+
+		final EvenementRFMutation mut2 = mutations.get(2);
+		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.COMMUNE, mut2.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
+		assertEquals("273", mut2.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <BfsNr>273</BfsNr>\n" +
+				             "    <Gemeindenamen>Thierrens</Gemeindenamen>\n" +
+				             "    <StammNr>0</StammNr>\n" +
+				             "</GrundstueckNummer>\n", mut2.getXmlContent());
+
+		final EvenementRFMutation mut3 = mutations.get(3);
+		assertEquals(IMPORT_ID, mut3.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.COMMUNE, mut3.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
+		assertEquals("2233", mut3.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <BfsNr>2233</BfsNr>\n" +
+				             "    <Gemeindenamen>Le-gros-du-lac</Gemeindenamen>\n" +
+				             "    <StammNr>0</StammNr>\n" +
+				             "</GrundstueckNummer>\n", mut3.getXmlContent());
+	}
+
+	/**
+	 * Ce test vérifie que des mutations de type MODIFICATION sur les commuens sont bien créées si les communes dans l'import existent dans la base de données mais pas avec les mêmes valeurs.
+	 */
+	@Test
+	public void testCommunesModifiees() throws Exception {
+
+		final String idRfBienFond = "382929efa218";
+		final String idRfPPE = "23af3efe44";
+
+		// un mock de DAO qui simule l'existence des deux immeubles
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFond, idRfPPE);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+
+		// on envoie les immeubles
+		// - fusion de commune (Le-gros-du-lac -> Lac-Amour *avec* réutilisation du numéro de commune) et changement de numéro de parcelle
+		final Liegenschaft bienfondImport = newBienFond(2233, "Lac-Amour", 2304, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
+		// - fusion de commune (Thierrens -> Montanair *sans* réutilisation du numéro de commune) et changement de numéro de parcelle
+		final StockwerksEinheit ppeImport = newPPE(108, "Montanair", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
+
+		// on devrait avoir quatre événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base (deux sur les immeubles et deux autres sur les communes)
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(4, mutations.size());
+
+		final EvenementRFMutation mut0 = mutations.get(0);
+		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut0.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
+		assertEquals("382929efa218", mut0.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
+				             "    <EGrid>CH282891891</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <Gemeindenamen>Lac-Amour</Gemeindenamen>\n" +
+				             "        <StammNr>2304</StammNr>\n" +
+				             "        <IndexNr1>17</IndexNr1>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>450000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>2015</ProtokollNr>\n" +
+				             "        <ProtokollDatum>2015-07-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <LigUnterartEnum>cfa</LigUnterartEnum>\n" +
+				             "</Liegenschaft>\n", mut0.getXmlContent());
+
+		final EvenementRFMutation mut1 = mutations.get(1);
+		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.IMMEUBLE, mut1.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
+		assertEquals("23af3efe44", mut1.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>23af3efe44</GrundstueckID>\n" +
+				             "    <EGrid>CH8383820002</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>108</BfsNr>\n" +
+				             "        <Gemeindenamen>Montanair</Gemeindenamen>\n" +
+				             "        <StammNr>1022</StammNr>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>250000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>RG97</ProtokollNr>\n" +
+				             "        <ProtokollDatum>1997-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <StammGrundstueck>\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "            <QuoteUnbekannt>false</QuoteUnbekannt>\n" +
+				             "        </Quote>\n" +
+				             "    </StammGrundstueck>\n" +
+				             "</StockwerksEinheit>\n", mut1.getXmlContent());
+
+		final EvenementRFMutation mut2 = mutations.get(2);
+		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.COMMUNE, mut2.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut2.getTypeMutation());
+		assertEquals("2233", mut2.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <BfsNr>2233</BfsNr>\n" +
+				             "    <Gemeindenamen>Lac-Amour</Gemeindenamen>\n" +
+				             "    <StammNr>0</StammNr>\n" +
+				             "</GrundstueckNummer>\n", mut2.getXmlContent());
+
+		final EvenementRFMutation mut3 = mutations.get(3);
+		assertEquals(IMPORT_ID, mut3.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
+		assertEquals(EvenementRFMutation.TypeEntite.COMMUNE, mut3.getTypeEntite());
+		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
+		assertEquals("108", mut3.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <BfsNr>108</BfsNr>\n" +
+				             "    <Gemeindenamen>Montanair</Gemeindenamen>\n" +
+				             "    <StammNr>0</StammNr>\n" +
+				             "</GrundstueckNummer>\n", mut3.getXmlContent());
+	}
+
+	@NotNull
+	private static BienFondRF newBienFondRFGrosDuLac(String idRfBienFond) {
 		final BienFondRF bienFond = new BienFondRF();
 		{
+			final CommuneRF commune = new CommuneRF();
+			commune.setNoRf(2233);
+			commune.setNomRf("Le-gros-du-lac");
+
 			final SituationRF situation = new SituationRF();
-			situation.setNoRfCommune(2233);
+			situation.setCommune(commune);
 			situation.setNoParcelle(109);
 			situation.setIndex1(17);
 
@@ -382,75 +652,16 @@ public class DataRFMutationsDetectorImmeubleTest {
 			bienFond.addSituation(situation);
 			bienFond.addEstimation(estimation);
 		}
-
-		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
-		{
-			final SituationRF situation = new SituationRF();
-			situation.setNoRfCommune(5689); // Thierrens
-			situation.setNoParcelle(46);
-
-			final EstimationRF estimation = new EstimationRF();
-			estimation.setMontant(250000L);
-			estimation.setReference("RG97");
-			estimation.setDateEstimation(RegDate.get(1997, 1, 1));
-			estimation.setEnRevision(false);
-			estimation.setDateDebut(RegDate.get(2000, 1, 1));
-
-			ppe.setIdRF(idRfPPE);
-			ppe.setQuotePart(new Fraction(1, 1));
-			ppe.setEgrid("CH8383820002");
-			ppe.addSituation(situation);
-			ppe.addEstimation(estimation);
-		}
-
-
-		// un mock de DAO qui simule l'existence des deux immeubles
-		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
-			@Nullable
-			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
-				if (key.getIdRF().equals(idRfBienFond)) {
-					return bienFond;
-				}
-				else if (key.getIdRF().equals(idRfPPE)) {
-					return ppe;
-				}
-				return null;
-			}
-		};
-
-		// un mock de DAO avec un import du registre foncier
-		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
-			@Override
-			public EvenementRFImport get(Long id) {
-				final EvenementRFImport imp = new EvenementRFImport();
-				imp.setId(IMPORT_ID);
-				return imp;
-			}
-		};
-
-		// un mock qui mémorise toutes les mutations sauvées
-		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
-
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
-
-		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
-		final Liegenschaft bienfondImport = newBienFond(2233, 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
-		final StockwerksEinheit ppeImport = newPPE(5689, 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
-		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
-		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
-
-		// on ne devrait pas avoir de mutation
-		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-		assertEquals(0, mutations.size());
+		return bienFond;
 	}
 
 	@NotNull
-	private static Liegenschaft newBienFond(int noRfCommune, int noParcelle, Integer index1,
+	private static Liegenschaft newBienFond(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
 	                                        long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
 	                                        boolean enRevision, String idRF, String egrid, boolean cfa) {
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(noRfCommune);
+		grundstueckNummer.setGemeindenamen(nomCommune);
 		grundstueckNummer.setStammNr(noParcelle);
 		grundstueckNummer.setIndexNr1(index1);
 
@@ -471,11 +682,12 @@ public class DataRFMutationsDetectorImmeubleTest {
 	}
 
 	@NotNull
-	private static StockwerksEinheit newPPE(int noRfCommune, int noParcelle, Integer index1,
+	private static StockwerksEinheit newPPE(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
 	                                        long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
 	                                        boolean enRevision, String idRF, String egrid, Fraction quotepart) {
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(noRfCommune);
+		grundstueckNummer.setGemeindenamen(nomCommune);
 		grundstueckNummer.setStammNr(noParcelle);
 		grundstueckNummer.setIndexNr1(index1);
 
@@ -495,12 +707,13 @@ public class DataRFMutationsDetectorImmeubleTest {
 		return grundstueck;
 	}
 
-	private static UnbekanntesGrundstueck newKopie(int noRfCommune, int noParcelle, Integer index1,
+	private static UnbekanntesGrundstueck newKopie(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
 	                                               long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
 	                                               boolean enRevision, String idRF, String egrid) {
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(noRfCommune);
+		grundstueckNummer.setGemeindenamen(nomCommune);
 		grundstueckNummer.setStammNr(noParcelle);
 		grundstueckNummer.setIndexNr1(index1);
 
@@ -518,5 +731,32 @@ public class DataRFMutationsDetectorImmeubleTest {
 		grundstueck.setIstKopie(true);
 
 		return grundstueck;
+	}
+
+	private class MockImmeubleRFDAODeuxImmeubles extends MockImmeubleRFDAO {
+
+		private final BienFondRF bienFond;
+		private final ProprieteParEtageRF ppe;
+		private final String idRfBienFond;
+		private final String idRfPPE;
+
+		public MockImmeubleRFDAODeuxImmeubles(String idRfBienFond, String idRfPPE) {
+			this.idRfBienFond = idRfBienFond;
+			this.idRfPPE = idRfPPE;
+			this.bienFond = newBienFondRFGrosDuLac(idRfBienFond);
+			this.ppe = newProprieteParEtageRFThierrens(idRfPPE);
+		}
+
+		@Nullable
+		@Override
+		public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			if (key.getIdRF().equals(idRfBienFond)) {
+				return bienFond;
+			}
+			else if (key.getIdRF().equals(idRfPPE)) {
+				return ppe;
+			}
+			return null;
+		}
 	}
 }

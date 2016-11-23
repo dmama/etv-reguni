@@ -18,6 +18,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -34,6 +35,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 	private ImmeubleRFDAO immeubleRFDAO;
 	private SurfaceAuSolRFDAO surfaceAuSolRFDAO;
 	private ZipRaftEsbStore zipRaftEsbStore;
+	private CommuneRFDAO communeRFDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -44,6 +46,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 		immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		surfaceAuSolRFDAO = getBean(SurfaceAuSolRFDAO.class, "surfaceAuSolRFDAO");
 		zipRaftEsbStore = getBean(ZipRaftEsbStore.class, "zipRaftEsbStore");
+		communeRFDAO = getBean(CommuneRFDAO.class, "communeRFDAO");
 	}
 
 	/**
@@ -104,7 +107,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(4, mutations.size());    // il y a 2 immeuble + 3 surfaces (dont deux sur le même immeuble, donc une seule mutation) dans le fichier d'import et la DB était vide
+				assertEquals(6, mutations.size());    // il y a 2 communes + 2 immeuble + 3 surfaces (dont deux sur le même immeuble, donc une seule mutation) dans le fichier d'import et la DB était vide
 				Collections.sort(mutations, new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
@@ -248,6 +251,33 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 						             "        <Flaeche>17814</Flaeche>\n" +
 						             "    </Bodenbedeckung>\n" +
 						             "</BodenbedeckungList>\n", mut3.getXmlContent());
+
+				final EvenementRFMutation mut4 = mutations.get(4);
+				assertEquals(importId, mut4.getParentImport().getId());
+				assertEquals(EtatEvenementRF.A_TRAITER, mut4.getEtat());
+				assertEquals(EvenementRFMutation.TypeEntite.COMMUNE, mut4.getTypeEntite());
+				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut4.getTypeMutation());
+				assertEquals("273", mut4.getIdRF());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <BfsNr>273</BfsNr>\n" +
+						             "    <Gemeindenamen>Rances</Gemeindenamen>\n" +
+						             "    <StammNr>0</StammNr>\n" +
+						             "</GrundstueckNummer>\n", mut4.getXmlContent());
+
+				final EvenementRFMutation mut5 = mutations.get(5);
+				assertEquals(importId, mut5.getParentImport().getId());
+				assertEquals(EtatEvenementRF.A_TRAITER, mut5.getEtat());
+				assertEquals(EvenementRFMutation.TypeEntite.COMMUNE, mut5.getTypeEntite());
+				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut5.getTypeMutation());
+				assertEquals("71", mut5.getIdRF());
+				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "    <BfsNr>71</BfsNr>\n" +
+						             "    <Gemeindenamen>Penthalaz</Gemeindenamen>\n" +
+						             "    <StammNr>0</StammNr>\n" +
+						             "</GrundstueckNummer>\n", mut5.getXmlContent());
+
 			}
 		});
 
@@ -291,9 +321,13 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
+
+				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
+				final CommuneRF penthalaz = communeRFDAO.save(newCommuneRF(71, "Penthalaz", 5556));
+
 				// données équivalentes au fichier export_surfaceausol_rf_hebdo.xml
-				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", 273, 3, 1100000L, "RG96", null, false, false, dateImportInitial, 2969451);
-				BienFondRF bienFond2 = newBienFondRF("_1f109152381037590138103b73cf579a", "CH344583712491", 71, 428, 14000L, "EF01", null, false, false, dateImportInitial, 17814);
+				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", null, false, false, dateImportInitial, 2969451);
+				BienFondRF bienFond2 = newBienFondRF("_1f109152381037590138103b73cf579a", "CH344583712491", penthalaz, 428, 14000L, "EF01", null, false, false, dateImportInitial, 17814);
 				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
 				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
 
@@ -385,9 +419,12 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
+				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
+				final CommuneRF penthalaz = communeRFDAO.save(newCommuneRF(71, "Penthalaz", 5556));
+
 				// données partiellement différentes de celles du fichier export_surfaceausol_rf_hebdo.xml
-				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", 273, 3, 1100000L, "RG96", null, false, false, dateImportInitial, 2969451);
-				BienFondRF bienFond2 = newBienFondRF("_1f109152381037590138103b73cf579a", "CH344583712491", 71, 428, 14000L, "EF01", null, false, false, dateImportInitial, 17814);
+				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", null, false, false, dateImportInitial, 2969451);
+				BienFondRF bienFond2 = newBienFondRF("_1f109152381037590138103b73cf579a", "CH344583712491", penthalaz, 428, 14000L, "EF01", null, false, false, dateImportInitial, 17814);
 				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
 				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
 

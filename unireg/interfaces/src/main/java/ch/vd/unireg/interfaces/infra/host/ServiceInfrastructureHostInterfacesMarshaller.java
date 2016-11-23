@@ -139,6 +139,12 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 		return getClient().getCommuneByLocalite(localite);
 	}
 
+	@Nullable
+	@Override
+	public Commune findCommuneByNomOfficiel(@NotNull String nomOfficiel, @Nullable RegDate date) throws ServiceInfrastructureException {
+		return getClient().findCommuneByNomOfficiel(nomOfficiel, date);
+	}
+
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<TypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		return getClient().getCollectivitesAdministratives(typesCollectivite);
