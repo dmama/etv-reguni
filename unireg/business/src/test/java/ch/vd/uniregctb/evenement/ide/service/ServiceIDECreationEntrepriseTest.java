@@ -29,6 +29,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ServiceIDEException;
 import ch.vd.uniregctb.evenement.ide.SingleShotMockAnnonceIDESender;
@@ -284,7 +285,8 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 				try {
 					return (AnnonceIDEEnvoyee) serviceIDE.synchroniseIDE((Entreprise) tiersDAO.get(noEntreprise));
 				} catch (Exception e) {
-					String expectedMessage = String.format("L'entreprise n°%s non appariée a été annoncée au registre IDE mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.", noEntreprise);
+					String expectedMessage = String.format("L'entreprise n°%s non appariée a été annoncée au registre IDE mais cette annonce n'a pas encore été traitée: impossible d'évaluer la situation du tiers pour l'instant.",
+					                                       FormatNumeroHelper.numeroCTBToDisplay(noEntreprise));
 					if (e instanceof ServiceIDEException) {
 						Assert.assertEquals(expectedMessage, e.getMessage());
 						return null;
