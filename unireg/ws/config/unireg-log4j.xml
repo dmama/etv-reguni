@@ -57,6 +57,11 @@
 		<level value="INFO" />
 	</logger>
 
+	<!-- pour ne pas logger en debug les logs du TransactionTemplate de Spring -->
+	<logger name="ch.vd.uniregctb.transaction">
+		<level value="INFO" />
+	</logger>
+
 	<logger name="ch.vd.unireg.servlet.remoting">
 		<level value="INFO" />
 	</logger>
