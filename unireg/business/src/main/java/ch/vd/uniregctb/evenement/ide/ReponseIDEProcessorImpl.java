@@ -74,6 +74,7 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 		}
 		final RegDate date = RegDateHelper.get(annonceIDE.getDateAnnonce());
 		final Etablissement etablissement = referenceAnnonceIDE.getEtablissement();
+		final Entreprise entreprise = tiersService.getEntreprise(etablissement, date);
 
 		final StatutAnnonce statut = annonceIDE.getStatut().getStatut();
 		if (statut == null) {
@@ -86,7 +87,6 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 			                       String.format("Fatal: l'annonce à l'IDE numéro %d jointe à la réponse est de statut %s mais ne contient pas le numéro IDE de l'entité concernée.",
 			                                     annonceIDE.getNumero(), statut)
 			);
-			final Entreprise entreprise = tiersService.getEntreprise(etablissement, date);
 			if (entreprise == null) {
 				throw new ReponseIDEProcessorException(
 						String.format("Fatal: impossible de retrouver l'entreprise visée par l'annonce à l'IDE numéro %d à la date de l'annonce %s.", annonceIDE.getNumero(),
@@ -104,15 +104,15 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 			if (etablissement.getNumero().equals(etablissementPrincipal.getNumero())) {
 				try {
 					if (etablissementPrincipal.getNumeroEtablissement() == null) {
-						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers n°%s établissement principal non encore apparié.",
+						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers établissement n°%s principal non encore apparié.",
 						                                                 annonceIDE.getNoIde().getValeur(),
 						                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
 						tiersService.setIdentifiantEntreprise(etablissementPrincipal, annonceIDE.getNoIde().getValeur());
 					}
 					if (entreprise.getNumeroEntreprise() == null) {
-						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers n°%s entreprise non encore apparié.",
+						Audit.info(annonceIDE.getNumero(), String.format("Numéro IDE %s assigné au tiers entreprise n°%s non encore apparié.",
 						                                                 annonceIDE.getNoIde().getValeur(),
-						                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+						                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 						tiersService.setIdentifiantEntreprise(entreprise, annonceIDE.getNoIde().getValeur());
 					}
 				}
@@ -135,27 +135,27 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 			/* Cas de dédoublonnage */
 			if (noIdeRemplacant != null) {
 				Audit.warn(annonceIDE.getNumero(),
-				           String.format("Refus de l'IDE pour cause de doublon: numéro IDE de remplacement %s. Vérifier si le tiers n°%s n'a pas été créé à double dans Unireg. ",
+				           String.format("Refus de l'IDE pour cause de doublon: numéro IDE de remplacement %s. Vérifier si l'entreprise n°%s n'a pas été créé à double dans Unireg. ",
 				                         noIdeRemplacant.getValeur(),
-				                         FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+				                         FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 			}
 			/* Cas d'erreur */
 			else {
-				Audit.warn(annonceIDE.getNumero(), String.format("Refus de l'IDE pour cause d'erreur. La création ou modification sur l'établissement n°%s a été rejetée. (Voir les erreurs ci-dessus)",
-				                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
+				Audit.warn(annonceIDE.getNumero(), String.format("Refus de l'IDE pour cause d'erreur. L'inscription ou la modification de l'entreprise n°%s a été rejetée. (Voir les erreurs ci-dessus)",
+				                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 				           )
 				);
 			}
 		}
 		else if (statut == StatutAnnonce.REJET_RCENT) {
-			Audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'établissement n°%s par RCEnt. (Voir les erreurs ci-dessus)",
-			                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
+			Audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'entreprise n°%s par RCEnt. (Voir les erreurs ci-dessus)",
+			                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 			           )
 			);
 		}
 		else {
-			Audit.warn(annonceIDE.getNumero(), String.format("L'annonce à l'IDE portant sur l'établissement n°%s par RCEnt est passée à l'état %s. Aucune action à entreprendre.",
-			                                                 FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
+			Audit.warn(annonceIDE.getNumero(), String.format("L'annonce à l'IDE portant sur l'entreprise n°%s par RCEnt est passée à l'état %s. Aucune action à entreprendre.",
+			                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 			                                                 statut
 			           )
 			);
