@@ -188,7 +188,7 @@ public class DataRFMutationsProcessor {
 		return template.execute(new TxCallback<List<Long>>() {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
-				return evenementRFMutationDAO.findIds(importId, typeEntite, EtatEvenementRF.A_TRAITER);
+				return evenementRFMutationDAO.findIds(importId, typeEntite, EtatEvenementRF.A_TRAITER, EtatEvenementRF.EN_ERREUR);
 			}
 		});
 	}
