@@ -83,11 +83,6 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		/*
-			- On rattache les entités, sans fermer les surcharge (demande de l'ACI).
-			- On comparer une à une toutes les données de l'annonce (à rechercher dans RCEnt) et on vérifie que le résultat obtenu dans RCEnt correspond bien. (ou faut-il comparer avec l'état actuel d'Unireg?)
-			- Les différences sont signalées à l'utilisateur avec un message à vérifier. Il ne devrait pas y avoir de différence, sauf en cas de collision avec un autre registre lors du traitement à l'IDE.
-		 */
 		suivis.addSuivi(
 				String.format(
 						"Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant être aligné sur celui d'Unireg.",
