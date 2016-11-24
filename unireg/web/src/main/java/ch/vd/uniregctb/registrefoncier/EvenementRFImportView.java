@@ -32,12 +32,19 @@ public class EvenementRFImportView {
 	@Nullable
 	private final String errorMessage;
 
+	/**
+	 * La callstack complète en cas d'erreur de traitement.
+	 */
+	@Nullable
+	private final String callstack;
+
 	public EvenementRFImportView(@NotNull EvenementRFImport right) {
 		this.id = right.getId();
 		this.etat = right.getEtat();
 		this.dateEvenement = right.getDateEvenement();
 		this.fileUrl = right.getFileUrl();
 		this.errorMessage = right.getErrorMessage();
+		this.callstack = right.getCallstack();
 	}
 
 	public Long getId() {
@@ -59,5 +66,10 @@ public class EvenementRFImportView {
 	@Nullable
 	public String getErrorMessage() {
 		return errorMessage;
+	}
+
+	@Nullable
+	public String getCallstack() {
+		return callstack;
 	}
 }

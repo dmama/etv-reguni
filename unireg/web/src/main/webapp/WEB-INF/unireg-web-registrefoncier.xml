@@ -20,7 +20,6 @@
 
 	<bean id="importRFController" class="ch.vd.uniregctb.registrefoncier.ImportRFController">
 		<property name="serviceRF" ref="serviceRF" />
-		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
 	</bean>

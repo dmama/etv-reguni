@@ -34,7 +34,12 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	}
 
 	@Override
-	public void forceMutations(long importId) {
+	public void forceMutation(long mutId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void forceAllMutations(long importId) {
 		throw new NotImplementedException();
 	}
 

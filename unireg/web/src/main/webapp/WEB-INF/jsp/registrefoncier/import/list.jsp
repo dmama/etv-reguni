@@ -32,36 +32,33 @@
 				}
 			</script>
 
-			<fieldset>
-			<legend><span><fmt:message key="title.suivi.imports.criteria"/></span></legend>
-				<span class="checkboxes">
-			        Etats : <form:checkbox path="aTraiter" id="aTraiter" label="A traiter" onchange="submitForm()" onclick="submitForm()" />
-			        <form:checkbox path="traite" id="traite" label="Traité" onchange="submitForm()" onclick="submitForm()" />
-			        <form:checkbox path="enErreur" id="enErreur" label="En erreur" onchange="submitForm()" onclick="submitForm()" />
-			        <form:checkbox path="force" id="force" label="Forcé" onchange="submitForm()" onclick="submitForm()" />
-			    </span>
-			</fieldset>
+			<span class="checkboxes">
+		        Etats : <form:checkbox path="aTraiter" id="aTraiter" label="A traiter" onchange="submitForm()" onclick="submitForm()" />
+		        <form:checkbox path="traite" id="traite" label="Traité" onchange="submitForm()" onclick="submitForm()" />
+		        <form:checkbox path="enErreur" id="enErreur" label="En erreur" onchange="submitForm()" onclick="submitForm()" />
+		        <form:checkbox path="force" id="force" label="Forcé" onchange="submitForm()" onclick="submitForm()" />
+		    </span>
 
 			<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.EvenementRFImportView"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
 			<display:table name="list" id="importEvent" class="display_table" pagesize="10" size="${count}" sort="external" partialList="true"
 			               requestURI="/registrefoncier/import/list.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.import.trouvee"/></span></display:setProperty>
+				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.import.trouve"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.un.import.trouve"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.imports.trouves"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.imports.trouves"/></span></display:setProperty>
 
-				<display:column titleKey="label.id.import" sortable="true" sortProperty="id" class="import-id" >
-					${importEvent.id}
+				<display:column titleKey="label.id.event.rf" sortable="true" sortProperty="id" class="import-id" >
+					<unireg:linkTo action="/registrefoncier/import/show.do" name="${importEvent.id}" params="{'importId' : ${importEvent.id}}"/>
 				</display:column>
 				<display:column titleKey="label.date.valeur.import" sortable="true" sortProperty="dateEvenement">
 					<unireg:regdate regdate="${importEvent.dateEvenement}"/>
 				</display:column>
-				<display:column titleKey="label.etat.import" sortable="true" sortProperty="etat">
+				<display:column titleKey="label.etat.event.rf" sortable="true" sortProperty="etat">
 					<fmt:message key="option.rf.etat.evenement.${importEvent.etat}" />
 				</display:column>
 				<display:column titleKey="label.message.erreur.import" >
-					${importEvent.errorMessage}
+					${importEvent.errorMessage} <c:if test="${importEvent.callstack != null}"><a href="#" onclick="showCallstack(${importEvent.id})">callstack</a></c:if>
 				</display:column>
 				<display:column titleKey="label.actions" class="action">
 					<c:if test="${importEvent.etat == 'EN_ERREUR' || importEvent.etat == 'A_TRAITER'}">
@@ -73,23 +70,23 @@
 					<unireg:consulterLog entityNature="EvenementRFImport" entityId="${importEvent.id}"/>
 				</display:column>
 				<display:column titleKey="label.mutations.a.traiter">
-					<span class="a-traiter"><img src="<c:url value="/images/loading.gif"/>" /></span>
+					<div class="a-traiter"><img src="<c:url value="/images/loading.gif"/>" /></div>
 				</display:column>
 				<display:column titleKey="label.mutations.traitees">
-					<span class="traitees"><img src="<c:url value="/images/loading.gif"/>" /></span>
+					<div class="traitees"><img src="<c:url value="/images/loading.gif"/>" /></div>
 				</display:column>
 				<display:column titleKey="label.mutations.en.erreur">
-					<span class="en-erreur"><img src="<c:url value="/images/loading.gif"/>" /></span>
+					<div class="en-erreur"><img src="<c:url value="/images/loading.gif"/>" /></div>
 				</display:column>
 				<display:column titleKey="label.mutations.forcees">
-					<span class="forcees"><img src="<c:url value="/images/loading.gif"/>" /></span>
+					<div class="forcees"><img src="<c:url value="/images/loading.gif"/>" /></div>
 				</display:column>
 				<display:column titleKey="label.actions" class="action">
 					<div class="actionTraitementMutations" style="display:none">
 						<unireg:buttonTo name="Relancer le traitement" confirm="Voulez-vous vraiment relancer le traitement des mutations de l'import n°${importEvent.id} ?"
 						                 action="/registrefoncier/mutation/restart.do" params="{importId:${importEvent.id}}"/>
-						<unireg:buttonTo name="Forcer les mutations" confirm="Voulez-vous vraiment forcer les mutations non-traitées de l'import n°${importEvent.id} ? \n\nEn forçant ces mutations, elles seront marquées comme 'forcées' et ne seront jamais intégrées dans Unireg."
-						                 action="/registrefoncier/mutation/forcer.do" params="{importId:${importEvent.id}}"/>
+						<unireg:buttonTo name="Forcer toutes les mutations" confirm="Voulez-vous vraiment forcer toutes les mutations non-traitées de l'import n°${importEvent.id} ? \n\nEn forçant ces mutations, elles seront marquées comme 'forcées' et ne seront jamais intégrées dans Unireg."
+						                 action="/registrefoncier/mutation/forceAll.do" params="{importId:${importEvent.id}}"/>
 					</div>
 				</display:column>
 			</display:table>
@@ -100,15 +97,25 @@
 					// on ajoute une ligne d'entête pour différencier la génération des mutations du traitement des mutations
 					table.find('thead tr:first').before('<tr class="headerGroup"><th colspan="2" style="background: none"></th><th colspan="3">Génération des mutations</th><th colspan="5">Traitement des mutations</th></tr>');
 
+					function addMutationCount(div, importId, count) {
+						if (count == 0) {
+							div.prop('innerHTML', count);
+						}
+						else {
+							var url = '<c:url value="/registrefoncier/import/show.do?importId="/>' + importId;
+							div.prop('innerHTML', '<a href="' + url + '">' + count + '</a>');
+						}
+					}
+
 					// on va chercher de manière asynchrone les statistiques sur chaque import (optimisation pour ne pas bloquer l'affichage lors de la récupération des stats)
 					table.find('tbody').find('tr').each(function() {
 						var tr = $(this);
 						var importId = tr.find('.import-id').text();
 						$.getJSON(App.curl("/registrefoncier/import/stats.do?importId=") + importId + "&" + new Date().getTime(), function(stats) {
-							tr.find('span.a-traiter').text(stats.mutationsATraiter);
-							tr.find('span.traitees').text(stats.mutationsTraitees);
-							tr.find('span.en-erreur').text(stats.mutationsEnErreur);
-							tr.find('span.forcees').text(stats.mutationsForcees);
+							addMutationCount(tr.find('div.a-traiter'), importId, stats.mutationsATraiter);
+							addMutationCount(tr.find('div.traitees'), importId, stats.mutationsTraitees);
+							addMutationCount(tr.find('div.en-erreur'), importId, stats.mutationsEnErreur);
+							addMutationCount(tr.find('div.forcees'), importId, stats.mutationsForcees);
 
 							// on active les boutons de relance/forçage des mutations si nécessaire
 							if (stats.mutationsATraiter > 0 || stats.mutationsEnErreur >  0) {
@@ -117,6 +124,28 @@
 						});
 					});
 				});
+
+				function showCallstack(importId) {
+					// charge le contenu de la boîte de dialogue
+					$.getJSON(App.curl('/registrefoncier/import/get.do?importId=') + importId + '&' + new Date().getTime(), function (imp) {
+						var dialog = Dialog.create_dialog_div('show-callstack');
+						dialog.html('<pre>' + imp.callstack + '</pre>');
+						dialog.dialog({
+							              title: 'Callstack',
+							              height: 800,
+							              width: 800,
+							              modal: true,
+							              buttons: {
+								              Ok: function () {
+									              dialog.dialog("close");
+								              }
+							              }
+						              });
+					});
+
+					//prevent the browser to follow the link
+					return false;
+				}
 			</script>
 
 		</form:form>

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.ParamPagination;
 
 public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	private final List<EvenementRFMutation> db = new ArrayList<>();
@@ -111,6 +112,11 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	}
 
 	@Override
+	public int forceMutation(long mutId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public int forceMutations(long importId) {
 		throw new NotImplementedException();
 	}
@@ -128,6 +134,17 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	@Nullable
 	@Override
 	public Long findNextMutationsToProcess() {
+		throw new NotImplementedException();
+	}
+
+	@NotNull
+	@Override
+	public List<EvenementRFMutation> find(long importId, @Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int count(long importId, @Nullable List<EtatEvenementRF> etats) {
 		throw new NotImplementedException();
 	}
 }

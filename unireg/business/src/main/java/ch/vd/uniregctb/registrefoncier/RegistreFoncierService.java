@@ -39,9 +39,16 @@ public interface RegistreFoncierService {
 	void startMutations(long importId) throws JobAlreadyStartedException, SchedulerException;
 
 	/**
-	 * Passe les mutations d'un import du registre foncier à l'état FORCE (c'est-à-dire qu'elles ne seront plus jamais traitées).
+	 * Passe la mutation spécifiée à l'état FORCE (c'est-à-dire qu'elle ne sera plus jamais traitée).
+	 *
+	 * @param mutId l'id d'une mutation
+	 */
+	void forceMutation(long mutId);
+
+	/**
+	 * Passe toutes les mutations d'un import du registre foncier à l'état FORCE (c'est-à-dire qu'elles ne seront plus jamais traitées).
 	 *
 	 * @param importId l'id d'un import
 	 */
-	void forceMutations(long importId);
+	void forceAllMutations(long importId);
 }

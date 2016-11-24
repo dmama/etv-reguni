@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
+import ch.vd.uniregctb.common.ParamPagination;
 
 public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, Long> {
 
@@ -30,6 +31,14 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 */
 	@Nullable
 	EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF);
+
+	/**
+	 * Passe la mutation spécifiée à l'état FORCE.
+	 *
+	 * @param mutId l'id d'une mutation
+	 * @return le nombre de mutations modifiées.
+	 */
+	int forceMutation(long mutId);
 
 	/**
 	 * Passe à l'état FORCE toutes les mutations non traitées de l'import spécifié.
@@ -59,4 +68,22 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 */
 	@Nullable
 	Long findNextMutationsToProcess();
+
+	/**
+	 * Recherche des mutations d'import qui correspondent aux critères spécifiés.
+	 *
+	 * @param importId   l'id de l'import considéré
+	 * @param etats      le ou les états des événements (optionnel)
+	 * @param pagination le numéro de page
+	 * @return les événements d'import correspondants
+	 */
+	@NotNull
+	List<EvenementRFMutation> find(long importId, @Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination);
+
+	/**
+	 * @param importId   l'id de l'import considéré
+	 * @param etats       le ou les états des événements (optionnel)
+	 * @return le nombre de mutations qui correspondent aux critères spécifiés.
+	 */
+	int count(long importId, @Nullable List<EtatEvenementRF> etats);
 }

@@ -101,7 +101,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	}
 
 	@Override
-	public void forceMutations(long importId) {
+	public void forceMutation(long mutId) {
+		evenementRFMutationDAO.forceMutation(mutId);
+	}
+
+	@Override
+	public void forceAllMutations(long importId) {
 		// on force les mutations
 		evenementRFMutationDAO.forceMutations(importId);
 	}

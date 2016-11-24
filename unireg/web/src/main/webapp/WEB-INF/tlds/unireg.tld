@@ -422,6 +422,46 @@
 	</tag>
 
 	<tag>
+		<description>Tag qui d'afficher une valeur (comme "c:out") mais qui tronque sa représentation string si elle dépasse une certaine limite.</description>
+		<name>limitedOut</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagLimitedOut</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Limite de longueur à ne pas dépasser.</description>
+			<name>limit</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>
+				Expression to be evaluated.
+			</description>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>
+				Default value if the resulting value is null.
+			</description>
+			<name>default</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>
+				Determines whether characters &lt;,&gt;,&amp;,'," in the
+				resulting string should be converted to their
+				corresponding character entity codes. Default value is
+				true.
+			</description>
+			<name>escapeXml</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<description>Tag qui génère un lien vers un éditeur supergra pour une entité ou une collection d'une entité</description>
 		<name>superGraLink</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagSuperGraLink</tag-class>
