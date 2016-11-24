@@ -5,8 +5,9 @@
 
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 
-<c:set var="editionCivil" value="${(command.natureTiers == 'Entreprise' && command.entreprise.degreAssocCivil != 'CIVIL_ESCLAVE') || (command.natureTiers == 'Etablissement' && command.etablissement.degreAssocCivilEntreprise != 'CIVIL_ESCLAVE')}"/>
-<c:if test="${autorisations.donneesCiviles && empty param['message'] && empty param['retour'] && editionCivil}">
+<c:set var="desactiverEdition" value="${(command.natureTiers == 'Entreprise' && command.entreprise.degreAssocCivil == 'CIVIL_ESCLAVE') || (command.natureTiers == 'Etablissement' && command.etablissement.degreAssocCivilEntreprise == 'CIVIL_ESCLAVE')}"/>
+
+<c:if test="${autorisations.donneesCiviles && empty param['message'] && empty param['retour'] && !desactiverEdition}">
 	<table border="0">
 		<tr>
 			<td>
