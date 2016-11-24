@@ -25,7 +25,7 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 
 	@NotNull
 	@Override
-	public List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats) {
+	public List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats) {
 		final Query query = getCurrentSession().createQuery("select id from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and etat in (:etats)");
 		query.setParameter("importId", importId);
 		query.setParameter("typeEntite", typeEntite);
@@ -36,7 +36,7 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 
 	@Nullable
 	@Override
-	public EvenementRFMutation find(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull String idImmeubleRF) {
+	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF) {
 		final Query query = getCurrentSession().createQuery("from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and idImmeubleRF = :idImmeubleRF");
 		query.setParameter("importId", importId);
 		query.setParameter("typeEntite", typeEntite);

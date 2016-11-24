@@ -11,10 +11,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
-import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
@@ -92,7 +91,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.CREATION, null);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -125,7 +124,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.CREATION, null);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -159,7 +158,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntite.AYANT_DROIT, TypeMutation.MODIFICATION, null);
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {

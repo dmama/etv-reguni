@@ -15,6 +15,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -98,8 +100,8 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.DROIT);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut0.setTypeEntite(TypeEntiteRF.DROIT);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
 				mut0.setIdRF("_1f109152381009be0138100a1d442eee");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -143,8 +145,8 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.DROIT);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut1.setTypeEntite(TypeEntiteRF.DROIT);
+				mut1.setTypeMutation(TypeMutationRF.CREATION);
 				mut1.setIdRF("_22222222222222222222222222222222");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -336,8 +338,8 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.DROIT);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut0.setTypeEntite(TypeEntiteRF.DROIT);
+				mut0.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut0.setIdRF("_1f109152381009be0138100a1d442eee");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -382,8 +384,8 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.DROIT);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut1.setTypeEntite(TypeEntiteRF.DROIT);
+				mut1.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut1.setIdRF("_22222222222222222222222222222222");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -588,8 +590,8 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.DROIT);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.SUPPRESSION);
+				mut0.setTypeEntite(TypeEntiteRF.DROIT);
+				mut0.setTypeMutation(TypeMutationRF.SUPPRESSION);
 				mut0.setIdRF("_1f109152381009be0138100a1d442eee");
 				mut0.setXmlContent(null);
 				evenementRFMutationDAO.save(mut0);
@@ -597,8 +599,8 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.DROIT);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.SUPPRESSION);
+				mut1.setTypeEntite(TypeEntiteRF.DROIT);
+				mut1.setTypeMutation(TypeMutationRF.SUPPRESSION);
 				mut1.setIdRF("_22222222222222222222222222222222");
 				mut1.setXmlContent(null);
 				evenementRFMutationDAO.save(mut1);

@@ -18,6 +18,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -107,8 +109,8 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut0.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+				assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+				assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
 				assertEquals("3893728273382823", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -128,8 +130,8 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = mutations.get(1);
 				assertEquals(importId, mut1.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut1.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+				assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
+				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
 				assertEquals("48349384890202", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -144,8 +146,8 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut2 = mutations.get(2);
 				assertEquals(importId, mut2.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut2.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
+				assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
+				assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
 				assertEquals("574739202303482", mut2.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -322,8 +324,8 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut0.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
+				assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+				assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
 				assertEquals("3893728273382823", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -343,8 +345,8 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = mutations.get(1);
 				assertEquals(importId, mut1.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut1.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
+				assertEquals(TypeEntiteRF.AYANT_DROIT, mut1.getTypeEntite());
+				assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
 				assertEquals("48349384890202", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -359,8 +361,8 @@ public class TraiterImportRFAyantsDroitsJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut2 = mutations.get(2);
 				assertEquals(importId, mut2.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut2.getTypeEntite());
-				assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut2.getTypeMutation());
+				assertEquals(TypeEntiteRF.AYANT_DROIT, mut2.getTypeEntite());
+				assertEquals(TypeMutationRF.MODIFICATION, mut2.getTypeMutation());
 				assertEquals("574739202303482", mut2.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +

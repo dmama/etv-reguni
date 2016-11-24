@@ -37,9 +37,9 @@ import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -154,12 +154,12 @@ public class DataRFMutationsDetector {
 					final ImmeubleRF immeubleRF = immeubleRFDAO.find(key);
 
 					// on détermine ce qu'il faut faire
-					final TypeMutation typeMutation;
+					final TypeMutationRF typeMutation;
 					if (immeubleRF == null) {
-						typeMutation = TypeMutation.CREATION;
+						typeMutation = TypeMutationRF.CREATION;
 					}
 					else if (!ImmeubleRFHelper.currentDataEquals(immeubleRF, immeuble)) {
-						typeMutation = TypeMutation.MODIFICATION;
+						typeMutation = TypeMutationRF.MODIFICATION;
 					}
 					else {
 						// rien à faire
@@ -172,7 +172,7 @@ public class DataRFMutationsDetector {
 					final EvenementRFMutation mutation = new EvenementRFMutation();
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(TypeEntite.IMMEUBLE);
+					mutation.setTypeEntite(TypeEntiteRF.IMMEUBLE);
 					mutation.setTypeMutation(typeMutation);
 					mutation.setIdRF(key.getIdRF());
 					mutation.setXmlContent(immeubleAsXml);
@@ -211,12 +211,12 @@ public class DataRFMutationsDetector {
 
 					final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noRf));
 
-					final TypeMutation typeMutation;
+					final TypeMutationRF typeMutation;
 					if (communeRF == null) {
-						typeMutation = TypeMutation.CREATION;
+						typeMutation = TypeMutationRF.CREATION;
 					}
 					else if (!Objects.equals(communeRF.getNomRf(), nom)) {
-						typeMutation = TypeMutation.MODIFICATION;
+						typeMutation = TypeMutationRF.MODIFICATION;
 					}
 					else {
 						// rien à faire
@@ -229,7 +229,7 @@ public class DataRFMutationsDetector {
 					final EvenementRFMutation mutation = new EvenementRFMutation();
 					mutation.setParentImport(parentImport);
 					mutation.setEtat(EtatEvenementRF.A_TRAITER);
-					mutation.setTypeEntite(TypeEntite.COMMUNE);
+					mutation.setTypeEntite(TypeEntiteRF.COMMUNE);
 					mutation.setTypeMutation(typeMutation);
 					mutation.setIdRF(String.valueOf(noRf));
 					mutation.setXmlContent(communeAsXml);
@@ -305,8 +305,8 @@ public class DataRFMutationsDetector {
 						final EvenementRFMutation mutation = new EvenementRFMutation();
 						mutation.setParentImport(parentImport);
 						mutation.setEtat(EtatEvenementRF.A_TRAITER);
-						mutation.setTypeEntite(TypeEntite.DROIT);
-						mutation.setTypeMutation(TypeMutation.CREATION);
+						mutation.setTypeEntite(TypeEntiteRF.DROIT);
+						mutation.setTypeMutation(TypeMutationRF.CREATION);
 						mutation.setIdRF(idRF); // idRF de l'ayant-droit
 						mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(nouveauxDroits)));
 						evenementRFMutationDAO.save(mutation);
@@ -323,8 +323,8 @@ public class DataRFMutationsDetector {
 							final EvenementRFMutation mutation = new EvenementRFMutation();
 							mutation.setParentImport(parentImport);
 							mutation.setEtat(EtatEvenementRF.A_TRAITER);
-							mutation.setTypeEntite(TypeEntite.DROIT);
-							mutation.setTypeMutation(TypeMutation.MODIFICATION);
+							mutation.setTypeEntite(TypeEntiteRF.DROIT);
+							mutation.setTypeMutation(TypeMutationRF.MODIFICATION);
 							mutation.setIdRF(idRF); // idRF de l'ayant-droit
 							mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(nouveauxDroits)));
 							evenementRFMutationDAO.save(mutation);
@@ -380,8 +380,8 @@ public class DataRFMutationsDetector {
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setParentImport(parentImport);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
-				mutation.setTypeEntite(TypeEntite.DROIT);
-				mutation.setTypeMutation(TypeMutation.SUPPRESSION);
+				mutation.setTypeEntite(TypeEntiteRF.DROIT);
+				mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
 				mutation.setIdRF(idRF); // idRF de l'ayant-droit
 				mutation.setXmlContent(null);
 				evenementRFMutationDAO.save(mutation);
@@ -448,12 +448,12 @@ public class DataRFMutationsDetector {
 		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key);
 
 		// on détermine ce qu'il faut faire
-		final TypeMutation typeMutation;
+		final TypeMutationRF typeMutation;
 		if (ayantDroitRF == null) {
-			typeMutation = TypeMutation.CREATION;
+			typeMutation = TypeMutationRF.CREATION;
 		}
 		else if (!AyantDroitRFHelper.dataEquals(ayantDroitRF, rechteinhaber)) {
-			typeMutation = TypeMutation.MODIFICATION;
+			typeMutation = TypeMutationRF.MODIFICATION;
 		}
 		else {
 			// rien à faire
@@ -466,7 +466,7 @@ public class DataRFMutationsDetector {
 		final EvenementRFMutation mutation = new EvenementRFMutation();
 		mutation.setParentImport(parentImport);
 		mutation.setEtat(EtatEvenementRF.A_TRAITER);
-		mutation.setTypeEntite(TypeEntite.AYANT_DROIT);
+		mutation.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
 		mutation.setIdRF(key.getIdRF());
 		mutation.setTypeMutation(typeMutation);
 		mutation.setXmlContent(immeubleAsXml);
@@ -552,9 +552,9 @@ public class DataRFMutationsDetector {
 						final EvenementRFMutation mut = new EvenementRFMutation();
 						mut.setParentImport(parentImport);
 						mut.setEtat(EtatEvenementRF.A_TRAITER);
-						mut.setTypeEntite(TypeEntite.SURFACE_AU_SOL);
+						mut.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
 						mut.setIdRF(idRF);
-						mut.setTypeMutation(TypeMutation.CREATION);
+						mut.setTypeMutation(TypeMutationRF.CREATION);
 						mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(nouvellesSurfaces)));
 						evenementRFMutationDAO.save(mut);
 					}
@@ -570,9 +570,9 @@ public class DataRFMutationsDetector {
 							final EvenementRFMutation mut = new EvenementRFMutation();
 							mut.setParentImport(parentImport);
 							mut.setEtat(EtatEvenementRF.A_TRAITER);
-							mut.setTypeEntite(TypeEntite.SURFACE_AU_SOL);
+							mut.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
 							mut.setIdRF(idRF);
-							mut.setTypeMutation(TypeMutation.MODIFICATION);
+							mut.setTypeMutation(TypeMutationRF.MODIFICATION);
 							mut.setXmlContent(xmlHelperRF.toXMLString(new GrundstueckExport.BodenbedeckungList(nouvellesSurfaces)));
 							evenementRFMutationDAO.save(mut);
 						}

@@ -16,6 +16,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -79,8 +81,8 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut0.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
 				mut0.setIdRF("382929efa218");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -106,8 +108,8 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut1.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
+				mut1.setTypeMutation(TypeMutationRF.CREATION);
 				mut1.setIdRF("58390029228");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -270,8 +272,8 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut0.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
+				mut0.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut0.setIdRF("382929efa218");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -297,8 +299,8 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut1.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
+				mut1.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut1.setIdRF("58390029228");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +

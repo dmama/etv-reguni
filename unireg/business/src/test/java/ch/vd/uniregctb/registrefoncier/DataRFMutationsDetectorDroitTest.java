@@ -32,6 +32,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -112,8 +114,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -164,8 +166,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut1.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -240,8 +242,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.AYANT_DROIT, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
 		assertEquals(idRFCommunaute, mut0.getIdRF());  // le communauté elle-même
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<Gemeinschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -262,8 +264,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut1.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
 		assertEquals(idRfPP1, mut1.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -294,8 +296,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut2 = mutations.get(2);
 		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut2.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut2.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
 		assertEquals(idRfPP2, mut2.getIdRF());  // le deuxième propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -326,8 +328,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut3 = mutations.get(3);
 		assertEquals(IMPORT_ID, mut3.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut3.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut3.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut3.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
 		assertEquals(idRFCommunaute, mut3.getIdRF());  // le troisième propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -475,8 +477,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -527,8 +529,8 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut1.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut1.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -782,16 +784,16 @@ public class DataRFMutationsDetectorDroitTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.SUPPRESSION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertNull(mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.DROIT, mut1.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.SUPPRESSION, mut1.getTypeMutation());
+		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertNull(mut1.getXmlContent());
 	}

@@ -26,6 +26,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -101,8 +103,8 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.SURFACE_AU_SOL, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
 		assertEquals("382929efa218", mut0.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -162,8 +164,8 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.SURFACE_AU_SOL, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
 		assertEquals("382929efa218", mut0.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -188,8 +190,8 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final EvenementRFMutation mut1 = mutations.get(1);
 		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut1.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.CREATION, mut1.getTypeMutation());
+		assertEquals(TypeEntiteRF.SURFACE_AU_SOL, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
 		assertEquals("457372892821", mut1.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
@@ -275,8 +277,8 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-		assertEquals(EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, mut0.getTypeEntite());
-		assertEquals(EvenementRFMutation.TypeMutation.MODIFICATION, mut0.getTypeMutation());
+		assertEquals(TypeEntiteRF.SURFACE_AU_SOL, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
 		assertEquals("382929efa218", mut0.getIdRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<BodenbedeckungList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +

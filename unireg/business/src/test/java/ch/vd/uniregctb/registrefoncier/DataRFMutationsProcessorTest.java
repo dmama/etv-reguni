@@ -12,6 +12,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
@@ -134,15 +136,15 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		doInNewTransaction(status -> {
 
 			final EvenementRFImport importPrecedent = addParentImport(EtatEvenementRF.TRAITE, RegDate.get(2010, 1, 1));
-			addMutation(importPrecedent, EtatEvenementRF.EN_ERREUR, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "389383", null);
-			addMutation(importPrecedent, EtatEvenementRF.EN_ERREUR, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "482922", null);
-			addMutation(importPrecedent, EtatEvenementRF.TRAITE, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "492308", null);
+			addMutation(importPrecedent, EtatEvenementRF.EN_ERREUR, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "389383", null);
+			addMutation(importPrecedent, EtatEvenementRF.EN_ERREUR, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "482922", null);
+			addMutation(importPrecedent, EtatEvenementRF.TRAITE, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "492308", null);
 			ids.precedent = importPrecedent.getId();
 
 			final EvenementRFImport importSuivant = addParentImport(EtatEvenementRF.A_TRAITER, RegDate.get(2010, 3, 1));
-			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "389383", null);
-			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "482922", null);
-			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "492308", null);
+			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "389383", null);
+			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "482922", null);
+			addMutation(importSuivant, EtatEvenementRF.A_TRAITER, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "492308", null);
 			ids.suivant = importSuivant.getId();
 
 			return null;
@@ -167,9 +169,9 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		return doInNewTransaction(status -> {
 			EvenementRFImport parentImport = addParentImport(EtatEvenementRF.A_TRAITER, RegDate.get(2000, 1, 1));
 
-			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "389383", null);
-			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "482922", null);
-			addMutation(parentImport, EtatEvenementRF.A_TRAITER, EvenementRFMutation.TypeEntite.IMMEUBLE, EvenementRFMutation.TypeMutation.CREATION, "492308", null);
+			addMutation(parentImport, EtatEvenementRF.A_TRAITER, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "389383", null);
+			addMutation(parentImport, EtatEvenementRF.A_TRAITER, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "482922", null);
+			addMutation(parentImport, EtatEvenementRF.A_TRAITER, TypeEntiteRF.IMMEUBLE, TypeMutationRF.CREATION, "492308", null);
 
 			return parentImport.getId();
 		});
@@ -182,7 +184,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		return evenementRFImportDAO.save(parentImport);
 	}
 
-	private EvenementRFMutation addMutation(EvenementRFImport parentImport, EtatEvenementRF etat, EvenementRFMutation.TypeEntite typeEntite, EvenementRFMutation.TypeMutation typeMutation, @Nullable String idRF, String content) {
+	private EvenementRFMutation addMutation(EvenementRFImport parentImport, EtatEvenementRF etat, TypeEntiteRF typeEntite, TypeMutationRF typeMutation, @Nullable String idRF, String content) {
 		final EvenementRFMutation mutation = new EvenementRFMutation();
 		mutation.setEtat(etat);
 		mutation.setTypeEntite(typeEntite);

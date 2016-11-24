@@ -14,6 +14,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
@@ -80,7 +82,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 		});
 	}
 
-	protected Long insertMutation(final String xml, final RegDate dateEvenement, final EvenementRFMutation.TypeEntite typeEntite, final EvenementRFMutation.TypeMutation typeMutation, @Nullable String idRF) throws Exception {
+	protected Long insertMutation(final String xml, final RegDate dateEvenement, final TypeEntiteRF typeEntite, final TypeMutationRF typeMutation, @Nullable String idRF) throws Exception {
 		return doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {

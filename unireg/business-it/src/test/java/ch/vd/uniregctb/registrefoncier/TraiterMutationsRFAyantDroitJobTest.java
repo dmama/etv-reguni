@@ -14,6 +14,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -58,8 +60,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut0.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   " <NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "     <PersonstammID>3893728273382823</PersonstammID>\n" +
@@ -79,8 +81,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut1.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut1.setTypeMutation(TypeMutationRF.CREATION);
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonstammID>48349384890202</PersonstammID>\n" +
@@ -95,8 +97,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut2 = new EvenementRFMutation();
 				mut2.setParentImport(importEvent);
 				mut2.setEtat(EtatEvenementRF.A_TRAITER);
-				mut2.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut2.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut2.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut2.setTypeMutation(TypeMutationRF.CREATION);
 				mut2.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonstammID>574739202303482</PersonstammID>\n" +
@@ -179,8 +181,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut0.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<Gemeinschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <Rechtsgruende>\n" +
@@ -270,8 +272,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut0.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut0.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   " <NatuerlichePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "     <PersonstammID>3893728273382823</PersonstammID>\n" +
@@ -291,8 +293,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut1.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut1.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonstammID>48349384890202</PersonstammID>\n" +
@@ -307,8 +309,8 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut2 = new EvenementRFMutation();
 				mut2.setParentImport(importEvent);
 				mut2.setEtat(EtatEvenementRF.A_TRAITER);
-				mut2.setTypeEntite(EvenementRFMutation.TypeEntite.AYANT_DROIT);
-				mut2.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut2.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
+				mut2.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut2.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<JuristischePersonstamm xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonstammID>574739202303482</PersonstammID>\n" +

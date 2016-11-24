@@ -90,7 +90,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@NotNull
 	@Override
-	public List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats) {
+	public List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats) {
 		return db.stream()
 				.filter(mut -> mut.getParentImport().getId().equals(importId))
 				.filter(mut -> mut.getTypeEntite() == typeEntite)
@@ -101,7 +101,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Nullable
 	@Override
-	public EvenementRFMutation find(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull String idImmeubleRF) {
+	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF) {
 		return db.stream()
 				.filter(mut -> mut.getParentImport().getId().equals(importId))
 				.filter(mut -> mut.getTypeEntite() == typeEntite)

@@ -18,7 +18,7 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 * @param etats      un ou plusieurs états  @return les ids des mutations correspondantes.
 	 */
 	@NotNull
-	List<Long> findIds(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull EtatEvenementRF... etats);
+	List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats);
 
 	/**
 	 * Recherche une mutation pour un import, un immeuble et un type d'entité.
@@ -29,7 +29,7 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 * @return zéro ou une mutation.
 	 */
 	@Nullable
-	EvenementRFMutation find(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, @NotNull String idImmeubleRF);
+	EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF);
 
 	/**
 	 * Passe à l'état FORCE toutes les mutations non traitées de l'import spécifié.

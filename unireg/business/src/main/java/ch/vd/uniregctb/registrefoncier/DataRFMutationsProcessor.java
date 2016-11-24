@@ -25,6 +25,7 @@ import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
@@ -77,11 +78,11 @@ public class DataRFMutationsProcessor {
 
 		checkPreconditions(importId);
 
-		processMutations(importId, EvenementRFMutation.TypeEntite.COMMUNE, nbThreads, new SubStatusManager(0, 25, statusManager));
-		processMutations(importId, EvenementRFMutation.TypeEntite.IMMEUBLE, nbThreads, new SubStatusManager(0, 25, statusManager));
-		processMutations(importId, EvenementRFMutation.TypeEntite.AYANT_DROIT, nbThreads, new SubStatusManager(25, 50, statusManager));
-		processMutations(importId, EvenementRFMutation.TypeEntite.DROIT, nbThreads, new SubStatusManager(50, 75, statusManager));
-		processMutations(importId, EvenementRFMutation.TypeEntite.SURFACE_AU_SOL, nbThreads, new SubStatusManager(75, 100, statusManager));
+		processMutations(importId, TypeEntiteRF.COMMUNE, nbThreads, new SubStatusManager(0, 25, statusManager));
+		processMutations(importId, TypeEntiteRF.IMMEUBLE, nbThreads, new SubStatusManager(0, 25, statusManager));
+		processMutations(importId, TypeEntiteRF.AYANT_DROIT, nbThreads, new SubStatusManager(25, 50, statusManager));
+		processMutations(importId, TypeEntiteRF.DROIT, nbThreads, new SubStatusManager(50, 75, statusManager));
+		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, nbThreads, new SubStatusManager(75, 100, statusManager));
 	}
 
 	private void checkPreconditions(long importId) {
@@ -98,7 +99,7 @@ public class DataRFMutationsProcessor {
 		});
 	}
 
-	private void processMutations(long importId, @NotNull EvenementRFMutation.TypeEntite typeEntite, int nbThreads, @NotNull final StatusManager statusManager) {
+	private void processMutations(long importId, @NotNull TypeEntiteRF typeEntite, int nbThreads, @NotNull final StatusManager statusManager) {
 
 		final List<Long> ids = findIdsMutationsATraiter(importId, typeEntite);
 		if (LOGGER.isTraceEnabled()) {
@@ -161,7 +162,7 @@ public class DataRFMutationsProcessor {
 	}
 
 	@NotNull
-	private MutationRFProcessor getProcessor(@NotNull EvenementRFMutation.TypeEntite typeEntite) {
+	private MutationRFProcessor getProcessor(@NotNull TypeEntiteRF typeEntite) {
 		switch (typeEntite) {
 		case AYANT_DROIT:
 			return ayantDroitRFProcessor;
@@ -182,7 +183,7 @@ public class DataRFMutationsProcessor {
 	}
 
 	@NotNull
-	private List<Long> findIdsMutationsATraiter(long importId, EvenementRFMutation.TypeEntite typeEntite) {
+	private List<Long> findIdsMutationsATraiter(long importId, TypeEntiteRF typeEntite) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(new TxCallback<List<Long>>() {

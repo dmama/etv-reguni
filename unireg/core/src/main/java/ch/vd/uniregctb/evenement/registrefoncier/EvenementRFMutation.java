@@ -34,39 +34,15 @@ public class EvenementRFMutation extends HibernateEntity {
 	 */
 	private EtatEvenementRF etat;
 
-	public enum TypeEntite {
-		AYANT_DROIT,
-		DROIT,
-		IMMEUBLE,
-		SURFACE_AU_SOL,
-		BATIMENT,
-		COMMUNE
-	}
-
 	/**
 	 * Le type d'entité concernée par la mutation.
 	 */
-	private TypeEntite typeEntite;
-
-	public enum TypeMutation {
-		/**
-		 * La mutation est une création d'une nouvelle entité.
-		 */
-		CREATION,
-		/**
-		 * La mutation est une modification d'une entité existante.
-		 */
-		MODIFICATION,
-		/**
-		 * La mutation est une suppression d'une ou plusieurs entités existantes.
-		 */
-		SUPPRESSION
-	}
+	private TypeEntiteRF typeEntite;
 
 	/**
 	 * Le type de mutation considérée.
 	 */
-	private TypeMutation typeMutation;
+	private TypeMutationRF typeMutation;
 
 	/**
 	 * L'id de l'immeuble associé à la mutation (pas toujours renseigné)
@@ -125,21 +101,21 @@ public class EvenementRFMutation extends HibernateEntity {
 	@Column(name = "TYPE_ENTITE", length = 14, nullable = false)
 	@Enumerated(EnumType.STRING)
 	@Index(name="IDX_EV_RF_MUT_TYPE_ENTITE")
-	public TypeEntite getTypeEntite() {
+	public TypeEntiteRF getTypeEntite() {
 		return typeEntite;
 	}
 
-	public void setTypeEntite(TypeEntite typeEntite) {
+	public void setTypeEntite(TypeEntiteRF typeEntite) {
 		this.typeEntite = typeEntite;
 	}
 
 	@Column(name = "TYPE_MUTATION", length = 13, nullable = false)
 	@Enumerated(EnumType.STRING)
-	public TypeMutation getTypeMutation() {
+	public TypeMutationRF getTypeMutation() {
 		return typeMutation;
 	}
 
-	public void setTypeMutation(TypeMutation typeMutation) {
+	public void setTypeMutation(TypeMutationRF typeMutation) {
 		this.typeMutation = typeMutation;
 	}
 

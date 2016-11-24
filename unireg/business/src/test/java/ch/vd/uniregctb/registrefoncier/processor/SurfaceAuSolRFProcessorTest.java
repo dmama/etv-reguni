@@ -15,9 +15,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
@@ -105,7 +105,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 
 		// on insère la mutation dans la base
 		final Long immeubleId = insertImmeuble("382929efa218");
-		final Long mutationId = insertMutation(xml, dateImport, TypeEntite.SURFACE_AU_SOL, TypeMutation.CREATION, "382929efa218");
+		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.CREATION, "382929efa218");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -192,7 +192,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntite.AYANT_DROIT, TypeMutation.MODIFICATION, "382929efa218");
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, "382929efa218");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {

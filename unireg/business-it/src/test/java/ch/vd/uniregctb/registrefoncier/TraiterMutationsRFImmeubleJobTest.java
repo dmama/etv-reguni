@@ -17,6 +17,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
@@ -66,8 +68,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut0.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_1f109152381026b501381028a73d1852</GrundstueckID>\n" +
@@ -115,8 +117,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut1.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut1.setTypeMutation(TypeMutationRF.CREATION);
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
@@ -176,8 +178,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut2 = new EvenementRFMutation();
 				mut2.setParentImport(importEvent);
 				mut2.setEtat(EtatEvenementRF.A_TRAITER);
-				mut2.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut2.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut2.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut2.setTypeMutation(TypeMutationRF.CREATION);
 				mut2.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_8af806fc45d223e60149c23f475365d5</GrundstueckID>\n" +
@@ -232,8 +234,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut3 = new EvenementRFMutation();
 				mut3.setParentImport(importEvent);
 				mut3.setEtat(EtatEvenementRF.A_TRAITER);
-				mut3.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut3.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut3.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut3.setTypeMutation(TypeMutationRF.CREATION);
 				mut3.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +
@@ -290,8 +292,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut4 = new EvenementRFMutation();
 				mut4.setParentImport(importEvent);
 				mut4.setEtat(EtatEvenementRF.A_TRAITER);
-				mut4.setTypeEntite(EvenementRFMutation.TypeEntite.COMMUNE);
-				mut4.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut4.setTypeEntite(TypeEntiteRF.COMMUNE);
+				mut4.setTypeMutation(TypeMutationRF.CREATION);
 				mut4.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <BfsNr>190</BfsNr>\n" +
@@ -303,8 +305,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut5 = new EvenementRFMutation();
 				mut5.setParentImport(importEvent);
 				mut5.setEtat(EtatEvenementRF.A_TRAITER);
-				mut5.setTypeEntite(EvenementRFMutation.TypeEntite.COMMUNE);
-				mut5.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut5.setTypeEntite(TypeEntiteRF.COMMUNE);
+				mut5.setTypeMutation(TypeMutationRF.CREATION);
 				mut5.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <BfsNr>294</BfsNr>\n" +
@@ -316,8 +318,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut6 = new EvenementRFMutation();
 				mut6.setParentImport(importEvent);
 				mut6.setEtat(EtatEvenementRF.A_TRAITER);
-				mut6.setTypeEntite(EvenementRFMutation.TypeEntite.COMMUNE);
-				mut6.setTypeMutation(EvenementRFMutation.TypeMutation.CREATION);
+				mut6.setTypeEntite(TypeEntiteRF.COMMUNE);
+				mut6.setTypeMutation(TypeMutationRF.CREATION);
 				mut6.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <BfsNr>308</BfsNr>\n" +
@@ -514,8 +516,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
-				mut0.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut0.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut0.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut0.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_1f109152381026b501381028a73d1852</GrundstueckID>\n" +
@@ -563,8 +565,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
 				mut1.setParentImport(importEvent);
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
-				mut1.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut1.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut1.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut1.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<Sdr xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_8af806cc3971feb60139e36d062130f3</GrundstueckID>\n" +
@@ -624,8 +626,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut2 = new EvenementRFMutation();
 				mut2.setParentImport(importEvent);
 				mut2.setEtat(EtatEvenementRF.A_TRAITER);
-				mut2.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut2.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut2.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut2.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut2.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<StockwerksEinheit xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_8af806fc45d223e60149c23f475365d5</GrundstueckID>\n" +
@@ -680,8 +682,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut3 = new EvenementRFMutation();
 				mut3.setParentImport(importEvent);
 				mut3.setEtat(EtatEvenementRF.A_TRAITER);
-				mut3.setTypeEntite(EvenementRFMutation.TypeEntite.IMMEUBLE);
-				mut3.setTypeMutation(EvenementRFMutation.TypeMutation.MODIFICATION);
+				mut3.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut3.setTypeMutation(TypeMutationRF.MODIFICATION);
 				mut3.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						                   "<GewoehnlichesMiteigentum xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <GrundstueckID>_8af806cc5043853201508e1e8a3a1a71</GrundstueckID>\n" +

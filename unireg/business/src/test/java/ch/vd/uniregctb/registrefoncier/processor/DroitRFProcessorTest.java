@@ -15,9 +15,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeEntite;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation.TypeMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
@@ -116,7 +116,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		insertImmeuble("_1f109152381009be0138100ba7e31031");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateImport, TypeEntite.DROIT, TypeMutation.CREATION, "_1f109152381009be0138100a1d442eee");
+		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.DROIT, TypeMutationRF.CREATION, "_1f109152381009be0138100a1d442eee");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -235,7 +235,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntite.AYANT_DROIT, TypeMutation.MODIFICATION, idPPRF);
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, idPPRF);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -371,7 +371,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntite.AYANT_DROIT, TypeMutation.SUPPRESSION, idPPRF);
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.AYANT_DROIT, TypeMutationRF.SUPPRESSION, idPPRF);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
