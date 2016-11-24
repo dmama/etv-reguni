@@ -81,7 +81,8 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
-				assertTrue(importEvent.getErrorMessage().contains("L'import RF avec l'id = [" + importId + "] a déjà été traité."));
+				assertEquals("L'import RF avec l'id = [" + importId + "] a déjà été traité.", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + importId + "] a déjà été traité."));
 			}
 		});
 	}
@@ -137,7 +138,8 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
-				assertTrue(importEvent.getErrorMessage().contains("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "]."));
+				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "].", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "]."));
 			}
 		});
 	}
@@ -408,7 +410,8 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
-				assertTrue(importEvent.getErrorMessage().contains("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées."));
+				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées.", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées."));
 			}
 		});
 	}

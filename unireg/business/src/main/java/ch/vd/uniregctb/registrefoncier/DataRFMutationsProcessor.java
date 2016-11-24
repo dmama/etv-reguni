@@ -19,6 +19,7 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.SubStatusManager;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.xml.ExceptionHelper;
 
 /**
  * Processeur responsable de traiter les mutations du registre foncier.
@@ -202,7 +204,8 @@ public class DataRFMutationsProcessor {
 				final EvenementRFMutation mutation = getMutation(mutId);
 				mutation.setEtat(EtatEvenementRF.EN_ERREUR);
 				if (e != null) {
-					mutation.setErrorMessage(ExceptionUtils.getStackTrace(e));
+					mutation.setErrorMessage(LengthConstants.streamlineField(ExceptionHelper.getMessage(e), 1000, true));
+					mutation.setCallstack(ExceptionUtils.getStackTrace(e));
 				}
 			}
 		});

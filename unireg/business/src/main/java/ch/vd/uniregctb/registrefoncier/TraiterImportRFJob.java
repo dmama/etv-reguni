@@ -19,6 +19,7 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.technical.esb.store.EsbStore;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamLong;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.xml.ExceptionHelper;
 
 /**
  * Job de traitement d'un import des immeubles du registre foncier
@@ -126,19 +128,19 @@ public class TraiterImportRFJob extends JobDefinition {
 		final long importId = event.getId();
 		if (event.getEtat() != EtatEvenementRF.A_TRAITER && event.getEtat() != EtatEvenementRF.EN_ERREUR) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] a déjà été traité.");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
 		final EvenementRFImport nextToProcess = getNextImportToProcess();
 		if (!Objects.equals(importId, nextToProcess.getId())) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
 		final Long unprocessedImport = findOldestImportWithUnprocessedMutations(importId);
 		if (unprocessedImport != null) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + unprocessedImport + "] n'ont pas été traitées.");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(exception));
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
 	}
@@ -182,7 +184,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		}
 		catch (Exception e) {
 			LOGGER.warn("Erreur lors du processing de l'événement d'import RF avec l'id = [" + importId + "]", e);
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(e));
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -243,7 +245,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		serviceRF.deleteExistingMutations(importId);
 	}
 
-	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable String errorMessage) {
+	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable Exception exception) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TxCallbackWithoutResult() {
 			@Override
@@ -254,7 +256,14 @@ public class TraiterImportRFJob extends JobDefinition {
 				}
 
 				event.setEtat(etat);
-				event.setErrorMessage(errorMessage);
+				if (exception == null) {
+					event.setErrorMessage(null);
+					event.setCallstack(null);
+				}
+				else {
+					event.setErrorMessage(LengthConstants.streamlineField(ExceptionHelper.getMessage(exception), 1000, true));
+					event.setCallstack(ExceptionUtils.getStackTrace(exception));
+				}
 			}
 		});
 	}

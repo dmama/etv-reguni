@@ -47,6 +47,12 @@ public class EvenementRFImport extends HibernateEntity {
 	@Nullable
 	private String errorMessage;
 
+	/**
+	 * La callstack complète en cas d'erreur de traitement.
+	 */
+	@Nullable
+	private String callstack;
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -99,8 +105,7 @@ public class EvenementRFImport extends HibernateEntity {
 		this.fileUrl = fileUrl;
 	}
 
-	@Column(name = "ERROR_MESSAGE")
-	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Column(name = "ERROR_MESSAGE", length = 1000)
 	@Nullable
 	public String getErrorMessage() {
 		return errorMessage;
@@ -108,5 +113,16 @@ public class EvenementRFImport extends HibernateEntity {
 
 	public void setErrorMessage(@Nullable String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	@Column(name = "CALLSTACK")
+	@Type(type = "ch.vd.uniregctb.hibernate.StringAsClobUserType")
+	@Nullable
+	public String getCallstack() {
+		return callstack;
+	}
+
+	public void setCallstack(@Nullable String callstack) {
+		this.callstack = callstack;
 	}
 }

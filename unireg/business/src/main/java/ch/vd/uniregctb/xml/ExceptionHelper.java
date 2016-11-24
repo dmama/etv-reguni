@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.xml;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -46,5 +48,14 @@ public class ExceptionHelper {
 		final String message = exception.getMessage();
 		info.setMessage(message);
 		return new ServiceException(message, info);
+	}
+
+	@NotNull
+	public static String getMessage(@NotNull Exception e) {
+		String message = e.getMessage();
+		if (message == null) {
+			message = e.getClass().getSimpleName();
+		}
+		return message;
 	}
 }

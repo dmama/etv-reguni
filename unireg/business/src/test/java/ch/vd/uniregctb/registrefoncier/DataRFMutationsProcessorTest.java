@@ -70,14 +70,17 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 			final EvenementRFMutation mut0 = mutations.get(0);
 			assertEquals(EtatEvenementRF.TRAITE, mut0.getEtat());
 			assertNull(mut0.getErrorMessage());
+			assertNull(mut0.getCallstack());
 
 			final EvenementRFMutation mut1 = mutations.get(1);
 			assertEquals(EtatEvenementRF.TRAITE, mut1.getEtat());
 			assertNull(mut1.getErrorMessage());
+			assertNull(mut1.getCallstack());
 
 			final EvenementRFMutation mut2 = mutations.get(2);
 			assertEquals(EtatEvenementRF.TRAITE, mut2.getEtat());
 			assertNull(mut2.getErrorMessage());
+			assertNull(mut2.getCallstack());
 			return null;
 		});
 	}
@@ -107,15 +110,18 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 
 			final EvenementRFMutation mut0 = mutations.get(0);
 			assertEquals(EtatEvenementRF.EN_ERREUR, mut0.getEtat());
-			assertContains("java.lang.RuntimeException: Exception de test", mut0.getErrorMessage());
+			assertEquals("Exception de test", mut0.getErrorMessage());
+			assertContains("java.lang.RuntimeException: Exception de test", mut0.getCallstack());
 
 			final EvenementRFMutation mut1 = mutations.get(1);
 			assertEquals(EtatEvenementRF.EN_ERREUR, mut1.getEtat());
-			assertContains("java.lang.RuntimeException: Exception de test", mut1.getErrorMessage());
+			assertEquals("Exception de test", mut1.getErrorMessage());
+			assertContains("java.lang.RuntimeException: Exception de test", mut1.getCallstack());
 
 			final EvenementRFMutation mut2 = mutations.get(2);
 			assertEquals(EtatEvenementRF.EN_ERREUR, mut2.getEtat());
-			assertContains("java.lang.RuntimeException: Exception de test", mut2.getErrorMessage());
+			assertEquals("Exception de test", mut2.getErrorMessage());
+			assertContains("java.lang.RuntimeException: Exception de test", mut2.getCallstack());
 			return null;
 		});
 	}
