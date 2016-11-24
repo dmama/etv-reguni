@@ -100,11 +100,6 @@ public class IdentificationContribuable extends HibernateEntity {
 			this.libelle = libelle;
 			this.code = code;
 		}
-		ErreurMessage(){
-			this.code = "";
-			this.libelle="";
-
-		}
 
 		public String getLibelle() {
 			return libelle;

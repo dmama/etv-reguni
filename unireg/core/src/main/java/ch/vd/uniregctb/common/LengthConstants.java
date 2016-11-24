@@ -28,6 +28,7 @@ public abstract class LengthConstants {
 	public static final int IDENTPERSONNE_IDENTIFIANT = 13;
 	public static final int IDENTPERSONNE_CATEGORIE = 10;
 	public static final int IDENT_DEMANDE_TYPE = 30;
+	public static final int IDENT_TYPE_CTB = 30;
 
 	public static final int IDENT_ENTREPRISE_IDE = 12;
 

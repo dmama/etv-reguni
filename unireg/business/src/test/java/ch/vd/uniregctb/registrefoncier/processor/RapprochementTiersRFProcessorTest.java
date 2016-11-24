@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.processor;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,9 +24,9 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
@@ -42,6 +43,18 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 
 	private RapprochementTiersRFProcessor processor;
 	private RapprochementRFDAO rapprochementDAO;
+	private CollectingRapprochementManuelTiersRFService rapprochementManuelTiersRFService;
+
+	private static class CollectingRapprochementManuelTiersRFService extends MockRapprochementManuelTiersRFService {
+
+		public final List<Long> tiersRFCollectes = new LinkedList<>();
+
+		@Override
+		public void genererDemandeIdentificationManuelle(TiersRF tiersRF) {
+			super.genererDemandeIdentificationManuelle(tiersRF);
+			tiersRFCollectes.add(tiersRF.getId());
+		}
+	}
 
 	public RapprochementTiersRFProcessorTest() {
 		setWantIndexationTiers(true);
@@ -54,8 +67,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		rapprochementDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");
 		final IdentificationContribuableService identificationService = getBean(IdentificationContribuableService.class, "identCtbService");
-		final RapprochementManuelTiersRFService rapprochementManuelService = getBean(RapprochementManuelTiersRFService.class, "rapprochementManuelTiersRFService");
-		processor = new RapprochementTiersRFProcessor(transactionManager, tiersService, adresseService, rapprochementDAO, hibernateTemplate, identificationService, rapprochementManuelService);
+		rapprochementManuelTiersRFService = new CollectingRapprochementManuelTiersRFService();
+		processor = new RapprochementTiersRFProcessor(transactionManager, tiersService, adresseService, rapprochementDAO, hibernateTemplate, identificationService, rapprochementManuelTiersRFService);
 	}
 
 	/**
@@ -108,6 +121,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.pp, rapprochement.idContribuable);
 		Assert.assertEquals(ids.idTiersRF, rapprochement.idTiersRF);
 		Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.type);
+
+		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -184,6 +199,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.pm, rapprochement.idContribuable);
 		Assert.assertEquals(ids.idTiersRF, rapprochement.idTiersRF);
 		Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.type);
+
+		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -262,6 +279,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertNotNull(nonIdentification);
 		Assert.assertEquals(ids.idTiersRF, nonIdentification.idTiersRF);
 		Assert.assertEquals(Collections.emptyList(), nonIdentification.candidats);
+
+		Assert.assertEquals(Collections.singletonList(ids.idTiersRF), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -343,6 +362,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.pp, rapprochement.idContribuable);
 		Assert.assertEquals(ids.idTiersRF, rapprochement.idTiersRF);
 		Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochement.type);
+
+		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -426,6 +447,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.idTiersRF, nonIdentification.idTiersRF);
 		Assert.assertEquals(Arrays.asList(ids.pp1, ids.pp2), nonIdentification.candidats.stream().sorted().collect(Collectors.toList()));
 
+		Assert.assertEquals(Collections.singletonList(ids.idTiersRF), rapprochementManuelTiersRFService.tiersRFCollectes);
+
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -491,6 +514,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertNotNull(nonIdentification);
 		Assert.assertEquals(ids.idTiersRF, nonIdentification.idTiersRF);
 		Assert.assertEquals(Arrays.asList(ids.pp1, ids.pp2), nonIdentification.candidats.stream().sorted().collect(Collectors.toList()));
+
+		Assert.assertEquals(Collections.singletonList(ids.idTiersRF), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -561,6 +586,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.pp2, rapprochement.idContribuable);
 		Assert.assertEquals(ids.idTiersRF, rapprochement.idTiersRF);
 		Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.type);
+
+		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -649,6 +676,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(ids.pm, rapprochement.idContribuable);
 		Assert.assertEquals(ids.tiersRF, rapprochement.idTiersRF);
 		Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.type);
+
+		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.tiersRFCollectes);
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {

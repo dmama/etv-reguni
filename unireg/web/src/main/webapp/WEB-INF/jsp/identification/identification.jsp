@@ -3,36 +3,59 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
+	<%--@elvariable id="messageData" type="ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView"--%>
+	<%--@elvariable id="message" type="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView"--%>
+	<%--@elvariable id="source" type="ch.vd.uniregctb.identification.contribuable.IdentificationController.Source"--%>
+	<%--@elvariable id="searchCtbErrorMessage" type="java.lang.String"--%>
+	<%--@elvariable id="found" type="java.util.List<ch.vd.uniregctb.tiers.TiersIndexedDataView>"--%>
+	<%--@elvariable id="hideSoumissionExpertise" type="java.lang.Boolean"--%>
+	<%--@elvariable id="hideNonIdentifiable" type="java.lang.Boolean"--%>
+
   	<tiles:put name="title"><fmt:message key="title.identification.recherche.personne" /></tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRecherchePersonne" name="theForm" action="edit.do">
-	    	<input type="hidden"  name="__TARGET__" value="">
-			<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
-	    	<jsp:include page="demande-identification.jsp" >
-		    	<jsp:param name="path" value="demandeIdentificationView" />
-	    	</jsp:include>
 
-		    <c:choose>
-			    <c:when test="${command.noCtbIdentifie == null}">
+        <jsp:include page="demande-identification.jsp"/>
+
+	    <c:choose>
+		    <c:when test="${message.noCtbIdentifie == null}">
+
+			    <form:form method="post" id="formRecherchePersonne" name="theSearchForm" action="edit.do?source=${source}&id=${messageData.id}" commandName="identificationSearchCriteria">
+
 				    <fieldset>
 					    <legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 					    <form:errors cssClass="error"/>
+					    <c:set var="typeRechercheIdentification">
+						    <c:choose>
+							    <c:when test="${messageData.typeContribuable == 'ENTREPRISE'}">identification-pm</c:when>
+							    <c:when test="${messageData.typeContribuable == 'PERSONNE_PHYSIQUE'}">identification-pp</c:when>
+							    <c:otherwise>identification</c:otherwise>
+						    </c:choose>
+					    </c:set>
 					    <jsp:include page="../tiers/recherche/form.jsp" >
-						    <jsp:param name="typeRecherche" value="identification" />
+						    <jsp:param name="typeRecherche" value="${typeRechercheIdentification}" />
 						    <jsp:param name="prefixeEffacer" value="/identification/gestion-messages" />
-						    <jsp:param name="paramsEffacer" value="id:${command.demandeIdentificationView.id}" />
+						    <jsp:param name="paramsEffacer" value="id:${messageData.id},source:'${source}'" />
 					    </jsp:include>
 				    </fieldset>
 
-				    <display:table name="list" id="personne" pagesize="${parametresApp.nbMaxParPage}" requestURI="edit.do" class="display_table" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			    </form:form>
+
+			    <form:form method="post" id="formIdentification" name="theIdentificationForm" action="identifie.do?source=${source}&id=${messageData.id}" commandName="identificationSelect">
+
+				    <input type="hidden" name="contribuableIdentifie" id="contribuableIdentifie" value=""/>
+
+				    <c:if test="${searchCtbErrorMessage != null}">
+					    <span class="error"><c:out value="${searchCtbErrorMessage}"/></span>
+				    </c:if>
+				    <display:table name="found" id="personne" pagesize="25" requestURI="edit.do" class="display_table" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 					    <display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 					    <display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 					    <display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 					    <display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 
 					    <display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-						    <a href="../../tiers/visu.do?id=${personne.numero}&message=${command.demandeIdentificationView.id}"><unireg:numCTB numero="${personne.numero}" /></a>
+						    <a href="../../tiers/visu.do?id=${personne.numero}&message=${messageData.id}"><unireg:numCTB numero="${personne.numero}" /></a>
 					    </display:column>
 					    <display:column sortable ="true" titleKey="label.role" >
 						    <c:out value="${personne.roleLigne1}" />
@@ -41,15 +64,15 @@
 						    </c:if>
 					    </display:column>
 					    <display:column sortable ="true" titleKey="label.nom.prenom" >
-						 <span class="civTip" id="civildata" name="${personne.numero}">
-							<c:out value="${personne.nom1}" />
-							<c:if test="${personne.nom2 != null}">
-								<br><c:out value="${personne.nom2}" />
-							</c:if>
+							<span class="civTip" id="civildata" name="${personne.numero}">
+								<c:out value="${personne.nom1}" />
+								<c:if test="${personne.nom2 != null}">
+									<br><c:out value="${personne.nom2}" />
+								</c:if>
 							</span>
 					    </display:column>
 					    <display:column titleKey="label.date.naissance.ou.rc" sortable="true" sortName="dateNaissanceInscriptionRC" sortProperty="dateNaissanceInscriptionRC">
-						    <unireg:date date="${personne.dateNaissanceInscriptionRC}"></unireg:date>
+						    <unireg:date date="${personne.dateNaissanceInscriptionRC}"/>
 					    </display:column>
 					    <display:column sortable ="true" titleKey="label.npa" >
 						    <c:out value="${personne.npa}" />
@@ -69,7 +92,7 @@
 						    <fmt:formatDate value="${personne.dateFermetureFor}" pattern="dd.MM.yyyy"/>
 					    </display:column>
 					    <display:column>
-						    <unireg:raccourciIdentifier onClick="javascript:IdentificationCtb.Page_Identifier(${personne.numero});" tooltip="Identifier" />
+						    <unireg:raccourciIdentifier onClick="IdentificationCtb.Page_Identifier(${personne.numero});" tooltip="Identifier" />
 					    </display:column>
 				    </display:table>
 
@@ -97,42 +120,52 @@
 					    });
 				    </script>
 
-				    <!-- Debut Boutons -->
-				    <unireg:RetourButton link="edit.do?unlock=true" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
+			    </form:form>
 
+			    <!-- Debut Boutons -->
+
+			    <unireg:RetourButton link="back-from-edit.do?source=${source}&idToUnlock=${message.demandeIdentificationView.id}" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
+
+			    <!-- Bouton de passage en expertise -->
+			    <c:if test="${!hideSoumissionExpertise}">
 				    <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
 					    <c:set var="expertiserButtonName">
 						    <fmt:message key="label.bouton.expertiser" />
 					    </c:set>
-					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/edit.do" method="post" name="${expertiserButtonName}" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${command.demandeIdentificationView.id},expertiser:'expertiser'}"/>
+					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/soumettre-expertise.do" method="post" name="${expertiserButtonName}" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${messageData.id},source:'${source}'}"/>
 				    </authz:authorize>
+			    </c:if>
+
+			    <!-- Bouton de non-identification -->
+			    <c:if test="${!hideNonIdentifiable}">
 				    <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN">
 					    <c:set var="nonIdentifiableButtonName">
 						    <fmt:message key="label.bouton.identification.impossible" />
 					    </c:set>
-					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/nonIdentifie.do" name="${nonIdentifiableButtonName}" method="get" params="{id:${command.demandeIdentificationView.id}}"/>
+					    &nbsp;<unireg:buttonTo action="/identification/gestion-messages/non-identifie.do" name="${nonIdentifiableButtonName}" method="get" params="{id:${messageData.id},source:'${source}'}"/>
 				    </authz:authorize>
-				    <!-- Fin Boutons -->
+			    </c:if>
 
-			    </c:when>
+			    <!-- Fin Boutons -->
 
-			    <c:otherwise>
 
-				    <!-- La demande a en fait déjà été traitée, il faut donc afficher les caractéristiques du tiers effectivement choisi -->
-				    <unireg:bandeauTiers numero="${command.noCtbIdentifie}" titre="Caractéristiques du contribuable identifié" showAvatar="true" showEvenementsCivils="false" showLinks="false" showValidation="false" showComplements="true"/>
+		    </c:when>
 
-				    <!-- Debut Boutons -->
-				    <c:set var="retourButtonName">
-					    <fmt:message key="label.bouton.retour"/>
-				    </c:set>
-				    <unireg:buttonTo method="get" name="${retourButtonName}" action="/identification/gestion-messages/edit.do" params="{unlock:true}"/>
-				    <!-- Fin Boutons -->
+		    <c:otherwise>
 
-			    </c:otherwise>
-		    </c:choose>
+			    <!-- La demande a en fait déjà été traitée, il faut donc afficher les caractéristiques du tiers effectivement choisi -->
+			    <unireg:bandeauTiers numero="${message.noCtbIdentifie}" titre="Caractéristiques du contribuable identifié" showAvatar="true" showEvenementsCivils="false" showLinks="false" showValidation="false" showComplements="true"/>
 
-		</form:form>
-		
+			    <!-- Debut Boutons -->
+			    <unireg:RetourButton link="back-from-edit.do?source=${source}&idToUnlock=${messageData.id}"/>
+			    <!-- Fin Boutons -->
+
+		    </c:otherwise>
+
+	    </c:choose>
+
+
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>
+
 	</tiles:put>
 </tiles:insert>

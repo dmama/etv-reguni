@@ -14,7 +14,6 @@ import ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieListController;
 import ch.vd.uniregctb.deces.DecesListController;
 import ch.vd.uniregctb.fusion.HabitantListController;
 import ch.vd.uniregctb.fusion.NonHabitantListController;
-import ch.vd.uniregctb.identification.contribuable.IdentificationMessagesEditController;
 import ch.vd.uniregctb.rapport.RapportListController;
 import ch.vd.uniregctb.rt.DebiteurListController;
 import ch.vd.uniregctb.rt.SourcierListController;
@@ -50,12 +49,6 @@ public class SearchCriteriaRemovalController {
 	public String effacerCriteresRechercheAnnulationSeparation(HttpSession session) {
 		session.removeAttribute(AnnulationSeparationListController.ANNULATION_SEPARATION_CRITERIA_NAME);
 		return "redirect:/annulation/separation/list.do";
-	}
-
-	@RequestMapping(value = "/identification/gestion-messages/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheIdentification(HttpSession session, @RequestParam("id") long id) {
-		session.removeAttribute(IdentificationMessagesEditController.PP_CRITERIA_NAME);
-		return String.format("redirect:/identification/gestion-messages/edit.do?id=%d", id);
 	}
 
 	@RequestMapping(value = "/contribuable-associe/reset-search.do", method = RequestMethod.GET)

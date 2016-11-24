@@ -5,12 +5,15 @@ import java.util.Date;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.Sexe;
 
 public class DemandeIdentificationView implements Annulable {
 
 	private Long id;
 	private String typeMessage;
+	private TypeDemande typeDemande;
 	private Integer periodeFiscale;
 	private String emetteurId;
 	private String businessId;
@@ -34,6 +37,7 @@ public class DemandeIdentificationView implements Annulable {
 	private String documentUrl;
 	private String transmetteur;
 	private Long montant;
+	private TiersCriteria.TypeTiers typeContribuable;
 
 	public Long getId() {
 		return id;
@@ -49,6 +53,14 @@ public class DemandeIdentificationView implements Annulable {
 
 	public void setTypeMessage(String typeMessage) {
 		this.typeMessage = typeMessage;
+	}
+
+	public TypeDemande getTypeDemande() {
+		return typeDemande;
+	}
+
+	public void setTypeDemande(TypeDemande typeDemande) {
+		this.typeDemande = typeDemande;
 	}
 
 	public Integer getPeriodeFiscale() {
@@ -234,5 +246,13 @@ public class DemandeIdentificationView implements Annulable {
 
 	public void setMontant(Long montant) {
 		this.montant = montant;
+	}
+
+	public TiersCriteria.TypeTiers getTypeContribuable() {
+		return typeContribuable;
+	}
+
+	public void setTypeContribuable(TiersCriteria.TypeTiers typeContribuable) {
+		this.typeContribuable = typeContribuable;
 	}
 }

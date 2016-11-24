@@ -33,6 +33,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.Sexe;
 
 /**
@@ -248,13 +249,14 @@ public abstract class XmlEntityAdapter {
 		entity.setPersonne(xml2entity(xml.getPersonne()));
 		final PrioriteEmetteur prioriteEmetteur = xml.getDemande().getPrioriteEmetteur() ? PrioriteEmetteur.PRIORITAIRE : PrioriteEmetteur.NON_PRIORITAIRE;
 		entity.setPrioriteEmetteur(prioriteEmetteur);
+		entity.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		entity.setModeIdentification(translateModeIdentification(xml.getDemande().getModeIdentification()));
 		entity.setPrioriteUtilisateur(xml.getDemande().getPrioriteUtilisateur());
 		entity.setTypeMessage(xml.getDemande().getTypeMessage());
 		entity.setTransmetteur(xml.getDemande().getTransmetteur());
-		final BigInteger montant = xml.getDemande().getMontant();
 
+		final BigInteger montant = xml.getDemande().getMontant();
 		if (montant != null) {
 			entity.setMontant(montant.longValue());
 		}

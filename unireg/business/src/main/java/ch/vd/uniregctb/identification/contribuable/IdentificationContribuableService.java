@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
@@ -66,14 +67,19 @@ public interface IdentificationContribuableService {
 	int count(IdentificationContribuableCriteria identificationContribuableCriteria, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
-	 * Force l'identification du contribuable
+	 * Force l'identification du contribuable personne physique
 	 */
-	void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat) throws Exception;
+	void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat);
+
+	/**
+	 * Force l'identification du contribuable entreprise
+	 */
+	void forceIdentification(IdentificationContribuable identificationContribuable, Entreprise entreprise, Etat etat);
 
 	/**
 	 * Impossible à identifier
 	 */
-	void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception;
+	void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur);
 
 	/**
 	 * Soumet le message à l'identification
@@ -101,8 +107,7 @@ public interface IdentificationContribuableService {
 	 * Retente une identification automatique sur les messages présents en base
 	 * @return <code>true</code> si l'identification a réussi, <code>false</code> sinon
 	 */
-
-	boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
+	boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message);
 
 	/**
 	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU

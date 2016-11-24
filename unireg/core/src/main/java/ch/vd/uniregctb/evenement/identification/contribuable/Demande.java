@@ -3,11 +3,14 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 /**
  * Contient les données d'une requête d'identification d'un contribuable.
@@ -94,6 +97,11 @@ public class Demande {
 	 * Montant en lien avec le type du message(ex: montant du salaire pour un certificat de salaire)
 	 */
 	private Long montant;
+
+	/**
+	 * Type de contribuable recherché : historiquement, PP, mais les PM (et d'autres ...?) arrivent avec les rapprochements RF
+	 */
+	private TypeTiers typeContribuableRecherche;
 
 
 	@Column(name = "DATE_DEMANDE")
@@ -193,6 +201,16 @@ public class Demande {
 
 	public void setMontant(Long montant) {
 		this.montant = montant;
+	}
+
+	@Column(name = "TYPE_CTB_RECHERCHE", nullable = false, length = LengthConstants.IDENT_TYPE_CTB)
+	@Enumerated(EnumType.STRING)
+	public TypeTiers getTypeContribuableRecherche() {
+		return typeContribuableRecherche;
+	}
+
+	public void setTypeContribuableRecherche(TypeTiers typeContribuableRecherche) {
+		this.typeContribuableRecherche = typeContribuableRecherche;
 	}
 
 	@Embedded

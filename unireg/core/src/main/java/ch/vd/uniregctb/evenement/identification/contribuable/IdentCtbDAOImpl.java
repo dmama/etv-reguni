@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
@@ -177,17 +179,13 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		return globalMap;
 	}
 
-	private interface Unmarshaller<T> {
-		T buildValue(Object o);
-	}
+	private static final Function<Object, Integer> INTEGER_UNMARSHALLER = o -> Optional.ofNullable((Number) o).map(Number::intValue).orElse(null);
 
-	private static final Unmarshaller<Integer> INTEGER_UNMARSHALLER = o -> ((Number) o).intValue();
+	private static final Function<Object, String> STRING_UNMARSHALLER = o -> (String) o;
 
-	private static final Unmarshaller<String> STRING_UNMARSHALLER = o -> (String) o;
+	private static final Function<Object, Etat> ETAT_UNMARSHALLER = o -> (Etat) o;
 
-	private static final Unmarshaller<Etat> ETAT_UNMARSHALLER = o -> (Etat) o;
-
-	private static final Unmarshaller<PrioriteEmetteur> PRIORITE_UNMARSHALLER = o -> (PrioriteEmetteur) o;
+	private static final Function<Object, PrioriteEmetteur> PRIORITE_UNMARSHALLER = o -> (PrioriteEmetteur) o;
 
 	/**
 	 * Récupère la liste des valeurs d'un champ particulier par état de la demande d'identification
@@ -197,7 +195,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 	 * @return la map de répartition trouvée
 	 */
 	@SuppressWarnings("unchecked")
-	private <T> Map<Etat, List<T>> getDonneesParEtat(String champHql, final Unmarshaller<T> unmarshaller) {
+	private <T> Map<Etat, List<T>> getDonneesParEtat(String champHql, final Function<Object, ? extends T> unmarshaller) {
 		final String hql = "select distinct " + champHql + ", i.etat from IdentificationContribuable i";
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
@@ -205,7 +203,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		final Iterator<Object[]> iterator = query.iterate();
 		while (iterator.hasNext()) {
 			final Object[] row = iterator.next();
-			final T value = unmarshaller.buildValue(row[0]);
+			final T value = unmarshaller.apply(row[0]);
 			final Etat etat = (Etat) row[1];
 			List<T> ids = map.get(etat);
 			if (ids == null) {

@@ -2,21 +2,33 @@ package ch.vd.uniregctb.identification.contribuable;
 
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -44,23 +56,42 @@ import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManager;
+import ch.vd.uniregctb.identification.contribuable.validator.IdentificationManuelleMessageEditValidator;
 import ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessageValidator;
+import ch.vd.uniregctb.identification.contribuable.validator.NonIdentificationMessageEditValidator;
+import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationManuelleMessageEditView;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
+import ch.vd.uniregctb.identification.contribuable.view.NonIdentificationMessageEditView;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
+import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
+import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
 @RequestMapping(value = "/identification")
 @SessionAttributes({"identificationPagination"})
 public class IdentificationController {
 
-	public static enum Source {
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationController.class);
+
+	public enum Source {
 		enCours,
 		suspendu
 	}
@@ -73,13 +104,17 @@ public class IdentificationController {
 	private static final int PAGE_SIZE = 25;
 	private static final String DEFAULT_FIELD = "id";
 	private static final String IDENTIFICATION_PAGINATION = "identificationPagination";
+	private static final String CTB_SEARCH_CRITERIA_SESSION_NAME = "ctbSearchIdentCriteria";
+
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 	private IdentificationMessagesStatsManager identificationMessagesStatsManager;
 	private IdentificationMapHelper identificationMapHelper;
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
 	private SecurityProviderInterface securityProvider;
 	private IdentificationMessagesListManager identificationMessagesListManager;
-
+	private TiersMapHelper tiersMapHelper;
+	private TiersService tiersService;
+	private MessageSource messageSource;
 
 	protected ControllerUtils controllerUtils;
 
@@ -97,7 +132,6 @@ public class IdentificationController {
 		this.identificationMessagesEditManager = identificationMessagesEditManager;
 	}
 
-
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
 	}
@@ -106,17 +140,25 @@ public class IdentificationController {
 		this.identificationMessagesListManager = identificationMessagesListManager;
 	}
 
-
 	public void setValidator(IdentificationMessageValidator validator) {
 		this.validator = validator;
 	}
-
-
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
 	}
 
+	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
+		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 	/**
 	 *  Crée un objet ParamPagination initial dans la session
@@ -177,42 +219,34 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/unlock.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	public ModelAndView deverouillerMessage(HttpServletRequest request,
-	                                           @RequestParam(value = "source", required = true) Source source,
-	                                           @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
-	                                           ModelMap model) throws Exception {
+	public ModelAndView deverouillerMessage(@RequestParam(value = "source", required = true) Source source,
+	                                        @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria) throws Exception {
 		deverouillerMessage(criteria);
-		return buildModelAndViewFromSource(request,source,criteria,model);
+		return buildModelAndViewFromSource(source);
 	}
 
 	@RequestMapping(value = {"/gestion-messages/lock.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	public ModelAndView verouillerMessage(HttpServletRequest request,
-	                                         @RequestParam(value = "source", required = true) Source source,
-	                                         @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
-	                                         ModelMap model) throws Exception {
+	public ModelAndView verouillerMessage(@RequestParam(value = "source", required = true) Source source,
+	                                      @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria) throws Exception {
 		verouillerMessage(criteria);
-		return buildModelAndViewFromSource(request,source,criteria,model);
+		return buildModelAndViewFromSource(source);
 	}
 
 	@RequestMapping(value = {"/gestion-messages/suspendre.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	public ModelAndView suspendreMessage(HttpServletRequest request,
-	                                        @RequestParam(value = "source", required = true) Source source,
-	                                        @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
-	                                        ModelMap model) throws Exception {
+	public ModelAndView suspendreMessage(@RequestParam(value = "source", required = true) Source source,
+	                                     @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria) throws Exception {
 		identificationMessagesListManager.suspendreIdentificationMessages(criteria);
-		return buildModelAndViewFromSource(request,source,criteria,model);
+		return buildModelAndViewFromSource(source);
 	}
 
 	@RequestMapping(value = {"/gestion-messages/resoumettre.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	public ModelAndView reSoumettreMessage(HttpServletRequest request,
-	                                          @RequestParam(value = "source", required = true) Source source,
-	                                          @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
-	                                          ModelMap model) throws Exception {
+	public ModelAndView reSoumettreMessage(@RequestParam(value = "source", required = true) Source source,
+	                                       @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria) throws Exception {
 		identificationMessagesListManager.reSoumettreIdentificationMessages(criteria);
-		return buildModelAndViewFromSource(request,source,criteria,model);
+		return buildModelAndViewFromSource(source);
 	}
 
 
@@ -234,6 +268,241 @@ public class IdentificationController {
 		return buildResponseFromSource(request, source, criteria, model);
 	}
 
+	@RequestMapping(value = "/gestion-messages/edit.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	public String editionMessage(Model model,
+	                             HttpSession session,
+	                             @RequestParam(value = "id", required = true) Long idMessage,
+	                             @RequestParam(value = "source", required = true) Source source) {
+
+		// [SIFISC-13602] tentative de relance de l'identification automatique avant toute chose
+		final Long noCtbNouvellementIdentifie = identificationMessagesEditManager.relanceIdentificationAuto(idMessage);
+		if (noCtbNouvellementIdentifie != null) {
+			Flash.message("Le contribuable a maintenant été identifié automatiquement.");
+		}
+
+		// vérouillage (ou pas) du message
+		final IdentificationMessagesEditView view = identificationMessagesEditManager.getView(idMessage);
+		if (view.getNoCtbIdentifie() == null) {
+			identificationMessagesEditManager.verouillerMessage(idMessage);
+		}
+
+		final TiersCriteriaView searchCriteria = Optional.of(CTB_SEARCH_CRITERIA_SESSION_NAME)
+				.map(session::getAttribute)
+				.map(obj -> (TiersCriteriaView) obj)
+				.orElseGet(() -> buildPrefilledSearchCriteria(view.getDemandeIdentificationView()));
+		if (view.getDemandeIdentificationView().getTypeContribuable() != null) {
+			searchCriteria.setTypesTiersImperatifs(Collections.singleton(view.getDemandeIdentificationView().getTypeContribuable()));
+		}
+
+		if (view.getNoCtbIdentifie() == null) {
+			model.addAttribute("found", searchTiers(searchCriteria, error -> model.addAttribute("searchCtbErrorMessage", error)));
+		}
+		return showSearchForm(model, source, view, searchCriteria);
+	}
+
+	private List<TiersIndexedDataView> searchTiers(TiersCriteriaView criteria, Consumer<String> errorConsumer) {
+		final String message;
+		try {
+			final List<TiersIndexedData> coreFound = tiersService.search(criteria.asCore());
+			return coreFound.stream()
+					.map(TiersIndexedDataView::new)
+					.collect(Collectors.toList());
+		}
+		catch (TooManyResultsIndexerException ee) {
+			if (ee.getNbResults() > 0) {
+				message = messageSource.getMessage("error.preciser.recherche.trouves", new Object[] {String.valueOf(ee.getNbResults())}, WebContextUtils.getDefaultLocale());
+			}
+			else {
+				message = messageSource.getMessage("error.preciser.recherche", null, WebContextUtils.getDefaultLocale());
+			}
+		}
+		catch (IndexerException e) {
+			LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
+			message = messageSource.getMessage("error.recherche", null, WebContextUtils.getDefaultLocale());
+		}
+		errorConsumer.accept(message);
+		return null;
+	}
+
+	private TiersCriteriaView buildPrefilledSearchCriteria(DemandeIdentificationView demandeView) {
+		final TiersCriteriaView view = new TiersCriteriaView();
+		view.setNumeroAVS(Optional.ofNullable(demandeView.getNavs13()).orElse(demandeView.getNavs11()));
+		view.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
+		view.setNomRaison(Stream.of(demandeView.getNom(), demandeView.getPrenoms())
+				                  .filter(StringUtils::isNotBlank)
+				                  .collect(Collectors.joining(" ")));
+		// [SIFISC-130] La date de naissance ne fait pas partie des critères à pré-remplir
+		//view.setDateNaissanceInscriptionRC(demandeView.getDateNaissance());
+		return view;
+	}
+
+	private String showSearchForm(Model model,
+	                              Source source,
+	                              IdentificationMessagesEditView editView,
+	                              TiersCriteriaView searchView) {
+
+		// visualisation complète ou limitée...
+		final TiersCriteria.TypeVisualisation typeVisualisation;
+		if (SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			typeVisualisation = TiersCriteria.TypeVisualisation.COMPLETE;
+		}
+		else if (SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)) {
+			typeVisualisation = TiersCriteria.TypeVisualisation.LIMITEE;
+		}
+		else {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg.");
+		}
+		searchView.setTypeVisualisation(typeVisualisation);
+
+		final DemandeIdentificationView demandeView = editView.getDemandeIdentificationView();
+		model.addAttribute("message", editView);
+		model.addAttribute("messageData", demandeView);
+		model.addAttribute("source", source);
+		model.addAttribute("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
+		model.addAttribute("formesJuridiquesEnum", tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		model.addAttribute("categoriesEntreprisesEnum", tiersMapHelper.getMapCategoriesEntreprise());
+		model.addAttribute("identificationSearchCriteria", searchView);
+		model.addAttribute("hideSoumissionExpertise", demandeView.getTypeDemande() == TypeDemande.RAPPROCHEMENT_RF);
+		model.addAttribute("hideNonIdentifiable", demandeView.getTypeDemande() == TypeDemande.RAPPROCHEMENT_RF);
+
+		return "identification/identification";
+	}
+
+	@RequestMapping(value = "/gestion-messages/edit.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	public String rechercheContribuable(Model model,
+	                                    @Valid @ModelAttribute(value = "identificationSearchCriteria") TiersCriteriaView criteria,
+	                                    BindingResult bindingResult,
+	                                    @RequestParam(value = "source", required = true) Source source,
+	                                    @RequestParam(value = "id", required = true) Long idMessage,
+                                        HttpSession session) {
+		if (bindingResult.hasErrors()) {
+			return showSearchForm(model,
+			                      source,
+			                      identificationMessagesEditManager.getView(idMessage),
+			                      criteria);
+		}
+
+		session.setAttribute(CTB_SEARCH_CRITERIA_SESSION_NAME, criteria);
+		return "redirect:edit.do?source=" + source + "&id=" + idMessage;
+	}
+
+	@RequestMapping(value = "/gestion-messages/back-from-edit.do", method = RequestMethod.GET)
+	public ModelAndView retourApresEdition(HttpSession session,
+	                                       @RequestParam(value = "idToUnlock", required = false) Long idMessageToUnlock,
+	                                       @RequestParam(value = "source", required = true) Source source) {
+		if (idMessageToUnlock != null) {
+			identificationMessagesEditManager.deVerouillerMessage(idMessageToUnlock, false);
+		}
+		session.removeAttribute(CTB_SEARCH_CRITERIA_SESSION_NAME);
+		return buildModelAndViewFromSource(source);
+	}
+
+	@RequestMapping(value = "/gestion-messages/reset-search.do", method = RequestMethod.GET)
+	public String effacerCritereRechercheContribuable(HttpSession session,
+	                                                  @RequestParam(value = "id", required = true) Long idMessage,
+	                                                  @RequestParam(value = "source", required = true) Source source) {
+		session.removeAttribute(CTB_SEARCH_CRITERIA_SESSION_NAME);
+		return "redirect:edit.do?source=" + source + "&id=" + idMessage;
+	}
+
+	@RequestMapping(value = "/gestion-messages/soumettre-expertise.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.LISTE_IS_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	public String soumettreExpertise(@RequestParam(value = "id", required = true) Long idMessage,
+	                                 @RequestParam(value = "source", required = true) Source source) {
+
+		final IdentificationMessagesEditView aModifier = identificationMessagesEditManager.getView(idMessage);
+		if (!aModifier.getDemandeIdentificationView().getEtatMessage().isEncoreATraiter()) {
+			Flash.warning("Ce message a déjà été traité, vous avez été redirigé vers la liste des messages");
+		}
+		else {
+			identificationMessagesEditManager.expertiser(idMessage);
+		}
+		return "redirect:back-from-edit.do?idToUnlock=" + idMessage + "&source=" + source;
+	}
+
+	@RequestMapping(value = "/gestion-messages/non-identifie.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	public String nonIndenfication(Model model,
+	                               @RequestParam(value = "id", required = true) Long idMessage,
+	                               @RequestParam(value = "source", required = true) Source source) {
+
+		// verrouilage du message (ne l'est-il pas déjà ?)
+		identificationMessagesEditManager.verouillerMessage(idMessage);
+		return showConfirmationNonIdentification(model, idMessage, source, new NonIdentificationMessageEditView());
+	}
+
+	private String showConfirmationNonIdentification(Model model,
+	                                                 Long idMessage,
+	                                                 Source source,
+	                                                 NonIdentificationMessageEditView view) {
+
+		// remplissage du modèle pour affichage de page de confirmation (avec choix du motif)
+		final IdentificationMessagesEditView editView = identificationMessagesEditManager.getView(idMessage);
+		model.addAttribute("messageData", editView.getDemandeIdentificationView());
+		model.addAttribute("source", source);
+		model.addAttribute("erreursMessage", identificationMapHelper.initErreurMessage());
+		model.addAttribute("nonIdentification", view);
+
+		return "identification/gestion-messages/nonIdentifie";
+	}
+
+	@RequestMapping(value = "/gestion-messages/non-identifie.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	public String confirmeNonIdentification(Model model,
+	                                        @Valid @ModelAttribute(value = "nonIdentification") NonIdentificationMessageEditView view,
+	                                        BindingResult bindingResult,
+	                                        @RequestParam(value = "id", required = true) Long idMessage,
+	                                        @RequestParam(value = "source", required = true) Source source) {
+
+		if (bindingResult.hasErrors()) {
+			return showConfirmationNonIdentification(model, idMessage, source, view);
+		}
+
+		final IdentificationMessagesEditView aModifier = identificationMessagesEditManager.getView(idMessage);
+		if (!aModifier.getDemandeIdentificationView().getEtatMessage().isEncoreATraiter()) {
+			Flash.warning("Ce message a déjà été traité, vous avez été redirigé vers la liste des messages");
+		}
+		else {
+			identificationMessagesEditManager.impossibleAIdentifier(idMessage, view.getErreurMessage());
+		}
+		return "redirect:back-from-edit.do?idToUnlock=" + idMessage + "&source=" + source;
+	}
+
+	@RequestMapping(value = "/gestion-messages/identifie.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	public String identifie(Model model,
+	                        @RequestParam(value = "id", required = true) Long idMessage,
+	                        @RequestParam(value = "source", required = true) Source source,
+	                        @ModelAttribute(value = "identificationSelect") IdentificationManuelleMessageEditView donneeIdentification,
+	                        BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			return "redirect:edit.do?id=" + idMessage + "&source=" + source;
+		}
+
+		final IdentificationMessagesEditView aModifier = identificationMessagesEditManager.getView(idMessage);
+		if (!aModifier.getDemandeIdentificationView().getEtatMessage().isEncoreATraiter()) {
+			Flash.warning("Ce message a déjà été traité, vous avez été redirigé vers la liste des messages");
+		}
+		else {
+			final IdentificationContribuable.Etat etat;
+			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
+				etat = IdentificationContribuable.Etat.TRAITE_MAN_EXPERT;
+			}
+			else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+				etat = IdentificationContribuable.Etat.TRAITE_MANUELLEMENT;
+			}
+			else {
+				throw new AccessDeniedException(ACCESS_DENIED_ACTION_MESSAGE);
+			}
+			identificationMessagesEditManager.forceIdentification(idMessage, donneeIdentification.getContribuableIdentifie(), etat);
+		}
+		return "redirect:back-from-edit.do?idToUnlock=" + idMessage + "&source=" + source;
+
+	}
+
 	private ModelAndView buildResponseFromSource(HttpServletRequest request, Source source, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
 		if (source == Source.enCours) {
 			return buildResponseForMessageEnCours(request, criteria, model);
@@ -245,15 +514,15 @@ public class IdentificationController {
 		throw new IllegalArgumentException("Invalid value for source parameter");
 	}
 
-	private ModelAndView buildModelAndViewFromSource(HttpServletRequest request, Source source, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
-		if (source == Source.enCours) {
+	private ModelAndView buildModelAndViewFromSource(Source source) {
+		switch (source) {
+		case enCours:
 			return new ModelAndView("redirect:/identification/gestion-messages/listEnCours.do");
-		}
-		else if (source == Source.suspendu) {
+		case suspendu:
 			return new ModelAndView("redirect:/identification/gestion-messages/listSuspendu.do");
+		default:
+			throw new IllegalArgumentException("Invalid value for source parameter");
 		}
-
-		throw new IllegalArgumentException("Invalid value for source parameter");
 	}
 
 	@RequestMapping(value = "/gestion-messages/listEnCours.do", method =  {RequestMethod.POST, RequestMethod.GET})
@@ -565,7 +834,13 @@ public class IdentificationController {
 	 */
 	protected TypeDemande[] getAllowedTypes() {
 		final Set<TypeDemande> types = EnumSet.noneOf(TypeDemande.class);
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
+			types.add(TypeDemande.MELDEWESEN);
+			types.add(TypeDemande.NCS);
+			types.add(TypeDemande.IMPOT_SOURCE);
+			types.add(TypeDemande.RAPPROCHEMENT_RF);
+		}
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 			types.add(TypeDemande.MELDEWESEN);
 			types.add(TypeDemande.NCS);
 			types.add(TypeDemande.IMPOT_SOURCE);
@@ -576,6 +851,9 @@ public class IdentificationController {
 		if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 			types.add(TypeDemande.IMPOT_SOURCE);
 		}
+		if (SecurityHelper.isGranted(securityProvider, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB)) {
+			types.add(TypeDemande.RAPPROCHEMENT_RF);
+		}
 
 		if (types.isEmpty()) {
 			// aucun droit... plutôt que tous
@@ -585,12 +863,6 @@ public class IdentificationController {
 			return types.toArray(new TypeDemande[types.size()]);
 		}
 	}
-
-	public boolean areUsed(String parametreEtat, String parametrePeriode, String parametreTypeMessage) {
-		return (parametreEtat != null) || (parametrePeriode != null) || (parametreTypeMessage != null);
-	}
-
-
 
 	protected Map<String, String> initMapEmetteurIdMessageEncours() {
 		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
@@ -637,7 +909,7 @@ public class IdentificationController {
 	}
 
 	@InitBinder("identificationCriteria")
-	protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
+	protected void initBinderIdentificationCriteria(HttpServletRequest request, WebDataBinder binder) {
 		binder.setValidator(validator);
 		Locale locale = request.getLocale();
 		SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_FORMAT_DISPLAY, locale);
@@ -654,11 +926,32 @@ public class IdentificationController {
 		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true, false));
 	}
 
+	@InitBinder("message")
+	protected void initBinderMessage(WebDataBinder binder) {
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false));
+	}
+
+	@InitBinder("identificationSearchCriteria")
+	protected void initBinderCtbSearchCriteria(WebDataBinder binder) {
+		binder.setValidator(new TiersCriteriaValidator());
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false));
+	}
+
+	@InitBinder("nonIdentification")
+	protected void initBinderNonIdentification(WebDataBinder binder) {
+		binder.setValidator(new NonIdentificationMessageEditValidator());
+	}
+
+	@InitBinder("identificationSelect")
+	protected void initBinderSelectIdentification(WebDataBinder binder) {
+		binder.setValidator(new IdentificationManuelleMessageEditValidator());
+	}
+
 	private void deverouillerMessage(IdentificationContribuableListCriteria criteria) throws Exception {
 		final Long[] tabIdsMessages = criteria.getTabIdsMessages();
 		if (tabIdsMessages != null) {
-			for (int i = 0; i < tabIdsMessages.length; i++) {
-				identificationMessagesEditManager.deVerouillerMessage(tabIdsMessages[i], true);
+			for (final Long tabIdsMessage : tabIdsMessages) {
+				identificationMessagesEditManager.deVerouillerMessage(tabIdsMessage, true);
 			}
 		}
 	}
@@ -666,8 +959,8 @@ public class IdentificationController {
 	private void verouillerMessage(IdentificationContribuableListCriteria criteria) throws Exception {
 		final Long[] tabIdsMessages = criteria.getTabIdsMessages();
 		if (tabIdsMessages != null) {
-			for (int i = 0; i < tabIdsMessages.length; i++) {
-				identificationMessagesEditManager.verouillerMessage(tabIdsMessages[i]);
+			for (final Long tabIdsMessage : tabIdsMessages) {
+				identificationMessagesEditManager.verouillerMessage(tabIdsMessage);
 			}
 		}
 	}

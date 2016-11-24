@@ -102,10 +102,9 @@ var IdentificationCtb = {
     /*
      * message impossible à identifier
      */
-    confirmerImpossibleAIdentifier: function(id) {
+    confirmerImpossibleAIdentifier: function() {
         if(confirm('Voulez-vous marquer le message comme impossible à identifier ?')) {
-            var form = $("#formNonIdentifie");
-            form.attr('action', 'nonIdentifie.do');
+            const form = $("#formNonIdentifie");
             form.submit();
         }
     },
@@ -113,7 +112,10 @@ var IdentificationCtb = {
     Page_Identifier: function(idCtb) {
         if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {
             $("table#personne a.key").replaceWith('<span>&nbsp;</span>');
-            Form.doPostBack("theForm", "identifier", idCtb);
+	        const input = $('#contribuableIdentifie')[0];
+	        input.setAttribute('value', idCtb);
+	        const form = $("#formIdentification");
+	        form.submit();
         }
     }
 };

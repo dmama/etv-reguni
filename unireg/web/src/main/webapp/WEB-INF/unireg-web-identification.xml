@@ -33,33 +33,15 @@
 		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
 		<property name="validator" ref="identificationMessageValidator" />
 		<property name="controllerUtils" ref="controllerUtils" />
-
-
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="messageSource" ref="messageSource"/>
 	</bean>
 	
 	<bean id="identificationMessagesStatsManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManagerImpl">
 		<property name="identCtbService" ref="identCtbService" />
 	</bean>
 
-	<bean id="identificationMessagesEditController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesEditController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="identification/identification" />
-		<property name="successView" value="edit.do" />
-		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
-		<property name="validator" ref="tiersCriteriaValidator"/>
-	</bean>
-	<bean id="identificationMessagesNonIdentifieController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesNonIdentifieController" parent="abstractIdentificationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="identification/gestion-messages/nonIdentifie" />
-		<property name="successView" value="nonIdentifie.do" />
-		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
-		<property name="validator" ref="tiersCriteriaValidator"/>
-	</bean>
-	
 	<bean id="identificationMessagesEditManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManagerImpl">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />

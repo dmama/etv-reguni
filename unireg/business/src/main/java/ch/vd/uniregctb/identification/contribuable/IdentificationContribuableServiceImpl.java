@@ -853,7 +853,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param personne la personne physique identifiée
 	 * @throws Exception en cas de problème
 	 */
-	private void identifieAutomatiquement(IdentificationContribuable message, PersonnePhysique personne) throws Exception {
+	private void identifieAutomatiquement(IdentificationContribuable message, PersonnePhysique personne) {
 		identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
 	}
 
@@ -865,7 +865,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param etat     le mode d'identification (manuel ou automatique)
 	 * @throws Exception si ça a pas marché
 	 */
-	private void identifie(IdentificationContribuable message, PersonnePhysique personne, Etat etat) throws Exception {
+	private void identifie(IdentificationContribuable message, PersonnePhysique personne, Etat etat) {
 		Assert.notNull(personne);
 
 		// [UNIREG-1911] On retourne le numéro du ménage-commun associé s'il existe
@@ -926,7 +926,44 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.setTraitementUser(user);
 
 		LOGGER.info(String.format("Le message n°%d est passé dans l'état [%s]. Numéro du contribuable trouvé = %d", messageReponse.getId(), etat, personne.getNumero()));
-		messageHandler.sendReponse(messageReponse);
+		sendReponse(messageReponse);
+	}
+
+	/**
+	 * Envoie une réponse d'identification <b>lorsqu'un contribuable a été identifié formellement</b>.
+	 *
+	 * @param message  la requête d'identification initiale
+	 * @param entreprise l'entreprise identifiée
+	 * @param etat     le mode d'identification (manuel ou automatique)
+	 * @throws Exception si ça a pas marché
+	 */
+	private void identifie(IdentificationContribuable message, Entreprise entreprise, Etat etat) {
+		Assert.notNull(entreprise);
+
+		final String user = AuthenticationHelper.getCurrentPrincipal();
+
+		final Reponse reponse = new Reponse();
+		reponse.setDate(DateHelper.getCurrentDate());
+		reponse.setNoContribuable(entreprise.getNumero());
+
+		final IdentificationContribuable messageReponse = new IdentificationContribuable();
+		messageReponse.setId(message.getId());
+		messageReponse.setHeader(message.getHeader());
+		messageReponse.setNbContribuablesTrouves(1);
+		messageReponse.setCommentaireTraitement(null);
+		messageReponse.setReponse(reponse);
+		messageReponse.setEtat(etat);
+		messageReponse.getHeader().setBusinessUser(traduireBusinessUser(user));
+
+		message.setNbContribuablesTrouves(1);
+		message.setCommentaireTraitement(null);
+		message.setReponse(reponse);
+		message.setEtat(etat);
+		message.setDateTraitement(DateHelper.getCurrentDate());
+		message.setTraitementUser(user);
+
+		LOGGER.info(String.format("Le message n°%d est passé dans l'état [%s]. Numéro du contribuable trouvé = %d", messageReponse.getId(), etat, entreprise.getNumero()));
+		sendReponse(messageReponse);
 	}
 
 	/**
@@ -996,9 +1033,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * Envoie une réponse <b>lorsqu'un contribuable n'a définitivement pas été identifié</b>.
 	 *
 	 * @param message la requête d'identification initiale
-	 * @throws Exception si ça a pas marché
 	 */
-	private void nonIdentifie(IdentificationContribuable message, Erreur erreur) throws Exception {
+	private void nonIdentifie(IdentificationContribuable message, Erreur erreur) {
 
 		final Etat etat = Etat.NON_IDENTIFIE; // par définition
 
@@ -1025,8 +1061,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(String.format("Le message n°%d est passé dans l'état [%s]. Aucun contribuable trouvé.", messageReponse.getId(), etat));
 		}
-
-		messageHandler.sendReponse(messageReponse);
+		sendReponse(messageReponse);
 	}
 
 	/**
@@ -1034,7 +1069,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param message
 	 */
-	private void notifieAttenteIdentifManuel(IdentificationContribuable message) throws Exception {
+	private void notifieAttenteIdentifManuel(IdentificationContribuable message) {
 		final Etat etat = Etat.A_TRAITER_MANUELLEMENT; // par définition
 
 		final Reponse reponse = new Reponse();
@@ -1051,7 +1086,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(String.format("Le message n°%d est passé dans l'état [%s], le demandeur va en être notifié.", messageReponse.getId(), etat));
 		}
-		messageHandler.sendReponse(messageReponse);
+		sendReponse(messageReponse);
+	}
+
+	private void sendReponse(IdentificationContribuable message) {
+		try {
+			messageHandler.sendReponse(message);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -1089,18 +1133,25 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * Force l'identification du contribuable
+	 * Force l'identification du contribuable personne physique
 	 *
 	 * @param identificationContribuable
 	 * @param personne
 	 * @throws Exception
 	 */
 	@Override
-	public void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat)
-			throws Exception {
-
-		identificationContribuable.setEtat(etat); // <--- ça sert à quoi de le faire ici ?
+	public void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat) {
+		identificationContribuable.setEtat(etat);   // <--- ça sert à quoi de le faire ici ?
 		identifie(identificationContribuable, personne, etat);
+	}
+
+	/**
+	 * Force l'identification du contribuable entreprise
+	 */
+	@Override
+	public void forceIdentification(IdentificationContribuable identificationContribuable, Entreprise entreprise, Etat etat) {
+		identificationContribuable.setEtat(etat);   // <--- ça sert à quoi de le faire ici ?
+		identifie(identificationContribuable, entreprise, etat);
 	}
 
 	private final Map<TypeDemande, Consumer<IdentificationContribuable>> MAP_SOUMISSION = buildMapSoumission();
@@ -1302,7 +1353,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @throws Exception
 	 */
 	@Override
-	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception {
+	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) {
 		nonIdentifie(identificationContribuable, erreur);
 	}
 
@@ -1474,7 +1525,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	@Override
-	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {
+	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) {
 		// Ensuite : effectuer l'identification
 
 		final Demande demande = message.getDemande();

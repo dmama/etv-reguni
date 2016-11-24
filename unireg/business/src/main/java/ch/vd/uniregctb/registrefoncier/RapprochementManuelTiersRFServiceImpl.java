@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class RapprochementManuelTiersRFServiceImpl implements RapprochementManuelTiersRFService {
 
@@ -80,8 +81,8 @@ public class RapprochementManuelTiersRFServiceImpl implements RapprochementManue
 		demande.setTransmetteur(null);
 		demande.setTypeDemande(TypeDemande.RAPPROCHEMENT_RF);
 		demande.setTypeMessage(TYPE_MESSAGE_IDENTIFICATION);
-
-		// TODO ne manque-t-il pas un type de tiers à rechercher ?
+		demande.setPeriodeFiscale(DateHelper.getCurrentYear());
+		demande.setTypeContribuableRecherche(extractTypeTiersRecherche(tiersRF));
 
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId(String.format("%d %d", tiersRF.getId(), demande.getDate().getTime()));
@@ -98,8 +99,17 @@ public class RapprochementManuelTiersRFServiceImpl implements RapprochementManue
 		hibernateTemplate.merge(pseudoMessage);
 	}
 
+	private static TypeTiers extractTypeTiersRecherche(TiersRF tiersRF) {
+		if (tiersRF instanceof PersonnePhysiqueRF) {
+			return TypeTiers.PERSONNE_PHYSIQUE;
+		}
+		else {
+			return TypeTiers.ENTREPRISE;
+		}
+	}
+
 	@NotNull
-	private CriteresPersonne extractCriteresPersonne(TiersRF tiersRF) {
+	private static CriteresPersonne extractCriteresPersonne(TiersRF tiersRF) {
 		final CriteresPersonne criteres;
 		if (tiersRF instanceof PersonnePhysiqueRF) {
 			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) tiersRF;
