@@ -173,9 +173,10 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 
 		@Override
 		protected String getDataString() {
+			final StringRenderer<Long> renderer = l -> Optional.ofNullable(l).map(String::valueOf).orElse("...");
 			return String.format("%s, candidats=%s",
 			                     super.getDataString(),
-		                         toString(candidats, lst -> CollectionsUtils.toString(lst, StringRenderer.DEFAULT, "/")));
+		                         toString(candidats, lst -> CollectionsUtils.toString(lst, renderer, "/")));
 		}
 	}
 

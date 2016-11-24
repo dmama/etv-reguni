@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +188,15 @@ public class RapprochementTiersRFProcessor {
 		}
 		catch (TooManyIdentificationPossibilitiesException e) {
 			// rien de spécial, pas d'identification positive, c'est tout...
-			resultatIdentification = e.getExamplesFound();
+			final List<Long> examplesFound = e.getExamplesFound();
+			if (examplesFound == null || examplesFound.isEmpty()) {
+				resultatIdentification = examplesFound;
+			}
+			else {
+				// on ajoute un "null" à la fin de la liste pour indiquer qu'il y a d'autres données...
+				resultatIdentification = Stream.concat(examplesFound.stream(), Stream.of((Long) null))
+						.collect(Collectors.toList());
+			}
 		}
 
 		// on n'a rien identifier... il faut faire une demande d'identification manuelle...

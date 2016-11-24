@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.itextpdf.text.pdf.PdfWriter;
@@ -122,6 +124,7 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 	private TemporaryFile nonIdentfiesAsCsvFile(List<RapprochementTiersRFResults.NonIdentification> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
+			final Function<Long, String> candidateRenderer = l -> Optional.ofNullable(l).map(String::valueOf).orElse("...");
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RapprochementTiersRFResults.NonIdentification>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
@@ -142,7 +145,7 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 					b.append(CsvHelper.escapeChars(elt.nomRaisonSocialeRF)).append(COMMA);
 					b.append(CsvHelper.escapeChars(elt.prenomRF)).append(COMMA);
 					b.append(elt.dateNaissanceRF).append(COMMA);
-					b.append(elt.candidats.stream().sorted().map(String::valueOf).collect(Collectors.joining(" / ")));
+					b.append(elt.candidats.stream().sorted(Comparator.nullsLast(Comparator.naturalOrder())).map(candidateRenderer).collect(Collectors.joining(" / ")));
 					return true;
 				}
 			});
