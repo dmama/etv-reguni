@@ -183,6 +183,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		catch (Exception e) {
 			LOGGER.warn("Erreur lors du processing de l'événement d'import RF avec l'id = [" + importId + "]", e);
 			updateEvent(importId, EtatEvenementRF.EN_ERREUR, ExceptionUtils.getStackTrace(e));
+			throw new RuntimeException(e);
 		}
 	}
 
