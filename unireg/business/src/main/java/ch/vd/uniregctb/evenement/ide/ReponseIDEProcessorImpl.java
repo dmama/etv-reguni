@@ -141,14 +141,14 @@ public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 			}
 			/* Cas d'erreur */
 			else {
-				Audit.warn(annonceIDE.getNumero(), String.format("Refus de l'IDE pour cause d'erreur. L'inscription ou la modification de l'entreprise n°%s a été rejetée. (Voir les erreurs ci-dessus)",
+				Audit.warn(annonceIDE.getNumero(), String.format("Refus de l'IDE pour cause d'erreur. L'inscription ou la modification de l'entreprise n°%s a été rejetée.",
 				                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 				           )
 				);
 			}
 		}
 		else if (statut == StatutAnnonce.REJET_RCENT) {
-			Audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'entreprise n°%s par RCEnt. (Voir les erreurs ci-dessus)",
+			Audit.warn(annonceIDE.getNumero(), String.format("Rejet de demande d'annonce portant sur l'entreprise n°%s par RCEnt.",
 			                                                 FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())
 			           )
 			);
