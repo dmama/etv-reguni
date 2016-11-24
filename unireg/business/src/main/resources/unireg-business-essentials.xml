@@ -213,8 +213,6 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
-	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />
-
 	<bean id="jmsStatsService" class="ch.vd.uniregctb.stats.StatsServiceGroup">
 		<property name="statsService" ref="statsService" />
 		<property name="groupName" value="JMS" />

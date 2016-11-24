@@ -22,4 +22,8 @@
 
 	<alias alias="globalTiersSearcher" name="globalTiersSearcherTracing"/>
 
+	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl">
+		<property name="logPeriode" value="${extprop.stats.log.period}"/>
+	</bean>
+
 </beans>

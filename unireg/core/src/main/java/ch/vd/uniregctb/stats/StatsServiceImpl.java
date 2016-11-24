@@ -39,7 +39,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private static final String CR = System.lineSeparator();
 
 	private static final long UNE_MINUTE = 60000L;
-	private static final int LOG_PERIODE = 5; // 5 * UNE_MINUTE
+	private int logPeriode = 5; // 5 * UNE_MINUTE
 
 	private final Timer timer = new Timer("StatsServiceTicking");
 	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<>();
@@ -48,10 +48,17 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private final Map<String, JobMonitor> jobMonitors = new HashMap<>();
 	private long lastLoggedCallTime = 0;
 
+	/**
+	 * @param logPeriode la période de logging des statistiques des caches (en minutes, 0 pour désactiver le logging)
+	 */
+	public void setLogPeriode(int logPeriode) {
+		this.logPeriode = logPeriode;
+	}
+
 	private final class TickingTask extends TimerTask {
 
 		/**
-		 * Compteur d'appels à la méthode {@link #run} : on loggue en plus les statistiques tous les {@link #LOG_PERIODE} appels
+		 * Compteur d'appels à la méthode {@link #run} : on loggue en plus les statistiques tous les {@link #logPeriode} appels
 		 */
 		private int compteur = 0;
 
@@ -59,9 +66,11 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		public void run() {
 
 			// on loggue d'abord les stats avant de faire glisser
-			compteur = (compteur + 1) % LOG_PERIODE;
-			if (compteur == 0 && LOGGER.isInfoEnabled()) {
-				logStats();
+			if (logPeriode > 0) {
+				compteur = (compteur + 1) % logPeriode;
+				if (compteur == 0 && LOGGER.isInfoEnabled()) {
+					logStats();
+				}
 			}
 
 			// la minute est finie -> "top"!

@@ -68,4 +68,8 @@
 
 	<bean id="evenementDocumentSortantSender" class="ch.vd.uniregctb.evenement.docsortant.MockEvenementDocumentSortantSender"/>
 
+	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl">
+		<property name="logPeriode" value="0"/>
+	</bean>
+
 </beans>

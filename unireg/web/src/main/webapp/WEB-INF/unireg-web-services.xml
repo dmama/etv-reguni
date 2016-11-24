@@ -35,4 +35,8 @@
 
 	<bean id="delayedDownloadService" class="ch.vd.uniregctb.common.DelayedDownloadServiceImpl"/>
 
+	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl">
+		<property name="logPeriode" value="${extprop.stats.log.period}"/>
+	</bean>
+
 </beans>
