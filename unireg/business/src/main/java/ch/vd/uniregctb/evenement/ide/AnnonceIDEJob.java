@@ -169,7 +169,7 @@ public class AnnonceIDEJob extends JobDefinition {
 		finally {
 			session.close();
 		}
-		return resultatEntreprise;
+		return resultatEntreprise.getAnnoncesIDE().isEmpty() ? null : resultatEntreprise;
 	}
 
 	/**

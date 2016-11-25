@@ -107,8 +107,11 @@ public class PdfAnnoncesIDERapport extends PdfRapport {
 
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, AnnonceIDEJobResults.AnnonceInfo elt) {
-				b.append(elt.entrepriseId).append(COMMA);
 				final BaseAnnonceIDE ann = elt.annonceIDE;
+				if (ann == null) {
+					return false;
+				}
+				b.append(elt.entrepriseId).append(COMMA);
 				String ligneNumero = ann instanceof AnnonceIDE ? ((AnnonceIDE) ann).getNumero().toString() : "";
 				b.append(asCsvField(escapeChars(ligneNumero))).append(COMMA);
 				b.append(asCsvField(escapeChars(ann.getType().toString()))).append(COMMA);
