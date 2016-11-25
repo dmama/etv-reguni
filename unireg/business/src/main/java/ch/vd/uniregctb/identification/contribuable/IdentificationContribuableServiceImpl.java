@@ -87,6 +87,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -1257,31 +1258,38 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			final Demande demande = message.getDemande();
 			Assert.notNull(demande, "Le message ne contient aucune demande.");
 
-			final CriteresPersonne criteresPersonne = demande.getPersonne();
-			Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
-
-			final Mutable<String> avsUpi = new MutableObject<>();
-			IdentificationResultKind resultKind;
+			// [SIFISC-20374] Pour le moment, on bloque toute tentative automatique d'identification de contribuable non-PP
 			List<Long> found;
-			try {
-				found = identifiePersonnePhysique(criteresPersonne, avsUpi);
-				switch (found.size()) {
-				case 0:
-					resultKind = IdentificationResultKind.FOUND_NONE;
-					break;
-				case 1:
-					resultKind = IdentificationResultKind.FOUND_ONE;
-					break;
-				default:
-					resultKind = IdentificationResultKind.FOUND_SEVERAL;
-					break;
+			IdentificationResultKind resultKind;
+			if (demande.getTypeContribuableRecherche() != TypeTiers.PERSONNE_PHYSIQUE) {
+				resultKind = IdentificationResultKind.FOUND_NONE;
+				found = Collections.emptyList();
+			}
+			else {
+				final CriteresPersonne criteresPersonne = demande.getPersonne();
+				Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
+
+				final Mutable<String> avsUpi = new MutableObject<>();
+				try {
+					found = identifiePersonnePhysique(criteresPersonne, avsUpi);
+					switch (found.size()) {
+					case 0:
+						resultKind = IdentificationResultKind.FOUND_NONE;
+						break;
+					case 1:
+						resultKind = IdentificationResultKind.FOUND_ONE;
+						break;
+					default:
+						resultKind = IdentificationResultKind.FOUND_SEVERAL;
+						break;
+					}
 				}
+				catch (TooManyIdentificationPossibilitiesException e) {
+					found = e.getExamplesFound();
+					resultKind = IdentificationResultKind.FOUND_MANY;
+				}
+				message.setNAVS13Upi(avsUpi.getValue());
 			}
-			catch (TooManyIdentificationPossibilitiesException e) {
-				found = e.getExamplesFound();
-				resultKind = IdentificationResultKind.FOUND_MANY;
-			}
-			message.setNAVS13Upi(avsUpi.getValue());
 
 			if (resultKind == IdentificationResultKind.FOUND_ONE) {
 				// on a trouvé un et un seul contribuable:
@@ -1533,44 +1541,48 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final CriteresPersonne criteresPersonne = demande.getPersonne();
 		if (criteresPersonne != null) {
-			final Mutable<String> avsUpi = new MutableObject<>();
-			List<Long> found;
-			IdentificationResultKind resultKind;
-			try {
-				found = identifiePersonnePhysique(criteresPersonne, avsUpi);
-				switch (found.size()) {
-				case 0:
-					resultKind = IdentificationResultKind.FOUND_NONE;
-					break;
-				case 1:
-					resultKind = IdentificationResultKind.FOUND_ONE;
-					break;
-				default:
-					resultKind = IdentificationResultKind.FOUND_SEVERAL;
-					break;
+
+			// [SIFISC-20374] Pour le moment, on bloque toute tentative automatique d'identification de contribuable non-PP
+			if (demande.getTypeContribuableRecherche() == TypeTiers.PERSONNE_PHYSIQUE) {
+				final Mutable<String> avsUpi = new MutableObject<>();
+				List<Long> found;
+				IdentificationResultKind resultKind;
+				try {
+					found = identifiePersonnePhysique(criteresPersonne, avsUpi);
+					switch (found.size()) {
+					case 0:
+						resultKind = IdentificationResultKind.FOUND_NONE;
+						break;
+					case 1:
+						resultKind = IdentificationResultKind.FOUND_ONE;
+						break;
+					default:
+						resultKind = IdentificationResultKind.FOUND_SEVERAL;
+						break;
+					}
 				}
-			}
-			catch (TooManyIdentificationPossibilitiesException e) {
-				found = e.getExamplesFound();
-				resultKind = IdentificationResultKind.FOUND_MANY;
-			}
-			message.setNAVS13Upi(avsUpi.getValue());
+				catch (TooManyIdentificationPossibilitiesException e) {
+					found = e.getExamplesFound();
+					resultKind = IdentificationResultKind.FOUND_MANY;
+				}
+				message.setNAVS13Upi(avsUpi.getValue());
 
-			// un résultat trouvé -> on a réussi !
-			if (resultKind == IdentificationResultKind.FOUND_ONE) {
-				// on a trouvé un et un seul contribuable:
-				final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
+				// un résultat trouvé -> on a réussi !
+				if (resultKind == IdentificationResultKind.FOUND_ONE) {
+					// on a trouvé un et un seul contribuable:
+					final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(found.get(0));
 
-				// on peut répondre immédiatement
-				identifieAutomatiquement(message, personne);
-				return true;
-			}
+					// on peut répondre immédiatement
+					identifieAutomatiquement(message, personne);
+					return true;
+				}
 
-			// pas ou trop de résultats -> mettre à jour la valeur associée à l'erreur
-			message.setNbContribuablesTrouves(resultKind != IdentificationResultKind.FOUND_MANY ? found.size() : null);
-			message.setCommentaireTraitement(getMessageNonIdentification(found, resultKind));
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(String.format("Le message %d doit être traité manuellement. %s", message.getId(), message.getCommentaireTraitement()));
+				// pas ou trop de résultats -> mettre à jour la valeur associée à l'erreur
+				message.setNbContribuablesTrouves(resultKind != IdentificationResultKind.FOUND_MANY ? found.size() : null);
+				message.setCommentaireTraitement(getMessageNonIdentification(found, resultKind));
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Le message %d doit être traité manuellement. %s", message.getId(), message.getCommentaireTraitement()));
+				}
 			}
 		}
 		else {
