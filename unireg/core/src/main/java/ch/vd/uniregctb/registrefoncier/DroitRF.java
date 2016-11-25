@@ -107,6 +107,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		this.masterIdRF = masterIdRF;
 	}
 
+	// configuration hibernate : l'ayant-droit ne possède pas les droits (les droits pointent vers les ayants-droits, c'est tout)
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "AYANT_DROIT_ID", nullable = false)
 	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
@@ -119,6 +120,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		this.ayantDroit = ayantDroit;
 	}
 
+	// configuration hibernate : l'immeuble ne possède pas les droits (les droits pointent vers les immeubles, c'est tout)
 	@ManyToOne
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID")

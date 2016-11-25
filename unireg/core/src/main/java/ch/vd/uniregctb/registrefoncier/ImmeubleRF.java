@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -76,9 +74,9 @@ public abstract class ImmeubleRF {
 	private Set<EstimationRF> estimations;
 
 	/**
-	 * Le ou les bâtiments (multiples + historisés) correspondants à l'immeuble.
+	 * Le ou les bâtiments (multiples + historisés) implanté sur cet immeuble.
 	 */
-	private Set<BatimentRF> batiments;
+	private Set<ImplantationRF> implantations;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -118,6 +116,7 @@ public abstract class ImmeubleRF {
 		this.urlIntercapi = urlIntercapi;
 	}
 
+	// configuration hibernate : l'immeuble possède les situations
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_SIT_RF_IMMEUBLE_ID")
@@ -136,6 +135,7 @@ public abstract class ImmeubleRF {
 		this.situations.add(situation);
 	}
 
+	// configuration hibernate : l'immeuble possède les surfaces totales
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_SURF_TOT_RF_IMMEUBLE_ID")
@@ -154,6 +154,7 @@ public abstract class ImmeubleRF {
 		this.surfacesTotales.add(surfaceTotale);
 	}
 
+	// configuration hibernate : l'immeuble ne possède pas les surfaces au sol
 	@OneToMany(mappedBy = "immeuble")
 	public Set<SurfaceAuSolRF> getSurfacesAuSol() {
 		return surfacesAuSol;
@@ -163,6 +164,7 @@ public abstract class ImmeubleRF {
 		this.surfacesAuSol = surfacesAuSol;
 	}
 
+	// configuration hibernate : l'immeuble possède les estimations fiscales
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_ESTIM_RF_IMMEUBLE_ID")
@@ -181,13 +183,13 @@ public abstract class ImmeubleRF {
 		this.estimations.add(estimation);
 	}
 
-	@ManyToMany(targetEntity = BatimentRF.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "RF_IMMEUBLE_BATIMENT", joinColumns = @JoinColumn(name = "IMMEUBLE_ID"), inverseJoinColumns = @JoinColumn(name = "BATIMENT_ID"))
-	public Set<BatimentRF> getBatiments() {
-		return batiments;
+	// configuration hibernate : l'immeuble ne possède pas les implantations
+	@OneToMany(mappedBy = "immeuble")
+	public Set<ImplantationRF> getImplantations() {
+		return implantations;
 	}
 
-	public void setBatiments(Set<BatimentRF> batiments) {
-		this.batiments = batiments;
+	public void setImplantations(Set<ImplantationRF> implantations) {
+		this.implantations = implantations;
 	}
 }

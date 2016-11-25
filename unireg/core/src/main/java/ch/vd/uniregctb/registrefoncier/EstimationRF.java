@@ -119,6 +119,7 @@ public class EstimationRF extends HibernateDateRangeEntity {
 		this.enRevision = enRevision;
 	}
 
+	// configuration hibernate : l'immeuble possède les estimations fiscales
 	@ManyToOne(cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})

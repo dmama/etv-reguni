@@ -180,8 +180,7 @@ public abstract class LengthConstants {
 	public static final int RF_ID_RF = 33;
 	public static final int RF_FILE_URL = 512;
 	public static final int RF_ERROR_MESSAGE = 1000;
-	public static final int RF_CODE = 255;
-	public static final int RF_CODE_DESCRIPTION = 255;
+	public static final int RF_TYPE_BATIMENT = 255;
 	public static final int RF_PM_NUMRC = 20;
 	public static final int RF_TIERS_RAISON_SOCIALE = 255;
 	public static final int RF_TYPE_COMMUNAUTE = 22;

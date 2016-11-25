@@ -215,7 +215,6 @@
 		<value>ch.vd.uniregctb.registrefoncier.AyantDroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.BatimentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.BienFondRF</value>
-		<value>ch.vd.uniregctb.registrefoncier.CodeRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.CommuneRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.CommunauteRF</value>
@@ -229,6 +228,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.EstimationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImmeubleRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.ImplantationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.MineRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PartCoproprieteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PersonneMoraleRF</value>
@@ -236,6 +236,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SituationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.TiersRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.UsufruitRF</value>

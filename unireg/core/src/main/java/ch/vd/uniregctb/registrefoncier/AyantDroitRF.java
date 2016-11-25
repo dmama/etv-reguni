@@ -71,6 +71,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.idRF = idRF;
 	}
 
+	// configuration hibernate : l'ayant-droit ne possède pas les droits
 	@OneToMany(mappedBy = "ayantDroit")
 	public Set<DroitRF> getDroits() {
 		return droits;

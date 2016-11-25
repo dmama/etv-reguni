@@ -15,20 +15,20 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
 
 /**
- * Surface d'un immeuble inscrit au registre foncier.
+ * L'implantation d'un bâtiment sur une parcelle (immeuble)
  */
 @Entity
-@Table(name = "RF_SURFACE_AU_SOL")
+@Table(name = "RF_IMPLANTATION")
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
-public class SurfaceAuSolRF extends HibernateDateRangeEntity {
+public class ImplantationRF extends HibernateDateRangeEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -36,19 +36,20 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 	private Long id;
 
 	/**
-	 * Le type de surface.
+	 * La surface concernée en mètre carrés (m2).
 	 */
-	private String type;
+	@Nullable
+	private Integer surface;
 
 	/**
-	 * La surface en mètre carrés (m2).
-	 */
-	private int surface;
-
-	/**
-	 * L'immeuble concerné par la surface.
+	 * L'immeuble concerné par l'implantation.
 	 */
 	private ImmeubleRF immeuble;
+
+	/**
+	 * Le bâtiment concerné par l'implantation.
+	 */
+	private BatimentRF batiment;
 
 	@Transient
 	@Override
@@ -66,36 +67,40 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
-	@Index(name = "IDX_SURF_SOL_RF_TYPE")
-	@Column(name = "TYPE", nullable = false, length = LengthConstants.RF_TYPE_SURFACE_AU_SOL)
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	@Index(name = "IDX_SURF_SOL_RF_SURFACE")
-	@Column(name = "SURFACE", nullable = false)
-	public int getSurface() {
+	@Column(name = "SURFACE")
+	@Nullable
+	public Integer getSurface() {
 		return surface;
 	}
 
-	public void setSurface(int surface) {
+	public void setSurface(@Nullable Integer surface) {
 		this.surface = surface;
 	}
 
-	// configuration hibernate : l'immeuble ne possède pas les surfaces au sol
-	@ManyToOne(cascade = CascadeType.ALL)
+	// configuration hibernate : l'immeuble ne possède pas les implantations
+	@ManyToOne
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_SURF_SOL_RF_IMMEUBLE_ID")
-	@Index(name = "IDX_SURF_SOL_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
+	@ForeignKey(name = "FK_IMPLANTATION_RF_IMMEUBLE_ID")
+	@Index(name = "IDX_IMPLANTATION_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
+	}
+
+	// configuration hibernate : le bâtiment possède les implantations
+	@ManyToOne(cascade = {
+			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
+	})
+	@JoinColumn(name = "BATIMENT_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_IMPLANTATION_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
+	public BatimentRF getBatiment() {
+		return batiment;
+	}
+
+	public void setBatiment(BatimentRF batiment) {
+		this.batiment = batiment;
 	}
 }

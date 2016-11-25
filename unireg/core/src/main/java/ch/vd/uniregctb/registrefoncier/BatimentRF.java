@@ -1,21 +1,22 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
 /**
@@ -23,11 +24,7 @@ import ch.vd.uniregctb.common.LengthConstants;
  */
 @Entity
 @Table(name = "RF_BATIMENT")
-@AttributeOverrides({
-		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
-		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
-})
-public class BatimentRF extends HibernateDateRangeEntity {
+public class BatimentRF {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -37,31 +34,25 @@ public class BatimentRF extends HibernateDateRangeEntity {
 	/**
 	 * Identifiant technique du bâtiment au registre foncier.
 	 */
-	private String idRF;
+	private String masterIdRF;
 
 	/**
 	 * Le type de bâtiment.
 	 */
-	private CodeRF type;
+	private String type;
 
 	/**
-	 * La surface en mètre carrés (m2).
+	 * Les surfaces (historisées) du bâtiment
 	 */
-	private int surface;
+	private Set<SurfaceBatimentRF> surfaces;
 
 	/**
-	 * Le ou les immeubles sur lesquels le bâtiment est construit.
+	 * L'implantation ou les implantations de l'immeuble (données historisées).
 	 * <p>
 	 * La majorité des bâtiments sont construits sur une seule parcelle. Les bâtiments construits sur plusieurs parcelles
 	 * existent néanmoins. Exemples : les garages souterrains qui lient plusieurs bâtiments, les ponts, les tunnels, etc...
 	 */
-	private Set<ImmeubleRF> immeubles;
-
-	@Transient
-	@Override
-	public Object getKey() {
-		return id;
-	}
+	private Set<ImplantationRF> implantations;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -73,43 +64,53 @@ public class BatimentRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
-	@Index(name = "IDX_BATIMENT_ID_RF")
-	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
-	public String getIdRF() {
-		return idRF;
+	@Index(name = "IDX_BATIMENT_MASTER_ID_RF")
+	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
+	public String getMasterIdRF() {
+		return masterIdRF;
 	}
 
-	public void setIdRF(String idRF) {
-		this.idRF = idRF;
+	public void setMasterIdRF(String masterIdRF) {
+		this.masterIdRF = masterIdRF;
 	}
 
-	@AttributeOverrides({
-			@AttributeOverride(name = "code", column = @Column(name = "TYPE_CODE", length = LengthConstants.RF_CODE, nullable = false)),
-			@AttributeOverride(name = "description", column = @Column(name = "TYPE_DESCRIPTION", length = LengthConstants.RF_CODE_DESCRIPTION))
-	})
-	public CodeRF getType() {
+	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_BATIMENT, nullable = false)
+	public String getType() {
 		return type;
 	}
 
-	public void setType(CodeRF type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
-	@Column(name = "SURFACE", nullable = false)
-	public int getSurface() {
-		return surface;
+	// configuration hibernate : le bâtiment possède les surfaces du bâtiment
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "BATIMENT_ID", nullable = false)
+	@ForeignKey(name = "FK_SURF_BAT_RF_BATIMENT_ID")
+	public Set<SurfaceBatimentRF> getSurfaces() {
+		return surfaces;
 	}
 
-	public void setSurface(int surface) {
-		this.surface = surface;
+	public void setSurfaces(Set<SurfaceBatimentRF> surfaces) {
+		this.surfaces = surfaces;
 	}
 
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "batiments", targetEntity = ImmeubleRF.class)
-	public Set<ImmeubleRF> getImmeubles() {
-		return immeubles;
+	public void addSurface(@NotNull SurfaceBatimentRF surface) {
+		if (this.surfaces == null) {
+			this.surfaces = new HashSet<>();
+		}
+		this.surfaces.add(surface);
 	}
 
-	public void setImmeubles(Set<ImmeubleRF> immeubles) {
-		this.immeubles = immeubles;
+	// configuration hibernate : le bâtiment possède les implantations
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "BATIMENT_ID", nullable = false)
+	@ForeignKey(name = "FK_IMPLANTATION_RF_BATIMENT_ID")
+	public Set<ImplantationRF> getImplantations() {
+		return implantations;
+	}
+
+	public void setImplantations(Set<ImplantationRF> implantations) {
+		this.implantations = implantations;
 	}
 }

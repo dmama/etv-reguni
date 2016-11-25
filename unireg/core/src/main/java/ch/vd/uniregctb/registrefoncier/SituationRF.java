@@ -116,6 +116,7 @@ public class SituationRF extends HibernateDateRangeEntity {
 		this.index3 = index3;
 	}
 
+	// configuration hibernate : la situation pointe vers une commune, mais ne la possède pas
 	@ManyToOne
 	@JoinColumn(name = "COMMUNE_ID", nullable = false)
 	@ForeignKey(name = "FK_SITUATION_RF_COMMUNE_ID")
@@ -128,6 +129,7 @@ public class SituationRF extends HibernateDateRangeEntity {
 		this.commune = commune;
 	}
 
+	// configuration hibernate : l'immeuble possède les situations
 	@ManyToOne(cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
