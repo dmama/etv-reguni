@@ -2,11 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	<!--  Identification -->
-	<bean id="abstractIdentificationController" class="ch.vd.uniregctb.identification.contribuable.AbstractIdentificationController">
-		<property name="identificationMapHelper" ref="identificationMapHelper" />
-		<property name="tacheMapHelper" ref="tacheMapHelper" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
 
 	<bean id="identificationMessageValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessageValidator">
 		<property name="validatorList" ref="identificationMessagesListValidator" />
@@ -17,8 +12,6 @@
 	
 	<bean id="identificationMessagesStatsValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesStatsValidator" />
 	
-
-
 	<bean id="identificationMessagesListManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManagerImpl">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />

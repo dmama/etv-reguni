@@ -19,6 +19,7 @@
     <column>NAVS13</column>
     <column>DATE_NAISSANCE</column>
 	<column>DEMANDE_TYPE</column>
+	<column>TYPE_CTB_RECHERCHE</column>
     <row>
       <value>1</value>
       <value>1</value>
@@ -37,7 +38,8 @@
       <value>Lora</value>
       <value>1234567890123</value>
       <value>19730711</value>
-	  <value>MELDEWESEN</value>	
+	  <value>MELDEWESEN</value>
+      <value>PERSONNE_PHYSIQUE</value>
     </row>
     <row>
       <value>2</value>
@@ -58,6 +60,7 @@
       <value>1234567890123</value>
       <value>19730711</value>
 	  <value>NCS</value>
+      <value>PERSONNE_PHYSIQUE</value>
     </row>
     <row>
       <value>3</value>
@@ -78,6 +81,7 @@
       <value>1234567890123</value>
       <value>19730711</value>
 	  <value>IMPOT_SOURCE</value>
+      <value>PERSONNE_PHYSIQUE</value>
     </row>
   </table>
 </dataset>

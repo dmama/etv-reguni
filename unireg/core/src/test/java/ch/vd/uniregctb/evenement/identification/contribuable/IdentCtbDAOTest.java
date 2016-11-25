@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -162,6 +163,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		demande.setTransmetteur("TransMEtteUR");
 		demande.setTypeDemande(TypeDemande.NCS);
 		demande.setTypeMessage("CS_EMPLOYEUR");
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("Mon businessId");

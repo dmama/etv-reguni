@@ -18,6 +18,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class MessageIdentificationIndexerHibernateInterceptorTest extends BusinessTest {
 
@@ -49,6 +50,7 @@ public class MessageIdentificationIndexerHibernateInterceptorTest extends Busine
 		demande.setPeriodeFiscale(2010);
 		demande.setPersonne(criteres);
 		demande.setTypeDemande(TypeDemande.IMPOT_SOURCE);
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);

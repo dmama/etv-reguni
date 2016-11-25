@@ -1094,6 +1094,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		try {
 			messageHandler.sendReponse(message);
 		}
+		catch (RuntimeException | Error e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}

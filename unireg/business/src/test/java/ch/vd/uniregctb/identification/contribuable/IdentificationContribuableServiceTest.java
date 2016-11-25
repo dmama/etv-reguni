@@ -66,6 +66,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
@@ -4084,6 +4085,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(2009);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.MELDEWESEN);
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);
@@ -4112,6 +4114,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.MELDEWESEN);
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);
@@ -4136,6 +4139,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(2010);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.NCS);
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);
@@ -4160,6 +4164,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(2010);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.IMPOT_SOURCE);
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);
@@ -4184,6 +4189,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(2012);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.E_FACTURE);
+		demande.setTypeContribuableRecherche(TypeTiers.PERSONNE_PHYSIQUE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);

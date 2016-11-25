@@ -8,5 +8,6 @@ public class WebTestingConstants {
 	public static final String UNIREG_WEBUT_SECURITY = "classpath:ut/unireg-webut-security.xml";
 	public static final String UNIREG_WEBUT_ULRMAPPING = "classpath:ut/unireg-webut-url-mapping.xml";
 	public static final String UNIREG_WEBUT_CONTROLLER = "classpath:ut/unireg-webut-controller.xml";
+	public static final String UNIREG_WEBUT_ADMIN = "classpath:ut/unireg-webut-admin.xml";
 	public static final String UNIREG_WEBUT_JMX = "classpath:ut/unireg-webut-jmx.xml";
 }
