@@ -87,7 +87,7 @@ public class IdentificationContribuableCache {
 		}
 		else if (typesDemande.length == 1) {
 			final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(typesDemande[0]);
-			res = findValues(typesMessages, filter);
+			res = typesMessages != null ? findValues(typesMessages, filter) : Collections.emptyList();
 		}
 		else {
 			final List<String> accumulator = new LinkedList<>();

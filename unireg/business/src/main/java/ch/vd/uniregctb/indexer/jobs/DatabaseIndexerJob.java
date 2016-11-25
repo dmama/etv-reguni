@@ -42,10 +42,8 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 	@Override
 	public void doExecute(Map<String, Object> params) throws Exception {
-
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
-
 		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode);
 	}
 

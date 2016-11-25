@@ -128,7 +128,7 @@
 							  (message.etatMessage == 'A_EXPERTISER_SUSPENDU') || (message.etatMessage == 'A_TRAITER_MAN_SUSPENDU')}">
 
 								<c:choose>
-									<c:when test="${(message.utilisateurTraitant==null) || (message.utilisateurTraitant==command.userCourant)}">
+									<c:when test="${(message.utilisateurTraitant==null) || (message.utilisateurTraitant == identificationCriteria.userCourant)}">
 										<c:if test="${!messageTraite}">
 											<unireg:raccourciModifier onClick="traiterMessage(${message.id},'${mySource}');" tooltip="Traiter le message" />
 										</c:if>

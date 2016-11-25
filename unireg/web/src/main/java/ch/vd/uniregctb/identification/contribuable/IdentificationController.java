@@ -45,6 +45,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -218,7 +219,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = {"/gestion-messages/unlock.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.SUPERGRA}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
 	public ModelAndView deverouillerMessage(@RequestParam(value = "source", required = true) Source source,
 	                                        @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria) throws Exception {
 		deverouillerMessage(criteria);
@@ -226,7 +227,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = {"/gestion-messages/lock.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.SUPERGRA}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
 	public ModelAndView verouillerMessage(@RequestParam(value = "source", required = true) Source source,
 	                                      @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria) throws Exception {
 		verouillerMessage(criteria);
@@ -251,7 +252,7 @@ public class IdentificationController {
 
 
 	@RequestMapping(value = {"/gestion-messages/demandeEdit.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
 	public ModelAndView demanderEditionMessage(HttpServletRequest request,
 	                                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria identCriteria,
 	                                              @RequestParam(value = "id", required = true) Long idMessage,
@@ -269,7 +270,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/edit.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
 	public String editionMessage(Model model,
 	                             HttpSession session,
 	                             @RequestParam(value = "id", required = true) Long idMessage,
@@ -370,7 +371,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/edit.do", method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
 	public String rechercheContribuable(Model model,
 	                                    @Valid @ModelAttribute(value = "identificationSearchCriteria") TiersCriteriaView criteria,
 	                                    BindingResult bindingResult,
@@ -472,8 +473,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = "/gestion-messages/identifie.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	public String identifie(Model model,
-	                        @RequestParam(value = "id", required = true) Long idMessage,
+	public String identifie(@RequestParam(value = "id", required = true) Long idMessage,
 	                        @RequestParam(value = "source", required = true) Source source,
 	                        @ModelAttribute(value = "identificationSelect") IdentificationManuelleMessageEditView donneeIdentification,
 	                        BindingResult bindingResult) {
@@ -491,7 +491,7 @@ public class IdentificationController {
 			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
 				etat = IdentificationContribuable.Etat.TRAITE_MAN_EXPERT;
 			}
-			else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+			else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO, Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB)) {
 				etat = IdentificationContribuable.Etat.TRAITE_MANUELLEMENT;
 			}
 			else {
@@ -500,7 +500,6 @@ public class IdentificationController {
 			identificationMessagesEditManager.forceIdentification(idMessage, donneeIdentification.getContribuableIdentifie(), etat);
 		}
 		return "redirect:back-from-edit.do?idToUnlock=" + idMessage + "&source=" + source;
-
 	}
 
 	private ModelAndView buildResponseFromSource(HttpServletRequest request, Source source, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
@@ -533,7 +532,8 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/nav-listEnCours.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
-			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO,
+			Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	public ModelAndView listerEncours(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
@@ -541,6 +541,8 @@ public class IdentificationController {
 	                              ModelMap model) throws AdressesResolutionException {
 
 		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
+		criteria.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
+
 		addPaginationToModel(request, model);
 		return buildResponseForMessageEnCours(request, criteria, model);
 	}
@@ -590,7 +592,8 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/listEnCoursFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
-			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO,
+			Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	public ModelAndView listerEnCoursFromStats(HttpServletRequest request,
 	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
 	                                              @RequestParam(value = "periode", required = false) Integer periode,
@@ -637,7 +640,8 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/nav-listTraite.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
-			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO,
+			Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	public ModelAndView listerTraite(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
@@ -652,7 +656,8 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/listTraiteFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
-			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO,
+			Role.RAPPROCHEMENT_RF_IDENTIFICATION_CTB}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
 	public ModelAndView listerTraiteFromStats(HttpServletRequest request,
 	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
 	                                              @RequestParam(value = "periode", required = false) Integer periode,
