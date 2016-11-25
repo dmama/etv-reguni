@@ -20,12 +20,6 @@ import ch.vd.uniregctb.tiers.TypeTiers;
 public class RapprochementManuelTiersRFServiceImpl implements RapprochementManuelTiersRFService {
 
 	/**
-	 * Nom de l'attribut placé dans les headers du message d'identification
-	 * (qui sera donc retourné à l'appelant)
-	 */
-	public static final String ID_TIERS_RF = "idTiersRF";
-
-	/**
 	 * Type du message d'identification créé quand un rapprochement n'a pas pu être fait de manière automatique
 	 */
 	public static final String TYPE_MESSAGE_IDENTIFICATION = "RapprochementTiersRF";

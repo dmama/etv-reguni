@@ -31,4 +31,31 @@
 		<property name="description" value="Réception des événements du registre foncier concernant les immeubles"/>
 	</bean>
 
+	<!-- Evénements d'identification manuelle pour les rapprochements propriétaires -->
+
+	<bean id="evtIdentificationRapprochementRFListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evtIdentificationRapprochementRFEsbHandler"/>
+	</bean>
+
+	<bean id="evtIdentificationRapprochementRFEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementIdentificationRapprochementProprietaireEsbHandler">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
+	</bean>
+
+	<bean id="evtIdentificationRapprochementRFEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtRapprochementTiersRF}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtIdentificationRapprochementRFListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtRapprochementTiersRF.enabled}"/>
+		<property name="description" value="Réception des événements d'identification manuelle des rapprochements 'propriétaire'"/>
+	</bean>
+
 </beans>

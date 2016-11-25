@@ -232,9 +232,9 @@ public abstract class XmlEntityAdapter {
 	public static IdentificationContribuable xml2entity(IdentificationCTB xml) throws XmlException {
 		final IdentificationContribuable entity = new IdentificationContribuable();
 		entity.setDemande(xml2entity(xml.getDemande()));
+		entity.setReponse(xml2entity(xml.getReponse()));
 		return entity;
 	}
-
 
 	private static Demande xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande xml) throws XmlException {
 		if (xml == null) {
@@ -269,6 +269,46 @@ public abstract class XmlEntityAdapter {
 		entity.setTypeDemande(typeDemande);
 
 		return entity;
+	}
+
+	private static ch.vd.uniregctb.evenement.identification.contribuable.Reponse xml2entity(Reponse xml) {
+		if (xml == null) {
+			return null;
+		}
+
+		final ch.vd.uniregctb.evenement.identification.contribuable.Reponse reponse = new ch.vd.uniregctb.evenement.identification.contribuable.Reponse();
+		reponse.setDate(xml.getDate().getTime());
+		reponse.setEnAttenteIdentifManuel(xml.isSetEnAttenteIdentifManuel() && xml.getEnAttenteIdentifManuel() == EnAttenteIdentifManuelType.Enum.forString("true"));
+		reponse.setErreur(xml.isSetErreur() ? xml2entity(xml.getErreur()) : null);
+		reponse.setNoContribuable(xml.isSetContribuable() ? (long) xml.getContribuable().getNumeroContribuableIndividuel() : null);
+		reponse.setNoMenageCommun(xml.isSetContribuable() && xml.getContribuable().isSetNumeroContribuableCouple() ? (long) xml.getContribuable().getNumeroContribuableCouple() : null);
+		return reponse;
+	}
+
+	private static ch.vd.uniregctb.evenement.identification.contribuable.Erreur xml2entity(Erreur xml) {
+		if (xml == null) {
+			return null;
+		}
+
+		final ch.vd.uniregctb.evenement.identification.contribuable.Erreur erreur = new ch.vd.uniregctb.evenement.identification.contribuable.Erreur();
+		erreur.setType(xml2TypeErreur(xml.getType()));
+		erreur.setMessage(xml.getMessage());
+		erreur.setCode(xml.getCode());
+		return erreur;
+	}
+
+	private static TypeErreur xml2TypeErreur(TypeErreurType.Enum xml) {
+		if (xml == null) {
+			return null;
+		}
+
+		if (xml.intValue() == 1) {
+			return TypeErreur.TECHNIQUE;
+		}
+		else {
+			Assert.isEqual(2, xml.intValue());
+			return TypeErreur.METIER;
+		}
 	}
 
 	private static Demande.ModeIdentificationType translateModeIdentification(ModeIdentificationType.Enum modeIdentification) {

@@ -61,6 +61,7 @@
 				<entry key="reqDes" value-ref="reqdesEventEndpointManager"/>
 				<entry key="evenementOrganisation" value-ref="evtOrganisationEndpointManager"/>
 				<entry key="rapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>
+				<entry key="evenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFEndpointManager"/>
 			</util:map>
 		</property>
 	</bean>
