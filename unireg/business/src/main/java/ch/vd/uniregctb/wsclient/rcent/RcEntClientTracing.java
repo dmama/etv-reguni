@@ -63,10 +63,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			}
 			return data;
 		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -92,10 +88,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 				items = data.getOrganisation().size();
 			}
 			return data;
-		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -123,10 +115,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			}
 			return data;
 		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -152,10 +140,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 				items = 1;
 			}
 			return data;
-		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -183,10 +167,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			}
 			return data;
 		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -213,10 +193,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			}
 			return page;
 		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -237,10 +213,6 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 		final long time = tracing.start();
 		try {
 			target.ping();
-		}
-		catch (RcEntClientException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;

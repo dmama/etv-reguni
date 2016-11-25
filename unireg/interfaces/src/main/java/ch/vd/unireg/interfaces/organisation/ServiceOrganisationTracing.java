@@ -64,10 +64,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return organisation;
 		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -93,10 +89,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 				items = 1;
 			}
 			return noOrganisation;
-		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -124,10 +116,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return ids;
 		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -153,10 +141,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 				items = 1;
 			}
 			return organisations;
-		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -184,10 +168,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return annonceIDE;
 		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -210,14 +190,8 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 		final long time = tracing.start();
 		try {
 			final Page<AnnonceIDE> page = target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
-			if (page != null) {
-				items = page.getNumberOfElements();
-			}
+			items = page.getNumberOfElements();
 			return page;
-		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
@@ -245,10 +219,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			}
 			return annonceIDEStatut;
 		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
-		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
@@ -270,10 +240,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 		final long time = tracing.start();
 		try {
 			target.ping();
-		}
-		catch (ServiceOrganisationException e) {
-			t = e;
-			throw e;
 		}
 		catch (RuntimeException | Error e) {
 			t = e;

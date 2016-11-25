@@ -157,7 +157,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		// on fait la requête au client
 		final Page<NoticeRequestReport> notices = client.findNotices(query.toFindNoticeQuery(), order, pageNumber + 1, resultsPerPage);
 		if (notices == null) {
-			return new PageImpl<AnnonceIDE>(Collections.<AnnonceIDE>emptyList(), pageable, 0);
+			return new PageImpl<>(Collections.<AnnonceIDE>emptyList(), pageable, 0);
 		}
 		else {
 			// on adapte les réponses
@@ -166,7 +166,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 				final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
 				annonces.add(a);
 			}
-			return new PageImpl<AnnonceIDE>(annonces, pageable, notices.getTotalElements());
+			return new PageImpl<>(annonces, pageable, notices.getTotalElements());
 		}
 	}
 
