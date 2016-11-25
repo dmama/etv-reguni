@@ -192,6 +192,7 @@ public class DataRFMutationsDetector {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
 					LOGGER.error("Exception sur le traitement de l'immeuble idRF=[" + first.get().getGrundstueckID() + "]", e);
+					throw new RuntimeException(e);
 				}
 			}
 		}, null);
@@ -358,6 +359,7 @@ public class DataRFMutationsDetector {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
 					LOGGER.error("Exception sur le traitement des droits de l'ayant-droit idRF=[" + first.get().getKey() + "]", e);
+					throw new RuntimeException(e);
 				}
 			}
 		}, null);
@@ -437,6 +439,7 @@ public class DataRFMutationsDetector {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
 					LOGGER.error("Exception sur le traitement du propriétaire idRF=[" + first.get().getPersonstammID() + "]", e);
+					throw new RuntimeException(e);
 				}
 			}
 		}, null);
@@ -595,6 +598,7 @@ public class DataRFMutationsDetector {
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
 					LOGGER.error("Exception sur le traitement des surfaces au sol de l'immeuble idRF=[" + first.get().getKey() + "]", e);
+					throw new RuntimeException(e);
 				}
 			}
 		}, null);
