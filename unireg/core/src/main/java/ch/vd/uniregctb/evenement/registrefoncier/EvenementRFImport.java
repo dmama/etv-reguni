@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * Un événement d'import d'une extraction hebdomadaire du registre foncier.
@@ -75,7 +76,7 @@ public class EvenementRFImport extends HibernateEntity {
 		this.id = id;
 	}
 
-	@Column(name = "ETAT")
+	@Column(name = "ETAT", length = LengthConstants.RF_ETAT_EVENEMENT)
 	@Enumerated(EnumType.STRING)
 	@Index(name="IDX_EV_RF_IMP_ETAT")
 	public EtatEvenementRF getEtat() {
@@ -96,7 +97,7 @@ public class EvenementRFImport extends HibernateEntity {
 		this.dateEvenement = dateEvenement;
 	}
 
-	@Column(name = "FILE_URL")
+	@Column(name = "FILE_URL", length = LengthConstants.RF_FILE_URL)
 	public String getFileUrl() {
 		return fileUrl;
 	}
@@ -105,7 +106,7 @@ public class EvenementRFImport extends HibernateEntity {
 		this.fileUrl = fileUrl;
 	}
 
-	@Column(name = "ERROR_MESSAGE", length = 1000)
+	@Column(name = "ERROR_MESSAGE", length = LengthConstants.RF_ERROR_MESSAGE)
 	@Nullable
 	public String getErrorMessage() {
 		return errorMessage;

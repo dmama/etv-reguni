@@ -24,6 +24,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.common.LengthConstants;
+
 /**
  * Représente un immeuble au registre foncier
  */
@@ -89,7 +91,7 @@ public abstract class ImmeubleRF {
 	}
 
 	@Index(name = "IDX_IMMEUBLE_ID_RF")
-	@Column(name = "ID_RF", nullable = false, length = 33)
+	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;
 	}
@@ -98,7 +100,7 @@ public abstract class ImmeubleRF {
 		this.idRF = idRF;
 	}
 
-	@Column(name = "EGRID", length = 14)
+	@Column(name = "EGRID", length = LengthConstants.RF_EGRID)
 	public String getEgrid() {
 		return egrid;
 	}
@@ -107,7 +109,7 @@ public abstract class ImmeubleRF {
 		this.egrid = egrid;
 	}
 
-	@Column(name = "URL_INTERCAPI", length = 2000)
+	@Column(name = "URL_INTERCAPI", length = LengthConstants.RF_URL_INTERCAPI)
 	public String getUrlIntercapi() {
 		return urlIntercapi;
 	}

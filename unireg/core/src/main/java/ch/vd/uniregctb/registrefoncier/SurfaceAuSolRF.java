@@ -17,6 +17,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * Surface d'un immeuble inscrit au registre foncier.
@@ -66,7 +67,7 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 	}
 
 	@Index(name = "IDX_SURF_SOL_RF_TYPE")
-	@Column(name = "TYPE", nullable = false)
+	@Column(name = "TYPE", nullable = false, length = LengthConstants.RF_TYPE_SURFACE_AU_SOL)
 	public String getType() {
 		return type;
 	}

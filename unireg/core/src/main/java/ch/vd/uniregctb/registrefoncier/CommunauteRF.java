@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import ch.vd.uniregctb.common.LengthConstants;
+
 /**
  * Une communauté représente un groupement de tiers qui possèdent ensemble un droit sur un immeuble.
  */
@@ -15,7 +17,7 @@ public class CommunauteRF extends AyantDroitRF {
 
 	private TypeCommunaute type;
 
-	@Column(name = "TYPE_COMMUNAUTE", length = 22)
+	@Column(name = "TYPE_COMMUNAUTE", length = LengthConstants.RF_TYPE_COMMUNAUTE)
 	@Enumerated(EnumType.STRING)
 	public TypeCommunaute getType() {
 		return type;

@@ -17,6 +17,7 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @Table(name = "EVENEMENT_RF_MUTATION")
@@ -93,7 +94,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.parentImport = parentImport;
 	}
 
-	@Column(name = "ETAT", length = 9)
+	@Column(name = "ETAT", length = LengthConstants.RF_ETAT_EVENEMENT)
 	@Enumerated(EnumType.STRING)
 	@Index(name="IDX_EV_RF_MUT_ETAT")
 	public EtatEvenementRF getEtat() {
@@ -104,7 +105,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.etat = etat;
 	}
 
-	@Column(name = "TYPE_ENTITE", length = 14, nullable = false)
+	@Column(name = "TYPE_ENTITE", length = LengthConstants.RF_TYPE_ENTITE, nullable = false)
 	@Enumerated(EnumType.STRING)
 	@Index(name="IDX_EV_RF_MUT_TYPE_ENTITE")
 	public TypeEntiteRF getTypeEntite() {
@@ -115,7 +116,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.typeEntite = typeEntite;
 	}
 
-	@Column(name = "TYPE_MUTATION", length = 13, nullable = false)
+	@Column(name = "TYPE_MUTATION", length = LengthConstants.RF_TYPE_MUTATION, nullable = false)
 	@Enumerated(EnumType.STRING)
 	public TypeMutationRF getTypeMutation() {
 		return typeMutation;
@@ -137,7 +138,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	 * @return l'idRF de l'entité liée à la mutation.
 	 */
 	@Index(name = "IDX_EV_RF_ID_RF")
-	@Column(name = "ID_RF", length = 33)
+	@Column(name = "ID_RF", length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;
 	}
@@ -156,7 +157,7 @@ public class EvenementRFMutation extends HibernateEntity {
 		this.xmlContent = xmlContent;
 	}
 
-	@Column(name = "ERROR_MESSAGE", length = 1000)
+	@Column(name = "ERROR_MESSAGE", length = LengthConstants.RF_ERROR_MESSAGE)
 	@Nullable
 	public String getErrorMessage() {
 		return errorMessage;

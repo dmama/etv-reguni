@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
 
+import ch.vd.uniregctb.common.LengthConstants;
+
 /**
  * Droit d'habitation sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
  */
@@ -31,7 +33,7 @@ public class DroitHabitationRF extends DroitRF {
 		super.setAyantDroit(ayantDroit);
 	}
 
-	@Column(name = "ID_RF", length = 33)
+	@Column(name = "ID_RF", length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;
 	}
@@ -40,7 +42,7 @@ public class DroitHabitationRF extends DroitRF {
 		this.idRF = idRF;
 	}
 
-	@Column(name = "IDENTIFIANT_DROIT")
+	@Column(name = "IDENTIFIANT_DROIT", length = LengthConstants.RF_IDENTIFIANT_DROIT)
 	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantDroitRFUserType")
 	public IdentifiantDroitRF getIdentifiantDroit() {
 		return identifiantDroit;

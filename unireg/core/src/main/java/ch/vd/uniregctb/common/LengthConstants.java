@@ -173,8 +173,28 @@ public abstract class LengthConstants {
 
 	public static final int RAPPROCHEMENT_RF_TYPE = 15;
 
+	public static final int RF_ETAT_EVENEMENT = 9;
+	public static final int RF_TYPE_ENTITE = 14;
+	public static final int RF_TYPE_MUTATION = 13;
+	public static final int RF_ID_RF = 33;
+	public static final int RF_FILE_URL = 512;
+	public static final int RF_ERROR_MESSAGE = 1000;
+	public static final int RF_CODE = 255;
+	public static final int RF_CODE_DESCRIPTION = 255;
 	public static final int RF_PM_NUMRC = 20;
 	public static final int RF_TIERS_RAISON_SOCIALE = 255;
+	public static final int RF_TYPE_COMMUNAUTE = 22;
+	public static final int RF_NOM_COMMUNE = 50;
+	public static final int RF_IDENTIFIANT_DROIT = 15;
+	public static final int RF_GENRE_PROPRIETE = 12;
+	public static final int RF_NO_AFFAIRE = 25;
+	public static final int RF_MOTIF = 255;
+	public static final int RF_REFERENCE_ESTIMATION = 25;
+	public static final int RF_EGRID = 14;
+	public static final int RF_URL_INTERCAPI = 2000;
+	public static final int RF_NOM_PP = 250;
+	public static final int RF_PRENOM_PP = 250;
+	public static final int RF_TYPE_SURFACE_AU_SOL = 250;
 
 	public static final int MAXLEN = 2000;
 

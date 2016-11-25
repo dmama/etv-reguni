@@ -8,6 +8,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @DiscriminatorValue("PersonnePhysique")
@@ -17,7 +18,7 @@ public class PersonnePhysiqueRF extends TiersRF {
 	private String prenom;
 	private RegDate dateNaissance;
 
-	@Column(name = "NOM_PP")
+	@Column(name = "NOM_PP", length = LengthConstants.RF_NOM_PP)
 	public String getNom() {
 		return nom;
 	}
@@ -26,7 +27,7 @@ public class PersonnePhysiqueRF extends TiersRF {
 		this.nom = nom;
 	}
 
-	@Column(name = "PRENOM_PP")
+	@Column(name = "PRENOM_PP", length = LengthConstants.RF_PRENOM_PP)
 	public String getPrenom() {
 		return prenom;
 	}

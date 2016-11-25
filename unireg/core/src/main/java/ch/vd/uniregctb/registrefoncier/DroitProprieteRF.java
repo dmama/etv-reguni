@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
 @Entity
@@ -28,7 +29,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 		this.part = part;
 	}
 
-	@Column(name = "REGIME_PROPRIETE", nullable = false)
+	@Column(name = "REGIME_PROPRIETE", nullable = false, length = LengthConstants.RF_GENRE_PROPRIETE)
 	@Enumerated(EnumType.STRING)
 	public GenrePropriete getRegime() {
 		return regime;

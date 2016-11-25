@@ -16,6 +16,7 @@ import java.util.Set;
 import org.hibernate.annotations.Index;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * Représente un bâtiment au registre foncier.
@@ -73,7 +74,7 @@ public class BatimentRF extends HibernateDateRangeEntity {
 	}
 
 	@Index(name = "IDX_BATIMENT_ID_RF")
-	@Column(name = "ID_RF", nullable = false, length = 33)
+	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;
 	}
@@ -83,8 +84,8 @@ public class BatimentRF extends HibernateDateRangeEntity {
 	}
 
 	@AttributeOverrides({
-			@AttributeOverride(name = "code", column = @Column(name = "TYPE_CODE", nullable = false)),
-			@AttributeOverride(name = "description", column = @Column(name = "TYPE_DESCRIPTION"))
+			@AttributeOverride(name = "code", column = @Column(name = "TYPE_CODE", length = LengthConstants.RF_CODE, nullable = false)),
+			@AttributeOverride(name = "description", column = @Column(name = "TYPE_DESCRIPTION", length = LengthConstants.RF_CODE_DESCRIPTION))
 	})
 	public CodeRF getType() {
 		return type;

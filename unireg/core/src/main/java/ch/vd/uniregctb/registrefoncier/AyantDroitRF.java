@@ -19,6 +19,7 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * Ayant-droit sur un ou plusieurs immeubles. Un ayant-droit est soit un tiers (personne physique ou morale), soit une communauté (regroupement de personnes physiques ou morales).
@@ -61,7 +62,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	}
 
 	@Index(name = "IDX_AYANTDROIT_ID_RF")
-	@Column(name = "ID_RF", nullable = false, length = 33, unique = true)
+	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF, unique = true)
 	public String getIdRF() {
 		return idRF;
 	}

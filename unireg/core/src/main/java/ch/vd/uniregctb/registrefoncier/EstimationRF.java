@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * Estimation fiscale d'un immeuble inscrit au registre foncier.
@@ -90,7 +91,7 @@ public class EstimationRF extends HibernateDateRangeEntity {
 	}
 
 	@Nullable
-	@Column(name = "REFERENCE")
+	@Column(name = "REFERENCE", length = LengthConstants.RF_REFERENCE_ESTIMATION)
 	public String getReference() {
 		return reference;
 	}

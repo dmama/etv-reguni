@@ -4,13 +4,15 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import ch.vd.uniregctb.common.LengthConstants;
+
 @Entity
 @DiscriminatorValue("CollectivitePublique")
 public class CollectivitePubliqueRF extends TiersRF {
 
 	private String raisonSociale;
 
-	@Column(name = "RAISON_SOCIALE")
+	@Column(name = "RAISON_SOCIALE", length = LengthConstants.RF_TIERS_RAISON_SOCIALE)
 	public String getRaisonSociale() {
 		return raisonSociale;
 	}

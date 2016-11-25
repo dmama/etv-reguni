@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @Table(name = "RF_DROIT")
@@ -97,7 +98,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	}
 
 	@Index(name = "IDX_DROIT_MASTER_ID_RF")
-	@Column(name = "MASTER_ID_RF", nullable = false)
+	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getMasterIdRF() {
 		return masterIdRF;
 	}
@@ -131,7 +132,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	}
 
 	@Nullable
-	@Column(name = "NO_AFFAIRE")
+	@Column(name = "NO_AFFAIRE", length = LengthConstants.RF_NO_AFFAIRE)
 	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType")
 	public IdentifiantAffaireRF getNumeroAffaire() {
 		return numeroAffaire;
@@ -153,7 +154,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	}
 
 	@Nullable
-	@Column(name = "MOTIF_DEBUT_CODE")
+	@Column(name = "MOTIF_DEBUT_CODE", length = LengthConstants.RF_MOTIF)
 	public String getMotifDebut() {
 		return motifDebut;
 	}
@@ -163,7 +164,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 	}
 
 	@Nullable
-	@Column(name = "MOTIF_FIN_CODE")
+	@Column(name = "MOTIF_FIN_CODE", length = LengthConstants.RF_MOTIF)
 	public String getMotifFin() {
 		return motifFin;
 	}

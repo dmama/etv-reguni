@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 
 import org.hibernate.annotations.Type;
 
+import ch.vd.uniregctb.common.LengthConstants;
+
 /**
  * Droit de type usufruit sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
  */
@@ -31,7 +33,7 @@ public class UsufruitRF extends DroitRF {
 		super.setAyantDroit(ayantDroit);
 	}
 
-	@Column(name = "ID_RF", length = 33)
+	@Column(name = "ID_RF", length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;
 	}

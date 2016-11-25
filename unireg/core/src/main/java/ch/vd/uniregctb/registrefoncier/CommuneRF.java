@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @Table(name = "RF_COMMUNE")
@@ -74,7 +75,7 @@ public class CommuneRF extends HibernateDateRangeEntity {
 		this.noRf = noRf;
 	}
 
-	@Column(name = "NOM_RF", nullable = false)
+	@Column(name = "NOM_RF", nullable = false, length = LengthConstants.RF_NOM_COMMUNE)
 	public String getNomRf() {
 		return nomRf;
 	}
