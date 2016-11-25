@@ -265,6 +265,11 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				final List<RcEntClientErrorMessage> errors = parseErrors(e.getMessage());
 				throw new RcEntClientException(e, errors);
 			}
+			finally {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("findNotices(query={}, order={}, page={}, resultsPerPage={}) => {}", query, order, pageNumber, resultsPerPage, URLKeeperInterceptor.getLastUrl());
+				}
+			}
 		}
 		finally {
 			wcPool.returnClient(wc);
