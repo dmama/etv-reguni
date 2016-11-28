@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.XmlError;
@@ -11,13 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.XmlEntityAdapter;
@@ -26,11 +20,6 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFService;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 /**
  * Handler qui reçoit les réponses d'identification manuelle des rapprochements propriétaire
@@ -40,14 +29,14 @@ public class EvenementIdentificationRapprochementProprietaireEsbHandler implemen
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementIdentificationRapprochementProprietaireEsbHandler.class);
 
 	private HibernateTemplate hibernateTemplate;
-	private RapprochementRFDAO rapprochementRFDAO;
+	private RapprochementProprietaireHandler handler;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	public void setRapprochementRFDAO(RapprochementRFDAO rapprochementRFDAO) {
-		this.rapprochementRFDAO = rapprochementRFDAO;
+	public void setHandler(RapprochementProprietaireHandler handler) {
+		this.handler = handler;
 	}
 
 	@Override
@@ -84,50 +73,14 @@ public class EvenementIdentificationRapprochementProprietaireEsbHandler implemen
 
 			final Reponse reponse = identification.getReponse();
 			final long idTiersRF = extractIdTiersRF(message);
-			final TiersRF tiersRF = hibernateTemplate.get(TiersRF.class, idTiersRF);
-			if (tiersRF == null) {
-				LOGGER.error(String.format("TiersRF inconnu avec l'identifiant %d", idTiersRF));
-				throw new EsbBusinessException(EsbBusinessCode.IDENTIFICATION_DONNEES_INVALIDES, "Pas de tiers RF connu avec l'identifiant donné.", null);
-			}
 
-			final Contribuable contribuable = hibernateTemplate.get(Contribuable.class, reponse.getNoContribuable());
-			if (contribuable == null) {
-				LOGGER.error(String.format("Pas de contribuable avec l'identifiant %d", reponse.getNoContribuable()));
-				throw new EsbBusinessException(EsbBusinessCode.IDENTIFICATION_DONNEES_INVALIDES, "Pas de contribuable connu avec le numéro annoncé.", null);
-			}
-
-			// on crée maintenant le rapprochement qui va bien
-
-			// recherche des plages de valeur disponibles
-			final List<DateRange> periodesCouvertes = DateRangeHelper.merge(rapprochementRFDAO.findByTiersRF(idTiersRF, false).stream()
-					                                                                .filter(AnnulableHelper::nonAnnule)
-					                                                                .sorted(DateRangeComparator::compareRanges)
-					                                                                .collect(Collectors.toList()));
-			final DateRange eternity = new DateRangeHelper.Range(null, null);
-			final List<DateRange> periodesLibres = DateRangeHelper.subtract(eternity, periodesCouvertes);
-			if (periodesLibres.isEmpty()) {
-				LOGGER.error(String.format("Le tiersRF %d n'a aucune période libre pour créer un nouveau rapprochement avec le contribuable %s", idTiersRF, FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero())));
-				throw new EsbBusinessException(EsbBusinessCode.IDENTIFICATION_DONNEES_INVALIDES, "Le tiers RF indiqué n'a plus de période disponible pour un nouveau rapprochement.", null);
-			}
-
+			// on délègue le vrai boulot plus loin
 			AuthenticationHelper.pushPrincipal(message.getBusinessUser());
 			try {
-				for (DateRange range : periodesLibres) {
-					final RapprochementRF rapprochement = new RapprochementRF();
-					rapprochement.setDateDebut(range.getDateDebut());
-					rapprochement.setDateFin(range.getDateFin());
-					rapprochement.setTiersRF(tiersRF);
-					rapprochement.setContribuable(contribuable);
-					rapprochement.setTypeRapprochement(TypeRapprochementRF.MANUEL);
+				handler.addRapprochement(reponse.getNoContribuable(), idTiersRF);
 
-					contribuable.addRapprochementRF(hibernateTemplate.merge(rapprochement));
-
-					LOGGER.info(String.format("Généré rapprochement manuel entre le contribuable %s et le tiers RF %d (numéro RF %d) pour la période %s.",
-					                          FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()),
-					                          idTiersRF,
-					                          tiersRF.getNoRF(),
-					                          DateRangeHelper.toDisplayString(rapprochement)));
-				}
+				// flush de la session (pour les données de LOG_*USER assignées dans le contexte du principal
+				hibernateTemplate.flush();
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -135,7 +88,7 @@ public class EvenementIdentificationRapprochementProprietaireEsbHandler implemen
 		}
 	}
 
-	private long extractIdTiersRF(EsbMessage message) throws EsbBusinessException {
+	private static long extractIdTiersRF(EsbMessage message) throws EsbBusinessException {
 		final String strIdTiersRF = message.getHeader(RapprochementManuelTiersRFService.ID_TIERS_RF);
 		if (strIdTiersRF == null || !StringUtils.isNumeric(strIdTiersRF)) {
 			throw new EsbBusinessException(EsbBusinessCode.MESSAGE_NON_SUPPORTE, "L'attribut " + RapprochementManuelTiersRFService.ID_TIERS_RF + " du header est absent ou invalide", null);

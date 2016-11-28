@@ -39,6 +39,11 @@
 
 	<bean id="evtIdentificationRapprochementRFEsbHandler" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementIdentificationRapprochementProprietaireEsbHandler">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="handler" ref="rapprochementProprietaireHandler"/>
+	</bean>
+
+	<bean id="rapprochementProprietaireHandler" class="ch.vd.uniregctb.evenement.registrefoncier.RapprochementProprietaireHandlerImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
 	</bean>
 
