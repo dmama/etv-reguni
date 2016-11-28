@@ -30,6 +30,7 @@ public abstract class SurfaceAuSolRFHelper {
 
 	public static boolean dataEquals(@Nullable Set<SurfaceAuSolRF> surfaces, @Nullable List<Bodenbedeckung> bodenbedeckung) {
 
+		//noinspection Duplicates
 		if ((surfaces == null || surfaces.isEmpty()) && (bodenbedeckung == null || bodenbedeckung.isEmpty())) {
 			// les deux collections sont vides ou nulles
 			return true;

@@ -32,9 +32,11 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.MockBatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockCommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
@@ -51,6 +53,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 	private PlatformTransactionManager transactionManager;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private CommuneRFDAO communeRFDAO;
+	private BatimentRFDAO batimentRFDAO;
 	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
 	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
@@ -60,6 +63,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		transactionManager = new MockTransactionManager();
 		immeubleRFDAO = new MockImmeubleRFDAO();
 		communeRFDAO = new MockCommuneRFDAO();
+		batimentRFDAO = new MockBatimentRFDAO();
 		cacheDroits = new MockPersistentCache<>();
 		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
@@ -98,7 +102,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie trois nouveaux ayant-droits
 		final NatuerlichePersonstamm natuerliche = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));
@@ -260,7 +264,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec des modifications
 		// - nouveau prénom
@@ -391,7 +395,7 @@ public class DataRFMutationsDetectorAyantDroitTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
 
 		// on envoie les immeubles avec les mêmes donneés que celles dans la DB
 		final NatuerlichePersonstamm natuerliche = newPersonnePhysique("3893728273382823", 3727L, 827288022L, "Nom", "Prénom", RegDate.get(1956, 1, 23));

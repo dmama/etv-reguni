@@ -31,6 +31,22 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return commune;
 	}
 
+	protected static BatimentRF newBatimentRF(String masterIdRF, String type) {
+		final BatimentRF batiment = new BatimentRF();
+		batiment.setMasterIdRF(masterIdRF);
+		batiment.setType(type);
+		return batiment;
+	}
+
+	protected static ImplantationRF newImplantationRF(ImmeubleRF immeuble, Integer surface, RegDate dateDebut, RegDate dateFin) {
+		final ImplantationRF implantation = new ImplantationRF();
+		implantation.setImmeuble(immeuble);
+		implantation.setSurface(surface);
+		implantation.setDateDebut(dateDebut);
+		implantation.setDateFin(dateFin);
+		return implantation;
+	}
+
 	protected static BienFondRF newBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
 	                                          Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
 	                                          boolean enRevision, boolean cfa, RegDate dateValeur, int surface) {

@@ -99,6 +99,7 @@ public class BatimentRF {
 		if (this.surfaces == null) {
 			this.surfaces = new HashSet<>();
 		}
+		surface.setBatiment(this);
 		this.surfaces.add(surface);
 	}
 
@@ -112,5 +113,13 @@ public class BatimentRF {
 
 	public void setImplantations(Set<ImplantationRF> implantations) {
 		this.implantations = implantations;
+	}
+
+	public void addImplantation(@NotNull ImplantationRF implantation) {
+		if (this.implantations == null) {
+			this.implantations = new HashSet<>();
+		}
+		implantation.setBatiment(this);
+		this.implantations.add(implantation);
 	}
 }

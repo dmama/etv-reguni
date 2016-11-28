@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
 /**
@@ -42,6 +43,18 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 	 * Le bâtiment concerné par la surface.
 	 */
 	private BatimentRF batiment;
+
+	public SurfaceBatimentRF() {
+	}
+
+	public SurfaceBatimentRF(int surface) {
+		this.surface = surface;
+	}
+
+	public SurfaceBatimentRF(int surface, RegDate dateDebut, RegDate dateFin) {
+		super(dateDebut, dateFin);
+		this.surface = surface;
+	}
 
 	@Transient
 	@Override

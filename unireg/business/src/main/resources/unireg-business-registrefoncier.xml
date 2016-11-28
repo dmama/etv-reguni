@@ -21,6 +21,7 @@
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="communeRFDAO"/>
+		<constructor-arg ref="batimentRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="transactionManager"/>

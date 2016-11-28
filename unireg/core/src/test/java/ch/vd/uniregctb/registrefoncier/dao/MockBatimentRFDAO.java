@@ -1,55 +1,60 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
 
-public class MockImmeubleRFDAO implements ImmeubleRFDAO {
+public class MockBatimentRFDAO implements BatimentRFDAO {
 
-	private final List<ImmeubleRF> db = new ArrayList<>();
-
-	public MockImmeubleRFDAO() {
-	}
-
-	public MockImmeubleRFDAO(ImmeubleRF... immeubles) {
-		Arrays.stream(immeubles).forEach(this::save);
-	}
+	private final List<BatimentRF> db = new ArrayList<>();
 
 	@Nullable
 	@Override
-	public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+	public BatimentRF find(@NotNull BatimentRFKey key) {
 		return db.stream()
-				.filter(m -> Objects.equals(m.getIdRF(), key.getIdRF()))
+				.filter(b -> Objects.equals(b.getMasterIdRF(), key.getMasterIdRF()))
 				.findFirst()
 				.orElse(null);
 	}
 
+	@NotNull
 	@Override
-	public List<ImmeubleRF> getAll() {
-		throw new NotImplementedException();
+	public Set<String> findActifs() {
+		return db.stream()
+				.filter(b -> b.getImplantations().stream()
+						.filter(i -> i.isValidAt(null))
+						.count() > 0)
+				.map(BatimentRF::getMasterIdRF)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
-	public ImmeubleRF get(Long id) {
+	public List<BatimentRF> getAll() {
+		return db;
+	}
+
+	@Override
+	public BatimentRF get(Long id) {
 		return db.stream()
-				.filter(m -> Objects.equals(m.getId(),id))
+				.filter(b -> Objects.equals(b.getId(), id))
 				.findFirst()
 				.orElse(null);
 	}
 
 	@Override
 	public boolean exists(Long id) {
-		throw new NotImplementedException();
+		return get(id) != null;
 	}
 
 	@Override
@@ -58,7 +63,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	}
 
 	@Override
-	public ImmeubleRF save(ImmeubleRF object) {
+	public BatimentRF save(BatimentRF object) {
 		db.add(object);
 		object.setId((long) db.size());
 		return object;
@@ -80,7 +85,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	}
 
 	@Override
-	public Iterator<ImmeubleRF> iterate(String query) {
+	public Iterator<BatimentRF> iterate(String query) {
 		throw new NotImplementedException();
 	}
 

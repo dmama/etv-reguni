@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,13 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	private List<EvenementRFImport> db = new ArrayList<>();
 
+	public MockEvenementRFImportDAO() {
+	}
+
+	public MockEvenementRFImportDAO(EvenementRFImport... imps) {
+		Arrays.stream(imps).forEach(this::save);
+	}
+
 	@Override
 	public List<EvenementRFImport> getAll() {
 		return db;
@@ -22,7 +31,10 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public EvenementRFImport get(Long id) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(i -> Objects.equals(i.getId(), id))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

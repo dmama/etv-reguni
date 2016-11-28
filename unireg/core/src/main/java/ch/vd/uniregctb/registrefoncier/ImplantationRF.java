@@ -17,6 +17,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
 /**
@@ -50,6 +51,20 @@ public class ImplantationRF extends HibernateDateRangeEntity {
 	 * Le bâtiment concerné par l'implantation.
 	 */
 	private BatimentRF batiment;
+
+	public ImplantationRF() {
+	}
+
+	public ImplantationRF(@Nullable Integer surface, ImmeubleRF immeuble) {
+		this.surface = surface;
+		this.immeuble = immeuble;
+	}
+
+	public ImplantationRF(@Nullable Integer surface, ImmeubleRF immeuble, RegDate dateDebut, RegDate dateFin) {
+		super(dateDebut, dateFin);
+		this.surface = surface;
+		this.immeuble = immeuble;
+	}
 
 	@Transient
 	@Override

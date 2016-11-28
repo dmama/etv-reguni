@@ -165,7 +165,7 @@ public class TraiterImportRFJob extends JobDefinition {
 			mutationsDetector.processImmeubles(importId, nbThreads, dataAdapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
 			mutationsDetector.processDroits(importId, nbThreads, dataAdapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
 			mutationsDetector.processProprietaires(importId, nbThreads, dataAdapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
-			mutationsDetector.processConstructions(importId, dataAdapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
+			mutationsDetector.processBatiments(importId, nbThreads, dataAdapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
 			mutationsDetector.processSurfaces(importId, nbThreads, dataAdapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
 
 			// on attend que le parsing soit terminé

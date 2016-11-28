@@ -39,6 +39,7 @@ public class DroitRFHelper {
 
 	public static boolean dataEquals(Set<DroitRF> droits, List<PersonEigentumAnteil> eigentums) {
 
+		//noinspection Duplicates
 		if ((droits == null || droits.isEmpty()) && (eigentums == null || eigentums.isEmpty())) {
 			// les deux collections sont vides ou nulles
 			return true;
