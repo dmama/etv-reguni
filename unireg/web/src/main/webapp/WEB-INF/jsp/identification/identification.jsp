@@ -63,34 +63,62 @@
 							    <br><c:out value="${personne.roleLigne2}" />
 						    </c:if>
 					    </display:column>
-					    <display:column sortable ="true" titleKey="label.nom.prenom" >
-							<span class="civTip" id="civildata" name="${personne.numero}">
-								<c:out value="${personne.nom1}" />
-								<c:if test="${personne.nom2 != null}">
-									<br><c:out value="${personne.nom2}" />
-								</c:if>
-							</span>
-					    </display:column>
-					    <display:column titleKey="label.date.naissance.ou.rc" sortable="true" sortName="dateNaissanceInscriptionRC" sortProperty="dateNaissanceInscriptionRC">
-						    <unireg:date date="${personne.dateNaissanceInscriptionRC}"/>
-					    </display:column>
-					    <display:column sortable ="true" titleKey="label.npa" >
-						    <c:out value="${personne.npa}" />
-					    </display:column>
-					    <display:column sortable ="true" titleKey="label.localitePays" >
-						 <span  class="adrTip" id="adressedata" name="${personne.numero}">
-							<c:out value="${personne.localiteOuPays}" />
-						</span>
-					    </display:column>
-					    <display:column sortable ="true" titleKey="label.for.principal" >
-						    <c:out value="${personne.forPrincipal}" />
-					    </display:column>
-					    <display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-						    <fmt:formatDate value="${personne.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
-					    </display:column>
-					    <display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-						    <fmt:formatDate value="${personne.dateFermetureFor}" pattern="dd.MM.yyyy"/>
-					    </display:column>
+					    <c:choose>
+						    <c:when test="${messageData.typeContribuable == 'ENTREPRISE'}">
+							    <display:column sortable ="true" titleKey="label.raison.sociale" >
+									<c:out value="${personne.nom1}" />
+							    </display:column>
+							    <display:column sortable="true" titleKey="label.numero.ide">
+								    <unireg:numIDE numeroIDE="${personne.numeroIDE}"/>
+							    </display:column>
+							    <display:column titleKey="label.date.naissance.ou.rc" sortable="true" sortName="dateNaissanceInscriptionRC" sortProperty="dateNaissanceInscriptionRC">
+								    <unireg:date date="${personne.dateNaissanceInscriptionRC}"/>
+							    </display:column>
+							    <display:column sortable="true" titleKey="label.siege">
+								    <c:out value="${personne.forPrincipal}"/>
+							    </display:column>
+							    <display:column sortable="true" titleKey="label.forme.juridique">
+								    <c:if test="${personne.formeJuridique != null}">
+									    <fmt:message key="option.forme.legale.${personne.formeJuridique}"/>
+								    </c:if>
+							    </display:column>
+							    <display:column sortable="true" titleKey="label.etat.entreprise.actuel">
+								    <c:if test="${personne.etatEntreprise != null}">
+									    <fmt:message key="option.etat.entreprise.${personne.etatEntreprise}"/>
+								    </c:if>
+							    </display:column>
+						    </c:when>
+						    <c:otherwise>
+							    <display:column sortable ="true" titleKey="label.nom.prenom" >
+									<span class="civTip" id="civildata" name="${personne.numero}">
+										<c:out value="${personne.nom1}" />
+										<c:if test="${personne.nom2 != null}">
+											<br><c:out value="${personne.nom2}" />
+										</c:if>
+									</span>
+							    </display:column>
+							    <display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissanceInscriptionRC" sortProperty="dateNaissanceInscriptionRC">
+								    <unireg:date date="${personne.dateNaissanceInscriptionRC}"/>
+							    </display:column>
+							    <display:column sortable ="true" titleKey="label.npa" >
+								    <c:out value="${personne.npa}" />
+							    </display:column>
+							    <display:column sortable ="true" titleKey="label.localitePays" >
+									<span  class="adrTip" id="adressedata" name="${personne.numero}">
+										<c:out value="${personne.localiteOuPays}" />
+									</span>
+							    </display:column>
+							    <display:column sortable ="true" titleKey="label.for.principal" >
+								    <c:out value="${personne.forPrincipal}" />
+							    </display:column>
+							    <display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
+								    <fmt:formatDate value="${personne.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
+							    </display:column>
+							    <display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
+								    <fmt:formatDate value="${personne.dateFermetureFor}" pattern="dd.MM.yyyy"/>
+							    </display:column>
+						    </c:otherwise>
+					    </c:choose>
 					    <display:column>
 						    <unireg:raccourciIdentifier onClick="IdentificationCtb.Page_Identifier(${personne.numero});" tooltip="Identifier" />
 					    </display:column>

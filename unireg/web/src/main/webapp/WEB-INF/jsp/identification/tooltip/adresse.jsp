@@ -12,7 +12,7 @@
         </c:if>
         <c:if test="${command.source != null}">
             <b>Dernière adresse vaudoise</b><br/>
-			Source&nbsp;:&nbsp;<b><c:out value="${command.source}"/></b><br/>
+	        Source&nbsp;:&nbsp;<b><fmt:message key="option.source.${command.source}"/></b><br/>
             <c:if test="${command.complements != null}">
 				<c:out value="${command.complements}"/><br/>
             </c:if>
