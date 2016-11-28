@@ -41,7 +41,7 @@ public class NexusTomcatRunner {
 		// Propriétés normallement configurées par Maven et qu'on spécifie à la main parce qu'on pointe vers le répertoire sources (et non pas target).
 
 		// BEGIN_LVERSION
-		System.setProperty("project.version", "6.2.3");
+		System.setProperty("project.version", "6.2.4-SNAPSHOT");
 		// END_LVERSION
 
 		System.setProperty("project.name", "Unireg - Nexus");
