@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamLong;
 
@@ -22,6 +24,7 @@ public class TraiterMutationsRFJob extends JobDefinition {
 	public static final String NAME = "TraiterMutationsRFJob";
 	public static final String ID = "eventId";
 	public static final String NB_THREADS = "NB_THREADS";
+	public static final String CONTINUE_WITH_IDENTIFICATION_JOB = "CONTINUE_WITH_IDENTIFICATION_JOB";
 
 	private DataRFMutationsProcessor processor;
 
@@ -45,6 +48,13 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		param2.setMandatory(true);
 		param2.setType(new JobParamInteger());
 		addParameterDefinition(param2, 8);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("Continuer avec le job de rapprochement des propriétaires");
+		param3.setName(CONTINUE_WITH_IDENTIFICATION_JOB);
+		param3.setMandatory(true);
+		param3.setType(new JobParamBoolean());
+		addParameterDefinition(param3, true);
 	}
 
 	@Override
@@ -52,11 +62,20 @@ public class TraiterMutationsRFJob extends JobDefinition {
 
 		final long importId = getLongValue(params, ID);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
+		final boolean startRapprochementJob = getBooleanValue(params, CONTINUE_WITH_IDENTIFICATION_JOB);
+
 		final StatusManager statusManager = getStatusManager();
 
 		// on traite les mutations
 		statusManager.setMessage("Traitement des mutations...");
 		processor.processImport(importId, nbThreads, statusManager);
+
+		// si demandé, on démarre le job de rapprochement des propriétaires
+		if (startRapprochementJob) {
+			final Map<String, Object> rapprochementParams = new HashMap<>();
+			rapprochementParams.put(RapprocherTiersRFJob.NB_THREADS, nbThreads);
+			batchScheduler.startJob(RapprocherTiersRFJob.NAME, rapprochementParams);
+		}
 
 		statusManager.setMessage("Traitement terminé.");
 	}

@@ -179,6 +179,7 @@ public class TraiterImportRFJob extends JobDefinition {
 				final Map<String, Object> mutParams = new HashMap<>();
 				mutParams.put(TraiterMutationsRFJob.ID, importId);
 				mutParams.put(TraiterMutationsRFJob.NB_THREADS, nbThreads);
+				mutParams.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.TRUE);
 				batchScheduler.startJob(TraiterMutationsRFJob.NAME, mutParams);
 			}
 		}
