@@ -6,10 +6,9 @@ import java.util.Map;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.InfoCommunePP;
-import ch.vd.uniregctb.role.InfoContribuable;
-import ch.vd.uniregctb.role.InfoContribuablePP;
-import ch.vd.uniregctb.role.ProduireRolesPPCommunesResults;
+import ch.vd.uniregctb.role.before2016.InfoCommunePP;
+import ch.vd.uniregctb.role.before2016.InfoContribuablePP;
+import ch.vd.uniregctb.role.before2016.ProduireRolesPPCommunesResults;
 
 public class PdfRolesPPCommunesRapport extends PdfRolesCommunesRapport<ProduireRolesPPCommunesResults, InfoContribuablePP, InfoCommunePP> {
 

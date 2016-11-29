@@ -19,9 +19,9 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.common.AutoCloseableContainer;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.InfoContribuable;
-import ch.vd.uniregctb.role.InfoContribuablePP;
-import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
+import ch.vd.uniregctb.role.before2016.InfoContribuable;
+import ch.vd.uniregctb.role.before2016.InfoContribuablePP;
+import ch.vd.uniregctb.role.before2016.ProduireRolesOIDsResults;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les OID

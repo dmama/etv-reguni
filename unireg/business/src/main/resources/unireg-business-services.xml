@@ -90,7 +90,7 @@
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 	
-	<bean id="roleService" class="ch.vd.uniregctb.role.RoleServiceImpl">
+	<bean id="roleService" class="ch.vd.uniregctb.role.before2016.RoleServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />

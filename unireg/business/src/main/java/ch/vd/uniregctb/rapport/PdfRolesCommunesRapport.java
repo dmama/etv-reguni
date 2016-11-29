@@ -18,9 +18,9 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AutoCloseableContainer;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.InfoCommune;
-import ch.vd.uniregctb.role.InfoContribuable;
-import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
+import ch.vd.uniregctb.role.before2016.InfoCommune;
+import ch.vd.uniregctb.role.before2016.InfoContribuable;
+import ch.vd.uniregctb.role.before2016.ProduireRolesCommunesResults;
 
 
 /**

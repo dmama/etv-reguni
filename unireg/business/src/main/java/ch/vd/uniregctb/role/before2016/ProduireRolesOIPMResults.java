@@ -1,8 +1,7 @@
-package ch.vd.uniregctb.role;
+package ch.vd.uniregctb.role.before2016;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
@@ -13,16 +12,12 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ProduireRolesPMCommunesResults extends ProduireRolesCommunesResults<ProduireRolesPMCommunesResults> {
+public class ProduireRolesOIPMResults extends ProduireRolesResults<ProduireRolesOIPMResults> {
 
 	private final RolesPM roles = new RolesPM();
 
-	public ProduireRolesPMCommunesResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public ProduireRolesOIPMResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(anneePeriode, nbThreads, dateTraitement, tiersService, adresseService);
-	}
-
-	public ProduireRolesPMCommunesResults(int anneePeriode, Integer noOfsCommune, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
-		super(anneePeriode, noOfsCommune, nbThreads, dateTraitement, tiersService, adresseService);
 	}
 
 	@Override
@@ -41,28 +36,17 @@ public class ProduireRolesPMCommunesResults extends ProduireRolesCommunesResults
 	}
 
 	@Override
-	public void addAll(ProduireRolesPMCommunesResults rapport) {
+	public void addAll(ProduireRolesOIPMResults rapport) {
 		super.addAll(rapport);
 		roles.addAll(rapport.roles);
 	}
 
-	@Override
-	public Set<Integer> getNoOfsCommunesTraitees() {
-		if (noOfsCommune == null) {
-			return roles.getNoOfsCommunesTraitees();
-		}
-		else {
-			return Collections.singleton(noOfsCommune);
-		}
+	public List<InfoContribuablePM> buildInfoPourRegroupementCommunes(Collection<Integer> noOfsCommunes) {
+		return roles.buildInfosPourRegroupementCommunes(noOfsCommunes);
 	}
 
-	public Map<Integer, InfoCommunePM> getInfosCommunes() {
-		final Map<Integer, InfoCommunePM> full = roles.getInfosCommunes();
-		if (noOfsCommune == null) {
-			return full;
-		}
-		else {
-			return Collections.singletonMap(noOfsCommune, full.get(noOfsCommune));
-		}
+	@Override
+	public Set<Integer> getNoOfsCommunesTraitees() {
+		return roles.getNoOfsCommunesTraitees();
 	}
 }

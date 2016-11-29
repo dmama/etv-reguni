@@ -28,10 +28,10 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.InfoContribuable;
-import ch.vd.uniregctb.role.InfoContribuablePM;
-import ch.vd.uniregctb.role.InfoContribuablePP;
-import ch.vd.uniregctb.role.ProduireRolesResults;
+import ch.vd.uniregctb.role.before2016.InfoContribuable;
+import ch.vd.uniregctb.role.before2016.InfoContribuablePM;
+import ch.vd.uniregctb.role.before2016.InfoContribuablePP;
+import ch.vd.uniregctb.role.before2016.ProduireRolesResults;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 

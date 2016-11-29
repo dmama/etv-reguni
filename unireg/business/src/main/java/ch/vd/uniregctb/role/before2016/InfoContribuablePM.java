@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.uniregctb.role.before2016;
 
 import java.util.List;
 

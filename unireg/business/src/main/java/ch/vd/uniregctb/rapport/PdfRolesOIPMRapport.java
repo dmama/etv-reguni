@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -15,9 +14,9 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AutoCloseableContainer;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.role.InfoContribuable;
-import ch.vd.uniregctb.role.InfoContribuablePM;
-import ch.vd.uniregctb.role.ProduireRolesOIPMResults;
+import ch.vd.uniregctb.role.before2016.InfoContribuable;
+import ch.vd.uniregctb.role.before2016.InfoContribuablePM;
+import ch.vd.uniregctb.role.before2016.ProduireRolesOIPMResults;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour l'OIPM

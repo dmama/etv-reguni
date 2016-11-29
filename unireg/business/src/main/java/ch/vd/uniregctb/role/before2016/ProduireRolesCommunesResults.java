@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.uniregctb.role.before2016;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;

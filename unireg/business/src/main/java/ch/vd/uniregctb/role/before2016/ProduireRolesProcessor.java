@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.role;
+package ch.vd.uniregctb.role.before2016;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -67,8 +67,8 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.role.InfoContribuable.TypeAssujettissement;
-import ch.vd.uniregctb.role.InfoContribuable.TypeContribuable;
+import ch.vd.uniregctb.role.before2016.InfoContribuable.TypeAssujettissement;
+import ch.vd.uniregctb.role.before2016.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;

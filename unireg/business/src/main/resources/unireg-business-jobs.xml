@@ -399,28 +399,28 @@
 	</bean>
 
 
-	<bean id="abstractProduireRolesJob" parent="schedulerJob" abstract="true" class="ch.vd.uniregctb.role.AbstractProduireRolesJob">
+	<bean id="abstractProduireRolesJob" parent="schedulerJob" abstract="true" class="ch.vd.uniregctb.role.before2016.AbstractProduireRolesJob">
 		<property name="service" ref="roleService"/>
 		<property name="rapportService" ref="rapportService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-    <bean id="produireRolesPPCommunesJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.ProduireRolesPPCommunesJob">
+    <bean id="produireRolesPPCommunesJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.before2016.ProduireRolesPPCommunesJob">
         <constructor-arg value="600"/>
         <constructor-arg value="Produire les rôles PP pour les communes vaudoises"/>
     </bean>
 
-	<bean id="produireRolesOIDsJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.ProduireRolesOIDsJob">
+	<bean id="produireRolesOIDsJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.before2016.ProduireRolesOIDsJob">
         <constructor-arg value="601"/>
         <constructor-arg value="Produire les rôles PP pour les OID vaudois"/>
     </bean>
 
-	<bean id="produireRolesPMCommunesJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.ProduireRolesPMCommunesJob">
+	<bean id="produireRolesPMCommunesJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.before2016.ProduireRolesPMCommunesJob">
 		<constructor-arg value="602"/>
 		<constructor-arg value="Produire les rôles PM pour les communes vaudoises"/>
 	</bean>
 
-	<bean id="produireRolesOIPMJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.ProduireRolesOIPMJob">
+	<bean id="produireRolesOIPMJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.before2016.ProduireRolesOIPMJob">
         <constructor-arg value="603"/>
         <constructor-arg value="Produire les rôles PM pour l'OIPM"/>
     </bean>
