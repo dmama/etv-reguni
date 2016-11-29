@@ -97,12 +97,12 @@
 					// on ajoute une ligne d'entête pour différencier la génération des mutations du traitement des mutations
 					table.find('thead tr:first').before('<tr class="headerGroup"><th colspan="2" style="background: none"></th><th colspan="3">Génération des mutations</th><th colspan="5">Traitement des mutations</th></tr>');
 
-					function addMutationCount(div, importId, count) {
+					function addMutationCount(div, importId, count, additionalParams) {
 						if (count == 0) {
 							div.prop('innerHTML', count);
 						}
 						else {
-							var url = '<c:url value="/registrefoncier/import/show.do?importId="/>' + importId;
+							var url = '<c:url value="/registrefoncier/import/show.do?importId="/>' + importId + additionalParams;
 							div.prop('innerHTML', '<a href="' + url + '">' + count + '</a>');
 						}
 					}
@@ -112,10 +112,10 @@
 						var tr = $(this);
 						var importId = tr.find('.import-id').text();
 						$.getJSON(App.curl("/registrefoncier/import/stats.do?importId=") + importId + "&" + new Date().getTime(), function(stats) {
-							addMutationCount(tr.find('div.a-traiter'), importId, stats.mutationsATraiter);
-							addMutationCount(tr.find('div.traitees'), importId, stats.mutationsTraitees);
-							addMutationCount(tr.find('div.en-erreur'), importId, stats.mutationsEnErreur);
-							addMutationCount(tr.find('div.forcees'), importId, stats.mutationsForcees);
+							addMutationCount(tr.find('div.a-traiter'), importId, stats.mutationsATraiter, '&aTraiter=true&_aTraiter=on&_traite=on&_enErreur=on&_force=on');
+							addMutationCount(tr.find('div.traitees'), importId, stats.mutationsTraitees, '&_aTraiter=on&traite=true&_traite=on&_enErreur=on&_force=on');
+							addMutationCount(tr.find('div.en-erreur'), importId, stats.mutationsEnErreur, '&_aTraiter=on&_traite=on&enErreur=true&_enErreur=on&_force=on');
+							addMutationCount(tr.find('div.forcees'), importId, stats.mutationsForcees, '&_aTraiter=on&_traite=on&_enErreur=on&force=true&_force=on');
 
 							// on active les boutons de relance/forçage des mutations si nécessaire
 							if (stats.mutationsATraiter > 0 || stats.mutationsEnErreur >  0) {
