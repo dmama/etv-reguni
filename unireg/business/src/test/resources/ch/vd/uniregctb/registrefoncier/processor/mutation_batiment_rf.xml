@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Gebaeude VersionID="1f109152381026b50138102aa2875806" MasterID="1f109152381026b50138102aa28557e0" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<GrundstueckZuGebaeude>
+		<GrundstueckIDREF>_1f109152381026b501381028a73d1852</GrundstueckIDREF>
+		<AbschnittFlaeche>104</AbschnittFlaeche>
+	</GrundstueckZuGebaeude>
+	<Einzelobjekt>false</Einzelobjekt>
+	<Unterirdisch>false</Unterirdisch>
+	<MehrereGrundstuecke>false</MehrereGrundstuecke>
+	<GebaeudeArten>
+		<GebaeudeArtCode>
+			<TextDe>*Habitation</TextDe>
+			<TextFr>Habitation</TextFr>
+		</GebaeudeArtCode>
+	</GebaeudeArten>
+	<Versicherungsnummer>3064</Versicherungsnummer>
+</Gebaeude>

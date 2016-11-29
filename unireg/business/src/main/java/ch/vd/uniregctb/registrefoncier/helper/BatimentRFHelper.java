@@ -1,14 +1,18 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.grundstueck.Gebaeude;
+import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
@@ -55,5 +59,26 @@ public abstract class BatimentRFHelper {
 
 		// les deux bâtiments sont identiques
 		return true;
+	}
+
+	@NotNull
+	public static BatimentRF newBatimentRF(@NotNull Gebaeude gebaeude, @NotNull Function<String, ImmeubleRF> immeubleProvider) {
+
+		final BatimentRF batiment = new BatimentRF();
+		batiment.setMasterIdRF(gebaeude.getMasterID());
+		batiment.setType(gebaeude.getGebaeudeArten().get(0).getGebaeudeArtCode().getTextFr());
+
+		final Integer flaeche = gebaeude.getFlaeche();
+		if (flaeche != null) {
+			batiment.addSurface(new SurfaceBatimentRF(flaeche));
+		}
+		else {
+			batiment.setSurfaces(new HashSet<>());
+		}
+
+		final List<GrundstueckZuGebaeude> gzg = gebaeude.getGrundstueckZuGebaeude();
+		gzg.forEach(i -> batiment.addImplantation(ImplantationRFHelper.newImplantation(i, immeubleProvider)));
+
+		return batiment;
 	}
 }

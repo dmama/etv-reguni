@@ -672,18 +672,4 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 			}
 		});
 	}
-
-	private void assertEtatMutations(final int count, final EtatEvenementRF etat) throws Exception {
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(count, mutations.size());
-				Collections.sort(mutations, new MutationComparator());
-				for (EvenementRFMutation mutation : mutations) {
-					assertEquals(etat, mutation.getEtat());
-				}
-			}
-		});
-	}
 }

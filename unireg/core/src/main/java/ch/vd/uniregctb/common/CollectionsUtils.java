@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.RandomAccess;
+import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -58,8 +59,8 @@ public abstract class CollectionsUtils {
 
 	/**
 	 * @param collection la collection d'entrée à processer
-	 * @param size la taille (maximale) des portions à découper
-	 * @param <T> le type des éléments contenus dans la collection
+	 * @param size       la taille (maximale) des portions à découper
+	 * @param <T>        le type des éléments contenus dans la collection
 	 * @return une liste de listes des éléments initialement contenus dans la collection d'entrée
 	 */
 	public static <T> List<List<T>> split(Collection<T> collection, int size) {
@@ -117,9 +118,9 @@ public abstract class CollectionsUtils {
 	}
 
 	/**
-	 * @param first première liste présentée
+	 * @param first  première liste présentée
 	 * @param second seconde liste présentée
-	 * @param <T> type des éléments des collections
+	 * @param <T>    type des éléments des collections
 	 * @return itérable sur une liste virtuelle vue comme la composition des deux listes données
 	 */
 	public static <T> Iterable<T> merged(Iterable<T> first, Iterable<T> second) {
@@ -163,7 +164,7 @@ public abstract class CollectionsUtils {
 
 	/**
 	 * @param list une liste d'éléments
-	 * @param <T> le type d'élément dans la liste
+	 * @param <T>  le type d'élément dans la liste
 	 * @return le dernier élément de la liste (utilise l'accès direct si la liste implémente {@link RandomAccess} ou un accès par {@link ListIterator} dans le cas contraire)
 	 * @throws IllegalArgumentException si la liste est nulle ou vide
 	 */
@@ -180,11 +181,11 @@ public abstract class CollectionsUtils {
 	}
 
 	/**
-	 * @param col collection à transformer en chaîne de caractères
-	 * @param renderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
-	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la collection
+	 * @param col                   collection à transformer en chaîne de caractères
+	 * @param renderer              le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
+	 * @param separator             le séparateur à placer entre la représentation de chacun des éléments de la collection
 	 * @param emptyCollectionString la chaîne de caractère à afficher dans le cas d'une collection nulle ou vide
-	 * @param <T> type des éléments de la collection
+	 * @param <T>                   type des éléments de la collection
 	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (les nulls de la collection sont ignorés)
 	 */
 	public static <T> String toString(Collection<T> col, StringRenderer<? super T> renderer, String separator, String emptyCollectionString) {
@@ -204,10 +205,10 @@ public abstract class CollectionsUtils {
 	}
 
 	/**
-	 * @param col collection à transformer en chaîne de caractères
-	 * @param renderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
+	 * @param col       collection à transformer en chaîne de caractères
+	 * @param renderer  le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
 	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la collection
-	 * @param <T> type des éléments de la collection
+	 * @param <T>       type des éléments de la collection
 	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (en cas de collection nulle ou vide, renvoie une chaîne vide)
 	 */
 	public static <T> String toString(Collection<T> col, StringRenderer<? super T> renderer, String separator) {
@@ -233,5 +234,53 @@ public abstract class CollectionsUtils {
 	@NotNull
 	public static <T> List<T> unmodifiableNeverNull(@Nullable List<? extends T> source) {
 		return source != null ? Collections.unmodifiableList(source) : Collections.<T>emptyList();
+	}
+
+	/**
+	 * Analyse les deux collections fournies et supprime des collections les éléments communs.
+	 * <p/>
+	 * A noter que cette méthode tient compte des éléments dupliqués de manière unitaire. Ainsi,
+	 * si un élément A est présent deux fois dans la première collection et seulement une fois
+	 * dans la seconde collection alors il restera au final un élément A dans le première
+	 * collection et zéro dans la seconde collection :
+	 * <pre>
+	 *     (a, a, b, c) + (a, d, e) => (a, b, c) + (d, e)
+	 * </pre>
+	 *
+	 * @param left            une collection
+	 * @param right           une autre collection
+	 * @param equalityFunctor la function qui permet de détecter les éléments communs (optionnel)
+	 * @param <T>             le type des éléments des collections
+	 */
+	public static <T> void removeCommonElements(@NotNull Collection<? extends T> left,
+	                                            @NotNull Collection<? extends T> right,
+	                                            @Nullable BiFunction<T, T, Boolean> equalityFunctor) {
+
+		if (left == right) {
+			// pas besoin de se casser la tête
+			left.clear();
+			return;
+		}
+
+		if (equalityFunctor == null) {
+			equalityFunctor = T::equals;
+		}
+
+		final Iterator<? extends T> liter = left.iterator();
+		while (liter.hasNext()) {
+			final T l = liter.next();
+
+			final Iterator<? extends T> riter = right.iterator();
+			while (riter.hasNext()) {
+				final T r = riter.next();
+
+				if (equalityFunctor.apply(l, r)) {
+					// les deux éléments sont équivalents, on les supprime donc des deux listes.
+					liter.remove();
+					riter.remove();
+					break;
+				}
+			}
+		}
 	}
 }

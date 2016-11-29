@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -375,20 +373,6 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				assertEquals(3727L, coll.getNoRF());
 				assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
 				assertEquals("Raison sociale", coll.getRaisonSociale());
-			}
-		});
-	}
-
-	private void assertEtatMutations(final int count, final EtatEvenementRF etat) throws Exception {
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(count, mutations.size());
-				Collections.sort(mutations, new MutationComparator());
-				for (EvenementRFMutation mutation : mutations) {
-					assertEquals(etat, mutation.getEtat());
-				}
 			}
 		});
 	}

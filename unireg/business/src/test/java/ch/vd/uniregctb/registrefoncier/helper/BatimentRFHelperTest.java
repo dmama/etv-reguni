@@ -1,6 +1,10 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -18,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -178,5 +183,54 @@ public class BatimentRFHelperTest {
 
 			assertFalse(BatimentRFHelper.currentDataEquals(batiment, gebaeude));
 		}
+	}
+
+	@Test
+	public void testNewBatimentRF() throws Exception {
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("3738728228");
+
+		final BienFondRF immeuble2 = new BienFondRF();
+		immeuble2.setIdRF("a8280ec000");
+
+		final Gebaeude gebaeude = new Gebaeude();
+		gebaeude.setMasterID("7837829e9a9a");
+		gebaeude.getGebaeudeArten().add(new GebaeudeArt(new CapiCode("", "Garage"), null));
+		gebaeude.setFlaeche(360);
+		gebaeude.getGrundstueckZuGebaeude().add(new GrundstueckZuGebaeude("3738728228", 80));
+		gebaeude.getGrundstueckZuGebaeude().add(new GrundstueckZuGebaeude("a8280ec000", 280));
+
+		final BatimentRF batiment = BatimentRFHelper.newBatimentRF(gebaeude, idRF -> {
+			if (idRF.equals(immeuble1.getIdRF())) {
+				return immeuble1;
+			}
+			else if (idRF.equals(immeuble2.getIdRF())) {
+				return immeuble2;
+			}
+			else {
+				return null;
+			}
+		});
+		assertNotNull(batiment);
+		assertEquals("7837829e9a9a", batiment.getMasterIdRF());
+		assertEquals("Garage", batiment.getType());
+
+		final Set<SurfaceBatimentRF> surfaces = batiment.getSurfaces();
+		assertEquals(1, surfaces.size());
+		final SurfaceBatimentRF surface0 = surfaces.iterator().next();
+		assertEquals(360, surface0.getSurface());
+
+		final List<ImplantationRF> implantations = new ArrayList<>(batiment.getImplantations());
+		assertEquals(2, implantations.size());
+		Collections.sort(implantations, (l, r) -> l.getImmeuble().getIdRF().compareTo(r.getImmeuble().getIdRF()));
+
+		final ImplantationRF implantation0 = implantations.get(0);
+		assertEquals(Integer.valueOf(80), implantation0.getSurface());
+		assertEquals("3738728228", implantation0.getImmeuble().getIdRF());
+
+		final ImplantationRF implantation1 = implantations.get(1);
+		assertEquals(Integer.valueOf(280), implantation1.getSurface());
+		assertEquals("a8280ec000", implantation1.getImmeuble().getIdRF());
 	}
 }

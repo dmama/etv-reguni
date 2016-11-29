@@ -13,7 +13,6 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -28,6 +27,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor;
+import ch.vd.uniregctb.registrefoncier.processor.BatimentRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessor;
 import ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor;
@@ -48,6 +48,7 @@ public class DataRFMutationsProcessor {
 	private final AyantDroitRFProcessor ayantDroitRFProcessor;
 	private final DroitRFProcessor droitRFProcessor;
 	private final SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
+	private final BatimentRFProcessor batimentRFProcessor;
 
 	public DataRFMutationsProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
 	                                @NotNull MutationRFProcessor communeRFProcessor,
@@ -55,12 +56,14 @@ public class DataRFMutationsProcessor {
 	                                @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
 	                                @NotNull DroitRFProcessor droitRFProcessor,
 	                                @NotNull SurfaceAuSolRFProcessor surfaceAuSolRFProcessor,
+	                                @NotNull BatimentRFProcessor batimentRFProcessor,
 	                                @NotNull PlatformTransactionManager transactionManager) {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.ayantDroitRFProcessor = ayantDroitRFProcessor;
 		this.immeubleRFProcessor = immeubleRFProcessor;
 		this.droitRFProcessor = droitRFProcessor;
 		this.surfaceAuSolRFProcessor = surfaceAuSolRFProcessor;
+		this.batimentRFProcessor = batimentRFProcessor;
 		this.transactionManager = transactionManager;
 		this.communeRFProcessor = communeRFProcessor;
 	}
@@ -80,11 +83,12 @@ public class DataRFMutationsProcessor {
 
 		checkPreconditions(importId);
 
-		processMutations(importId, TypeEntiteRF.COMMUNE, nbThreads, new SubStatusManager(0, 25, statusManager));
-		processMutations(importId, TypeEntiteRF.IMMEUBLE, nbThreads, new SubStatusManager(0, 25, statusManager));
-		processMutations(importId, TypeEntiteRF.AYANT_DROIT, nbThreads, new SubStatusManager(25, 50, statusManager));
-		processMutations(importId, TypeEntiteRF.DROIT, nbThreads, new SubStatusManager(50, 75, statusManager));
-		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, nbThreads, new SubStatusManager(75, 100, statusManager));
+		processMutations(importId, TypeEntiteRF.COMMUNE, nbThreads, new SubStatusManager(0, 16, statusManager));
+		processMutations(importId, TypeEntiteRF.IMMEUBLE, nbThreads, new SubStatusManager(16, 33, statusManager));
+		processMutations(importId, TypeEntiteRF.AYANT_DROIT, nbThreads, new SubStatusManager(33, 50, statusManager));
+		processMutations(importId, TypeEntiteRF.DROIT, nbThreads, new SubStatusManager(50, 66, statusManager));
+		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, nbThreads, new SubStatusManager(66, 83, statusManager));
+		processMutations(importId, TypeEntiteRF.BATIMENT, nbThreads, new SubStatusManager(83, 100, statusManager));
 	}
 
 	private void checkPreconditions(long importId) {
@@ -169,8 +173,7 @@ public class DataRFMutationsProcessor {
 		case AYANT_DROIT:
 			return ayantDroitRFProcessor;
 		case BATIMENT:
-			// TODO (msi)
-			throw new NotImplementedException();
+			return batimentRFProcessor;
 		case COMMUNE:
 			return communeRFProcessor;
 		case DROIT:

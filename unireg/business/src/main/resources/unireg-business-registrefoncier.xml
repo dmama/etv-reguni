@@ -36,6 +36,7 @@
 		<constructor-arg ref="ayantDroitRFProcessor"/>
 		<constructor-arg ref="droitRFProcessor"/>
 		<constructor-arg ref="surfaceAuSolRFProcessor"/>
+		<constructor-arg ref="batimentRFProcessor"/>
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
@@ -66,6 +67,12 @@
 	<bean id="surfaceAuSolRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor">
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="surfaceAuSolRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="batimentRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.BatimentRFProcessor">
+		<constructor-arg ref="batimentRFDAO"/>
+		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 

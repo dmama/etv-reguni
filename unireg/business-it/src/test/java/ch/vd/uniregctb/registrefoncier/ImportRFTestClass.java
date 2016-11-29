@@ -1,17 +1,26 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
@@ -22,6 +31,14 @@ import static org.junit.Assert.fail;
 public abstract class ImportRFTestClass extends BusinessItTest {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ImportRFTestClass.class);
+
+	private EvenementRFMutationDAO evenementRFMutationDAO;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
+	}
 
 	protected static CommuneRF newCommuneRF(int noRf, String nomRf, int noOFS) {
 		CommuneRF commune = new CommuneRF();
@@ -268,5 +285,19 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 				fail("Le job " + job.getName() + " tournait depuis plus de cinq minutes et a été interrompu.");
 			}
 		}
+	}
+
+	protected void assertEtatMutations(final int count, final EtatEvenementRF etat) throws Exception {
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+				assertEquals(count, mutations.size());
+				Collections.sort(mutations, new MutationComparator());
+				for (EvenementRFMutation mutation : mutations) {
+					assertEquals(etat, mutation.getEtat());
+				}
+			}
+		});
 	}
 }

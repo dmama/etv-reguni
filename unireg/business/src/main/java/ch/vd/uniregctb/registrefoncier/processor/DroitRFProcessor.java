@@ -3,7 +3,6 @@ package ch.vd.uniregctb.registrefoncier.processor;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
@@ -159,23 +159,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on détermine les changements
 		List<DroitRF> toAddList = new LinkedList<>(droits);
 		List<DroitRF> toCloseList = new LinkedList<>(persisted);
-
-		final Iterator<DroitRF> aiter = toAddList.iterator();
-		while (aiter.hasNext()) {
-			final DroitRF toAdd = aiter.next();
-
-			final Iterator<DroitRF> citer = toCloseList.iterator();
-			while (citer.hasNext()) {
-				final DroitRF toClose = citer.next();
-
-				if (DroitRFHelper.dataEquals(toAdd, toClose)) {
-					// les deux droits sont équivalents, cela veut dire qu'il n'a pas changé. On la supprime donc des deux listes.
-					aiter.remove();
-					citer.remove();
-					break;
-				}
-			}
-		}
+		CollectionsUtils.removeCommonElements(toAddList, toCloseList, DroitRFHelper::dataEquals);
 
 		// on ferme toutes les droits à fermer
 		toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
@@ -189,7 +173,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite la suppresion (= fermeture) de tous les droits d'un propriétaire.
+	 * Traite la suppression (= fermeture) de tous les droits d'un propriétaire.
 	 */
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit) {
 		// on ferme tous les droits encore ouverts
