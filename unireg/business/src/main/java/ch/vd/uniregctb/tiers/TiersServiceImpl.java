@@ -311,6 +311,11 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
+	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
+		return tiersDAO.getEtablissementByNumeroSite(numeroSite);
+	}
+
+	@Override
 	public List<DateRanged<Etablissement>> getEtablissementsPrincipauxEntreprise(Entreprise entreprise) {
 		return getEtablissementsEntreprise(entreprise, true, ActiviteEconomique::isPrincipal);
 	}

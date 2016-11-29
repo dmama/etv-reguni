@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -58,10 +59,31 @@ public class DoublonEntrepriseStrategy extends AbstractOrganisationStrategy {
 
 			if (remplaceParAvant == null && remplaceParApres != null) {
 
-				final String message = String.format("Organisation remplacée (civil): %d, remplaçante: %d.",
-				                                     organisation.getNumeroOrganisation(), remplaceParApres);
+				final Entreprise entrepriseRemplacante = context.getTiersService().getEntrepriseByNumeroOrganisation(remplaceParApres);
+
+				final String message = String.format("Doublon d’organisation à l'IDE. Cette entreprise n°%s (civil: %d) est remplacée par l'entreprise %s (civil: %d).",
+				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+				                                     organisation.getNumeroOrganisation(),
+				                                     entrepriseRemplacante == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseRemplacante.getNumero()),
+				                                     remplaceParApres);
 				LOGGER.info(message);
-				return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis pour la gestion de doublon d’entreprises: " + message);
+				return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message);
+			}
+
+			final Long enRemplacementDeAvant = sitePrincipalAvantRange.getPayload().getIdeEnRemplacementDe(dateAvant);
+			final Long enRemplacementDeApres = organisation.getSitePrincipal(dateApres).getPayload().getIdeEnRemplacementDe(dateApres);
+
+			if (enRemplacementDeAvant == null && enRemplacementDeApres != null) {
+
+				final Entreprise entrepriseRemplacee = context.getTiersService().getEntrepriseByNumeroOrganisation(enRemplacementDeApres);
+
+				final String message = String.format("Doublon d’organisation à l'IDE. Cette entreprise n°%s (civil: %d) remplace l'entreprise %s (civil: %d).",
+				                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+				                                     organisation.getNumeroOrganisation(),
+				                                     entrepriseRemplacee == null ? "non encore connue d'Unireg" : "n°" + FormatNumeroHelper.numeroCTBToDisplay(entrepriseRemplacee.getNumero()),
+				                                     enRemplacementDeApres);
+				LOGGER.info(message);
+				return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message);
 			}
 		}
 

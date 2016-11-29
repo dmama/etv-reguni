@@ -77,6 +77,14 @@ public interface TiersService {
      */
     Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
 
+	/**
+	 * Renvoie l'établissement (fiscal, donc) correspondant au numéro de site (civil) passé en paramètre.
+	 *
+	 * @param numeroSite le numéro du site
+	 * @return l'établissement (tiers non-annulé) correspondant au numéro d'organisation passé en paramètre, ou <b>null</b>.
+	 */
+	Etablissement getEtablissementByNumeroSite(long numeroSite);
+
     /**
      * @param entreprise entreprise
      * @return la liste des établissements principaux (avec leurs dates de validité) associés à l'entreprise
