@@ -827,7 +827,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionDemandeBilanFinalHelper.buildDocument(lettre, dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
 		root.getDocument().add(original);
+		if (copieMandataire != null)  {
+			root.getDocument().add(copieMandataire);
+		}
 		final TypeDocumentEditique typeDocument = impressionDemandeBilanFinalHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionDemandeBilanFinalHelper.construitIdDocument(lettre);
 
@@ -846,7 +850,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeLettreTypeInformationLiquidationOnline(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreTypeInformationLiquidationHelper.buildDocument(lettre, dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionLettreTypeInformationLiquidationHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
 		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
 		final TypeDocumentEditique typeDocument = impressionLettreTypeInformationLiquidationHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLettreTypeInformationLiquidationHelper.construitIdDocument(lettre);
 
