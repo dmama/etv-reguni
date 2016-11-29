@@ -28,6 +28,10 @@ public class SubStatusManagerTest {
 
 		final StatusManager sub = new SubStatusManager(0, 50,  parent);
 
+		sub.setMessage("init");
+		assertEquals(0, parent.getPercent());
+		assertEquals("init", parent.getMsg());
+
 		sub.setMessage("zéro", 0);
 		assertEquals(0, parent.getPercent());
 		assertEquals("zéro", parent.getMsg());
@@ -53,6 +57,10 @@ public class SubStatusManagerTest {
 	public void testRange_50_100() throws Exception {
 
 		final StatusManager sub = new SubStatusManager(50, 100,  parent);
+
+		sub.setMessage("init");
+		assertEquals(50, parent.getPercent());
+		assertEquals("init", parent.getMsg());
 
 		sub.setMessage("zéro", 0);
 		assertEquals(50, parent.getPercent());

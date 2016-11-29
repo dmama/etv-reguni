@@ -82,7 +82,7 @@ public class SubStatusManager implements StatusManager {
 
 	@Override
 	public void setMessage(String msg) {
-		parent.setMessage(msg);
+		parent.setMessage(msg, minRange);
 	}
 
 	@Override
