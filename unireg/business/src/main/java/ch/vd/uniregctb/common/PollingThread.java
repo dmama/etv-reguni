@@ -36,7 +36,7 @@ public abstract class PollingThread<T> extends Thread {
 	 * @param name nom du thread
 	 */
 	protected PollingThread(String name) {
-		this(name, 1, TimeUnit.SECONDS);
+		this(name, 100, TimeUnit.MILLISECONDS);
 	}
 
 	/**
