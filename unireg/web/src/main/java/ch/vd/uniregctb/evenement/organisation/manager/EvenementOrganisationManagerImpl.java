@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
-import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
@@ -39,6 +38,7 @@ import ch.vd.uniregctb.evenement.organisation.view.ErreurEvenementOrganisationVi
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
+import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationSummaryView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.organisation.OrganisationView;
@@ -112,6 +112,16 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return buildDetailView(evt);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public EvenementOrganisationSummaryView getSummary(Long id) throws AdresseException, ServiceInfrastructureException {
+		final EvenementOrganisation evt = evenementService.get(id);
+		if (evt == null) {
+			throw newObjectNotFoundException(id);
+		}
+		return buildSummaryView(evt);
+	}
+
 	private EvenementOrganisationDetailView buildDetailView(EvenementOrganisation evt) {
 		final String foscPublicationDirectLinkFormat = "https://www.fosc.ch/shabforms/servlet/Search/1925485.pdf?EID=7&DOCID=%d";
 
@@ -124,6 +134,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		evtView.setEvtId(evt.getId());
 		evtView.setNoEvenement(evt.getNoEvenement());
 		evtView.setEvtType(evt.getType());
+		evtView.setCorrectionDansLePasse(evt.getCorrectionDansLePasse());
+		if (evt.getReferenceAnnonceIDE() != null) {
+			evtView.setAnnonceIDEId(evt.getReferenceAnnonceIDE().getId());
+		}
+
 		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
 			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
 		}
@@ -156,22 +171,62 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		try {
 			final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(numeroOrganisation);
 			evtView.setNonTraitesSurMemeOrganisation(list);
-			if (list != null && list.size() > 0) {
-				final EvenementOrganisationBasicInfo evtPrioritaire = list.get(0);
-				if (evtView.getEvtId() == evtPrioritaire.getId()) {
-					evtView.setRecyclable(true);
-					evtView.setForcable(true);
-				}
-			}
+			evtView.setRecyclable(evaluateRecyclable(evtView.getEvtId(), list));
 		}
 		catch (Exception e) {
 			evtView.setOrganisationError(e.getMessage());
 		}
-		if (evt.getEtat() == EtatEvenementOrganisation.A_VERIFIER) {
-			evtView.setForcable(true);
-		}
+		evtView.setForcable(evaluateForcable(evt.getEtat(), evtView.isRecyclable()));
 		return evtView;
 	}
+
+	private EvenementOrganisationSummaryView buildSummaryView(EvenementOrganisation evt) {
+		final EvenementOrganisationSummaryView evtView = new EvenementOrganisationSummaryView();
+
+		evtView.setEvtCommentaireTraitement(evt.getCommentaireTraitement());
+		evtView.setEvtDate(evt.getDateEvenement());
+		evtView.setEvtDateTraitement(evt.getDateTraitement());
+		evtView.setEvtEtat(evt.getEtat());
+		evtView.setEvtId(evt.getId());
+		evtView.setNoEvenement(evt.getNoEvenement());
+		evtView.setEvtType(evt.getType());
+		evtView.setCorrectionDansLePasse(evt.getCorrectionDansLePasse());
+		if (evt.getReferenceAnnonceIDE() != null) {
+			evtView.setAnnonceIDEId(evt.getReferenceAnnonceIDE().getId());
+		}
+		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
+			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
+		}
+		Collections.sort(evtView.getEvtErreurs(), (o1, o2) -> Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId()));
+
+		evtView.setNoOrganisation(evt.getNoOrganisation());
+
+		try {
+			final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(evt.getNoOrganisation());
+			evtView.setNonTraitesSurMemeOrganisation(list);
+			evtView.setRecyclable(evaluateRecyclable(evtView.getEvtId(), list));
+		}
+		catch (Exception e) {
+			evtView.setErreursEvt(e.getMessage());
+		}
+		evtView.setForcable(evaluateForcable(evt.getEtat(), evtView.isRecyclable()));
+		return evtView;
+	}
+
+	private boolean evaluateRecyclable(Long evtId, List<EvenementOrganisationBasicInfo> list) {
+		if (list != null && list.size() > 0) {
+			final EvenementOrganisationBasicInfo evtPrioritaire = list.get(0);
+			if (evtId == evtPrioritaire.getId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean evaluateForcable(EtatEvenementOrganisation etat, boolean recyclable) {
+		return etat == EtatEvenementOrganisation.A_VERIFIER || recyclable;
+	}
+
 
 	@Override
 	@Transactional
@@ -279,11 +334,15 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			view.setNumeroCTB(getNumeroCtbPourNoOrganisation(numeroOrganisation));
 
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(evt.getNoOrganisation());
-			view.setNom(organisation.getNom(dateEvenement));
-			final Domicile siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
-			view.setNoOFSSiege(siegePrincipal.getNumeroOfsAutoriteFiscale());
-			view.setTypeSiege(siegePrincipal.getTypeAutoriteFiscale());
-
+			view.setOrganisation(new OrganisationView(organisation, evt.getDateEvenement()));
+			view.setNom(view.getOrganisation().getNom()); // Champ redondant mais nécessaire car utilisé en cas d'erreur de chargement de l'organisation.
+			view.setCorrectionDansLePasse(evt.getCorrectionDansLePasse());
+			if (evt.getReferenceAnnonceIDE() != null) {
+				view.setAnnonceIDEId(evt.getReferenceAnnonceIDE().getId());
+			}
+			final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(evt.getNoOrganisation());
+			view.setRecyclable(evaluateRecyclable(evt.getId(), list));
+			view.setForcable(evaluateForcable(evt.getEtat(), view.isRecyclable()));
 		}
 		catch (ServiceOrganisationException e) {
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement organisation " + evt.toString(), e);

@@ -1949,6 +1949,7 @@ var Tooltips = {
 	activate_ajax_tooltips: function() {
 		$(".jTip").tooltip({
 			items: "[title]",
+			position: { my: "right top", at: "left bottom" },
 			content: function(response) {
 				var url = $(this).attr("title");
 				$.get(url, response);

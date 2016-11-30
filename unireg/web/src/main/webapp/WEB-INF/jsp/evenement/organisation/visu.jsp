@@ -23,6 +23,9 @@
             <td width="25%">
                     ${command.noEvenement}
                 <unireg:consulterLog entityNature="EvenementOrganisation" entityId="${command.evtId}"/>
+                <c:if test="${command.correctionDansLePasse == true}">
+                    <a href="#" class="alert" title="<fmt:message key="label.correction.passe"/>"></a>
+                </c:if>
             </td>
             <td width="25%"><fmt:message key="label.date.evenement"/> :</td>
             <td width="25%">
@@ -42,12 +45,6 @@
 		    <td width="25%"><fmt:message key="label.etat.evenement"/> :</td>
 		    <td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}"/></td>
 	    </tr>
-<%--
-        <tr class="<unireg:nextRowClass/>">
-            <td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
-            <td colspan="3"><em><c:out value="${command.evtCommentaireTraitement}"/></em></td>
-        </tr>
---%>
     </table>
 </fieldset>
 <!-- Fin Caracteristiques generales -->

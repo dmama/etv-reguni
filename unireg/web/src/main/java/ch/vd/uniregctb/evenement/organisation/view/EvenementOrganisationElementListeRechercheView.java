@@ -5,8 +5,8 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.organisation.OrganisationView;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationElementListeRechercheView implements Serializable {
@@ -23,8 +23,13 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 	private Long numeroCTB;
 	private String nom;
 	private String commentaireTraitement;
-	private Integer noOFSSiege;
-	private TypeAutoriteFiscale typeSiege;
+	private long annonceIDEId;
+	private boolean correctionDansLePasse;
+
+	/* Ajouté de la vue de détail */
+	private boolean recyclable;
+	private boolean forcable;
+	private OrganisationView organisation;
 
 	public EvenementOrganisationElementListeRechercheView(EvenementOrganisation evt) {
 		this.id = evt.getId();
@@ -117,19 +122,43 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 		this.commentaireTraitement = commentaireTraitement;
 	}
 
-	public Integer getNoOFSSiege() {
-		return noOFSSiege;
+	public boolean isRecyclable() {
+		return recyclable;
 	}
 
-	public void setNoOFSSiege(Integer noOFSSiege) {
-		this.noOFSSiege = noOFSSiege;
+	public void setRecyclable(boolean recyclable) {
+		this.recyclable = recyclable;
 	}
 
-	public TypeAutoriteFiscale getTypeSiege() {
-		return typeSiege;
+	public boolean isForcable() {
+		return forcable;
 	}
 
-	public void setTypeSiege(TypeAutoriteFiscale typeSiege) {
-		this.typeSiege = typeSiege;
+	public void setForcable(boolean forcable) {
+		this.forcable = forcable;
+	}
+
+	public OrganisationView getOrganisation() {
+		return organisation;
+	}
+
+	public void setOrganisation(OrganisationView organisation) {
+		this.organisation = organisation;
+	}
+
+	public long getAnnonceIDEId() {
+		return annonceIDEId;
+	}
+
+	public void setAnnonceIDEId(long annonceIDEId) {
+		this.annonceIDEId = annonceIDEId;
+	}
+
+	public boolean isCorrectionDansLePasse() {
+		return correctionDansLePasse;
+	}
+
+	public void setCorrectionDansLePasse(boolean correctionDansLePasse) {
+		this.correctionDansLePasse = correctionDansLePasse;
 	}
 }

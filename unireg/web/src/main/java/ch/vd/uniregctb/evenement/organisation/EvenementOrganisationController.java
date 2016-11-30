@@ -207,6 +207,12 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		return new ModelAndView ("evenement/organisation/visu", "command", manager.get(id));
 	}
 
+	@RequestMapping(value = {"/summary.do"}, method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public ModelAndView onGetEvenementOrganisationSummary(@RequestParam("id") Long id) throws AdresseException {
+		return new ModelAndView ("evenement/organisation/summary", "command", manager.getSummary(id));
+	}
+
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String onForcerEvenementOrganisation(@RequestParam("id") Long id) throws AdresseException {

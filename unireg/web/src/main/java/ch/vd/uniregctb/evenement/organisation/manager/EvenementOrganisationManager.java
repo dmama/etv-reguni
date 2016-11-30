@@ -9,6 +9,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
+import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationSummaryView;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersException;
 
@@ -19,16 +20,28 @@ import ch.vd.uniregctb.tiers.TiersException;
 public interface EvenementOrganisationManager {
 
 	/**
-	 * Charge la structure EvenementCivilRegPPDetailView en fonction des informations de
+	 * Charge la structure EvenementOrganisationDetailView en fonction des informations de
 	 * l'événement
 	 *
 	 * @param id ID d'evenement
-	 * @return la structure EvenementCivilRegPPDetailView correspondant à l'id
+	 * @return la structure EvenementOrganisationDetailView correspondant à l'id
 	 *
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 * @throws ServiceInfrastructureException ...
 	 */
 	EvenementOrganisationDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+
+	/**
+	 * Charge la structure EvenementOrganisationSummaryView en fonction des informations de
+	 * l'événement
+	 *
+	 * @param id ID d'evenement
+	 * @return la structure EvenementOrganisationSummaryView correspondant à l'id
+	 *
+	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
+	 * @throws ServiceInfrastructureException ...
+	 */
+	EvenementOrganisationSummaryView getSummary(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Recycle l'evenement civil designe par l'id
