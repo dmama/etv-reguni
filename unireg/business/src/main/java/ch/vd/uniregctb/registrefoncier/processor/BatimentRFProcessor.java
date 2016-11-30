@@ -100,8 +100,6 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 		else {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
 		}
-
-
 	}
 
 	@NotNull

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+	<GrundstueckList>
+		<Liegenschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<GrundstueckID>_1f109152381009be0138100bc9f139e0</GrundstueckID>
+			<EGrid>CH938383459516</EGrid>
+			<GrundstueckNummer VersionID="1f109152381009be0138100bc9f33a1a">
+				<BfsNr>273</BfsNr>
+				<Gemeindenamen>Rances</Gemeindenamen>
+				<StammNr>3</StammNr>
+			</GrundstueckNummer>
+			<IstKopie>false</IstKopie>
+			<AmtlicheBewertung VersionID="1f109152381009be0138100cfd906087">
+				<AmtlicherWert>1100000</AmtlicherWert>
+				<Ertragswert>0</Ertragswert>
+				<ProtokollNr>RG96</ProtokollNr>
+				<ProtokollGueltig>true</ProtokollGueltig>
+				<MitEwKomponente>unbekannt</MitEwKomponente>
+			</AmtlicheBewertung>
+			<GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+			<BeschreibungUebergeben>true</BeschreibungUebergeben>
+			<EigentumUebergeben>true</EigentumUebergeben>
+			<PfandrechtUebergeben>true</PfandrechtUebergeben>
+			<DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+			<GrundlastUebergeben>true</GrundlastUebergeben>
+			<AnmerkungUebergeben>true</AnmerkungUebergeben>
+			<VormerkungUebergeben>true</VormerkungUebergeben>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<BereitZurVerifikation>false</BereitZurVerifikation>
+			<NutzungLandwirtschaft>unbekannt</NutzungLandwirtschaft>
+			<NutzungWald>unbekannt</NutzungWald>
+			<NutzungEisenbahn>nein</NutzungEisenbahn>
+			<NutzungVerwaltungsvermoegen>unbekannt</NutzungVerwaltungsvermoegen>
+			<GrundstueckFlaeche VersionID="1f109152381009be0138100dbd7c1856" MasterID="1f109152381009be0138100dbd7c1855">
+				<Flaeche>2969451</Flaeche>
+				<Qualitaet>
+					<TextDe>*numérisé</TextDe>
+					<TextFr>numérisé</TextFr>
+				</Qualitaet>
+				<ProjektMutation>false</ProjektMutation>
+				<GeometrischDarstellbar>false</GeometrischDarstellbar>
+				<UeberlagerndeRechte>false</UeberlagerndeRechte>
+			</GrundstueckFlaeche>
+		</Liegenschaft>
+	</GrundstueckList>
+</GrundstueckExport>

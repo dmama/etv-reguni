@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -29,9 +31,20 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	@Override
 	public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
 		return db.stream()
-				.filter(m -> Objects.equals(m.getIdRF(), key.getIdRF()))
+				.filter(i -> Objects.equals(i.getIdRF(), key.getIdRF()))
 				.findFirst()
 				.orElse(null);
+	}
+
+	@NotNull
+	@Override
+	public Set<String> findWithActiveSurfacesAuSol() {
+		return db.stream()
+				.filter(i -> i.getSurfacesAuSol().stream()
+						.filter(s -> s.isValidAt(null))
+						.count() > 0)
+				.map(ImmeubleRF::getIdRF)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -42,7 +55,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	@Override
 	public ImmeubleRF get(Long id) {
 		return db.stream()
-				.filter(m -> Objects.equals(m.getId(),id))
+				.filter(i -> Objects.equals(i.getId(), id))
 				.findFirst()
 				.orElse(null);
 	}

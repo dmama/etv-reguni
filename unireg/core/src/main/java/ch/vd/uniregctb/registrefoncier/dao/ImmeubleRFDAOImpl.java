@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,5 +22,13 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		final Query query = getCurrentSession().createQuery("from ImmeubleRF where idRF = :idRF");
 		query.setParameter("idRF", key.getIdRF());
 		return (ImmeubleRF) query.uniqueResult();
+	}
+
+	@NotNull
+	@Override
+	public Set<String> findWithActiveSurfacesAuSol() {
+		final Query query = getCurrentSession().createQuery("select i.idRF from ImmeubleRF i left join i.surfacesAuSol s where s.dateFin is null and i.surfacesAuSol is not empty");
+		//noinspection unchecked
+		return new HashSet<>(query.list());
 	}
 }

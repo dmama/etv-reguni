@@ -28,6 +28,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
@@ -516,6 +517,99 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 						             "        <Flaeche>17814</Flaeche>\n" +
 						             "    </Bodenbedeckung>\n" +
 						             "</BodenbedeckungList>\n", mut1.getXmlContent());
+			}
+		});
+	}
+
+	/**
+	 * Ce test vérifie que des mutations sont bien créées lorsqu'on importe un fichier RF et qu'il n'y a plus de surface au sol.
+	 */
+	@Test
+	public void testImportSurfacesAuSolSupprimees() throws Exception {
+
+		// on va chercher le fichier d'import
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_surfaceausol_vides_rf_hebdo.xml");
+		assertNotNull(importFile);
+
+		// on l'upload dans Raft
+		final String raftUrl;
+		try (FileInputStream is = new FileInputStream(importFile)) {
+			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
+		}
+		assertNotNull(raftUrl);
+
+		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
+		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		// on insère les données de l'import dans la base
+		final Long importId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(dateSecondImport);
+				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+				importEvent.setFileUrl(raftUrl);
+				return evenementRFImportDAO.save(importEvent).getId();
+			}
+		});
+		assertNotNull(importId);
+
+		// on insère les données des immeubles dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
+
+				// un immeuble avec deux surfaces au sol actives
+				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", null, false, false, dateImportInitial, 2969451);
+				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
+
+				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFond1, "Pâturage", 660066, dateImportInitial, null);
+				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateImportInitial, null);
+				surfaceAuSolRFDAO.save(surface1);
+				surfaceAuSolRFDAO.save(surface2);
+			}
+		});
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, importId);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit se terminer correctement
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+
+		// on vérifie que l'import est bien passé au statut TRAITE
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			}
+		});
+
+		// on vérifie que les mutations attendues sont bien dans la DB
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+				assertEquals(1, mutations.size());    // les 2 surfaces au sol de l'immeuble sont différentes
+				Collections.sort(mutations, new MutationComparator());
+
+				final EvenementRFMutation mut0 = mutations.get(0);
+				assertEquals(importId, mut0.getParentImport().getId());
+				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+				assertEquals(TypeEntiteRF.SURFACE_AU_SOL, mut0.getTypeEntite());
+				assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdRF());
+				assertNull(mut0.getXmlContent());
 			}
 		});
 	}

@@ -16,6 +16,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.MockPersistentCache;
 import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class DataRFMutationsDetectorSurfaceAuSolTest {
 
@@ -362,6 +364,65 @@ public class DataRFMutationsDetectorSurfaceAuSolTest {
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(0, mutations.size());
+	}
+
+	/**
+	 * Ce test vérifie que des mutations de suppression sont créées si les surfaces d'un immeuble n'apparaissent plus dans le fichier XML alors qu'elles existent dans la DB.
+	 */
+	@Test
+	public void testSurfacesSupprimees() throws Exception {
+
+		final BienFondRF immeuble = new BienFondRF();
+		immeuble.setIdRF("382929efa218");
+
+		final SurfaceAuSolRF s1 = new SurfaceAuSolRF();
+		s1.setImmeuble(immeuble);
+		s1.setType("Forêt");
+		s1.setSurface(37823);
+		s1.setDateDebut(RegDate.get(2003, 11, 22));
+		s1.setDateFin(RegDate.get(2005, 1, 2));
+
+		final SurfaceAuSolRF s2 = new SurfaceAuSolRF();
+		s2.setImmeuble(immeuble);
+		s2.setType("Paturage");
+		s2.setSurface(4728211);
+		s2.setDateDebut(RegDate.get(2003, 11, 22));
+
+		immeuble.setSurfacesAuSol(new HashSet<>(Arrays.asList(s1, s2)));
+
+		// un mock de DAO qui simule l'existence d'un immeuble
+		immeubleRFDAO = new MockImmeubleRFDAO(immeuble);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+
+		// on envoie une liste d'immeuble vide
+		final List<Bodenbedeckung> surfaces = Collections.emptyList();
+		detector.processSurfaces(IMPORT_ID, 2, surfaces.iterator(), null);
+
+		// on devrait avoir un seul événement de mutation de type SUPPRESSION à l'état A_TRAITER dans la base
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(1, mutations.size());
+
+		final EvenementRFMutation mut0 = mutations.get(0);
+		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+		assertEquals(TypeEntiteRF.SURFACE_AU_SOL, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
+		assertEquals("382929efa218", mut0.getIdRF());
+		assertNull(mut0.getXmlContent());
 	}
 
 	@NotNull

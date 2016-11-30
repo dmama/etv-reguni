@@ -149,7 +149,6 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 	}
 
-
 	/*
 	 * Ce test vérifie que le processing d'une mutation de modification de surfaces au sol fonctionne bien.
 	 */
@@ -192,7 +191,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, "382929efa218");
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.MODIFICATION, "382929efa218");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -246,6 +245,92 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals("382929efa218", surface2.getImmeuble().getIdRF());
 				assertEquals(4728211, surface2.getSurface());
 				assertEquals("Paturage", surface2.getType());
+			}
+		});
+	}
+
+	/*
+	 * Ce test vérifie que le processing d'une mutation de suppression de surfaces au sol fonctionne bien.
+	 */
+	@Test
+	public void testProcessMutationSuppression() throws Exception {
+
+		final String idImmeubleRF = "382929efa218";
+		final RegDate dateImportInitial = RegDate.get(2015, 3, 17);
+		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		// précondition : il y a déjà un immeuble dans la base avec deux surfaces au sol
+		final Long immeubleId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				BienFondRF immeuble = new BienFondRF();
+				immeuble.setIdRF(idImmeubleRF);
+				immeuble = (BienFondRF) immeubleRFDAO.save(immeuble);
+
+				final SurfaceAuSolRF surface0 = new SurfaceAuSolRF();
+				surface0.setDateDebut(dateImportInitial);
+				surface0.setDateFin(RegDate.get(2015, 6, 2));
+				surface0.setImmeuble(immeuble);
+				surface0.setSurface(37823);
+				surface0.setType("Forêt");
+
+				final SurfaceAuSolRF surface1 = new SurfaceAuSolRF();
+				surface1.setDateDebut(dateImportInitial);
+				surface1.setImmeuble(immeuble);
+				surface1.setSurface(47347);
+				surface1.setType("Héliport");
+
+				surfaceAuSolRFDAO.save(surface0);
+				surfaceAuSolRFDAO.save(surface1);
+
+				return immeuble.getId();
+			}
+		});
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.SUPPRESSION, "382929efa218");
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation);
+			}
+		});
+
+		// postcondition : la mutation est traitée et tous les surfaces au sol ouvertes sont maintenant fermées
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final ImmeubleRF immeuble = immeubleRFDAO.get(immeubleId);
+				assertNotNull(immeuble);
+
+				final Set<SurfaceAuSolRF> surfaces = immeuble.getSurfacesAuSol();
+				assertNotNull(surfaces);
+				assertEquals(2, surfaces.size());
+
+				final List<SurfaceAuSolRF> surfacesList = new ArrayList<>(surfaces);
+				Collections.sort(surfacesList, (o1, o2) -> Integer.compare(o1.getSurface(), o2.getSurface()));
+
+				// surface inchangée
+				final SurfaceAuSolRF surface0 = surfacesList.get(0);
+				assertNotNull(surface0);
+				assertEquals(dateImportInitial, surface0.getDateDebut());
+				assertEquals(RegDate.get(2015, 6, 2), surface0.getDateFin());
+				assertEquals("382929efa218", surface0.getImmeuble().getIdRF());
+				assertEquals(37823, surface0.getSurface());
+				assertEquals("Forêt", surface0.getType());
+
+				// surface fermée
+				final SurfaceAuSolRF surface1 = surfacesList.get(1);
+				assertNotNull(surface1);
+				assertEquals(dateImportInitial, surface1.getDateDebut());
+				assertEquals(dateSecondImport.getOneDayBefore(), surface1.getDateFin());
+				assertEquals("382929efa218", surface1.getImmeuble().getIdRF());
+				assertEquals(47347, surface1.getSurface());
+				assertEquals("Héliport", surface1.getType());
 			}
 		});
 	}

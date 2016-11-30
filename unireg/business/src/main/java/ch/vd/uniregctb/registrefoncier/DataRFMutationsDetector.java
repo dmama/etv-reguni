@@ -708,10 +708,38 @@ public class DataRFMutationsDetector {
 			}
 		}, null);
 
+		// détection des mutations de type SUPRESSION
+		final TransactionTemplate t1 = new TransactionTemplate(transactionManager);
+		t1.execute(s -> {
+			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+			final Set<String> existingImmeublesAvecSurfaces = immeubleRFDAO.findWithActiveSurfacesAuSol();
+			//noinspection UnnecessaryLocalVariable
+			final Set<String> nouveauImmeublesAvecSurfaces = cacheSurfaces.keySet().stream()
+					.map(k -> (IdRfKey) k)
+					.map(IdRfKey::getIdRF)
+					.collect(Collectors.toSet());
+
+			// on ne garde que les bâtiments existants dans la DB qui n'existent pas dans le fichier XML
+			existingImmeublesAvecSurfaces.removeAll(nouveauImmeublesAvecSurfaces);
+
+			// on crée des mutations de suppression pour les surfaces de tous ces bâtiments
+			existingImmeublesAvecSurfaces.forEach(idRF -> {
+				final EvenementRFMutation mutation = new EvenementRFMutation();
+				mutation.setParentImport(parentImport);
+				mutation.setEtat(EtatEvenementRF.A_TRAITER);
+				mutation.setTypeEntite(TypeEntiteRF.SURFACE_AU_SOL);
+				mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
+				mutation.setIdRF(idRF); // idRF du bâtiment
+				mutation.setXmlContent(null);
+				evenementRFMutationDAO.save(mutation);
+			});
+
+			return null;
+		});
+
 		// inutile de garder des données en mémoire ou sur le disque
 		cacheSurfaces.clear();
-
-		// TODO (msi) faut-il détecter les immeubles qui perdraient toutes les surfaces au sol ?
 	}
 
 	private static class IdRfKey implements ObjectKey {

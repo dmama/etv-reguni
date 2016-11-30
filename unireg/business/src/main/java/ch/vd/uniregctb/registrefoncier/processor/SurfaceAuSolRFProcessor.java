@@ -15,6 +15,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport.BodenbedeckungList;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -66,34 +67,39 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("L'immeuble avec l'idRF=[" + idImmeubleRF + "] n'existe pas.");
 		}
 
-		// on interpète le XML
-		final List<Bodenbedeckung> surfaceList;
-		try {
-			final StringSource source = new StringSource(mutation.getXmlContent());
-			final BodenbedeckungList surfaceListImport = (BodenbedeckungList) unmarshaller.get().unmarshal(source);
-			surfaceList = surfaceListImport.getBodenbedeckung();
-		}
-		catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
+		final TypeMutationRF typeMutation = mutation.getTypeMutation();
+		if (typeMutation == TypeMutationRF.CREATION || typeMutation == TypeMutationRF.MODIFICATION) {
 
-		// on crée les surfaces en mémoire
-		final List<SurfaceAuSolRF> surfaces = surfaceList.stream()
-				.map(SurfaceAuSolRFHelper::newSurfaceAuSolRF)
-				.collect(Collectors.toList());
+			// on interpète le XML
+			final List<Bodenbedeckung> surfaceList;
+			try {
+				final StringSource source = new StringSource(mutation.getXmlContent());
+				final BodenbedeckungList surfaceListImport = (BodenbedeckungList) unmarshaller.get().unmarshal(source);
+				surfaceList = surfaceListImport.getBodenbedeckung();
+			}
+			catch (JAXBException e) {
+				throw new RuntimeException(e);
+			}
 
-		// on les insère en DB
-		switch (mutation.getTypeMutation()) {
-		case CREATION:
-			processCreation(dateValeur, immeuble, surfaces);
-			break;
-		case MODIFICATION:
-			processModification(dateValeur, immeuble, surfaces);
-			break;
-		default:
-			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
+			// on crée les surfaces en mémoire
+			final List<SurfaceAuSolRF> surfaces = surfaceList.stream()
+					.map(SurfaceAuSolRFHelper::newSurfaceAuSolRF)
+					.collect(Collectors.toList());
+
+			// on traite la mutation
+			if (typeMutation == TypeMutationRF.CREATION) {
+				processCreation(dateValeur, immeuble, surfaces);
+			}
+			else {
+				processModification(dateValeur, immeuble, surfaces);
+			}
 		}
-
+		else if (typeMutation == TypeMutationRF.SUPPRESSION) {
+			processSuppression(dateValeur, immeuble);
+		}
+		else {
+			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
+		}
 	}
 
 	/**
@@ -152,5 +158,12 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 			s.setDateDebut(dateValeur);
 			surfaceAuSolRFDAO.save(s);
 		});
+	}
+
+	private void processSuppression(@NotNull RegDate dateValeur, @NotNull ImmeubleRF immeuble) {
+		// on ferme toutes les surfaces au sol encore ouvertes
+		immeuble.getSurfacesAuSol().stream()
+				.filter(d -> d.isValidAt(null))
+				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 	}
 }
