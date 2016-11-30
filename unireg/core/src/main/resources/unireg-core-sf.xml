@@ -158,10 +158,14 @@
 		<value>ch.vd.uniregctb.document.EchoirDIsPMRapport</value>
 		<value>ch.vd.uniregctb.document.MajoriteRapport</value>
 		<value>ch.vd.uniregctb.document.FusionDeCommunesRapport</value>
-		<value>ch.vd.uniregctb.document.RolesCommunesPMRapport</value>
-		<value>ch.vd.uniregctb.document.RolesCommunesPPRapport</value>
-		<value>ch.vd.uniregctb.document.RolesOIDsRapport</value>
-		<value>ch.vd.uniregctb.document.RolesOIPMRapport</value>
+		<value>ch.vd.uniregctb.document.RolePMCommunesRapport</value>
+		<value>ch.vd.uniregctb.document.RolePMOfficeRapport</value>
+		<value>ch.vd.uniregctb.document.RolePPCommunesRapport</value>
+		<value>ch.vd.uniregctb.document.RolePPOfficesRapport</value>
+		<value>ch.vd.uniregctb.document.RolesCommunesPMRapport</value>        <!-- [SIFISC-19937] avant 2016 -->
+		<value>ch.vd.uniregctb.document.RolesCommunesPPRapport</value>        <!-- [SIFISC-19937] avant 2016 -->
+		<value>ch.vd.uniregctb.document.RolesOIDsRapport</value>              <!-- [SIFISC-19937] avant 2016 -->
+		<value>ch.vd.uniregctb.document.RolesOIPMRapport</value>              <!-- [SIFISC-19937] avant 2016 -->
 		<value>ch.vd.uniregctb.document.StatistiquesDIsRapport</value>
 		<value>ch.vd.uniregctb.document.StatistiquesCtbsRapport</value>
 		<value>ch.vd.uniregctb.document.ListeDIsNonEmisesRapport</value>

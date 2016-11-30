@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
- * Méta-information sur le rapport de production des rôles pour les OID vaudois
+ * Méta-information sur le rapport de production des rôles (avant 2016) pour les OID vaudois
  */
 @Entity
 @DiscriminatorValue("RolesOIDsRapport")

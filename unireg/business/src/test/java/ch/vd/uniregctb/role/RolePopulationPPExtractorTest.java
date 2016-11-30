@@ -22,7 +22,7 @@ public class RolePopulationPPExtractorTest extends WithoutSpringTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		this.extractor = new RolePopulationPPExtractor();
+		this.extractor = new RolePopulationPPExtractor((ctb, date) -> false);
 	}
 
 	@Test

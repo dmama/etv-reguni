@@ -3,7 +3,7 @@ package ch.vd.uniregctb.role;
 import java.util.EnumSet;
 
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -14,7 +14,7 @@ public class RolePopulationPMExtractor extends RolePopulationExtractorImpl<Entre
 	}
 
 	@Override
-	protected boolean isForAPrendreEnCompte(ForFiscal ff) {
+	protected boolean isForAPrendreEnCompte(ForFiscalRevenuFortune ff) {
 		return ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL;
 	}
 }

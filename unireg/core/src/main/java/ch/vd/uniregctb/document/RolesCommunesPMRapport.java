@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
- * Méta-information sur le rapport de production des rôles PM pour les communes vaudoises.
+ * Méta-information sur le rapport de production des rôles PM (avant 2016) pour les communes vaudoises.
  */
 @Entity
 @DiscriminatorValue("RolesCommunesPMRapport")

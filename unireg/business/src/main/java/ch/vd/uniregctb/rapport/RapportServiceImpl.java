@@ -87,6 +87,10 @@ import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolePMCommunesRapport;
+import ch.vd.uniregctb.document.RolePMOfficeRapport;
+import ch.vd.uniregctb.document.RolePPCommunesRapport;
+import ch.vd.uniregctb.document.RolePPOfficesRapport;
 import ch.vd.uniregctb.document.RolesCommunesPMRapport;
 import ch.vd.uniregctb.document.RolesCommunesPPRapport;
 import ch.vd.uniregctb.document.RolesOIDsRapport;
@@ -120,6 +124,10 @@ import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
+import ch.vd.uniregctb.role.RolePMCommunesResults;
+import ch.vd.uniregctb.role.RolePMOfficeResults;
+import ch.vd.uniregctb.role.RolePPCommunesResults;
+import ch.vd.uniregctb.role.RolePPOfficesResults;
 import ch.vd.uniregctb.role.before2016.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.role.before2016.ProduireRolesOIPMResults;
 import ch.vd.uniregctb.role.before2016.ProduireRolesPMCommunesResults;
@@ -351,6 +359,78 @@ public class RapportServiceImpl implements RapportService {
 					PdfFusionDeCommunesRapport document = new PdfFusionDeCommunesRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RolePPCommunesRapport generateRapport(final RolePPCommunesResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final String nom = "RolePPCommunes" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'extraction du rôle PP %d des communes", results.annee);
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RolePPCommunesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolePPCommunesRapport document = new PdfRolePPCommunesRapport(infraService);
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RolePPOfficesRapport generateRapport(final RolePPOfficesResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final String nom = "RolePPOffices" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'extraction du rôle PP %d des OID", results.annee);
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RolePPOfficesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolePPOfficesRapport document = new PdfRolePPOfficesRapport(infraService);
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RolePMCommunesRapport generateRapport(final RolePMCommunesResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final String nom = "RolePMCommunes" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'extraction du rôle PM %d des communes", results.annee);
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RolePMCommunesRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolePMCommunesRapport document = new PdfRolePMCommunesRapport(infraService);
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RolePMOfficeRapport generateRapport(final RolePMOfficeResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final String nom = "RolePMOffice" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'extraction du rôle PM %d de l'OIPM", results.annee);
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RolePMOfficeRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRolePMOfficeRapport document = new PdfRolePMOfficeRapport(infraService);
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {

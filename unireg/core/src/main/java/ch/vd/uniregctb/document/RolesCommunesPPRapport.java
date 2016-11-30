@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
- * Méta-information sur le rapport de production des rôles PP pour les communes vaudoises.
+ * Méta-information sur le rapport de production des rôles PP (avant 2016) pour les communes vaudoises.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

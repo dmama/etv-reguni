@@ -77,6 +77,10 @@ import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolePMCommunesRapport;
+import ch.vd.uniregctb.document.RolePMOfficeRapport;
+import ch.vd.uniregctb.document.RolePPCommunesRapport;
+import ch.vd.uniregctb.document.RolePPOfficesRapport;
 import ch.vd.uniregctb.document.RolesCommunesPMRapport;
 import ch.vd.uniregctb.document.RolesCommunesPPRapport;
 import ch.vd.uniregctb.document.RolesOIDsRapport;
@@ -109,6 +113,10 @@ import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
+import ch.vd.uniregctb.role.RolePMCommunesResults;
+import ch.vd.uniregctb.role.RolePMOfficeResults;
+import ch.vd.uniregctb.role.RolePPCommunesResults;
+import ch.vd.uniregctb.role.RolePPOfficesResults;
 import ch.vd.uniregctb.role.before2016.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.role.before2016.ProduireRolesOIPMResults;
 import ch.vd.uniregctb.role.before2016.ProduireRolesPMCommunesResults;
@@ -202,6 +210,38 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	FusionDeCommunesRapport generateRapport(final FusionDeCommunesResults results, StatusManager s);
+
+	/**
+	 * Génération du rapport d'exécution du rôle PP des communes
+	 * @param results output du job
+	 * @param status status manager
+	 * @return le rapport
+	 */
+	RolePPCommunesRapport generateRapport(RolePPCommunesResults results, StatusManager status);
+
+	/**
+	 * Génération du rapport d'exécution du rôle PP des OID
+	 * @param results output du job
+	 * @param status status manager
+	 * @return le rapport
+	 */
+	RolePPOfficesRapport generateRapport(RolePPOfficesResults results, StatusManager status);
+
+	/**
+	 * Génération du rapport d'exécution du rôle PM des communes
+	 * @param results output du job
+	 * @param status status manager
+	 * @return le rapport
+	 */
+	RolePMCommunesRapport generateRapport(RolePMCommunesResults results, StatusManager status);
+
+	/**
+	 * Génération du rapport d'exécution du rôle PM complet de l'OIPM
+	 * @param results output du job
+	 * @param status status manager
+	 * @return le rapport
+	 */
+	RolePMOfficeRapport generateRapport(RolePMOfficeResults results, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) des rôles des contribuables PP, décomposé par commune.

@@ -116,7 +116,7 @@ public abstract class CsvHelper {
 	}
 
 	@Nullable("si la collection est vide")
-	public static <T> TemporaryFile asCsvTemporaryFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) {
+	public static <T> TemporaryFile asCsvTemporaryFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<? super T> filler) {
 		TemporaryFile file = null;
 		if (!list.isEmpty()) {
 			try {
@@ -145,7 +145,7 @@ public abstract class CsvHelper {
 		return file;
 	}
 
-	private static <T> void buildFileContent(Collection<T> list, String fileName, StatusManager status, FileFiller<T> filler, LineFiller lf) {
+	private static <T> void buildFileContent(Collection<T> list, String fileName, StatusManager status, FileFiller<? super T> filler, LineFiller lf) {
 		filler.fillHeader(lf);
 		lf.append(CR);
 

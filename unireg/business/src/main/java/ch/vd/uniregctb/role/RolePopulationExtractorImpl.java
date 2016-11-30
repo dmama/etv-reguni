@@ -22,6 +22,7 @@ import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -42,7 +43,7 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 	 * @param ff for fiscal à tester
 	 * @return <code>true</code> si on doit prendre en compte le for, <code>false</code> sinon
 	 */
-	protected abstract boolean isForAPrendreEnCompte(ForFiscal ff);
+	protected abstract boolean isForAPrendreEnCompte(ForFiscalRevenuFortune ff);
 
 	@Nullable
 	@Override
@@ -56,21 +57,27 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 			return null;
 		}
 
+		// le dernier jour de validité du for principal dans l'année des rôles
+		final RegDate dateReferenceDansAnnee = RegDateHelper.minimum(finAnnee, ffp.getCurrent().getDateFin(), NullDateBehavior.LATEST);
+
+		// un contribuable peut être directement exclu de tous les rôles en fonction de sa nature à la date de référence...
+		if (isExcludedByNature(contribuable, dateReferenceDansAnnee)) {
+			// par construction...
+			return null;
+		}
+
 		// trois possibilités : VD, HC ou HS
 		if (ffp.getCurrent().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			return getCommunePourForPrincipalVaudois(ffp, finAnnee);
 		}
 
-		// le dernier jour de validité du for principal dans l'année des rôles
-		final RegDate dateReferenceDansAnnee = RegDateHelper.minimum(finAnnee, ffp.getCurrent().getDateFin(), NullDateBehavior.LATEST);
-
 		// fors secondaires qui intersectent la période de l'année des rôles
 		final DateRange rangeReference = new DateRangeHelper.Range(debutAnnee, dateReferenceDansAnnee);
 		final List<ForFiscalSecondaire> forsSecondaires = contribuable.getForsFiscaux().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(this::isForAPrendreEnCompte)
 				.filter(ff -> ff instanceof ForFiscalSecondaire)
 				.map(ff -> (ForFiscalSecondaire) ff)
+				.filter(this::isForAPrendreEnCompte)
 				.filter(ff -> DateRangeHelper.intersect(ff, rangeReference))
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());
@@ -234,4 +241,13 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 		return null;
 	}
 
+	/**
+	 * @param contribuable un contribuable à tester
+	 * @param dateReference une date de référence
+	 * @return <code>true</code> si le contribuable doit être exclu de tous rôles en raison de sa nature à la date de référence
+	 */
+	protected boolean isExcludedByNature(T contribuable, RegDate dateReference) {
+		// pas défaut, personne n'est exclu en raison de sa nature
+		return false;
+	}
 }

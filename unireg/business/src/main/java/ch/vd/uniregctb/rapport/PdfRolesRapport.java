@@ -36,7 +36,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
- * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les communes ou les OID
+ * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les communes ou les OID (avant 2016 !!)
  */
 public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends PdfRapport {
 

@@ -90,7 +90,7 @@
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 	
-	<bean id="roleService" class="ch.vd.uniregctb.role.before2016.RoleServiceImpl">
+	<bean id="roleBefore2016Service" class="ch.vd.uniregctb.role.before2016.RoleServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />
@@ -100,6 +100,20 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="validationService" ref="validationService" />
 		<property name="assujettissementService" ref="assujettissementService" />
+	</bean>
+
+	<bean id="roleService" class="ch.vd.uniregctb.role.RoleServiceImpl">
+		<property name="adresseService" ref="adresseService"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="roleHelper">
+			<bean class="ch.vd.uniregctb.role.RoleHelper">
+				<constructor-arg ref="transactionManager"/>
+				<constructor-arg ref="hibernateTemplate"/>
+				<constructor-arg ref="tiersService"/>
+			</bean>
+		</property>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 	
 	<bean id="listesTiersService" class="ch.vd.uniregctb.listes.ListesTiersServiceImpl">
