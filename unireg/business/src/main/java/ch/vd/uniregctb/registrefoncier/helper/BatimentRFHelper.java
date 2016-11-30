@@ -3,12 +3,16 @@ package ch.vd.uniregctb.registrefoncier.helper;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gebaeude;
+import ch.vd.capitastra.grundstueck.GebaeudeArt;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
@@ -34,7 +38,7 @@ public abstract class BatimentRFHelper {
 		}
 
 		// [blindage] les valeurs suivantes ne doivent jamais changer (le modèle est construit sur ce prédicat)
-		if (!Objects.equals(batiment.getType(), gebaeude.getGebaeudeArten().get(0).getGebaeudeArtCode().getTextFr())) {
+		if (!Objects.equals(batiment.getType(), getTypeBatiment(gebaeude))) {
 			throw new IllegalArgumentException("Le type du bâtiment masterIdRF=[" + batiment.getMasterIdRF() + "] a changé.");
 		}
 		// [/blindage]
@@ -66,7 +70,7 @@ public abstract class BatimentRFHelper {
 
 		final BatimentRF batiment = new BatimentRF();
 		batiment.setMasterIdRF(gebaeude.getMasterID());
-		batiment.setType(gebaeude.getGebaeudeArten().get(0).getGebaeudeArtCode().getTextFr());
+		batiment.setType(getTypeBatiment(gebaeude));
 
 		final Integer flaeche = gebaeude.getFlaeche();
 		if (flaeche != null) {
@@ -80,5 +84,23 @@ public abstract class BatimentRFHelper {
 		gzg.forEach(i -> batiment.addImplantation(ImplantationRFHelper.newImplantation(i, immeubleProvider)));
 
 		return batiment;
+	}
+
+	@Nullable
+	private static String getTypeBatiment(@NotNull Gebaeude gebaeude) {
+
+		final Optional<GebaeudeArt> gebaeudeArt = Optional.of(gebaeude)
+				.map(Gebaeude::getGebaeudeArten)
+				.filter(l -> !l.isEmpty())
+				.map(l -> l.get(0));
+
+		// on prends soit le art-code (premier choix), soit le art-zusatz (second choix)
+		return gebaeudeArt
+				.map(GebaeudeArt::getGebaeudeArtCode)
+				.map(CapiCode::getTextFr)
+				.orElseGet(() -> gebaeudeArt
+						.map(GebaeudeArt::getGebaeudeArtZusatz)
+						.orElse(null)
+				);
 	}
 }

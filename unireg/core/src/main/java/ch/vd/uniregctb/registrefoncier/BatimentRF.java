@@ -16,6 +16,7 @@ import java.util.Set;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.LengthConstants;
 
@@ -39,6 +40,7 @@ public class BatimentRF {
 	/**
 	 * Le type de bâtiment.
 	 */
+	@Nullable
 	private String type;
 
 	/**
@@ -74,12 +76,13 @@ public class BatimentRF {
 		this.masterIdRF = masterIdRF;
 	}
 
-	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_BATIMENT, nullable = false)
+	@Nullable
+	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_BATIMENT)
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(@Nullable String type) {
 		this.type = type;
 	}
 

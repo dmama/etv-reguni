@@ -20,6 +20,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 
+import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -232,5 +233,65 @@ public class BatimentRFHelperTest {
 		final ImplantationRF implantation1 = implantations.get(1);
 		assertEquals(Integer.valueOf(280), implantation1.getSurface());
 		assertEquals("a8280ec000", implantation1.getImmeuble().getIdRF());
+	}
+
+	/**
+	 * Ce test vérifie qu'un bâtiment avec un type en texte libre (GebaeudeArtZusatz) est bien traité.
+	 */
+	@Test
+	public void testNewBatimentRFTypeTexteLibre() throws Exception {
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("_8af80e6254709f68015476fecb1f0e0b");
+
+		final Gebaeude gebaeude = new Gebaeude();
+		gebaeude.setMasterID("8af80e6254709f6801547708f4c10ebd");
+		gebaeude.getGebaeudeArten().add(new GebaeudeArt(null, "Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554"));
+		gebaeude.getGrundstueckZuGebaeude().add(new GrundstueckZuGebaeude("_8af80e6254709f68015476fecb1f0e0b", 0));
+
+		final BatimentRF batiment = BatimentRFHelper.newBatimentRF(gebaeude, idRF -> immeuble1);
+		assertNotNull(batiment);
+		assertEquals("8af80e6254709f6801547708f4c10ebd", batiment.getMasterIdRF());
+		assertEquals("Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554", batiment.getType());
+		assertEmpty(batiment.getSurfaces());
+
+		final Set<ImplantationRF> implantations = batiment.getImplantations();
+		assertEquals(1, implantations.size());
+
+		final ImplantationRF implantation0 = implantations.iterator().next();
+		assertEquals(Integer.valueOf(0), implantation0.getSurface());
+		assertEquals("_8af80e6254709f68015476fecb1f0e0b", implantation0.getImmeuble().getIdRF());
+	}
+
+	/**
+	 * Ce test vérifie qu'un bâtiment sans type (ni GebaeudeArtCode, ni GebaeudeArtZusatz) est bien traité.
+	 */
+	@Test
+	public void testNewBatimentRFSansType() throws Exception {
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("_1f109152381026b501381028bb23779a");
+
+		final Gebaeude gebaeude = new Gebaeude();
+		gebaeude.setMasterID("8af806fc3b8f410e013c437c69a112ed");
+		gebaeude.getGrundstueckZuGebaeude().add(new GrundstueckZuGebaeude("_1f109152381026b501381028bb23779a", 136));
+		gebaeude.setFlaeche(136);
+
+		final BatimentRF batiment = BatimentRFHelper.newBatimentRF(gebaeude, idRF -> immeuble1);
+		assertNotNull(batiment);
+		assertEquals("8af806fc3b8f410e013c437c69a112ed", batiment.getMasterIdRF());
+		assertNull(batiment.getType());
+
+		final Set<SurfaceBatimentRF> surfaces = batiment.getSurfaces();
+		assertEquals(1, surfaces.size());
+		final SurfaceBatimentRF surface0 = surfaces.iterator().next();
+		assertEquals(136, surface0.getSurface());
+
+		final Set<ImplantationRF> implantations = batiment.getImplantations();
+		assertEquals(1, implantations.size());
+
+		final ImplantationRF implantation0 = implantations.iterator().next();
+		assertEquals(Integer.valueOf(136), implantation0.getSurface());
+		assertEquals("_1f109152381026b501381028bb23779a", implantation0.getImmeuble().getIdRF());
 	}
 }

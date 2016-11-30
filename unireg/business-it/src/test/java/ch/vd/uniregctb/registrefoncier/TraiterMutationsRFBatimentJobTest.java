@@ -188,6 +188,145 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 	}
 
 	/**
+	 * Ce test vérifie que les mutations de type CREATION créent bien de nouveaux batiments lorsque ces derniers ont des types en texte libre ou nuls.
+	 */
+	@Test
+	public void testTraiterMutationsCreationTypeTexteLibreOuNull() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+
+		// on insère les données de l'import dans la base
+		final Long importId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(dateImport);
+				importEvent.setEtat(EtatEvenementRF.TRAITE);
+				importEvent.setFileUrl("http://turlututu");
+				importEvent = evenementRFImportDAO.save(importEvent);
+
+				BienFondRF immeuble1 = new BienFondRF();
+				immeuble1.setIdRF("_8af80e6254709f68015476fecb1f0e0b");
+				immeubleRFDAO.save(immeuble1);
+
+				BienFondRF immeuble2 = new BienFondRF();
+				immeuble2.setIdRF("_1f109152381026b501381028bb23779a");
+				immeubleRFDAO.save(immeuble2);
+
+				final EvenementRFMutation mut0 = new EvenementRFMutation();
+				mut0.setParentImport(importEvent);
+				mut0.setEtat(EtatEvenementRF.A_TRAITER);
+				mut0.setTypeEntite(TypeEntiteRF.BATIMENT);
+				mut0.setTypeMutation(TypeMutationRF.CREATION);
+				mut0.setIdRF("8af80e6254709f6801547708f4c10ebd");
+				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<Gebaeude VersionID=\"8af80e6254709f6801547708f4c10ebc\" MasterID=\"8af80e6254709f6801547708f4c10ebd\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <GrundstueckZuGebaeude>\n" +
+						                   "        <GrundstueckIDREF>_8af80e6254709f68015476fecb1f0e0b</GrundstueckIDREF>\n" +
+						                   "        <AbschnittFlaeche>0</AbschnittFlaeche>\n" +
+						                   "    </GrundstueckZuGebaeude>\n" +
+						                   "    <KantGid>25141</KantGid>\n" +
+						                   "    <Einzelobjekt>false</Einzelobjekt>\n" +
+						                   "    <Unterirdisch>false</Unterirdisch>\n" +
+						                   "    <MehrereGrundstuecke>false</MehrereGrundstuecke>\n" +
+						                   "    <Koordinaten>\n" +
+						                   "        <QualitaetKoordinaten>nicht_vorhanden</QualitaetKoordinaten>\n" +
+						                   "    </Koordinaten>\n" +
+						                   "    <GebaeudeArten>\n" +
+						                   "        <GebaeudeArtZusatz>Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554</GebaeudeArtZusatz>\n" +
+						                   "    </GebaeudeArten>\n" +
+						                   "</Gebaeude>\n");
+				evenementRFMutationDAO.save(mut0);
+
+				final EvenementRFMutation mut1 = new EvenementRFMutation();
+				mut1.setParentImport(importEvent);
+				mut1.setEtat(EtatEvenementRF.A_TRAITER);
+				mut1.setTypeEntite(TypeEntiteRF.BATIMENT);
+				mut1.setTypeMutation(TypeMutationRF.CREATION);
+				mut1.setIdRF("8af806fc3b8f410e013c437c69a112ed");
+				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+						                   "<Gebaeude VersionID=\"8af806fc3b8f410e013c437c69a112ee\" MasterID=\"8af806fc3b8f410e013c437c69a112ed\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "    <GrundstueckZuGebaeude>\n" +
+						                   "        <GrundstueckIDREF>_1f109152381026b501381028bb23779a</GrundstueckIDREF>\n" +
+						                   "        <AbschnittFlaeche>136</AbschnittFlaeche>\n" +
+						                   "    </GrundstueckZuGebaeude>\n" +
+						                   "    <KantGid>4073</KantGid>\n" +
+						                   "    <Einzelobjekt>false</Einzelobjekt>\n" +
+						                   "    <Unterirdisch>false</Unterirdisch>\n" +
+						                   "    <MehrereGrundstuecke>false</MehrereGrundstuecke>\n" +
+						                   "    <Flaeche>136</Flaeche>\n" +
+						                   "    <Koordinaten>\n" +
+						                   "        <QualitaetKoordinaten>nicht_vorhanden</QualitaetKoordinaten>\n" +
+						                   "    </Koordinaten>\n" +
+						                   "    <Versicherungsnummer>502</Versicherungsnummer>\n" +
+						                   "</Gebaeude>\n");
+				evenementRFMutationDAO.save(mut1);
+
+				return importEvent.getId();
+			}
+		});
+		assertNotNull(importId);
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterMutationsRFJob.ID, importId);
+		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit se terminer correctement
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+
+		// on vérifie que les mutations ont bien été traitées
+		assertEtatMutations(2, EtatEvenementRF.TRAITE); // il y a 2 bâtiments différents dans le fichier d'import
+
+		// on vérifie que les bâtiments ont bien été créés
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("8af80e6254709f6801547708f4c10ebd"));
+				assertNotNull(batiment0);
+				assertEquals("8af80e6254709f6801547708f4c10ebd", batiment0.getMasterIdRF());
+				assertEquals("Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554", batiment0.getType());
+				assertEmpty(batiment0.getSurfaces());
+
+				final Set<ImplantationRF> implantations0 = batiment0.getImplantations();
+				assertEquals(1, implantations0.size());
+				final ImplantationRF implantation00 = implantations0.iterator().next();
+				assertEquals("_8af80e6254709f68015476fecb1f0e0b", implantation00.getImmeuble().getIdRF());
+				assertEquals(Integer.valueOf(0), implantation00.getSurface());
+				assertEquals(dateImport, implantation00.getDateDebut());
+				assertNull(implantation00.getDateFin());
+
+				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("8af806fc3b8f410e013c437c69a112ed"));
+				assertNotNull(batiment1);
+				assertEquals("8af806fc3b8f410e013c437c69a112ed", batiment1.getMasterIdRF());
+				assertNull(batiment1.getType());
+
+				final Set<SurfaceBatimentRF> surfaces1 = batiment1.getSurfaces();
+				assertEquals(1, surfaces1.size());
+				final SurfaceBatimentRF surface10 = surfaces1.iterator().next();
+				assertEquals(136, surface10.getSurface());
+				assertEquals(dateImport, surface10.getDateDebut());
+				assertNull(surface10.getDateFin());
+
+				final Set<ImplantationRF> implantations1 = batiment1.getImplantations();
+				assertEquals(1, implantations1.size());
+				final ImplantationRF implantation10 = implantations1.iterator().next();
+				assertEquals("_1f109152381026b501381028bb23779a", implantation10.getImmeuble().getIdRF());
+				assertEquals(Integer.valueOf(136), implantation10.getSurface());
+				assertEquals(dateImport, implantation10.getDateDebut());
+				assertNull(implantation10.getDateFin());
+			}
+		});
+	}
+
+	/**
 	 * Ce test vérifie que les mutations de type MODIFICATION modifient bien des bâtiments existants
 	 */
 	@Test
