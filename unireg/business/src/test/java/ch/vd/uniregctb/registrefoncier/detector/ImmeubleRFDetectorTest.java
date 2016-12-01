@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.detector;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -344,7 +345,7 @@ public class ImmeubleRFDetectorTest {
 	}
 
 	@NotNull
-	private ProprieteParEtageRF newProprieteParEtageRFThierrens(String idRfPPE) {
+	private static ProprieteParEtageRF newProprieteParEtageRFThierrens(String idRfPPE) {
 		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
 		{
 			final CommuneRF commune = new CommuneRF();
@@ -367,6 +368,7 @@ public class ImmeubleRFDetectorTest {
 			ppe.setEgrid("CH8383820002");
 			ppe.addSituation(situation);
 			ppe.addEstimation(estimation);
+			ppe.setSurfacesTotales(Collections.emptySet());
 		}
 		return ppe;
 	}
@@ -647,6 +649,7 @@ public class ImmeubleRFDetectorTest {
 			bienFond.setEgrid("CH282891891");
 			bienFond.addSituation(situation);
 			bienFond.addEstimation(estimation);
+			bienFond.setSurfacesTotales(Collections.emptySet());
 		}
 		return bienFond;
 	}
