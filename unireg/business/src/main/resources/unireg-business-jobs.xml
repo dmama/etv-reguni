@@ -86,7 +86,7 @@
     </bean>
 
 	<!-- [SIFISC-20372] Job de traitement de l'import et de génération des mutations sur les immeubles du registre foncier -->
-	<bean id="traiterImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.TraiterImportRFJob">
+	<bean id="traiterImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.dataimport.TraiterImportRFJob">
 		<constructor-arg value="108"/>
 		<constructor-arg value="Traiter un import du registre foncier et générer les mutations"/>
 		<property name="serviceRF" ref="serviceRF"/>
@@ -98,7 +98,7 @@
 	</bean>
 
 	<!-- [SIFISC-20372] Job de traitement des mutations des immeubles du registre foncier -->
-	<bean id="traiterMutationsRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.TraiterMutationsRFJob">
+	<bean id="traiterMutationsRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.dataimport.TraiterMutationsRFJob">
 		<constructor-arg value="109"/>
 		<constructor-arg value="Traiter les mutations des immeubles du registre foncier"/>
 		<property name="processor" ref="dataRFMutationsProcessor"/>

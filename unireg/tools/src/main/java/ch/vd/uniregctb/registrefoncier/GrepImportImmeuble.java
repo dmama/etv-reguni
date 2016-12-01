@@ -19,8 +19,9 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
-import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
+import ch.vd.uniregctb.registrefoncier.dataimport.FichierImmeublesRFParser;
+import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 

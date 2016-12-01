@@ -10,13 +10,13 @@
 		<property name="batchScheduler" ref="batchScheduler"/>
 	</bean>
 
-	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl"/>
+	<bean id="xmlHelperRF" class="ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl"/>
 
-	<bean id="fichierImmeublesRFParser" class="ch.vd.uniregctb.registrefoncier.FichierImmeublesRFParser">
+	<bean id="fichierImmeublesRFParser" class="ch.vd.uniregctb.registrefoncier.dataimport.FichierImmeublesRFParser">
 		<property name="xmlHelperRF" ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsDetector">
+	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.DataRFMutationsDetector">
 		<constructor-arg ref="ayantDroitRFDetector"/>
 		<constructor-arg ref="batimentRFDetector"/>
 		<constructor-arg ref="droitRFDetector"/>
@@ -24,7 +24,7 @@
 		<constructor-arg ref="surfaceAuSolRFDetector"/>
 	</bean>
 
-	<bean id="ayantDroitRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.AyantDroitRFDetector">
+	<bean id="ayantDroitRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.AyantDroitRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
@@ -32,7 +32,7 @@
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
-	<bean id="batimentRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.BatimentRFDetector">
+	<bean id="batimentRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.BatimentRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="batimentRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
@@ -40,7 +40,7 @@
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
-	<bean id="droitRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.DroitRFDetector">
+	<bean id="droitRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.DroitRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
@@ -50,7 +50,7 @@
 		<constructor-arg ref="tempRFCacheDroits"/>
 	</bean>
 
-	<bean id="immeubleRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.ImmeubleRFDetector">
+	<bean id="immeubleRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="communeRFDAO"/>
@@ -59,7 +59,7 @@
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
-	<bean id="surfaceAuSolRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.SurfaceAuSolRFDetector">
+	<bean id="surfaceAuSolRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.SurfaceAuSolRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
@@ -68,7 +68,7 @@
 		<constructor-arg ref="tempRFCacheSurfaces"/>
 	</bean>
 
-	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsProcessor">
+	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.DataRFMutationsProcessor">
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="communeRFProcessor"/>
 		<constructor-arg ref="immeubleRFProcessor"/>
@@ -79,37 +79,37 @@
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 
-	<bean id="communeRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.CommuneRFProcessor">
+	<bean id="communeRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.CommuneRFProcessor">
 		<constructor-arg ref="communeRFDAO" />
 		<constructor-arg ref="serviceInfrastructureService" />
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.ImmeubleRFProcessor">
+	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.ImmeubleRFProcessor">
 		<constructor-arg ref="communeRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="ayantDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.AyantDroitRFProcessor">
+	<bean id="ayantDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor">
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="droitRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.DroitRFProcessor">
+	<bean id="droitRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor">
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="droitRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="surfaceAuSolRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.SurfaceAuSolRFProcessor">
+	<bean id="surfaceAuSolRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor">
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="surfaceAuSolRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="batimentRFProcessor" class="ch.vd.uniregctb.registrefoncier.processor.BatimentRFProcessor">
+	<bean id="batimentRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor">
 		<constructor-arg ref="batimentRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>

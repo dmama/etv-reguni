@@ -14,6 +14,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.TraiterImportRFJob;
+import ch.vd.uniregctb.registrefoncier.dataimport.TraiterMutationsRFJob;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
