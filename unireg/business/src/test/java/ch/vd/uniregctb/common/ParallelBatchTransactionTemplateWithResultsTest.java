@@ -119,23 +119,28 @@ public class ParallelBatchTransactionTemplateWithResultsTest extends BusinessTes
 		final TestJobResults rapportFinal = new TestJobResults();
 		final ParallelBatchTransactionTemplateWithResults<Long, TestJobResults> template =
 				new ParallelBatchTransactionTemplateWithResults<>(list, 100, 2, Behavior.SANS_REPRISE, transactionManager, null, AuthenticationInterface.INSTANCE);
-		template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
+		try {
+			template.execute(rapportFinal, new BatchWithResultsCallback<Long, TestJobResults>() {
 
-			@Override
-			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
-				return true;
-			}
+				@Override
+				public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
+					return true;
+				}
 
-			@Override
-			public void afterTransactionCommit() {
-				throw new RuntimeException("forced halt");
-			}
+				@Override
+				public void afterTransactionCommit() {
+					throw new RuntimeException("forced halt");
+				}
 
-			@Override
-			public TestJobResults createSubRapport() {
-				return new TestJobResults();
-			}
-		}, null);
+				@Override
+				public TestJobResults createSubRapport() {
+					return new TestJobResults();
+				}
+			}, null);
+		}
+		catch (Exception e) {
+			assertEquals("java.lang.RuntimeException: forced halt", e.getMessage());
+		}
 	}
 
 	/**
