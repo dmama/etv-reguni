@@ -1,15 +1,18 @@
 package ch.vd.uniregctb.registrefoncier.helper;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(UniregJUnit4Runner.class)
 public class EstimationRFHelperTest {
 
 	/**

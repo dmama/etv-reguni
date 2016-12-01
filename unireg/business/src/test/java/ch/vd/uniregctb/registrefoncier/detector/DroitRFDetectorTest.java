@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.CapiCode;
@@ -23,6 +24,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.cache.MockPersistentCache;
 import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
@@ -48,6 +50,7 @@ import ch.vd.uniregctb.transaction.MockTransactionManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@RunWith(UniregJUnit4Runner.class)
 public class DroitRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;

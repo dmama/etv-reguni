@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.AmtlicheBewertung;
 import ch.vd.capitastra.grundstueck.Bergwerk;
@@ -16,6 +17,7 @@ import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StammGrundstueck;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
@@ -34,6 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(UniregJUnit4Runner.class)
 public class ImmeubleRFHelperTest {
 
 	/**

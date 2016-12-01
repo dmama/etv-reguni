@@ -9,14 +9,17 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
+import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@RunWith(UniregJUnit4Runner.class)
 public class FichierUsufruitiersRFParserTest {
 
 	private FichierUsufruitiersRFParser parser;
