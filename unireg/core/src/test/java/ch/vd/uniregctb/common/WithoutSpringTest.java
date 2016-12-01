@@ -2,11 +2,12 @@ package ch.vd.uniregctb.common;
 
 import java.util.Collection;
 
-import ch.vd.registre.base.date.RegDate;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.springframework.util.Log4jConfigurer;
+import org.junit.runner.RunWith;
+
+import ch.vd.registre.base.date.RegDate;
 
 import static org.junit.Assert.assertTrue;
 
@@ -16,25 +17,8 @@ import static org.junit.Assert.assertTrue;
  * @author jec
  *
  */
+@RunWith(UniregJUnit4Runner.class)
 public abstract class WithoutSpringTest {
-
-	public WithoutSpringTest() {
-		try {
-			Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public WithoutSpringTest(String log4j) {
-		try {
-			Log4jConfigurer.initLogging(log4j);
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	/**
 	 * A surcharger par les sous-classes

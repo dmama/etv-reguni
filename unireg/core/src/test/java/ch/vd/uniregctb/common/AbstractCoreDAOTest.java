@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
@@ -174,20 +172,6 @@ import static org.junit.Assert.assertNull;
 		CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES
 })
 public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
-
-	static {
-		try {
-			Log4jConfigurer.initLogging(getLog4jConfigFilename().toString());
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * Fichier de configuration par défaut de log4j.
-	 */
-	private static final String DEFAULT_LOG4J_CONFIGURATION_FILENAME = "classpath:ut/log4j.xml";
 
 	protected DataSource dataSource;
 	protected JdbcTemplate jdbcTemplate;
@@ -398,10 +382,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		finally {
 			DataSourceUtils.releaseConnection(dsCon, dataSource);
 		}
-	}
-
-	protected static URL getLog4jConfigFilename() throws Exception {
-		return ResourceUtils.getURL(DEFAULT_LOG4J_CONFIGURATION_FILENAME);
 	}
 
 	protected static DatabaseConnection createNewConnection(Connection connection) {
