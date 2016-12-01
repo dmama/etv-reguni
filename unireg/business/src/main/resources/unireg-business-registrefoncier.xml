@@ -17,15 +17,54 @@
 	</bean>
 
 	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.DataRFMutationsDetector">
+		<constructor-arg ref="ayantDroitRFDetector"/>
+		<constructor-arg ref="batimentRFDetector"/>
+		<constructor-arg ref="droitRFDetector"/>
+		<constructor-arg ref="immeubleRFDetector"/>
+		<constructor-arg ref="surfaceAuSolRFDetector"/>
+	</bean>
+
+	<bean id="ayantDroitRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.AyantDroitRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
-		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="ayantDroitRFDAO"/>
-		<constructor-arg ref="communeRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
+	<bean id="batimentRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.BatimentRFDetector">
+		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="batimentRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="transactionManager"/>
+	</bean>
+
+	<bean id="droitRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.DroitRFDetector">
+		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
+		<constructor-arg ref="ayantDroitRFDetector"/>
 		<constructor-arg ref="tempRFCacheDroits"/>
+	</bean>
+
+	<bean id="immeubleRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.ImmeubleRFDetector">
+		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="communeRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
+	<bean id="surfaceAuSolRFDetector" class="ch.vd.uniregctb.registrefoncier.detector.SurfaceAuSolRFDetector">
+		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
 		<constructor-arg ref="tempRFCacheSurfaces"/>
 	</bean>
 

@@ -1,6 +1,5 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.registrefoncier.detector;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,14 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GebaeudeArt;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
-import ch.vd.uniregctb.cache.MockPersistentCache;
-import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -28,14 +23,13 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.MutationComparator;
+import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockBatimentRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.MockCommuneRFDAO;
-import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.elements.XmlHelperRFImpl;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
@@ -43,29 +37,19 @@ import ch.vd.uniregctb.transaction.MockTransactionManager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class DataRFMutationsDetectorBatimentTest {
+public class BatimentRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;
 	private XmlHelperRF xmlHelperRF;
 	private PlatformTransactionManager transactionManager;
-	private AyantDroitRFDAO ayantDroitRFDAO;
-	private ImmeubleRFDAO immeubleRFDAO;
-	private CommuneRFDAO communeRFDAO;
 	private BatimentRFDAO batimentRFDAO;
-	private PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
-	private PersistentCache<ArrayList<Bodenbedeckung>> cacheSurfaces;
 
 	@Before
 	public void setUp() throws Exception {
 
 		xmlHelperRF = new XmlHelperRFImpl();
 		transactionManager = new MockTransactionManager();
-		ayantDroitRFDAO = new MockAyantDroitRFDAO();
-		immeubleRFDAO = new MockImmeubleRFDAO();
-		communeRFDAO = new MockCommuneRFDAO();
 		batimentRFDAO = new MockBatimentRFDAO();
-		cacheDroits = new MockPersistentCache<>();
-		cacheSurfaces = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -93,7 +77,7 @@ public class DataRFMutationsDetectorBatimentTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final BatimentRFDetector detector = new BatimentRFDetector(xmlHelperRF, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie trois nouveaux bâtiments sur deux immeubles
 		final Gebaeude gebaeude1 = newBatiment("4728a8e8c83e", 760, "Immeuble", new GrundstueckZuGebaeude("48e89c9a9", 760));
@@ -209,9 +193,6 @@ public class DataRFMutationsDetectorBatimentTest {
 		batiment3.addSurface(new SurfaceBatimentRF(230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
-		// un mock avec les deux immeubles
-		immeubleRFDAO = new MockImmeubleRFDAO(immeuble1, immeuble2);
-
 		// un mock avec les trois bâtiments.
 		batimentRFDAO.save(batiment1);
 		batimentRFDAO.save(batiment2);
@@ -225,7 +206,7 @@ public class DataRFMutationsDetectorBatimentTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final BatimentRFDetector detector = new BatimentRFDetector(xmlHelperRF, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie trois bâtiments avec quelques différences
 		//  - surface différente
@@ -323,9 +304,6 @@ public class DataRFMutationsDetectorBatimentTest {
 		batiment3.addSurface(new SurfaceBatimentRF(230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
-		// un mock avec les deux immeubles
-		immeubleRFDAO = new MockImmeubleRFDAO(immeuble1, immeuble2);
-
 		// un mock avec les trois bâtiments.
 		batimentRFDAO.save(batiment1);
 		batimentRFDAO.save(batiment2);
@@ -339,7 +317,7 @@ public class DataRFMutationsDetectorBatimentTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final BatimentRFDetector detector = new BatimentRFDetector(xmlHelperRF, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les trois mêmes bâtiments
 		final Gebaeude gebaeude1 = newBatiment("4728a8e8c83e", 760, "Immeuble", new GrundstueckZuGebaeude("48e89c9a9", 760));
@@ -385,9 +363,6 @@ public class DataRFMutationsDetectorBatimentTest {
 		batiment3.addSurface(new SurfaceBatimentRF(230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
-		// un mock avec les deux immeubles
-		immeubleRFDAO = new MockImmeubleRFDAO(immeuble1, immeuble2);
-
 		// un mock avec les trois bâtiments.
 		batimentRFDAO.save(batiment1);
 		batimentRFDAO.save(batiment2);
@@ -401,7 +376,7 @@ public class DataRFMutationsDetectorBatimentTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final DataRFMutationsDetector detector = new DataRFMutationsDetector(xmlHelperRF, immeubleRFDAO, ayantDroitRFDAO, communeRFDAO, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, cacheDroits, cacheSurfaces);
+		final BatimentRFDetector detector = new BatimentRFDetector(xmlHelperRF, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie une liste de bâtiments vide
 		detector.processBatiments(IMPORT_ID, 2, Collections.<Gebaeude>emptyList().iterator(), null);
