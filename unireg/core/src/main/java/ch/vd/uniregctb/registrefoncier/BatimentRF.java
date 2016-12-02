@@ -16,7 +16,6 @@ import java.util.Set;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.LengthConstants;
 
@@ -36,12 +35,6 @@ public class BatimentRF {
 	 * Identifiant technique du bâtiment au registre foncier.
 	 */
 	private String masterIdRF;
-
-	/**
-	 * Le type de bâtiment.
-	 */
-	@Nullable
-	private String type;
 
 	/**
 	 * Les surfaces (historisées) du bâtiment
@@ -74,16 +67,6 @@ public class BatimentRF {
 
 	public void setMasterIdRF(String masterIdRF) {
 		this.masterIdRF = masterIdRF;
-	}
-
-	@Nullable
-	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_BATIMENT)
-	public String getType() {
-		return type;
-	}
-
-	public void setType(@Nullable String type) {
-		this.type = type;
 	}
 
 	// configuration hibernate : le bâtiment possède les surfaces du bâtiment

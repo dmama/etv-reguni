@@ -36,6 +36,7 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -69,11 +70,14 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return commune;
 	}
 
-	protected static BatimentRF newBatimentRF(String masterIdRF, String type) {
+	protected static BatimentRF newBatimentRF(String masterIdRF) {
 		final BatimentRF batiment = new BatimentRF();
 		batiment.setMasterIdRF(masterIdRF);
-		batiment.setType(type);
 		return batiment;
+	}
+
+	protected static SurfaceBatimentRF newSurfaceBatiment(String type, Integer surface, RegDate dateDebut, RegDate dateFin) {
+		return new SurfaceBatimentRF(type, surface, dateDebut, dateFin);
 	}
 
 	protected static ImplantationRF newImplantationRF(ImmeubleRF immeuble, Integer surface, RegDate dateDebut, RegDate dateFin) {

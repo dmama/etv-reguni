@@ -157,8 +157,12 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"));
 				assertNotNull(batiment0);
 				assertEquals("1f109152381026b50138102aa28557e0", batiment0.getMasterIdRF());
-				assertEquals("Habitation", batiment0.getType());
-				assertEmpty(batiment0.getSurfaces());
+
+				final Set<SurfaceBatimentRF> surfaces0 = batiment0.getSurfaces();
+				assertEquals(1, surfaces0.size());
+				final SurfaceBatimentRF surface00 = surfaces0.iterator().next();
+				assertNull(surface00.getSurface());
+				assertEquals("Habitation", surface00.getType());
 
 				final Set<ImplantationRF> implantations0 = batiment0.getImplantations();
 				assertEquals(1, implantations0.size());
@@ -171,12 +175,12 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"));
 				assertNotNull(batiment1);
 				assertEquals("1f10915238106bdc0138107364741e62", batiment1.getMasterIdRF());
-				assertEquals("Garage", batiment1.getType());
 
 				final Set<SurfaceBatimentRF> surfaces1 = batiment1.getSurfaces();
 				assertEquals(1, surfaces1.size());
 				final SurfaceBatimentRF surface10 = surfaces1.iterator().next();
-				assertEquals(247, surface10.getSurface());
+				assertEquals(Integer.valueOf(247), surface10.getSurface());
+				assertEquals("Garage", surface10.getType());
 				assertEquals(dateImport, surface10.getDateDebut());
 				assertNull(surface10.getDateFin());
 
@@ -296,8 +300,12 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("8af80e6254709f6801547708f4c10ebd"));
 				assertNotNull(batiment0);
 				assertEquals("8af80e6254709f6801547708f4c10ebd", batiment0.getMasterIdRF());
-				assertEquals("Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554", batiment0.getType());
-				assertEmpty(batiment0.getSurfaces());
+
+				final Set<SurfaceBatimentRF> surfaces0 = batiment0.getSurfaces();
+				assertEquals(1, surfaces0.size());
+				final SurfaceBatimentRF surface00 = surfaces0.iterator().next();
+				assertNull(surface00.getSurface());
+				assertEquals("Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554", surface00.getType());
 
 				final Set<ImplantationRF> implantations0 = batiment0.getImplantations();
 				assertEquals(1, implantations0.size());
@@ -310,12 +318,12 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("8af806fc3b8f410e013c437c69a112ed"));
 				assertNotNull(batiment1);
 				assertEquals("8af806fc3b8f410e013c437c69a112ed", batiment1.getMasterIdRF());
-				assertNull(batiment1.getType());
 
 				final Set<SurfaceBatimentRF> surfaces1 = batiment1.getSurfaces();
 				assertEquals(1, surfaces1.size());
 				final SurfaceBatimentRF surface10 = surfaces1.iterator().next();
-				assertEquals(136, surface10.getSurface());
+				assertEquals(Integer.valueOf(136), surface10.getSurface());
+				assertNull(surface10.getType());
 				assertEquals(dateImport, surface10.getDateDebut());
 				assertNull(surface10.getDateFin());
 
@@ -354,16 +362,14 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 
 				BatimentRF batiment1 = new BatimentRF();
 				batiment1.setMasterIdRF("1f109152381026b50138102aa28557e0");
-				batiment1.setType("Habitation");
 				batiment1.addImplantation(new ImplantationRF(104, immeuble1, dateImportInitial, null));
-				batiment1.addSurface(new SurfaceBatimentRF(12003, dateImportInitial, null));
+				batiment1.addSurface(new SurfaceBatimentRF("Habitation", 12003, dateImportInitial, null));
 				batimentRFDAO.save(batiment1);
 
 				BatimentRF batiment2 = new BatimentRF();
 				batiment2.setMasterIdRF("1f10915238106bdc0138107364741e62");
-				batiment2.setType("Garage");
 				batiment2.addImplantation(new ImplantationRF(247, immeuble2, dateImportInitial, null));
-				batiment2.addSurface(new SurfaceBatimentRF(247, dateImportInitial, null));
+				batiment2.addSurface(new SurfaceBatimentRF("Garage", 247, dateImportInitial, null));
 				batimentRFDAO.save(batiment2);
 			}
 		});
@@ -458,15 +464,24 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"));
 				assertNotNull(batiment0);
 				assertEquals("1f109152381026b50138102aa28557e0", batiment0.getMasterIdRF());
-				assertEquals("Habitation", batiment0.getType());
 
 				// la surface existante est fermée
-				final Set<SurfaceBatimentRF> surfaces0 = batiment0.getSurfaces();
-				assertEquals(1, surfaces0.size());
-				final SurfaceBatimentRF surface00 = surfaces0.iterator().next();
-				assertEquals(12003, surface00.getSurface());
+				final List<SurfaceBatimentRF> surfaces0 =  new ArrayList<SurfaceBatimentRF>(batiment0.getSurfaces());
+				assertEquals(2, surfaces0.size());
+				Collections.sort(surfaces0, new DateRangeComparator<>());
+
+				final SurfaceBatimentRF surface00 = surfaces0.get(0);
+				assertEquals(Integer.valueOf(12003), surface00.getSurface());
+				assertEquals("Habitation", surface00.getType());
 				assertEquals(dateImportInitial, surface00.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), surface00.getDateFin());
+
+				// la nouvelle surface sans surface est créé
+				final SurfaceBatimentRF surface01 = surfaces0.get(1);
+				assertNull(surface01.getSurface());
+				assertEquals("Habitation", surface01.getType());
+				assertEquals(dateSecondImport, surface01.getDateDebut());
+				assertNull(surface01.getDateFin());
 
 				// pas de changement sur l'implantation
 				final Set<ImplantationRF> implantations0 = batiment0.getImplantations();
@@ -480,13 +495,13 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"));
 				assertNotNull(batiment1);
 				assertEquals("1f10915238106bdc0138107364741e62", batiment1.getMasterIdRF());
-				assertEquals("Garage", batiment1.getType());
 
 				// pas de changement sur la surface
 				final Set<SurfaceBatimentRF> surfaces1 = batiment1.getSurfaces();
 				assertEquals(1, surfaces1.size());
 				final SurfaceBatimentRF surface10 = surfaces1.iterator().next();
-				assertEquals(247, surface10.getSurface());
+				assertEquals(Integer.valueOf(247), surface10.getSurface());
+				assertEquals("Garage", surface10.getType());
 				assertEquals(dateImportInitial, surface10.getDateDebut());
 				assertNull(surface10.getDateFin());
 
@@ -534,16 +549,14 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 
 				BatimentRF batiment1 = new BatimentRF();
 				batiment1.setMasterIdRF("1f109152381026b50138102aa28557e0");
-				batiment1.setType("Habitation");
 				batiment1.addImplantation(new ImplantationRF(104, immeuble1, dateImportInitial, null));
-				batiment1.addSurface(new SurfaceBatimentRF(12003, dateImportInitial, null));
+				batiment1.addSurface(new SurfaceBatimentRF("Habitation", 12003, dateImportInitial, null));
 				batimentRFDAO.save(batiment1);
 
 				BatimentRF batiment2 = new BatimentRF();
 				batiment2.setMasterIdRF("1f10915238106bdc0138107364741e62");
-				batiment2.setType("Garage");
 				batiment2.addImplantation(new ImplantationRF(247, immeuble2, dateImportInitial, null));
-				batiment2.addSurface(new SurfaceBatimentRF(247, dateImportInitial, null));
+				batiment2.addSurface(new SurfaceBatimentRF("Garage", 247, dateImportInitial, null));
 				batimentRFDAO.save(batiment2);
 			}
 		});
@@ -606,13 +619,13 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"));
 				assertNotNull(batiment0);
 				assertEquals("1f109152381026b50138102aa28557e0", batiment0.getMasterIdRF());
-				assertEquals("Habitation", batiment0.getType());
 
 				// la surface existante est fermée
 				final Set<SurfaceBatimentRF> surfaces0 = batiment0.getSurfaces();
 				assertEquals(1, surfaces0.size());
 				final SurfaceBatimentRF surface00 = surfaces0.iterator().next();
-				assertEquals(12003, surface00.getSurface());
+				assertEquals(Integer.valueOf(12003), surface00.getSurface());
+				assertEquals("Habitation", surface00.getType());
 				assertEquals(dateImportInitial, surface00.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), surface00.getDateFin());
 
@@ -628,13 +641,13 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"));
 				assertNotNull(batiment1);
 				assertEquals("1f10915238106bdc0138107364741e62", batiment1.getMasterIdRF());
-				assertEquals("Garage", batiment1.getType());
 
 				// la surface existante est fermée
 				final Set<SurfaceBatimentRF> surfaces1 = batiment1.getSurfaces();
 				assertEquals(1, surfaces1.size());
 				final SurfaceBatimentRF surface10 = surfaces1.iterator().next();
-				assertEquals(247, surface10.getSurface());
+§				assertEquals(Integer.valueOf(247), surface10.getSurface());
+				assertEquals("Garage", surface10.getType());
 				assertEquals(dateImportInitial, surface10.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), surface10.getDateFin());
 

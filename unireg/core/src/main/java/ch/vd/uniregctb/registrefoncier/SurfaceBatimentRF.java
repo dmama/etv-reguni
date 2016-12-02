@@ -14,9 +14,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * La surface d'un bâtiment valide pendant une période donnée.
@@ -35,9 +37,16 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 	private Long id;
 
 	/**
+	 * Le type de surface.
+	 */
+	@Nullable
+	private String type;
+
+	/**
 	 * La surface en mètre carrés (m2).
 	 */
-	private int surface;
+	@Nullable
+	private Integer surface;
 
 	/**
 	 * Le bâtiment concerné par la surface.
@@ -47,12 +56,16 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 	public SurfaceBatimentRF() {
 	}
 
-	public SurfaceBatimentRF(int surface) {
-		this.surface = surface;
+	public SurfaceBatimentRF(@Nullable String type, @Nullable Integer surface) {
+		this(type, surface, null, null);
 	}
 
-	public SurfaceBatimentRF(int surface, RegDate dateDebut, RegDate dateFin) {
+	public SurfaceBatimentRF(@Nullable String type, @Nullable Integer surface, RegDate dateDebut, RegDate dateFin) {
 		super(dateDebut, dateFin);
+		if (type == null && surface == null) {
+			throw new IllegalArgumentException("Un des deux valeurs type ou surface doit être renseignée.");
+		}
+		this.type = type;
 		this.surface = surface;
 	}
 
@@ -72,12 +85,23 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
-	@Column(name = "SURFACE", nullable = false)
-	public int getSurface() {
+	@Nullable
+	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_BATIMENT)
+	public String getType() {
+		return type;
+	}
+
+	public void setType(@Nullable String type) {
+		this.type = type;
+	}
+
+	@Nullable
+	@Column(name = "SURFACE", nullable = true)
+	public Integer getSurface() {
 		return surface;
 	}
 
-	public void setSurface(int surface) {
+	public void setSurface(@Nullable Integer surface) {
 		this.surface = surface;
 	}
 

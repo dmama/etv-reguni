@@ -179,21 +179,18 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.setType("Immeuble");
-		batiment1.addSurface(new SurfaceBatimentRF(760));
+		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		final BatimentRF batiment2 = new BatimentRF();
 		batiment2.setMasterIdRF("7837829e9a9a");
-		batiment2.setType("Garage");
-		batiment2.addSurface(new SurfaceBatimentRF(500));
+		batiment2.addSurface(new SurfaceBatimentRF("Garage", 500));
 		batiment2.addImplantation(new ImplantationRF(350, immeuble1));
 		batiment2.addImplantation(new ImplantationRF(150, immeuble2));
 
 		final BatimentRF batiment3 = new BatimentRF();
 		batiment3.setMasterIdRF("9028920a02ee");
-		batiment3.setType("Villa");
-		batiment3.addSurface(new SurfaceBatimentRF(230));
+		batiment3.addSurface(new SurfaceBatimentRF("Villa", 230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
 		// un mock avec les trois bâtiments.
@@ -277,6 +274,66 @@ public class BatimentRFDetectorTest {
 	}
 
 	/**
+	 * Ce test vérifie que des mutations sont bien créées si les bâtiments ont un type différents.
+	 */
+	@Test
+	public void testBatimentsModifiesTypeDifferents() throws Exception {
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("48e89c9a9");
+
+		final BatimentRF batiment1 = new BatimentRF();
+		batiment1.setMasterIdRF("4728a8e8c83e");
+		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
+		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
+
+		// un mock avec le bâtiment.
+		batimentRFDAO.save(batiment1);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImport imp = new EvenementRFImport();
+		imp.setId(IMPORT_ID);
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp);
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final BatimentRFDetector detector = new BatimentRFDetector(xmlHelperRF, batimentRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+
+		// on envoie le bâtiments avec le type différent
+		final Gebaeude gebaeude1 = newBatiment("4728a8e8c83e", 760, "Habitation", new GrundstueckZuGebaeude("48e89c9a9", 763));
+
+		List<Gebaeude> batiments = Collections.singletonList(gebaeude1);
+		detector.processBatiments(IMPORT_ID, 2, batiments.iterator(), null);
+
+		// on devrait avoir un événement de mutation de type MODIFICATION sur le bâtiment
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(1, mutations.size());
+
+		final EvenementRFMutation mut0 = mutations.get(0);
+		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+		assertEquals(TypeEntiteRF.BATIMENT, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
+		assertEquals("4728a8e8c83e", mut0.getIdRF());  // le premier bâtiment
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<Gebaeude MasterID=\"4728a8e8c83e\" xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckZuGebaeude>\n" +
+				             "        <GrundstueckIDREF>48e89c9a9</GrundstueckIDREF>\n" +
+				             "        <AbschnittFlaeche>763</AbschnittFlaeche>\n" +
+				             "    </GrundstueckZuGebaeude>\n" +
+				             "    <Einzelobjekt>false</Einzelobjekt>\n" +
+				             "    <Unterirdisch>false</Unterirdisch>\n" +
+				             "    <Flaeche>760</Flaeche>\n" +
+				             "    <GebaeudeArten>\n" +
+				             "        <GebaeudeArtCode>\n" +
+				             "            <TextFr>Habitation</TextFr>\n" +
+				             "        </GebaeudeArtCode>\n" +
+				             "    </GebaeudeArten>\n" +
+				             "</Gebaeude>\n", mut0.getXmlContent());
+	}
+
+	/**
 	 * Ce test vérifie qu'aucune mutation n'est créée si les données des immeubles dans l'import sont identiques avec l'état courant des immeubles stockés dans la DB.
 	 */
 	@Test
@@ -290,21 +347,18 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.setType("Immeuble");
-		batiment1.addSurface(new SurfaceBatimentRF(760));
+		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		final BatimentRF batiment2 = new BatimentRF();
 		batiment2.setMasterIdRF("7837829e9a9a");
-		batiment2.setType("Garage");
-		batiment2.addSurface(new SurfaceBatimentRF(500));
+		batiment2.addSurface(new SurfaceBatimentRF("Garage", 500));
 		batiment2.addImplantation(new ImplantationRF(350, immeuble1));
 		batiment2.addImplantation(new ImplantationRF(150, immeuble2));
 
 		final BatimentRF batiment3 = new BatimentRF();
 		batiment3.setMasterIdRF("9028920a02ee");
-		batiment3.setType("Villa");
-		batiment3.addSurface(new SurfaceBatimentRF(230));
+		batiment3.addSurface(new SurfaceBatimentRF("Villa", 230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
 		// un mock avec les trois bâtiments.
@@ -349,21 +403,18 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.setType("Immeuble");
-		batiment1.addSurface(new SurfaceBatimentRF(760));
+		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		final BatimentRF batiment2 = new BatimentRF();
 		batiment2.setMasterIdRF("7837829e9a9a");
-		batiment2.setType("Garage");
-		batiment2.addSurface(new SurfaceBatimentRF(500));
+		batiment2.addSurface(new SurfaceBatimentRF("Garage", 500));
 		batiment2.addImplantation(new ImplantationRF(350, immeuble1));
 		batiment2.addImplantation(new ImplantationRF(150, immeuble2));
 
 		final BatimentRF batiment3 = new BatimentRF();
 		batiment3.setMasterIdRF("9028920a02ee");
-		batiment3.setType("Villa");
-		batiment3.addSurface(new SurfaceBatimentRF(230));
+		batiment3.addSurface(new SurfaceBatimentRF("Villa", 230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
 		// un mock avec les trois bâtiments.
