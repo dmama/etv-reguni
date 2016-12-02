@@ -89,14 +89,14 @@
 	<bean id="traiterImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.dataimport.TraiterImportRFJob">
 		<constructor-arg value="108"/>
 		<constructor-arg value="Traiter un import du registre foncier et générer les mutations"/>
-		<property name="mutationsDetector" ref="dataRFMutationsDetector"/>
+		<property name="mutationsDetector" ref="mutationsRFDetector"/>
 	</bean>
 
 	<!-- [SIFISC-20372] Job de traitement des mutations des immeubles du registre foncier -->
 	<bean id="traiterMutationsRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.dataimport.TraiterMutationsRFJob">
 		<constructor-arg value="109"/>
 		<constructor-arg value="Traiter les mutations des immeubles du registre foncier"/>
-		<property name="processor" ref="dataRFMutationsProcessor"/>
+		<property name="processor" ref="mutationsRFProcessor"/>
 	</bean>
 
 	<bean id="rapprocherTiersRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.RapprocherTiersRFJob">

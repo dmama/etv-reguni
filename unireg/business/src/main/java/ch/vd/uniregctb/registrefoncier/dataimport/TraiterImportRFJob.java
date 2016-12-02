@@ -20,9 +20,9 @@ public class TraiterImportRFJob extends JobDefinition {
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String CONTINUE_WITH_MUTATIONS_JOB = "CONTINUE_WITH_MUTATIONS_JOB";
 
-	private DataRFMutationsDetector mutationsDetector;
+	private MutationsRFDetector mutationsDetector;
 
-	public void setMutationsDetector(DataRFMutationsDetector mutationsDetector) {
+	public void setMutationsDetector(MutationsRFDetector mutationsDetector) {
 		this.mutationsDetector = mutationsDetector;
 	}
 

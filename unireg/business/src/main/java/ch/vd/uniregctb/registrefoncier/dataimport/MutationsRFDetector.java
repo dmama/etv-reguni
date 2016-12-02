@@ -42,9 +42,9 @@ import ch.vd.uniregctb.xml.ExceptionHelper;
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
  */
-public class DataRFMutationsDetector {
+public class MutationsRFDetector {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataRFMutationsDetector.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MutationsRFDetector.class);
 
 	private final RegistreFoncierService serviceRF;
 	private final FichierImmeublesRFParser parser;
@@ -58,9 +58,9 @@ public class DataRFMutationsDetector {
 	private final ImmeubleRFDetector immeubleRFDetector;
 	private final SurfaceAuSolRFDetector surfaceAuSolRFDetector;
 
-	public DataRFMutationsDetector(RegistreFoncierService serviceRF, FichierImmeublesRFParser parser, EvenementRFImportDAO evenementRFImportDAO, PlatformTransactionManager transactionManager, EsbStore zipRaftStore,
-	                               AyantDroitRFDetector ayantDroitRFDetector, BatimentRFDetector batimentRFDetector, DroitRFDetector droitRFDetector, ImmeubleRFDetector immeubleRFDetector,
-	                               SurfaceAuSolRFDetector surfaceAuSolRFDetector) {
+	public MutationsRFDetector(RegistreFoncierService serviceRF, FichierImmeublesRFParser parser, EvenementRFImportDAO evenementRFImportDAO, PlatformTransactionManager transactionManager, EsbStore zipRaftStore,
+	                           AyantDroitRFDetector ayantDroitRFDetector, BatimentRFDetector batimentRFDetector, DroitRFDetector droitRFDetector, ImmeubleRFDetector immeubleRFDetector,
+	                           SurfaceAuSolRFDetector surfaceAuSolRFDetector) {
 		this.serviceRF = serviceRF;
 		this.parser = parser;
 		this.evenementRFImportDAO = evenementRFImportDAO;
@@ -121,21 +121,21 @@ public class DataRFMutationsDetector {
 			statusManager.setMessage("Détection des mutations...");
 
 			// Note : pour des raisons de performances, le parsing de l'import et la détection des mutations s'effectuent concurremment (en parallèle)
-			final DataRFCallbackAdapter dataAdapter = new DataRFCallbackAdapter();
+			final FichierImmeubleIteratorAdapter adapter = new FichierImmeubleIteratorAdapter();
 
 			// on parse le fichier (dans un thread séparé)
 			ExecutorCompletionService<Boolean> ecs = new ExecutorCompletionService<>(Executors.newFixedThreadPool(1));
 			ecs.submit(() -> {
-				parser.processFile(is, dataAdapter);    // <-- émetteur des données
+				parser.processFile(is, adapter);    // <-- émetteur des données
 				return true;
 			});
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
-			processImmeubles(importId, nbThreads, dataAdapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
-			processDroits(importId, nbThreads, dataAdapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
-			processProprietaires(importId, nbThreads, dataAdapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
-			processBatiments(importId, nbThreads, dataAdapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
-			processSurfaces(importId, nbThreads, dataAdapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
+			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
+			processDroits(importId, nbThreads, adapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
+			processProprietaires(importId, nbThreads, adapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
+			processBatiments(importId, nbThreads, adapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
+			processSurfaces(importId, nbThreads, adapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
 
 			// on attend que le parsing soit terminé
 			ecs.take().get();

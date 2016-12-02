@@ -24,9 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-public class DataRFMutationsProcessorTest extends BusinessTest {
+public class MutationsRFProcessorTest extends BusinessTest {
 
-	private DataRFMutationsProcessor processor;
+	private MutationsRFProcessor processor;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 	private AyantDroitRFProcessor ayantDroitRFProcessor;
@@ -62,7 +62,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
@@ -103,7 +103,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné
@@ -164,7 +164,7 @@ public class DataRFMutationsProcessorTest extends BusinessTest {
 		};
 
 		// on devrait avoir une exception parce que les mutations de l'import précédent ne sont pas toutes traitées
-		processor = new DataRFMutationsProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
 		try {
 			processor.processImport(ids.suivant, 2, null);
 			fail();

@@ -27,9 +27,9 @@ public class TraiterMutationsRFJob extends JobDefinition {
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String CONTINUE_WITH_IDENTIFICATION_JOB = "CONTINUE_WITH_IDENTIFICATION_JOB";
 
-	private DataRFMutationsProcessor processor;
+	private MutationsRFProcessor processor;
 
-	public void setProcessor(DataRFMutationsProcessor processor) {
+	public void setProcessor(MutationsRFProcessor processor) {
 		this.processor = processor;
 	}
 

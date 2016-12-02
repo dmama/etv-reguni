@@ -37,9 +37,9 @@ import ch.vd.uniregctb.xml.ExceptionHelper;
 /**
  * Processeur responsable de traiter les mutations du registre foncier.
  */
-public class DataRFMutationsProcessor {
+public class MutationsRFProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataRFMutationsProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MutationsRFProcessor.class);
 
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
@@ -50,14 +50,14 @@ public class DataRFMutationsProcessor {
 	private final SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 	private final BatimentRFProcessor batimentRFProcessor;
 
-	public DataRFMutationsProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
-	                                @NotNull MutationRFProcessor communeRFProcessor,
-	                                @NotNull MutationRFProcessor immeubleRFProcessor,
-	                                @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
-	                                @NotNull DroitRFProcessor droitRFProcessor,
-	                                @NotNull SurfaceAuSolRFProcessor surfaceAuSolRFProcessor,
-	                                @NotNull BatimentRFProcessor batimentRFProcessor,
-	                                @NotNull PlatformTransactionManager transactionManager) {
+	public MutationsRFProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
+	                            @NotNull MutationRFProcessor communeRFProcessor,
+	                            @NotNull MutationRFProcessor immeubleRFProcessor,
+	                            @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
+	                            @NotNull DroitRFProcessor droitRFProcessor,
+	                            @NotNull SurfaceAuSolRFProcessor surfaceAuSolRFProcessor,
+	                            @NotNull BatimentRFProcessor batimentRFProcessor,
+	                            @NotNull PlatformTransactionManager transactionManager) {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.ayantDroitRFProcessor = ayantDroitRFProcessor;
 		this.immeubleRFProcessor = immeubleRFProcessor;

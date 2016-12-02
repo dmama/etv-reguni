@@ -16,7 +16,7 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 /**
  * Classe qui transforme un flux de données reçues par callback en des itérateurs traditionnels. Cette classe nécessite deux threads au minimum pour fonctionner : un thread pour envoyer les éléments (Callback) et un thread pour itérer.
  */
-public class DataRFCallbackAdapter implements FichierImmeublesRFParser.Callback {
+public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.Callback {
 
 	// on ne garde que 100 éléments en mémoire, ça semble suffisant
 	private static final int QUEUE_SIZE = 100;
@@ -68,7 +68,7 @@ public class DataRFCallbackAdapter implements FichierImmeublesRFParser.Callback 
 	private final QueuedIterator<Gebaeude> constructionsIterator = new QueuedIterator<>();
 	private final QueuedIterator<Bodenbedeckung> surfacesIterator = new QueuedIterator<>();
 
-	public DataRFCallbackAdapter() {
+	public FichierImmeubleIteratorAdapter() {
 	}
 
 	/**

@@ -16,7 +16,7 @@
 		<property name="xmlHelperRF" ref="xmlHelperRF"/>
 	</bean>
 
-	<bean id="dataRFMutationsDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.DataRFMutationsDetector">
+	<bean id="mutationsRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetector">
 		<constructor-arg ref="serviceRF"/>
 		<constructor-arg ref="fichierImmeublesRFParser"/>
 		<constructor-arg ref="evenementRFImportDAO"/>
@@ -73,7 +73,7 @@
 		<constructor-arg ref="tempRFCacheSurfaces"/>
 	</bean>
 
-	<bean id="dataRFMutationsProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.DataRFMutationsProcessor">
+	<bean id="mutationsRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessor">
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="communeRFProcessor"/>
 		<constructor-arg ref="immeubleRFProcessor"/>
