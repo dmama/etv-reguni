@@ -765,6 +765,13 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
 	}
 
+	/**
+	 * Mise à jour en fonction des données de l'établissement, sans setter le tiers, boudiou.
+	 */
+	protected void setJusteEtablissement(TiersView tiersView, Etablissement etb) {
+		tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
+	}
+
 	private List<DomicileEtablissementView> getDomicilesEtablissement(List<DomicileHisto> domiciles) {
 		final List<DomicileEtablissementView> domicilesViews = new ArrayList<>(domiciles.size());
 		for (DomicileHisto domicile : domiciles) {

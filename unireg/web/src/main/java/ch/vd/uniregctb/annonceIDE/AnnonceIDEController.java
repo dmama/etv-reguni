@@ -117,7 +117,24 @@ public class AnnonceIDEController {
 		// on effectue la recherche
 		final Page<AnnonceIDE> annonces;
 		try {
-			annonces = organisationService.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
+			if (view.getTiersId() != null) {
+				final List<ReferenceAnnonceIDE> referencesAnnonceIDE = referenceAnnonceIDEDAO.getReferencesAnnonceIDE(view.getTiersId());
+				final List<AnnonceIDE> listeAnnonces = new ArrayList<>();
+
+				if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
+					for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
+						final AnnonceIDEEnvoyee annonceIDE = organisationService.getAnnonceIDE(ref.getId());
+						listeAnnonces.add((AnnonceIDE) annonceIDE);
+					}
+				}
+				final Sort sort = (order == null ? null : new Sort(order));
+				final PageRequest pageable = new PageRequest(pageNumber, pageSize, sort);
+
+				annonces = new PageImpl<>(listeAnnonces, pageable, listeAnnonces.size());
+			}
+			else {
+				annonces = organisationService.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
+			}
 		}
 		catch (RcEntClientException e) {
 			LOGGER.warn("Erreur lors de la recherche de demandes à l'IDE", e);

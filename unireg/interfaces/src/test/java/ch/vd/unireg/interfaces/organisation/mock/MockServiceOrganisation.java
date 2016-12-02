@@ -37,7 +37,7 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	 * Map des organisations par numéro
 	 */
 	private final Map<Long, MockOrganisation> organisationMap = new HashMap<>();
-	private Map<Long, AnnonceIDEEnvoyee> annoncesIDE = new HashMap<>();
+	private Map<Long, AnnonceIDE> annoncesIDE = new HashMap<>();
 	private Map<BaseAnnonceIDE.Contenu, BaseAnnonceIDE.Statut> annoncesIDEValidations = new HashMap<>();
 
 	/**
@@ -92,7 +92,7 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	}
 
 	@Override
-	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) {
+	public AnnonceIDE getAnnonceIDE(long numero) {
 		return annoncesIDE.get(numero);
 	}
 
@@ -102,7 +102,7 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		throw new NotImplementedException();
 	}
 
-	protected void addAnnonceIDE(AnnonceIDEEnvoyee annonce) {
+	protected void addAnnonceIDE(AnnonceIDE annonce) {
 		annoncesIDE.put(annonce.getNumero(), annonce);
 	}
 

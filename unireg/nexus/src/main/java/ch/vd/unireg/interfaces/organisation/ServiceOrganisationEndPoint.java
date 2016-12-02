@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -86,7 +85,7 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 	}
 
 	@Override
-	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException {
+	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
 		loadMeter.start(new MethodCallDescriptor("getAnnonceIDE", "numero", numero));
 		try {
 			return target.getAnnonceIDE(numero);

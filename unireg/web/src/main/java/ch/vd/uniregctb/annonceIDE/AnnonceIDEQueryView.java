@@ -23,6 +23,8 @@ public class AnnonceIDEQueryView {
 	private RegDate dateTo;
 	private Boolean containsForName;
 
+	private Long tiersId;
+
 	// les options de recherche
 	private int resultsPerPage;
 
@@ -106,6 +108,14 @@ public class AnnonceIDEQueryView {
 		this.resultsPerPage = resultsPerPage;
 	}
 
+	public Long getTiersId() {
+		return tiersId;
+	}
+
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
+	}
+
 	public AnnonceIDEQuery toQuery() {
 		final AnnonceIDEQuery query = new AnnonceIDEQuery();
 		query.setNoticeId(noticeId);
@@ -117,6 +127,7 @@ public class AnnonceIDEQueryView {
 		query.setDateFrom(dateFrom);
 		query.setDateTo(dateTo);
 		query.setContainsForName(containsForName);
+		query.setTiersId(tiersId);
 		return query;
 	}
 }

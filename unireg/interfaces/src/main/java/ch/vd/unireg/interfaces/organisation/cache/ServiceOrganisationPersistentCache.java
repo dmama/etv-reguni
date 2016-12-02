@@ -17,7 +17,6 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -213,7 +212,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	}
 
 	@Override
-	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) {
+	public AnnonceIDE getAnnonceIDE(long numero) {
 		// Surtout pas de cache.
 		return target.getAnnonceIDE(numero);
 	}

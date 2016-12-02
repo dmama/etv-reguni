@@ -25,7 +25,6 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -137,7 +136,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Nullable
 	@Override
-	public AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException {
+	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
 		final ListOfNoticeRequest noticeRequests = client.getNoticeRequest(String.valueOf(numero));
 		if (noticeRequests == null || noticeRequests.getNumberOfResults() == 0) {
 			return null;

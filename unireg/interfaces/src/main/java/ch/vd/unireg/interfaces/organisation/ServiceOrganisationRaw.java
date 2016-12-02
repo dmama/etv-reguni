@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -95,7 +94,7 @@ public interface ServiceOrganisationRaw {
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	@Nullable
-	AnnonceIDEEnvoyee getAnnonceIDE(long numero) throws ServiceOrganisationException;
+	AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException;
 
 	/**
 	 * Recherche des demandes d'annonces à l'IDE.

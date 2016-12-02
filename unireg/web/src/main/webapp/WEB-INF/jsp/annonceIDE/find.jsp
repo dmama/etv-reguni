@@ -76,13 +76,10 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
-						<td>Nombre résultats par page&nbsp;:</td>
+						<td>Numéro de l'établissement&nbsp;:</td>
 						<td>
-							<form:select path="resultsPerPage">
-								<form:option value="10">10</form:option>
-								<form:option value="20">20</form:option>
-								<form:option value="50">50</form:option>
-							</form:select>
+							<form:input  path="tiersId" id="tiersId"/>
+							<form:errors path="tiersId" cssClass="error"/>
 						</td>
 					</tr>
 
@@ -91,7 +88,14 @@
 				<!-- Debut Boutons -->
 				<table border="0">
 					<tr class="odd" >
-						<td width="25%">&nbsp;</td>
+						<td width="25%">
+							Nombre résultats par page&nbsp;:
+							<form:select path="resultsPerPage">
+							<form:option value="10">10</form:option>
+							<form:option value="20">20</form:option>
+							<form:option value="50">50</form:option>
+						</form:select>
+						</td>
 						<td width="25%">
 							<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>
 						</td>

@@ -31,6 +31,8 @@ public class AnnonceIDEQuery implements Serializable {
 	private RegDate dateTo;
 	private Boolean containsForName;
 
+	private Long tiersId;
+
 	public Long getNoticeId() {
 		return this.noticeId;
 	}
@@ -104,6 +106,14 @@ public class AnnonceIDEQuery implements Serializable {
 		this.containsForName = containsForName;
 	}
 
+	public Long getTiersId() {
+		return tiersId;
+	}
+
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
+	}
+
 	public String toString() {
 		ArrayList values = new ArrayList();
 		if (this.noticeId != null) {
@@ -140,6 +150,10 @@ public class AnnonceIDEQuery implements Serializable {
 
 		if (this.containsForName != null) {
 			values.add("containsForName=" + this.containsForName);
+		}
+
+		if (this.tiersId != null) {
+			values.add("tiersId=" + this.tiersId);
 		}
 
 		return "AnnonceIDEQuery{" + StringUtils.join(", ", values) + "}";

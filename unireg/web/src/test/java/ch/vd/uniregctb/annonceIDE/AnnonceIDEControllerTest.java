@@ -3,10 +3,13 @@ package ch.vd.uniregctb.annonceIDE;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.displaytag.util.ParamEncoder;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
@@ -21,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AdresseAnnonceIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
@@ -34,8 +38,15 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.MockMessageSource;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteria;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceOrganisationService;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -102,6 +113,8 @@ public class AnnonceIDEControllerTest {
 		final AnnonceIDEController controller = new AnnonceIDEController();
 		controller.setTiersMapHelper(tiersMapHelper);
 		controller.setOrganisationService(organisationService);
+		controller.setReferenceAnnonceIDEDAO(new MockDummyReferenceAnnonceIDEDAO());
+		controller.setEvtOrganisationDAO(new MockDummyEvenementOrganisationDAO());
 
 		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
 
@@ -308,5 +321,202 @@ public class AnnonceIDEControllerTest {
 		assertNotNull(query);
 
 		assertEquals(Long.valueOf(123456789L), query.getCantonalId());
+	}
+
+	public static class MockDummyReferenceAnnonceIDEDAO implements ReferenceAnnonceIDEDAO {
+
+		@Override
+		public List<ReferenceAnnonceIDE> getReferencesAnnonceIDE(long etablissementId) {
+			return null;
+		}
+
+		@Override
+		public ReferenceAnnonceIDE getLastReferenceAnnonceIDE(long etablissementId) {
+			return null;
+		}
+
+		@Override
+		public List<ReferenceAnnonceIDE> getAll() {
+			return null;
+		}
+
+		@Override
+		public ReferenceAnnonceIDE get(Long id) {
+			return null;
+		}
+
+		@Override
+		public boolean exists(Long id) {
+			return false;
+		}
+
+		@Override
+		public boolean exists(Long id, FlushMode flushModeOverride) {
+			return false;
+		}
+
+		@Override
+		public ReferenceAnnonceIDE save(ReferenceAnnonceIDE object) {
+			return null;
+		}
+
+		@Override
+		public Object saveObject(Object object) {
+			return null;
+		}
+
+		@Override
+		public void remove(Long id) {
+
+		}
+
+		@Override
+		public void removeAll() {
+
+		}
+
+		@Override
+		public Iterator<ReferenceAnnonceIDE> iterate(String query) {
+			return null;
+		}
+
+		@Override
+		public int getCount(Class<?> clazz) {
+			return 0;
+		}
+
+		@Override
+		public void clearSession() {
+
+		}
+
+		@Override
+		public void evict(Object o) {
+
+		}
+	}
+
+	public static class MockDummyEvenementOrganisationDAO implements EvenementOrganisationDAO {
+		@Override
+		public List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation) {
+			return null;
+		}
+
+		@Override
+		public List<EvenementOrganisation> getEvenementsOrganisation(long noOrganisation) {
+			return null;
+		}
+
+		@Override
+		public List<EvenementOrganisation> getEvenementsOrganisationARelancer() {
+			return null;
+		}
+
+		@NotNull
+		@Override
+		public List<EvenementOrganisation> getEvenementsOrganisationApresDateNonAnnules(Long noOrganisation, RegDate date) {
+			return null;
+		}
+
+		@Override
+		public Set<Long> getOrganisationsConcerneesParEvenementsPourRetry() {
+			return null;
+		}
+
+		@Override
+		public List<EvenementOrganisation> find(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion, @Nullable ParamPagination paramPagination) {
+			return null;
+		}
+
+		@Override
+		public List<EvenementOrganisation> getEvenementsForNoEvenement(long noEvenement) {
+			return null;
+		}
+
+		@Override
+		public EvenementOrganisation getEvenementForNoAnnonceIDE(long noAnnonce) {
+			return null;
+		}
+
+		@Override
+		public List<EvenementOrganisation> getEvenementsForBusinessId(String businessId) {
+			return null;
+		}
+
+		@Override
+		public int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
+			return 0;
+		}
+
+		@Override
+		public boolean isEvenementDateValeurDansLePasse(EvenementOrganisation event) {
+			return false;
+		}
+
+		@NotNull
+		@Override
+		public List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation) {
+			return null;
+		}
+
+		@Override
+		public List<EvenementOrganisation> getAll() {
+			return null;
+		}
+
+		@Override
+		public EvenementOrganisation get(Long id) {
+			return null;
+		}
+
+		@Override
+		public boolean exists(Long id) {
+			return false;
+		}
+
+		@Override
+		public boolean exists(Long id, FlushMode flushModeOverride) {
+			return false;
+		}
+
+		@Override
+		public EvenementOrganisation save(EvenementOrganisation object) {
+			return null;
+		}
+
+		@Override
+		public Object saveObject(Object object) {
+			return null;
+		}
+
+		@Override
+		public void remove(Long id) {
+
+		}
+
+		@Override
+		public void removeAll() {
+
+		}
+
+		@Override
+		public Iterator<EvenementOrganisation> iterate(String query) {
+			return null;
+		}
+
+		@Override
+		public int getCount(Class<?> clazz) {
+			return 0;
+		}
+
+		@Override
+		public void clearSession() {
+
+		}
+
+		@Override
+		public void evict(Object o) {
+
+		}
 	}
 }

@@ -157,12 +157,12 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 	}
 
 	@Override
-	public AnnonceIDEEnvoyee getAnnonceIDE(final long numero) {
+	public AnnonceIDE getAnnonceIDE(final long numero) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final AnnonceIDEEnvoyee annonceIDE = target.getAnnonceIDE(numero);
+			final AnnonceIDE annonceIDE = target.getAnnonceIDE(numero);
 			if (annonceIDE != null) {
 				items = 1;
 			}
