@@ -67,10 +67,54 @@
 			</display:column>
 
 			<!-- No Evenement -->
-			<display:column property="noEvenement" sortable ="${sortable}" titleKey="label.no.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="noEvenement" />
+			<display:column property="noEvenement" sortable ="${sortable}" titleKey="label.no.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="noEvenement"/>
 			<!-- NO Organisation -->
 			<display:column titleKey="label.no.cantonal">
-				${tableEvtsOrganisation.numeroOrganisation}
+				<a href="#" class="staticTip" id="tt-${tableEvtsOrganisation.numeroOrganisation}">
+					<div id="tt-${tableEvtsOrganisation.numeroOrganisation}-tooltip" style="display:none;">
+						<h3>Organisation n°${tableEvtsOrganisation.numeroOrganisation}</h3>
+						<fieldset>
+							<unireg:nextRowClass reset="1"/>
+							<table>
+								<tr class="<unireg:nextRowClass/>">
+									<td><fmt:message key="label.numero.registre.entreprises"/> :</td>
+									<td>${tableEvtsOrganisation.organisation.numeroOrganisation}</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>">
+									<td><fmt:message key="label.raison.sociale"/> :</td>
+									<td>${tableEvtsOrganisation.organisation.nom}</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>">
+									<td><fmt:message key="label.forme.juridique"/>&nbsp;:</td>
+									<td style="min-width: 300px"><c:out value="${tableEvtsOrganisation.organisation.formeJuridique}"/></td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>">
+									<td width="130px"><fmt:message key="label.categorie"/>&nbsp;:</td>
+									<td><c:out value="${tableEvtsOrganisation.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${tableEvtsOrganisation.organisation.categorie}"/>)</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>">
+									<td><fmt:message key="label.siege"/>&nbsp;:</td>
+									<c:choose>
+										<c:when test="${tableEvtsOrganisation.organisation.typeSiege == 'COMMUNE_OU_FRACTION_VD'}">
+											<td><unireg:commune ofs="${tableEvtsOrganisation.organisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficiel" titleProperty="noOFS"/></td>
+										</c:when>
+										<c:when test="${tableEvtsOrganisation.organisation.typeSiege == 'COMMUNE_HC'}">
+											<td><unireg:commune ofs="${tableEvtsOrganisation.organisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficielAvecCanton" titleProperty="noOFS"/></td>
+										</c:when>
+										<c:when test="${tableEvtsOrganisation.organisation.typeSiege == 'PAYS_HS'}">
+											<td><unireg:pays ofs="${tableEvtsOrganisation.organisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficiel" titleProperty="noOFS"/></td>
+										</c:when>
+									</c:choose>
+								</tr>
+								<tr class="<unireg:nextRowClass/>">
+									<td><fmt:message key="label.numero.ide"/>&nbsp;:</td>
+									<td><unireg:numIDE numeroIDE="${tableEvtsOrganisation.organisation.numeroIDE}"/></td>
+								</tr>
+							</table>
+						</fieldset>
+					</div>
+					<span>${tableEvtsOrganisation.numeroOrganisation}&nbsp;</span>
+				</a>
 			</display:column>
 			<!-- NO CTB -->
 			<display:column titleKey="label.numero.contribuable">
@@ -102,7 +146,7 @@
 			</display:column>
 			<!-- Date evenement -->
 			<display:column sortable ="${sortable}" titleKey="label.date" sortName="dateEvenement">
-				<unireg:regdate regdate="${tableEvtsOrganisation.dateEvenement}" />
+				<span><unireg:regdate regdate="${tableEvtsOrganisation.dateEvenement}" />&nbsp;</span>
 			</display:column>
 			<!-- Date traitement -->
 			<display:column property="dateTraitement" sortable ="${sortable}" titleKey="label.date.traitement" format="{0,date,dd.MM.yyyy}" sortName="dateTraitement" />
@@ -138,6 +182,23 @@
 			                   }
 		                   });
 	}
+	function activate_static_evt_tooltips(obj) {
+		$(".staticTip", obj).tooltip({
+			                             items: "[id]",
+			                             position: { my: "right top", at: "right bottom" },
+			                             content: function() {
+				                             // on détermine l'id de la div qui contient le tooltip à afficher
+				                             var id = $(this).attr("id") + "-tooltip";
+				                             id = id.replace(/\./g, '\\.'); // on escape les points
+
+				                             // on récupère la div et on affiche son contenu
+				                             var div = $("#" + id);
+				                             return div.html();
+			                             }
+		                             });
+	}
 
 	activate_evtinfo_tooltips();
+	activate_static_evt_tooltips();
 </script>
+
