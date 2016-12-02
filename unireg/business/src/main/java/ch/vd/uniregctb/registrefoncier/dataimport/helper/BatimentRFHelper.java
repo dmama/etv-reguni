@@ -11,9 +11,9 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
 
 public abstract class BatimentRFHelper {
@@ -32,12 +32,12 @@ public abstract class BatimentRFHelper {
 			throw new ProgrammingException();
 		}
 
-		// on vérifie la surface courante
-		final SurfaceBatimentRF surface = batiment.getSurfaces().stream()
+		// on vérifie la description courante
+		final DescriptionBatimentRF surface = batiment.getDescriptions().stream()
 				.filter(s -> s.isValidAt(null))
 				.findFirst()
 				.orElse(null);
-		if (!SurfaceBatimentRFHelper.dataEquals(surface, gebaeude)) {
+		if (!DescriptionBatimentRFHelper.dataEquals(surface, gebaeude)) {
 			return false;
 		}
 
@@ -59,12 +59,12 @@ public abstract class BatimentRFHelper {
 		final BatimentRF batiment = new BatimentRF();
 		batiment.setMasterIdRF(gebaeude.getMasterID());
 
-		final SurfaceBatimentRF surface = SurfaceBatimentRFHelper.getSurfaceBatiment(gebaeude);
+		final DescriptionBatimentRF surface = DescriptionBatimentRFHelper.getDescriptionBatiment(gebaeude);
 		if (surface != null) {
-			batiment.addSurface(surface);
+			batiment.addDescription(surface);
 		}
 		else {
-			batiment.setSurfaces(new HashSet<>());
+			batiment.setDescriptions(new HashSet<>());
 		}
 
 		final List<GrundstueckZuGebaeude> gzg = gebaeude.getGrundstueckZuGebaeude();

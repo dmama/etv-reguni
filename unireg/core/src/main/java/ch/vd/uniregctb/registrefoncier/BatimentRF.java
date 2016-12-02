@@ -37,9 +37,9 @@ public class BatimentRF {
 	private String masterIdRF;
 
 	/**
-	 * Les surfaces (historisées) du bâtiment
+	 * Les descriptions (historisées) du bâtiment
 	 */
-	private Set<SurfaceBatimentRF> surfaces;
+	private Set<DescriptionBatimentRF> descriptions;
 
 	/**
 	 * L'implantation ou les implantations de l'immeuble (données historisées).
@@ -69,24 +69,24 @@ public class BatimentRF {
 		this.masterIdRF = masterIdRF;
 	}
 
-	// configuration hibernate : le bâtiment possède les surfaces du bâtiment
+	// configuration hibernate : le bâtiment possède les descriptions du bâtiment
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "BATIMENT_ID", nullable = false)
-	@ForeignKey(name = "FK_SURF_BAT_RF_BATIMENT_ID")
-	public Set<SurfaceBatimentRF> getSurfaces() {
-		return surfaces;
+	@ForeignKey(name = "FK_DESCR_BAT_RF_BATIMENT_ID")
+	public Set<DescriptionBatimentRF> getDescriptions() {
+		return descriptions;
 	}
 
-	public void setSurfaces(Set<SurfaceBatimentRF> surfaces) {
-		this.surfaces = surfaces;
+	public void setDescriptions(Set<DescriptionBatimentRF> descriptions) {
+		this.descriptions = descriptions;
 	}
 
-	public void addSurface(@NotNull SurfaceBatimentRF surface) {
-		if (this.surfaces == null) {
-			this.surfaces = new HashSet<>();
+	public void addDescription(@NotNull DescriptionBatimentRF description) {
+		if (this.descriptions == null) {
+			this.descriptions = new HashSet<>();
 		}
-		surface.setBatiment(this);
-		this.surfaces.add(surface);
+		description.setBatiment(this);
+		this.descriptions.add(description);
 	}
 
 	// configuration hibernate : le bâtiment possède les implantations

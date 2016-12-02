@@ -240,7 +240,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SituationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF</value>
-		<value>ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.TiersRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.UsufruitRF</value>

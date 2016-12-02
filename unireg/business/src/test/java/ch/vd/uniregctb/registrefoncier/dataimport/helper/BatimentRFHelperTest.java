@@ -18,9 +18,9 @@ import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -63,8 +63,8 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
 			batiment.setImplantations(new HashSet<>());
 
 			final Gebaeude gebaeude = new Gebaeude();
@@ -79,8 +79,8 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
 			batiment.setImplantations(new HashSet<>());
 
 			final Gebaeude gebaeude = new Gebaeude();
@@ -95,7 +95,7 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.setSurfaces(new HashSet<>());
+			batiment.setDescriptions(new HashSet<>());
 			batiment.setImplantations(new HashSet<>());
 
 			final Gebaeude gebaeude = new Gebaeude();
@@ -117,8 +117,8 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
 			batiment.setImplantations(new HashSet<>());
 
 			final Gebaeude gebaeude = new Gebaeude();
@@ -133,8 +133,8 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
-			batiment.addSurface(new SurfaceBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 58, null, RegDate.get(2014, 12, 31)));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", 60, RegDate.get(2015, 1, 1), null));
 			batiment.setImplantations(new HashSet<>());
 
 			final Gebaeude gebaeude = new Gebaeude();
@@ -149,7 +149,7 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.setSurfaces(new HashSet<>());
+			batiment.setDescriptions(new HashSet<>());
 			batiment.setImplantations(new HashSet<>());
 
 			final Gebaeude gebaeude = new Gebaeude();
@@ -180,7 +180,7 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.addSurface(new SurfaceBatimentRF("Garage", null));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", null));
 			batiment.addImplantation(new ImplantationRF(23, immeuble1));
 			batiment.addImplantation(new ImplantationRF(12234, immeuble2));
 			batiment.addImplantation(new ImplantationRF(208, immeuble3));
@@ -199,7 +199,7 @@ public class BatimentRFHelperTest {
 		{
 			final BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("7837829e9a9a");
-			batiment.addSurface(new SurfaceBatimentRF("Garage", null));
+			batiment.addDescription(new DescriptionBatimentRF("Garage", null));
 			batiment.addImplantation(new ImplantationRF(23, immeuble1));
 			batiment.addImplantation(new ImplantationRF(12234, immeuble2));
 			batiment.addImplantation(new ImplantationRF(208, immeuble3));
@@ -244,11 +244,11 @@ public class BatimentRFHelperTest {
 		assertNotNull(batiment);
 		assertEquals("7837829e9a9a", batiment.getMasterIdRF());
 
-		final Set<SurfaceBatimentRF> surfaces = batiment.getSurfaces();
-		assertEquals(1, surfaces.size());
-		final SurfaceBatimentRF surface0 = surfaces.iterator().next();
-		assertEquals(Integer.valueOf(360), surface0.getSurface());
-		assertEquals("Garage", surface0.getType());
+		final Set<DescriptionBatimentRF> descriptions = batiment.getDescriptions();
+		assertEquals(1, descriptions.size());
+		final DescriptionBatimentRF description0 = descriptions.iterator().next();
+		assertEquals(Integer.valueOf(360), description0.getSurface());
+		assertEquals("Garage", description0.getType());
 
 		final List<ImplantationRF> implantations = new ArrayList<>(batiment.getImplantations());
 		assertEquals(2, implantations.size());
@@ -281,11 +281,11 @@ public class BatimentRFHelperTest {
 		assertNotNull(batiment);
 		assertEquals("8af80e6254709f6801547708f4c10ebd", batiment.getMasterIdRF());
 
-		final Set<SurfaceBatimentRF> surfaces = batiment.getSurfaces();
-		assertEquals(1, surfaces.size());
-		final SurfaceBatimentRF surface0 = surfaces.iterator().next();
-		assertNull(surface0.getSurface());
-		assertEquals("Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554", surface0.getType());
+		final Set<DescriptionBatimentRF> descriptions = batiment.getDescriptions();
+		assertEquals(1, descriptions.size());
+		final DescriptionBatimentRF description0 = descriptions.iterator().next();
+		assertNull(description0.getSurface());
+		assertEquals("Centrale électrique sur le domaine public (art. 20LICom) contigüe à la parcelle 554", description0.getType());
 
 		final Set<ImplantationRF> implantations = batiment.getImplantations();
 		assertEquals(1, implantations.size());
@@ -313,11 +313,11 @@ public class BatimentRFHelperTest {
 		assertNotNull(batiment);
 		assertEquals("8af806fc3b8f410e013c437c69a112ed", batiment.getMasterIdRF());
 
-		final Set<SurfaceBatimentRF> surfaces = batiment.getSurfaces();
-		assertEquals(1, surfaces.size());
-		final SurfaceBatimentRF surface0 = surfaces.iterator().next();
-		assertEquals(Integer.valueOf(136), surface0.getSurface());
-		assertNull(surface0.getType());
+		final Set<DescriptionBatimentRF> descriptions = batiment.getDescriptions();
+		assertEquals(1, descriptions.size());
+		final DescriptionBatimentRF description0 = descriptions.iterator().next();
+		assertEquals(Integer.valueOf(136), description0.getSurface());
+		assertNull(description0.getType());
 
 		final Set<ImplantationRF> implantations = batiment.getImplantations();
 		assertEquals(1, implantations.size());

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -36,7 +37,6 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -76,8 +76,8 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return batiment;
 	}
 
-	protected static SurfaceBatimentRF newSurfaceBatiment(String type, Integer surface, RegDate dateDebut, RegDate dateFin) {
-		return new SurfaceBatimentRF(type, surface, dateDebut, dateFin);
+	protected static DescriptionBatimentRF newDescriptionBatiment(String type, Integer surface, RegDate dateDebut, RegDate dateFin) {
+		return new DescriptionBatimentRF(type, surface, dateDebut, dateFin);
 	}
 
 	protected static ImplantationRF newImplantationRF(ImmeubleRF immeuble, Integer surface, RegDate dateDebut, RegDate dateFin) {

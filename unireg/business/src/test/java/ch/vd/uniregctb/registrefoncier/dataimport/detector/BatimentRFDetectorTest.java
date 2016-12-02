@@ -27,8 +27,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockBatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationComparator;
@@ -179,18 +179,18 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
+		batiment1.addDescription(new DescriptionBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		final BatimentRF batiment2 = new BatimentRF();
 		batiment2.setMasterIdRF("7837829e9a9a");
-		batiment2.addSurface(new SurfaceBatimentRF("Garage", 500));
+		batiment2.addDescription(new DescriptionBatimentRF("Garage", 500));
 		batiment2.addImplantation(new ImplantationRF(350, immeuble1));
 		batiment2.addImplantation(new ImplantationRF(150, immeuble2));
 
 		final BatimentRF batiment3 = new BatimentRF();
 		batiment3.setMasterIdRF("9028920a02ee");
-		batiment3.addSurface(new SurfaceBatimentRF("Villa", 230));
+		batiment3.addDescription(new DescriptionBatimentRF("Villa", 230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
 		// un mock avec les trois bâtiments.
@@ -284,7 +284,7 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
+		batiment1.addDescription(new DescriptionBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		// un mock avec le bâtiment.
@@ -347,18 +347,18 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
+		batiment1.addDescription(new DescriptionBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		final BatimentRF batiment2 = new BatimentRF();
 		batiment2.setMasterIdRF("7837829e9a9a");
-		batiment2.addSurface(new SurfaceBatimentRF("Garage", 500));
+		batiment2.addDescription(new DescriptionBatimentRF("Garage", 500));
 		batiment2.addImplantation(new ImplantationRF(350, immeuble1));
 		batiment2.addImplantation(new ImplantationRF(150, immeuble2));
 
 		final BatimentRF batiment3 = new BatimentRF();
 		batiment3.setMasterIdRF("9028920a02ee");
-		batiment3.addSurface(new SurfaceBatimentRF("Villa", 230));
+		batiment3.addDescription(new DescriptionBatimentRF("Villa", 230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
 		// un mock avec les trois bâtiments.
@@ -403,18 +403,18 @@ public class BatimentRFDetectorTest {
 
 		final BatimentRF batiment1 = new BatimentRF();
 		batiment1.setMasterIdRF("4728a8e8c83e");
-		batiment1.addSurface(new SurfaceBatimentRF("Immeuble", 760));
+		batiment1.addDescription(new DescriptionBatimentRF("Immeuble", 760));
 		batiment1.addImplantation(new ImplantationRF(760, immeuble1));
 
 		final BatimentRF batiment2 = new BatimentRF();
 		batiment2.setMasterIdRF("7837829e9a9a");
-		batiment2.addSurface(new SurfaceBatimentRF("Garage", 500));
+		batiment2.addDescription(new DescriptionBatimentRF("Garage", 500));
 		batiment2.addImplantation(new ImplantationRF(350, immeuble1));
 		batiment2.addImplantation(new ImplantationRF(150, immeuble2));
 
 		final BatimentRF batiment3 = new BatimentRF();
 		batiment3.setMasterIdRF("9028920a02ee");
-		batiment3.addSurface(new SurfaceBatimentRF("Villa", 230));
+		batiment3.addDescription(new DescriptionBatimentRF("Villa", 230));
 		batiment3.addImplantation(new ImplantationRF(null, immeuble2));
 
 		// un mock avec les trois bâtiments.

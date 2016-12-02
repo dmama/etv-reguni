@@ -1,22 +1,22 @@
 package ch.vd.uniregctb.validation.registrefoncier;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
-public class SurfaceBatimentRFValidator extends DateRangeEntityValidator<SurfaceBatimentRF> {
+public class DescriptionBatimentRFValidator extends DateRangeEntityValidator<DescriptionBatimentRF> {
 	@Override
-	protected Class<SurfaceBatimentRF> getValidatedClass() {
-		return SurfaceBatimentRF.class;
+	protected Class<DescriptionBatimentRF> getValidatedClass() {
+		return DescriptionBatimentRF.class;
 	}
 
 	@Override
 	protected String getEntityCategoryName() {
-		return "La surface du bâtiment RF";
+		return "La description du bâtiment RF";
 	}
 
 	@Override
-	public ValidationResults validate(SurfaceBatimentRF entity) {
+	public ValidationResults validate(DescriptionBatimentRF entity) {
 		final ValidationResults vr = super.validate(entity);
 		if (!entity.isAnnule()) {
 			if (entity.getSurface() == null && entity.getType() == null) {

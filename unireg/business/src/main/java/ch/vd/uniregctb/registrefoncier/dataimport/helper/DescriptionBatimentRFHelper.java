@@ -9,14 +9,14 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GebaeudeArt;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 
-public abstract class SurfaceBatimentRFHelper {
+public abstract class DescriptionBatimentRFHelper {
 
-	private SurfaceBatimentRFHelper() {
+	private DescriptionBatimentRFHelper() {
 	}
 
-	public static boolean dataEquals(@Nullable SurfaceBatimentRF left, @Nullable SurfaceBatimentRF right) {
+	public static boolean dataEquals(@Nullable DescriptionBatimentRF left, @Nullable DescriptionBatimentRF right) {
 		if (left == null || right == null) {
 			return left == null && right == null;
 		}
@@ -26,12 +26,12 @@ public abstract class SurfaceBatimentRFHelper {
 		}
 	}
 
-	public static boolean dataEquals(@Nullable SurfaceBatimentRF left, @Nullable Gebaeude gebaeude) {
-		return dataEquals(left, getSurfaceBatiment(gebaeude));
+	public static boolean dataEquals(@Nullable DescriptionBatimentRF left, @Nullable Gebaeude gebaeude) {
+		return dataEquals(left, getDescriptionBatiment(gebaeude));
 	}
 
 	@Nullable
-	public static SurfaceBatimentRF getSurfaceBatiment(@Nullable Gebaeude gebaeude) {
+	public static DescriptionBatimentRF getDescriptionBatiment(@Nullable Gebaeude gebaeude) {
 		if (gebaeude == null) {
 			return null;
 		}
@@ -40,7 +40,7 @@ public abstract class SurfaceBatimentRFHelper {
 		if (type == null && surface == null) {
 			return null;
 		}
-		return new SurfaceBatimentRF(type, surface);
+		return new DescriptionBatimentRF(type, surface);
 	}
 
 	@Nullable

@@ -18,15 +18,15 @@ import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceBatimentRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BatimentRFHelper;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.DescriptionBatimentRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ImplantationRFHelper;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.SurfaceBatimentRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
@@ -113,8 +113,8 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 
 	private void processCreation(RegDate dateValeur, @NotNull BatimentRF newBatiment) {
 
-		// on renseigne les dates de début des surfaces et implantations
-		newBatiment.getSurfaces().forEach(s -> s.setDateDebut(dateValeur));
+		// on renseigne les dates de début des descriptions et implantations
+		newBatiment.getDescriptions().forEach(s -> s.setDateDebut(dateValeur));
 		newBatiment.getImplantations().forEach(s -> s.setDateDebut(dateValeur));
 
 		batimentRFDAO.save(newBatiment);
@@ -129,8 +129,8 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("Le bâtiment avec le masterIdRF=[" + masterIdRF + "] n'existe pas dans la DB.");
 		}
 
-		// on va chercher les surfaces et les implantations courantes
-		final SurfaceBatimentRF persistedSurface = persisted.getSurfaces().stream()
+		// on va chercher les descriptions et les implantations courantes
+		final DescriptionBatimentRF persistedDescription = persisted.getDescriptions().stream()
 				.filter(s -> s.isValidAt(null))
 				.findFirst()
 				.orElse(null);
@@ -139,19 +139,19 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 				.filter(s -> s.isValidAt(null))
 				.collect(Collectors.toList());
 
-		// on va chercher les nouvelles situations et estimations
-		final SurfaceBatimentRF newSurface = CollectionsUtils.getFirst(newBatiment.getSurfaces());     // par définition, le nouveau bâtiment ne contient zéro ou une surface courante,
+		// on va chercher les nouvelles descriptions et estimations
+		final DescriptionBatimentRF newDescription = CollectionsUtils.getFirst(newBatiment.getDescriptions());     // par définition, le nouveau bâtiment ne contient zéro ou une surface courante,
 		final Set<ImplantationRF> newImplantations = newBatiment.getImplantations();
 
 		// on détermine les changements sur la surface
-		if (!SurfaceBatimentRFHelper.dataEquals(persistedSurface, newSurface)) {
-			// on ferme l'ancienne surface et on ajoute la nouvelle
-			if (persistedSurface != null) {
-				persistedSurface.setDateFin(dateValeur.getOneDayBefore());
+		if (!DescriptionBatimentRFHelper.dataEquals(persistedDescription, newDescription)) {
+			// on ferme l'ancienne description et on ajoute la nouvelle
+			if (persistedDescription != null) {
+				persistedDescription.setDateFin(dateValeur.getOneDayBefore());
 			}
-			if (newSurface != null) {
-				newSurface.setDateDebut(dateValeur);
-				persisted.addSurface(newSurface);
+			if (newDescription != null) {
+				newDescription.setDateDebut(dateValeur);
+				persisted.addDescription(newDescription);
 			}
 		}
 
@@ -179,11 +179,11 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("Le bâtiment avec le masterIdRF=[" + masterIdRF + "] n'existe pas dans la DB.");
 		}
 
-		// on ferme toutes les implantations et surfaces encore ouvertes
+		// on ferme toutes les implantations et descriptions encore ouvertes
 		persisted.getImplantations().stream()
 				.filter(d -> d.isValidAt(null))
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
-		persisted.getSurfaces().stream()
+		persisted.getDescriptions().stream()
 				.filter(d -> d.isValidAt(null))
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 	}

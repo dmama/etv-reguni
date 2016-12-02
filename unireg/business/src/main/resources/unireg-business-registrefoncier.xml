@@ -136,7 +136,7 @@
 	<bean id="implantationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImplantationRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="situationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SituationRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="surfaceAuSolRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceAuSolRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="surfaceBatimentRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceBatimentRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="descriptionBatimentRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DescriptionBatimentRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="surfaceTotaleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceTotaleRFValidator" parent="dateRangeEntityValidator" />
 
 	<bean id="rapprochementRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.RapprochementRFValidator" parent="dateRangeEntityValidator">

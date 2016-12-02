@@ -21,15 +21,15 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
 /**
- * La surface d'un bâtiment valide pendant une période donnée.
+ * La description d'un bâtiment (valide pendant une période donnée).
  */
 @Entity
-@Table(name = "RF_SURFACE_BATIMENT")
+@Table(name = "RF_DESCRIPTION_BATIMENT")
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
-public class SurfaceBatimentRF extends HibernateDateRangeEntity {
+public class DescriptionBatimentRF extends HibernateDateRangeEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -37,7 +37,7 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 	private Long id;
 
 	/**
-	 * Le type de surface.
+	 * Le type de batiment.
 	 */
 	@Nullable
 	private String type;
@@ -49,18 +49,18 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 	private Integer surface;
 
 	/**
-	 * Le bâtiment concerné par la surface.
+	 * Le bâtiment concerné par la description.
 	 */
 	private BatimentRF batiment;
 
-	public SurfaceBatimentRF() {
+	public DescriptionBatimentRF() {
 	}
 
-	public SurfaceBatimentRF(@Nullable String type, @Nullable Integer surface) {
+	public DescriptionBatimentRF(@Nullable String type, @Nullable Integer surface) {
 		this(type, surface, null, null);
 	}
 
-	public SurfaceBatimentRF(@Nullable String type, @Nullable Integer surface, RegDate dateDebut, RegDate dateFin) {
+	public DescriptionBatimentRF(@Nullable String type, @Nullable Integer surface, RegDate dateDebut, RegDate dateFin) {
 		super(dateDebut, dateFin);
 		if (type == null && surface == null) {
 			throw new IllegalArgumentException("Un des deux valeurs type ou surface doit être renseignée.");
@@ -96,7 +96,7 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 	}
 
 	@Nullable
-	@Column(name = "SURFACE", nullable = true)
+	@Column(name = "SURFACE")
 	public Integer getSurface() {
 		return surface;
 	}
@@ -105,12 +105,12 @@ public class SurfaceBatimentRF extends HibernateDateRangeEntity {
 		this.surface = surface;
 	}
 
-	// configuration hibernate : le bâtiment possède les surfaces du bâtiment
+	// configuration hibernate : le bâtiment possède les descriptions du bâtiment
 	@ManyToOne(cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "BATIMENT_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_SURF_BAT_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
+	@Index(name = "IDX_DESCR_BAT_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
 	public BatimentRF getBatiment() {
 		return batiment;
 	}
