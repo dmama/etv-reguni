@@ -118,6 +118,16 @@
 				<display:column titleKey="label.numero.annonce" >
 					${annonce.numero}
 				</display:column>
+				<display:column titleKey="label.numero.tiers.entreprise" >
+					<c:if test="${annonce.numeroTiersEntreprise != null}">
+						<a href="<c:url value="../tiers/visu.do"/>?id=${annonce.numeroTiersEntreprise}"><unireg:numCTB numero="${annonce.numeroTiersEntreprise}" />&nbsp;</a>
+					</c:if>
+				</display:column>
+				<display:column titleKey="label.numero.evenement.organisation" >
+					<c:if test="${annonce.noEvtOrganisation != null}">
+						<a href="<c:url value="../evenement/organisation/visu.do"/>?id=${annonce.idEvtOrganisation}">${annonce.noEvtOrganisation}</a>
+					</c:if>
+				</display:column>
 				<display:column titleKey="label.type.annonce" >
 					<fmt:message key="option.type.annonce.${annonce.type}" />
 				</display:column>

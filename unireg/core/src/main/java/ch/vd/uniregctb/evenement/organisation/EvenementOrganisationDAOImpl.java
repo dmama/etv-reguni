@@ -199,6 +199,15 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public EvenementOrganisation getEvenementForNoAnnonceIDE(long noAnnonce) {
+		Criteria query = getCurrentSession().createCriteria(EvenementOrganisation.class, "eo");
+		query.add(Restrictions.eq("referenceAnnonceIDE.id", noAnnonce));
+		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		return (EvenementOrganisation) query.uniqueResult();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public List<EvenementOrganisation> getEvenementsForBusinessId(String businessId) {
 		Criteria query = getCurrentSession().createCriteria(EvenementOrganisation.class, "eo");
 		query.add(Restrictions.eq("businessId", businessId));

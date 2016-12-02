@@ -5,6 +5,9 @@
 	<bean id="annonceIDEController" class="ch.vd.uniregctb.annonceIDE.AnnonceIDEController">
 		<property name="organisationService" ref="serviceOrganisationService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
+		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO"/>
 	</bean>
 
 </beans>

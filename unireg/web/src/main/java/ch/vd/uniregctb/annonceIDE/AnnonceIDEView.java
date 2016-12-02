@@ -31,6 +31,10 @@ public class AnnonceIDEView {
 	private InformationOrganisationView informationOrganisation;
 	private ContenuView contenu;
 
+	private Long numeroTiersEntreprise;
+	private Long noEvtOrganisation;
+	private Long idEvtOrganisation;
+
 	public AnnonceIDEView() {
 	}
 
@@ -169,5 +173,29 @@ public class AnnonceIDEView {
 
 	public void setContenu(ContenuView contenu) {
 		this.contenu = contenu;
+	}
+
+	public Long getNumeroTiersEntreprise() {
+		return numeroTiersEntreprise;
+	}
+
+	public void setNumeroTiersEntreprise(Long numeroTiersEntreprise) {
+		this.numeroTiersEntreprise = numeroTiersEntreprise;
+	}
+
+	public Long getNoEvtOrganisation() {
+		return noEvtOrganisation;
+	}
+
+	public void setNoEvtOrganisation(Long noEvtOrganisation) {
+		this.noEvtOrganisation = noEvtOrganisation;
+	}
+
+	public Long getIdEvtOrganisation() {
+		return idEvtOrganisation;
+	}
+
+	public void setIdEvtOrganisation(Long idEvtOrganisation) {
+		this.idEvtOrganisation = idEvtOrganisation;
 	}
 }

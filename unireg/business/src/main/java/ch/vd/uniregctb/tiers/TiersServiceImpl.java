@@ -6891,7 +6891,8 @@ public class TiersServiceImpl implements TiersService {
 		final RegDate notreDate = date == null ? RegDate.get() : date;
 
 		final RapportEntreTiers rapportEntreTiers = etablissement.getRapportObjetValidAt(notreDate, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-		return (Entreprise) getTiers(rapportEntreTiers.getSujetId());
+
+		return rapportEntreTiers == null ? null : (Entreprise) getTiers(rapportEntreTiers.getSujetId());
 	}
 
 	@Override

@@ -287,6 +287,12 @@ public interface TiersService {
      */
     TypeRegimeFiscal getTypeRegimeFiscalParDefault(CategorieEntreprise categorieEntreprise);
 
+	/**
+	 * Détermine l'entreprise à laquelle l'établissement appartient pour une date donnée
+	 * @param etablissement l'établissement
+	 * @param date la date pour laquelle on veut connaître l'entreprise
+	 * @return l'entreprise possèdant l'établissement
+	 */
 	Entreprise getEntreprise(Etablissement etablissement, RegDate date);
 
 	/**

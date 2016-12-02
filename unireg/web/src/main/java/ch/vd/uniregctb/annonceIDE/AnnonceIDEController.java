@@ -3,6 +3,7 @@ package ch.vd.uniregctb.annonceIDE;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -31,10 +33,16 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
+import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.CantonalIdEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -51,6 +59,9 @@ public class AnnonceIDEController {
 
 	private TiersMapHelper tiersMapHelper;
 	private ServiceOrganisationService organisationService;
+	private TiersService tiersService;
+	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
+	private EvenementOrganisationDAO evtOrganisationDAO;
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
@@ -58,6 +69,18 @@ public class AnnonceIDEController {
 
 	public void setOrganisationService(ServiceOrganisationService organisationService) {
 		this.organisationService = organisationService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setReferenceAnnonceIDEDAO(ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO) {
+		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
+	}
+
+	public void setEvtOrganisationDAO(EvenementOrganisationDAO evtOrganisationDAO) {
+		this.evtOrganisationDAO = evtOrganisationDAO;
 	}
 
 	@InitBinder
@@ -71,6 +94,7 @@ public class AnnonceIDEController {
 	 */
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/find.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
 	public String find(@ModelAttribute(value = "view") AnnonceIDEQueryView view, BindingResult bindingResult, HttpServletRequest request, Model model) {
 
 		model.addAttribute("noticeTypes", tiersMapHelper.getTypeAnnonce());
@@ -106,7 +130,24 @@ public class AnnonceIDEController {
 		// on adapte les annonces
 		final List<AnnonceIDEView> content = new ArrayList<>(annonces.getNumberOfElements());
 		for (AnnonceIDE annonce : annonces) {
-			content.add(new AnnonceIDEView(annonce));
+			// On récupère les informations de tiers entreprise et de d'événement RCEnt en retour, si disponible pour le dernier.
+			final Date dateAnnonce = annonce.getDateAnnonce();
+			final AnnonceIDEView annonceView = new AnnonceIDEView(annonce);
+
+			final ReferenceAnnonceIDE referenceAnnonceIDE = referenceAnnonceIDEDAO.get(annonce.getNumero());
+			if (referenceAnnonceIDE != null) {
+				final Entreprise entreprise = tiersService.getEntreprise(referenceAnnonceIDE.getEtablissement(), RegDateHelper.get(dateAnnonce));
+
+				if (entreprise != null) {
+					annonceView.setNumeroTiersEntreprise(entreprise.getNumero());
+				}
+				final EvenementOrganisation evenementOrganisation = evtOrganisationDAO.getEvenementForNoAnnonceIDE(annonce.getNumero());
+				if (evenementOrganisation != null) {
+					annonceView.setNoEvtOrganisation(evenementOrganisation.getNoEvenement());
+					annonceView.setIdEvtOrganisation(evenementOrganisation.getId());
+				}
+			}
+			content.add(annonceView);
 		}
 
 		// on renseigne le modèle

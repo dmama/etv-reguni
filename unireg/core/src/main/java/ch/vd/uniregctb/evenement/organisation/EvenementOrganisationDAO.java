@@ -76,6 +76,14 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	List<EvenementOrganisation> getEvenementsForNoEvenement(long noEvenement);
 
 	/**
+	 * Renvoie l'événement organisation en base Unireg correspondant au numéro d'annonce IDE.
+	 *
+	 * @param noAnnonce Le numéro de l'annonce à l'IDE
+	 * @return L'événement correspondant, ou <code>null</code> si aucune ne correspond
+	 */
+	EvenementOrganisation getEvenementForNoAnnonceIDE(long noAnnonce);
+
+	/**
 	 * Renvoie le ou les événements organisation en base Unireg émanant d'un même message expédié par RCEnt (par businessId).
 	 *
 	 * Note: On trouve plusieurs événement en base Unireg pour un seul événement RCEnt lorsque plusieurs organisations sont visées par cet événement. En effet,
