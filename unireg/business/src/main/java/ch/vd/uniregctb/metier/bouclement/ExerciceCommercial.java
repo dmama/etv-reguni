@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class ExerciceCommercial implements DateRange, Serializable {
 
-	private static final long serialVersionUID = 4684660603465556391L;
+	private static final long serialVersionUID = -3489877083412255621L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -28,6 +28,22 @@ public class ExerciceCommercial implements DateRange, Serializable {
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final ExerciceCommercial that = (ExerciceCommercial) o;
+		return dateDebut == that.dateDebut && dateFin == that.dateFin;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = dateDebut != null ? dateDebut.hashCode() : 0;
+		result = 31 * result + (dateFin != null ? dateFin.hashCode() : 0);
+		return result;
 	}
 
 	@NotNull

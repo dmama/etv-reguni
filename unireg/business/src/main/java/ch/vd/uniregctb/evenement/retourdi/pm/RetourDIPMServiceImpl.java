@@ -1267,6 +1267,34 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			datesBouclementTriees.add(dateFinExerciceCommercial);
 		}
 
+		// [SIFISC-22254] vérification des périodes couvertes par des bouclements (il doit y en avoir un par an sauf exceptionnellement la première année)
+		// (on ne vérifie que dans la période temporelle entre l'ancienne année de bouclement et la nouvelle)
+		final Set<Integer> periodesAvecBouclement = new HashSet<>(datesBouclementTriees.size());
+		for (RegDate dateBouclement : datesBouclementTriees) {
+			periodesAvecBouclement.add(dateBouclement.year());
+		}
+		if (periodesAvecBouclement.size() > 1 && anneeNouvelleFinExercice != ancienneFinExerciceCommercial.year()) {
+			final int anneePremierBouclement = datesBouclementTriees.first().year();
+			final int anneePremierBouclementAControler = Math.max(Math.min(ancienneFinExerciceCommercial.year(), anneeNouvelleFinExercice), anneePremierBouclement + 1);
+			final int anneeDernierBouclementAControler = Math.max(ancienneFinExerciceCommercial.year(), anneeNouvelleFinExercice);
+			if (anneeDernierBouclementAControler - anneePremierBouclementAControler > 0) {
+				for (int annee = anneePremierBouclementAControler ; annee <= anneeDernierBouclementAControler ; ++ annee) {
+					if (!periodesAvecBouclement.contains(annee)) {
+						tacheService.genereTacheControleDossier(entreprise, Motifs.DATE_EXERCICE_COMMERCIAL_IGNOREE);
+						addRemarque(entreprise, String.format(
+								"Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
+								di.getPeriode().getAnnee(),
+								di.getNumero(),
+								RegDateHelper.dateToDisplayString(dateFinExerciceCommercial),
+								annee));
+
+						// on arrête là...
+						return;
+					}
+				}
+			}
+		}
+
 		// mise à jour des nouveaux cycles de bouclement dans l'entreprise
 		final List<Bouclement> nouveauxCycles = bouclementService.extractBouclementsDepuisDates(datesBouclementTriees, 12);
 		BouclementHelper.resetBouclements(entreprise, nouveauxCycles);
