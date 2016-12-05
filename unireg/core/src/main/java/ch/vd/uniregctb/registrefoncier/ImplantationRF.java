@@ -96,7 +96,7 @@ public class ImplantationRF extends HibernateDateRangeEntity {
 	@ManyToOne
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
 	@ForeignKey(name = "FK_IMPLANTATION_RF_IMMEUBLE_ID")
-	@Index(name = "IDX_IMPLANTATION_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
+	@Index(name = "IDX_IMPLANT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
 	public ImmeubleRF getImmeuble() {
 		return immeuble;
 	}
@@ -110,7 +110,7 @@ public class ImplantationRF extends HibernateDateRangeEntity {
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "BATIMENT_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_IMPLANTATION_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
+	@Index(name = "IDX_IMPLANT_RF_BATIMENT_ID", columnNames = "BATIMENT_ID")
 	public BatimentRF getBatiment() {
 		return batiment;
 	}
