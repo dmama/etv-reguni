@@ -15,7 +15,6 @@ import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -61,7 +60,6 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.id = id;
 	}
 
-	@Index(name = "IDX_AYANTDROIT_ID_RF")
 	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF, unique = true)
 	public String getIdRF() {
 		return idRF;
