@@ -84,6 +84,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomComplet2 = null;
 		this.nomComplet3 = null;
 		this.nomCourt = nom;
+		this.isValide = true;
 	}
 
 	/**
@@ -99,6 +100,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomCourt = nomCourt;
 		this.noTelephone = noTelephone;
 		this.noFax = noFax;
+		this.isValide = true;
 
 		DefaultMockServiceInfrastructureService.addColAdm(this);
 		addToAll(noColAdm, this);
@@ -115,6 +117,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomComplet2 = nomComplet2;
 		this.nomComplet3 = nomComplet3;
 		this.nomCourt = nomCourt;
+		this.isValide = true;
 
 		DefaultMockServiceInfrastructureService.addColAdm(this);
 		addToAll(noColAdm, this);

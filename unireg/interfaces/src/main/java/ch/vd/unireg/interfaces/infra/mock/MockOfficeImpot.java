@@ -47,6 +47,7 @@ public class MockOfficeImpot extends MockCollectiviteAdministrative implements O
 		super(noColAdm, adresse, nomComplet1, nomComplet2, nomComplet3, nomCourt);
 		this.identifiantDistrict = identifiantDistrict;
 		this.identifiantRegion = identifiantRegion;
+		setOID(true);
 	}
 
 	public Integer getIdentifiantDistrict() {

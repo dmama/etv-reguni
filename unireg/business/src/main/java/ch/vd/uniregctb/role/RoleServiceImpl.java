@@ -180,14 +180,8 @@ public class RoleServiceImpl implements RoleService {
 						.filter(colAdmId -> oid == null || oid.equals(colAdmId))
 						.map(colAdmId -> infraService.getListeCommunesByOID(colAdmId).stream().map(commune -> Pair.<Integer, Integer>of(commune.getNoOFS(), colAdmId)))
 						.flatMap(Function.identity())
-						.collect(Collectors.toMap(Pair::getLeft,
-						                          Pair::getRight,
-						                          (oid1, oid2) -> {
-							                          if (Objects.equals(oid1, oid2)) {
-								                          return oid1;
-							                          }
-							                          throw new IllegalArgumentException("Une commune est associée aux OID " + oid1 + " et " + oid2);
-						                          }));
+						.distinct()
+						.collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
 			}
 		});
 
