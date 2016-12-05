@@ -14,6 +14,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.Set;
 import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
 /**
@@ -30,7 +32,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 @Table(name = "RF_IMMEUBLE", uniqueConstraints = @UniqueConstraint(name="CS_IMMEUBLE_RF_ID", columnNames = "ID_RF"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class ImmeubleRF {
+public abstract class ImmeubleRF extends HibernateEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -76,6 +78,12 @@ public abstract class ImmeubleRF {
 	 * Le ou les bâtiments (multiples + historisés) implanté sur cet immeuble.
 	 */
 	private Set<ImplantationRF> implantations;
+
+	@Transient
+	@Override
+	public Object getKey() {
+		return id;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
 /**
@@ -24,7 +26,7 @@ import ch.vd.uniregctb.common.LengthConstants;
  */
 @Entity
 @Table(name = "RF_BATIMENT")
-public class BatimentRF {
+public class BatimentRF extends HibernateEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -48,6 +50,12 @@ public class BatimentRF {
 	 * existent néanmoins. Exemples : les garages souterrains qui lient plusieurs bâtiments, les ponts, les tunnels, etc...
 	 */
 	private Set<ImplantationRF> implantations;
+
+	@Transient
+	@Override
+	public Object getKey() {
+		return id;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
