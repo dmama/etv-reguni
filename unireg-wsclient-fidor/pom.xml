@@ -10,7 +10,7 @@
 	<artifactId>unireg-wsclient-fidor</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>5.11-SNAPSHOT</version>
+	<version>5.11</version>
 	<!-- END_LVERSION -->
 
 	<name>Unireg - Client WS fidor</name>
