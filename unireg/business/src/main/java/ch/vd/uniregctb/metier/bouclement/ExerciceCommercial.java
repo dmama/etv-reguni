@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 
 public class ExerciceCommercial implements DateRange, Serializable {
 
-	private static final long serialVersionUID = 4684660603465556391L;
+	private static final long serialVersionUID = 4745011206481328652L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -21,6 +21,22 @@ public class ExerciceCommercial implements DateRange, Serializable {
 		}
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final ExerciceCommercial that = (ExerciceCommercial) o;
+		return dateDebut == that.dateDebut && dateFin == that.dateFin;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = dateDebut != null ? dateDebut.hashCode() : 0;
+		result = 31 * result + (dateFin != null ? dateFin.hashCode() : 0);
+		return result;
 	}
 
 	@NotNull

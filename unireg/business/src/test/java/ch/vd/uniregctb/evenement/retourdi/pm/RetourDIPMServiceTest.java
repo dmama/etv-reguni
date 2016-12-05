@@ -39,6 +39,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -6831,6 +6832,114 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
 				Assert.assertNotNull(tachesControle);
 				Assert.assertEquals(0, tachesControle.size());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-22254 : un exercice commercial 1.7.2015 -> 30.06.2016 est tiré par la DI jusqu'en 2017
+	 * (cela devrait poser un problème car alors 2016 n'a pas de bouclement alors qu'il ne s'agit pas de la première année)
+	 */
+	@Test
+	public void testTraitementDecalageBouclementTropLoin() throws Exception {
+
+		final int anneeInitiale = RegDate.get().year() - 1;
+		final RegDate dateDebut = RegDate.get(anneeInitiale - 1, 1, 1);
+
+		// mise en place fiscale
+		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(entreprise, dateDebut, null, "Entreprise Dugenou");
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);      // initialement, bouclements tous les ans au 30.06
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+
+				final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeInitiale);
+				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeInitiale + 1);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfCourante);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfSuivante);
+
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfCourante, date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(anneeInitiale, 7, 6));
+				addEtatDeclarationRetournee(di, date(anneeInitiale, 11, 1));
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout...)
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 6, 30), null, null, null, null, null);
+		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		// - la DI n'a pas changé de PF ni de dates
+		// - les bouclements n'ont pas été modifiés
+		// - une tâche de contrôle de dossier a été générée
+		// - une remarque a été ajoutée
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+				Assert.assertNotNull(entreprise);
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals(String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
+				                                  anneeInitiale,
+				                                  1,
+				                                  RegDateHelper.dateToDisplayString(date(anneeInitiale + 1, 6, 30)),
+				                                  anneeInitiale),
+				                    remarque.getTexte());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(1, tachesControle.size());
+				{
+					final Tache tache = tachesControle.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
+				}
+
+				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+				Assert.assertNotNull(dis);
+				Assert.assertEquals(1, dis.size());
+				final DeclarationImpotOrdinairePM di = dis.get(0);
+				Assert.assertNotNull(di);
+				Assert.assertFalse(di.isAnnule());
+				Assert.assertEquals(date(dateDebut.year(), 7, 1), di.getDateDebut());
+				Assert.assertEquals(date(dateDebut.year(), 7, 1), di.getDateDebutExerciceCommercial());
+				Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFin());
+				Assert.assertEquals(date(anneeInitiale, 6, 30), di.getDateFinExerciceCommercial());
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+
+				// je ne compare que les 3 premiers exercices, car un 4ème apparaît parfois dans le calcul (quand la date du jour est en fin d'année, i.e. après le 1.7 de l'année)
+				Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() == 3 || exercices.size() == 4);
+				Assert.assertEquals(new ExerciceCommercial(dateDebut, date(dateDebut.year(), 6, 30)), exercices.get(0));
+				Assert.assertEquals(new ExerciceCommercial(date(dateDebut.year(), 7, 1), date(anneeInitiale, 6, 30)), exercices.get(1));
+				Assert.assertEquals(new ExerciceCommercial(date(anneeInitiale, 7, 1), date(anneeInitiale + 1, 6, 30)), exercices.get(2));
 			}
 		});
 

@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -1249,10 +1250,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 				// cycles annuels temporaires (jusqu'à la DI retournée)
 				// on ne rajoute des bouclements que sur les années où il n'y en a pas déjà un
-				final Set<Integer> presentYears = new HashSet<>();
-				for (RegDate dateBouclement : datesBouclementTriees) {
-					presentYears.add(dateBouclement.year());
-				}
+				final Set<Integer> presentYears = datesBouclementTriees.stream()
+						.map(RegDate::year)
+						.collect(Collectors.toSet());
 				for (RegDate date = dateFinExerciceCommercial.addYears(1) ; date.compareTo(finDeclarationeRetournee) < 0 ; date = date.addYears(1)) {
 					if (!presentYears.contains(date.year())) {
 						datesBouclementTriees.add(date);
@@ -1260,6 +1260,33 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				}
 			}
 			datesBouclementTriees.add(dateFinExerciceCommercial);
+		}
+
+		// [SIFISC-22254] vérification des périodes couvertes par des bouclements (il doit y en avoir un par an sauf exceptionnellement la première année)
+		// (on ne vérifie que dans la période temporelle entre l'ancienne année de bouclement et la nouvelle)
+		final Set<Integer> periodesAvecBouclement = datesBouclementTriees.stream()
+				.map(RegDate::year)
+				.collect(Collectors.toSet());
+		if (periodesAvecBouclement.size() > 1 && anneeNouvelleFinExercice != ancienneFinExerciceCommercial.year()) {
+			final int anneePremierBouclement = datesBouclementTriees.first().year();
+			final int anneePremierBouclementAControler = Math.max(Math.min(ancienneFinExerciceCommercial.year(), anneeNouvelleFinExercice), anneePremierBouclement + 1);
+			final int anneeDernierBouclementAControler = Math.max(ancienneFinExerciceCommercial.year(), anneeNouvelleFinExercice);
+			if (anneeDernierBouclementAControler - anneePremierBouclementAControler > 0) {
+				for (int annee = anneePremierBouclementAControler ; annee <= anneeDernierBouclementAControler ; ++ annee) {
+					if (!periodesAvecBouclement.contains(annee)) {
+						tacheService.genereTacheControleDossier(entreprise, Motifs.DATE_EXERCICE_COMMERCIAL_IGNOREE);
+						addRemarque(entreprise, String.format(
+								"Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais l'année civile %d se retrouve alors sans bouclement, ce qui est interdit.",
+								di.getPeriode().getAnnee(),
+								di.getNumero(),
+								RegDateHelper.dateToDisplayString(dateFinExerciceCommercial),
+								annee));
+
+						// on arrête là...
+						return;
+					}
+				}
+			}
 		}
 
 		// mise à jour des nouveaux cycles de bouclement dans l'entreprise
