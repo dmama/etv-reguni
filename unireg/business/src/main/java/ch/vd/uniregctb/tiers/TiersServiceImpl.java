@@ -6982,6 +6982,7 @@ public class TiersServiceImpl implements TiersService {
 		// mise à jour du numéro cantonal
 		etablissement.setNumeroEtablissement(site.getNumeroSite());
 		etablissement.setIdentificationsEntreprise(null); // L'identifiant IDE est dès lors fourni par RCEnt.
+		etablissement.setRaisonSociale(null);       // [SIFISC-22336] la raison sociale est maintenant fournie par RCEnt
 
 		fermeSurchargesCiviles(etablissement, finFiscale);
 	}
