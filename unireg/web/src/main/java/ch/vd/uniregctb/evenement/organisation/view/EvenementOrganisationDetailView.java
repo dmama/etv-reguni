@@ -51,6 +51,10 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	private List<EvenementOrganisationBasicInfo> nonTraitesSurMemeOrganisation;
 
+	private boolean embedded;
+
+	private Long nextId;
+
 	@SuppressWarnings("unused")
 	public Long getEvtId() {
 		return evtId;
@@ -250,5 +254,21 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	public void setNonTraitesSurMemeOrganisation(List<EvenementOrganisationBasicInfo> nonTraitesSurMemeOrganisation) {
 		this.nonTraitesSurMemeOrganisation = nonTraitesSurMemeOrganisation;
+	}
+
+	public boolean isEmbedded() {
+		return embedded;
+	}
+
+	public void setEmbedded(boolean embedded) {
+		this.embedded = embedded;
+	}
+
+	public Long getNextId() {
+		return nextId;
+	}
+
+	public void setNextId(Long nextId) {
+		this.nextId = nextId;
 	}
 }

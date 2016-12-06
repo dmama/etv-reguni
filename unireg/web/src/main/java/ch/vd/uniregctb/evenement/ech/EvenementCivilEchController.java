@@ -182,7 +182,7 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	}
 
 	private String buildNavListRedirect(ParamPagination pagination) {
-		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/ech/nav-list.do");
+		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/ech/nav-list.do", null, null);
 	}
 
 	private void populateModel(ModelMap model,

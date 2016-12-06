@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="listEvenementsOrganisation" type="java.util.List<ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView>"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
     <tiles:put name="head">
         <script type="text/javascript">
@@ -160,6 +162,9 @@
 				</c:if>
 			</display:column>
 			<display:column style="action">
+				<a href="#" class="detail" title="Détails" onclick="open_details(<c:out value="${tableEvtsOrganisation.id}"/>); return false;">&nbsp;</a>
+			</display:column>
+			<display:column style="action">
 				<c:if test="${tableEvtsOrganisation.id != null}">
 					<unireg:consulterLog entityNature="EvenementOrganisation" entityId="${tableEvtsOrganisation.id}"/>
 				</c:if>
@@ -167,6 +172,18 @@
 		</display:table>
 	</tiles:put>
 </tiles:insert>
+<script language="JavaScript">
+
+	EvtOrg.list = [
+		<c:forEach var="evt" items="${listEvenementsOrganisation}" varStatus="evtStatus">
+		${evt.id}
+		<c:if test="${!evtStatus.last}">
+		,
+		</c:if>
+		</c:forEach>
+	]
+
+</script>
 <script language="javascript">
 	/**
 	 * Variante de la version jTip globale avec un positionnement en dessous de la ligne de l'événement concerné.
@@ -198,7 +215,56 @@
 		                             });
 	}
 
+	/**
+	 * Ouvrir le panneau de détail après avoir déterminé les ids de l'événement précédent et suivant.
+	 *
+	 * Selon la position de l'événement dans la liste, le précédent ou le suivant peut être null.
+	 *
+	 * Il faut gérer spécialement le cas où l'id de l'événement dont l'ouverture est demandé ne figure pas dans la liste, par exemple
+	 * parce qu'il a été forcé. Dans ce cas, il faut prendre l'id conservé dans la variable nextId qui sert justement à accueillir
+	 * cette valeur qui est passée lors de l'action de forçage. Lorsqu'on ne trouve pas de nextId, on prend le premier de la liste
+	 * comme suivant.
+	 *
+	 * @param evtId l'id de l'événement dont on souhaite afficher le détail.
+	 * @returns {null}
+	 */
+	function open_details(evtId) {
+		if (!EvtOrg.list || EvtOrg.list.length == 0) return null;
+		var evtPrecedant = null;
+		var evtSuivant = null;
+		var indexEvt = EvtOrg.list.indexOf(evtId);
+		if (indexEvt == -1) {
+			if (EvtOrg.nextId) {
+				evtSuivant = EvtOrg.nextId;
+			}
+			if (!evtSuivant) {
+				evtSuivant = EvtOrg.list[0];
+			}
+		}
+		else {
+			if (indexEvt > 0) {
+				evtPrecedant = EvtOrg.list[indexEvt - 1];
+			}
+			if (indexEvt < EvtOrg.list.length - 1) {
+				evtSuivant = EvtOrg.list[indexEvt + 1];
+			}
+		}
+		EvtOrg.open_details(evtId, evtPrecedant, evtSuivant)
+	}
+
+
 	activate_evtinfo_tooltips();
 	activate_static_evt_tooltips();
+
+	/*
+	Ce qui suit permet de rouvrir la fenêtre de détail de l'événement concerné par une action (recyclage, forçage, etc...) grâce
+	au paramtères passé lors de l'appel à l'action.
+	 */
+	<c:if test="${nextEvtId != null}">
+	EvtOrg.nextId = ${nextEvtId};
+	</c:if>
+	<c:if test="${selectedEvtId != null}">
+	open_details(${selectedEvtId});
+	</c:if>
 </script>
 

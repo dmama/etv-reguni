@@ -37,7 +37,9 @@ import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
 import ch.vd.uniregctb.evenement.organisation.manager.EvenementOrganisationManager;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
+import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
+import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationSummaryView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -137,7 +139,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
-		populateModel(model, initEvenementOrganisationCriteria(), INITIAL_PAGINATION, null, 0);
+		populateModel(model, initEvenementOrganisationCriteria(), INITIAL_PAGINATION, null, 0, null, null);
 		return new ModelAndView("evenement/organisation/list", model);
 	}
 
@@ -148,63 +150,84 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	                            ModelMap model ) throws AdresseException {
 		// Stockage des nouveau critère de recherche dans la session
 		// La recherche en elle meme est faite dans nav-list.do
-		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0);
+		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0, null, null);
 		if (bindingResult.hasErrors()) {
 			return "evenement/organisation/list";
 		}
 		// Redirect vers nav-list.do  avec en parametre une pagination reinitialisée
-		return buildNavListRedirect(INITIAL_PAGINATION);
+		return buildNavListRedirect(INITIAL_PAGINATION, null, null);
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String retourSurLaListe(@ModelAttribute("evenementOrganisationPagination") ParamPagination paginationInSession ) throws AdresseException 	{
+	public String retourSurLaListe(@ModelAttribute("evenementOrganisationPagination") ParamPagination paginationInSession,
+	                               @RequestParam(value = "id", required = false) Long id,
+	                               @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException 	{
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
-		return buildNavListRedirect(paginationInSession);
+		return buildNavListRedirect(paginationInSession, id, nextId);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView navigationDansLaListe(HttpServletRequest request,
-	                                         @ModelAttribute("evenementOrganisationCriteria") @Valid EvenementOrganisationCriteriaView criteriaInSession,
-	                                         BindingResult bindingResult,
-	                                         ModelMap model) throws AdresseException 	{
+	                                          @ModelAttribute("evenementOrganisationCriteria") @Valid EvenementOrganisationCriteriaView criteriaInSession,
+	                                          BindingResult bindingResult,
+	                                          ModelMap model,
+	                                          @RequestParam(value = "selectedEvtId", required = false) Long selectedEvtId,
+	                                          @RequestParam(value = "nextEvtId", required = false) Long nextEvtId) throws AdresseException 	{
 		if (bindingResult.hasErrors() || (criteriaInSession.isModeLotEvenement() && criteriaInSession.getNumeroOrganisation() == null)) {
 			// L'utilisateur a soumis un formulaire incorrect
-			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
+			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0, null, null);
 		} else {
 			// On recupère les paramètres de pagination en request pour les sauver en session
 			// On recupère les données correspondant au formulaire de recherche
 			final ParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
 			populateModel(model,
-					criteriaInSession,
-					pagination,
-					manager.find(criteriaInSession, pagination),
-					manager.count(criteriaInSession));
+			              criteriaInSession,
+			              pagination,
+			              manager.find(criteriaInSession, pagination),
+			              manager.count(criteriaInSession),
+			              selectedEvtId,
+			              nextEvtId);
 
 		}
 		return new ModelAndView("evenement/organisation/list", model);
 	}
 
-	private String buildNavListRedirect(ParamPagination pagination) {
-		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/organisation/nav-list.do");
+	private String buildNavListRedirect(ParamPagination pagination, Long id, Long nextId) {
+		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/organisation/nav-list.do", id, nextId);
 	}
 
 	private void populateModel(ModelMap model,
 	                           final EvenementOrganisationCriteriaView evenementOrganisationCriteria,
 	                           ParamPagination evenementPagination,
 	                           @Nullable List<EvenementOrganisationElementListeRechercheView> listEvenementElementListeRecherches,
-	                           int listEvenementsSize ) {
+	                           int listEvenementsSize,
+	                           Long selectedEvtId,
+	                           Long nextEvtId) {
 		model.put("evenementOrganisationCriteria", evenementOrganisationCriteria);
 		model.put("evenementOrganisationPagination", evenementPagination);
 		model.put("listEvenementsOrganisation", listEvenementElementListeRecherches);
 		model.put("listEvenementsOrganisationSize", listEvenementsSize);
+		model.put("selectedEvtId", selectedEvtId);
+		model.put("nextEvtId", nextEvtId);
 	}
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView onGetEvenementOrganisation(@RequestParam("id") Long id) throws AdresseException {
-		return new ModelAndView ("evenement/organisation/visu", "command", manager.get(id));
+		final EvenementOrganisationDetailView visuView = manager.get(id);
+		visuView.setEmbedded(false);
+		return new ModelAndView ("evenement/organisation/visu", "command", visuView);
+	}
+
+	@RequestMapping(value = {"/detail.do"}, method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public ModelAndView onGetEvenementOrganisationDetail(@RequestParam("id") Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException {
+		final EvenementOrganisationDetailView visuView = manager.get(id);
+		visuView.setEmbedded(true);
+		visuView.setNextId(nextId);
+		return new ModelAndView ("evenement/organisation/detail", "command", visuView);
 	}
 
 	@RequestMapping(value = {"/summary.do"}, method = RequestMethod.GET)
@@ -220,6 +243,13 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
 	}
 
+	@RequestMapping(value = {"/forcerVersListe.do"}, method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String onForcerEvenementOrganisationVersListe(@RequestParam("id") Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException {
+		manager.forceEvenement(id);
+		return String.format("redirect:/evenement/organisation/list.do?id=%d%s", id, nextId ==null ? "" : "&nextId=" + nextId);
+	}
+
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String onRecyclerEvenementOrganisation(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
@@ -230,6 +260,19 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 			Flash.warning("Demande prise en compte, l'événement est en attente de recyclage");
 		}
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
+	}
+
+	@RequestMapping(value = {"/recyclerVersListe.do"}, method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String onRecyclerEvenementOrganisationRetourListe(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
+		final EvenementOrganisationSummaryView summary = manager.getSummary(id);
+		boolean recycle = manager.recycleEvenementOrganisation(id);
+		if (recycle) {
+			Flash.message(String.format("Événement n°%d recyclé", summary.getNoEvenement()));
+		} else {
+			Flash.warning(String.format("Demande prise en compte, l'événement n°%d est en attente de recyclage", summary.getNoEvenement()));
+		}
+		return "redirect:/evenement/organisation/list.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/creer-entreprise.do"}, method = RequestMethod.POST)
@@ -251,6 +294,27 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 			Flash.error(String.format("L'entreprise n'a pu être créée. %s", errorMessage));
 		}
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
+	}
+
+	@RequestMapping(value = {"/creer-entrepriseVersListe.do"}, method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String onCreerEntreprisePourEvenementOrganisationVersListe(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
+
+		String errorMessage = "";
+		Entreprise entreprise = null;
+		try {
+			entreprise = manager.creerEntreprisePourEvenementOrganisation(id);
+		} catch (Exception e) {
+			errorMessage = e.getMessage();
+			Audit.error(id, e);
+		}
+
+		if (entreprise != null) {
+			Flash.message(String.format("Entreprise crée avec le numéro %s", entreprise.getNumero()));
+		} else {
+			Flash.error(String.format("L'entreprise n'a pu être créée. %s", errorMessage));
+		}
+		return "redirect:/evenement/organisation/list.do?id=" + id;
 	}
 }
 
