@@ -45,7 +45,9 @@ public class ImportRFController {
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de suivi des imports du Registre Foncier";
 
-	private static final String TABLE_NAME = "tableImportsRF";
+	private static final String TABLE_IMPORT_LIST = "importEvent";
+	private static final String TABLE_MUTATION_LIST = "mutation";
+
 	private static final int IMPORT_PAGE_SIZE = 10;
 	private static final int MUTATION_PAGE_SIZE = 50;
 
@@ -80,7 +82,7 @@ public class ImportRFController {
 
 		// on exécute la requête
 		final List<EtatEvenementRF> etats = view.buildEtats();
-		final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, IMPORT_PAGE_SIZE);
+		final WebParamPagination pagination = new WebParamPagination(request, TABLE_IMPORT_LIST, IMPORT_PAGE_SIZE);
 		final List<EvenementRFImport> list = evenementRFImportDAO.find(etats, pagination);
 		final int count = evenementRFImportDAO.count(etats);
 
@@ -99,7 +101,7 @@ public class ImportRFController {
 	 */
 	@RequestMapping(value = "/import/show.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String list(HttpServletRequest request, @RequestParam(value = "importId") long importId, @ModelAttribute(value = "view") ImportRFCriteriaView view, Model model) {
+	public String show(HttpServletRequest request, @RequestParam(value = "importId") long importId, @ModelAttribute(value = "view") ImportRFCriteriaView view, Model model) {
 
 		final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
 		if (importEvent == null) {
@@ -108,7 +110,7 @@ public class ImportRFController {
 
 		// on va chercher les mutations de l'import
 		final List<EtatEvenementRF> etats = view.buildEtats();
-		final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, MUTATION_PAGE_SIZE);
+		final WebParamPagination pagination = new WebParamPagination(request, TABLE_MUTATION_LIST, MUTATION_PAGE_SIZE);
 		final List<EvenementRFMutation> list = evenementRFMutationDAO.find(importId, etats, pagination);
 		final int count = evenementRFMutationDAO.count(importId, etats);
 

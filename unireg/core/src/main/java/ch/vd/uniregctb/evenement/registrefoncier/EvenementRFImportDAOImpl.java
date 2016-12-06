@@ -43,7 +43,7 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 		else {
 			fragment = new QueryFragment("from EvenementRFImport evenement where etat in (:etats)", "etats", etats);
 		}
-		fragment.add(pagination.buildOrderClause("evenement", "dateEvenement", true, null));
+		fragment.add(pagination.buildOrderClause("evenement", "dateEvenement", false, null));
 
 		final Query queryObject = fragment.createQuery(getCurrentSession());
 		queryObject.setFirstResult(pagination.getSqlFirstResult());
