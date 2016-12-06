@@ -40,7 +40,8 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		data.put(TYPE_RECHERCHE_NOM_MAP_NAME, tiersMapHelper.getMapTypeRechercheNom());
 		data.put(TYPE_RECHERCHE_LOCALITE_PAYS_MAP_NAME, tiersMapHelper.getMapTypeRechercheLocalitePays());
 		data.put(TYPE_RECHERCHE_FOR_FISCAL, tiersMapHelper.getMapTypeRechercheForFiscal());
-		data.put(FORME_JURIDIQUE_MAP_NAME, tiersMapHelper.getMapFormeJuridique());
+		data.put(FORME_JURIDIQUE_MAP_NAME, tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		data.put(CATEGORIE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapCategoriesEntreprise());
 		data.put(NATURE_JURIDIQUE_MAP_NAME, tiersMapHelper.getMapNatureJuridique());
 		data.put(CATEGORIE_ETRANGER_MAP_NAME, tiersMapHelper.getMapCategorieEtranger());
 		data.put(SEXE_MAP_NAME, tiersMapHelper.getMapSexe());
@@ -120,7 +121,12 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	/**
 	 * Le nom de l'attribut utilise pour la liste des formes juridiques
 	 */
-	public static final String FORME_JURIDIQUE_MAP_NAME = "formesJuridiques";
+	public static final String FORME_JURIDIQUE_MAP_NAME = "formesJuridiquesEnum";
+
+	/**
+	 * Le nom de l'attribut utilise pour la liste des catégories d'entreprise
+	 */
+	public static final String CATEGORIE_ENTREPRISE_MAP_NAME = "categoriesEntreprisesEnum";
 
 	/**
 	 * Le nom de l'attribut utilise pour la liste des natures juridiques
