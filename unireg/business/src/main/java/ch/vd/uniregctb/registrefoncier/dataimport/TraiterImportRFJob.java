@@ -3,6 +3,9 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
+import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -21,9 +24,14 @@ public class TraiterImportRFJob extends JobDefinition {
 	public static final String CONTINUE_WITH_MUTATIONS_JOB = "CONTINUE_WITH_MUTATIONS_JOB";
 
 	private MutationsRFDetector mutationsDetector;
+	private RapportService rapportService;
 
 	public void setMutationsDetector(MutationsRFDetector mutationsDetector) {
 		this.mutationsDetector = mutationsDetector;
+	}
+
+	public void setRapportService(RapportService rapportService) {
+		this.rapportService = rapportService;
 	}
 
 	public TraiterImportRFJob(int sortOrder, String description) {
@@ -57,7 +65,12 @@ public class TraiterImportRFJob extends JobDefinition {
 		final long importId = getLongValue(params, ID);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final boolean startMutationJob = getBooleanValue(params, CONTINUE_WITH_MUTATIONS_JOB);
-		mutationsDetector.run(importId, nbThreads, getStatusManager());
+
+		// démarrage de l'import
+		final MutationsRFDetectorResults results = mutationsDetector.run(importId, nbThreads, getStatusManager());
+		final MutationsRFDetectorRapport rapport = rapportService.generateRapport(results, getStatusManager());
+		setLastRunReport(rapport);
+		Audit.success("L'import des immeubles RF (détection des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de traitement des mutations
 		if (startMutationJob) {

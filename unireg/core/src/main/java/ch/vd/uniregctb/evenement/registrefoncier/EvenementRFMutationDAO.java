@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,10 +17,32 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 *
 	 * @param importId   l'id de l'import considéré
 	 * @param typeEntite filtre sur les types de mutations
-	 * @param etats      un ou plusieurs états  @return les ids des mutations correspondantes.
+	 * @param etats      un ou plusieurs états
+	 * @return les ids des mutations correspondantes.
 	 */
 	@NotNull
 	List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats);
+
+	/**
+	 * Recherche le nombre de mutations d'un import donné selon certains critères.
+	 *
+	 * @param importId     l'id de l'import considéré
+	 * @param typeEntite   filtre sur les types de mutations
+	 * @param typeMutation le type de mutation considéré
+	 * @return le nombre des mutations trouvées.
+	 */
+	long count(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation);
+
+	/**
+	 * Recherche les ids RF de mutations d'un import donné selon certains critères.
+	 *
+	 * @param importId     l'id de l'import considéré
+	 * @param typeEntite   filtre sur les types de mutations
+	 * @param typeMutation le type de mutation considéré
+	 * @return une liste des IDs RF des mutations trouvées.
+	 */
+	@NotNull
+	Iterator<String> findRfIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation);
 
 	/**
 	 * Recherche une mutation pour un import, un immeuble et un type d'entité.
@@ -81,8 +104,8 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	List<EvenementRFMutation> find(long importId, @Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination);
 
 	/**
-	 * @param importId   l'id de l'import considéré
-	 * @param etats       le ou les états des événements (optionnel)
+	 * @param importId l'id de l'import considéré
+	 * @param etats    le ou les états des événements (optionnel)
 	 * @return le nombre de mutations qui correspondent aux critères spécifiés.
 	 */
 	int count(long importId, @Nullable List<EtatEvenementRF> etats);

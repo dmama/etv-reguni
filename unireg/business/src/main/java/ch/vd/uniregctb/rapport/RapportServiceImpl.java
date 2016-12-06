@@ -5,6 +5,9 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -78,6 +81,7 @@ import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
@@ -121,6 +125,7 @@ import ch.vd.uniregctb.metier.piis.DumpPeriodesImpositionImpotSourceResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -152,12 +157,13 @@ import ch.vd.uniregctb.validation.ValidationJobResults;
 /**
  * {@inheritDoc}
  */
-public class RapportServiceImpl implements RapportService {
+public class RapportServiceImpl implements RapportService, ApplicationContextAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RapportServiceImpl.class);
 
 	private DocumentService docService;
 	private ServiceInfrastructureService infraService;
+	private ApplicationContext applicationContext;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDocService(DocumentService docService) {
@@ -166,6 +172,11 @@ public class RapportServiceImpl implements RapportService {
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 	/**
@@ -1653,6 +1664,25 @@ public class RapportServiceImpl implements RapportService {
 					final PdfRapprochementTiersRFRapport document = new PdfRapprochementTiersRFRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MutationsRFDetectorRapport generateRapport(MutationsRFDetectorResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportImportImmeubleRF";
+		final String description = "Rapport d'exécution du job d'import (détection des mutations) du RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(MutationsRFDetectorRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfMutationsRFDetectorRapport document = new PdfMutationsRFDetectorRapport();
+				document.write(results, nom, description, dateGeneration, os, status, applicationContext);
 			});
 		}
 		catch (Exception e) {

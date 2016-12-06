@@ -90,6 +90,7 @@
 		<constructor-arg value="108"/>
 		<constructor-arg value="Traiter un import du registre foncier et générer les mutations"/>
 		<property name="mutationsDetector" ref="mutationsRFDetector"/>
+		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
 	<!-- [SIFISC-20372] Job de traitement des mutations des immeubles du registre foncier -->

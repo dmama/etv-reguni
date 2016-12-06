@@ -58,8 +58,15 @@ public class MutationsRFDetector {
 	private final ImmeubleRFDetector immeubleRFDetector;
 	private final SurfaceAuSolRFDetector surfaceAuSolRFDetector;
 
-	public MutationsRFDetector(RegistreFoncierService serviceRF, FichierImmeublesRFParser parser, EvenementRFImportDAO evenementRFImportDAO, PlatformTransactionManager transactionManager, EsbStore zipRaftStore,
-	                           AyantDroitRFDetector ayantDroitRFDetector, BatimentRFDetector batimentRFDetector, DroitRFDetector droitRFDetector, ImmeubleRFDetector immeubleRFDetector,
+	public MutationsRFDetector(RegistreFoncierService serviceRF,
+	                           FichierImmeublesRFParser parser,
+	                           EvenementRFImportDAO evenementRFImportDAO,
+	                           PlatformTransactionManager transactionManager,
+	                           EsbStore zipRaftStore,
+	                           AyantDroitRFDetector ayantDroitRFDetector,
+	                           BatimentRFDetector batimentRFDetector,
+	                           DroitRFDetector droitRFDetector,
+	                           ImmeubleRFDetector immeubleRFDetector,
 	                           SurfaceAuSolRFDetector surfaceAuSolRFDetector) {
 		this.serviceRF = serviceRF;
 		this.parser = parser;
@@ -73,7 +80,7 @@ public class MutationsRFDetector {
 		this.surfaceAuSolRFDetector = surfaceAuSolRFDetector;
 	}
 
-	public void run(long importId, int nbThreads, @Nullable StatusManager statusManager) {
+	public MutationsRFDetectorResults run(long importId, int nbThreads, @Nullable StatusManager statusManager) {
 
 		if (statusManager == null) {
 			statusManager = new LoggingStatusManager(LOGGER);
@@ -86,12 +93,17 @@ public class MutationsRFDetector {
 		}
 		checkPreconditions(event);
 
+		final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, event.getDateEvenement(), nbThreads);
+
 		// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
 		// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
 		deleteExistingMutations(importId, statusManager);
 
 		// on peut maintenant processer l'import
 		processImport(importId, event.getFileUrl(), nbThreads, statusManager);
+
+		rapport.end();
+		return rapport;
 	}
 
 	private void checkPreconditions(@NotNull EvenementRFImport event) {

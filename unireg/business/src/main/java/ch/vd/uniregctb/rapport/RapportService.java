@@ -68,6 +68,7 @@ import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
@@ -110,6 +111,7 @@ import ch.vd.uniregctb.metier.piis.DumpPeriodesImpositionImpotSourceResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -671,4 +673,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RapprochementTiersRFRapport generateRapport(RapprochementTiersRFResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui traite l'import des immeubles du RF
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	MutationsRFDetectorRapport generateRapport(MutationsRFDetectorResults results, StatusManager status);
 }

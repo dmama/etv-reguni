@@ -100,6 +100,27 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public long count(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation) {
+		return db.stream()
+				.filter(mut -> mut.getParentImport().getId().equals(importId))
+				.filter(mut -> mut.getTypeEntite() == typeEntite)
+				.filter(mut -> mut.getTypeMutation() == typeMutation)
+				.count();
+	}
+
+	@NotNull
+	@Override
+	public Iterator<String> findRfIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation) {
+		return db.stream()
+				.filter(mut -> mut.getParentImport().getId().equals(importId))
+				.filter(mut -> mut.getTypeEntite() == typeEntite)
+				.filter(mut -> mut.getTypeMutation() == typeMutation)
+				.map(EvenementRFMutation::getIdRF)
+				.collect(Collectors.toList())
+				.iterator();
+	}
+
 	@Nullable
 	@Override
 	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF) {

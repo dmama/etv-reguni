@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,26 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		query.setParameterList("etats", etats);
 		//noinspection unchecked
 		return query.list();
+	}
+
+	@Override
+	public long count(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation) {
+		final Query query = getCurrentSession().createQuery("select count(*) from EvenementRFMutation where parentImport.id = :importId and typeEntite = :typeEntite and typeMutation = :typeMutation");
+		query.setParameter("importId", importId);
+		query.setParameter("typeEntite", typeEntite);
+		query.setParameter("typeMutation", typeMutation);
+		return ((Number) query.uniqueResult()).longValue();
+	}
+
+	@NotNull
+	@Override
+	public Iterator<String> findRfIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation) {
+		final Query query = getCurrentSession().createQuery("select idRF from EvenementRFMutation where parentImport.id = :importId and typeEntite = :typeEntite and typeMutation = :typeMutation");
+		query.setParameter("importId", importId);
+		query.setParameter("typeEntite", typeEntite);
+		query.setParameter("typeMutation", typeMutation);
+		//noinspection unchecked
+		return query.iterate();
 	}
 
 	@Nullable

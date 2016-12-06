@@ -6,9 +6,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -145,6 +147,37 @@ public abstract class CsvHelper {
 		return file;
 	}
 
+	@Nullable("si l'itérateur est vide")
+	public static <T> TemporaryFile asCsvTemporaryFile(@NotNull Iterator<T> iter, String fileName, @Nullable StatusManager status, FileFiller<? super T> filler) {
+		TemporaryFile file = null;
+		try {
+			file = new TemporaryFile("ur-csv-");
+			try (final OutputStream out = file.openOutputStream();
+			     final OutputStreamWriter writer = new OutputStreamWriter(out, CHARSET);
+			     final BufferedWriter bufferedWriter = new BufferedWriter(writer, 1024 * 1024)) {
+
+				final LineFiller lf = new WriterLineFiller(bufferedWriter);
+				final long lines = buildFileContent(iter, fileName, status, filler, lf);
+				if (lines == 0) {
+					return null;
+				}
+			}
+		}
+		catch (RuntimeException | Error e) {
+			if (file != null) {
+				file.close();
+			}
+			throw e;
+		}
+		catch (IOException e) {
+			if (file != null) {
+				file.close();
+			}
+			throw new RuntimeException(e);
+		}
+		return file;
+	}
+
 	private static <T> void buildFileContent(Collection<T> list, String fileName, StatusManager status, FileFiller<? super T> filler, LineFiller lf) {
 		filler.fillHeader(lf);
 		lf.append(CR);
@@ -164,6 +197,27 @@ public abstract class CsvHelper {
 				lf.append(CR);
 			}
 		}
+	}
+
+	private static <T> long buildFileContent(Iterator<T> iter, String fileName, StatusManager status, FileFiller<? super T> filler, LineFiller lf) {
+		filler.fillHeader(lf);
+		lf.append(CR);
+
+		final String message = String.format("Génération du fichier %s", fileName);
+		if (status != null) {
+			status.setMessage(message, 0);
+		}
+
+		long lines = 0;
+		while (iter.hasNext()) {
+			final T info = iter.next();
+			if (filler.fillLine(lf, info)) {
+				lf.append(CR);
+			}
+			++lines;
+		}
+
+		return lines;
 	}
 
 	/**
