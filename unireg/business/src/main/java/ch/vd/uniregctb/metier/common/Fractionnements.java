@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.metier.common;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -104,10 +102,9 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 
 	@Override
 	public Iterator<Fraction> iterator() {
-		final List<Fraction> fractionnements = new ArrayList<>(map.values());
-		Collections.sort(fractionnements, Comparator.comparing(Fraction::getDate));
-		final List<Fraction> list = Collections.unmodifiableList(fractionnements);
-		return list.iterator();
+		return map.values().stream()
+				.sorted(Comparator.comparing(Fraction::getDate))
+				.iterator();
 	}
 
 	@Nullable
