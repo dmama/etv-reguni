@@ -15,7 +15,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -120,8 +119,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			setEntreprise(tiersVisuView, entreprise);
-			final Etablissement etablissementPrincipal = tiersService.getEtablissementPrincipal(entreprise, RegDate.get()); // Aussi attacher l'établissement principal courant.
-			setJusteEtablissement(tiersVisuView, etablissementPrincipal);
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;

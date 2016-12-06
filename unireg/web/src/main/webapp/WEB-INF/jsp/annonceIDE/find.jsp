@@ -76,7 +76,7 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
-						<td>Numéro de l'établissement&nbsp;:</td>
+						<td>Numéro de tiers&nbsp;:</td>
 						<td>
 							<form:input  path="tiersId" id="tiersId"/>
 							<form:errors path="tiersId" cssClass="error"/>

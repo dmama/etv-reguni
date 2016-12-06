@@ -3,14 +3,12 @@
 <c:choose>
 	<c:when test="${command != null}">
 		<c:set var="entreprise" value="${command.entreprise}" /><%-- TiersVisuController --%>
-		<c:set var="etablissementPrincipalActuel" value="${command.etablissement}" /><%-- TiersVisuController --%>
 	</c:when>
 	<c:when test="${data != null}">
 		<c:set var="entreprise" value="${data}" /><%-- CivilEditController --%>
 	</c:when>
 </c:choose>
 <%--@elvariable id="entreprise" type="ch.vd.uniregctb.entreprise.EntrepriseView"--%>
-<%--@elvariable id="etablissementPrincipalActuel" type="ch.vd.uniregctb.entreprise.EtablissementView"--%>
 
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
@@ -48,9 +46,14 @@
 				<td width="20%"><fmt:message key="label.controle.donnees.civiles"/>&nbsp;:</td>
 				<td>
 					<fmt:message key="label.controle.donnees.civiles.aci"/>&nbsp;
-					<c:if test="${etablissementPrincipalActuel != null}">
-						<a href="<c:url value="../annonceIDE/find.do"/>?tiersId=${etablissementPrincipalActuel.id}">[Suivi des annonces à l'IDE pour l'établissement principal]</a>
-					</c:if>
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${entreprise.degreAssocCivil != 'CIVIL_ESCLAVE'}">
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="20%">Annonces à l'IDE&nbsp;:</td>
+				<td>
+					<a href="<c:url value="../annonceIDE/find.do"/>?tiersId=${entreprise.id}">Vers le suivi des annonces</a>
 				</td>
 			</tr>
 		</c:if>

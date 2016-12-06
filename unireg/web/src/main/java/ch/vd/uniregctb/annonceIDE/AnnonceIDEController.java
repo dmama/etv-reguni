@@ -41,6 +41,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.CantonalIdEditor;
@@ -117,19 +119,31 @@ public class AnnonceIDEController {
 		// on effectue la recherche
 		final Page<AnnonceIDE> annonces;
 		try {
-			if (view.getTiersId() != null) {
-				final List<ReferenceAnnonceIDE> referencesAnnonceIDE = referenceAnnonceIDEDAO.getReferencesAnnonceIDE(view.getTiersId());
-				final List<AnnonceIDE> listeAnnonces = new ArrayList<>();
-
-				if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
-					for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
-						final AnnonceIDEEnvoyee annonceIDE = organisationService.getAnnonceIDE(ref.getId());
-						listeAnnonces.add((AnnonceIDE) annonceIDE);
+			final List<AnnonceIDE> listeAnnonces = new ArrayList<>();
+			final Long tiersId = view.getTiersId();
+			if (tiersId != null) {
+				final Tiers tiers = tiersService.getTiers(tiersId);
+				if (tiers != null) {
+					Long idToUse;
+					if (tiers instanceof Entreprise) {
+						final Etablissement etablissementPrincipalActuel = tiersService.getEtablissementPrincipal((Entreprise) tiers, RegDate.get());
+						idToUse = etablissementPrincipalActuel.getNumero();
 					}
+					else {
+						idToUse = tiersId;
+					}
+					final List<ReferenceAnnonceIDE> referencesAnnonceIDE = referenceAnnonceIDEDAO.getReferencesAnnonceIDE(idToUse);
+
+					if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
+						for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
+							final AnnonceIDEEnvoyee annonceIDE = organisationService.getAnnonceIDE(ref.getId());
+							listeAnnonces.add((AnnonceIDE) annonceIDE);
+						}
+					}
+
 				}
 				final Sort sort = (order == null ? null : new Sort(order));
 				final PageRequest pageable = new PageRequest(pageNumber, pageSize, sort);
-
 				annonces = new PageImpl<>(listeAnnonces, pageable, listeAnnonces.size());
 			}
 			else {
