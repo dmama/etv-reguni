@@ -72,7 +72,7 @@ public class CriteresPersonne {
 		NAVS11 = navs11;
 	}
 
-	@Column(name = "NOM", length = 100)
+	@Column(name = "NOM", length = 255)
 	public String getNom() {
 		return nom;
 	}
@@ -81,7 +81,7 @@ public class CriteresPersonne {
 		this.nom = nom;
 	}
 
-	@Column(name = "PRENOMS", length = 100)
+	@Column(name = "PRENOMS", length = 250)
 	public String getPrenoms() {
 		return prenoms;
 	}
