@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -29,6 +31,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
@@ -93,12 +96,23 @@ public class MutationsRFProcessor {
 		final RegDate dateValeur = getDateValeur(importId);
 		final MutationsRFProcessorResults rapportFinal = new MutationsRFProcessorResults(importId, dateValeur, nbThreads, evenementRFMutationDAO);
 
-		processMutations(importId, TypeEntiteRF.COMMUNE, nbThreads, dateValeur, rapportFinal, new SubStatusManager(0, 16, statusManager));
-		processMutations(importId, TypeEntiteRF.IMMEUBLE, nbThreads, dateValeur, rapportFinal, new SubStatusManager(16, 33, statusManager));
-		processMutations(importId, TypeEntiteRF.AYANT_DROIT, nbThreads, dateValeur, rapportFinal, new SubStatusManager(33, 50, statusManager));
-		processMutations(importId, TypeEntiteRF.DROIT, nbThreads, dateValeur, rapportFinal, new SubStatusManager(50, 66, statusManager));
-		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, nbThreads, dateValeur, rapportFinal, new SubStatusManager(66, 83, statusManager));
-		processMutations(importId, TypeEntiteRF.BATIMENT, nbThreads, dateValeur, rapportFinal, new SubStatusManager(83, 100, statusManager));
+		// pour respecter les contraintes relationnelles de la DB, on traite d'abord les créations et les modifications...
+		final List<TypeMutationRF> creationEtModification = Arrays.asList(TypeMutationRF.CREATION, TypeMutationRF.MODIFICATION);
+		processMutations(importId, TypeEntiteRF.COMMUNE, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(0, 10, statusManager));
+		processMutations(importId, TypeEntiteRF.IMMEUBLE, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(10, 20, statusManager));
+		processMutations(importId, TypeEntiteRF.AYANT_DROIT, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(20, 30, statusManager));
+		processMutations(importId, TypeEntiteRF.DROIT, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(30, 40, statusManager));
+		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(40, 50, statusManager));
+		processMutations(importId, TypeEntiteRF.BATIMENT, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(50, 60, statusManager));
+
+		// ... puis les suppressions (attention, l'ordre de traitement des types d'entités est important aussi)
+		final List<TypeMutationRF> suppression = Collections.singletonList(TypeMutationRF.SUPPRESSION);
+		processMutations(importId, TypeEntiteRF.BATIMENT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(60, 66, statusManager));
+		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(66, 72, statusManager));
+		processMutations(importId, TypeEntiteRF.DROIT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(72, 80, statusManager));
+		processMutations(importId, TypeEntiteRF.AYANT_DROIT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(80, 86, statusManager));
+		processMutations(importId, TypeEntiteRF.IMMEUBLE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(86, 92, statusManager));
+		processMutations(importId, TypeEntiteRF.COMMUNE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(92, 100, statusManager));
 
 		rapportFinal.end();
 		return rapportFinal;
@@ -131,9 +145,15 @@ public class MutationsRFProcessor {
 		});
 	}
 
-	private void processMutations(long importId, @NotNull TypeEntiteRF typeEntite, int nbThreads, @NotNull RegDate dateValeur, @NotNull MutationsRFProcessorResults rapportFinal, @NotNull final StatusManager statusManager) {
+	private void processMutations(long importId,
+	                              @NotNull TypeEntiteRF typeEntite,
+	                              @NotNull Collection<TypeMutationRF> typesMutations,
+	                              int nbThreads,
+	                              @NotNull RegDate dateValeur,
+	                              @NotNull MutationsRFProcessorResults rapportFinal,
+	                              @NotNull final StatusManager statusManager) {
 
-		final List<Long> ids = findIdsMutationsATraiter(importId, typeEntite);
+		final List<Long> ids = findIdsMutationsATraiter(importId, typeEntite, typesMutations);
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Mutations to process = {}", Arrays.toString(ids.toArray()));
 		}
@@ -218,13 +238,16 @@ public class MutationsRFProcessor {
 	}
 
 	@NotNull
-	private List<Long> findIdsMutationsATraiter(long importId, TypeEntiteRF typeEntite) {
+	private List<Long> findIdsMutationsATraiter(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull Collection<TypeMutationRF> typesMutations) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(new TxCallback<List<Long>>() {
 			@Override
 			public List<Long> execute(TransactionStatus status) throws Exception {
-				return evenementRFMutationDAO.findIds(importId, typeEntite, EtatEvenementRF.A_TRAITER, EtatEvenementRF.EN_ERREUR);
+				return evenementRFMutationDAO.findIds(importId,
+				                                      typeEntite,
+				                                      Arrays.asList(EtatEvenementRF.A_TRAITER, EtatEvenementRF.EN_ERREUR),
+				                                      typesMutations);
 			}
 		});
 	}

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +16,14 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	/**
 	 * Recherche les mutations d'un import qui sont dans un ou plusieurs états.
 	 *
-	 * @param importId   l'id de l'import considéré
-	 * @param typeEntite filtre sur les types de mutations
-	 * @param etats      un ou plusieurs états
+	 * @param importId      l'id de l'import considéré
+	 * @param typeEntite    filtre sur les types de mutations
+	 * @param etats         un ou plusieurs états
+	 * @param typesMutation un ou plusieurs types de mutations
 	 * @return les ids des mutations correspondantes.
 	 */
 	@NotNull
-	List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats);
+	List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull Collection<EtatEvenementRF> etats, @NotNull Collection<TypeMutationRF> typesMutation);
 
 	/**
 	 * Recherche le nombre de mutations d'un import donné selon certains critères.

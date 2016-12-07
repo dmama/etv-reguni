@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,11 +31,12 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 
 	@NotNull
 	@Override
-	public List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats) {
-		final Query query = getCurrentSession().createQuery("select id from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and etat in (:etats)");
+	public List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull Collection<EtatEvenementRF> etats, @NotNull Collection<TypeMutationRF> typesMutation) {
+		final Query query = getCurrentSession().createQuery("select id from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and etat in (:etats) and typeMutation in (:typesMutation)");
 		query.setParameter("importId", importId);
 		query.setParameter("typeEntite", typeEntite);
 		query.setParameterList("etats", etats);
+		query.setParameterList("typesMutation", typesMutation);
 		//noinspection unchecked
 		return query.list();
 	}

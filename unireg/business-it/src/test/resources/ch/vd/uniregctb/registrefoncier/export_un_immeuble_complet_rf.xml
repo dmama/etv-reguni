@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+	<GrundstueckList>
+		<Liegenschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<GrundstueckID>_1f10915238100390013810052537624b</GrundstueckID>
+			<EGrid>CH507045198314</EGrid>
+			<GrundstueckNummer VersionID="1f1091523810039001381005253a62d1">
+				<BfsNr>38</BfsNr>
+				<Gemeindenamen>Cudrefin</Gemeindenamen>
+				<StammNr>1365</StammNr>
+			</GrundstueckNummer>
+			<IstKopie>false</IstKopie>
+			<AmtlicheBewertung VersionID="1f109152381003900138100691a02df3">
+				<AmtlicherWert>30000</AmtlicherWert>
+				<Ertragswert>0</Ertragswert>
+				<ProtokollNr>2002</ProtokollNr>
+				<ProtokollGueltig>true</ProtokollGueltig>
+				<MitEwKomponente>unbekannt</MitEwKomponente>
+			</AmtlicheBewertung>
+			<GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+			<BeschreibungUebergeben>true</BeschreibungUebergeben>
+			<EigentumUebergeben>true</EigentumUebergeben>
+			<PfandrechtUebergeben>true</PfandrechtUebergeben>
+			<DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+			<GrundlastUebergeben>true</GrundlastUebergeben>
+			<AnmerkungUebergeben>true</AnmerkungUebergeben>
+			<VormerkungUebergeben>true</VormerkungUebergeben>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<BereitZurVerifikation>false</BereitZurVerifikation>
+			<NutzungLandwirtschaft>nein</NutzungLandwirtschaft>
+			<NutzungWald>unbekannt</NutzungWald>
+			<NutzungEisenbahn>nein</NutzungEisenbahn>
+			<NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>
+			<GrundstueckFlaeche VersionID="1f109152381003900138100740923152" MasterID="1f109152381003900138100740923151">
+				<Flaeche>614</Flaeche>
+				<Qualitaet>
+					<TextDe>*numérique</TextDe>
+					<TextFr>numérique</TextFr>
+				</Qualitaet>
+				<ProjektMutation>false</ProjektMutation>
+				<GeometrischDarstellbar>false</GeometrischDarstellbar>
+				<UeberlagerndeRechte>false</UeberlagerndeRechte>
+			</GrundstueckFlaeche>
+		</Liegenschaft>
+	</GrundstueckList>
+	<EigentumList>
+		<PersonEigentumAnteil VersionID="1f10915238100390013810067ae35d4a" MasterID="1f1091523810039001381005be485efd" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<Quote>
+				<AnteilZaehler>1</AnteilZaehler>
+				<AnteilNenner>1</AnteilNenner>
+				<QuoteUnbekannt>false</QuoteUnbekannt>
+			</Quote>
+			<BelastetesGrundstueckIDREF>_1f10915238100390013810052537624b</BelastetesGrundstueckIDREF>
+			<NatuerlichePersonGb VersionID="1f1091523810039001381005be4b5f2f" MasterID="1f10915238100390013810067ae35d4b">
+				<Name>Claude</Name>
+				<Status>definitiv</Status>
+				<Rechtsgruende>
+					<AmtNummer>3</AmtNummer>
+					<RechtsgrundCode>
+						<TextDe>*Achat</TextDe>
+						<TextFr>Achat</TextFr>
+					</RechtsgrundCode>
+					<BelegDatum>1997-06-19</BelegDatum>
+					<BelegAlt>74'677</BelegAlt>
+				</Rechtsgruende>
+				<Vorname>Daniel</Vorname>
+				<Geburtsdatum>
+					<Tag>7</Tag>
+					<Monat>2</Monat>
+					<Jahr>1945</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Joseph</NameEltern>
+				<WeitereVornamen>François</WeitereVornamen>
+				<PersonstammIDREF>_1f1091523810039001381003da8b72ac</PersonstammIDREF>
+			</NatuerlichePersonGb>
+			<PersonEigentumsForm>alleineigentum</PersonEigentumsForm>
+			<AnzahlPaquiers>0</AnzahlPaquiers>
+		</PersonEigentumAnteil>
+	</EigentumList>
+	<PersonstammList>
+		<NatuerlichePersonstamm xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<PersonstammID>_1f1091523810039001381003da8b72ac</PersonstammID>
+			<Name>Claude</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<Anrede>
+				<TextDe>*Monsieur</TextDe>
+				<TextFr>Monsieur</TextFr>
+			</Anrede>
+			<NrACI>0</NrACI>
+			<NoRF>149888</NoRF>
+			<Vorname>Daniel</Vorname>
+			<Zivilstand>unbekannt</Zivilstand>
+			<Geburtsdatum>
+				<Tag>7</Tag>
+				<Monat>2</Monat>
+				<Jahr>1945</Jahr>
+			</Geburtsdatum>
+			<NameDerEltern>Joseph</NameDerEltern>
+			<Geschlecht>unbekannt</Geschlecht>
+			<WeitereVornamen>François</WeitereVornamen>
+			<NrIROLE>10131016</NrIROLE>
+		</NatuerlichePersonstamm>
+	</PersonstammList>
+	<GebaeudeList>
+		<Gebaeude VersionID="1f1091523810039001381006e05a70e0" MasterID="1f1091523810039001381006e05770ac" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<GrundstueckZuGebaeude>
+				<GrundstueckIDREF>_1f10915238100390013810052537624b</GrundstueckIDREF>
+				<AbschnittFlaeche>50</AbschnittFlaeche>
+			</GrundstueckZuGebaeude>
+			<Einzelobjekt>false</Einzelobjekt>
+			<Unterirdisch>false</Unterirdisch>
+			<MehrereGrundstuecke>false</MehrereGrundstuecke>
+			<GebaeudeArten>
+				<GebaeudeArtCode>
+					<TextDe>*Bâtiment</TextDe>
+					<TextFr>Bâtiment</TextFr>
+				</GebaeudeArtCode>
+			</GebaeudeArten>
+			<Versicherungsnummer>486</Versicherungsnummer>
+		</Gebaeude>
+	</GebaeudeList>
+	<BodenbedeckungList>
+		<Bodenbedeckung VersionID="1f10915238100390013810064c8d2e82" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+			<GrundstueckIDREF>_1f10915238100390013810052537624b</GrundstueckIDREF>
+			<Art>
+				<TextDe>*Place-jardin</TextDe>
+				<TextFr>Place-jardin</TextFr>
+			</Art>
+			<Flaeche>564</Flaeche>
+		</Bodenbedeckung>
+	</BodenbedeckungList>
+</GrundstueckExport>

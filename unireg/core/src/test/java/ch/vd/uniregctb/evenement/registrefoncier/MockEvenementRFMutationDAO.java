@@ -1,13 +1,13 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -91,11 +91,12 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@NotNull
 	@Override
-	public List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull EtatEvenementRF... etats) {
+	public List<Long> findIds(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull Collection<EtatEvenementRF> etats, @NotNull Collection<TypeMutationRF> typesMutation) {
 		return db.stream()
 				.filter(mut -> mut.getParentImport().getId().equals(importId))
 				.filter(mut -> mut.getTypeEntite() == typeEntite)
-				.filter(mut -> ArrayUtils.contains(etats, mut.getEtat()))
+				.filter(mut -> etats.contains(mut.getEtat()))
+				.filter(mut -> typesMutation.contains(mut.getTypeMutation()))
 				.map(EvenementRFMutation::getId)
 				.collect(Collectors.toList());
 	}
