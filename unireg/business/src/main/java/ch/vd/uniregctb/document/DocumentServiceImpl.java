@@ -276,11 +276,11 @@ public class DocumentServiceImpl implements DocumentService {
 	/**
 	 * Construit un nom de fichier sur le disque à partir de la date courante et du nom "utilisateur" spécifié.
 	 * <p>
-	 * Le format est : yyyyMMdd_$(nom_utilisateur_sans_les_caracteres_speciaux)
+	 * Le format est : yyyyMMdd_kkmmss_S_$(nom_sans_les_caracteres_speciaux)
 	 */
 	private String buildFileName(String nom, String fileExtension, Date d) {
 		final StringBuilder b = new StringBuilder();
-		b.append(new SimpleDateFormat("yyyyMMdd_kkmmss").format(d));
+		b.append(new SimpleDateFormat("yyyyMMdd_kkmmss_S").format(d));
 		b.append('_');
 		b.append(nom.replaceAll("[^-+0-9a-zA-Z._]", "_"));
 		b.append('.').append(fileExtension);
