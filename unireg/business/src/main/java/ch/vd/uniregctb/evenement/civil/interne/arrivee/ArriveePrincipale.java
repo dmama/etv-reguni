@@ -475,11 +475,11 @@ public class ArriveePrincipale extends Arrivee {
 									|| !forPrecedent.getNumeroOfsAutoriteFiscale().equals(localisationPrecedente.getNoOfs())) {
 
 								// problème -> la commune n'est pas la même
-								throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de communes vaudoises différentes.");
+								throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.");
 							}
 							else if (!isDifferenceTwoYearsOrLess(forFiscal.getDateDebut(), dateArriveeEffective)) {
 								// problème -> ça fait trop longtemps !
-								throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de la date de départ, trop vieille.");
+								throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.");
 							}
 
 							forReferent = forPrecedent;
@@ -545,25 +545,27 @@ public class ArriveePrincipale extends Arrivee {
 		infoRattrapage.forVaudoisPrecedantDepart.setAnnule(true);
 		context.getEvenementFiscalService().publierEvenementFiscalAnnulationFor(infoRattrapage.forVaudoisPrecedantDepart);
 
-		// remplacement
-		openAndCloseForFiscalPrincipal(ctb,
-		                               infoRattrapage.forVaudoisPrecedantDepart.getDateDebut(),
-		                               infoRattrapage.forVaudoisPrecedantDepart.getTypeAutoriteFiscale(),
-		                               infoRattrapage.forVaudoisPrecedantDepart.getNumeroOfsAutoriteFiscale(),
-		                               infoRattrapage.forVaudoisPrecedantDepart.getMotifRattachement(),
-		                               infoRattrapage.forVaudoisPrecedantDepart.getMotifOuverture(),
-		                               infoRattrapage.forVaudoisPrecedantDepart.getModeImposition(),
-		                               dateOuverture.getOneDayBefore(),
-		                               motifOuverture);
+		// remplacement -> génération du for principal avant le départ
+		getService().addForPrincipal(ctb,
+		                             infoRattrapage.forVaudoisPrecedantDepart.getDateDebut(),
+		                             infoRattrapage.forVaudoisPrecedantDepart.getMotifOuverture(),
+		                             null,
+		                             null,
+		                             infoRattrapage.forVaudoisPrecedantDepart.getMotifRattachement(),
+		                             infoRattrapage.forVaudoisPrecedantDepart.getNumeroOfsAutoriteFiscale(),
+		                             infoRattrapage.forVaudoisPrecedantDepart.getTypeAutoriteFiscale(),
+		                             infoRattrapage.forVaudoisPrecedantDepart.getModeImposition());
 
 		// ouverture du for suite à l'arrivée
-		openForFiscalPrincipal(ctb,
-		                       dateOuverture,
-		                       taf,
-		                       noOfs,
-		                       motifRattachement,
-		                       motifOuverture,
-		                       modeImposition);
+		getService().addForPrincipal(ctb,
+		                             dateOuverture,
+		                             motifOuverture,
+		                             null,
+		                             null,
+		                             motifRattachement,
+		                             noOfs,
+		                             taf,
+		                             modeImposition);
 	}
 
 	@Override
@@ -697,11 +699,11 @@ public class ArriveePrincipale extends Arrivee {
 								|| !forPrecedent.getNumeroOfsAutoriteFiscale().equals(localisationPrecedente.getNoOfs())) {
 
 							// problème -> la commune n'est pas la même
-							throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de communes vaudoises différentes.");
+							throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.");
 						}
 						else if (!isDifferenceTwoYearsOrLess(ffpMenage.getDateDebut(), dateEvenement)) {
 							// problème -> ça fait trop longtemps !
-							throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de la date de départ, trop vieille.");
+							throw new EvenementCivilException("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.");
 						}
 
 						forReferent = forPrecedent;

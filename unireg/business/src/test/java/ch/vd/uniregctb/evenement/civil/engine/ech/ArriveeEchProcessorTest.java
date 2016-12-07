@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -3350,7 +3352,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de communes vaudoises différentes.", erreur.getMessage());
+				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
@@ -3462,7 +3464,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de la date de départ, trop vieille.", erreur.getMessage());
+				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
@@ -3838,7 +3840,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de communes vaudoises différentes.", erreur.getMessage());
+				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de communes vaudoises différentes.", erreur.getMessage());
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
 				Assert.assertNotNull(mc);
@@ -3953,7 +3955,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu abortée en raison de la date de départ, trop vieille.", erreur.getMessage());
+				Assert.assertEquals("Tentative de rattrapage d'un départ pour pays inconnu avortée en raison de la date de départ, trop vieille.", erreur.getMessage());
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
 				Assert.assertNotNull(mc);
@@ -3991,6 +3993,150 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 					Assert.assertEquals((Integer) MockPays.PaysInconnu.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-22358] Rattrapage d'un départ HS vers pays inconnu avec une arrivée vaudoise ultérieure (dans les deux ans) en présence
+	 * de for secondaire...
+	 */
+	@Test
+	public void testRattrapagePaysInconnuAvecArriveeVaudoiseEnPresenceDeForSecondaire() throws Exception {
+		final long noIndividu = 45115L;
+		final RegDate dateNaissance = date(1965, 8, 25);
+		final RegDate dateDepart = date(2014, 2, 3);
+		final RegDate dateArrivee = date(2014, 2, 7);
+
+		// mise en place civile (on connaissait la personne avant)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
+				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+
+				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
+				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
+				addEtatCivil(individu, dateNaissance, TypeEtatCivil.CELIBATAIRE);
+			}
+		});
+
+		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+				addForSecondaire(pp, dateDepart.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isAnnule());
+				Assert.assertTrue(pp.isHabitantVD());
+
+				// les fors principaux
+				final List<ForFiscalPrincipalPP> ffps = pp.getForsFiscaux().stream()
+						.filter(ff -> ff instanceof ForFiscalPrincipalPP)
+						.map(ff -> (ForFiscalPrincipalPP) ff)
+						.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()))
+						.collect(Collectors.toList());
+				Assert.assertEquals(4, ffps.size());
+				{
+					final ForFiscalPrincipalPP ffp = ffps.get(0);
+					Assert.assertNotNull(ffp);
+					Assert.assertFalse(ffp.isAnnule());
+					Assert.assertEquals(dateNaissance.addYears(18), ffp.getDateDebut());
+					Assert.assertEquals(dateArrivee.getOneDayBefore(), ffp.getDateFin());
+					Assert.assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(ModeImposition.INDIGENT, ffp.getModeImposition());
+				}
+				{
+					final ForFiscalPrincipalPP ffp = ffps.get(1);
+					Assert.assertNotNull(ffp);
+					Assert.assertFalse(ffp.isAnnule());
+					Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(ModeImposition.INDIGENT, ffp.getModeImposition());
+				}
+				{
+					final ForFiscalPrincipalPP ffp = ffps.get(2);
+					Assert.assertNotNull(ffp);
+					Assert.assertTrue(ffp.isAnnule());
+					Assert.assertEquals(dateNaissance.addYears(18), ffp.getDateDebut());
+					Assert.assertEquals(dateDepart, ffp.getDateFin());
+					Assert.assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(ModeImposition.INDIGENT, ffp.getModeImposition());
+				}
+				{
+					final ForFiscalPrincipalPP ffp = ffps.get(3);
+					Assert.assertNotNull(ffp);
+					Assert.assertTrue(ffp.isAnnule());
+					Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.PaysInconnu.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+				}
+
+				// le for secondaire ne doit pas avoir bougé
+				final List<ForFiscalSecondaire> ffss = pp.getForsFiscaux().stream()
+						.filter(ff -> ff instanceof ForFiscalSecondaire)
+						.map(ff -> (ForFiscalSecondaire) ff)
+						.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()))
+						.collect(Collectors.toList());
+				Assert.assertEquals(1, ffss.size());
+				final ForFiscalSecondaire ffs = ffss.get(0);
+				Assert.assertNotNull(ffs);
+				Assert.assertFalse(ffs.isAnnule());
+				Assert.assertEquals(dateDepart.addDays(-10), ffs.getDateDebut());
+				Assert.assertNull(ffs.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+				Assert.assertNull(ffs.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
 			}
 		});
 	}
