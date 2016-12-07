@@ -74,6 +74,7 @@
 	</bean>
 
 	<bean id="mutationsRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessor">
+		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="communeRFProcessor"/>
 		<constructor-arg ref="immeubleRFProcessor"/>

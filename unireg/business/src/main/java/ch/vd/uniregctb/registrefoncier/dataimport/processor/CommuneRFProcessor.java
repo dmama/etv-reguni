@@ -12,9 +12,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.CommuneRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
@@ -44,7 +46,7 @@ public class CommuneRFProcessor implements MutationRFProcessor {
 	}
 
 	@Override
-	public void process(@NotNull EvenementRFMutation mutation) {
+	public void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport) {
 
 		if (mutation.getEtat() == EtatEvenementRF.TRAITE || mutation.getEtat() == EtatEvenementRF.FORCE) {
 			throw new IllegalArgumentException("La mutation n°" + mutation.getId() + " est déjà traitée (état=[" + mutation.getEtat() + "]).");
@@ -77,6 +79,10 @@ public class CommuneRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
 		}
 
+		// on renseigne le rapport
+		if (rapport != null) {
+			rapport.addProcessed(mutation.getId(), TypeEntiteRF.COMMUNE, mutation.getTypeMutation());
+		}
 	}
 
 	private void processCreation(@NotNull CommuneRF commune) {

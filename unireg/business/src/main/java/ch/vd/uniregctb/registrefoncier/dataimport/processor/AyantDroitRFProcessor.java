@@ -5,14 +5,17 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.AyantDroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
@@ -51,7 +54,7 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 	}
 
 	@Override
-	public void process(@NotNull EvenementRFMutation mutation) {
+	public void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport) {
 
 		if (mutation.getEtat() == EtatEvenementRF.TRAITE || mutation.getEtat() == EtatEvenementRF.FORCE) {
 			throw new IllegalArgumentException("La mutation n°" + mutation.getId() + " est déjà traitée (état=[" + mutation.getEtat() + "]).");
@@ -90,6 +93,10 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
 		}
 
+		// on renseigne le rapport
+		if (rapport != null) {
+			rapport.addProcessed(mutation.getId(), TypeEntiteRF.AYANT_DROIT, mutation.getTypeMutation());
+		}
 	}
 
 	private void processCreation(AyantDroitRF ayantDroit) {

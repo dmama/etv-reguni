@@ -70,7 +70,7 @@ public class TraiterImportRFJob extends JobDefinition {
 		final MutationsRFDetectorResults results = mutationsDetector.run(importId, nbThreads, getStatusManager());
 		final MutationsRFDetectorRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("L'import des immeubles RF (détection des mutations) est terminé.", rapport);
+		Audit.success("Le traitement de l'import RF (détection des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de traitement des mutations
 		if (startMutationJob) {

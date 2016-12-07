@@ -57,12 +57,12 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		final Long importId = addImportAndThreeMutations();
 
 		// un processor de mutations qui ne fait rien de spécial (ce n'est pas lui que l'on veut tester)
-		final MutationRFProcessor immeubleRFProcessor = mutation -> {
+		final MutationRFProcessor immeubleRFProcessor = (mutation, rapport) -> {
 			// on ne fait rien
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new MutationsRFProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
@@ -98,12 +98,12 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		final Long importId = addImportAndThreeMutations();
 
 		// un processor de mutations qui lève des exceptions
-		final MutationRFProcessor immeubleRFProcessor = mutation -> {
+		final MutationRFProcessor immeubleRFProcessor = (mutation, rapport) -> {
 			throw new RuntimeException("Exception de test");
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new MutationsRFProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné
@@ -160,11 +160,11 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		});
 
 		// un processor de mutations qui ne fait rien
-		final MutationRFProcessor immeubleRFProcessor = mutation -> {
+		final MutationRFProcessor immeubleRFProcessor = (mutation, rapport) -> {
 		};
 
 		// on devrait avoir une exception parce que les mutations de l'import précédent ne sont pas toutes traitées
-		processor = new MutationsRFProcessor(evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
 		try {
 			processor.processImport(ids.suivant, 2, null);
 			fail();

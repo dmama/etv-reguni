@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.registre.base.date.RegDate;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
@@ -23,6 +25,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BatimentRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DescriptionBatimentRFHelper;
@@ -60,7 +63,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 	}
 
 	@Override
-	public void process(@NotNull EvenementRFMutation mutation) {
+	public void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport) {
 
 		if (mutation.getEtat() == EtatEvenementRF.TRAITE || mutation.getEtat() == EtatEvenementRF.FORCE) {
 			throw new IllegalArgumentException("La mutation n°" + mutation.getId() + " est déjà traitée (état=[" + mutation.getEtat() + "]).");
@@ -99,6 +102,11 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 		}
 		else {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
+		}
+
+		// on renseigne le rapport
+		if (rapport != null) {
+			rapport.addProcessed(mutation.getId(), TypeEntiteRF.BATIMENT, mutation.getTypeMutation());
 		}
 	}
 

@@ -2,34 +2,27 @@ package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.ApplicationContext;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 
 /**
- * Rapport PDF contenant les résultats du job de détection des mutations sur les immeubles du RF.
+ * Rapport PDF contenant les résultats du job de traitement des mutations sur les immeubles du RF.
  */
-public class PdfMutationsRFDetectorRapport extends PdfRapport {
+public class PdfMutationsRFProcessorRapport extends PdfRapport {
 
-	public void write(final MutationsRFDetectorResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status, ApplicationContext applicationContext) throws Exception {
-
-		final EvenementRFMutationDAO evenementRFMutationDAO = applicationContext.getBean("evenementRFMutationDAO", EvenementRFMutationDAO.class);
-		if (evenementRFMutationDAO == null) {
-			throw new IllegalArgumentException("Le bean 'evenementRFMutationDAO' n'existe pas.");
-		}
+	public void write(final MutationsRFProcessorResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
 
@@ -40,7 +33,7 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution du job de détection des mutations du RF.");
+		addTitrePrincipal("Rapport d'exécution de traitement des mutations du RF.");
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -63,11 +56,11 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 			addTableSimple(new float[]{.6f, .4f}, table -> {
 				for (TypeEntiteRF typeEntity : TypeEntiteRF.values()) {
 					final String entityName = getName(typeEntity);
-					table.addLigne("Mutations sur les " + entityName + " :", "");
+					table.addLigne("Mutations traitées sur les " + entityName + " :", "");
 					for (TypeMutationRF typeMutation : TypeMutationRF.values()) {
 						final String typeMutationName = getName(typeMutation);
-						final long count = evenementRFMutationDAO.count(results.getImportId(), typeEntity, typeMutation);
-						table.addLigne("  - " + typeMutationName + " :", String.valueOf(count));
+						final MutableLong count = results.getProcessed().get(new MutationsRFProcessorResults.ProcessedKey(typeEntity, typeMutation));
+						table.addLigne("  - " + typeMutationName + " :", count == null ? "0" : String.valueOf(count.getValue()));
 					}
 				}
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getNbErreurs()));
@@ -76,27 +69,10 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 			});
 		}
 
-		// tous les fichiers CSV
-		for (TypeEntiteRF typeEntity : TypeEntiteRF.values()) {
-			final String entityName = getName(typeEntity);
-			for (TypeMutationRF typeMutation : TypeMutationRF.values()) {
-				final String typeMutationName = getName(typeMutation);
-				final String filename = typeEntity.name().toLowerCase() + "_" + typeMutation.name().toLowerCase() + ".csv";
-				final String titre = "Mutations de " + typeMutationName + " sur les " + entityName + " ";
-				final String listVide = "(aucun)";
-				final Iterator<String> iter = evenementRFMutationDAO.findRfIds(results.getImportId(), typeEntity, typeMutation);
-				try (TemporaryFile contenu = idRFAsCsvFile(iter, filename, status)) {
-					if (contenu != null) {
-						addListeDetaillee(writer, titre, listVide, filename, contenu);
-					}
-				}
-			}
-		}
-
 		// Cas en erreur
 		{
 			final String filename = "erreurs.csv";
-			final String titre = " Liste des cas en erreur";
+			final String titre = " Liste des mutations en erreur";
 			final String listeVide = "(aucun)";
 			try (TemporaryFile contenu = erreursAsCsvFile(results.getErreurs(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
@@ -147,35 +123,24 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 		}
 	}
 
-	private TemporaryFile idRFAsCsvFile(Iterator<String> iter, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(iter, filename, status, new CsvHelper.FileFiller<String>() {
-			@Override
-			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("ID_RF").append(COMMA);
-			}
-
-			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, String elt) {
-				b.append(elt).append(COMMA);
-				return true;
-			}
-		});
-	}
-
-	private TemporaryFile erreursAsCsvFile(List<MutationsRFDetectorResults.Erreur> liste, String filename, StatusManager status) {
+	private TemporaryFile erreursAsCsvFile(List<MutationsRFProcessorResults.Erreur> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
-			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MutationsRFDetectorResults.Erreur>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MutationsRFProcessorResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("ID_RF").append(COMMA);
+					b.append("MUTATION_ID").append(COMMA);
+					b.append("TYPE_ENTITE").append(COMMA);
+					b.append("TYPE_MUTATION").append(COMMA);
 					b.append("MESSAGE");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, MutationsRFDetectorResults.Erreur elt) {
-					b.append(elt.idRF).append(COMMA);
-					b.append(CsvHelper.asCsvField(elt.message));
+				public boolean fillLine(CsvHelper.LineFiller b, MutationsRFProcessorResults.Erreur elt) {
+					b.append(elt.getMutationId()).append(COMMA);
+					b.append(elt.getTypeEntite()).append(COMMA);
+					b.append(elt.getTypeMutation()).append(COMMA);
+					b.append(CsvHelper.asCsvField(elt.getMessage()));
 					return true;
 				}
 			});

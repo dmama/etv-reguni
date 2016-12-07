@@ -82,6 +82,7 @@ import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
+import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
@@ -126,6 +127,7 @@ import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -1675,7 +1677,7 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 	public MutationsRFDetectorRapport generateRapport(MutationsRFDetectorResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportImportImmeubleRF";
+		final String nom = "RapportTraiterImportRF";
 		final String description = "Rapport d'exécution du job d'import (détection des mutations) du RF.";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
@@ -1683,6 +1685,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 			return docService.newDoc(MutationsRFDetectorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfMutationsRFDetectorRapport document = new PdfMutationsRFDetectorRapport();
 				document.write(results, nom, description, dateGeneration, os, status, applicationContext);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MutationsRFProcessorRapport generateRapport(MutationsRFProcessorResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportTraiterMutationRF";
+		final String description = "Rapport d'exécution du job d'import (traitement des mutations) du RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(MutationsRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfMutationsRFProcessorRapport document = new PdfMutationsRFProcessorRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {

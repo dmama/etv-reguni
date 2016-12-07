@@ -9,17 +9,20 @@ import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.GrundstueckExport.BodenbedeckungList;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.SurfaceAuSolRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
@@ -53,7 +56,7 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 	}
 
 	@Override
-	public void process(@NotNull EvenementRFMutation mutation) {
+	public void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport) {
 
 		if (mutation.getEtat() == EtatEvenementRF.TRAITE || mutation.getEtat() == EtatEvenementRF.FORCE) {
 			throw new IllegalArgumentException("La mutation n°" + mutation.getId() + " est déjà traitée (état=[" + mutation.getEtat() + "]).");
@@ -99,6 +102,11 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 		}
 		else {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
+		}
+
+		// on renseigne le rapport
+		if (rapport != null) {
+			rapport.addProcessed(mutation.getId(), TypeEntiteRF.SURFACE_AU_SOL, mutation.getTypeMutation());
 		}
 	}
 

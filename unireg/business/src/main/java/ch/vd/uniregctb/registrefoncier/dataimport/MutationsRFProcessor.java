@@ -11,18 +11,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
-import ch.vd.shared.batchtemplate.BatchCallback;
+import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -41,6 +44,7 @@ public class MutationsRFProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MutationsRFProcessor.class);
 
+	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final MutationRFProcessor communeRFProcessor;
@@ -50,7 +54,8 @@ public class MutationsRFProcessor {
 	private final SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 	private final BatimentRFProcessor batimentRFProcessor;
 
-	public MutationsRFProcessor(@NotNull EvenementRFMutationDAO evenementRFMutationDAO,
+	public MutationsRFProcessor(@NotNull EvenementRFImportDAO evenementRFImportDAO,
+	                            @NotNull EvenementRFMutationDAO evenementRFMutationDAO,
 	                            @NotNull MutationRFProcessor communeRFProcessor,
 	                            @NotNull MutationRFProcessor immeubleRFProcessor,
 	                            @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
@@ -58,6 +63,7 @@ public class MutationsRFProcessor {
 	                            @NotNull SurfaceAuSolRFProcessor surfaceAuSolRFProcessor,
 	                            @NotNull BatimentRFProcessor batimentRFProcessor,
 	                            @NotNull PlatformTransactionManager transactionManager) {
+		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.ayantDroitRFProcessor = ayantDroitRFProcessor;
 		this.immeubleRFProcessor = immeubleRFProcessor;
@@ -75,7 +81,8 @@ public class MutationsRFProcessor {
 	 * @param nbThreads     le nombre de threads à utiliser pour le traitement
 	 * @param statusManager un status manager pour suivre la progression du traitement
 	 */
-	public void processImport(long importId, int nbThreads, @Nullable StatusManager statusManager) {
+	@NotNull
+	public MutationsRFProcessorResults processImport(long importId, int nbThreads, @Nullable StatusManager statusManager) {
 
 		if (statusManager == null) {
 			statusManager = new LoggingStatusManager(LOGGER);
@@ -83,12 +90,31 @@ public class MutationsRFProcessor {
 
 		checkPreconditions(importId);
 
-		processMutations(importId, TypeEntiteRF.COMMUNE, nbThreads, new SubStatusManager(0, 16, statusManager));
-		processMutations(importId, TypeEntiteRF.IMMEUBLE, nbThreads, new SubStatusManager(16, 33, statusManager));
-		processMutations(importId, TypeEntiteRF.AYANT_DROIT, nbThreads, new SubStatusManager(33, 50, statusManager));
-		processMutations(importId, TypeEntiteRF.DROIT, nbThreads, new SubStatusManager(50, 66, statusManager));
-		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, nbThreads, new SubStatusManager(66, 83, statusManager));
-		processMutations(importId, TypeEntiteRF.BATIMENT, nbThreads, new SubStatusManager(83, 100, statusManager));
+		final RegDate dateValeur = getDateValeur(importId);
+		final MutationsRFProcessorResults rapportFinal = new MutationsRFProcessorResults(importId, dateValeur, nbThreads, evenementRFMutationDAO);
+
+		processMutations(importId, TypeEntiteRF.COMMUNE, nbThreads, dateValeur, rapportFinal, new SubStatusManager(0, 16, statusManager));
+		processMutations(importId, TypeEntiteRF.IMMEUBLE, nbThreads, dateValeur, rapportFinal, new SubStatusManager(16, 33, statusManager));
+		processMutations(importId, TypeEntiteRF.AYANT_DROIT, nbThreads, dateValeur, rapportFinal, new SubStatusManager(33, 50, statusManager));
+		processMutations(importId, TypeEntiteRF.DROIT, nbThreads, dateValeur, rapportFinal, new SubStatusManager(50, 66, statusManager));
+		processMutations(importId, TypeEntiteRF.SURFACE_AU_SOL, nbThreads, dateValeur, rapportFinal, new SubStatusManager(66, 83, statusManager));
+		processMutations(importId, TypeEntiteRF.BATIMENT, nbThreads, dateValeur, rapportFinal, new SubStatusManager(83, 100, statusManager));
+
+		rapportFinal.end();
+		return rapportFinal;
+	}
+
+	@NotNull
+	private RegDate getDateValeur(long importId) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(status -> {
+			final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+			if (importEvent == null) {
+				throw new IllegalArgumentException("L'import avec l'id=[" + importId + "] n'existe pas.");
+			}
+			return importEvent.getDateEvenement();
+		});
 	}
 
 	private void checkPreconditions(long importId) {
@@ -105,7 +131,7 @@ public class MutationsRFProcessor {
 		});
 	}
 
-	private void processMutations(long importId, @NotNull TypeEntiteRF typeEntite, int nbThreads, @NotNull final StatusManager statusManager) {
+	private void processMutations(long importId, @NotNull TypeEntiteRF typeEntite, int nbThreads, @NotNull RegDate dateValeur, @NotNull MutationsRFProcessorResults rapportFinal, @NotNull final StatusManager statusManager) {
 
 		final List<Long> ids = findIdsMutationsATraiter(importId, typeEntite);
 		if (LOGGER.isTraceEnabled()) {
@@ -114,15 +140,14 @@ public class MutationsRFProcessor {
 
 		final MutationRFProcessor proc = getProcessor(typeEntite);
 
-		// TODO (msi) générer un rapport
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplate<Long> template = new ParallelBatchTransactionTemplate<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
-		template.execute(new BatchCallback<Long>() {
+		final ParallelBatchTransactionTemplateWithResults<Long, MutationsRFProcessorResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, MutationsRFProcessorResults>() {
 
 			private final ThreadLocal<Long> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Long> mutationsIds) throws Exception {
+			public boolean doInTransaction(List<Long> mutationsIds, MutationsRFProcessorResults rapport) throws Exception {
 				first.set(mutationsIds.get(0));
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Processing mutations ids={}", Arrays.toString(mutationsIds.toArray()));
@@ -130,7 +155,7 @@ public class MutationsRFProcessor {
 				statusManager.setMessage("Traitement des mutations " + typeEntite.name() + "...", monitor.getProgressInPercent());
 				mutationsIds.stream()
 						.map(id -> getMutation(id))
-						.forEach(mut -> processMutation(mut, proc));
+						.forEach(mut -> processMutation(mut, proc, rapport));
 				return true;
 			}
 
@@ -144,15 +169,20 @@ public class MutationsRFProcessor {
 					}
 				}
 			}
+
+			@Override
+			public MutationsRFProcessorResults createSubRapport() {
+				return new MutationsRFProcessorResults(importId, dateValeur, nbThreads, evenementRFMutationDAO);
+			}
 		}, monitor);
 	}
 
-	private void processMutation(@NotNull EvenementRFMutation mut, @NotNull MutationRFProcessor proc) {
+	private void processMutation(@NotNull EvenementRFMutation mut, @NotNull MutationRFProcessor proc, @NotNull MutationsRFProcessorResults rapport) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Processing mutation id=[{}]", mut.getId());
 		}
 
-		proc.process(mut);
+		proc.process(mut, rapport);
 
 		// on met-à-jour le statut de la mutation
 		mut.setEtat(EtatEvenementRF.TRAITE);

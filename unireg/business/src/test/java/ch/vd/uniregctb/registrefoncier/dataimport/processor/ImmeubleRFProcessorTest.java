@@ -65,7 +65,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		mutation.setId(1L);
 		mutation.setEtat(EtatEvenementRF.TRAITE);
 		try {
-			processor.process(mutation);
+			processor.process(mutation, null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -83,7 +83,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		mutation.setId(1L);
 		mutation.setEtat(EtatEvenementRF.FORCE);
 		try {
-			processor.process(mutation);
+			processor.process(mutation, null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -119,7 +119,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation);
+				processor.process(mutation, null);
 			}
 		});
 
@@ -199,7 +199,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation);
+				processor.process(mutation, null);
 			}
 		});
 
@@ -290,7 +290,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation);
+				processor.process(mutation, null);
 			}
 		});
 
@@ -412,7 +412,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation);
+				processor.process(mutation, null);
 			}
 		});
 
@@ -526,7 +526,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation);
+				processor.process(mutation, null);
 			}
 		});
 

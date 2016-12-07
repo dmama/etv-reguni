@@ -98,6 +98,7 @@
 		<constructor-arg value="109"/>
 		<constructor-arg value="Traiter les mutations des immeubles du registre foncier"/>
 		<property name="processor" ref="mutationsRFProcessor"/>
+		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
 	<bean id="rapprocherTiersRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.RapprocherTiersRFJob">

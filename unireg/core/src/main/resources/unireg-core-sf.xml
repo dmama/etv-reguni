@@ -214,6 +214,7 @@
 		<value>ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport</value>
 		<value>ch.vd.uniregctb.document.RapprochementTiersRFRapport</value>
 		<value>ch.vd.uniregctb.document.MutationsRFDetectorRapport</value>
+		<value>ch.vd.uniregctb.document.MutationsRFProcessorRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.registrefoncier.RapprochementRF</value>
