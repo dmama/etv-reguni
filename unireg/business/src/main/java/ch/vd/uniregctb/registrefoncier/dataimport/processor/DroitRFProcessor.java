@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
@@ -24,6 +25,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
@@ -63,7 +65,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	@Override
-	public void process(@NotNull EvenementRFMutation mutation) {
+	public void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport) {
 
 		if (mutation.getEtat() == EtatEvenementRF.TRAITE || mutation.getEtat() == EtatEvenementRF.FORCE) {
 			throw new IllegalArgumentException("La mutation n°" + mutation.getId() + " est déjà traitée (état=[" + mutation.getEtat() + "]).");
@@ -115,6 +117,10 @@ public class DroitRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
 		}
 
+		// on renseigne le rapport
+		if (rapport != null) {
+			rapport.addProcessed(mutation.getId(), TypeEntiteRF.DROIT, mutation.getTypeMutation());
+		}
 	}
 
 	@Nullable

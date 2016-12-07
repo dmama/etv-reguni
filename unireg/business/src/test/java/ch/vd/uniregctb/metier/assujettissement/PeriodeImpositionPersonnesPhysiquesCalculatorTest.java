@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
@@ -20,7 +21,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1400,4 +1403,66 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 		});
 	}
 
+
+	/**
+	 * [SIFISC-21684] Cas d'un mixte 2 qui se sépare et part HC dès le lendemain (en 2014 ou plus tard)
+	 * --> il devrait avoir un assujettissement depuis le début de l'année jusqu'à la fin du mois du départ HC
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testMixte2QuiSeSepareEtPartHCLeLendemain() throws Exception {
+
+		final int annee = 2014;
+		final RegDate mariage = date(annee - 4, 1, 1);
+		final RegDate separation = date(annee, 4, 17);
+		final RegDate departHC = separation.getOneDayAfter();
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, separation);
+		final MenageCommun mc = couple.getMenage();
+
+		addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, separation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
+		addForPrincipal(pp, separation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+
+		final List<PeriodeImposition> pis = determine(pp, annee);
+		assertNotNull(pis);
+		assertEquals(1, pis.size());
+
+		final PeriodeImposition pi = pis.get(0);
+		assertNotNull(pi);
+		assertEquals(date(annee, 1, 1), pi.getDateDebut());
+		assertEquals(departHC.getLastDayOfTheMonth(), pi.getDateFin());
+	}
+
+	/**
+	 * [SIFISC-21684] Cas d'un mixte 2 qui se sépare et part HC dès le surlendemain (en 2014 ou plus tard)
+	 * --> il devrait avoir un assujettissement depuis le début de l'année jusqu'à la fin du mois du départ HC
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@Test
+	public void testMixte2QuiSeSepareEtPartHCLeSurlendemain() throws Exception {
+
+		final int annee = 2014;
+		final RegDate mariage = date(annee - 4, 1, 1);
+		final RegDate separation = date(annee, 4, 17);
+		final RegDate departHC = separation.getOneDayAfter().getOneDayAfter();
+
+		final PersonnePhysique pp = createContribuableSansFor();
+		final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, mariage, separation);
+		final MenageCommun mc = couple.getMenage();
+
+		addForPrincipal(mc, mariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, separation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
+		addForPrincipal(pp, separation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+		addForPrincipal(pp, departHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
+
+		final List<PeriodeImposition> pis = determine(pp, annee);
+		assertNotNull(pis);
+		assertEquals(1, pis.size());
+
+		final PeriodeImposition pi = pis.get(0);
+		assertNotNull(pi);
+		assertEquals(date(annee, 1, 1), pi.getDateDebut());
+		assertEquals(departHC.getLastDayOfTheMonth(), pi.getDateFin());
+	}
 }

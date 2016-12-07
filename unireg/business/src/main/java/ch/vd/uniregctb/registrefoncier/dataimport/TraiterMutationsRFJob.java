@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
+import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.registrefoncier.RapprocherTiersRFJob;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -28,9 +31,14 @@ public class TraiterMutationsRFJob extends JobDefinition {
 	public static final String CONTINUE_WITH_IDENTIFICATION_JOB = "CONTINUE_WITH_IDENTIFICATION_JOB";
 
 	private MutationsRFProcessor processor;
+	private RapportService rapportService;
 
 	public void setProcessor(MutationsRFProcessor processor) {
 		this.processor = processor;
+	}
+
+	public void setRapportService(RapportService rapportService) {
+		this.rapportService = rapportService;
 	}
 
 	public TraiterMutationsRFJob(int sortOrder, String description) {
@@ -69,7 +77,10 @@ public class TraiterMutationsRFJob extends JobDefinition {
 
 		// on traite les mutations
 		statusManager.setMessage("Traitement des mutations...");
-		processor.processImport(importId, nbThreads, statusManager);
+		final MutationsRFProcessorResults results = processor.processImport(importId, nbThreads, statusManager);
+		final MutationsRFProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
+		setLastRunReport(rapport);
+		Audit.success("Le traitement de l'import RF (traitement des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de rapprochement des propriétaires
 		if (startRapprochementJob) {

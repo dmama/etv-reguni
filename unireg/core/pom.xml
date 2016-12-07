@@ -44,7 +44,7 @@
 			<groupId>oracle.jdbc</groupId>
 			<artifactId>ojdbc7</artifactId>
 			<version>${oracle.version}</version>
-			<scope>provided</scope>
+		<!--	<scope>provided</scope>-->
 			<!-- nécessaire à la classe UniregXAMCF -->
 		</dependency>
 		<dependency>

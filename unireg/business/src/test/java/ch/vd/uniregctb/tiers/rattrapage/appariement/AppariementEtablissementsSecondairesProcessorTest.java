@@ -280,6 +280,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				addDomicileEtablissement(sec, dateDebut, null, MockCommune.Lausanne);
 				addActiviteEconomique(e, sec, dateDebut, null, false);
 				sec.setRaisonSociale("Toto et compagnie Lausanne");
+				sec.setEnseigne("Toto & cie");
 				addIdentificationEntreprise(sec, ide);
 
 				final Ids ids = new Ids();
@@ -319,6 +320,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
 				Assert.assertNotNull(sec);
 				Assert.assertNull(sec.getNumeroEtablissement());
+				Assert.assertEquals("Toto et compagnie Lausanne", sec.getRaisonSociale());
+				Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
 				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("from DomicileEtablissement", null);
 				Assert.assertNotNull(domiciles);
@@ -360,6 +363,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
 				Assert.assertNotNull(sec);
 				Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
+				Assert.assertNull(sec.getRaisonSociale());
+				Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
 				// le domicile fiscal a été carrément annulé car la date de début de l'établissement civil est la même que celle du domicile fiscal actuel
 				final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
@@ -435,6 +440,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				addDomicileEtablissement(sec, dateDemenagementFiscal, null, MockCommune.Lausanne);
 				addActiviteEconomique(e, sec, dateDebutFiscale, null, false);
 				sec.setRaisonSociale("Toto et compagnie Lausanne");
+				sec.setEnseigne("Toto & cie");
 
 				final Ids ids = new Ids();
 				ids.idEntreprise = e.getNumero();
@@ -473,6 +479,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
 				Assert.assertNotNull(sec);
 				Assert.assertNull(sec.getNumeroEtablissement());
+				Assert.assertEquals("Toto et compagnie Lausanne", sec.getRaisonSociale());
+				Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
 				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("FROM DomicileEtablissement de ORDER BY de.dateDebut ASC", null);
 				Assert.assertNotNull(domiciles);
@@ -529,6 +537,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
 				Assert.assertNotNull(sec);
 				Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
+				Assert.assertNull(sec.getRaisonSociale());
+				Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
 				// le domicile fiscal actif au moment de la date de début civile a été fermé à la veille
 				final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);
@@ -612,6 +622,7 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				addDomicileEtablissement(sec, dateDemenagementFiscal2, null, MockCommune.Lausanne);
 				addActiviteEconomique(e, sec, dateDebutFiscale, null, false);
 				sec.setRaisonSociale("Toto Lausanne");
+				sec.setEnseigne("Toto & cie");
 
 				final Ids ids = new Ids();
 				ids.idEntreprise = e.getNumero();
@@ -650,6 +661,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
 				Assert.assertNotNull(sec);
 				Assert.assertNull(sec.getNumeroEtablissement());
+				Assert.assertEquals("Toto Lausanne", sec.getRaisonSociale());
+				Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
 				final List<DomicileEtablissement> domiciles = hibernateTemplate.find("FROM DomicileEtablissement de ORDER BY de.dateDebut ASC", null);
 				Assert.assertNotNull(domiciles);
@@ -716,6 +729,8 @@ public class AppariementEtablissementsSecondairesProcessorTest extends BusinessT
 				final Etablissement sec = (Etablissement) tiersService.getTiers(ids.idEtablissementSecondaire);
 				Assert.assertNotNull(sec);
 				Assert.assertEquals((Long) noCantonalEtablissementSecondaire1, sec.getNumeroEtablissement());
+				Assert.assertNull(sec.getRaisonSociale());
+				Assert.assertEquals("Toto & cie", sec.getEnseigne());
 
 				// le domicile fiscal actif au moment de la date de début civile a été fermé à la veille
 				final List<DomicileEtablissement> secDomiciles = sec.getSortedDomiciles(true);

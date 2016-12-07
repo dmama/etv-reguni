@@ -86,8 +86,9 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 				fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 			}
 			else {
+				// [SIFISC-21684] la fraction décalée n'est active qu'à partir du lendemain du départ (= à partir du jour d'arrivée dans l'autre canton)
 				final RegDate dateFraction = current.getDateFin().getLastDayOfTheMonth().getOneDayAfter();
-				fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateFin(), dateFraction), motifFermeture, null);
+				fraction = new FractionDecalee(dateFraction, new DateRangeHelper.Range(current.getDateFin().getOneDayAfter(), dateFraction), motifFermeture, null);
 			}
 		}
 
