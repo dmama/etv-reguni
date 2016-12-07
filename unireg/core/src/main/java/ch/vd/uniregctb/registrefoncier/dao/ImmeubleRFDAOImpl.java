@@ -31,4 +31,12 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		//noinspection unchecked
 		return new HashSet<>(query.list());
 	}
+
+	@NotNull
+	@Override
+	public Set<String> findImmeublesActifs() {
+		final Query query = getCurrentSession().createQuery("select idRF from ImmeubleRF where dateRadiation is null");
+		//noinspection unchecked
+		return new HashSet<>(query.list());
+	}
 }

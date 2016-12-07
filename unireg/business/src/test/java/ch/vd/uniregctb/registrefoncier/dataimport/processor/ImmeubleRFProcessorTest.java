@@ -570,4 +570,84 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			}
 		});
 	}
+
+	/**
+	 * Ce test vérifie que le processing d'une mutation de suppression d'un immeuble ajoute bien une date de radiation.
+	 */
+	@Test
+	public void testProcessMutationSuppression() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+		final RegDate veilleImport = dateImport.getOneDayBefore();
+
+		// précondition : il y a un immeuble dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(294);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
+				final BienFondRF bienFond = new BienFondRF();
+				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
+				bienFond.setEgrid("CH938391457759");
+				bienFond.setCfa(false);
+
+				final SituationRF situation = new SituationRF();
+				situation.setDateDebut(RegDate.get(1988, 1, 1));
+				situation.setDateFin(veilleImport); // on pré-renseigne la date de fermeture pour que la validation de l'immeuble passe (on ne veut tester que la mutation sur l'immeuble)
+				situation.setCommune(commune);
+				situation.setNoParcelle(5089);
+				bienFond.addSituation(situation);
+
+				final EstimationRF estimation = new EstimationRF();
+				estimation.setDateDebut(RegDate.get(1988, 1, 1));
+				estimation.setDateFin(veilleImport);
+				estimation.setMontant(260000L);
+				estimation.setReference("RG93");
+				estimation.setEnRevision(false);
+				bienFond.addEstimation(estimation);
+
+				final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+				surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
+				surfaceTotale.setDateFin(veilleImport);
+				surfaceTotale.setSurface(532);
+				bienFond.addSurfaceTotale(surfaceTotale);
+
+				immeubleRFDAO.save(bienFond);
+				assertEquals(1, immeubleRFDAO.getAll().size());
+			}
+		});
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_1f109152381026b501381028a73d1852");
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée et l'immeuble est radié
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(1, immeubles.size());
+
+				// l'immeuble est radié
+				final ImmeubleRF immeuble0 = immeubles.get(0);
+				assertEquals("_1f109152381026b501381028a73d1852", immeuble0.getIdRF());
+				assertEquals("CH938391457759", immeuble0.getEgrid());
+				assertEquals(veilleImport, immeuble0.getDateRadiation());
+			}
+		});
+	}
 }

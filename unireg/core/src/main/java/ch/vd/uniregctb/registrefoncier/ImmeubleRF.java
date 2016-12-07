@@ -20,8 +20,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
@@ -78,6 +81,9 @@ public abstract class ImmeubleRF extends HibernateEntity {
 	 * Le ou les bâtiments (multiples + historisés) implanté sur cet immeuble.
 	 */
 	private Set<ImplantationRF> implantations;
+
+	@Nullable
+	private RegDate dateRadiation;
 
 	@Transient
 	@Override
@@ -197,5 +203,16 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	public void setImplantations(Set<ImplantationRF> implantations) {
 		this.implantations = implantations;
+	}
+
+	@Nullable
+	@Column(name = "DATE_RADIATION")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateRadiation() {
+		return dateRadiation;
+	}
+
+	public void setDateRadiation(@Nullable RegDate dateRadiation) {
+		this.dateRadiation = dateRadiation;
 	}
 }

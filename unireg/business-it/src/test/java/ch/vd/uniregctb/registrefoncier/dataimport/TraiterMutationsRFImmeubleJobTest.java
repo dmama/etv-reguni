@@ -28,6 +28,7 @@ import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
@@ -958,6 +959,284 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals("2015", estimation.getReference());
 					assertEquals(RegDate.get(2015, 10, 22), estimation.getDateEstimation());
 					assertFalse(estimation.isEnRevision());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Ce test vérifie que des mutations de suppression sont bien traitées et que les immeubles correspondant sont radiés.
+	 */
+	@Test
+	public void testTraiterMutationsSuppression() throws Exception {
+
+		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
+		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		// on insère les données du second import dans la base
+		final Long importId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(dateSecondImport);
+				importEvent.setEtat(EtatEvenementRF.TRAITE);
+				importEvent.setFileUrl("http://turlututu");
+				importEvent = evenementRFImportDAO.save(importEvent);
+
+				final EvenementRFMutation mut0 = new EvenementRFMutation();
+				mut0.setParentImport(importEvent);
+				mut0.setEtat(EtatEvenementRF.A_TRAITER);
+				mut0.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut0.setTypeMutation(TypeMutationRF.SUPPRESSION);
+				mut0.setIdRF("_1f109152381026b501381028a73d1852");
+				mut0.setXmlContent(null);
+				evenementRFMutationDAO.save(mut0);
+
+				final EvenementRFMutation mut1 = new EvenementRFMutation();
+				mut1.setParentImport(importEvent);
+				mut1.setEtat(EtatEvenementRF.A_TRAITER);
+				mut1.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut1.setTypeMutation(TypeMutationRF.SUPPRESSION);
+				mut1.setIdRF("_8af806cc3971feb60139e36d062130f3");
+				mut1.setXmlContent(null);
+				evenementRFMutationDAO.save(mut1);
+
+				final EvenementRFMutation mut2 = new EvenementRFMutation();
+				mut2.setParentImport(importEvent);
+				mut2.setEtat(EtatEvenementRF.A_TRAITER);
+				mut2.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut2.setTypeMutation(TypeMutationRF.SUPPRESSION);
+				mut2.setIdRF("_8af806cc5043853201508e1e8a3a1a71");
+				mut2.setXmlContent(null);
+				evenementRFMutationDAO.save(mut2);
+
+				final EvenementRFMutation mut3 = new EvenementRFMutation();
+				mut3.setParentImport(importEvent);
+				mut3.setEtat(EtatEvenementRF.A_TRAITER);
+				mut3.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+				mut3.setTypeMutation(TypeMutationRF.SUPPRESSION);
+				mut3.setIdRF("_8af806fc45d223e60149c23f475365d5");
+				mut3.setXmlContent(null);
+				evenementRFMutationDAO.save(mut3);
+
+				return importEvent.getId();
+			}
+		});
+		assertNotNull(importId);
+
+		// on insère les données des immeubles dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
+				final CommuneRF boulens = communeRFDAO.save(newCommuneRF(190, "Boulens", 5556));
+				final CommuneRF corcelles = communeRFDAO.save(newCommuneRF(308, "Corcelles-près-Payerne", 5557));
+
+				// données identiques de celles du fichier export_immeubles_rf_hebdo.xml
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, false, false, dateImportInitial, 707);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2120000L, "2016", RegDate.get(2016, 9, 13), false, dateImportInitial, 4896);
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), dateImportInitial);
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 3601, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), dateImportInitial);
+
+				immeubleRFDAO.save(bienFond);
+				immeubleRFDAO.save(droitDistinctEtPermanent);
+				immeubleRFDAO.save(ppe);
+				immeubleRFDAO.save(copropriete);
+			}
+		});
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterMutationsRFJob.ID, importId);
+		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit se terminer correctement
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+
+		// on vérifie que les mutations ont bien été traitées
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+				assertEquals(4, mutations.size());    // il n'y a pas d'immeubles dans le fichier d'import et 4 immeubles dans le DB
+				Collections.sort(mutations, new MutationComparator());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(0).getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(1).getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(2).getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, mutations.get(3).getEtat());
+			}
+		});
+
+		// on vérifie que les immeubles ont bien été radié
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
+				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"));
+				assertNotNull(bienFond);
+				{
+					assertEquals("_1f109152381026b501381028a73d1852", bienFond.getIdRF());
+					assertEquals("CH938391457759", bienFond.getEgrid());
+					assertFalse(bienFond.isCfa());
+					assertEquals(dateSecondImport.getOneDayBefore(), bienFond.getDateRadiation());
+
+					final Set<SituationRF> situations = bienFond.getSituations();
+					assertEquals(1, situations.size());
+
+					final SituationRF situation = situations.iterator().next();
+					assertEquals(dateImportInitial, situation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), situation.getDateFin());
+					assertEquals(294, situation.getCommune().getNoRf());
+					assertEquals(5089, situation.getNoParcelle());
+					assertNull(situation.getIndex1());
+					assertNull(situation.getIndex2());
+					assertNull(situation.getIndex3());
+
+					final Set<EstimationRF> estimations = bienFond.getEstimations();
+					assertEquals(1, estimations.size());
+
+					final EstimationRF estimation = estimations.iterator().next();
+					assertEquals(dateImportInitial, estimation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFin());
+					assertEquals(Long.valueOf(260000), estimation.getMontant());
+					assertEquals("RG93", estimation.getReference());
+					assertNull(estimation.getDateEstimation());
+					assertFalse(estimation.isEnRevision());
+
+					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+					assertEquals(1, surfacesTotales.size());
+
+					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+					assertEquals(dateImportInitial, surfaceTotale.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), surfaceTotale.getDateFin());
+					assertEquals(707, surfaceTotale.getSurface());
+				}
+
+				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
+				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"));
+				assertNotNull(ddo);
+				{
+					assertEquals("_8af806cc3971feb60139e36d062130f3", ddo.getIdRF());
+					assertEquals("CH729253834531", ddo.getEgrid());
+					assertEquals(dateSecondImport.getOneDayBefore(), ddo.getDateRadiation());
+
+					final Set<SituationRF> situations = ddo.getSituations();
+					assertEquals(1, situations.size());
+
+					final SituationRF situation = situations.iterator().next();
+					assertEquals(dateImportInitial, situation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), situation.getDateFin());
+					assertEquals(294, situation.getCommune().getNoRf());
+					assertEquals(692, situation.getNoParcelle());
+					assertNull(situation.getIndex1());
+					assertNull(situation.getIndex2());
+					assertNull(situation.getIndex3());
+
+					final Set<EstimationRF> estimations = ddo.getEstimations();
+					assertEquals(1, estimations.size());
+					final EstimationRF estimation = estimations.iterator().next();
+					assertEquals(dateImportInitial, estimation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFin());
+					assertEquals(Long.valueOf(2120000), estimation.getMontant());
+					assertEquals("2016", estimation.getReference());
+					assertEquals(RegDate.get(2016, 9, 13), estimation.getDateEstimation());
+					assertFalse(estimation.isEnRevision());
+
+					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+					assertEquals(1, surfacesTotales.size());
+
+					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+					assertEquals(dateImportInitial, surfaceTotale.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), surfaceTotale.getDateFin());
+					assertEquals(707, surfaceTotale.getSurface());
+				}
+
+				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
+				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"));
+				assertNotNull(ppe);
+				{
+					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
+					assertEquals("CH336583651349", ppe.getEgrid());
+					assertEquals(new Fraction(293, 1000), ppe.getQuotePart());
+
+					final Set<SituationRF> situations = ppe.getSituations();
+					assertEquals(1, situations.size());
+
+					final SituationRF situation = situations.iterator().next();
+					assertEquals(dateImportInitial, situation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), situation.getDateFin());
+					assertEquals(190, situation.getCommune().getNoRf());
+					assertEquals(19, situation.getNoParcelle());
+					assertEquals(Integer.valueOf(4), situation.getIndex1());
+					assertNull(situation.getIndex2());
+					assertNull(situation.getIndex3());
+
+					final Set<EstimationRF> estimations = ppe.getEstimations();
+					assertEquals(1, estimations.size());
+
+					final EstimationRF estimation = estimations.iterator().next();
+					assertEquals(dateImportInitial, estimation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFin());
+					assertEquals(Long.valueOf(495000), estimation.getMontant());
+					assertEquals("2016", estimation.getReference());
+					assertEquals(RegDate.get(2016, 9, 13), estimation.getDateEstimation());
+					assertFalse(estimation.isEnRevision());
+
+					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+					assertEquals(1, surfacesTotales.size());
+
+					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+					assertEquals(dateImportInitial, surfaceTotale.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), surfaceTotale.getDateFin());
+					assertEquals(707, surfaceTotale.getSurface());
+				}
+
+				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
+				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"));
+				assertNotNull(copro);
+				{
+					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());
+					assertEquals("CH516579658411", copro.getEgrid());
+					assertEquals(new Fraction(1, 18), copro.getQuotePart());
+
+					final Set<SituationRF> situations = copro.getSituations();
+					assertEquals(1, situations.size());
+
+					final SituationRF situation = situations.iterator().next();
+					assertEquals(dateImportInitial, situation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), situation.getDateFin());
+					assertEquals(308, situation.getCommune().getNoRf());
+					assertEquals(3601, situation.getNoParcelle());
+					assertEquals(Integer.valueOf(7), situation.getIndex1());
+					assertEquals(Integer.valueOf(13), situation.getIndex2());
+					assertNull(situation.getIndex3());
+
+					final Set<EstimationRF> estimations = copro.getEstimations();
+					assertEquals(1, estimations.size());
+
+					final EstimationRF estimation = estimations.iterator().next();
+					assertEquals(dateImportInitial, estimation.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFin());
+					assertEquals(Long.valueOf(550), estimation.getMontant());
+					assertEquals("2015", estimation.getReference());
+					assertEquals(RegDate.get(2015, 10, 22), estimation.getDateEstimation());
+					assertFalse(estimation.isEnRevision());
+
+					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+					assertEquals(1, surfacesTotales.size());
+
+					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
+					assertEquals(dateImportInitial, surfaceTotale.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), surfaceTotale.getDateFin());
+					assertEquals(707, surfaceTotale.getSurface());
 				}
 			}
 		});

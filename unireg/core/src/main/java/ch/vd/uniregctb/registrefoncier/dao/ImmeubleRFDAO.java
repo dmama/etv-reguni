@@ -15,8 +15,14 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	ImmeubleRF find(@NotNull ImmeubleRFKey key);
 
 	/**
-	 * @return les ids des immeubles qui possèdent des surfaces au sol actives.
+	 * @return les ids RF des immeubles qui possèdent des surfaces au sol actives.
 	 */
 	@NotNull
 	Set<String> findWithActiveSurfacesAuSol();
+
+	/**
+	 * @return les ids RF des immeubles non-radiés.
+	 */
+	@NotNull
+	Set<String> findImmeublesActifs();
 }

@@ -2,10 +2,12 @@ package ch.vd.uniregctb.registrefoncier.dataimport.detector;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
@@ -92,6 +94,7 @@ public class ImmeubleRFDetector {
 			}
 		};
 
+		final Set<String> immeubles = Collections.synchronizedSet(new HashSet<>());
 		final Map<Integer, String> communes = Collections.synchronizedMap(new HashMap<>());
 		final AtomicInteger processed = new AtomicInteger();
 
@@ -112,6 +115,9 @@ public class ImmeubleRFDetector {
 						// on ignore les bâtiments flaggés comme des copies
 						continue;
 					}
+
+					// on mémorise l'id RF de l'immeuble pour détecter les radiations d'immeubles (en fin de traitement)
+					immeubles.add(immeuble.getGrundstueckID());
 
 					// on renseigne la map des communes pour détecter les éventuelles mutations (en fin de traitement)
 					final int noRf = immeuble.getGrundstueckNummer().getBfsNr();
@@ -165,6 +171,33 @@ public class ImmeubleRFDetector {
 				}
 			}
 		}, null);
+
+		// on détecte les radiations d'immeubles
+		final TransactionTemplate t1 = new TransactionTemplate(transactionManager);
+		t1.execute(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
+
+				// on détecte les immeubles actifs dans la base qui ne sont pas présents dans l'import
+				final Set<String> persisted = immeubleRFDAO.findImmeublesActifs();
+				persisted.removeAll(immeubles);
+
+				// ... et on crée des mutations de SUPPRESSION dessus
+				persisted.forEach(idRf -> {
+					final EvenementRFMutation mutation = new EvenementRFMutation();
+					mutation.setParentImport(parentImport);
+					mutation.setEtat(EtatEvenementRF.A_TRAITER);
+					mutation.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+					mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
+					mutation.setIdRF(idRf);
+					mutation.setXmlContent(null);
+					evenementRFMutationDAO.save(mutation);
+				});
+			}
+		});
+		immeubles.clear();
 
 		// on détecte les mutations sur les communes (ajout, fusion, annexion par milice armée, ...)
 		final TransactionTemplate t2 = new TransactionTemplate(transactionManager);

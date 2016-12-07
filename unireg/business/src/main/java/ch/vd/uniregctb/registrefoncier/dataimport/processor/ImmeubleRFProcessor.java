@@ -9,11 +9,13 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -68,30 +70,36 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 
-		// on interpète le XML
-		final Grundstueck immeubleImport;
-		try {
-			final StringSource source = new StringSource(mutation.getXmlContent());
-			immeubleImport = (Grundstueck) unmarshaller.get().unmarshal(source);
+		final TypeMutationRF typeMutation = mutation.getTypeMutation();
+		if (typeMutation == TypeMutationRF.CREATION || typeMutation == TypeMutationRF.MODIFICATION) {
+			// on interpète le XML
+			final Grundstueck immeubleImport;
+			try {
+				final StringSource source = new StringSource(mutation.getXmlContent());
+				immeubleImport = (Grundstueck) unmarshaller.get().unmarshal(source);
+			}
+			catch (JAXBException e) {
+				throw new RuntimeException(e);
+			}
+
+			// on crée l'immeuble en mémoire
+			final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(immeubleImport, this::findCommune);
+
+			// on traite la mutation
+			if (typeMutation == TypeMutationRF.CREATION) {
+				processCreation(dateValeur, immeuble);
+			}
+			else {
+				processModification(dateValeur, immeuble);
+			}
 		}
-		catch (JAXBException e) {
-			throw new RuntimeException(e);
+		else if (typeMutation == TypeMutationRF.SUPPRESSION) {
+			processSuppression(dateValeur, mutation.getIdRF());
+		}
+		else {
+			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
 		}
 
-		// on crée l'immeuble en mémoire
-		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(immeubleImport, this::findCommune);
-
-		// on l'insère en DB
-		switch (mutation.getTypeMutation()) {
-		case CREATION:
-			processCreation(dateValeur, immeuble);
-			break;
-		case MODIFICATION:
-			processModification(dateValeur, immeuble);
-			break;
-		default:
-			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
-		}
 
 		// on renseigne le rapport
 		if (rapport != null) {
@@ -108,7 +116,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		return commune;
 	}
 
-	private void processCreation(RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
+	private void processCreation(@NotNull RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
 
 		// on va chercher les nouvelles situations et estimations
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
@@ -130,7 +138,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		immeubleRFDAO.save(newImmeuble);
 	}
 
-	private void processModification(RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
+	private void processModification(@NotNull RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
 
 		final String idRF = newImmeuble.getIdRF();
 
@@ -194,5 +202,30 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				persisted.getSurfacesTotales().add(newSurfaceTotale);
 			}
 		}
+	}
+
+	private void processSuppression(@NotNull RegDate dateValeur, @NotNull String idRF) {
+
+		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(idRF));
+		if (persisted == null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
+		}
+		if (persisted.getDateRadiation() != null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] est déjà radié à la date du [" + RegDateHelper.dateToDisplayString(persisted.getDateRadiation()) + "].");
+		}
+
+		// on ferme les situation, estimation fiscale et surface totale courantes (note : les implantations ne sont pas possédées par l'immeuble, on ne les touche pas)
+		persisted.getSituations().stream()
+				.filter(s -> s.getDateFin() == null)
+				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+		persisted.getEstimations().stream()
+				.filter(e -> e.getDateFin() == null)
+				.forEach(e -> e.setDateFin(dateValeur.getOneDayBefore()));
+		persisted.getSurfacesTotales().stream()
+				.filter(s -> s.getDateFin() == null)
+				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+
+		// on radie l'immeuble
+		persisted.setDateRadiation(dateValeur.getOneDayBefore());
 	}
 }

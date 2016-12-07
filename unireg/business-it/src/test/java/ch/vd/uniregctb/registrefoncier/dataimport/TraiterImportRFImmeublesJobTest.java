@@ -682,4 +682,110 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 		});
 	}
 
+	/**
+	 * Ce test vérifie que des mutations de suppression sont bien créées lorsque des immeubles actifs dans la base n'apparaissent pas dans l'import.
+	 */
+	@Test
+	public void testImportImmeublesRadie() throws Exception {
+
+		// on va chercher le fichier d'import
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_immeubles_vide_rf_hebdo.xml");
+		assertNotNull(importFile);
+
+		// on l'upload dans Raft
+		final String raftUrl;
+		try (FileInputStream is = new FileInputStream(importFile)) {
+			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
+		}
+		assertNotNull(raftUrl);
+
+		// on insère les données de l'import dans la base
+		final Long importId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
+				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+				importEvent.setFileUrl(raftUrl);
+				return evenementRFImportDAO.save(importEvent).getId();
+			}
+		});
+		assertNotNull(importId);
+
+		// on insère les données des immeubles dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
+				final CommuneRF boulens = communeRFDAO.save(newCommuneRF(190, "Boulens", 5556));
+				final CommuneRF corcelles = communeRFDAO.save(newCommuneRF(308, "Corcelles-près-Payerne", 5557));
+
+				// données équivalentes au fichier export_immeubles_rf_hebdo.xml
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, false, false, RegDate.get(2010, 1, 1), 707);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2120000L, "2016", RegDate.get(2016, 9, 13), false, RegDate.get(2010, 1, 1),
+				                                                                                          4896);
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 3601, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
+
+				immeubleRFDAO.save(bienFond);
+				immeubleRFDAO.save(droitDistinctEtPermanent);
+				immeubleRFDAO.save(ppe);
+				immeubleRFDAO.save(copropriete);
+			}
+		});
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, importId);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit se terminer correctement
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+
+		// on vérifie que l'import est bien passé au statut TRAITE
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
+			}
+		});
+
+		// on vérifie qu'il y a bien les mutations de suppression dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+				assertEquals(4, mutations.size());    // il y a 4 immeubles dans la base et aucun dans le fichier d'import
+				Collections.sort(mutations, (l,r) -> l.getIdRF().compareTo(r.getIdRF()));
+
+				final EvenementRFMutation mutation0 = mutations.get(0);
+				assertEquals(TypeEntiteRF.IMMEUBLE, mutation0.getTypeEntite());
+				assertEquals(TypeMutationRF.SUPPRESSION, mutation0.getTypeMutation());
+				assertEquals("_1f109152381026b501381028a73d1852", mutation0.getIdRF());
+
+				final EvenementRFMutation mutation1 = mutations.get(1);
+				assertEquals(TypeEntiteRF.IMMEUBLE, mutation1.getTypeEntite());
+				assertEquals(TypeMutationRF.SUPPRESSION, mutation1.getTypeMutation());
+				assertEquals("_8af806cc3971feb60139e36d062130f3", mutation1.getIdRF());
+
+				final EvenementRFMutation mutation2 = mutations.get(2);
+				assertEquals(TypeEntiteRF.IMMEUBLE, mutation2.getTypeEntite());
+				assertEquals(TypeMutationRF.SUPPRESSION, mutation2.getTypeMutation());
+				assertEquals("_8af806cc5043853201508e1e8a3a1a71", mutation2.getIdRF());
+
+				final EvenementRFMutation mutation3 = mutations.get(3);
+				assertEquals(TypeEntiteRF.IMMEUBLE, mutation3.getTypeEntite());
+				assertEquals(TypeMutationRF.SUPPRESSION, mutation3.getTypeMutation());
+				assertEquals("_8af806fc45d223e60149c23f475365d5", mutation3.getIdRF());
+			}
+		});
+	}
 }

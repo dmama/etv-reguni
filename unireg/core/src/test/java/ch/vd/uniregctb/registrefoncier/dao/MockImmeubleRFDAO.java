@@ -47,6 +47,15 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 				.collect(Collectors.toSet());
 	}
 
+	@NotNull
+	@Override
+	public Set<String> findImmeublesActifs() {
+		return db.stream()
+				.filter(i -> i.getDateRadiation() == null)
+				.map(ImmeubleRF::getIdRF)
+				.collect(Collectors.toSet());
+	}
+
 	@Override
 	public List<ImmeubleRF> getAll() {
 		throw new NotImplementedException();

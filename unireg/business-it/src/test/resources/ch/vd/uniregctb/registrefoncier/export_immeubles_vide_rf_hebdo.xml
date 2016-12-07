@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+    <GrundstueckList>
+    </GrundstueckList>
+</GrundstueckExport>

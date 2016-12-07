@@ -49,6 +49,7 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(UniregJUnit4Runner.class)
 public class ImmeubleRFDetectorTest {
@@ -345,6 +346,61 @@ public class ImmeubleRFDetectorTest {
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(0, mutations.size());
+	}
+
+	/**
+	 * Ce test vérifie que des mutations de suppression sont créées si des immeubles actifs existent dans la base mais pas dans le fichier d'import.
+	 */
+	@Test
+	public void testImmeublesRadies() throws Exception {
+
+		final BienFondRF bienFond = new BienFondRF();
+		bienFond.setIdRF("382929efa218");
+		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+		ppe.setIdRF("23af3efe44");
+
+		// un mock de DAO qui simule l'existence des deux immeubles
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO(bienFond, ppe);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+
+		// on envoie un import sans immeuble
+		final List<Grundstueck> immeublesImport = Collections.emptyList();
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
+
+		// on devrait avoir deux mutations de suppression des immeubles
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(2, mutations.size());
+		Collections.sort(mutations, (l, r) -> l.getIdRF().compareTo(r.getIdRF()));
+
+		final EvenementRFMutation mut0 = mutations.get(0);
+		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+		assertEquals(TypeEntiteRF.IMMEUBLE, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
+		assertEquals("23af3efe44", mut0.getIdRF());
+		assertNull(mut0.getXmlContent());
+
+		final EvenementRFMutation mut1 = mutations.get(1);
+		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+		assertEquals(TypeEntiteRF.IMMEUBLE, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
+		assertEquals("382929efa218", mut1.getIdRF());
+		assertNull(mut1.getXmlContent());
 	}
 
 	@NotNull
