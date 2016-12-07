@@ -160,4 +160,15 @@ public interface IdentificationContribuableService {
 	 * @return liste des états
 	 */
 	Collection<Etat> getEtats(IdentificationContribuableEtatFilter filter);
+
+
+	/**Permet de lancer l'identification de contribuable à partir d'une liste de critères
+	 *
+	 * @param listeCriteresPersonnes
+	 * @param status
+	 * @param regDate
+	 * @param nbThreads
+	 * @return
+	 */
+	IdentifierContribuableFromListeResults identifieFromListe(List<CriteresPersonne> listeCriteresPersonnes, StatusManager status, RegDate regDate, int nbThreads);
 }

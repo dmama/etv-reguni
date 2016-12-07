@@ -172,6 +172,14 @@
 		<property name="logDisabled" value="true"/>
 	</bean>
 
+	<!-- Job qui fait une identification à partir d'une liste-->
+	<bean id="identifierContribuableFromListeJob" parent="schedulerJob" class="ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeJob">
+		<constructor-arg value="190"/>
+		<constructor-arg value="Identifier des contribuables à partir d'une liste csv"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="identificationService" ref="identCtbService"/>
+	</bean>
+
     <!-- Job qui re-traite les événements civils -->
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>

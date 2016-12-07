@@ -1215,7 +1215,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		soumettreMessage(message);
 	}
 
-	private enum IdentificationResultKind {
+	public enum IdentificationResultKind {
 		FOUND_NONE,
 		FOUND_ONE,
 		FOUND_SEVERAL,
@@ -1746,6 +1746,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	@Override
 	public Collection<Etat> getEtats(IdentificationContribuableEtatFilter filter) {
 		return identificationContribuableCache.getEtats(filter);
+	}
+
+	@Override
+	public IdentifierContribuableFromListeResults identifieFromListe(List<CriteresPersonne> listeCriteresPersonnes, StatusManager status, RegDate regDate, int nbThreads) {
+		IdentifierContribuableFromListeProcessor processor = new IdentifierContribuableFromListeProcessor(this,transactionManager, tiersService, adresseService,tiersDAO);
+		return processor.run(listeCriteresPersonnes,status,RegDate.get(), nbThreads);
 	}
 
 	private String traduireBusinessUser(String user) {
