@@ -73,6 +73,10 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 		final TypeMutationRF typeMutation = mutation.getTypeMutation();
 		if (typeMutation == TypeMutationRF.CREATION || typeMutation == TypeMutationRF.MODIFICATION) {
 
+			if (immeuble.getDateRadiation() != null) {
+				throw new IllegalArgumentException("L'immeuble idRF=[" + idImmeubleRF + "] est radié, il ne devrait plus changer.");
+			}
+
 			// on interpète le XML
 			final List<Bodenbedeckung> surfaceList;
 			try {

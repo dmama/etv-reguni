@@ -116,6 +116,9 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 		if (immeuble == null) {
 			throw new ObjectNotFoundException("L'immeuble RF avec l'idRF=[" + idRf + "] n'existe pas dans la base.");
 		}
+		if (immeuble.getDateRadiation() != null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] est radié, il ne devrait plus changer.");
+		}
 		return immeuble;
 	}
 

@@ -118,6 +118,11 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 	private void processCreation(@NotNull RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
 
+		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble));
+		if (persisted != null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + newImmeuble.getIdRF() + "] existe déjà dans la DB.");
+		}
+
 		// on va chercher les nouvelles situations et estimations
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
 		if (newSituation == null) {                                                                  // il ne contient donc qu'un seul élément de chaque collection
@@ -145,6 +150,9 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble));
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
+		}
+		if (persisted.getDateRadiation() != null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] est radié, il ne devrait plus changer.");
 		}
 
 		// on va chercher les situations, estimations et surfaces totales courantes

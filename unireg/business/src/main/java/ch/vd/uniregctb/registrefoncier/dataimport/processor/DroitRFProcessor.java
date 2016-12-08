@@ -123,9 +123,16 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		}
 	}
 
-	@Nullable
+	@NotNull
 	private ImmeubleRF findImmeuble(@NotNull String idRf) {
-		return immeubleRFDAO.find(new ImmeubleRFKey(idRf));
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf));
+		if (immeuble == null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] n'existe pas dans la DB.");
+		}
+		if (immeuble.getDateRadiation() != null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] est radié, il ne devrait plus changer.");
+		}
+		return immeuble;
 	}
 
 	@Nullable
@@ -133,7 +140,11 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		if (idRf == null) {
 			return null;
 		}
-		return (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf));
+		final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf));
+		if (communaute == null) {
+			throw new IllegalArgumentException("La communauté idRF=[" + idRf + "] n'existe pas dans la DB.");
+		}
+		return communaute;
 	}
 
 	/**
