@@ -11,6 +11,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -53,10 +54,10 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	 * Container des données déjà émises dans la transaction courante
 	 * (histoire ne ne pas envoyer plusieurs messages identiques dans une même transaction)
 	 */
-	private ThreadLocal<Data> alreadySent = new ThreadLocal<Data>() {
+	private ThreadLocal<AlreadySentData> alreadySent = new ThreadLocal<AlreadySentData>() {
 		@Override
-		protected Data initialValue() {
-			return new Data();
+		protected AlreadySentData initialValue() {
+			return new AlreadySentData();
 		}
 	};
 
@@ -83,12 +84,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			if (o == null || getClass() != o.getClass()) return false;
 
 			final RelationshipKey that = (RelationshipKey) o;
-
-			if (objetId != that.objetId) return false;
-			if (sujetId != that.sujetId) return false;
-			if (type != that.type) return false;
-
-			return true;
+			return objetId == that.objetId && sujetId == that.sujetId && type == that.type;
 		}
 
 		@Override
@@ -114,7 +110,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	 * (comme ces notifications ne sont de toute façon envoyées qu'à la fin de la transaction, rien de sert
 	 * de l'envoyer plusieurs fois...)
 	 */
-	private static class Data {
+	private class AlreadySentData {
 
 		private final Set<Long> tiersChange = new HashSet<>();
 		private final Set<Long> individuChange = new HashSet<>();
@@ -122,12 +118,19 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		private final Set<Long> droitsAccesChange = new HashSet<>();
 		private final Set<RelationshipKey> relationshipChange = new HashSet<>();
 
-		public Data() {
+		public AlreadySentData() {
 			// cleanup une fois la transaction terminée
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 				@Override
 				public void afterCompletion(int status) {
-					clear();
+					// [SIFISC-22355][SIFISC-22258] un appel à "clear()" ne suffit pas ici, car la structure Data reste dans le ThreadLocal
+					// et dans le cas de ré-utilisation du même thread plus tard (pool ?), on ne repasse plus par ce constructeur
+					// et la structure ne sera plus nettoyée en fin de transaction parce qu'il manque alors l'enregistrement dans la transaction courante
+					// -> on efface complètement la structure dans le ThreadLocal, ce qui forcera systématiquement un nouvel appel au constructeur
+					alreadySent.remove();
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.trace("Cache des événements DB déjà envoyés dans la transaction nettoyé (cause : " + status + ")");
+					}
 				}
 			});
 		}
@@ -171,14 +174,6 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		public boolean addRelationshipChange(RelationshipKey key) {
 			return relationshipChange.add(key);
 		}
-
-		public void clear() {
-			tiersChange.clear();
-			individuChange.clear();
-			organisationChange.clear();
-			droitsAccesChange.clear();
-			relationshipChange.clear();
-		}
 	}
 
 	/**
@@ -220,7 +215,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		 * @param data les données maintenues
 		 * @return <code>true</code> s'il s'agit d'un nouvel enregistrement (= première fois que l'on voit cette notification)
 		 */
-		boolean registerNotification(Data data);
+		boolean registerNotification(AlreadySentData data);
 	}
 
 	/**
@@ -228,23 +223,23 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	 * @return la valeur de retour de l'action
 	 */
 	private boolean onNewNotification(OnNotificationAction action) {
-		final Data data = alreadySent.get();
+		final AlreadySentData data = alreadySent.get();
 		return action.registerNotification(data);
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onDroitAccessChange(final long tiersId) {
 		final OnNotificationAction action = new OnNotificationAction() {
 			@Override
-			public boolean registerNotification(Data data) {
+			public boolean registerNotification(AlreadySentData data) {
 				return data.addDroitAccesChange(tiersId);
 			}
 		};
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Emission d'un événement db de changement sur les droits d'accès du tiers n°" + tiersId);
+					LOGGER.trace("Emission d'un événement DB de changement sur les droits d'accès du tiers n°" + tiersId);
 				}
 
 				final DroitAccesChangeEvent event = objectFactory.createDroitAccesChangeEvent();
@@ -252,24 +247,27 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				sendDataEvent(String.valueOf(tiersId), event);
 			}
 			catch (Exception e) {
-				LOGGER.error("Impossible d'envoyer un message de changement de droit d'accès sur le tiers n°" + tiersId, e);
+				LOGGER.error("Impossible d'envoyer un événement DB de changement de droit d'accès sur le tiers n°" + tiersId, e);
 			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur les droits d'accès du tiers n°" + tiersId + " (une émission est déjà prévue dans la transaction courante)");
 		}
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onTiersChange(final long id) {
 		final OnNotificationAction action = new OnNotificationAction() {
 			@Override
-			public boolean registerNotification(Data data) {
+			public boolean registerNotification(AlreadySentData data) {
 				return data.addTiersChange(id);
 			}
 		};
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Emission d'un événement db de changement sur le tiers n°" + id);
+					LOGGER.trace("Emission d'un événement DB de changement sur le tiers n°" + id);
 				}
 
 				final TiersChangeEvent event = objectFactory.createTiersChangeEvent();
@@ -277,23 +275,27 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				sendDataEvent(String.valueOf(id), event);
 			}
 			catch (Exception e) {
-				LOGGER.error("Impossible d'envoyer un message de changement du tiers n°" + id, e);
+				LOGGER.error("Impossible d'envoyer un événement DB de changement du tiers n°" + id, e);
 			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur le tiers n°" + id + " (une émission est déjà prévue dans la transaction courante)");
 		}
 	}
 
 	@Override
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onOrganisationChange(final long id) {
 		final OnNotificationAction action = new OnNotificationAction() {
 			@Override
-			public boolean registerNotification(Data data) {
+			public boolean registerNotification(AlreadySentData data) {
 				return data.addOrganisationChange(id);
 			}
 		};
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Emission d'un événement db de changement sur l'organisation n°" + id);
+					LOGGER.trace("Emission d'un événement DB de changement sur l'organisation n°" + id);
 				}
 
 				final OrganisationChangeEvent event = objectFactory.createOrganisationChangeEvent();
@@ -301,24 +303,27 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				sendDataEvent(String.valueOf(id), event);
 			}
 			catch (Exception e) {
-				LOGGER.error("Impossible d'envoyer un message de changement de l'organisation n°" + id, e);
+				LOGGER.error("Impossible d'envoyer un événement DB de changement de l'organisation n°" + id, e);
 			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur l'organisation n°" + id + " (une émission est déjà prévue dans la transaction courante)");
 		}
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onIndividuChange(final long id) {
 		final OnNotificationAction action = new OnNotificationAction() {
 			@Override
-			public boolean registerNotification(Data data) {
+			public boolean registerNotification(AlreadySentData data) {
 				return data.addIndividuChange(id);
 			}
 		};
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Emission d'un événement db de changement sur l'individu n°" + id);
+					LOGGER.trace("Emission d'un événement DB de changement sur l'individu n°" + id);
 				}
 
 				final IndividuChangeEvent event = objectFactory.createIndividuChangeEvent();
@@ -326,24 +331,28 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				sendDataEvent(String.valueOf(id), event);
 			}
 			catch (Exception e) {
-				LOGGER.error("Impossible d'envoyer un message de changement de l'individu n°" + id, e);
+				LOGGER.error("Impossible d'envoyer un événement DB de changement de l'individu n°" + id, e);
 			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur l'individu n°" + id + " (une émission est déjà prévue dans la transaction courante)");
 		}
 	}
 
 	@Override
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		final RelationshipKey key = new RelationshipKey(type, sujetId, objetId);
 		final OnNotificationAction action = new OnNotificationAction() {
 			@Override
-			public boolean registerNotification(Data data) {
+			public boolean registerNotification(AlreadySentData data) {
 				return data.addRelationshipChange(key);
 			}
 		};
 		if (onNewNotification(action)) {
 			try {
 				if (LOGGER.isTraceEnabled()) {
-					LOGGER.trace("Emission d'un événement db de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId);
+					LOGGER.trace("Emission d'un événement DB de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId);
 				}
 
 				final Relationship relationship = getRelationshipMapping(type);
@@ -355,8 +364,11 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				sendDataEvent(String.valueOf(event.hashCode()), event);
 			}
 			catch (Exception e) {
-				LOGGER.error("Impossible d'envoyer un message de load de la DB", e);
+				LOGGER.error("Impossible d'envoyer événement DB de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId, e);
 			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId + " (une émission est déjà prévue dans la transaction courante)");
 		}
 	}
 
@@ -426,7 +438,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onLoadDatabase() {
 		try {
 			if (LOGGER.isTraceEnabled()) {
@@ -442,7 +454,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
 	public void onTruncateDatabase() {
 		try {
 			if (LOGGER.isTraceEnabled()) {
