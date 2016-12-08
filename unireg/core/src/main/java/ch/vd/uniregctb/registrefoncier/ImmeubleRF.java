@@ -32,7 +32,7 @@ import ch.vd.uniregctb.common.LengthConstants;
  * Représente un immeuble au registre foncier
  */
 @Entity
-@Table(name = "RF_IMMEUBLE", uniqueConstraints = @UniqueConstraint(name="CS_IMMEUBLE_RF_ID", columnNames = "ID_RF"))
+@Table(name = "RF_IMMEUBLE", uniqueConstraints = @UniqueConstraint(name = "IDX_IMMEUBLE_RF_ID", columnNames = "ID_RF"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class ImmeubleRF extends HibernateEntity {

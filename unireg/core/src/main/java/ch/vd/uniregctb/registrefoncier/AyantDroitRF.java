@@ -12,6 +12,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.common.LengthConstants;
  * Ayant-droit sur un ou plusieurs immeubles. Un ayant-droit est soit un tiers (personne physique ou morale), soit une communauté (regroupement de personnes physiques ou morales).
  */
 @Entity
-@Table(name = "RF_AYANT_DROIT")
+@Table(name = "RF_AYANT_DROIT", uniqueConstraints = @UniqueConstraint(name = "IDX_AYANTDROIT_ID_RF", columnNames = "ID_RF"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class AyantDroitRF extends HibernateEntity {
@@ -60,7 +61,7 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.id = id;
 	}
 
-	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF, unique = true)
+	@Column(name = "ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getIdRF() {
 		return idRF;
 	}

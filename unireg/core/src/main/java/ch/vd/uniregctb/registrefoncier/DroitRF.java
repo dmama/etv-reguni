@@ -28,7 +28,6 @@ import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @Table(name = "RF_DROIT")
-@org.hibernate.annotations.Table(appliesTo = "RF_DROIT", indexes = @Index(name = "IDX_DROIT_ID_RF", columnNames = "ID_RF"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 @AttributeOverrides({
@@ -97,6 +96,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
+	// Note : entre deux imports, on peut recevoir un droit avec le même masterId mais avec des données différentes (certainement des corrections). On ne met pas de contrainte unique donc.
 	@Index(name = "IDX_DROIT_MASTER_ID_RF")
 	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getMasterIdRF() {

@@ -9,12 +9,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
-@Table(name = "RF_COMMUNE")
+@Table(name = "RF_COMMUNE", uniqueConstraints = @UniqueConstraint(name = "IDx_COMMUNE_NO_OFS", columnNames = "NO_OFS"))
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT")),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
@@ -84,7 +85,7 @@ public class CommuneRF extends HibernateDateRangeEntity {
 		this.nomRf = nomRf;
 	}
 
-	@Column(name = "NO_OFS", nullable = false, unique = true)
+	@Column(name = "NO_OFS", nullable = false)
 	public int getNoOfs() {
 		return noOfs;
 	}

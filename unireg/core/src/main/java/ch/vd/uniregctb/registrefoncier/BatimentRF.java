@@ -11,11 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -25,7 +25,7 @@ import ch.vd.uniregctb.common.LengthConstants;
  * Représente un bâtiment au registre foncier.
  */
 @Entity
-@Table(name = "RF_BATIMENT")
+@Table(name = "RF_BATIMENT", uniqueConstraints = @UniqueConstraint(name = "IDX_BATIMENT_MASTER_ID_RF", columnNames = "MASTER_ID_RF"))
 public class BatimentRF extends HibernateEntity {
 
 	/**
@@ -67,7 +67,6 @@ public class BatimentRF extends HibernateEntity {
 		this.id = id;
 	}
 
-	@Index(name = "IDX_BATIMENT_MASTER_ID_RF")
 	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getMasterIdRF() {
 		return masterIdRF;

@@ -16,11 +16,6 @@ import ch.vd.uniregctb.common.LengthConstants;
 public class DroitHabitationRF extends DroitRF {
 
 	/**
-	 * L'identifiant interne du registre foncier du droit.
-	 */
-	private String idRF;
-
-	/**
 	 * L'identifiant métier public du droit.
 	 */
 	private IdentifiantDroitRF identifiantDroit;
@@ -31,15 +26,6 @@ public class DroitHabitationRF extends DroitRF {
 			throw new IllegalArgumentException("Seuls les tiers peuvent avoir un droit d'habitation");
 		}
 		super.setAyantDroit(ayantDroit);
-	}
-
-	@Column(name = "ID_RF", length = LengthConstants.RF_ID_RF)
-	public String getIdRF() {
-		return idRF;
-	}
-
-	public void setIdRF(String idRF) {
-		this.idRF = idRF;
 	}
 
 	@Column(name = "IDENTIFIANT_DROIT", length = LengthConstants.RF_IDENTIFIANT_DROIT)
