@@ -184,7 +184,7 @@
 	        <c:if test="${command.organisation == null}">
 		        <td class="error"><c:out value="${command.organisationError}"/></td>
 	        </c:if>
-	        <c:if test="${command.organisation != null}">
+	        <c:if test="${command.organisation != null && command.organisation.formeJuridique != null}">
 		        <td><c:out value="${command.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/>)</td>
 	        </c:if>
         </tr>

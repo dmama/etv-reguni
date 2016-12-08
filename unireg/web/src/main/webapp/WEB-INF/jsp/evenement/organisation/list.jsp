@@ -92,7 +92,9 @@
 								</tr>
 								<tr class="<unireg:nextRowClass/>">
 									<td width="130px"><fmt:message key="label.categorie"/>&nbsp;:</td>
-									<td><c:out value="${tableEvtsOrganisation.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${tableEvtsOrganisation.organisation.categorie}"/>)</td>
+									<c:if test="${tableEvtsOrganisation.organisation.formeJuridique != null}">
+										<td><c:out value="${tableEvtsOrganisation.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${tableEvtsOrganisation.organisation.categorie}"/>)</td>
+									</c:if>
 								</tr>
 								<tr class="<unireg:nextRowClass/>">
 									<td><fmt:message key="label.siege"/>&nbsp;:</td>
