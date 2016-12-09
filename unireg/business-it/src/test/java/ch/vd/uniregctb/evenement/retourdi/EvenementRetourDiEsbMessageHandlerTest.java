@@ -95,6 +95,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				new ClassPathResource("event/taxation/DossierElectronique-2017-1.xsd"),
 
 				new ClassPathResource("event/taxation/DeclarationIBC-1.xsd"),
+				new ClassPathResource("event/taxation/DeclarationIBC-2.xsd"),
 		});
 
 		initEndpointManager(INPUT_QUEUE, listener);
@@ -699,12 +700,122 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				events.add(retour);
 			}
 		};
+		final RetourDiHandler<?> ibcv2Handler = new ch.vd.uniregctb.evenement.retourdi.pm.V2Handler() {
+			@Override
+			protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
+				Assert.fail("Un message IBC v1 ne devrait pas arriver dans le handler IBC v2");
+			}
+		};
 
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2017v1Handler, ibcv1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2017v1Handler, ibcv1Handler, ibcv2Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pm/IBC-1-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final ch.vd.uniregctb.evenement.retourdi.pm.RetourDI q = events.get(0);
+		assertNotNull(q);
+		assertEquals(518L, q.getNoCtb());
+		assertEquals(2016, q.getPf());
+		assertEquals(1, q.getNoSequence());
+
+		assertNotNull(q.getEntreprise());
+		assertEquals("CH78005540A1024502601", q.getEntreprise().getIban());
+		assertEquals("Jörg Åström", q.getEntreprise().getTitulaireCompteBancaire());
+		assertEquals(RegDate.get(2015, 12, 31), q.getEntreprise().getDateFinExerciceCommercial());
+		assertNotNull(q.getEntreprise().getSiege());
+		assertEquals(Localisation.CommuneSuisse.class, q.getEntreprise().getSiege().getClass());
+		assertEquals(5586, ((Localisation.CommuneSuisse) q.getEntreprise().getSiege()).getNoOfsCommune());
+		assertNotNull(q.getEntreprise().getAdresseCourrier());
+		assertEquals(AdresseRaisonSociale.StructureeSuisse.class, q.getEntreprise().getAdresseCourrier().getClass());
+		assertEquals("1000", ((AdresseRaisonSociale.StructureeSuisse) q.getEntreprise().getAdresseCourrier()).getNumeroPostal());
+		assertEquals("Lausanne", ((AdresseRaisonSociale.StructureeSuisse) q.getEntreprise().getAdresseCourrier()).getLocalite());
+		assertEquals("11", ((AdresseRaisonSociale.StructureeSuisse) q.getEntreprise().getAdresseCourrier()).getNumero());
+		assertEquals("Chemin de Bellevue", ((AdresseRaisonSociale.StructureeSuisse) q.getEntreprise().getAdresseCourrier()).getRue());
+
+		assertNotNull(q.getMandataire());
+		assertNull(q.getMandataire().getIdeMandataire());       // le numéro IDE du mandataire, même valide, est maintenant ignoré...
+		assertEquals(Boolean.TRUE, q.getMandataire().getSansCopieMandataire());
+		assertEquals("0218887766", q.getMandataire().getNoTelContact());
+		assertNotNull(q.getMandataire().getAdresse());
+		assertEquals(AdresseRaisonSociale.Brutte.class, q.getMandataire().getAdresse().getClass());
+		assertEquals("Mon bon soldat", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne1());
+		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne2());
+		assertEquals("Ou pas", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne3());
+		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne4());
+		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne5());
+		assertEquals("1004", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getNpa());
+		assertEquals("Lausanne", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLocalite());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testIBC_V2() throws Exception {
+
+		final List<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> events = new ArrayList<>();
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler v1");
+			}
+		};
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler v2");
+			}
+		};
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler v3");
+			}
+		};
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler Periode 2015 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler Periode 2016 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> ibcv1Handler = new ch.vd.uniregctb.evenement.retourdi.pm.V1Handler() {
+			@Override
+			protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
+				Assert.fail("Un message IBC v2 ne devrait pas arriver dans le handler IBC v1");
+			}
+		};
+		final RetourDiHandler<?> ibcv2Handler = new ch.vd.uniregctb.evenement.retourdi.pm.V2Handler() {
+			@Override
+			protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
+				events.add(retour);
+			}
+		};
+
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2017v1Handler, ibcv1Handler, ibcv2Handler));
+		esbHandler.afterPropertiesSet();
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pm/IBC-2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message

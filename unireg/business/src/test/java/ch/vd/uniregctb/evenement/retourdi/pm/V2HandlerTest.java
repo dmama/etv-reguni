@@ -14,25 +14,25 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.AddressInformation;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.InformationMandataire;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.InformationPersonneMoraleModifiee;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.MailAddress;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.OrganisationMailAddressInfo;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypAdresse;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypNumeroIdeAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTelephoneAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTxtMax40Attr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.AddressInformation;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationMandataire;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationPersonneMoraleModifiee;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.MailAddress;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.OrganisationMailAddressInfo;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypAdresse;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypNumeroIdeAttr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTelephoneAttr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTxtMax40Attr;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 
 @SuppressWarnings("Duplicates")
-public class V1HandlerTest extends BusinessTest {
+public class V2HandlerTest extends BusinessTest {
 
 	private CollectingRetourService retourService;
-	private V1Handler handler;
+	private V2Handler handler;
 
 	private static class CollectingRetourService implements RetourDIPMService {
 
@@ -52,7 +52,7 @@ public class V1HandlerTest extends BusinessTest {
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		retourService = new CollectingRetourService();
-		handler = new V1Handler();
+		handler = new V2Handler();
 		handler.setInfraService(getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"));
 		handler.setRetourService(retourService);
 	}

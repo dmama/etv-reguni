@@ -70,6 +70,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeTache;
 
+@SuppressWarnings("Duplicates")
 @ContextConfiguration(locations = {
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES,     // on a besoin d'une véritable synchro sur les tâches...
 })
@@ -260,7 +261,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -349,7 +350,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -437,7 +438,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -515,7 +516,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -610,7 +611,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -716,7 +717,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -834,7 +835,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -953,7 +954,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -1080,7 +1081,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -1210,7 +1211,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -1375,7 +1376,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -1574,7 +1575,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -1782,7 +1783,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -1926,7 +1927,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
 
 		// traitement de ces données (en mettant la première année de calcul des tâches de DI PM à 2014 pour comprendre ce qui se passe sur la DI 2014)
@@ -2107,7 +2108,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(nouvelleFinExerciceCommercial, null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pmId, anneeInitiale, 1, infosEntreprise, null);
 
 		// traitement de ces données (en mettant la première année de calcul des tâches de DI PM à 2014 pour comprendre ce qui se passe sur la DI 2014)
@@ -2268,7 +2269,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Ratatatsointsoin 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2346,7 +2347,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2428,7 +2429,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, null, "Avenue de Ratatatsointsoin", "24", null, null, null, null, MockLocalite.Lausanne1003.getNoOrdre());
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2517,7 +2518,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2605,7 +2606,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2694,7 +2695,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2795,7 +2796,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2891,7 +2892,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -2987,7 +2988,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma grande entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3115,7 +3116,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation siege = new Localisation.SaisieLibre("CossoNay");
 		Assert.assertNotNull(siege.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien le siège à Cossonay
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3197,7 +3198,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation siege = new Localisation.SaisieLibre("LausannE");
 		Assert.assertNotNull(siege.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien le siège à Cossonay
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3286,7 +3287,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final Localisation siege = new Localisation.Extranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3376,7 +3377,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation siege = new Localisation.SaisieLibre("Pétahouchnock");
 		Assert.assertNull(siege.transcriptionFiscale(serviceInfra, RegDate.get()));
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3466,7 +3467,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation ae = new Localisation.SaisieLibre("ÉchaLLENS");
 		Assert.assertNotNull(ae.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien "échallens"
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3556,7 +3557,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation ae = new Localisation.SaisieLibre("LausannE");
 		Assert.assertNotNull(ae.transcriptionFiscale(serviceInfra, RegDate.get()));      // vérification qu'on reconnait bien la donnée
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3653,7 +3654,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final Localisation ae = new Localisation.Extranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3751,7 +3752,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		// réception des données de retour
 		final Localisation ae = new Localisation.SaisieLibre("Pétahouchnock");
 		Assert.assertNull(ae.transcriptionFiscale(serviceInfra, RegDate.get()));
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3854,7 +3855,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (iban valide sans titulaire)
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -3931,7 +3932,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -4008,7 +4009,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour (iban valide sans titulaire)
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -4085,7 +4086,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -4170,7 +4171,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -4247,7 +4248,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -4324,7 +4325,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, null, nouvelIban, nouveauTitulaireCompte, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
 		// traitement de ces données
@@ -6416,7 +6417,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -6489,7 +6490,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -6511,6 +6512,80 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNull(entreprise.getNumeroTelephonePortable());
 				Assert.assertNull(entreprise.getNumeroTelephonePrive());
 				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
+				Assert.assertNull(entreprise.getNumeroTelecopie());
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(0, tachesControle.size());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-21693] Ce test vérifie que le numéro de téléphone professionnel est bien copié des données de retour de la DI dans tous les cas.
+	 */
+	@Test
+	public void testCopieNumeroTelephoneProfessionel() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2009, 8, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 18);
+
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(6, 30), 12);
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+			entreprise.setPersonneContact("Le Chef");
+			entreprise.setNumeroTelephonePortable("0789999999");
+			entreprise.setNumeroTelephonePrive("0219999999");
+			entreprise.setNumeroTelephoneProfessionnel("0213169999");
+			entreprise.setNumeroTelecopie("0213160000");
+
+			final PeriodeFiscale pf = addPeriodeFiscale(annee);
+			final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(annee - 1, 7, 1), date(annee, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			addEtatDeclarationEmise(di, date(annee, 7, 5));
+			addEtatDeclarationRetournee(di, dateQuittance);
+
+			return entreprise.getNumero();
+		});
+
+		// réception des données de retour
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Alfred Proutprout"), null, null, null, null, null, null, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, "0666666666");
+		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				Assert.assertEquals("M. Alfred Proutprout", entreprise.getPersonneContact());
+				Assert.assertNull(entreprise.getNumeroTelephonePortable());
+				Assert.assertNull(entreprise.getNumeroTelephonePrive());
+				Assert.assertEquals("0666666666", entreprise.getNumeroTelephoneProfessionnel());
 				Assert.assertNull(entreprise.getNumeroTelecopie());
 
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -6566,7 +6641,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (juste ajout d'un titre sur le nom déjà connu)
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "M. Le Chef"), null, null, null, null, null, null, null, null, null, null);
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -6605,6 +6680,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 	/**
 	 * [SIFISC-21738] Non-effacement du numéro de téléphone utilisé pour le contact en cas de non-changement dans les données du contact
+	 * [SIFISC-22366] Update: le téléphone professionnel est repris de la quittance dans tous les cas.
 	 */
 	@Test
 	public void testNonEffacementNumeroTelephoneContactSiPasChangementContact() throws Exception {
@@ -6643,7 +6719,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, "Le Chef"), null, null, null, null, null, null, null, null, null, null);
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -6664,7 +6740,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals("Le Chef", entreprise.getPersonneContact());
 				Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
 				Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
-				Assert.assertEquals("0213169999", entreprise.getNumeroTelephoneProfessionnel());
+				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
 				Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
 
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -6682,6 +6758,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 	/**
 	 * [SIFISC-21738] Non-effacement du numéro de téléphone utilisé pour le contact en d'absence de données de contact
+	 * [SIFISC-22366] Update: le téléphone professionnel est repris de la quittance dans tous les cas.
 	 */
 	@Test
 	public void testNonEffacementNumeroTelephoneContactAbsenceDonneesContact() throws Exception {
@@ -6720,7 +6797,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour
 		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.StructureeSuisse(new DestinataireAdresse.Organisation(null, null, null, null, null), null, null, null, null, null, null, null, null, null, null);
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(id, annee, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -6741,7 +6818,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals("Le Chef", entreprise.getPersonneContact());
 				Assert.assertEquals("0789999999", entreprise.getNumeroTelephonePortable());
 				Assert.assertEquals("0219999999", entreprise.getNumeroTelephonePrive());
-				Assert.assertEquals("0213169999", entreprise.getNumeroTelephoneProfessionnel());
+				Assert.assertNull(entreprise.getNumeroTelephoneProfessionnel());
 				Assert.assertEquals("0213160000", entreprise.getNumeroTelecopie());
 
 				final Set<Remarque> remarques = entreprise.getRemarques();
@@ -6873,7 +6950,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout...)
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 6, 30), null, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 6, 30), null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -6983,7 +7060,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// arrivée du contenu de la DI avec un changement de PF -> année suivante (l'ancienne PF de la DI se retrouve alors sans bouclement du tout, mais ce n'est pas grave, car c'est la première...)
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 1, 31), null, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 1, 1, 31), null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
 
 		// traitement de ces données
@@ -7125,7 +7202,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// arrivée du contenu de la DI avec un changement de PF -> année + 2 (l'ancienne PF de la DI se retrouve alors sans bouclement du tout, ce qui n'est pas grave, puisque c'est
 		// la première, mais c'est un souci pour la suivante...)
-		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 2, 1, 31), null, null, null, null, null);
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(anneeInitiale + 2, 1, 31), null, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(pm, anneeInitiale, 1, infoEntreprise, null);
 
 		// traitement de ces données

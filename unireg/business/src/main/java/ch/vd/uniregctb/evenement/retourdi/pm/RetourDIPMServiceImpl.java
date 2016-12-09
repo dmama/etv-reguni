@@ -217,7 +217,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final InformationsEntreprise infosEntreprise = retour.getEntreprise();
 		if (infosEntreprise != null) {
 			traiterFinExerciceCommercial(entreprise, declarationIdentifiee, infosEntreprise.getDateFinExerciceCommercial());
-			traiterAdresseCourrierEtRaisonSociale(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdresseCourrier());
+			traiterAdresseCourrierEtRaisonSociale(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdresseCourrier(), infosEntreprise.getNoTelContact());
 			traiterSiege(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getSiege());
 			traiterAdministrationEffective(entreprise, retour.getPf(), retour.getNoSequence(), dateReference, infosEntreprise.getAdministrationEffective());
 			traiterInformationsBancaires(entreprise, retour.getPf(), retour.getNoSequence(), infosEntreprise.getIban(), infosEntreprise.getTitulaireCompteBancaire());
@@ -608,7 +608,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 */
 	private void fermerLienAdresseMandataire(Entreprise entreprise, @Nullable Mandat mandat, @Nullable AdresseMandataire adresseMandataire, RegDate dateCloture) {
 		if (mandat != null) {
-			final RapportEntreTiers nouvelleInstance = this.<RapportEntreTiers>fermerAt(mandat, dateCloture);
+			final RapportEntreTiers nouvelleInstance = this.fermerAt(mandat, dateCloture);
 			if (nouvelleInstance != null) {
 				entreprise.addRapportSujet(hibernateTemplate.merge(nouvelleInstance));
 			}
@@ -867,8 +867,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * @param noSequence numéro de séquence de la DI initiale dans sa période fiscale
 	 * @param dateReference date de référence pour les éventuelle résolution de noms...
 	 * @param adresseCourrier l'éventuelle nouvelle adresse courrier fournie
+	 * @param telProfessionnel le numéro de téléphone professionnel
 	 */
-	private void traiterAdresseCourrierEtRaisonSociale(Entreprise entreprise, int pf, int noSequence, RegDate dateReference, @Nullable AdresseRaisonSociale adresseCourrier) {
+	private void traiterAdresseCourrierEtRaisonSociale(Entreprise entreprise, int pf, int noSequence, RegDate dateReference, @Nullable AdresseRaisonSociale adresseCourrier, @Nullable String telProfessionnel) {
 
 		// cas super simple : aucune donnée fournie
 		if (adresseCourrier == null) {
@@ -876,7 +877,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		}
 
 		// dans tous les cas le contact
-		traiterContact(entreprise, adresseCourrier.getContact());
+		traiterContact(entreprise, adresseCourrier.getContact(), telProfessionnel);
 
 		final Pair<String, Adresse> raisonSocialeEtAdresse = adresseCourrier.split(infraService, tiersService, dateReference);
 		if (raisonSocialeEtAdresse == null) {
@@ -901,17 +902,20 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * Prise en compte d'une éventuelle donnée de contact dans la DI
 	 * @param entreprise entreprise concernée
 	 * @param contact eventuel nom de la personne de contact
+	 * @param telProfessionnel le numéro de téléphone professionnel
 	 */
-	private void traiterContact(Entreprise entreprise, @Nullable String contact) {
+	private void traiterContact(Entreprise entreprise, @Nullable String contact, @Nullable String telProfessionnel) {
 		// [SIFISC-21738] Dans le cas où une donnée de contact est fournie, et qu'elle est différente de la donnée
 		// préalablement connue, il faut effacer les numéros de téléphone...
 		if (StringUtils.isNotBlank(contact) && !Objects.equals(contact, entreprise.getPersonneContact())) {
 			entreprise.setPersonneContact(contact);
-			entreprise.setNumeroTelephoneProfessionnel(null);
 			entreprise.setNumeroTelephonePortable(null);
 			entreprise.setNumeroTelephonePrive(null);
 			entreprise.setNumeroTelecopie(null);
 		}
+
+		// [SIFISC-21693] On met-à-jour le numéro de téléphone professionnel dans tous les cas
+		entreprise.setNumeroTelephoneProfessionnel(telProfessionnel);
 	}
 
 	/**

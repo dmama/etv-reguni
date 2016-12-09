@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<declarationIBC xmlns="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" noContribuable="518" noSequenceDi="1" periode="2016" sousTypeDossierDi="PM" typDossierDi="IBC">
+	<supervision>
+		<emetteur>Contribuable</emetteur>
+		<horodatageReception>2016-07-28T14:20:00.540+02:00</horodatageReception>
+		<horodatagePublication>2016-07-28T14:20:00.540+02:00</horodatagePublication>
+		<uniteAcquisition>E-DIPM</uniteAcquisition>
+		<canalAcquisition>ELECTRONIQUE</canalAcquisition>
+		<origineAcquisitionDi>Formulaire en ligne</origineAcquisitionDi>
+		<idBusinessId>DIPM_2016_518_1_1</idBusinessId>
+	</supervision>
+	<declarationImpots>
+		<informationMandataire>
+			<adresseCourrier>
+				<ideMandataire valide="true">CHE111111113</ideMandataire>
+				<adresseMandataire>
+					<adresseLigne1 valide="true">Mon bon soldat</adresseLigne1>
+					<adresseLigne2 valide="false">Chez lui</adresseLigne2>
+					<adresseLigne3 valide="true">Ou pas</adresseLigne3>
+					<adresseNpa valide="true">1004</adresseNpa>
+					<adresseLocalite valide="true">Lausanne</adresseLocalite>
+				</adresseMandataire>
+			</adresseCourrier>
+			<sansCopieMandataire valide="true">true</sansCopieMandataire>
+			<contactMandataireTelephoneIndicatif valide="true">021</contactMandataireTelephoneIndicatif>
+			<contactMandataireTelephoneNumero valide="true">8887766</contactMandataireTelephoneNumero>
+		</informationMandataire>
+		<informationPersonneMoraleModifiee>
+			<adresseCourrierStructuree>
+				<organisation>
+					<numeroIde>CHE123456788</numeroIde>
+					<organisationName>01_Ordinaire_CasSimple</organisationName>
+				</organisation>
+				<addressInformation>
+					<street>Chemin de Bellevue</street>
+					<houseNumber>11</houseNumber>
+					<town>Lausanne</town>
+					<swissZipCode>1000</swissZipCode>
+				</addressInformation>
+				<adresseModifee>true</adresseModifee>
+			</adresseCourrierStructuree>
+			<siegeStructure>
+				<numeroOfsCommuneSuisse>5586</numeroOfsCommuneSuisse>
+			</siegeStructure>
+			<exerciceCommercialFin valide="true">2015-12-31Z</exerciceCommercialFin>
+			<exerciceCommercialModifie valide="true">true</exerciceCommercialModifie>
+			<compteNumeroIban valide="true">CH78005540A1024502601</compteNumeroIban>
+			<compteTitulaire valide="true">Jörg Åström</compteTitulaire>
+		</informationPersonneMoraleModifiee>
+		<regime>ORDINAIRE</regime>
+	</declarationImpots>
+	<documentsDuDossier>
+		<document>
+			<typDocument>DI</typDocument>
+			<identifiant>DIIBC.pdf</identifiant>
+			<scanne>true</scanne>
+		</document>
+	</documentsDuDossier>
+</declarationIBC>

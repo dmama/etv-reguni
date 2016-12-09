@@ -13,22 +13,21 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.AddressInformation;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.DeclarationIBC;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.DeclarationImpots;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.InformationMandataire;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.InformationPersonneMoraleModifiee;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.MailAddress;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.OrganisationMailAddressInfo;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.PersonMailAddressInfo;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypAdresse;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypBooleanAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypDateAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypNumeroIbanAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypNumeroIdeAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypSiegeEtAdministrationEffective;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTelephoneAttr;
-import ch.vd.unireg.xml.event.taxation.ibc.v1.TypTxtMax40Attr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.AddressInformation;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.DeclarationIBC;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.DeclarationImpots;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationMandataire;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationPersonneMoraleModifiee;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.MailAddress;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.OrganisationMailAddressInfo;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.PersonMailAddressInfo;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypAdresse;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypBooleanAttr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypDateAttr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypNumeroIbanAttr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypSiegeEtAdministrationEffective;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTelephoneAttr;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTxtMax40Attr;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -38,7 +37,7 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.type.TexteCasePostale;
 
 @SuppressWarnings("Duplicates")
-public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandler<DeclarationIBC> {
+public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandler<DeclarationIBC> {
 
 	private static final BigInteger MAX_INT = BigInteger.valueOf(Integer.MAX_VALUE);
 	private static final BigInteger MIN_INT = BigInteger.valueOf(Integer.MIN_VALUE);
@@ -51,7 +50,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 
 	@Override
 	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DeclarationIBC-1.xsd");
+		return new ClassPathResource("event/taxation/DeclarationIBC-2.xsd");
 	}
 
 	@Override
@@ -284,15 +283,6 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			return null;
 		}
 		return StringUtils.trimToNull(iban.getValue());
-	}
-
-	@Nullable
-	private static String extractStringIde(JAXBElement<TypNumeroIdeAttr> element) {
-		final TypNumeroIdeAttr ide = extractFromElement(element);
-		if (ide == null || !ide.isValide()) {
-			return null;
-		}
-		return StringUtils.trimToNull(ide.getValue());
 	}
 
 	@Nullable
