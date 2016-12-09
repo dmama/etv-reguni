@@ -8,7 +8,7 @@
 	</tiles:put>
 
 	<tiles:put name="title">
-		<fmt:message key="title.suivi.demandes.annonces" />
+		<fmt:message key="title.suivi.annonces" />
 	</tiles:put>
 
 	<tiles:put name="body">
@@ -16,15 +16,15 @@
 		<form:form method="get" commandName="view" id="formSuiviAnnonce" action="find.do">
 
 			<fieldset>
-				<legend><span><fmt:message key="title.suivi.demandes.annonces"/></span></legend>
+				<legend><span><fmt:message key="title.suivi.annonces"/></span></legend>
 				<table>
 					<tr class="<unireg:nextRowClass/>" >
-						<td>Numéro de demande&nbsp;:</td>
+						<td>Numéro d'annonce&nbsp;:</td>
 						<td>
 							<form:input  path="noticeId" id="noticeId" cssClass="number"/>
 							<form:errors path="noticeId" cssClass="error"/>
 						</td>
-						<td>Type de demande&nbsp;:</td>
+						<td>Type d'annonce&nbsp;:</td>
 						<td>
 							<form:select path="type" id="type">
 								<form:option value="">Tous</form:option>
@@ -34,12 +34,12 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
-						<td>Numéro cantonal de l'établissement&nbsp;:</td>
+						<td>Numéro cantonal&nbsp;:</td>
 						<td>
 							<form:input  path="cantonalId" id="cantonalId" cssClass="number"/>
 							<form:errors path="cantonalId" cssClass="error"/>
 						</td>
-						<td rowspan="5">Statuts de demande&nbsp;:</td>
+						<td rowspan="5">Statuts d'annonce&nbsp;:</td>
 						<td rowspan="5">
 							<form:select path="status" id="status" multiple="true" size="10">
 								<form:options items="${noticeStatuts}"/>
@@ -48,7 +48,7 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
-						<td>Nom de l'établissement&nbsp;:</td>
+						<td>Raison sociale&nbsp;:</td>
 						<td>
 							<form:input  path="name" id="name"/>
 							<form:errors path="name" cssClass="error"/>
@@ -147,9 +147,6 @@
 				</display:column>
 				<display:column titleKey="label.nom.entreprise.annonce" >
 					${annonce.contenu.nom}
-				</display:column>
-				<display:column titleKey="label.type.site.annonce" >
-					<fmt:message key="option.type.etablissement.${annonce.typeDeSite}" />
 				</display:column>
 				<display:column titleKey="label.date.annonce" >
 					<fmt:formatDate value="${annonce.dateAnnonce}" pattern="dd.MM.yyyy HH:mm:ss"/>
