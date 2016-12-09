@@ -1,178 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by ETAT DE VAUD (Direction des systèmes d`information) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/declaration-ibc/1" xmlns:di="http://www.vd.ch/fiscalite/taxation/declaration-ibc/1" targetNamespace="http://www.vd.ch/fiscalite/taxation/declaration-ibc/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="26">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" targetNamespace="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
 	<xs:annotation>
 		<xs:documentation>
-			<!-- 21.01.2016 (zcipca) v1.0 -->
-		Schéma XML du dossier DI IBC PM, valable pour la soumission papier et la soumission en ligne.
-
-		Par rapport à la DI papier, la soumission en ligne permet le choix des devises, la saisie du détail de certains
-		éléments du bénéfice et du capital (bloc B et C) et dispose d'un mode de répartition supplémentaire.
-
-		Le schéma prévoit les informations permettant d'identifier les types de documents qui ont été scannés et typés
-		automatiquement et si nécessaire vidéotypés manuellement. Il permet, au besoin, de considérer les annexes de la
-		DI comme des documents séparés.
-
-		Dans la structure du XSD, la DI, toutes ses annexes et tous les éléments saisis par le contribuable sont
-		optionnels.
-
-		Pour chaque élément saisi par le contribuable, et donc susceptible d'être vidéocodé, deux attributs sont prévus
-		: "donnée valide" et "donnée modifiée par vidéo codage". Les règles d'intégration dans TAO-PM définiront ce qui
-		sera fait de ces informations.
-
-		Les éléments saisis sont validés par la XSD, selon les mêmes règles de format que dans TAO-PM, hormis les
-		caractères d'affichages (séparateurs de milliers, etc...). En cas de non validation de ces éléments, on passe en
-		vidéocodage .... (d'autres règles peuvent évidemment être ajoutées).
-		<!-- 15.01.2016 (zcipca) v1.1 -->
-		Ajout d'une adresse structuée pour la saisie en ligne,
-		Ajout des numéro OFS pour la saisie en ligne,
-		Changement du type du ID515 et ID516 en typDecMax1_4Att
-		<!-- 20.01.2016 (zcipca) v1.2 -->
-		Changement de tous les type* en typ*
-		Limitation de tous les textes (string) à max 40 au lieu de string illimitée
-		Limitation de tous les textes à min 1
-		Typage fort du numéro IDE, AVS, IBAN
-		Suppression du businessId des pièces justificatives.
-
-		Suppression typBoolean, typInteger, typeDate
-
-		Ajout de l'attribut nillable sur les éléments pouvant être null
-
-		Changement de l'attribut valide à "required"
-
-		Ajout du "reductionParticipations" ID565 dans l'élément beneficeNet (NB deux éléments qui correspondent au même
-		IDTAO)
-		Ajout élément sansCopieMandataire
-		<!-- 21.01.2016 (zciedt) v1.3 -->
-		Suppression lieuEtDateDiLieu,
-		renommage lieuEtDateDiDate en dateDi
-		Ajout contrainte d'unicité
-		Découpage de enumCategorieInformationA en enumCategorieInformationA et enumCategorieInformationBC
-		Correction faute orthographe reparition en repartition
-		Correction cardinalité des infos complémentaires
-		<!-- 24.01.2016 (zciedt) v1.3 -->
-		modification du type 2207, 2217
-		suppression du type "typPctPosDecMax3_8
-		Correction cardinalité des infos complémentaires
-		<!-- 26.01.2016 (zciedt) v1.4 -->
-		Ajout numeroAvs pour mandataire
-		Ajout siege et administration effective structurée
-		Ajout diSignee
-		Ajout contraintes unicité sur repartitionIntercantonales
-		<!-- 26.01.2016 (zcipca) v1.5 -->
-		- resultatApresPertesRepartitionInternationale devient resultatAvantPertesRepartitionInternationale
-		- compensationPertesRepartitionInternationale devient reportPertesRepartitionInternationale
-		Suppression de l'élément forCommunal. Si le numéro OFS ne peut pas être reconnus sur la base de la commune déclarée sur la DI, on laisse le numeroOfs vide.
-		Recération de reductionParticipationIfd effacé par erreur
-		<!-- 28.01.2016 (zcipca) v1.6 -->
-		Suppression du reductionParticipationIfd qui n'aurait pas du être recréé
-		<!-- 02.02.2016 (zciedt) v1.7 -->
-		- Ajout de localitePaysEtranger pour le siege et l'administartionEffective
-		- Ajout boolean adresseModifiee pour les adresses structurées
-		<!-- 02.02.2016 (g1v8co) v1.8 -->
-		- Type incorrect pour //repartitionIntercommunaleBeneficeFinalFor/numeroOfsFor (typForAttr -> typNumeroOfsAttr)
-		- RICANT : Type incorrect pour les triptiques { total ; total-suisse ; total-etranger },
-		le numéro de ligne est obsolète (typActifRepartitionInternationale -> typElementRepartitionInternationale)
-		<!--  02.02.2016 (zciedt) v1.9 -->
-		ID2242 - Renommage de l'élément montantDebutExercice  en interetsComptabilises sous annexeInformationsActionnaires/creancesEnversActionnairesTotal
-		ID2246 - Renommage de l'élément montantDebutExercice  en interetsComptabilises dans l'élément dettesEnversActionnairesTotal
-		ID592: ajout beneficeNetImposablePerteSuisseChf
-		<!-- 09.02.2016 (zciedt) v1.10 -->
-		ID1923 et ID1523: Changement type en typPctPosDecMax3_3
-		ID2135: Ajout élément totalRendementsNetsParticipations
-		ID2133: totalValeurDeterminanteFin
-		ID2130: totalActifFin
-		<!-- 18.02.2016 (zciedt): v1.11 -->
-		Revue de l'archivage et du lien entre les PJ: Ajout de types énumérés pour les typDocument
-		<!--23.02.2016 (g1v8co): v1.12 -->
-		Changement du type partAttribuableImmeuble de repartitionIntercantonaleBeneficeImmobilierTotal et repartitionIntercommunaleBeneficeImmobilierTotal en typPctPosDecMax3_3Attr
-		<!-- 14.03.2016 (zciedt): v1.13-->
-		ID2109: Ajout code inventaire
-		ID2116: Ajout nombreParts pour Annexe 02
-		<!-- 21.03.2016 (g1v8co): v1.14-->
-		Leading space obsolète dans le type typNumeroIbanSuisse
-		Bloc ID2670 - ID2470 : changement du type typActifRepartitionInternationale en typElementRepartitionInternationale (1 seule ligne -> numéro de ligne obsolète)
-		<!-- 31.03.2016 (g1v8co): v1.15-->
-		Éclatement des champs multi-valeurs sur infos complémentaires A et BC (2300-2301-2302), en champs mono-valeurs (2301 à 2324).
-		Gestion du champ //documentJoint (en plus de //specifications déjà géré)
-		<!-- 15.04.2016 (zciedt): v1.16-->
-		Modification de la structure de l'élément Validation (dans Supervision) afin d'être conforme aux autres flux
-		<!-- 04.05.2016 (zciedt): v1.17-->
-		Attributs de l'élément racine rendus obligatoires
-		Restrictions sur la longueurs des String
-		<!-- 10.05.2016 (JPL): v1.18 - Poposition 2 pour Holding et Société de base-->
-		Inclusion des nodes dans le node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/declarationImpots/beneficeNet":
-			- rendementImmobilierCanton
-			- rendementImmobilierCantonChf
-
-		Inclusion du node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/annexeRepartitionInternationaleHolding"
-		Inclusion du node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/annexeRepartitionIntercantonaleHolding"
-		Inclusion du node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/annexeRepartitionIntercommunaleHolding"
-		Inclusion du node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/annexeRepartitionIntercantonaleSocieteBase"
-		Inclusion du node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/annexeRepartitionIntercommunaleSocieteBase"
-
-		Inclusion du type "typElementCalculExoneration"
-		Inclusion du type "typExonerationPalier"
-		Inclusion du node "calculExoneration" (type "calculExoneration") dans dossierElectroniqueDeclarationImpotsBeneficeCapitalPm
-
-		Inclusion d'un item "intercomunaleBase" dans l’Enum "enumCategorieInformationBC"
-
-		Augmentation de la propriété "maxOccurs" de 7 à 8 pour le node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/annexeInformationsComplementairesBC/informationsComplementairesBC”
-		<!-- 11.05.2016 (zciedt): v1.19-->
-		Modification enumSousTypeDossierDi pour ajouter BASE et HOLDING
-		<!-- 11.05.2016 (zciedt): v1.20-->
-		Modification tauxType
-		Champs rendus facultatifs: Dans l’objet calculExoneration les champs exonerationTotalFixe et exonerationTauxFixe
-		<!-- 02.06.2016 (JPL): v1.21-->
-		Inclusion des nodes dans le node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/declarationImpots/beneficeNet":
-			- resultatCantonApresExoneration
-			- resultatCantonApresExonerationChf
-
-		Inclusion des nodes dans le node "dossierElectroniqueDeclarationImpotsBeneficeCapitalPm/calculExoneration":
-			- resultatImposableAvantPertesNonCompensees
-			- iccBeneficeComptablilise
-			- pertesDeductibles
-		<!-- 14.06.2016 (zciedt): v1.22 -->
-		Modification du namespace (suppression PF)
-		Renommage de l'élément racine pour prendre en compte les APM
-		Réduction de l'énum enumTypeDocument: DI, PieceObligatoire et PiceJustificative
-		Suppression des contraintes d'unicité
-		Ajout élément Regime: Hors-Canton, SocieteBase, Holding avec et sans immebles
-		Reduction enum sousTypeDocumentDi: PM et APM
-		<!-- 30.06.2016 (zciedt): v1.23 -->
-		Suppression des Attr (valide=true) pour les champs provenant uniquement de la saisie en ligne
-		Factorisation des types de répartition et mise en place du mode Direct:
-		- repartitionInternationale identique pour l'ORD et HOLDING
-		- Définition du mode de répartition Direct identique pour ORD, HOLDING et BASE
-		- Ajout detailsRendementsImmobiliers pour la Holding uniquement
-		<!-- 06.07.2016 (g1v8co): v1.24 -->
-		Suppression des déclarations de types obsolètes
-		- annexeRepartitionIntercantonaleSocieteBase + annexeRepartitionIntercommunaleSocieteBase (ainsi que les types qu'ils contenaient, notamment le bénéfice et capital directs)
-		- annexeRepartitionInternationaleHolding
-		<!-- 13.07.2016 (zciedt): v1.25 -->
-		Regroupement annexeInformationsComplementairesA et annexeInformationsComplementairesBC
-		Ajout élément idReference pour génération accusé de réception
-		Ajout commentaire pour société simple
-		Extension enumRegime pour prise en compte du code de routage 4 de la DI-PM
-		Ajout idSoumission pour génération accusé de réception
-		ajout numeroOfsCommuneImposition pour la saisie en ligne
-		<!-- 21.07.2016 (zciedt) v1.25.1 -->
-		Modification du typElementRepartitionIntercommunale: correction numeroOfsFor au lieu de forCantonal
-		<!-- 25.07.2016 (zciedt) v1.25.2 -->
-		Suppression type inutilisé repartitionInternationaleBeneficeImmobilier
-		Création des types typElementRepartitionIntercantonalePourcent et typElementRepartitionIntercommunalePourcent pour les répartitions directes actifRepartitionIntercantonaleTotalPourcent et actifRepartitionIntercommunaleTotalPourcent
-		<!-- 28.07.2016 (zciedt) v1.25.3 -->		
-		Correction des types pour resultatImposableApresPerteRepartitionIntercantonale et resultatExploitationRepartitionIntercantonale: typEntMax12
-		<!-- 28.07.2016 (zciedt) v1.25.4 -->	
-		Correction des types pour resultatImposableApresPerteRepartitionIntercommunale et resultatExploitationRepartitionIntercommunale: typEntMax12
-		<!-- 10.08.2016 (zciedt) v1.25.5 -->	
-		Renommage type typSiegeEtAdministartionEffective en typSiegeEtAdministrationEffective
-		Suppression type swissAddressInformationType
-		Modification format contactMandataireTelephoneIndicatif/contactMandataireTelephoneNumero au profit d'une chaine de caractères pour prendre en compte les 0 en début de numéro: typTelephoneAttr
-		<!-- 13.09.2016 (zciedt) v1.25.6 -->
-		Correction du type typDecMax1_4Attr qui était configuré en typDecMax1_2
-		<!-- 01.12.2016 (zciedt) v1.26 -->
+			<!-- 07.112016 (zciedt) v2.0 -->
 			SIFISC-21671: ajouter une balise pour le numéro de téléphone professionnel pour mise à jour Unireg: contactTelephoneIndicatif et contactTelephoneNumero
+			SIFISC-21271: Ajout dans le XSD DI PM l'information "Domicile" dans l'annexe 3: ID2204, ID2214, ID2224, ID2234			
 		</xs:documentation>
 	</xs:annotation>
 	<!-- ELEMENT PRINCIPAL -->
@@ -2293,6 +2126,11 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 					<xs:documentation>ID2203</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="domicileActionnaire" type="typTxtMax40" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID2204</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="numeroIde" type="typNumeroIde" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>ID2261</xs:documentation>
@@ -2658,6 +2496,11 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 					<xs:documentation>ID2213</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="domicileActionnaire" type="typTxtMax40" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID2214</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="numeroIde" type="typNumeroIde" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>ID2271</xs:documentation>
@@ -2721,6 +2564,11 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 					<xs:documentation>ID2223</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="domicileActionnaire" type="typTxtMax40" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID2224</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="numeroIde" type="typNumeroIde" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>ID2281</xs:documentation>
@@ -2758,6 +2606,11 @@ ID4425-ID4431 et ID4433-4438 (par for communal)
 			<xs:element name="prenomActionnaire" type="typTxtMax40" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>ID2233</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="domicileActionnaire" type="typTxtMax40" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ID2234</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="numeroIde" type="typNumeroIde" minOccurs="0" maxOccurs="1">
