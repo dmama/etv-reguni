@@ -224,7 +224,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onDroitAccessChange(final long tiersId) {
 		final OnNotificationAction action = data -> data.addDroitAccesChange(tiersId);
 		if (onNewNotification(action)) {
@@ -247,7 +247,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onTiersChange(final long id) {
 		final OnNotificationAction action = data -> data.addTiersChange(id);
 		if (onNewNotification(action)) {
@@ -270,7 +270,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onOrganisationChange(final long id) {
 		final OnNotificationAction action = data -> data.addOrganisationChange(id);
 		if (onNewNotification(action)) {
@@ -293,7 +293,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onIndividuChange(final long id) {
 		final OnNotificationAction action = data -> data.addIndividuChange(id);
 		if (onNewNotification(action)) {
@@ -316,7 +316,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		final RelationshipKey key = new RelationshipKey(type, sujetId, objetId);
 		final OnNotificationAction action = data -> data.addRelationshipChange(key);
@@ -409,7 +409,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onLoadDatabase() {
 		try {
 			if (LOGGER.isTraceEnabled()) {
@@ -425,7 +425,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onTruncateDatabase() {
 		try {
 			if (LOGGER.isTraceEnabled()) {
