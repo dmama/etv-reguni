@@ -2564,29 +2564,32 @@ var EvtOrg = {
 		var nextIdParam = suivantEvtId != null ? "&nextId=" + suivantEvtId : "";
 		dialog.load(App.curl('/evenement/organisation/detail.do?id='+ idEvt + nextIdParam));
 
+		var b = {
+		};
+		b["Ok"] = function() {
+			dialog.dialog("close");
+		};
+		if (precedentEvtId) {
+			b["Précédent"] = function() {
+				if (precedentEvtId) {
+					open_details(precedentEvtId);
+				}
+			};
+		}
+		if (suivantEvtId) {
+			b["Suivant"] = function() {
+				if (suivantEvtId) {
+					open_details(suivantEvtId);
+				}
+			}
+		}
+
 		dialog.dialog({
 			              title: "Détails de l'événement n°" + idEvt,
 			              height: 800,
 			              width: 900,
 			              modal: true,
-			              buttons: {
-				              Ok: function() {
-					              dialog.dialog("close");
-				              },
-				              "Précédent": function() {
-					              if (precedentEvtId) {
-						              open_details(precedentEvtId);
-					              }
-				              },
-				              "Aller à la fiche": function() {
-					              document.location.href='visu.do?id=' + idEvt ;
-				              },
-				              "Suivant": function() {
-					              if (suivantEvtId) {
-						              open_details(suivantEvtId);
-					              }
-				              }
-			              }
+			              buttons: b
 		              });
 	}
 };

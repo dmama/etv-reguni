@@ -129,7 +129,8 @@
 				</display:column>
 				<display:column titleKey="label.numero.evenement.organisation" >
 					<c:if test="${annonce.noEvtOrganisation != null}">
-						<a href="<c:url value="../evenement/organisation/visu.do"/>?id=${annonce.idEvtOrganisation}">${annonce.noEvtOrganisation}</a>
+						<%--<a href="<c:url value="../evenement/organisation/visu.do"/>?id=${annonce.idEvtOrganisation}">${annonce.noEvtOrganisation}</a>--%>
+						<a href="#" onclick="EvtOrg.open_details(${annonce.idEvtOrganisation}, null, null)">${annonce.noEvtOrganisation}</a>
 					</c:if>
 				</display:column>
 				<display:column titleKey="label.type.annonce" >
