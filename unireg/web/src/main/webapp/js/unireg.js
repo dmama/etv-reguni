@@ -2594,6 +2594,57 @@ var EvtOrg = {
 	}
 };
 
+var EvtCivil = {
+
+	/**
+	 * Conserve l'id de l'événement suivant lors de la dernière ouverture de détail via open_details() ci-dessous.
+	 */
+	nextId: null,
+
+	/**
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de l'annonce dont l'id est passé en paramètre.
+	 * @param idEvt l'id de l'événement organisation
+	 * @param precedentEvtId l'id de l'événement organisation précédent dans la liste
+	 * @param suivantEvtId l'id de l'événement organisation suivant dans la liste
+	 */
+	open_details: function(idEvt, precedentEvtId, suivantEvtId) {
+
+		var dialog = Dialog.create_dialog_div('visu-evt-ech-dialog');
+
+		// charge le contenu de la boîte de dialogue
+		var nextIdParam = suivantEvtId != null ? "&nextId=" + suivantEvtId : "";
+		dialog.load(App.curl('/evenement/ech/detail.do?id='+ idEvt + nextIdParam));
+
+		var b = {
+		};
+		b["Ok"] = function() {
+			dialog.dialog("close");
+		};
+		if (precedentEvtId) {
+			b["Précédent"] = function() {
+				if (precedentEvtId) {
+					open_details(precedentEvtId);
+				}
+			};
+		}
+		if (suivantEvtId) {
+			b["Suivant"] = function() {
+				if (suivantEvtId) {
+					open_details(suivantEvtId);
+				}
+			}
+		}
+
+		dialog.dialog({
+			              title: "Détails de l'événement n°" + idEvt,
+			              height: 800,
+			              width: 900,
+			              modal: true,
+			              buttons: b
+		              });
+	}
+};
+
 //===================================================
 
 var Decl = {

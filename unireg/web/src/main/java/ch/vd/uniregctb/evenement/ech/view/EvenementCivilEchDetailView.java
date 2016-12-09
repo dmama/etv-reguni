@@ -22,6 +22,10 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 	private EvenementCivilEchGrappeView grappeComplete;
 	private List<EvenementCivilEchBasicInfo> nonTraitesSurMemeIndividu;
 
+	private boolean embedded;
+
+	private Long nextId;
+
 	@SuppressWarnings("unused")
 	public TypeEvenementCivilEch getEvtType() {
 		return evtType;
@@ -74,5 +78,21 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 
 	public void setNonTraitesSurMemeIndividu(List<EvenementCivilEchBasicInfo> nonTraitesSurMemeIndividu) {
 		this.nonTraitesSurMemeIndividu = nonTraitesSurMemeIndividu;
+	}
+
+	public boolean isEmbedded() {
+		return embedded;
+	}
+
+	public void setEmbedded(boolean embedded) {
+		this.embedded = embedded;
+	}
+
+	public Long getNextId() {
+		return nextId;
+	}
+
+	public void setNextId(Long nextId) {
+		this.nextId = nextId;
 	}
 }
