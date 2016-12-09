@@ -62,6 +62,7 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalViewFactory;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
+import ch.vd.uniregctb.evenement.ide.ServiceIDEService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -192,6 +193,8 @@ public class TiersManager implements MessageSourceAware {
 	protected SecurityProviderInterface securityProvider;
 
 	protected ExerciceCommercialHelper exerciceCommercialHelper;
+
+	protected ServiceIDEService serviceIDEService;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -753,6 +756,11 @@ public class TiersManager implements MessageSourceAware {
 		Collections.sort(mandatairesPerception, MandataireViewHelper.BASIC_COMPARATOR);
 		tiersView.setMandatairesCourrier(mandatairesCourrier);
 		tiersView.setMandatairesPerception(mandatairesPerception);
+
+		// L'ACI est-elle actuellement maîtresse des données civiles pour cette entreprise?
+		final Etablissement etablissementPrincipalActuel = tiersService.getEtablissementPrincipal(entreprise, null);
+		final boolean serviceIDEObligEtendues = serviceIDEService.isServiceIDEObligEtendues(entreprise, null);
+		tiersView.setCivilSousControleACI(serviceIDEObligEtendues);
 
 		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 	}
@@ -1437,6 +1445,10 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {
 		this.exerciceCommercialHelper = exerciceCommercialHelper;
+	}
+
+	public void setServiceIDEService(ServiceIDEService serviceIDEService) {
+		this.serviceIDEService = serviceIDEService;
 	}
 }
 

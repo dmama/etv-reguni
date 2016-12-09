@@ -142,6 +142,8 @@ public class TiersView {
 	private List<MandataireCourrierView> mandatairesCourrier;
 	private List<MandatairePerceptionView> mandatairesPerception;
 
+	private boolean civilSousControleACI;
+
 	public boolean isPmOuEtablissement() {
 		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
 	}
@@ -714,5 +716,13 @@ public class TiersView {
 
 	public void setEtiquettesConjoint(List<EtiquetteTiersView> etiquettesConjoint) {
 		this.etiquettesConjoint = etiquettesConjoint;
+	}
+
+	public boolean isCivilSousControleACI() {
+		return civilSousControleACI;
+	}
+
+	public void setCivilSousControleACI(boolean civilSousControleACI) {
+		this.civilSousControleACI = civilSousControleACI;
 	}
 }

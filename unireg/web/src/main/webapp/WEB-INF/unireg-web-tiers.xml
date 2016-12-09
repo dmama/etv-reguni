@@ -131,6 +131,7 @@
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+		<property name="serviceIDEService" ref="serviceIDEService"/>
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">

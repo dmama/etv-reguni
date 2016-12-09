@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
+<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersVisuView"--%>
 <c:choose>
 	<c:when test="${command != null}">
 		<c:set var="entreprise" value="${command.entreprise}" /><%-- TiersVisuController --%>
@@ -41,19 +42,17 @@
 				<unireg:numIDE numeroIDE="${entreprise.numerosIDE}"/>
 			</td>
 		</tr>
-		<c:if test="${entreprise.degreAssocCivil == 'CIVIL_MAITRE'}">
+		<c:if test="${command.civilSousControleACI == true}">
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="20%"><fmt:message key="label.controle.donnees.civiles"/>&nbsp;:</td>
 				<td>
 					<fmt:message key="label.controle.donnees.civiles.aci"/>&nbsp;
 				</td>
 			</tr>
-		</c:if>
-		<c:if test="${entreprise.degreAssocCivil != 'CIVIL_ESCLAVE'}">
 			<tr class="<unireg:nextRowClass/>" >
-				<td width="20%">Annonces à l'IDE&nbsp;:</td>
+				<td width="20%">&nbsp;</td>
 				<td>
-					<a href="<c:url value="../annonceIDE/find.do"/>?tiersId=${entreprise.id}">Vers le suivi des annonces</a>
+					<a href="<c:url value="../annonceIDE/find.do"/>?tiersId=${entreprise.id}">Vers le suivi des annonces au registre IDE</a>
 				</td>
 			</tr>
 		</c:if>
