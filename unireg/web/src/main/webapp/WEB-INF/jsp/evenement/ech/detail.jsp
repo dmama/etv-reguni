@@ -268,6 +268,7 @@
 		<c:if test="${command.recyclable}">
 			<form:form method="post" action="recyclerVersListe.do" style="display: inline">
 				<input type="hidden" name="id" value="${command.evtId}"/>
+				<input type="hidden" name="nextId" value="${command.nextId}"/>
 				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
 				<input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
 			</form:form>

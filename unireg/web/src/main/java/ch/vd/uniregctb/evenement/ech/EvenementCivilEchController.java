@@ -252,14 +252,14 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = {"/recyclerVersListe.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String onRecyclerEvenementCivilVersListe(@RequestParam("id")  Long id) throws AdresseException, EvenementCivilException {
+	public String onRecyclerEvenementCivilVersListe(@RequestParam("id")  Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException, EvenementCivilException {
 		boolean recycle = manager.recycleEvenementCivil(id);
 		if (recycle) {
 			Flash.message(String.format("Événement n°%d recyclé", id));
 		} else {
 			Flash.warning(String.format("Demande prise en compte, l'événement n°%d est en attente de recyclage", id));
 		}
-		return "redirect:/evenement/ech/list.do?id=" + id;
+		return String.format("redirect:/evenement/ech/list.do?id=%d%s", id, nextId ==null ? "" : "&nextId=" + nextId);
 	}
 }
 

@@ -264,7 +264,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 
 	@RequestMapping(value = {"/recyclerVersListe.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String onRecyclerEvenementOrganisationRetourListe(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
+	public String onRecyclerEvenementOrganisationRetourListe(@RequestParam("id")  Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException, EvenementOrganisationException {
 		final EvenementOrganisationSummaryView summary = manager.getSummary(id);
 		boolean recycle = manager.recycleEvenementOrganisation(id);
 		if (recycle) {
@@ -272,7 +272,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		} else {
 			Flash.warning(String.format("Demande prise en compte, l'événement n°%d est en attente de recyclage", summary.getNoEvenement()));
 		}
-		return "redirect:/evenement/organisation/list.do?id=" + id;
+		return String.format("redirect:/evenement/organisation/list.do?id=%d%s", id, nextId ==null ? "" : "&nextId=" + nextId);
 	}
 
 	@RequestMapping(value = {"/creer-entreprise.do"}, method = RequestMethod.POST)
