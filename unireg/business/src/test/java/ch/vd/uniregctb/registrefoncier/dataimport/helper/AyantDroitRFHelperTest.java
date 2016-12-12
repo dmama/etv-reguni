@@ -19,6 +19,7 @@ import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(UniregJUnit4Runner.class)
@@ -248,5 +249,29 @@ public class AyantDroitRFHelperTest {
 		assertEquals(3727L, coll.getNoRF());
 		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
 		assertEquals("Raison sociale", coll.getRaisonSociale());
+	}
+
+	/**
+	 * [SIFISC-22428] Ce test vérifie qu'on prend bien le numéro de contribuable valide quand les deux balises NrACI et NrIROLE sont renseignées mais que la balise NrACI contient un 0.
+	 */
+	@Test
+	public void testGetNoContribuableNrAciZero() throws Exception {
+
+		final NatuerlichePersonstamm person = new NatuerlichePersonstamm();
+		person.setNrACI(0L);
+		person.setNrIROLE(283828282L);
+		assertEquals(Long.valueOf(283828282L), AyantDroitRFHelper.getNoContribuable(person));
+	}
+
+	/**
+	 * [SIFISC-22428] Ce test vérifie qu'on détecte bien un numéro de contribuable null si les deux balises NrACI et NrIROLE valent 0.
+	 */
+	@Test
+	public void testGetNoContribuableNrAciEtNrIroleZero() throws Exception {
+
+		final NatuerlichePersonstamm person = new NatuerlichePersonstamm();
+		person.setNrACI(0L);
+		person.setNrIROLE(0L);
+		assertNull(AyantDroitRFHelper.getNoContribuable(person));
 	}
 }

@@ -372,7 +372,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals("Daniel", pp.getPrenom());
 					assertEquals(RegDate.get(1945, 2, 7), pp.getDateNaissance());
 					assertEquals(149888, pp.getNoRF());
-					assertEquals(Long.valueOf(0), pp.getNoContribuable());
+					assertEquals(Long.valueOf(10131016), pp.getNoContribuable());
 				}
 
 				final List<DroitRF> droits = droitRFDAO.getAll();
@@ -687,7 +687,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals("Daniel", pp.getPrenom());
 					assertEquals(RegDate.get(1945, 2, 7), pp.getDateNaissance());
 					assertEquals(149888, pp.getNoRF());
-					assertEquals(Long.valueOf(0), pp.getNoContribuable());
+					assertEquals(Long.valueOf(10131016), pp.getNoContribuable());
 				}
 
 				final List<DroitRF> droits = droitRFDAO.getAll();

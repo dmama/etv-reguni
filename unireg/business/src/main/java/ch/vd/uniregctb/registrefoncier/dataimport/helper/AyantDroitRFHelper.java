@@ -210,11 +210,23 @@ public abstract class AyantDroitRFHelper {
 	}
 
 	@Nullable
-	private static Long getNoContribuable(@NotNull Personstamm right) {
-		Long no = right.getNrACI();
+	static Long getNoContribuable(@NotNull Personstamm right) {
+		Long no = trimToNull(right.getNrACI());
 		if (no == null && right instanceof NatuerlichePersonstamm) {
-			no = ((NatuerlichePersonstamm) right).getNrIROLE();
+			no = trimToNull(((NatuerlichePersonstamm) right).getNrIROLE());
 		}
 		return no;
+	}
+
+	/**
+	 * @param number un nombre
+	 * @return le nombre spécifié; ou <b>null</b> si le nombre vaut zéro.
+	 */
+	@Nullable
+	private static Long trimToNull(@Nullable Long number) {
+		if (number != null && number == 0L) {
+			return null;
+		}
+		return number;
 	}
 }
