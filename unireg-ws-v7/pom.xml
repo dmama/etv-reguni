@@ -222,6 +222,7 @@
 	</distributionManagement>
 	
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- Application settings -->
 		<copyright.year>2016</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
