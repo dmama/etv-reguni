@@ -124,7 +124,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 				errors.rejectValue("dateDebutPeriodeImposition", "error.date.debut.vide");
 			}
 		}
-		else if (view.getDateFinPeriodeImposition() == null) {
+		if (view.getDateFinPeriodeImposition() == null) {
 			if (!errors.hasFieldErrors("dateFinPeriodeImposition")) {
 				errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.vide");
 			}
