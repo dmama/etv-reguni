@@ -59,7 +59,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		mutation.setId(1L);
 		mutation.setEtat(EtatEvenementRF.TRAITE);
 		try {
-			processor.process(mutation, null);
+			processor.process(mutation, false, null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -77,7 +77,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		mutation.setId(1L);
 		mutation.setEtat(EtatEvenementRF.FORCE);
 		try {
-			processor.process(mutation, null);
+			processor.process(mutation, false, null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -113,7 +113,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, null);
+				processor.process(mutation, false, null);
 			}
 		});
 
@@ -199,7 +199,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, null);
+				processor.process(mutation, false, null);
 			}
 		});
 
@@ -297,7 +297,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, null);
+				processor.process(mutation, false, null);
 			}
 		});
 

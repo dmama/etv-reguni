@@ -37,7 +37,7 @@ public class DroitRFHelper {
 		return new DroitRFKey(droit.getMasterID());
 	}
 
-	public static boolean dataEquals(Set<DroitRF> droits, List<PersonEigentumAnteil> eigentums) {
+	public static boolean dataEquals(Set<DroitRF> droits, List<PersonEigentumAnteil> eigentums, boolean importInitial) {
 
 		//noinspection Duplicates
 		if ((droits == null || droits.isEmpty()) && (eigentums == null || eigentums.isEmpty())) {
@@ -58,7 +58,7 @@ public class DroitRFHelper {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
 				DroitRF droitRF = remaining.get(i);
-				if (dataEquals(droitRF, e)) {
+				if (dataEquals(droitRF, e, importInitial)) {
 					remaining.remove(i);
 					found = true;
 					break;
@@ -73,8 +73,8 @@ public class DroitRFHelper {
 		return true;
 	}
 
-	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
-		return dataEquals(droitRF, get(personEigentumAnteil, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
+	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil, boolean importInitial) {
+		return dataEquals(droitRF, get(personEigentumAnteil, importInitial, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
 	}
 
 	/**
@@ -173,20 +173,28 @@ public class DroitRFHelper {
 	}
 
 	/**
-	 * @return le droit de référence à utiliser, c'est-à-dire le droit le plus ancien (selon la spécification "Récupérer l'immeuble").
+	 * @return le droit de référence à utiliser, c'est-à-dire (selon la spécification "Récupérer l'immeuble") :
+	 * <ul>
+	 *     <li>le droit le plus ancien, dans le cas de l'import initial (SIFISC-22400).</li>
+	 *     <li>le droit le plus récent, dans tous les autres cas.</li>
+	 * </ul>
 	 */
 	@Nullable
-	public static Rechtsgrund getDroitDeReference(@Nullable List<Rechtsgrund> rechtsgruende) {
+	public static Rechtsgrund getDroitDeReference(@Nullable List<Rechtsgrund> rechtsgruende, boolean importInitial) {
 		if (rechtsgruende == null || rechtsgruende.isEmpty()) {
 			return null;
 		}
 		Rechtsgrund oldest = null;
+		Rechtsgrund newest = null;
 		for (Rechtsgrund rechtsgrund : rechtsgruende) {
 			if (oldest == null || RegDateHelper.isBefore(rechtsgrund.getBelegDatum(), oldest.getBelegDatum(), NullDateBehavior.EARLIEST)) {
 				oldest = rechtsgrund;
 			}
+			if (newest == null || RegDateHelper.isAfter(rechtsgrund.getBelegDatum(), newest.getBelegDatum(), NullDateBehavior.EARLIEST)) {
+				newest = rechtsgrund;
+			}
 		}
-		return oldest;
+		return importInitial ? oldest : newest;
 	}
 
 	private static boolean partEquals(@Nullable Fraction part, @Nullable Fraction quote) {
@@ -250,7 +258,7 @@ public class DroitRFHelper {
 
 	@NotNull
 	public static DroitProprieteRF newDroitRF(@NotNull PersonEigentumAnteil eigentumAnteil,
-	                                          @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
+	                                          boolean importInitial, @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                          @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 
@@ -262,7 +270,7 @@ public class DroitRFHelper {
 		if (natuerlichePerson != null) {
 
 			final DroitProprietePersonnePhysiqueRF d = new DroitProprietePersonnePhysiqueRF();
-			final Rechtsgrund rechtsgrund = getDroitDeReference(natuerlichePerson.getRechtsgruende());
+			final Rechtsgrund rechtsgrund = getDroitDeReference(natuerlichePerson.getRechtsgruende(), importInitial);
 
 			d.setMasterIdRF(eigentumAnteil.getMasterID());
 			d.setAyantDroit(ayantDroitProvider.apply(natuerlichePerson.getPersonstammIDREF()));
@@ -281,7 +289,7 @@ public class DroitRFHelper {
 		else if (juristischePerson != null) {
 
 			final DroitProprietePersonneMoraleRF d = new DroitProprietePersonneMoraleRF();
-			final Rechtsgrund rechtsgrund = getDroitDeReference(juristischePerson.getRechtsgruende());
+			final Rechtsgrund rechtsgrund = getDroitDeReference(juristischePerson.getRechtsgruende(), importInitial);
 
 			d.setMasterIdRF(eigentumAnteil.getMasterID());
 			d.setAyantDroit(ayantDroitProvider.apply(juristischePerson.getPersonstammIDREF()));
@@ -300,7 +308,7 @@ public class DroitRFHelper {
 		else if (gemeinschaft != null) {
 
 			final DroitProprieteCommunauteRF d = new DroitProprieteCommunauteRF();
-			final Rechtsgrund rechtsgrund = getDroitDeReference(gemeinschaft.getRechtsgruende());
+			final Rechtsgrund rechtsgrund = getDroitDeReference(gemeinschaft.getRechtsgruende(), importInitial);
 
 			d.setMasterIdRF(eigentumAnteil.getMasterID());
 			d.setAyantDroit(ayantDroitProvider.apply(gemeinschaft.getGemeinschatID()));
@@ -339,12 +347,12 @@ public class DroitRFHelper {
 
 	@Nullable
 	public static DroitProprieteRF get(@Nullable PersonEigentumAnteil eigentumAnteil,
-	                                   @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
+	                                   boolean importInitial, @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                   @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                   @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 		if (eigentumAnteil == null) {
 			return null;
 		}
-		return newDroitRF(eigentumAnteil, ayantDroitProvider, communauteProvider, immeubleProvider);
+		return newDroitRF(eigentumAnteil, importInitial, ayantDroitProvider, communauteProvider, immeubleProvider);
 	}
 }

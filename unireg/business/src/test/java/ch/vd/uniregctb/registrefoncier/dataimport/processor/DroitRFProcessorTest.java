@@ -66,7 +66,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		mutation.setId(1L);
 		mutation.setEtat(EtatEvenementRF.TRAITE);
 		try {
-			processor.process(mutation, null);
+			processor.process(mutation, false, null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -84,7 +84,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		mutation.setId(1L);
 		mutation.setEtat(EtatEvenementRF.FORCE);
 		try {
-			processor.process(mutation, null);
+			processor.process(mutation, false, null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -93,10 +93,10 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
-	 * Ce test vérifie que le processing d'une mutation de création crée bien des nouveaux droits
+	 * [SIFISC-22400] Ce test vérifie que le processing d'une mutation de création pour *l'import initial* crée bien des nouveaux droits avec la date de début la plus ancienne.
 	 */
 	@Test
-	public void testProcessMutationCreation() throws Exception {
+	public void testProcessMutationCreationImportInitial() throws Exception {
 
 		final RegDate dateImport = RegDate.get(2016, 10, 1);
 
@@ -124,7 +124,86 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, null);
+				processor.process(mutation, true, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée et les nouveaux droits sont créés
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
+				assertNotNull(pp);
+
+				final Set<DroitRF> droits = pp.getDroits();
+				assertNotNull(droits);
+				assertEquals(2, droits.size());
+
+				final List<DroitRF> droitList = new ArrayList<>(droits);
+				Collections.sort(droitList, (o1, o2) -> o1.getMasterIdRF().compareTo(o2.getMasterIdRF()));
+
+				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droitList.get(0);
+				assertNotNull(droit0);
+				assertEquals("1f109152381009be0138100c87276e68", droit0.getMasterIdRF());
+				assertEquals(dateImport, droit0.getDateDebut());
+				assertNull(droit0.getDateFin());
+				// en case d'import initial, on prend la plus ancienne date
+				assertEquals("Achat", droit0.getMotifDebut());
+				assertEquals(RegDate.get(2005, 1, 1), droit0.getDateDebutOfficielle());
+				assertEquals(new IdentifiantAffaireRF(13, 2005, 173, 0), droit0.getNumeroAffaire());
+				assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
+				assertEquals(new Fraction(1, 1), droit0.getPart());
+				assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+
+				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitList.get(1);
+				assertNotNull(droit1);
+				assertEquals("8af806fa4a4dd302014b16fc17266a0b", droit1.getMasterIdRF());
+				assertEquals(dateImport, droit1.getDateDebut());
+				assertNull(droit1.getDateFin());
+				assertEquals("Succession", droit1.getMotifDebut());
+				assertEquals(RegDate.get(2003, 1, 1), droit1.getDateDebutOfficielle());
+				assertEquals(new IdentifiantAffaireRF(6, 2003, 9593, 0), droit1.getNumeroAffaire());
+				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit1.getImmeuble().getIdRF());
+				assertEquals(new Fraction(1, 2), droit1.getPart());
+				assertEquals(GenrePropriete.COPROPRIETE, droit1.getRegime());
+			}
+		});
+	}
+
+	/**
+	 * Ce test vérifie que le processing d'une mutation de création crée bien des nouveaux droits
+	 */
+	@Test
+	public void testProcessMutationCreationImportPasInitial() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+
+		// précondition : la base est vide
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				assertEquals(0, droitRFDAO.getAll().size());
+			}
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_droit_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère quelques données satellites
+		final Long ppId = insertPP("_1f109152381009be0138100a1d442eee", "Schulz", "Alodie", RegDate.get(1900, 1, 1));
+		insertImmeuble("_8af806fc4a35927c014ae2a6e76041b8");
+		insertImmeuble("_1f109152381009be0138100ba7e31031");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.DROIT, TypeMutationRF.CREATION, "_1f109152381009be0138100a1d442eee");
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
 			}
 		});
 
@@ -243,7 +322,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, null);
+				processor.process(mutation, false, null);
 			}
 		});
 
@@ -379,7 +458,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, null);
+				processor.process(mutation, false, null);
 			}
 		});
 

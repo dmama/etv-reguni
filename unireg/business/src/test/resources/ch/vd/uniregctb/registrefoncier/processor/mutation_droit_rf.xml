@@ -13,6 +13,17 @@
 			<Rechtsgruende>
 				<AmtNummer>6</AmtNummer>
 				<RechtsgrundCode>
+					<TextDe>*Succession</TextDe>
+					<TextFr>Succession</TextFr>
+				</RechtsgrundCode>
+				<BelegDatum>2003-01-01</BelegDatum>
+				<BelegJahr>2003</BelegJahr>
+				<BelegNummer>9593</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Rechtsgruende>
+			<Rechtsgruende>
+				<AmtNummer>6</AmtNummer>
+				<RechtsgrundCode>
 					<TextDe>*Achat</TextDe>
 					<TextFr>Achat</TextFr>
 				</RechtsgrundCode>
@@ -44,6 +55,17 @@
 		<NatuerlichePersonGb VersionID="1f109152381009be0138100c87296e9a" MasterID="1f109152381009be0138100e4c7c00e6">
 			<Name>Schulz</Name>
 			<Status>definitiv</Status>
+			<Rechtsgruende>
+				<AmtNummer>13</AmtNummer>
+				<RechtsgrundCode>
+					<TextDe>*Achat</TextDe>
+					<TextFr>Achat</TextFr>
+				</RechtsgrundCode>
+				<BelegDatum>2005-01-01</BelegDatum>
+				<BelegJahr>2005</BelegJahr>
+				<BelegNummer>173</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Rechtsgruende>
 			<Rechtsgruende>
 				<AmtNummer>13</AmtNummer>
 				<RechtsgrundCode>

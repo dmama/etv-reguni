@@ -65,7 +65,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	@Override
-	public void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport) {
+	public void process(@NotNull EvenementRFMutation mutation, boolean importInitial, @Nullable MutationsRFProcessorResults rapport) {
 
 		if (mutation.getEtat() == EtatEvenementRF.TRAITE || mutation.getEtat() == EtatEvenementRF.FORCE) {
 			throw new IllegalArgumentException("La mutation n°" + mutation.getId() + " est déjà traitée (état=[" + mutation.getEtat() + "]).");
@@ -99,7 +99,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on crée les droits en mémoire
 		final List<DroitRF> droits = droitList.stream()
 				.map(e -> (PersonEigentumAnteil) e)
-				.map(e -> DroitRFHelper.newDroitRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
+				.map(e -> DroitRFHelper.newDroitRF(e, importInitial, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
 				.collect(Collectors.toList());
 
 		// on les insère en DB

@@ -30,6 +30,7 @@ import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.AyantDroitRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.BatimentRFDetector;
@@ -93,14 +94,17 @@ public class MutationsRFDetector {
 		}
 		checkPreconditions(event);
 
-		final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, event.getDateEvenement(), nbThreads);
+		// détection de l'import initial
+		final boolean importInitial = isImportInitial();
+
+		final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, importInitial, event.getDateEvenement(), nbThreads);
 
 		// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
 		// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
 		deleteExistingMutations(importId, statusManager);
 
 		// on peut maintenant processer l'import
-		processImport(importId, event.getFileUrl(), nbThreads, statusManager);
+		processImport(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
 
 		rapport.end();
 		return rapport;
@@ -127,7 +131,21 @@ public class MutationsRFDetector {
 		}
 	}
 
-	private void processImport(long importId, String fileUrl, int nbThreads, @NotNull StatusManager statusManager) {
+	/**
+	 * @return <i>vrai</i> s'il s'agit de l'import initial; <i>faux</i> autrement.
+	 */
+	boolean isImportInitial() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TxCallback<Boolean>() {
+			@Override
+			public Boolean execute(TransactionStatus status) throws Exception {
+				return evenementRFImportDAO.getCount(ImmeubleRF.class) == 0;
+			}
+		});
+	}
+
+	private void processImport(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull StatusManager statusManager) {
 		try (InputStream is = zipRaftStore.get(fileUrl)) {
 
 			statusManager.setMessage("Détection des mutations...");
@@ -144,7 +162,7 @@ public class MutationsRFDetector {
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
 			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
-			processDroits(importId, nbThreads, adapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
+			processDroits(importId, nbThreads, adapter.getDroitsIterator(), importInitial, new SubStatusManager(20, 40, statusManager));
 			processProprietaires(importId, nbThreads, adapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
 			processBatiments(importId, nbThreads, adapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
 			processSurfaces(importId, nbThreads, adapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
@@ -244,8 +262,8 @@ public class MutationsRFDetector {
 		immeubleRFDetector.processImmeubles(importId, nbThreads, iterator, statusManager);
 	}
 
-	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, @Nullable StatusManager statusManager) {
-		droitRFDetector.processDroits(importId, nbThreads, iterator, statusManager);
+	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
+		droitRFDetector.processDroits(importId, nbThreads, iterator, importInitial, statusManager);
 	}
 
 	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator, @Nullable StatusManager statusManager) {

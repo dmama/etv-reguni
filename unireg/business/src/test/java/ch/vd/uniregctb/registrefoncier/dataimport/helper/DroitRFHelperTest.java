@@ -42,19 +42,19 @@ public class DroitRFHelperTest {
 	@Test
 	public void testDataEqualsListNullity() throws Exception {
 
-		assertTrue(DroitRFHelper.dataEquals((Set<DroitRF>) null, null));
-		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), null));
-		assertTrue(DroitRFHelper.dataEquals(null, Collections.emptyList()));
-		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), Collections.emptyList()));
+		assertTrue(DroitRFHelper.dataEquals((Set<DroitRF>) null, null, false));
+		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), null, false));
+		assertTrue(DroitRFHelper.dataEquals(null, Collections.emptyList(), false));
+		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), Collections.emptyList(), false));
 
-		assertFalse(DroitRFHelper.dataEquals(null, Collections.singletonList(new PersonEigentumAnteil())));
-		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()), null));
+		assertFalse(DroitRFHelper.dataEquals(null, Collections.singletonList(new PersonEigentumAnteil()), false));
+		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()), null, false));
 	}
 
 	@Test
 	public void testDataEqualsListDifferentSizes() throws Exception {
 		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()),
-		                                     Arrays.asList(new PersonEigentumAnteil(), new PersonEigentumAnteil())));
+		                                     Arrays.asList(new PersonEigentumAnteil(), new PersonEigentumAnteil()), false));
 	}
 
 	@Test
@@ -146,9 +146,9 @@ public class DroitRFHelperTest {
 			eigentumAnteil2.setPersonEigentumsForm(PersonEigentumsform.ALLEINEIGENTUM);
 		}
 
-		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1, droitPP2)), Arrays.asList(eigentumAnteil1, eigentumAnteil2)));
-		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP2, droitPP1)), Arrays.asList(eigentumAnteil2, eigentumAnteil1)));
-		assertFalse(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1)), Arrays.asList(eigentumAnteil2)));
+		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1, droitPP2)), Arrays.asList(eigentumAnteil1, eigentumAnteil2), false));
+		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP2, droitPP1)), Arrays.asList(eigentumAnteil2, eigentumAnteil1), false));
+		assertFalse(DroitRFHelper.dataEquals(new HashSet<>(Collections.singletonList(droitPP1)), Collections.singletonList(eigentumAnteil2), false));
 	}
 
 	@Test
@@ -193,7 +193,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.MITEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil));
+		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false));
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.ALLEINEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitPM, eigentumAnteil));
+		assertTrue(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false));
 	}
 
 	@Test
@@ -282,7 +282,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.GESAMTEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
+		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false));
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setJuristischePersonGb(new JuristischePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil));
+		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false));
 	}
 
 	/**
@@ -314,7 +314,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil));
+		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false));
 	}
 
 	/**
@@ -330,31 +330,50 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
+		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false));
 	}
 
+	/**
+	 * [SIFISC-22400] Vérifie que le droit de référence est le plus ancien dans le cas de l'import initial et le plus récent dans tous les autres cas.
+	 */
 	@Test
 	public void testGetDroitDeReference() throws Exception {
 
 		final Rechtsgrund droit1 = new Rechtsgrund(1, null, null, RegDate.get(2010, 1, 22), null, null, null, null, null);
-		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
+		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2010, 9, 11), null, null, null, null, null);
+		final Rechtsgrund droit3 = new Rechtsgrund(3, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
 
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2)));
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit2, droit1)));
+		// import initial
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), true));
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), true));
+
+		// autres imports
+		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), false));
+		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), false));
 	}
 
 	@Test
 	public void testGetDroitDeReferenceListVide() throws Exception {
-		assertNull(DroitRFHelper.getDroitDeReference(Collections.emptyList()));
+		assertNull(DroitRFHelper.getDroitDeReference(Collections.emptyList(), true));
+		assertNull(DroitRFHelper.getDroitDeReference(Collections.emptyList(), false));
 	}
 
+	/**
+	 * Vérifie qu'une date de début nulle est considérée comme plus ancienne qu'une date renseignée.
+	 */
 	@Test
 	public void testGetDroitDeReferenceAnneeNulle() throws Exception {
 
 		final Rechtsgrund droit1 = new Rechtsgrund(1, null, null, null, null, null, null, null, null);
-		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
+		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2010, 9, 11), null, null, null, null, null);
+		final Rechtsgrund droit3 = new Rechtsgrund(3, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
 
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2)));
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit2, droit1)));
+		// import initial
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), true));
+		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), true));
+
+		// autres imports
+		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), false));
+		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), false));
 	}
 }

@@ -47,6 +47,7 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 		{
 			addTableSimple(2, table -> {
 				table.addLigne("Id de l'import :", String.valueOf(results.getImportId()));
+				table.addLigne("Import initial :", String.valueOf(results.isImportInitial()));
 				table.addLigne("Date de valeur :", RegDateHelper.dateToDisplayString(results.getDateValeur()));
 				table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
 			});

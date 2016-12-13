@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 public class MutationsRFProcessorResults extends JobResults<Long, MutationsRFProcessorResults> {
 
 	private final long importId;
+	private final boolean importInitial;
 	private final RegDate dateValeur;
 	private final int nbThreads;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
@@ -99,9 +100,10 @@ public class MutationsRFProcessorResults extends JobResults<Long, MutationsRFPro
 		}
 	}
 
-	public MutationsRFProcessorResults(long importId, RegDate dateValeur, int nbThreads, EvenementRFMutationDAO evenementRFMutationDAO) {
+	public MutationsRFProcessorResults(long importId, boolean importInitial, RegDate dateValeur, int nbThreads, EvenementRFMutationDAO evenementRFMutationDAO) {
 		super(null, null);
 		this.importId = importId;
+		this.importInitial = importInitial;
 		this.dateValeur = dateValeur;
 		this.nbThreads = nbThreads;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
@@ -109,6 +111,10 @@ public class MutationsRFProcessorResults extends JobResults<Long, MutationsRFPro
 
 	public long getImportId() {
 		return importId;
+	}
+
+	public boolean isImportInitial() {
+		return importInitial;
 	}
 
 	public RegDate getDateValeur() {

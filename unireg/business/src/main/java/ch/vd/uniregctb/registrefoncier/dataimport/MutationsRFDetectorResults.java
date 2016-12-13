@@ -9,6 +9,7 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 public class MutationsRFDetectorResults {
 
 	private final long importId;
+	private final boolean importInitial;
 	private final RegDate dateValeur;
 	private final int nbThreads;
 
@@ -48,14 +49,19 @@ public class MutationsRFDetectorResults {
 		}
 	}
 
-	public MutationsRFDetectorResults(long importId, RegDate dateValeur, int nbThreads) {
+	public MutationsRFDetectorResults(long importId, boolean importInitial, RegDate dateValeur, int nbThreads) {
 		this.importId = importId;
+		this.importInitial = importInitial;
 		this.dateValeur = dateValeur;
 		this.nbThreads = nbThreads;
 	}
 
 	public long getImportId() {
 		return importId;
+	}
+
+	public boolean isImportInitial() {
+		return importInitial;
 	}
 
 	public RegDate getDateValeur() {

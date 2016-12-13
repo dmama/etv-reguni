@@ -13,8 +13,9 @@ public interface MutationRFProcessor {
 	/**
 	 * Traite la mutation passée en paramètre. L'appelant de cette méthode doit gérer lui-même l'ouverture de la transaction.
 	 *
-	 * @param mutation la mutation à traiter.
-	 * @param rapport  le rapport de traitement
+	 * @param mutation      la mutation à traiter.
+	 * @param importInitial vrai s'il s'agit de l'import initial
+	 * @param rapport       le rapport de traitement
 	 */
-	void process(@NotNull EvenementRFMutation mutation, @Nullable MutationsRFProcessorResults rapport);
+	void process(@NotNull EvenementRFMutation mutation, boolean importInitial, @Nullable MutationsRFProcessorResults rapport);
 }

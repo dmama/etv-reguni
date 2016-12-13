@@ -14,6 +14,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
@@ -21,11 +23,14 @@ import ch.vd.uniregctb.registrefoncier.dataimport.processor.MutationRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class MutationsRFProcessorTest extends BusinessTest {
 
+	private ImmeubleRFDAO immeubleRFDAO;
 	private MutationsRFProcessor processor;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
@@ -38,6 +43,8 @@ public class MutationsRFProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
+		processor = getBean(MutationsRFProcessor.class, "mutationsRFProcessor");
 		evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 		ayantDroitRFProcessor = getBean(AyantDroitRFProcessor.class, "ayantDroitRFProcessor");
@@ -57,7 +64,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		final Long importId = addImportAndThreeMutations();
 
 		// un processor de mutations qui ne fait rien de spécial (ce n'est pas lui que l'on veut tester)
-		final MutationRFProcessor immeubleRFProcessor = (mutation, rapport) -> {
+		final MutationRFProcessor immeubleRFProcessor = (mutation, importInitial, rapport) -> {
 			// on ne fait rien
 		};
 
@@ -98,7 +105,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		final Long importId = addImportAndThreeMutations();
 
 		// un processor de mutations qui lève des exceptions
-		final MutationRFProcessor immeubleRFProcessor = (mutation, rapport) -> {
+		final MutationRFProcessor immeubleRFProcessor = (mutation, importInitial, rapport) -> {
 			throw new RuntimeException("Exception de test");
 		};
 
@@ -160,7 +167,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		});
 
 		// un processor de mutations qui ne fait rien
-		final MutationRFProcessor immeubleRFProcessor = (mutation, rapport) -> {
+		final MutationRFProcessor immeubleRFProcessor = (mutation, importInitial, rapport) -> {
 		};
 
 		// on devrait avoir une exception parce que les mutations de l'import précédent ne sont pas toutes traitées
@@ -172,6 +179,33 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		catch (IllegalArgumentException e) {
 			assertEquals("Les mutations de l'import RF avec l'id = [" + ids.suivant + "] ne peuvent être traitées car les mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées.", e.getMessage());
 		}
+	}
+
+	/**
+	 * Vérifie que la méthode 'isImportInitial' retourne bien true quand la base est vide.
+	 */
+	@Test
+	public void testIsImportInitial() throws Exception {
+
+		// précondition: la base est vide
+		doInNewTransaction(status -> {
+			assertEmpty(immeubleRFDAO.getAll());
+			return null;
+		});
+
+		// base vide : il s'agit de l'import initial
+		assertTrue(processor.isImportInitial());
+
+		// on ajoute un immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF immeuble = new BienFondRF();
+			immeuble.setIdRF("783782372");
+			immeubleRFDAO.save(immeuble);
+			return null;
+		});
+
+		// base non vide : il ne s'agit pas de l'import initial
+		assertFalse(processor.isImportInitial());
 	}
 
 	private Long addImportAndThreeMutations() throws Exception {

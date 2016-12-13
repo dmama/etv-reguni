@@ -81,7 +81,7 @@ public class DroitRFDetector {
 		this.cacheDroits = cacheDroits;
 	}
 
-	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, @Nullable StatusManager statusManager) {
+	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits... (regroupement)");
@@ -162,7 +162,7 @@ public class DroitRFDetector {
 								.collect(Collectors.toSet());
 
 						//noinspection StatementWithEmptyBody
-						if (!DroitRFHelper.dataEquals(activesDroits, nouveauxDroits)) {
+						if (!DroitRFHelper.dataEquals(activesDroits, nouveauxDroits, importInitial)) {
 							// les droits sont différents : on sauve une mutation en mode modification
 							final EvenementRFMutation mutation = new EvenementRFMutation();
 							mutation.setParentImport(parentImport);
