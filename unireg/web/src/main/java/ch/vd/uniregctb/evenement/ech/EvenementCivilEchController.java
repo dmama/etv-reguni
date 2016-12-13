@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,6 +37,7 @@ import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
+import ch.vd.uniregctb.evenement.common.AjaxResponseMessage;
 import ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManager;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
@@ -133,7 +135,7 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
-		populateModel(model, initEvenementEchCriteria(), INITIAL_PAGINATION, null, 0, null, null);
+		populateModel(model, initEvenementEchCriteria(), INITIAL_PAGINATION, null, 0);
 		return new ModelAndView("evenement/ech/list", model);
 	}
 
@@ -144,21 +146,19 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	                            ModelMap model ) throws AdresseException {
 		// Stockage des nouveau critère de recherche dans la session
 		// La recherche en elle meme est faite dans nav-list.do
-		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0, null, null);
+		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0);
 		if (bindingResult.hasErrors()) {
 			return "evenement/ech/list";
 		}
 		// Redirect vers nav-list.do  avec en parametre une pagination reinitialisée
-		return buildNavListRedirect(INITIAL_PAGINATION, null, null);
+		return buildNavListRedirect(INITIAL_PAGINATION);
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession,
-	                               @RequestParam(value = "id", required = false) Long id,
-	                               @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException 	{
+	public String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession) throws AdresseException 	{
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
-		return buildNavListRedirect(paginationInSession, id, nextId);
+		return buildNavListRedirect(paginationInSession);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
@@ -166,12 +166,10 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	public ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                          @ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                                          BindingResult bindingResult,
-	                                          ModelMap model,
-	                                          @RequestParam(value = "selectedEvtId", required = false) Long selectedEvtId,
-	                                          @RequestParam(value = "nextEvtId", required = false) Long nextEvtId) throws AdresseException 	{
+	                                          ModelMap model) throws AdresseException 	{
 		if (bindingResult.hasErrors() || (criteriaInSession.isModeLotEvenement() && criteriaInSession.getNumeroIndividu() == null)) {
 			// L'utilisateur a soumis un formulaire incorrect
-			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0, null, null);
+			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
 		} else {
 			// On recupère les paramètres de paginiation en request pour les sauver en session
 			// On recupère les données correspondant au formulaire de recherche
@@ -180,31 +178,25 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 			              criteriaInSession,
 			              pagination,
 			              manager.find(criteriaInSession, pagination),
-			              manager.count(criteriaInSession),
-			              selectedEvtId,
-					      nextEvtId);
+			              manager.count(criteriaInSession));
 
 		}
 		return new ModelAndView("evenement/ech/list", model);
 	}
 
-	private String buildNavListRedirect(ParamPagination pagination, Long id, Long nextId) {
-		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/ech/nav-list.do", id, nextId);
+	private String buildNavListRedirect(ParamPagination pagination) {
+		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/ech/nav-list.do");
 	}
 
 	private void populateModel(ModelMap model,
 	                           final EvenementCivilEchCriteriaView evenementEchCriteria,
 	                           ParamPagination evenementPagination,
 	                           @Nullable List<EvenementCivilEchElementListeRechercheView> listEvenementElementListeRecherches,
-	                           int listEvenementsSize,
-	                           Long selectedEvtId,
-	                           Long nextEvtId) {
+	                           int listEvenementsSize) {
 		model.put("evenementEchCriteria", evenementEchCriteria);
 		model.put("evenementEchPagination", evenementPagination);
 		model.put("listEvenementsEch", listEvenementElementListeRecherches);
 		model.put("listEvenementsEchSize", listEvenementsSize);
-		model.put("selectedEvtId", selectedEvtId);
-		model.put("nextEvtId", nextEvtId);
 	}
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
@@ -217,10 +209,9 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = {"/detail.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public ModelAndView onGetEvenementCivilDetail(@RequestParam("id") Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException {
+	public ModelAndView onGetEvenementCivilDetail(@RequestParam("id") Long id) throws AdresseException {
 		final EvenementCivilEchDetailView visuView = manager.get(id);
 		visuView.setEmbedded(true);
-		visuView.setNextId(nextId);
 		return new ModelAndView ("evenement/ech/detail", "command", visuView);
 	}
 
@@ -233,9 +224,10 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = {"/forcerVersListe.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String onForcerEvenementCivilVersListe(@RequestParam("id") Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException {
+	@ResponseBody()
+	public AjaxResponseMessage onForcerEvenementCivilVersListe(@RequestParam("id") Long id) throws AdresseException {
 		manager.forceEvenement(id);
-		return String.format("redirect:/evenement/ech/list.do?id=%d%s", id, nextId ==null ? "" : "&nextId=" + nextId);
+		return new AjaxResponseMessage(true, null, id);
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
@@ -252,14 +244,17 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = {"/recyclerVersListe.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String onRecyclerEvenementCivilVersListe(@RequestParam("id")  Long id, @RequestParam(value = "nextId", required = false) Long nextId) throws AdresseException, EvenementCivilException {
+	@ResponseBody()
+	public AjaxResponseMessage onRecyclerEvenementCivilVersListe(@RequestParam("id")  Long id) throws AdresseException, EvenementCivilException {
 		boolean recycle = manager.recycleEvenementCivil(id);
+		String message;
 		if (recycle) {
-			Flash.message(String.format("Événement n°%d recyclé", id));
+			message = String.format("Événement n°%d recyclé", id);
 		} else {
-			Flash.warning(String.format("Demande prise en compte, l'événement n°%d est en attente de recyclage", id));
+			message = String.format("Demande prise en compte, l'événement n°%d est en attente de recyclage", id);
 		}
-		return String.format("redirect:/evenement/ech/list.do?id=%d%s", id, nextId ==null ? "" : "&nextId=" + nextId);
+		return new AjaxResponseMessage(true, message, id);
+
 	}
 }
 

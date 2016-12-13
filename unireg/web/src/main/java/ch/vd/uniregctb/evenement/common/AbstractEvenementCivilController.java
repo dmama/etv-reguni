@@ -11,18 +11,12 @@ abstract public class AbstractEvenementCivilController {
 		this.controllerUtils = controllerUtils;
 	}
 
-	protected String buildNavListRedirect(ParamPagination pagination, final String tableName, final String navListPath, Long id, Long nextId) {
+	protected String buildNavListRedirect(ParamPagination pagination, final String tableName, final String navListPath) {
 		String displayTagParameter = controllerUtils.getDisplayTagRequestParametersForPagination(tableName, pagination);
-			if (displayTagParameter != null) {
-				displayTagParameter = "?" + displayTagParameter;
-			}
-			return String.format("redirect:%s%s%s%s%s",
-			                                    navListPath,
-			                                    displayTagParameter == null || id == null ? "" : "?",
-			                                    displayTagParameter == null ? "" : displayTagParameter,
-			                                    id == null ? "" : "&selectedEvtId=" + id,
-			                                    nextId == null ? "" : "&nextEvtId=" + nextId
-			                                    );
+		if (displayTagParameter != null) {
+			displayTagParameter = "?" + displayTagParameter;
+		}
+		return ("redirect:" + navListPath + displayTagParameter);
 	}
 
 }

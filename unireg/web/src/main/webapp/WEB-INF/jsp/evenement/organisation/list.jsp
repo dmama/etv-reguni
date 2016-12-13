@@ -223,9 +223,8 @@
 	 * Selon la position de l'événement dans la liste, le précédent ou le suivant peut être null.
 	 *
 	 * Il faut gérer spécialement le cas où l'id de l'événement dont l'ouverture est demandé ne figure pas dans la liste, par exemple
-	 * parce qu'il a été forcé. Dans ce cas, il faut prendre l'id conservé dans la variable nextId qui sert justement à accueillir
-	 * cette valeur qui est passée lors de l'action de forçage. Lorsqu'on ne trouve pas de nextId, on prend le premier de la liste
-	 * comme suivant.
+	 * parce qu'il a été forcé. Dans ce cas, il faut prendre l'id conservé dans la variable nextId qui contient une copie de la dernière id suivante.
+	 * Lorsqu'on ne trouve pas de nextId, on prend le premier de la liste comme suivant.
 	 *
 	 * @param evtId l'id de l'événement dont on souhaite afficher le détail.
 	 * @returns {null}
@@ -251,22 +250,63 @@
 				evtSuivant = EvtOrg.list[indexEvt + 1];
 			}
 		}
+		EvtOrg.nextId = evtSuivant;
 		EvtOrg.open_details(evtId, evtPrecedant, evtSuivant)
 	}
 
+	EvtOrg.doRecycle = function(id) {
+		$.ajax({
+			       type: "POST",
+			       url: "recyclerVersListe.do",
+			       data: {"id": id},
+			       success: function(data) {
+				       if (data.message) {
+					       alert(data.message);
+				       }
+				       open_details(id);
+			       },
+			       error: function(data) {
+				       alert("L'opération de recyclage a échoué pour une raison inconnue.")
+			       }
+		       });
+	};
+
+	EvtOrg.doForce = function(id) {
+		if (confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?')) {
+			$.ajax({
+				       type: "POST",
+				       url: "forcerVersListe.do",
+				       data: {"id": id},
+				       success: function(data) {
+					       open_details(id);
+				       },
+				       error: function(data) {
+					       alert("L'opération de forçage a échoué pour une raison inconnue.")
+				       }
+			       });
+		}
+	};
+
+	EvtOrg.doCreateEntreprise = function(id) {
+		if (confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?')) {
+			$.ajax({
+				       type: "POST",
+				       url: "creer-entrepriseVersListe.do",
+				       data: {"id": id},
+				       success: function(data) {
+					       if (data.message) {
+						       alert(data.message);
+					       }
+					       open_details(id);
+				       },
+				       error: function(data) {
+					       alert("L'opération de création a échoué pour une raison inconnue.")
+				       }
+			       });
+		}
+	};
 
 	activate_evtinfo_tooltips();
 	activate_static_evt_tooltips();
-
-	/*
-	Ce qui suit permet de rouvrir la fenêtre de détail de l'événement concerné par une action (recyclage, forçage, etc...) grâce
-	au paramtères passé lors de l'appel à l'action.
-	 */
-	<c:if test="${nextEvtId != null}">
-	EvtOrg.nextId = ${nextEvtId};
-	</c:if>
-	<c:if test="${selectedEvtId != null}">
-	open_details(${selectedEvtId});
-	</c:if>
 </script>
 

@@ -292,54 +292,51 @@
 <!-- Fin de la liste des événements dans un état non final sur ce même individu -->
 
 <!-- Debut Boutons -->
-<c:if test="${!command.embedded}">
-	<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';"/>
+<c:choose>
+	<c:when test="${!command.embedded}">
+		<input type="button" value="<fmt:message key='label.bouton.retour'/>" onClick="document.location='list.do';"/>
 
-	<c:if test="${command.recyclable}">
-		<form:form method="post" action="recycler.do" style="display: inline">
-			<input type="hidden" name="id" value="${command.evtId}"/>
-			<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
-			<input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
-		</form:form>
-	</c:if>
-	<c:if test="${command.forcable && command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
-		<form:form method="post" action="forcer.do" style="display: inline">
-			<input type="hidden" name="id" value="${command.evtId}"/>
-			<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
-			<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
-		</form:form>
-	</c:if>
-	<c:if test="${empty command.tiersAssocie && command.forcable && command.evtEtat == 'EN_ERREUR'}">
-		<form:form method="post" action="creer-entreprise.do" style="display: inline">
-			<input type="hidden" name="id" value="${command.evtId}"/>
-			<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
-			<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?');"/>
-		</form:form>
-	</c:if>
-</c:if>
-<c:if test="${command.embedded}">
-	<c:if test="${command.recyclable}">
-		<form:form method="post" action="recyclerVersListe.do" style="display: inline">
-			<input type="hidden" name="id" value="${command.evtId}"/>
-			<input type="hidden" name="nextId" value="${command.nextId}"/>
-			<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
-			<input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
-		</form:form>
-	</c:if>
-	<c:if test="${command.forcable && command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
-		<form:form method="post" action="forcerVersListe.do" style="display: inline">
-			<input type="hidden" name="id" value="${command.evtId}"/>
-			<input type="hidden" name="nextId" value="${command.nextId}"/>
-			<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
-			<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
-		</form:form>
-	</c:if>
-	<c:if test="${empty command.tiersAssocie && command.forcable && command.evtEtat == 'EN_ERREUR'}">
-		<form:form method="post" action="creer-entrepriseVersListe.do" style="display: inline">
-			<input type="hidden" name="id" value="${command.evtId}"/>
-			<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
-			<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?');"/>
-		</form:form>
-	</c:if>
-</c:if>
+		<c:if test="${command.recyclable}">
+			<form:form method="post" action="recycler.do" style="display: inline">
+				<input type="hidden" name="id" value="${command.evtId}"/>
+				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
+				<input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
+			</form:form>
+		</c:if>
+		<c:if test="${command.forcable && command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
+			<form:form method="post" action="forcer.do" style="display: inline">
+				<input type="hidden" name="id" value="${command.evtId}"/>
+				<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
+				<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
+			</form:form>
+		</c:if>
+		<c:if test="${empty command.tiersAssocie && command.forcable && command.evtEtat == 'EN_ERREUR'}">
+			<form:form method="post" action="creer-entreprise.do" style="display: inline">
+				<input type="hidden" name="id" value="${command.evtId}"/>
+				<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
+				<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?');"/>
+			</form:form>
+		</c:if>
+	</c:when>
+	<c:otherwise>
+		<c:if test="${command.recyclable}">
+			<form:form method="post" action="#" style="display: inline">
+				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
+				<input type="submit" name="recycler" value="${labelBoutonRecyler}" onclick="EvtOrg.doRecycle(${command.evtId}); return false"/>
+			</form:form>
+		</c:if>
+		<c:if test="${command.forcable && command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
+			<form:form method="post" action="#" style="display: inline">
+				<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
+				<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="EvtOrg.doForce(${command.evtId}); return false"/>
+			</form:form>
+		</c:if>
+		<c:if test="${empty command.tiersAssocie && command.forcable && command.evtEtat == 'EN_ERREUR'}">
+			<form:form method="post" action="#" style="display: inline">
+				<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
+				<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="EvtOrg.doCreateEntreprise(${command.evtId}); return false"/>
+			</form:form>
+		</c:if>
+	</c:otherwise>
+</c:choose>
 <!-- Fin Boutons -->

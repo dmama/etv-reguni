@@ -266,19 +266,15 @@
 	</c:when>
 	<c:otherwise>
 		<c:if test="${command.recyclable}">
-			<form:form method="post" action="recyclerVersListe.do" style="display: inline">
-				<input type="hidden" name="id" value="${command.evtId}"/>
-				<input type="hidden" name="nextId" value="${command.nextId}"/>
+			<form:form method="post" action="#" style="display: inline">
 				<fmt:message key="label.bouton.recycler" var="labelBoutonRecyler"/>
-				<input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
+				<input type="submit" name="recycler" value="${labelBoutonRecyler}" onclick="EvtCivil.doRecycle(${command.evtId}); return false"/>
 			</form:form>
 		</c:if>
 		<c:if test="${command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
-			<form:form method="post" action="forcerVersListe.do" style="display: inline">
-				<input type="hidden" name="id" value="${command.evtId}"/>
-				<input type="hidden" name="nextId" value="${command.nextId}"/>
+			<form:form method="post" action="#" style="display: inline">
 				<fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
-				<input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
+				<input type="submit" name="forcer" value="${labelBoutonForcer}"  onclick="EvtCivil.doForce(${command.evtId}); return false"/>
 			</form:form>
 		</c:if>
 	</c:otherwise>

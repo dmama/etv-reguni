@@ -176,7 +176,7 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	}
 
 	private String buildNavListRedirect(ParamPagination pagination) {
-		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/regpp/nav-list.do", null, null);
+		return buildNavListRedirect(pagination, TABLE_NAME, "/evenement/regpp/nav-list.do");
 	}
 
 	private void populateModel(ModelMap model,
