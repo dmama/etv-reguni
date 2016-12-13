@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -23,6 +25,10 @@ public class EvenementCivilEchElementListeRechercheView implements Serializable 
 	private Long numeroCTB;
 	private String nom;
 	private String commentaireTraitement;
+
+	private IndividuView individu;
+	private AdresseEnvoi adresse;
+
 
 	public EvenementCivilEchElementListeRechercheView(EvenementCivilEch evt) {
 		this.id = evt.getId();
@@ -90,4 +96,19 @@ public class EvenementCivilEchElementListeRechercheView implements Serializable 
 		return action;
 	}
 
+	public IndividuView getIndividu() {
+		return individu;
+	}
+
+	public void setIndividu(IndividuView individu) {
+		this.individu = individu;
+	}
+
+	public AdresseEnvoi getAdresse() {
+		return adresse;
+	}
+
+	public void setAdresse(AdresseEnvoi adresse) {
+		this.adresse = adresse;
+	}
 }

@@ -55,7 +55,70 @@
 			<display:column property="id" sortable ="${sortable}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
 			<!-- NO Individu + Conjoint -->
 			<display:column sortable ="${sortable}" titleKey="label.individu" sortProperty="numeroIndividu" sortName="numeroIndividu">
-				${tableEvtsEch.numeroIndividu}
+				<a href="#" class="staticTip" id="tt-${tableEvtsEch.numeroIndividu}">
+					<div id="tt-${tableEvtsEch.numeroIndividu}-tooltip" style="display:none;">
+						<h3>Individu n°${tableEvtsEch.numeroIndividu}</h3>
+						<fieldset>
+							<unireg:nextRowClass reset="1"/>
+							<table>
+								<tr class="<unireg:nextRowClass/>">
+									<td width="50%"><fmt:message key="label.numero.registre.habitant"/> :</td>
+									<td width="50%">${tableEvtsEch.individu.numeroIndividu}</td>
+								</tr>
+								<tr class="<unireg:nextRowClass/>">
+									<td width="50%"><fmt:message key="label.nom.prenom"/> :</td>
+									<c:if test="${tableEvtsEch.individu != null}">
+										<td width="50%">${tableEvtsEch.individu.nom}&nbsp;${tableEvtsEch.individu.prenomUsuel}</td>
+									</c:if>
+								</tr>
+								<c:if test="${tableEvtsEch.adresse.ligne1 != null}">
+									<tr class="<unireg:nextRowClass/>">
+										<td><fmt:message key="label.adresse.courrier.active"/>&nbsp;:</td>
+										<td>${tableEvtsEch.adresse.ligne1}</td>
+									</tr>
+								</c:if>
+								<c:if test="${tableEvtsEch.adresse.ligne2 != null }">
+									<tr class="<unireg:nextRowClass/>">
+										<td>&nbsp;</td>
+										<td>${tableEvtsEch.adresse.ligne2}</td>
+									</tr>
+								</c:if>
+								<c:if test="${tableEvtsEch.adresse.ligne3 != null }">
+									<tr class="<unireg:nextRowClass/>">
+										<td>&nbsp;</td>
+										<td>${tableEvtsEch.adresse.ligne3}</td>
+									</tr>
+								</c:if>
+								<c:if test="${tableEvtsEch.adresse.ligne4 != null }">
+									<tr class="<unireg:nextRowClass/>">
+										<td>&nbsp;</td>
+										<td>${tableEvtsEch.adresse.ligne4}</td>
+									</tr>
+								</c:if>
+								<c:if test="${tableEvtsEch.adresse.ligne5 != null}">
+									<tr class="<unireg:nextRowClass/>">
+										<td>&nbsp;</td>
+										<td>${tableEvtsEch.adresse.ligne5}</td>
+									</tr>
+								</c:if>
+								<c:if test="${tableEvtsEch.adresse.ligne6 != null}">
+									<tr class="<unireg:nextRowClass/>">
+										<td>&nbsp;</td>
+										<td>${tableEvtsEch.adresse.ligne6}</td>
+									</tr>
+								</c:if>
+								<tr class="<unireg:nextRowClass/>">
+									<td><fmt:message key="label.date.naissance"/>&nbsp;:</td>
+									<c:if test="${tableEvtsEch.individu != null}">
+										<td><unireg:regdate regdate="${tableEvtsEch.individu.dateNaissance}"/></td>
+									</c:if>
+								</tr>
+							</table>
+						</fieldset>
+					</div>
+					<span>${tableEvtsEch.numeroIndividu}&nbsp;</span>
+				</a>
+
 			</display:column>
 			<!-- NO CTB -->
 			<display:column titleKey="label.numero.contribuable">
@@ -112,6 +175,24 @@
 
 </script>
 <script language="javascript">
+
+	function activate_static_evt_tooltips(obj) {
+		$(".staticTip", obj).tooltip({
+			                             items: "[id]",
+			                             position: { my: "right top", at: "right bottom" },
+			                             content: function() {
+				                             // on détermine l'id de la div qui contient le tooltip à afficher
+				                             var id = $(this).attr("id") + "-tooltip";
+				                             id = id.replace(/\./g, '\\.'); // on escape les points
+
+				                             // on récupère la div et on affiche son contenu
+				                             var div = $("#" + id);
+				                             return div.html();
+			                             }
+		                             });
+	}
+
+
 	/**
 	 * Ouvrir le panneau de détail après avoir déterminé les ids de l'événement précédent et suivant.
 	 *
@@ -182,4 +263,7 @@
 			       });
 		}
 	};
+
+	activate_static_evt_tooltips();
+
 </script>

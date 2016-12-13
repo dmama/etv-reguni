@@ -245,6 +245,9 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 				final String nom = adresseService.getNomCourrier(numeroIndividu);
 				view.setNom(nom);
+
+				view.setIndividu(retrieveIndividu(numeroIndividu, evt.getId()));
+				view.setAdresse(retrieveAdresse(numeroIndividu));
 			}
 			catch (IndividuNotFoundException e) {
 				LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
