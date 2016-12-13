@@ -34,6 +34,7 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -94,7 +95,10 @@ public class DroitRFDetector {
 			if (eigentumAnteil == null) {
 				break;
 			}
-
+			if (BlacklistRFHelper.isBlacklisted(eigentumAnteil.getBelastetesGrundstueckIDREF())) {
+				// on ignore les droits sur les bâtiments blacklistés
+				continue;
+			}
 			final String idRF = DroitRFHelper.getIdRF(eigentumAnteil);
 			final IdRfCacheKey key = new IdRfCacheKey(idRF);
 			ArrayList<PersonEigentumAnteil> list = cacheDroits.get(key);

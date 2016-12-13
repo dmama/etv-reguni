@@ -37,6 +37,7 @@ import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
@@ -113,6 +114,10 @@ public class ImmeubleRFDetector {
 
 					if (immeuble.isIstKopie()) {
 						// on ignore les bâtiments flaggés comme des copies
+						continue;
+					}
+					if (BlacklistRFHelper.isBlacklisted(immeuble.getGrundstueckID())) {
+						// on ignore les bâtiments blacklistés
 						continue;
 					}
 

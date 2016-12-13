@@ -214,6 +214,46 @@ public class ImmeubleRFDetectorTest {
 	}
 
 	/**
+	 * [SIFISC-22366] Ce test vérifie que les immeubles blacklistés sont bien ignorés.
+	 */
+	@Test
+	public void testNouvelImmeubleBlackliste() throws Exception {
+
+		// un mock de DAO qui simule une base vide
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
+			@Nullable
+			@Override
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+				return null;
+			}
+		};
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+
+		// on envoie un immeuble blacklisté
+		final Liegenschaft bienfond = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "_1f1091523810108101381012b3d64cb4", "CH282891891", true);
+		final List<Grundstueck> immeubles = Collections.singletonList(bienfond);
+		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator(), null);
+
+		// on ne devrait pas avoir de mutations
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(0, mutations.size());
+	}
+
+	/**
 	 * Ce test vérifie que des mutations de type MODIFICATION sont bien créées les immeubles dans l'import existent dans la base de données mais pas avec les mêmes valeurs.
 	 */
 	@Test
