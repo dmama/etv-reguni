@@ -140,7 +140,6 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 	private final List<ErrorInfo> sommationsEnErreur = new LinkedList<>();
 	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<>();
 	private final List<Info> disContribuablesNonAssujettis = new LinkedList<>();
-	private final List<Info> disOptionnelles = new LinkedList<>();
 	private final List<Info> disSuspendues = new LinkedList<>();
 	private final List<DelaiEffectifNonEchuInfo> disDelaiEffectifNonEchu = new LinkedList<>();
 
@@ -154,7 +153,6 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 	public void addAll(EnvoiSommationsDIsPMResults right) {
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);
 		this.disContribuablesNonAssujettis.addAll(right.disContribuablesNonAssujettis);
-		this.disOptionnelles.addAll(right.disOptionnelles);
 		this.disSuspendues.addAll(right.disSuspendues);
 		this.disDelaiEffectifNonEchu.addAll(right.disDelaiEffectifNonEchu);
 		List<Integer> annees = new ArrayList<>(sommationsParPeriode.keySet());
@@ -248,7 +246,6 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 				+ getTotalSommationsEnErreur()
 				+ getTotalDelaisEffectifsNonEchus()
 				+ getTotalNonAssujettissement()
-				+ getTotalDisOptionnelles()
 				+ getTotalDisSuspendues();
 	}
 
@@ -270,18 +267,6 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 
 	public List<Info> getListeNonAssujettissement() {
 		return Collections.unmodifiableList(disContribuablesNonAssujettis);
-	}
-
-	public void addDiOptionelle(DeclarationImpotOrdinaire di) {
-		disOptionnelles.add(new Info(di));
-	}
-
-	public int getTotalDisOptionnelles() {
-		return disOptionnelles.size();
-	}
-
-	public List<Info> getDisOptionnelles() {
-		return Collections.unmodifiableList(disOptionnelles);
 	}
 
 	public void addDiSuspendue(DeclarationImpotOrdinaire di) {

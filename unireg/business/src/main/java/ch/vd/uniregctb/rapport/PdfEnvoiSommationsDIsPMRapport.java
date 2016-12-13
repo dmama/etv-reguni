@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -59,7 +58,6 @@ public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
                 }
                 table.addLigne("Nombre de DI non sommées pour cause de délai effectif non-échu :", String.valueOf(results.getTotalDelaisEffectifsNonEchus()));
                 table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
-                table.addLigne("Nombre de DI non sommées pour cause d'optionnalité :", String.valueOf(results.getTotalDisOptionnelles()));
                 table.addLigne("Nombre de DI non sommées pour cause de suspension :", String.valueOf(results.getTotalDisSuspendues()));
                 table.addLigne("Nombre de sommations en erreur :", String.valueOf(results.getTotalSommationsEnErreur()));
 	            table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
@@ -93,16 +91,6 @@ public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
             String titre = "Liste des déclarations dont les contribuables ne sont pas assujettis";
 	        String listVide = "(aucune déclaration n'est liée à un contribuable non assujetti)";
 	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeNonAssujettissement(), filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
-
-        // DI optionnelles
-        {
-            String filename = "optionnelles.csv";
-            String titre = "Liste des déclarations non-sommées car optionnelles";
-	        String listVide = "(aucune déclaration sommable n'est optionnelle)";
-	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status)) {
 		        addListeDetaillee(writer, titre, listVide, filename, contenu);
 	        }
         }

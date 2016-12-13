@@ -15,7 +15,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -149,12 +148,6 @@ public class EnvoiSommationsDIsPMProcessor {
 						LOGGER.info(msg);
 						r.addNonAssujettissement(di);
 					}
-					else if (isOptionnelle(di, periodesImposition)) {
-						final String msg = String.format("La di [id: %d] du contribuable [%s] n'a pas été sommée car elle était optionelle",
-						                                 di.getId(), di.getTiers().getNumero());
-						LOGGER.info(msg);
-						r.addDiOptionelle(di);
-					}
 					else if (isSuspendue(di)) {
 						final String msg = String.format("La di [id: %d] du contribuable [%s] n'a pas été sommée car elle était suspendue",
 						                                 di.getId(), di.getTiers().getNumero());
@@ -233,22 +226,6 @@ public class EnvoiSommationsDIsPMProcessor {
 		di.addEtat(etat);
 
 		diService.envoiSommationDIPMForBatch(di, dateTraitement, dateExpedition);
-	}
-
-	/**
-	 * Si la DI était optionelle (ou remplacée par une note), alors il ne faut pas la sommer
-	 */
-	private boolean isOptionnelle(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodesImposition) {
-		boolean optionnel = true;
-		for (PeriodeImposition pi : periodesImposition) {
-			if (DateRangeHelper.intersect(di, pi)) {
-				optionnel = pi.isDeclarationOptionnelle() || pi.isDeclarationRemplaceeParNote();
-				if (!optionnel) {
-					break;
-				}
-			}
-		}
-		return optionnel;
 	}
 
 	/**

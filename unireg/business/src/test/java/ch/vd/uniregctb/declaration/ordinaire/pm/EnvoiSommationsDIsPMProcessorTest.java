@@ -119,7 +119,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(2014));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -165,7 +164,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(2014));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -207,7 +205,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 
 		final List<EnvoiSommationsDIsPMResults.DelaiEffectifNonEchuInfo> nonEchus = results.getListeDisDelaiEffectifNonEchu();
@@ -254,7 +251,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -290,6 +286,13 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsPMResults results = processor.run(dateTraitement, 0, null);
+		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(1, results.getTotalDisSommees());
+		Assert.assertEquals(1, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -345,7 +348,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(1, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -409,7 +411,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -456,7 +457,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -499,7 +499,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
@@ -542,7 +541,6 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
-		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 		Assert.assertEquals(1, results.getTotalDisSuspendues());
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -551,6 +549,61 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) diDao.get(diId);
 				Assert.assertNotNull(di);
 				Assert.assertNull(di.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
+			}
+		});
+	}
+
+	@Test
+	public void testSommationMemeSiOptionelle() throws Exception {
+
+		final int anneePf = 2014;
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
+		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
+		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
+
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e, dateDebut, null, "Truc machin");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.CORP_DP_ADM);
+				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periode);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateTraitement = delaiInitial.addYears(1);
+		final EnvoiSommationsDIsPMResults results = processor.run(dateTraitement, null, null);
+		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
+		Assert.assertEquals(1, results.getTotalDisSommees());
+		Assert.assertEquals(1, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
+				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtat();
+				Assert.assertNotNull(etatSomme);
+				Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
+
+				final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
+				Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
+				return null;
 			}
 		});
 	}
