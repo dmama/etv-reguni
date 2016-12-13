@@ -62,11 +62,12 @@ if [ -s "$TMPFILE" ]; then
 
 	if [ $# -ge 1 ]; then
 
+		NB_TIERS=$(cat "$TMPFILE" | wc -l)
 		mutt -s "Tiers non-indexables de l'environnement Unireg $ENVIRONMENT en date du $FORMATTED_DAY" -- "$@" <<-EOF
 
 			Bonjour !
 
-			Ceci est un message automatique. En date du $FORMATTED_DAY, sur l'environnement Unireg $ENVIRONMENT, le(s) tiers suivant(s) a/ont été identifié(s) comme non-indexable(s) :
+			Ceci est un message automatique. En date du $FORMATTED_DAY, sur l'environnement Unireg $ENVIRONMENT, $NB_TIERS tiers a/ont été identifié(s) comme non-indexable(s) :
 
 			$(cat "$TMPFILE")
 
