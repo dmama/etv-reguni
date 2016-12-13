@@ -123,7 +123,7 @@
 			<!-- NO CTB -->
 			<display:column titleKey="label.numero.contribuable">
 				<c:if test="${tableEvtsEch.numeroCTB != null}">
-					<unireg:numCTB numero="${tableEvtsEch.numeroCTB}" />
+					<a href="<c:url value="../../tiers/visu.do"/>?id=${tableEvtsEch.numeroCTB}"><unireg:numCTB numero="${tableEvtsEch.numeroCTB}" /></a>
 				</c:if>
 			</display:column>
 			<!-- Nom  /Prénom -->
