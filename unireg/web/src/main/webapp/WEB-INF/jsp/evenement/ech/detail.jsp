@@ -117,6 +117,18 @@
 		        <td width="50%">${command.individu.nom}&nbsp;${command.individu.prenomUsuel}</td>
 	        </c:if>
         </tr>
+	    <c:if test="${command.individu != null}">
+		    <tr class="<unireg:nextRowClass/>">
+			    <td><fmt:message key="label.nouveau.numero.avs"/>&nbsp;:</td>
+			    <td><unireg:numAVS numeroAssureSocial="${command.individu.numeroAssureSocial}"></unireg:numAVS></td>
+		    </tr>
+	    </c:if>
+	    <c:if test="${command.individu != null}">
+		    <tr class="<unireg:nextRowClass/>">
+			    <td><fmt:message key="label.ancien.numero.avs"/>&nbsp;:</td>
+			    <td><unireg:ancienNumeroAVS ancienNumeroAVS="${command.individu.ancienNumeroAVS}"></unireg:ancienNumeroAVS></td>
+		    </tr>
+	    </c:if>
         <c:if test="${command.adresse.ligne1 != null}">
             <tr class="<unireg:nextRowClass/>">
                 <td><fmt:message key="label.adresse.courrier.active"/>&nbsp;:</td>
