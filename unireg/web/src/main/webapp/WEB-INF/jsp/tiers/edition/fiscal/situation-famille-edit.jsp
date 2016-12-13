@@ -20,27 +20,33 @@
 						<jsp:param name="path" value="dateDebut" />
 						<jsp:param name="id" value="dateDebut" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 			</tr>
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.etat.civil" />&nbsp;:</td>
 				<td width="25%">
-					<c:if test="${command.natureSituationFamille == 'SituationFamilleMenageCommun'}">
-						<form:select path="etatCivil">
-							<form:option value="MARIE" ><fmt:message key="option.etat.civil.MARIE" /></form:option>
-							<form:option value="LIE_PARTENARIAT_ENREGISTRE"><fmt:message key="option.etat.civil.LIE_PARTENARIAT_ENREGISTRE" /></form:option>
-						</form:select>
-					</c:if>
-					<c:if test="${command.natureSituationFamille != 'SituationFamilleMenageCommun'}">
-						<form:select path="etatCivil">
-							<form:option value="" ></form:option>
-							<form:options items="${etatCivil}" />
-						</form:select>
-					</c:if>
+					<c:choose>
+						<c:when test="${command.natureSituationFamille == 'SituationFamilleMenageCommun'}">
+							<form:select path="etatCivil">
+								<form:option value="MARIE" ><fmt:message key="option.etat.civil.MARIE" /></form:option>
+								<form:option value="LIE_PARTENARIAT_ENREGISTRE"><fmt:message key="option.etat.civil.LIE_PARTENARIAT_ENREGISTRE" /></form:option>
+							</form:select>
+						</c:when>
+						<c:otherwise>
+							<form:select path="etatCivil">
+								<form:option value="" ></form:option>
+								<form:options items="${etatCivil}" />
+							</form:select>
+						</c:otherwise>
+					</c:choose>
+					<span style="color: red;">*</span>
+					<form:errors path="etatCivil" cssClass="error"/>
 				</td>
 				<td width="25%"><fmt:message key="label.nombre.enfants" />&nbsp;:</td>
 				<td width="25%">
 					<form:input path="nombreEnfants" size="2" />
+					<span style="color: red;">*</span>
 					<form:errors path="nombreEnfants" cssClass="error"/>
 				</td>
 			</tr>

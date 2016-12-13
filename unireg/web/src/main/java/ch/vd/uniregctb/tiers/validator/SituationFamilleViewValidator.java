@@ -57,6 +57,11 @@ public class SituationFamilleViewValidator implements Validator {
 				errors.rejectValue("nombreEnfants", "error.nombre.enfants.invalide");
 			}
 		}
+
+		// [SIFISC-21605] l'état civil est obligatoire, non ?
+		if (situationFamilleView.getEtatCivil() == null) {
+			errors.rejectValue("etatCivil", "error.etat.civil.obligatoire");
+		}
 	}
 
 }
