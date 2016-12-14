@@ -507,6 +507,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesNonAnnuleesTriees = entreprise.getFormesJuridiquesNonAnnuleesTriees();
 		if (!formesJuridiquesNonAnnuleesTriees.isEmpty()) {
 			final FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise = DateRangeHelper.rangeAt(formesJuridiquesNonAnnuleesTriees, event.getDateEvenement());
+			if (formeJuridiqueFiscaleEntreprise == null) {
+				return false;
+			}
 			final FormeLegale formeLegaleEntreprise = FormeLegale.fromCode(formeJuridiqueFiscaleEntreprise.getFormeJuridique().getCodeECH());
 			if (formeLegaleEntreprise != null && formeLegaleEntreprise == organisation.getFormeLegale(event.getDateEvenement())) {
 				return true;
