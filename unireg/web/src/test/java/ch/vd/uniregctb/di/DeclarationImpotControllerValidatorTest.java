@@ -67,13 +67,16 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		validator.validate(view, errors);
 		final List<ObjectError> allErrors = errors.getAllErrors();
 		assertNotNull(allErrors);
-		assertEquals(2, allErrors.size());
+		assertEquals(3, allErrors.size());
 
 		final ObjectError error0 = allErrors.get(0);
 		assertEquals("error.date.debut.vide", error0.getCode());
 
 		final ObjectError error1 = allErrors.get(1);
-		assertEquals("error.delai.accorde.vide", error1.getCode());
+		assertEquals("error.date.fin.vide", error1.getCode());
+
+		final ObjectError error2 = allErrors.get(2);
+		assertEquals("error.delai.accorde.vide", error2.getCode());
 	}
 
 	@Test
