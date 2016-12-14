@@ -184,15 +184,19 @@
 	        <c:if test="${command.organisation == null}">
 		        <td class="error"><c:out value="${command.organisationError}"/></td>
 	        </c:if>
-	        <c:if test="${command.organisation != null && command.organisation.formeJuridique != null}">
-		        <td><c:out value="${command.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/>)</td>
+	        <c:if test="${command.organisation != null}">
+		        <td>
+			        <c:if test="${command.organisation.formeJuridique != null}">
+				        <c:out value="${command.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/>)
+			        </c:if>
+		        </td>
 	        </c:if>
         </tr>
-        <tr class="<unireg:nextRowClass/>">
-            <td><fmt:message key="label.siege"/>&nbsp;:</td>
-            <c:if test="${command.organisation == null}">
-                <td class="error"><c:out value="${command.organisationError}"/></td>
-            </c:if>
+	    <tr class="<unireg:nextRowClass/>">
+		    <td><fmt:message key="label.siege"/>&nbsp;:</td>
+		    <c:if test="${command.organisation == null}">
+			    <td class="error"><c:out value="${command.organisationError}"/></td>
+		    </c:if>
             <c:if test="${command.organisation != null}">
                 <c:choose>
                     <c:when test="${command.organisation.typeSiege == 'COMMUNE_OU_FRACTION_VD'}">
