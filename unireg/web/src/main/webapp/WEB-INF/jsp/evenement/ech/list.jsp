@@ -77,12 +77,6 @@
 										<td width="50%"><unireg:numAVS numeroAssureSocial="${tableEvtsEch.individu.numeroAssureSocial}"></unireg:numAVS></td>
 									</c:if>
 								</tr>
-								<tr class="<unireg:nextRowClass/>">
-									<td width="50%"><fmt:message key="label.ancien.numero.avs"/> :</td>
-									<c:if test="${tableEvtsEch.individu != null}">
-										<td width="50%"><unireg:ancienNumeroAVS ancienNumeroAVS="${tableEvtsEch.individu.ancienNumeroAVS}"></unireg:ancienNumeroAVS></td>
-									</c:if>
-								</tr>
 								<c:if test="${tableEvtsEch.adresse.ligne1 != null}">
 									<tr class="<unireg:nextRowClass/>">
 										<td><fmt:message key="label.adresse.courrier.active"/>&nbsp;:</td>
