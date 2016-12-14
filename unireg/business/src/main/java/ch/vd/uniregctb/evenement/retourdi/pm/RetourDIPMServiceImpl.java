@@ -1212,10 +1212,9 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 		// re-calcul des cycles de bouclement souhaités
 		final List<ExerciceCommercial> anciensExercicesCommerciaux = exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
-		final Set<RegDate> datesBouclement = new HashSet<>(anciensExercicesCommerciaux.size());
-		for (ExerciceCommercial ex : anciensExercicesCommerciaux) {
-			datesBouclement.add(ex.getDateFin());
-		}
+		final Set<RegDate> datesBouclement = anciensExercicesCommerciaux.stream()
+				.map(ExerciceCommercial::getDateFin)
+				.collect(Collectors.toSet());
 		// remplacement de l'ancienne date par la nouvelle (c'est le re-calcul des tâches qui fera le reste - dates dans la DI)
 		if (!datesBouclement.remove(ancienneFinExerciceCommercial)) {
 			// il y a un problème, non ?
@@ -1236,35 +1235,30 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final NavigableSet<RegDate> datesBouclementTriees = new TreeSet<>(datesBouclement);
 		final RegDate debutZone = RegDateHelper.minimum(ancienneFinExerciceCommercial, dateFinExerciceCommercial, NullDateBehavior.EARLIEST);
 
-		final NavigableSet<RegDate> datesBouclementPosterieures = datesBouclementTriees.tailSet(dateFinExerciceCommercial, false);
-		if (!datesBouclementPosterieures.isEmpty()) {
-			// il y a d'autres dates de bouclement après la nouvelle date...
+		// il faut trouver les DI retournées postérieures à la DI dont on traite actuellement le retour (toutes PF confondues)
+		final DeclarationImpotOrdinairePM declarationRetourneePosterieure = findPremiereDeclarationImpotRetourneeApresDate(entreprise, di.getDateFin());
+		final RegDate finDeclarationeRetournee = declarationRetourneePosterieure != null ? declarationRetourneePosterieure.getDateFinExerciceCommercial() : null;
+		if (finDeclarationeRetournee == null) {
+			datesBouclementTriees.tailSet(debutZone, false).clear();
+		}
+		else {
+			datesBouclementTriees
+					.tailSet(debutZone, false)
+					.headSet(finDeclarationeRetournee, false)
+					.clear();
 
-			// il faut trouver les DI retournées postérieures à la DI dont on traite actuellement le retour (toutes PF confondues)
-			final DeclarationImpotOrdinairePM declarationRetourneePosterieure = findPremiereDeclarationImpotRetourneeApresDate(entreprise, di.getDateFin());
-			final RegDate finDeclarationeRetournee = declarationRetourneePosterieure != null ? declarationRetourneePosterieure.getDateFinExerciceCommercial() : null;
-			if (finDeclarationeRetournee == null) {
-				datesBouclementTriees.tailSet(debutZone, false).clear();
-			}
-			else {
-				datesBouclementTriees
-						.tailSet(debutZone, false)
-						.headSet(finDeclarationeRetournee, false)
-						.clear();
-
-				// cycles annuels temporaires (jusqu'à la DI retournée)
-				// on ne rajoute des bouclements que sur les années où il n'y en a pas déjà un
-				final Set<Integer> presentYears = datesBouclementTriees.stream()
-						.map(RegDate::year)
-						.collect(Collectors.toSet());
-				for (RegDate date = dateFinExerciceCommercial.addYears(1) ; date.compareTo(finDeclarationeRetournee) < 0 ; date = date.addYears(1)) {
-					if (!presentYears.contains(date.year())) {
-						datesBouclementTriees.add(date);
-					}
+			// cycles annuels temporaires (jusqu'à la DI retournée)
+			// on ne rajoute des bouclements que sur les années où il n'y en a pas déjà un
+			final Set<Integer> presentYears = datesBouclementTriees.stream()
+					.map(RegDate::year)
+					.collect(Collectors.toSet());
+			for (RegDate date = dateFinExerciceCommercial.addYears(1) ; date.compareTo(finDeclarationeRetournee) < 0 ; date = date.addYears(1)) {
+				if (!presentYears.contains(date.year())) {
+					datesBouclementTriees.add(date);
 				}
 			}
-			datesBouclementTriees.add(dateFinExerciceCommercial);
 		}
+		datesBouclementTriees.add(dateFinExerciceCommercial);
 
 		// [SIFISC-22254] vérification des périodes couvertes par des bouclements (il doit y en avoir un par an sauf exceptionnellement la première année)
 		// (on ne vérifie que dans la période temporelle entre l'ancienne année de bouclement et la nouvelle)
