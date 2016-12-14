@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import noNamespace.FichierImpressionDocument;
+import noNamespace.InfoArchivageDocument;
 import noNamespace.TypFichierImpression;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -425,11 +426,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpressionDocument document = impressionSommationDIPPHelper.remplitSommationDI(params);
 		final String nomDocument = impressionSommationDIPPHelper.construitIdDocument(declaration);
 
-		// TODO à activer en 17R1 ?
-//		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
-//		if (infoArchivage != null) {
-//			evenementDocumentSortantService.signaleSommationDeclarationImpot(declaration, infoArchivage, false);
-//		}
+		// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleSommationDeclarationImpot(declaration, infoArchivage, false);
+		}
 
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
 	}
@@ -459,6 +460,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionSommationLRHelper.getTypeDocumentEditique();
 		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
+
+		// [SIFISC-21113] exposition des documents sortant IS vers le DPerm
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleSommationListeRecapitulative(lr, infoArchivage, false);
+		}
+
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
 	}
 
@@ -469,6 +477,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.online(declaration, infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur(), dateEvenement, emolument);
 		final FichierImpressionDocument document = impressionSommationDIPPHelper.remplitSommationDI(params);
 		final String nomDocument = impressionSommationDIPPHelper.construitIdDocument(declaration);
+
+		// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleSommationDeclarationImpot(declaration, infoArchivage, true);
+		}
 
 		final String description = String.format("Sommation de la déclaration d'impôt %d du contribuable %s",
 		                                         declaration.getPeriode().getAnnee(),
@@ -591,6 +605,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionSommationLRHelper.getTypeDocumentEditique();
 		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
+
+		// [SIFISC-21113] exposition des documents sortant IS vers le DPerm
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleSommationListeRecapitulative(lr, infoArchivage, true);
+		}
+
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, FormatDocumentEditique.PCL, document, true);
 	}
 
@@ -604,6 +625,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 		final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
 		final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
+
+		// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleConfirmationDelai(di, infoArchivage, true);
+		}
 
 		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
 		                                         RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()),
@@ -703,6 +730,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		ImpressionDocumentEfactureParams params = new ImpressionDocumentEfactureParams(tiers, typeDoc, dateTraitement, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 		final FichierImpressionDocument document = impressionEfactureHelper.remplitDocumentEfacture(params);
 		final String nomDocument = impressionEfactureHelper.construitIdDocument(params);
+
+		// [SIFISC-21114] exposition des documents sortant PP vers le DPerm
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getFichierImpression().getDocumentArray(0).getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleDocumentEFacture(typeDoc, tiers, infoArchivage, false);
+		}
+
 		editiqueService.creerDocumentParBatch(nomDocument, prefixe, document, true);
 		return impressionEfactureHelper.construitIdArchivageDocument(params);
 	}
