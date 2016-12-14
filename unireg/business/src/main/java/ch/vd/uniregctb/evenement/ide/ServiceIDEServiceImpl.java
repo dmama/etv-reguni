@@ -308,8 +308,8 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 						Comme Unireg connait le numéro IDE, on vérifie qu'il est bien identique à celui du civil. Sinon on arrête tout.
 					 */
 					if (!numeroIDEFiscalEntreprise.equals(numeroIDESite)) {
-						final String message = String.format("Entreprise n°%s: les numéro IDE de Unireg [%s] et du registre civil [%s] ne correspondent pas pour l'établissement n°%s! " +
-								                                     "Soit il s'agit du numéro IDE provisoire oublié dans Unireg, à effacer. Soit nous sommes en présence d'une erreur d'appariement.",
+						final String message = String.format("Entreprise n°%s: le numéro IDE dans Unireg [%s] et celui au registre civil [%s] ne correspondent pas pour l'établissement n°%s! " +
+								                                     "Soit il s'agit du numéro IDE provisoire qui aurait été oublié dans Unireg, à effacer. Soit nous sommes en présence d'une erreur d'appariement.",
 						                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 						                                     numeroIDEFiscalEntreprise, numeroIDESite,
 						                                     FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
@@ -351,7 +351,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 					typeAnnonce = TypeAnnonce.REACTIVATION;
 					break;
 				case DEFINITIVEMENT_RADIE:
-					final String messageDefRadie = String.format("L'entreprise n°%s est définitivementradié du registre IDE et ne peut plus être modifié.",
+					final String messageDefRadie = String.format("L'entreprise n°%s est définitivement radiée du registre IDE et ne peut plus être modifiée.",
 					                                    FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
 					Audit.error(messageDefRadie);
 					throw new ServiceIDEException(messageDefRadie);
@@ -469,7 +469,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			Code de neutralisation de la réactivation, qui n'est pas supportée à ce stade.
 		 */
 		if (typeAnnonce == TypeAnnonce.REACTIVATION) {
-			String message = String.format("L'entreprise n°%s doit être réactivée au registre IDE avant de pouvoir annoncée des modifications. La réactivation doit être effectuée auprès de l'IDE directement.",
+			String message = String.format("L'entreprise n°%s doit être réactivée au registre IDE avant de pouvoir annoncer des modifications. La demande doit être adressée à l'IDE directement.",
 			                               FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
 			Audit.error(message);
 			throw new ServiceIDEException(message);
@@ -530,7 +530,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 			case VALIDATION_SANS_ERREUR:
 				break;
 			case REJET_RCENT:
-				throw new AnnonceIDEValidationException(String.format("Entreprise n°%s: le modèle d'annonce à l'IDE a échoué à la validation.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())),
+				throw new AnnonceIDEValidationException(String.format("Entreprise n°%s: le modèle d'annonce à l'IDE a échoué à la validation par RCEnt.", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())),
 				                                        statut.getErreurs());
 			default:
 				final String message = String.format("Entreprise n°%s: statut d'annonce inattendu retourné par le service de validation du registre civil: %s",
