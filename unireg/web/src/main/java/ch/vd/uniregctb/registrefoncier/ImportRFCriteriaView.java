@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 public class ImportRFCriteriaView {
 
 	private boolean aTraiter = true;
+	private boolean enTraitement = true;
 	private boolean traite = true;
 	private boolean enErreur = true;
 	private boolean force = true;
@@ -18,6 +19,14 @@ public class ImportRFCriteriaView {
 
 	public void setaTraiter(boolean aTraiter) {
 		this.aTraiter = aTraiter;
+	}
+
+	public boolean isEnTraitement() {
+		return enTraitement;
+	}
+
+	public void setEnTraitement(boolean enTraitement) {
+		this.enTraitement = enTraitement;
 	}
 
 	public boolean isTraite() {
@@ -48,6 +57,9 @@ public class ImportRFCriteriaView {
 		List<EtatEvenementRF> etats = new ArrayList<>(4);
 		if (aTraiter) {
 			etats.add(EtatEvenementRF.A_TRAITER);
+		}
+		if (enTraitement) {
+			etats.add(EtatEvenementRF.EN_TRAITEMENT);
 		}
 		if (traite) {
 			etats.add(EtatEvenementRF.TRAITE);

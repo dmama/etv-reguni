@@ -34,6 +34,7 @@
 
 			<span class="checkboxes">
 		        Etats : <form:checkbox path="aTraiter" id="aTraiter" label="A traiter" onchange="submitForm()" onclick="submitForm()" />
+		        <form:checkbox path="enTraitement" id="enTraitement" label="En traitement" onchange="submitForm()" onclick="submitForm()" />
 		        <form:checkbox path="traite" id="traite" label="Traité" onchange="submitForm()" onclick="submitForm()" />
 		        <form:checkbox path="enErreur" id="enErreur" label="En erreur" onchange="submitForm()" onclick="submitForm()" />
 		        <form:checkbox path="force" id="force" label="Forcé" onchange="submitForm()" onclick="submitForm()" />
@@ -54,7 +55,8 @@
 				<display:column titleKey="label.date.valeur.import" sortable="true" sortProperty="dateEvenement">
 					<unireg:regdate regdate="${importEvent.dateEvenement}"/>
 				</display:column>
-				<display:column titleKey="label.etat.event.rf" sortable="true" sortProperty="etat">
+				<display:column titleKey="label.etat.event.rf" sortable="true" sortProperty="etat" class="import-etat">
+					<span class="raw-value" style="display: none">${importEvent.etat}</span>
 					<fmt:message key="option.rf.etat.evenement.${importEvent.etat}" />
 				</display:column>
 				<display:column titleKey="label.message.erreur.import" >
@@ -111,17 +113,20 @@
 					table.find('tbody').find('tr').each(function() {
 						var tr = $(this);
 						var importId = tr.find('.import-id').text();
-						$.getJSON(App.curl("/registrefoncier/import/stats.do?importId=") + importId + "&" + new Date().getTime(), function(stats) {
-							addMutationCount(tr.find('div.a-traiter'), importId, stats.mutationsATraiter, '&aTraiter=true&_aTraiter=on&_traite=on&_enErreur=on&_force=on');
-							addMutationCount(tr.find('div.traitees'), importId, stats.mutationsTraitees, '&_aTraiter=on&traite=true&_traite=on&_enErreur=on&_force=on');
-							addMutationCount(tr.find('div.en-erreur'), importId, stats.mutationsEnErreur, '&_aTraiter=on&_traite=on&enErreur=true&_enErreur=on&_force=on');
-							addMutationCount(tr.find('div.forcees'), importId, stats.mutationsForcees, '&_aTraiter=on&_traite=on&_enErreur=on&force=true&_force=on');
+						var importEtat = tr.find('.import-etat .raw-value').text();
+						(function(importId, importEtat) {   // <-- trick javascript pour fixer les paramètres importId et importEtat et pouvoir les utiliser dans le callback de l'appel Aajx
+							$.getJSON(App.curl("/registrefoncier/import/stats.do?importId=") + importId + "&" + new Date().getTime(), function(stats) {
+								addMutationCount(tr.find('div.a-traiter'), importId, stats.mutationsATraiter, '&aTraiter=true&_aTraiter=on&_traite=on&_enErreur=on&_force=on');
+								addMutationCount(tr.find('div.traitees'), importId, stats.mutationsTraitees, '&_aTraiter=on&traite=true&_traite=on&_enErreur=on&_force=on');
+								addMutationCount(tr.find('div.en-erreur'), importId, stats.mutationsEnErreur, '&_aTraiter=on&_traite=on&enErreur=true&_enErreur=on&_force=on');
+								addMutationCount(tr.find('div.forcees'), importId, stats.mutationsForcees, '&_aTraiter=on&_traite=on&_enErreur=on&force=true&_force=on');
 
-							// on active les boutons de relance/forçage des mutations si nécessaire
-							if (stats.mutationsATraiter > 0 || stats.mutationsEnErreur >  0) {
-								tr.find('.actionTraitementMutations').show();
-							}
-						});
+								// on active les boutons de relance/forçage des mutations si nécessaire
+								if (importEtat != 'EN_TRAITEMENT' && (stats.mutationsATraiter > 0 || stats.mutationsEnErreur >  0)) {
+									tr.find('.actionTraitementMutations').show();
+								}
+							});
+						})(importId, importEtat);
 					});
 				});
 

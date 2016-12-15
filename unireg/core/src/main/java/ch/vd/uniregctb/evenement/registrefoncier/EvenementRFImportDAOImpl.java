@@ -72,4 +72,10 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 		final Number o = (Number) query.uniqueResult();
 		return o.intValue();
 	}
+
+	@Override
+	public int fixAbnormalJVMTermination() {
+		final Query query = getCurrentSession().createQuery("update EvenementRFImport set etat = 'EN_ERREUR', errorMessage = 'Abnormal JVM termination.' where etat = 'EN_TRAITEMENT'");
+		return query.executeUpdate();
+	}
 }

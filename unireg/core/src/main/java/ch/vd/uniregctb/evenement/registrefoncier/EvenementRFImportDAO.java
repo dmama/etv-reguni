@@ -37,4 +37,11 @@ public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long
 	 * @return le nombre d'événements qui correspondent aux critères spécifiés.
 	 */
 	int count(@Nullable List<EtatEvenementRF> etats);
+
+	/**
+	 * Rattrape d'éventuels rapport d'importation interrompus par crash (ou kill) de la JVM en cours de traitement.
+	 *
+	 * @return le nombre de rapport corrigés.
+	 */
+	int fixAbnormalJVMTermination();
 }

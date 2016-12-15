@@ -172,6 +172,7 @@
 
 				$(function() {
 					var importId = '${importEvent.id}';
+					var importEtat = '${importEvent.etat}';
 					$.getJSON(App.curl("/registrefoncier/import/stats.do?importId=") + importId + "&" + new Date().getTime(), function(stats) {
 						$('div.a-traiter').text(stats.mutationsATraiter);
 						$('div.traitees').text(stats.mutationsTraitees);
@@ -179,7 +180,7 @@
 						$('div.forcees').text(stats.mutationsForcees);
 
 						// on active les boutons de relance/forçage des mutations si nécessaire
-						if (stats.mutationsATraiter > 0 || stats.mutationsEnErreur >  0) {
+						if (importEtat != 'EN_TRAITEMENT' && (stats.mutationsATraiter > 0 || stats.mutationsEnErreur >  0)) {
 							$('.actionTraitementMutations').show();
 						}
 					});

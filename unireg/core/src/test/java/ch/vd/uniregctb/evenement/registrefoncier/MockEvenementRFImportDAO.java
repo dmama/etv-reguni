@@ -113,4 +113,15 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	public int count(@Nullable List<EtatEvenementRF> etats) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public int fixAbnormalJVMTermination() {
+		db.stream()
+				.filter(i -> i.getEtat() == EtatEvenementRF.EN_TRAITEMENT)
+				.forEach(i -> {
+					i.setEtat(EtatEvenementRF.EN_ERREUR);
+					i.setErrorMessage("Abnormal JVM termination.");
+				});
+		return 0;
+	}
 }

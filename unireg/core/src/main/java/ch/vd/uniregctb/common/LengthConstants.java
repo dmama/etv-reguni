@@ -174,7 +174,7 @@ public abstract class LengthConstants {
 
 	public static final int RAPPROCHEMENT_RF_TYPE = 15;
 
-	public static final int RF_ETAT_EVENEMENT = 9;
+	public static final int RF_ETAT_EVENEMENT = 13;
 	public static final int RF_TYPE_ENTITE = 14;
 	public static final int RF_TYPE_MUTATION = 13;
 	public static final int RF_ID_RF = 33;

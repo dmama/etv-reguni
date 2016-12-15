@@ -7,6 +7,10 @@ public enum EtatEvenementRF {
 	 */
 	A_TRAITER,
 	/**
+	 * L'événement est en cours de traitement.
+	 */
+	EN_TRAITEMENT,
+	/**
 	 * L'événement a été traité avec succès.
 	 */
 	TRAITE,

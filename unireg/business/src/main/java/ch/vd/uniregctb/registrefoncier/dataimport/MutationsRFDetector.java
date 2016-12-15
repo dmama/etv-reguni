@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
@@ -43,7 +44,7 @@ import ch.vd.uniregctb.xml.ExceptionHelper;
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
  */
-public class MutationsRFDetector {
+public class MutationsRFDetector implements InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MutationsRFDetector.class);
 
@@ -94,20 +95,31 @@ public class MutationsRFDetector {
 		}
 		checkPreconditions(event);
 
-		// détection de l'import initial
-		final boolean importInitial = isImportInitial();
+		try {
+			updateEvent(importId, EtatEvenementRF.EN_TRAITEMENT, null);
 
-		final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, importInitial, event.getDateEvenement(), nbThreads);
+			// détection de l'import initial
+			final boolean importInitial = isImportInitial();
 
-		// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
-		// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
-		deleteExistingMutations(importId, statusManager);
+			final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, importInitial, event.getDateEvenement(), nbThreads);
 
-		// on peut maintenant processer l'import
-		processImport(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
+			// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
+			// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
+			deleteExistingMutations(importId, statusManager);
 
-		rapport.end();
-		return rapport;
+			// on peut maintenant processer l'import
+			processImport(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
+
+			// terminé
+			updateEvent(importId, EtatEvenementRF.TRAITE, null);
+			rapport.end();
+			return rapport;
+		}
+		catch (Exception e) {
+			LOGGER.warn("Erreur lors du processing de l'événement d'import RF avec l'id = [" + importId + "]", e);
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void checkPreconditions(@NotNull EvenementRFImport event) {
@@ -171,11 +183,8 @@ public class MutationsRFDetector {
 			ecs.take().get();
 
 			statusManager.setMessage("Traitement terminé.");
-			updateEvent(importId, EtatEvenementRF.TRAITE, null);
 		}
 		catch (Exception e) {
-			LOGGER.warn("Erreur lors du processing de l'événement d'import RF avec l'id = [" + importId + "]", e);
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -276,5 +285,17 @@ public class MutationsRFDetector {
 
 	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator, @Nullable StatusManager statusManager) {
 		surfaceAuSolRFDetector.processSurfaces(importId, nbThreads, iterator, statusManager);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(status -> {
+			final int count = evenementRFImportDAO.fixAbnormalJVMTermination();
+			if (count > 0) {
+				LOGGER.warn("Corrigé l'état de " + count + " job(s) d'importation RF suite à l'arrêt anormal de la JVM.");
+			}
+			return null;
+		});
 	}
 }
