@@ -139,7 +139,6 @@
 		<constructor-arg value="Envoi des annonces à l'IDE pour les entreprises sous le contrôle de l'ACI"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="dialect" ref="hibernateDialect"/>
-		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceIDEService" ref="serviceIDEService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>

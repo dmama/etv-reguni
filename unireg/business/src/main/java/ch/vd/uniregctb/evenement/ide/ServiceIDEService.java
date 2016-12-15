@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.evenement.ide;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -37,7 +39,7 @@ public interface ServiceIDEService {
 	 * @throws ServiceIDEException en cas d'erreur non récupérable.
 	 * @throws AnnonceIDEValidationException en cas d'echec de la validation effectuée avant tout envoi. L'exception contient la liste des erreurs rencontrées.
 	 */
-	BaseAnnonceIDE synchroniseIDE(Entreprise entreprise) throws ServiceIDEException;
+	AnnonceIDEEnvoyee synchroniseIDE(Entreprise entreprise) throws ServiceIDEException;
 
 	/**
 	 * <p>
@@ -48,7 +50,7 @@ public interface ServiceIDEService {
 	 * @throws ServiceIDEException en cas d'erreur non récupérable.
 	 * @throws AnnonceIDEValidationException en cas d'echec de la validation effectuée avant tout envoi. L'exception contient la liste des erreurs rencontrées.
 	 */
-	BaseAnnonceIDE simuleSynchronisationIDE(Entreprise entreprise) throws ServiceIDEException;
+	ProtoAnnonceIDE simuleSynchronisationIDE(Entreprise entreprise) throws ServiceIDEException;
 
 	/**
 	 * Valider le modèle d'annonce. Le service civil organisation est utilisé pour cela.

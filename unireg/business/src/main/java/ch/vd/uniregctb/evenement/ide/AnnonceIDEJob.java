@@ -1,14 +1,10 @@
 package ch.vd.uniregctb.evenement.ide;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -17,8 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.ProtoAnnonceIDE;
+import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.document.AnnoncesIDERapport;
@@ -42,7 +37,6 @@ public class AnnonceIDEJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private Dialect dialect;
-	private SessionFactory sessionFactory;
 	private TiersDAO tiersDAO;
 	private ServiceIDEService serviceIDEService;
 	private RapportService rapportService;
@@ -73,10 +67,6 @@ public class AnnonceIDEJob extends JobDefinition {
 		this.dialect = dialect;
 	}
 
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
@@ -100,14 +90,13 @@ public class AnnonceIDEJob extends JobDefinition {
 
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.getCurrentPrincipal());
 		try {
-			for (final Long tiersId : tiersAEvaluer) {
-				/*
-					On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
-				 */
-				final TransactionTemplate template = new TransactionTemplate(transactionManager);
-				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-				AnnonceIDEJobResults resultat = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
+			for (final Long tiersId : tiersAEvaluer) {
+
+				// On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
+				final AnnonceIDEJobResults resultat = template.execute(new TransactionCallback<AnnonceIDEJobResults>() {
 					@Override
 					public AnnonceIDEJobResults doInTransaction(TransactionStatus status) {
 						if (simulation) {
@@ -116,7 +105,7 @@ public class AnnonceIDEJob extends JobDefinition {
 						try {
 							return traiteTiers(tiersId, aujourdhui, simulation);
 						}
-						catch (ServiceIDEException e) {
+						catch (Exception e) {
 							// On doit faire le ménage si un problème est survenu pendant l'envoi afin d'éviter de croire qu'on a émis l'annonce alors que ce n'est pas le cas.
 							status.setRollbackOnly();
 							final AnnonceIDEJobResults resultatTiers = new AnnonceIDEJobResults(simulation);
@@ -145,31 +134,28 @@ public class AnnonceIDEJob extends JobDefinition {
 		if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			if (serviceIDEService.isServiceIDEObligEtendues(entreprise, date)) {
+				final BaseAnnonceIDE annonceIDE;
 				if (simulation) {
-					final ProtoAnnonceIDE protoAnnonceIDE = (ProtoAnnonceIDE) serviceIDEService.simuleSynchronisationIDE(entreprise);
-					resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), protoAnnonceIDE);
+					annonceIDE = serviceIDEService.simuleSynchronisationIDE(entreprise);
 				}
 				else {
-					final AnnonceIDE annonceIDE = (AnnonceIDE) serviceIDEService.synchroniseIDE(entreprise);
-					resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
+					annonceIDE = serviceIDEService.synchroniseIDE(entreprise);
 				}
+				resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
 			}
 		}
 		else {
 			throw new IllegalArgumentException("Le tiers n'est pas une entreprise.");
 		}
-		final Session session = sessionFactory.openSession();
-		try {
+
+		return hibernateTemplate.executeWithNewSession(session -> {
 			final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(false) + " where NUMERO = :id");
 			query.setParameter("id", tiers.getNumero());
 			query.executeUpdate();
 
 			session.flush();
-		}
-		finally {
-			session.close();
-		}
-		return resultatEntreprise.getAnnoncesIDE().isEmpty() ? null : resultatEntreprise;
+			return resultatEntreprise.getAnnoncesIDE().isEmpty() ? null : resultatEntreprise;
+		});
 	}
 
 	/**
@@ -182,25 +168,19 @@ public class AnnonceIDEJob extends JobDefinition {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-		List<Long> result = template.execute(new TransactionCallback<List<Long>>() {
+		return template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.openSession();
-				try {
+				return hibernateTemplate.executeWithNewSession(session -> {
 					final SQLQuery query = session.createSQLQuery("SELECT t.numero FROM tiers t WHERE t.ide_dirty = " + dialect.toBooleanValueString(true) + " AND t.annulation_date is null");
-					final List list = query.list();
-					final List<Long> resultat = new ArrayList<Long>();
-					for (Object o : list) {
-						resultat.add(((BigDecimal)o).longValue());
-					}
-					return resultat;
-				}
-				finally {
-					session.close();
-				}
+					//noinspection unchecked
+					final List<Number> list = query.list();
+					return list.stream()
+							.map(Number::longValue)
+							.collect(Collectors.toList());
+				});
 			}
 		});
-		return result == null ? Collections.<Long>emptyList() : result;
 	}
 
 }
