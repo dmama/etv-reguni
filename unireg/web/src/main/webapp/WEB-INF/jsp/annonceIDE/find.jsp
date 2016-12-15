@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<c:set var="even_pm_authorized" value="false" />
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head">
 		<style>
@@ -129,8 +131,17 @@
 				</display:column>
 				<display:column titleKey="label.numero.evenement.organisation" >
 					<c:if test="${annonce.noEvtOrganisation != null}">
-						<%--<a href="<c:url value="../evenement/organisation/visu.do"/>?id=${annonce.idEvtOrganisation}">${annonce.noEvtOrganisation}</a>--%>
-						<a href="#" onclick="EvtOrg.open_details(${annonce.idEvtOrganisation}, null, null)">${annonce.noEvtOrganisation}</a>
+						<authz:authorize ifAnyGranted="ROLE_EVEN_PM">
+							<c:set var="even_pm_authorized" value="true" />
+						</authz:authorize>
+						<c:choose>
+							<c:when test="${even_pm_authorized}">
+								<a href="#" onclick="EvtOrg.open_details(${annonce.idEvtOrganisation}, null, null)">${annonce.noEvtOrganisation}</a>
+							</c:when>
+							<c:otherwise>
+								${annonce.noEvtOrganisation}
+							</c:otherwise>
+						</c:choose>
 					</c:if>
 				</display:column>
 				<display:column titleKey="label.type.annonce" >

@@ -363,4 +363,14 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 			return "plier";
 		}
 	}
+
+	/**
+	 * Historique (= page de calendrier)
+	 */
+	public static class Historique extends JspTagRaccourci {
+		@Override
+		protected String getCssClass() {
+			return "historique";
+		}
+	}
 }

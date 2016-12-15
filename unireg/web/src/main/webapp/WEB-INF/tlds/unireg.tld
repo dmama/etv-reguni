@@ -1369,6 +1369,43 @@
 	</tag>
 
 	<tag>
+		<description>Affiche une icône pour ouvrir un historique</description>
+		<name>raccourciHistorique</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Historique</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Valeur du lien</description>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>id à associer au lien</description>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<description>Affiche un lien pour réduire ou augmenter le nombre de ligne affichées pour un tableau</description>
 		<name>raccourciToggleAffichage</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagToggleAffichage</tag-class>

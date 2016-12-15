@@ -47,12 +47,9 @@
 				<td width="20%"><fmt:message key="label.controle.donnees.civiles"/>&nbsp;:</td>
 				<td>
 					<fmt:message key="label.controle.donnees.civiles.aci"/>&nbsp;
-				</td>
-			</tr>
-			<tr class="<unireg:nextRowClass/>" >
-				<td width="20%">&nbsp;</td>
-				<td>
-					<a href="<c:url value="../annonceIDE/find.do"/>?tiersId=${entreprise.id}">Vers le suivi des annonces au registre IDE</a>
+					<authz:authorize ifAnyGranted="ROLE_SUIVI_ANNONCES_IDE">
+						<unireg:raccourciHistorique link="../annonceIDE/find.do?tiersId=${entreprise.id}" tooltip="Ouvrir le suivi des annonces au registre IDE pour cette entreprise"  display="label.bouton.historique.annonces.ide"/>
+					</authz:authorize>
 				</td>
 			</tr>
 		</c:if>
