@@ -634,18 +634,24 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private void executeActions(Long ctbId, List<SynchronizeAction> actions, TacheSyncResults results) {
-		final CollectiviteAdministrative officeApresDeces = etiquetteService.getAllEtiquettes(true).stream()
-				.filter(e -> !e.isAnnule() && e.isActive() && e.getActionSurDeces() != null)
-				.map(Etiquette::getCollectiviteAdministrative)
-				.filter(Objects::nonNull)
-				.findFirst()
-				.orElse(null);
-		if (officeApresDeces == null) {
-			throw new IllegalArgumentException("Impossible de trouver la collectivité administrative à utiliser après un décès !");
-		}
 
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		if (tiers instanceof Contribuable) {
+
+			// la collectivité à utiliser après un décès est extraite de la première (en fait, il ne devrait y en avoir qu'une seule)
+			// étiquette non-annulée qui indique une action en cas de décès et associée à une collectivité administrative, justement...
+			// (si on n'en trouve pas, c'est bizarre, car on dirait bien qu'il manque quelque chose en base, mais ce n'est réellement
+			// un souci que dans le cas d'un contribuable assimilé "personne physique")
+			final CollectiviteAdministrative officeApresDeces = etiquetteService.getAllEtiquettes(true).stream()
+					.filter(e -> !e.isAnnule() && e.isActive() && e.getActionSurDeces() != null)
+					.map(Etiquette::getCollectiviteAdministrative)
+					.filter(Objects::nonNull)
+					.findFirst()
+					.orElse(null);
+			if (officeApresDeces == null && tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+				throw new IllegalArgumentException("Impossible de trouver la collectivité administrative à utiliser après un décès !");
+			}
+
 			// On effectue toutes les actions nécessaires
 			final Contribuable contribuable = (Contribuable) tiers;
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
