@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
@@ -35,11 +36,19 @@ public class EtiquetteTiersValidatorTest extends AbstractValidatorTest<Etiquette
 	}
 
 	@Test
-	public void testDateDebut() throws Exception {
+	public void testDateDebutNulle() throws Exception {
 		// ça, en gros, c'est pour vérifier que le validateur fait bien appel au DateRangeEntityValidator
 		final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP, null);
 		final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(null, null, etiquette);
-		assertValidation(Collections.singletonList("L'étiquette EtiquetteTiers (? - ?) possède une date de début nulle"), null, validate(etiquetteTiers));
+		assertValidation(Collections.singletonList("L'étiquette 'Une étiquette de test' (? - ?) possède une date de début nulle"), null, validate(etiquetteTiers));
+	}
+
+	@Test
+	public void testDateDebutFuture() throws Exception {
+		// les dates de début futures sont autorisées
+		final Etiquette etiquette = new Etiquette("MYCODE", "Une étiquette de test", true, TypeTiersEtiquette.PP, null);
+		final EtiquetteTiers etiquetteTiers = new EtiquetteTiers(RegDate.get().addMonths(1), null, etiquette);
+		assertValidation(null, null, validate(etiquetteTiers));
 	}
 
 	@Test

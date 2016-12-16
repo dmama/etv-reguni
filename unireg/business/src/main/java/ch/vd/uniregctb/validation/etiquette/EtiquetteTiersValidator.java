@@ -1,6 +1,12 @@
 package ch.vd.uniregctb.validation.etiquette;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
@@ -31,6 +37,19 @@ public class EtiquetteTiersValidator extends DateRangeEntityValidator<EtiquetteT
 	@Override
 	protected String getEntityCategoryName() {
 		return "L'étiquette";
+	}
+
+	@Override
+	protected String getEntityDisplayString(@NotNull EtiquetteTiers entity) {
+		return String.format("'%s' (%s)",
+		                     Optional.ofNullable(entity.getEtiquette()).map(Etiquette::getLibelle).orElse(StringUtils.EMPTY),
+		                     rangeToString(entity));
+	}
+
+	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		// [SIFISC-22506] en fait, si, il faut autoriser les dates de début dans le futur...
+		return true;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -81,6 +83,12 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 	protected static RegDate getFutureBeginDate() {
 		final ReferenceDateAccessor accessor = getFutureBeginDateAccessor();
 		return accessor.getReferenceDate();
+	}
+
+	protected static String rangeToString(@NotNull DateRange range) {
+		return String.format("%s - %s",
+		                     StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateDebut()), "?"),
+		                     StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateFin()), "?"));
 	}
 
 	/**
