@@ -277,7 +277,7 @@ public abstract class WatchDogTest {
 					final String[] splits = json.split("\\s*,\\s*");
 					assertTrue(json, splits.length > 0);
 
-					final Pattern pattern = Pattern.compile("[^\\w]*['\"](\\w+)['\"]\\s*:\\s*['\"](\\w+)['\"].*");
+					final Pattern pattern = Pattern.compile("[^\\w]*['\"](\\w+)['\"]\\s*:\\s*['\"]([\\w\\p{Punct}\\p{Space}]+)['\"].*");
 					for (String split : splits) {
 						final Matcher matcher = pattern.matcher(split);
 						if (matcher.matches()) {
