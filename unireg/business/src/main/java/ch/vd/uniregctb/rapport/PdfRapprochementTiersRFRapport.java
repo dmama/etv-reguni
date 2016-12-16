@@ -54,7 +54,7 @@ public class PdfRapprochementTiersRFRapport extends PdfRapport {
 			addTableSimple(new float[] {.6f, .4f}, table -> {
 				table.addLigne("Nombre de tiers RF inspectés :", String.valueOf(results.getNbDossiersInspectes()));
 				table.addLigne("Nombre de rapprochements opérés :", String.valueOf(results.getNbIdentifications()));
-				table.addLigne("Nombre de d'identifications échouées :", String.valueOf(results.getNbNonIdentifications()));
+				table.addLigne("Nombre d'identifications échouées :", String.valueOf(results.getNbNonIdentifications()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getNbErreurs()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
