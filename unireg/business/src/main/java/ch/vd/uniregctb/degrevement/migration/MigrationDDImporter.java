@@ -156,7 +156,7 @@ public class MigrationDDImporter {
 					val.addUsage(dd.getUsages().iterator().next());
 				}
 				catch (IllegalArgumentException e) {
-					rapport.addDemandeEnErreur(dd, e.getMessage());
+					rapport.addDemandeEnErreur(dd, "Inconsistence dans les usages : " + e.getMessage());
 				}
 			}
 
@@ -268,7 +268,13 @@ public class MigrationDDImporter {
 			throw new IllegalArgumentException("La commune avec le nom [" + demande.getNomCommune() + "] n'existe pas.");
 		}
 
-		final Parcelle parcelle = new Parcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
+		final Parcelle parcelle;
+		try {
+			parcelle = new Parcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
+		}
+		catch (RuntimeException e) {
+			throw new IllegalArgumentException("Impossible de parser le numéro de pacelle : " + e.getMessage());
+		}
 
 		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3());
 		if (immeuble == null) {
@@ -359,7 +365,7 @@ public class MigrationDDImporter {
 			Collections.sort(list, (l, r) -> Integer.compare(l.getAnneeFiscale(), r.getAnneeFiscale()));
 			toSave = list.get(size - 1);
 			for (int i = 0; i < size - 1; ++i) {
-				rapport.addDemandeIgnoree(list.get(i), "Une demande de dégrèvement pour l'année fiscale " + toSave.getAnneeFiscale() + " existe dans l'export.");
+				rapport.addDemandeIgnoree(list.get(i), "Une demande de dégrèvement plus récente (" + toSave.getAnneeFiscale() + ") existe dans l'export (cette demande = " + list.get(i).getAnneeFiscale() + ").");
 			}
 		}
 		return toSave;
