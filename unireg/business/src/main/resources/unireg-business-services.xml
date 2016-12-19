@@ -372,4 +372,13 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
+	<bean id="migrationDDCsvLoader" class="ch.vd.uniregctb.degrevement.migration.MigrationDDImporter">
+		<constructor-arg ref="migrationDDDAO"/>
+		<constructor-arg ref="tiersDAO"/>
+		<constructor-arg ref="hibernateTemplate"/>
+		<constructor-arg ref="serviceInfrastructureService"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
 </beans>

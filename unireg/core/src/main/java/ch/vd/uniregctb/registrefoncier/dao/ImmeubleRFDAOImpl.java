@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier.dao;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.NonUniqueResultException;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,5 +39,47 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		final Query query = getCurrentSession().createQuery("select idRF from ImmeubleRF where dateRadiation is null");
 		//noinspection unchecked
 		return new HashSet<>(query.list());
+	}
+
+	@Nullable
+	@Override
+	public ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws NonUniqueResultException {
+
+		String queryString = "select s.immeuble from SituationRF s, CommuneRF c " +
+				"where c.noOfs = :noOfsCommune " +
+				"and s.commune.id = c.id " +
+				"and s.noParcelle = :noParcelle ";
+		if (index1 == null) {
+			queryString += 	"and s.index1 is null ";
+		}
+		else {
+			queryString += 	"and s.index1 = :index1 ";
+		}
+		if (index2 == null) {
+			queryString += 	"and s.index2 is null ";
+		}
+		else {
+			queryString += 	"and s.index2 = :index2 ";
+		}
+		if (index3 == null) {
+			queryString += 	"and s.index3 is null ";
+		}
+		else {
+			queryString += 	"and s.index3 = :index3 ";
+		}
+		
+		final Query query = getCurrentSession().createQuery(queryString);
+		query.setParameter("noOfsCommune", noOfsCommune);
+		query.setParameter("noParcelle", noParcelle);
+		if (index1 != null) {
+			query.setParameter("index1", index1);
+		}
+		if (index2 != null) {
+			query.setParameter("index2", index2);
+		}
+		if (index3 != null) {
+			query.setParameter("index3", index3);
+		}
+		return (ImmeubleRF) query.uniqueResult();
 	}
 }

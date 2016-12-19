@@ -38,6 +38,7 @@ import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
+import ch.vd.uniregctb.degrevement.migration.MigrationDDImporterResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
 import ch.vd.uniregctb.document.AnnoncesIDERapport;
 import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
@@ -82,6 +83,7 @@ import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
@@ -1729,6 +1731,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(MutationsRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfMutationsRFProcessorRapport document = new PdfMutationsRFProcessorRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MigrationDDCsvLoaderRapport generateRapport(MigrationDDImporterResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportMigrationDemandesDegrevement";
+		final String description = "Rapport d'exécution du job de migration des demandes de dégrèvement de SIMPA-PM.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(MigrationDDCsvLoaderRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfMigrationDemandesDegrevementRapport document = new PdfMigrationDemandesDegrevementRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

@@ -19,6 +19,7 @@ public enum JobCategory {
 	DI_PP("Déclarations d'impôt (PP)"),
 	DI_PM("Déclarations d'impôt (PM)"),
 	DI("Déclarations d'impôt (PP & PM)"),
+	DD("Demandes de dégrèvement"),
 	QSNC("Questionnaires SNC"),
 	AUTRES_DOCUMENTS("Autres documents fiscaux"),
 	FORS("Fors fiscaux"),

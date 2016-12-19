@@ -52,6 +52,7 @@
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
+		<value>ch.vd.uniregctb.degrevement.DemandeDegrevement</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration</value>
@@ -198,6 +199,7 @@
 		<value>ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport</value>
 		<value>ch.vd.uniregctb.document.ListeNoteRapport</value>
 		<value>ch.vd.uniregctb.document.MigrationCoquillesPMRapport</value>
+		<value>ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport</value>
 		<value>ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport</value>
 		<value>ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport</value>
 		<value>ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport</value>
