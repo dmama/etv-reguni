@@ -268,9 +268,9 @@ public class MigrationDDImporter {
 			throw new IllegalArgumentException("La commune avec le nom [" + demande.getNomCommune() + "] n'existe pas.");
 		}
 
-		final Parcelle parcelle;
+		final MigrationParcelle parcelle;
 		try {
-			parcelle = new Parcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
+			parcelle = new MigrationParcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
 		}
 		catch (RuntimeException e) {
 			throw new IllegalArgumentException("Impossible de parser le numéro de pacelle : " + e.getMessage());
@@ -282,56 +282,6 @@ public class MigrationDDImporter {
 		}
 
 		return immeuble;
-	}
-
-	private static class Parcelle {
-
-		private int noParcelle;
-		private Integer index1;
-		private Integer index2;
-		private Integer index3;
-
-		public Parcelle(@NotNull String baseParcelle, @Nullable String parcelle, @Nullable String lotPPE) {
-			if (StringUtils.isBlank(parcelle)) {
-				// si le numéro de parcelle est renseigné, c'est toujours lui qui prime sur le numéro de base
-				parcelle = baseParcelle;
-			}
-			if (parcelle.contains("-")) {
-				// le numéro de parcelle contient les indexes des lots PPE, on les parse
-				final String[] tokens = parcelle.split("-");
-				noParcelle = Integer.parseInt(tokens[0]);
-				index1 = Integer.parseInt(tokens[1]);
-				index2 = tokens.length > 2 ? Integer.parseInt(tokens[2]) : null;
-				index3 = tokens.length > 3 ? Integer.parseInt(tokens[3]) : null;
-			}
-			else {
-				noParcelle = Integer.parseInt(parcelle);
-				index1 = StringUtils.isBlank(lotPPE) ? null : Integer.parseInt(lotPPE);
-				index2 = null;
-				index3 = null;
-			}
-		}
-
-		public int getNoParcelle() {
-			return noParcelle;
-		}
-
-		public Integer getIndex1() {
-			return index1;
-		}
-
-		public Integer getIndex2() {
-			return index2;
-		}
-
-		public Integer getIndex3() {
-			return index3;
-		}
-
-		@Override
-		public String toString() {
-			return noParcelle + "/" + index1 + "/" + index2 + "/" + index3;
-		}
 	}
 
 	@NotNull
@@ -353,7 +303,7 @@ public class MigrationDDImporter {
 	 * @return la demande de dégrèvement à sauver dans la DB
 	 */
 	@NotNull
-	private static MigrationDD getDDToSave(@NotNull List<MigrationDD> list, @NotNull MigrationDDImporterResults rapport) {
+	static MigrationDD getDDToSave(@NotNull List<MigrationDD> list, @NotNull MigrationDDImporterResults rapport) {
 		final int size = list.size();
 		final MigrationDD toSave;
 		if (size == 1) {
