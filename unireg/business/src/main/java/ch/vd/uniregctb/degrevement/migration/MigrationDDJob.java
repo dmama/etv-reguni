@@ -14,6 +14,7 @@ import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
+import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 
 /**
@@ -25,7 +26,7 @@ public class MigrationDDJob extends JobDefinition {
 	public static final String CSV_FILE = "csvFile";
 	private static final String ENCODING = "Encoding";
 	private static final String DEFAULT_ENCODING = "ISO-8859-15";
-	public static final String CONTINUE_WITH_IMPORT_JOB = "CONTINUE_WITH_IMPORT_JOB";
+	public static final String NB_THREADS = "NB_THREADS";
 
 	private MigrationDDImporter loader;
 	private RapportService rapportService;
@@ -54,6 +55,14 @@ public class MigrationDDJob extends JobDefinition {
 		param2.setMandatory(false);
 		param2.setType(new JobParamString());
 		addParameterDefinition(param2, DEFAULT_ENCODING);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("Nombre de threads");
+		param3.setName(NB_THREADS);
+		param3.setMandatory(true);
+		param3.setType(new JobParamInteger());
+		addParameterDefinition(param3, 8);
+
 	}
 
 	@Override
@@ -62,14 +71,14 @@ public class MigrationDDJob extends JobDefinition {
 		final StatusManager status = getStatusManager();
 		final byte[] zippedContent = getFileContent(params, CSV_FILE);
 		final String encoding = getEncoding(params);
-//		final boolean startImportJob = getBooleanValue(params, CONTINUE_WITH_IMPORT_JOB);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		final MigrationDDImporterResults results;
 
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(zippedContent);
 		     ZipInputStream zipstream = new ZipInputStream(bais)) {
 			zipstream.getNextEntry();
-			results = loader.loadCSV(zipstream, encoding, status);
+			results = loader.loadCSV(zipstream, encoding, nbThreads, status);
 		}
 		final MigrationDDCsvLoaderRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);

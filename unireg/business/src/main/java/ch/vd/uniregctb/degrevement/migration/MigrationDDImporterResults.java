@@ -23,6 +23,7 @@ public class MigrationDDImporterResults {
 	private int nbDemandesTraitees = 0;
 	private final List<DemandeInfo> demandesIgnorees = new LinkedList<>();
 	private final List<DemandeInfo> demandesEnErreurs = new LinkedList<>();
+	private int nbThreads;
 
 	public static final class LigneInfo {
 		public final int index;
@@ -76,7 +77,8 @@ public class MigrationDDImporterResults {
 		}
 	}
 
-	public MigrationDDImporterResults() {
+	public MigrationDDImporterResults(int nbThreads) {
+		this.nbThreads = nbThreads;
 	}
 
 	public void addAll(MigrationDDImporterResults right) {
@@ -118,6 +120,10 @@ public class MigrationDDImporterResults {
 
 	public void setInterrompu(boolean interrompu) {
 		this.interrompu = interrompu;
+	}
+
+	public int getNbThreads() {
+		return nbThreads;
 	}
 
 	public int getNbLignes() {

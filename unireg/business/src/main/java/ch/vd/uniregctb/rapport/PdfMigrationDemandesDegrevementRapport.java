@@ -33,8 +33,8 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(1, table -> {
-				table.addLigne("(aucun paramètre)");
+			addTableSimple(2, table -> {
+				table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
 			});
 		}
 

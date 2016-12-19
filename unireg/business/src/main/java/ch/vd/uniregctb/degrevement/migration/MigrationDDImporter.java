@@ -31,8 +31,9 @@ import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.degrevement.DemandeDegrevement;
 import ch.vd.uniregctb.degrevement.MotifEnvoiDD;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -70,10 +71,10 @@ public class MigrationDDImporter {
 		this.transactionManager = transactionManager;
 	}
 
-	public MigrationDDImporterResults loadCSV(@NotNull InputStream csvStream, @NotNull String encoding, @Nullable StatusManager s) {
+	public MigrationDDImporterResults loadCSV(@NotNull InputStream csvStream, @NotNull String encoding, int nbThreads, @Nullable StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final MigrationDDImporterResults rapportFinal = new MigrationDDImporterResults();
+		final MigrationDDImporterResults rapportFinal = new MigrationDDImporterResults(nbThreads);
 
 		// Ouverture du flux CSV
 		status.setMessage("Ouverture du fichier...");
@@ -86,7 +87,7 @@ public class MigrationDDImporter {
 
 		// Import de toutes les lignes du flux CSV
 		try {
-			processAllLines(csvIterator, rapportFinal, status);
+			processAllLines(csvIterator, nbThreads, rapportFinal, status);
 		}
 		catch (IOException | ParseException e) {
 			throw new RuntimeException(e);
@@ -107,7 +108,7 @@ public class MigrationDDImporter {
 		return rapportFinal;
 	}
 
-	private void processAllLines(@NotNull Scanner csvIterator, @NotNull MigrationDDImporterResults rapport, @NotNull StatusManager status) throws IOException, ParseException {
+	private void processAllLines(@NotNull Scanner csvIterator, int nbThreads, @NotNull MigrationDDImporterResults rapport, @NotNull StatusManager status) throws IOException, ParseException {
 
 		int index = 1;
 
@@ -170,25 +171,26 @@ public class MigrationDDImporter {
 		}
 
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplate<Map<Integer, MigrationDD>> template = new BatchTransactionTemplate<>(map.values(), BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		final ParallelBatchTransactionTemplate<Map<Integer, MigrationDD>> template =
+				new ParallelBatchTransactionTemplate<>(new ArrayList<>(map.values()), BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.execute(new BatchCallback<Map<Integer, MigrationDD>>() {
 
-			private MigrationDDImporterResults subRapport;
-			private MigrationDD last = null;
+			private final ThreadLocal<MigrationDDImporterResults> subRapport = new ThreadLocal<>();
+			private final ThreadLocal<MigrationDD> last = new ThreadLocal<>();
 
 			@Override
 			public void beforeTransaction() {
-				subRapport = new MigrationDDImporterResults();
+				subRapport.set(new MigrationDDImporterResults(nbThreads));
 			}
 
 			@Override
 			public boolean doInTransaction(List<Map<Integer, MigrationDD>> batch) throws Exception {
 				batch.forEach(map -> {
 					final List<MigrationDD> list = new ArrayList<>(map.values());
-					final MigrationDD toSave = getDDToSave(list, rapport);
-					last = toSave;
+					final MigrationDD toSave = getDDToSave(list, subRapport.get());
+					last.set(toSave);
 					traiterDemande(toSave);
-					subRapport.incNbDemandesTraitees();
+					subRapport.get().incNbDemandesTraitees();
 				});
 				status.setMessage("Migration des dégrèvements...", monitor.getProgressInPercent());
 				return true;
@@ -196,14 +198,22 @@ public class MigrationDDImporter {
 
 			@Override
 			public void afterTransactionCommit() {
-				rapport.addAll(subRapport);
+				synchronized (rapport) {
+					rapport.addAll(subRapport.get());
+				}
+				subRapport.remove();
+				last.remove();
 			}
 
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
-					rapport.addDemandeEnErreur(last, e.getMessage());
+					synchronized (rapport) {
+						rapport.addDemandeEnErreur(last.get(), e.getMessage());
+					}
 				}
+				subRapport.remove();
+				last.remove();
 			}
 		}, monitor);
 	}

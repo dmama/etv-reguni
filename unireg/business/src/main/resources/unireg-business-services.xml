@@ -373,7 +373,6 @@
 	</bean>
 
 	<bean id="migrationDDCsvLoader" class="ch.vd.uniregctb.degrevement.migration.MigrationDDImporter">
-		<constructor-arg ref="migrationDDDAO"/>
 		<constructor-arg ref="tiersDAO"/>
 		<constructor-arg ref="hibernateTemplate"/>
 		<constructor-arg ref="serviceInfrastructureService"/>
