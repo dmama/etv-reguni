@@ -1,416 +1,446 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-    targetNamespace="http://vd.ch/Editique/PM/UniregImpression"
-    xmlns="http://vd.ch/Editique/PM/UniregImpression">
-    <xs:annotation>
-        <xs:appinfo>IMPORTANT : Le namespace par défaut ne doit pas contenir de préfixe !!!</xs:appinfo>
-    </xs:annotation>
-    <xs:element name="FichierImpression">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs="0" name="infoTechnique" type="CTypeInfoTechnique"
-                    nillable="false">
-                    <xs:annotation>
-                        <xs:documentation>(Cette partie n'est pas à renseigner par le métier, elle sera rajoutée par les Services Editique)</xs:documentation>
-                    </xs:annotation>
-                </xs:element>
-                <xs:element maxOccurs="unbounded" name="Document">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element minOccurs="0" name="infoDocument" type="CTypeInfoDocument"/>
-                            <xs:element minOccurs="0" name="infoArchivage" type="CTypeInfoArchivage"/>
-                            <xs:element minOccurs="0" name="infoEnteteDocument"
-                                type="CTypeInfoEnteteDocument" nillable="false"/>
-                            <xs:group ref="typeDocument" maxOccurs="1"/>
-                            <xs:element name="infoRoutage" type="CTypeInfoRoutage" minOccurs="0">
-                                <xs:annotation>
-                                    <xs:documentation/>
-                                </xs:annotation>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:group name="typeDocument">
-        <xs:choice>
-            <xs:group ref="DI">
-                <xs:annotation>
-                    <xs:documentation>DI PM : CodDoc=U1P1, typDoc=DI</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="DIAPM"/>
-            <xs:group ref="refusDelai">
-                <xs:annotation>
-                    <xs:documentation>Refus de délai : CodDoc=U1P6, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="accordDelai">
-                <xs:annotation>
-                    <xs:documentation>Accord Délai : CodDoc=U1P5, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="sommation">
-                <xs:annotation>
-                    <xs:documentation>Sommation : CodDoc=U1P4, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="accordDelaiApresSommation">
-                <xs:annotation>
-                    <xs:documentation>Accord Délai Après Sommation : CodDoc=U1P8, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="lettreBienvenue">
-                <xs:annotation>
-                    <xs:documentation>Lettre de bienvenue : CodDoc=U1P3, typDoc=CO </xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="lettreRappel">
-                <xs:annotation>
-                    <xs:documentation>Lettre de bienvenue : CodDoc=U1P7, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="questSNC">
-                <xs:annotation>
-                    <xs:documentation>Questionnqire SNC : CodDoc=U1PQ, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="questSNCRappel">
-                <xs:annotation>
-                    <xs:documentation>Lettre De Relance Questionnaire SNC : CodDoc=U1PR, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="demandeBilanFinal">
-                <xs:annotation>
-                    <xs:documentation>Demande de bilan final à la PM : CodDoc=U1P9, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="autorisationRadiation">
-                <xs:annotation>
-                    <xs:documentation>Autorisation de radiation : CodDoc=U1PA, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-            <xs:group ref="lettreLiquidation">
-                <xs:annotation>
-                    <xs:documentation>Lettre type information sur liquidation : CodDoc=U1PS, typDoc=CO</xs:documentation>
-                </xs:annotation>
-            </xs:group>
-        </xs:choice>
-    </xs:group>
-    <xs:group name="DI">
-        <xs:sequence>
-            <xs:element name="declarationImpot" type="CTypeDeclarationImpotPM"/>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="DIAPM">
-        <xs:sequence>
-            <xs:element name="declarationImpotAPM" type="CTypeDeclarationImpotAPM"/>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="refusDelai">
-        <xs:sequence>
-            <xs:element name="refusDelai">
-                <xs:annotation>
-                    <xs:documentation>U1P6</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="periodeFiscale" type="xs:gYear">
-                            <xs:annotation>
-                                <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateEnvoiContribuable" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="accordDelai">
-        <xs:sequence>
-            <xs:element name="accordDelai">
-                <xs:annotation>
-                    <xs:documentation>U1P5</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="dateAccord" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="sommation">
-        <xs:sequence>
-            <xs:element name="sommation">
-                <xs:annotation>
-                    <xs:documentation>U1P4</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="periodeFiscale" type="xs:gYear">
-                            <xs:annotation>
-                                <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="0" name="codeControleNIP" type="STypeCodeNIP">
-                            <xs:annotation>
-                                <xs:documentation>X12345</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateBaseSommation" type="STypeDate"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="accordDelaiApresSommation">
-        <xs:sequence>
-            <xs:element name="accordDelaiApresSommation">
-                <xs:annotation>
-                    <xs:documentation>U1P8</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="periodeFiscale" type="xs:gYear">
-                            <xs:annotation>
-                                <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateReceptionDemande" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateEnvoiSommation" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateAccord" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="lettreBienvenue">
-        <xs:sequence>
-            <xs:element name="lettreBienvenue">
-                <xs:annotation>
-                    <xs:documentation>U1P3</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="typeLettre" type="STypeLettreBienvenue"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="lettreRappel">
-        <xs:sequence>
-            <xs:element name="lettreRappel">
-                <xs:annotation>
-                    <xs:documentation>U1P7</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="typeLettre" type="STypeLettreRappel"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="questSNC">
-        <xs:sequence>
-            <xs:element name="questSNC" nillable="false" type="CTypeQuestSNC">
-                <xs:annotation>
-                    <xs:documentation>U1PQ</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="questSNCRappel">
-        <xs:sequence>
-            <xs:element name="questSNCRappel" nillable="false" type="CTypeQuestSNCRappel">
-                <xs:annotation>
-                    <xs:documentation>U1PR</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="demandeBilanFinal">
-        <xs:sequence>
-            <xs:element name="demandeBilanFinal">
-                <xs:annotation>
-                    <xs:documentation>U1P9</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="periodeFiscale" type="xs:gYear">
-                            <xs:annotation>
-                                <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateDemandeRequisition" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="autorisationRadiation">
-        <xs:sequence>
-            <xs:element name="autorisationRadiation">
-                <xs:annotation>
-                    <xs:documentation>U1PA</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="dateDemandeRadiation" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="raisonSociale" type="xs:string"/>
-                        <xs:element name="signatures">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="2" minOccurs="0" name="signature">
-                                        <xs:complexType>
-                                            <xs:sequence>
-                                                <xs:element name="signataire" type="xs:string"/>
-                                                <xs:element name="fonction" type="xs:string"/>
-                                            </xs:sequence>
-                                        </xs:complexType>
-                                    </xs:element>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:group name="lettreLiquidation">
-        <xs:sequence>
-            <xs:element name="lettreLiquidation">
-                <xs:annotation>
-                    <xs:documentation>U1PS</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="lettreLiquidation" type="STypeLettreLiquidation"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:group>
-    <xs:complexType name="CTypeAdresse">
-        <xs:sequence>
-            <xs:element maxOccurs="6" minOccurs="1" name="adresseLigne" nillable="false"
-                type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>adresseLigne1 : nom de l'Office ligne 1 (gras)
+<!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by ETAT DE VAUD (Direction des systèmes d`information) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://vd.ch/Editique/PM/UniregImpression" targetNamespace="http://vd.ch/Editique/PM/UniregImpression" elementFormDefault="qualified">
+	<xs:annotation>
+		<xs:appinfo>IMPORTANT : Le namespace par défaut ne doit pas contenir de préfixe !!!</xs:appinfo>
+	</xs:annotation>
+	<xs:element name="FichierImpression">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="infoTechnique" type="CTypeInfoTechnique" nillable="false" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>(Cette partie n'est pas à renseigner par le métier, elle sera rajoutée par les Services Editique)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Document" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="infoDocument" type="CTypeInfoDocument" minOccurs="0"/>
+							<xs:element name="infoArchivage" type="CTypeInfoArchivage" minOccurs="0"/>
+							<xs:element name="infoEnteteDocument" type="CTypeInfoEnteteDocument" nillable="false" minOccurs="0"/>
+							<xs:group ref="typeDocument" maxOccurs="1"/>
+							<xs:element name="infoRoutage" type="CTypeInfoRoutage" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:group name="typeDocument">
+		<xs:choice>
+			<xs:group ref="DI">
+				<xs:annotation>
+					<xs:documentation>DI PM : CodDoc=U1P1, typDoc=DI</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="DIAPM"/>
+			<xs:group ref="refusDelai">
+				<xs:annotation>
+					<xs:documentation>Refus de délai : CodDoc=U1P6, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="accordDelai">
+				<xs:annotation>
+					<xs:documentation>Accord Délai : CodDoc=U1P5, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="sommation">
+				<xs:annotation>
+					<xs:documentation>Sommation : CodDoc=U1P4, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="accordDelaiApresSommation">
+				<xs:annotation>
+					<xs:documentation>Accord Délai Après Sommation : CodDoc=U1P8, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="lettreBienvenue">
+				<xs:annotation>
+					<xs:documentation>Lettre de bienvenue : CodDoc=U1P3, typDoc=CO </xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="lettreRappel">
+				<xs:annotation>
+					<xs:documentation>Lettre de bienvenue : CodDoc=U1P7, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="questSNC">
+				<xs:annotation>
+					<xs:documentation>Questionnqire SNC : CodDoc=U1PQ, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="questSNCRappel">
+				<xs:annotation>
+					<xs:documentation>Lettre De Relance Questionnaire SNC : CodDoc=U1PR, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="demandeBilanFinal">
+				<xs:annotation>
+					<xs:documentation>Demande de bilan final à la PM : CodDoc=U1P9, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="autorisationRadiation">
+				<xs:annotation>
+					<xs:documentation>Autorisation de radiation : CodDoc=U1PA, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="lettreLiquidation">
+				<xs:annotation>
+					<xs:documentation>Lettre type information sur liquidation : CodDoc=U1PS, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="lettreDegrevementImm">
+				<xs:annotation>
+					<xs:documentation>Lettre avec formulaire de dégrèvement immeuble : CodDoc=U1PT, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:group ref="lettreDegrevementImmRappel">
+				<xs:annotation>
+					<xs:documentation>Lettre de rappel avec formulaire de dégrèvement immeuble : CodDoc=U1PU, typDoc=CO</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:choice>
+	</xs:group>
+	<xs:group name="DI">
+		<xs:sequence>
+			<xs:element name="declarationImpot" type="CTypeDeclarationImpotPM"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="DIAPM">
+		<xs:sequence>
+			<xs:element name="declarationImpotAPM" type="CTypeDeclarationImpotAPM"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="refusDelai">
+		<xs:sequence>
+			<xs:element name="refusDelai">
+				<xs:annotation>
+					<xs:documentation>U1P6</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="periodeFiscale" type="xs:gYear">
+							<xs:annotation>
+								<xs:documentation>AAAA</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dateEnvoiContribuable" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="accordDelai">
+		<xs:sequence>
+			<xs:element name="accordDelai">
+				<xs:annotation>
+					<xs:documentation>U1P5</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="dateAccord" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="sommation">
+		<xs:sequence>
+			<xs:element name="sommation">
+				<xs:annotation>
+					<xs:documentation>U1P4</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="periodeFiscale" type="xs:gYear">
+							<xs:annotation>
+								<xs:documentation>AAAA</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="codeControleNIP" type="STypeCodeNIP" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>X12345</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dateBaseSommation" type="STypeDate"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="accordDelaiApresSommation">
+		<xs:sequence>
+			<xs:element name="accordDelaiApresSommation">
+				<xs:annotation>
+					<xs:documentation>U1P8</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="periodeFiscale" type="xs:gYear">
+							<xs:annotation>
+								<xs:documentation>AAAA</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dateReceptionDemande" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dateEnvoiSommation" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dateAccord" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="lettreBienvenue">
+		<xs:sequence>
+			<xs:element name="lettreBienvenue">
+				<xs:annotation>
+					<xs:documentation>U1P3</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="typeLettre" type="STypeLettreBienvenue"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="lettreRappel">
+		<xs:sequence>
+			<xs:element name="lettreRappel">
+				<xs:annotation>
+					<xs:documentation>U1P7</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="typeLettre" type="STypeLettreRappel"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="questSNC">
+		<xs:sequence>
+			<xs:element name="questSNC" type="CTypeQuestSNC" nillable="false">
+				<xs:annotation>
+					<xs:documentation>U1PQ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="questSNCRappel">
+		<xs:sequence>
+			<xs:element name="questSNCRappel" type="CTypeQuestSNCRappel" nillable="false">
+				<xs:annotation>
+					<xs:documentation>U1PR</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="demandeBilanFinal">
+		<xs:sequence>
+			<xs:element name="demandeBilanFinal">
+				<xs:annotation>
+					<xs:documentation>U1P9</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="periodeFiscale" type="xs:gYear">
+							<xs:annotation>
+								<xs:documentation>AAAA</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="dateDemandeRequisition" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="autorisationRadiation">
+		<xs:sequence>
+			<xs:element name="autorisationRadiation">
+				<xs:annotation>
+					<xs:documentation>U1PA</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="dateDemandeRadiation" type="STypeDate">
+							<xs:annotation>
+								<xs:documentation>AAAAMMJJ</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="raisonSociale" type="xs:string"/>
+						<xs:element name="signatures">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="signature" minOccurs="0" maxOccurs="2">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="signataire" type="xs:string"/>
+												<xs:element name="fonction" type="xs:string"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="lettreLiquidation">
+		<xs:sequence>
+			<xs:element name="lettreLiquidation">
+				<xs:annotation>
+					<xs:documentation>U1PS</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="lettreLiquidation" type="STypeLettreLiquidation"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="lettreDegrevementImm">
+		<xs:sequence>
+			<xs:element name="lettreDegrevementImm" type="CTypeDegrevementImm"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="lettreDegrevementImmRappel">
+		<xs:sequence>
+			<xs:element name="lettreDegrevementImmRappel">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="CTypeDegrevementImm">
+							<xs:sequence>
+								<xs:element name="dateEnvoiLettre" type="STypeDate">
+									<xs:annotation>
+										<xs:documentation>AAAAMMJJ</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="CTypeAdresse">
+		<xs:sequence>
+			<xs:element name="adresseLigne" type="xs:string" nillable="false" minOccurs="1" maxOccurs="6">
+				<xs:annotation>
+					<xs:documentation>adresseLigne1 : nom de l'Office ligne 1 (gras)
 adresseLigne2 : nom de l'Office ligne 2 (gras)
 adresseLigne3 : nom de l'Office ligne 3 (gras)
 adresseLigne4 : adresse de l'Office ligne 1
 adresseLigne5 : adresse de l'Office ligne 2
 adresseLigne6 : adresse de l'Office ligne 3</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeCleRgp">
-        <xs:sequence>
-            <xs:element name="anneeFiscale" type="xs:gYear"/>
-            <xs:element name="genreDecision" type="STypeGenreDecision"/>
-            <xs:element name="genreImpot" type="CTypeGenreImpot"/>
-            <xs:element name="numeroTaxation" type="STypeNumeroTaxation"/>
-            <xs:element name="numeroVersion" type="STypeNumeroVersion"/>
-            <xs:element name="indicateurDENC" type="STypeIndicateurDENC"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeGenreImpot">
-        <xs:sequence>
-            <xs:element maxOccurs="unbounded" name="Impot" type="STypeImpot"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeAffranchissement">
-        <xs:sequence>
-            <xs:element name="zone" type="STypeZoneAffranchissement">
-                <xs:annotation>
-                    <xs:documentation>CH,EU,RM</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="type" type="STypeTypeAffranchissement">
-                <xs:annotation>
-                    <xs:documentation>A,B</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeInfoArchivage">
-        <xs:sequence>
-            <xs:element fixed="FOLDERS" name="nomApplication">
-                <xs:annotation>
-                    <xs:documentation>FOLDERS</xs:documentation>
-                </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:pattern value="[A-Z]{7}"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
-            <xs:element name="typDossier" type="STypeDossier">
-                <xs:annotation>
-                    <xs:documentation/>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="nomDossier" type="STypeNumeroContribuable">
-                <xs:annotation>
-                    <xs:documentation>n° de ctb formaté (avec un point comme séparateur)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="typDocument" type="STypeDocument">
-                <xs:annotation>
-                    <xs:documentation>Code du type de document attribué par l'Editique (XXX)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="idDocument" type="STypeDocIDFolders">
-                <xs:annotation>
-                    <xs:documentation>Identifiant FOLDERS du document </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="datTravail" type="STypeDate">
-                <xs:annotation>
-                    <xs:documentation>Date de travail, au format AAAAMMJJ : date d'expédition d'une correspondance</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeInfoTechnique">
-        <xs:sequence>
-            <xs:element name="prefixe" type="STypePrefixeTECHN">
-                <xs:annotation>
-                    <xs:appinfo/>
-                    <xs:documentation>U1P1DIPMTECHN
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeCleRgp">
+		<xs:sequence>
+			<xs:element name="anneeFiscale" type="xs:gYear"/>
+			<xs:element name="genreDecision" type="STypeGenreDecision"/>
+			<xs:element name="genreImpot" type="CTypeGenreImpot"/>
+			<xs:element name="numeroTaxation" type="STypeNumeroTaxation"/>
+			<xs:element name="numeroVersion" type="STypeNumeroVersion"/>
+			<xs:element name="indicateurDENC" type="STypeIndicateurDENC"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeGenreImpot">
+		<xs:sequence>
+			<xs:element name="Impot" type="STypeImpot" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeAffranchissement">
+		<xs:sequence>
+			<xs:element name="zone" type="STypeZoneAffranchissement">
+				<xs:annotation>
+					<xs:documentation>CH,EU,RM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="STypeTypeAffranchissement" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A,B</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeInfoArchivage">
+		<xs:sequence>
+			<xs:element name="nomApplication" fixed="FOLDERS">
+				<xs:annotation>
+					<xs:documentation>FOLDERS</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="[A-Z]{7}"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="typDossier" type="STypeDossier">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nomDossier" type="STypeNumeroContribuable">
+				<xs:annotation>
+					<xs:documentation>n° de ctb formaté (avec un point comme séparateur)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="typDocument" type="STypeDocument">
+				<xs:annotation>
+					<xs:documentation>Code du type de document attribué par l'Editique (XXX)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idDocument" type="STypeDocIDFolders">
+				<xs:annotation>
+					<xs:documentation>Identifiant FOLDERS du document </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="datTravail" type="STypeDate">
+				<xs:annotation>
+					<xs:documentation>Date de travail, au format AAAAMMJJ : date d'expédition d'une correspondance</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeInfoTechnique">
+		<xs:sequence>
+			<xs:element name="prefixe" type="STypePrefixeTECHN">
+				<xs:annotation>
+					<xs:appinfo/>
+					<xs:documentation>U1P1DIPMTECHN
 U1P2DIAPTECHN
 U1P3BIENTECHN
 U1P4SOMMTECHN
@@ -421,52 +451,52 @@ U1P8ADASTECHN
 U1PQQSNCTECHN
 U1PRQSNCTECHN
 </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="nomFichier" type="STypeFilename">
-                <xs:annotation>
-                    <xs:documentation>Nom du fichier au format PMP11101_aaaammjj.xml
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nomFichier" type="STypeFilename">
+				<xs:annotation>
+					<xs:documentation>Nom du fichier au format PMP11101_aaaammjj.xml
 PMP21101_aaaammjj.xml</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="sigleApplication" type="STypeSigleApplication">
-                <xs:annotation>
-                    <xs:documentation>sigle de l'application (XX)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="codTraitement" type="STypeCodeTraitement">
-                <xs:annotation>
-                    <xs:documentation>B ou D</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="idUtilisateur" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>nom ou code de l'utilisateur</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="archive" type="xs:boolean">
-                <xs:annotation>
-                    <xs:documentation>Si archivage prévu: true</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="returnFormat" type="STyperReturnFormat">
-                <xs:annotation>
-                    <xs:documentation>Format du document en sortie : AFP, PCL, PDF</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeInfoDocument">
-        <xs:sequence>
-            <xs:element name="versionXSD" type="STypeVersionXSD">
-                <xs:annotation>
-                    <xs:documentation>EDITIQUE : Incrémenter cette valeur à chaque diffusion de la XSD !!!</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="prefixe" type="STypePrefixeDOCUM">
-                <xs:annotation>
-                    <xs:appinfo/>
-                    <xs:documentation>U1P1DIPMDOCUM
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sigleApplication" type="STypeSigleApplication">
+				<xs:annotation>
+					<xs:documentation>sigle de l'application (XX)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codTraitement" type="STypeCodeTraitement">
+				<xs:annotation>
+					<xs:documentation>B ou D</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idUtilisateur" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>nom ou code de l'utilisateur</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="archive" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Si archivage prévu: true</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="returnFormat" type="STyperReturnFormat">
+				<xs:annotation>
+					<xs:documentation>Format du document en sortie : AFP, PCL, PDF</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeInfoDocument">
+		<xs:sequence>
+			<xs:element name="versionXSD" type="STypeVersionXSD">
+				<xs:annotation>
+					<xs:documentation>EDITIQUE : Incrémenter cette valeur à chaque diffusion de la XSD !!!</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="prefixe" type="STypePrefixeDOCUM">
+				<xs:annotation>
+					<xs:appinfo/>
+					<xs:documentation>U1P1DIPMDOCUM
 U1P2DIAPDOCUM
 U1P3BIENDOCUM
 U1P4SOMMDOCUM
@@ -475,167 +505,165 @@ U1P6REFUDOCUM
 U1P7RAPLDOCUM
 U1P8ADASDOCUM
 </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element maxOccurs="1" minOccurs="1" name="codPorteAdresse" nillable="true"
-                type="STyperCodePorteAdresse">
-                <xs:annotation>
-                    <xs:documentation/>
-                </xs:annotation>
-            </xs:element>
-            <xs:element maxOccurs="2" minOccurs="0" name="txtCopieMandataire" nillable="false"
-                type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>Texte Copie Mandataire et/ou Notaire</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="idEnvoi">
-                <xs:annotation>
-                    <xs:documentation>Code ou identifiant de l'envoi, permet de déterminer quand on commence un nouvel envoi (cas spéciaux)</xs:documentation>
-                </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:token">
-                        <xs:maxLength value="10"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
-            <xs:element minOccurs="0" name="typDoc" type="STypeTypeDoc">
-                <xs:annotation>
-                    <xs:documentation>Exemple : DI / CO
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codPorteAdresse" type="STyperCodePorteAdresse" nillable="true" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="txtCopieMandataire" type="xs:string" nillable="false" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation>Texte Copie Mandataire et/ou Notaire</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idEnvoi" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Code ou identifiant de l'envoi, permet de déterminer quand on commence un nouvel envoi (cas spéciaux)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="typDoc" type="STypeTypeDoc" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Exemple : DI / CO
 
 (DI = Déclaration d'Impôt, CO = Courrier)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="codDoc" type="STypeCodeDoc">
-                <xs:annotation>
-                    <xs:documentation/>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="cleRgp" type="CTypeCleRgp"> </xs:element>
-            <xs:element name="populations" type="STypePopulation">
-                <xs:annotation>
-                    <xs:documentation>PM</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="affranchissement" type="CTypeAffranchissement"> </xs:element>
-            <xs:element minOccurs="0" name="brouillon" type="xs:boolean"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeInfoEnteteDocument">
-        <xs:sequence>
-            <xs:element name="expediteur" type="CTypeExpediteur"> </xs:element>
-            <xs:element name="destinataire" type="CTypeDestinataire"> </xs:element>
-            <xs:element minOccurs="0" name="porteAdresse" type="CTypePorteAdresse"> </xs:element>
-            <xs:element minOccurs="0" name="ligReference" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>Ligne de référence (e.g. concerne)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="libelleTitre" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>Titre du document représenté dans un cadre plein, de couleur grise.</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeExpediteur">
-        <xs:sequence>
-            <xs:element name="adresse" type="CTypeAdresse"/>
-            <xs:element name="adrMes" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>adresse messagerie</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="numTelephone" type="STypeNumTelFax" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>012'345'67'89</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="numFax" type="STypeNumTelFax" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>012'345'67'89</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element form="qualified" name="numCCP" type="STypeNumCCP" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>XX-YYYYYY-Z</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="traitePar" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>Titre, initiales et nom du taxateur</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="ideUti" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>Visa utilisateur (valeur "ZZT" pour une taxation automatique)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="localiteExpedition" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>Localité présente sur les documents sous la forme :
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codDoc" type="STypeCodeDoc">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="cleRgp" type="CTypeCleRgp" minOccurs="0"/>
+			<xs:element name="populations" type="STypePopulation">
+				<xs:annotation>
+					<xs:documentation>PM</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="affranchissement" type="CTypeAffranchissement"/>
+			<xs:element name="brouillon" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeInfoEnteteDocument">
+		<xs:sequence>
+			<xs:element name="expediteur" type="CTypeExpediteur"/>
+			<xs:element name="destinataire" type="CTypeDestinataire"/>
+			<xs:element name="porteAdresse" type="CTypePorteAdresse" minOccurs="0"/>
+			<xs:element name="ligReference" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ligne de référence (e.g. concerne)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="libelleTitre" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Titre du document représenté dans un cadre plein, de couleur grise.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeExpediteur">
+		<xs:sequence>
+			<xs:element name="adresse" type="CTypeAdresse"/>
+			<xs:element name="adrMes" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>adresse messagerie</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numTelephone" type="STypeNumTelFax" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>012'345'67'89</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numFax" type="STypeNumTelFax" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>012'345'67'89</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numCCP" type="STypeNumCCP" form="qualified" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>XX-YYYYYY-Z</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="traitePar" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Titre, initiales et nom du taxateur</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ideUti" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Visa utilisateur (valeur "ZZT" pour une taxation automatique)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="localiteExpedition" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Localité présente sur les documents sous la forme :
 
 	Lausanne, le
-	
-(Seule la localité est à renseigner)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="dateExpedition" type="STypeDate">
-                <xs:annotation>
-                    <xs:documentation>AAAAMMJJ</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="notreReference" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation/>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="votreReference" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation/>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="numIBAN" type="STypeNumIBAN">
-                <xs:annotation>
-                    <xs:documentation>CHXX BBBB BCCC CCCC CCCC C
 
-        (avec XX : Clef de contrôle de 02 à 98, 
-        B = code banque, 
+(Seule la localité est à renseigner)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateExpedition" type="STypeDate">
+				<xs:annotation>
+					<xs:documentation>AAAAMMJJ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="notreReference" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="votreReference" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numIBAN" type="STypeNumIBAN" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>CHXX BBBB BCCC CCCC CCCC C
+
+        (avec XX : Clef de contrôle de 02 à 98,
+        B = code banque,
         C = numéro de compte)
-        
+
 
 </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="srvExp" type="xs:string" minOccurs="0"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeDestinataire">
-        <xs:sequence>
-            <xs:element name="adresse" type="CTypeAdresse"> </xs:element>
-            <xs:element minOccurs="0" name="numRecommande" type="xs:token"/>
-            <xs:element name="numContribuable" type="STypeNumeroContribuable">
-                <xs:annotation>
-                    <xs:documentation>xxx.yyy.zz</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element maxOccurs="3" minOccurs="0" name="numIDE" type="STypeNumIDE">
-                <xs:annotation>
-                    <xs:documentation>CHE-999.999.99C</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypePorteAdresse">
-        <xs:sequence>
-            <xs:element name="adresse" type="CTypeAdresse"> </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeInfoRoutage">
-        <xs:sequence>
-            <xs:element name="prefixe" type="STypePrefixeROUTE">
-                <xs:annotation>
-                    <xs:documentation>U1P1DIPMROUTE
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="srvExp" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeDestinataire">
+		<xs:sequence>
+			<xs:element name="adresse" type="CTypeAdresse"/>
+			<xs:element name="numRecommande" type="xs:token" minOccurs="0"/>
+			<xs:element name="numContribuable" type="STypeNumeroContribuable">
+				<xs:annotation>
+					<xs:documentation>xxx.yyy.zz</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numIDE" type="STypeNumIDE" minOccurs="0" maxOccurs="3">
+				<xs:annotation>
+					<xs:documentation>CHE-999.999.99C</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypePorteAdresse">
+		<xs:sequence>
+			<xs:element name="adresse" type="CTypeAdresse"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeInfoRoutage">
+		<xs:sequence>
+			<xs:element name="prefixe" type="STypePrefixeROUTE">
+				<xs:annotation>
+					<xs:documentation>U1P1DIPMROUTE
 U1P2DIAPROUTE
 U1P3BIENROUTE
 U1P4SOMMROUTE
@@ -644,355 +672,377 @@ U1P6REFUROUTE
 U1P7RAPLROUTE
 U1P8ADASROUTE
 </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="CTypeDeclarationImpot" abstract="true">
-        <xs:sequence>
-            <xs:element name="periodeFiscale" type="xs:gYear">
-                <xs:annotation>
-                    <xs:documentation>AAAA</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="codeControleNIP" type="STypeCodeNIP">
-                <xs:annotation>
-                    <xs:documentation>X12345</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="adresseRaisonSociale" type="CTypeAdresse"> </xs:element>
-            <xs:element name="adresseRetour" type="CTypeAdresse"> </xs:element>
-            <xs:element name="dateLimiteRetour" type="STypeDate">
-                <xs:annotation>
-                    <xs:documentation>AAAAMMJJ</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element form="qualified" name="codeRoutage" type="STypeCodeRoutage">
-                <xs:annotation>
-                    <xs:documentation>21-X
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeDeclarationImpot" abstract="true">
+		<xs:sequence>
+			<xs:element name="periodeFiscale" type="xs:gYear">
+				<xs:annotation>
+					<xs:documentation>AAAA</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codeControleNIP" type="STypeCodeNIP" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>X12345</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="adresseRaisonSociale" type="CTypeAdresse"/>
+			<xs:element name="adresseRetour" type="CTypeAdresse"/>
+			<xs:element name="dateLimiteRetour" type="STypeDate">
+				<xs:annotation>
+					<xs:documentation>AAAAMMJJ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codeRoutage" type="STypeCodeRoutage" form="qualified">
+				<xs:annotation>
+					<xs:documentation>21-X
 
                         (avec X=1 pour les entreprises de catégorie « PM » dont le siège est vaudois et X=3 pour les entreprises de catégorie « PM » dont le siège est hors Vaud (hors Canton ou étranger)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="siege" type="xs:string"/>
-            <xs:element minOccurs="0" name="administrationEffective" type="xs:string"/>
-            <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
-                <xs:annotation>
-                    <xs:documentation>AAAAMMJJ</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
-                <xs:annotation>
-                    <xs:documentation>AAAAMMJJ</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="IBAN" type="STypeNumIBAN">
-                <xs:annotation>
-                    <xs:documentation>CHxx BBBB BCCC CCCC CCCC C
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="siege" type="xs:string"/>
+			<xs:element name="administrationEffective" type="xs:string" minOccurs="0"/>
+			<xs:element name="debutExerciceCommercial" type="STypeDate" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>AAAAMMJJ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="finExerciceCommercial" type="STypeDate" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>AAAAMMJJ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IBAN" type="STypeNumIBAN" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>CHxx BBBB BCCC CCCC CCCC C
 
                         (avec xx : Clé, B=code banque, C=numéro de compte)</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="0" name="titulaireCompte" type="xs:string"/>
-            <xs:element minOccurs="0" name="codeFlyer" type="STypeCodeFlyer"/>
-        </xs:sequence>
-    </xs:complexType>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="titulaireCompte" type="xs:string" minOccurs="0"/>
+			<xs:element name="codeFlyer" type="STypeCodeFlyer" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeDeclarationImpotPM">
+		<xs:complexContent>
+			<xs:extension base="CTypeDeclarationImpot">
+				<xs:sequence>
+					<xs:element name="feuilles" type="CTypeAnnexesDI" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CTypeDeclarationImpotAPM">
+		<xs:complexContent>
+			<xs:extension base="CTypeDeclarationImpot">
+				<xs:sequence>
+					<xs:element name="feuilles" type="CTypeAnnexesDIAPM" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CTypeAnnexesDI">
+		<xs:sequence>
+			<xs:element name="referenceFeuille" type="STypeReferenceAnnexeDI" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="nombreFeuille" type="xs:integer"/>
+			<xs:element name="codeBarreFeuille" type="STypeCodeBarreDI" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeAnnexesDIAPM">
+		<xs:sequence>
+			<xs:element name="referenceFeuille" type="STypeReferenceAnnexeDIAPM" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="nombreFeuille" type="xs:integer"/>
+			<xs:element name="codeBarreFeuille" type="STypeCodeBarreDI" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeQuestSNC">
+		<xs:sequence>
+			<xs:element name="periodeFiscale" type="xs:gYear">
+				<xs:annotation>
+					<xs:documentation>AAAA</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="adresseRetour" type="CTypeAdresse"/>
+			<xs:element name="dateLimiteRetour" type="STypeDate">
+				<xs:annotation>
+					<xs:documentation>AAAAMMJJ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codeRoutage" type="STypeCodeRoutage" form="qualified">
+				<xs:annotation>
+					<xs:documentation>21-X
 
-    <xs:complexType name="CTypeDeclarationImpotPM">
-        <xs:complexContent>
-            <xs:extension base="CTypeDeclarationImpot">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="feuilles" type="CTypeAnnexesDI"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="CTypeDeclarationImpotAPM">
-        <xs:complexContent>
-            <xs:extension base="CTypeDeclarationImpot">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="feuilles" type="CTypeAnnexesDIAPM"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="CTypeAnnexesDI">
-        <xs:sequence>
-            <xs:element maxOccurs="1" minOccurs="1" name="referenceFeuille"
-                type="STypeReferenceAnnexeDI"/>
-            <xs:element name="nombreFeuille" type="xs:integer"/>
-            <xs:element minOccurs="1" name="codeBarreFeuille" type="STypeCodeBarreDI"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeAnnexesDIAPM">
-        <xs:sequence>
-            <xs:element maxOccurs="1" minOccurs="1" name="referenceFeuille"
-                type="STypeReferenceAnnexeDIAPM"/>
-            <xs:element name="nombreFeuille" type="xs:integer"/>
-            <xs:element minOccurs="1" name="codeBarreFeuille" type="STypeCodeBarreDI"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeQuestSNC">
-        <xs:sequence>
-            <xs:element name="periodeFiscale" type="xs:gYear">
-                <xs:annotation>
-                    <xs:documentation>AAAA</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="adresseRetour" type="CTypeAdresse"/>
-            <xs:element name="dateLimiteRetour" type="STypeDate">
-                <xs:annotation>
-                    <xs:documentation>AAAAMMJJ</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element form="qualified" name="codeRoutage" type="STypeCodeRoutage">
-                <xs:annotation>
-                    <xs:documentation>21-X</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="siege" type="xs:string"/>
-            <xs:element name="NumCommune" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>AAAA</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element minOccurs="1" name="codeBarre" type="STypeCodeBarreDI"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeQuestSNCRappel">
-        <xs:sequence>
-            <xs:element name="periodeFiscale" type="xs:gYear">
-                <xs:annotation>
-                    <xs:documentation>AAAA</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="nomSociete" type="xs:string"/>
-            <xs:element name="siege" type="xs:string"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:simpleType name="STypePrefixeTECHN">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z0-9]{8}TECHN"/>
-            <xs:whiteSpace value="preserve"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeFilename">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z0-9]{8}_[0-9]{8}.xml"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeSigleApplication">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{2}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeCodeTraitement">
-        <xs:annotation>
-            <xs:documentation/>
-        </xs:annotation>
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="D"/>
-            <xs:enumeration value="B"/>
-            <xs:pattern value="[A-Z]"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STyperReturnFormat">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="AFP"/>
-            <xs:enumeration value="PCL"/>
-            <xs:enumeration value="PDF"/>
-            <xs:pattern value="[A-Z]{3}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STyperCodePorteAdresse">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="M"/>
-            <xs:enumeration value="N"/>
-            <xs:enumeration value="C"/>
-            <xs:pattern value="[A-Z]"/>
-            <xs:enumeration value=" "/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeTypeDoc">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{2}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeCodeDoc">
-        <xs:restriction base="xs:string">
-            <xs:maxLength value="32"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeGenreDecision">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{2}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeImpot">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{5}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumeroTaxation">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{4}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumeroVersion">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{2}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeIndicateurDENC">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypePopulation">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{2}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeZoneAffranchissement">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{2}"/>
-            <xs:enumeration value="CH"/>
-            <xs:enumeration value="EU"/>
-            <xs:enumeration value="RM"/>
-            <xs:enumeration value="NA"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeTypeAffranchissement">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]"/>
-            <xs:enumeration value="A"/>
-            <xs:enumeration value="B"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeDocument">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{3}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeDossier">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{3}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumeroContribuable">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[1-9][0-9.]{0,10}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumTelFax">
-        <xs:restriction base="xs:string">
-            <xs:maxLength value="25"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumCCP">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{1,2}-[0-9]{1,6}-[0-9]"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumIBAN">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{2}[0-9A-Z ]+"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypePrefixeROUTE">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z0-9]{8}ROUTE"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypePrefixeDOCUM">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z0-9]{8}DOCUM"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeNumIDE">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{3}-[0-9]{3}\.[0-9]{3}\.[0-9]{3}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeDate">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="\d{8}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeCodeBarreDI">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{26}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeCodeNIP">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z0-9]{6}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeCodeRoutage">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{2}-[0-9]"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeDocIDFolders">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[a-zA-Z\d][a-zA-Z\d_\-\+\\ $]{0,39}"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeCodeFlyer">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeLettreBienvenue">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="InscriptionVD"/>
-            <xs:enumeration value="APM"/>
-            <xs:enumeration value="HCHSImmeubleVD"/>
-            <xs:enumeration value="HCHSEtablissementStableVD"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeLettreRappel">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="LettreBienvenue"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeReferenceAnnexeDI">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="A01a"/>
-            <xs:enumeration value="A01b"/>
-            <xs:enumeration value="A01c"/>
-            <xs:enumeration value="A01d"/>
-            <xs:enumeration value="A01e"/>
-            <xs:enumeration value="A02"/>
-            <xs:enumeration value="A03"/>
-            <xs:enumeration value="A04a"/>
-            <xs:enumeration value="A04b"/>
-            <xs:enumeration value="DI"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeReferenceAnnexeDIAPM">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="A01a"/>
-            <xs:enumeration value="A01b"/>
-            <xs:enumeration value="A02"/>
-            <xs:enumeration value="A03a"/>
-            <xs:enumeration value="A03b"/>
-            <xs:enumeration value="A04"/>
-            <xs:enumeration value="DI"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeVersionXSD">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="16.7"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:simpleType name="STypeLettreLiquidation">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="LettreLiquidation"/>
-        </xs:restriction>
-    </xs:simpleType>
+                        (avec X=1 pour les entreprises de catégorie « PM » dont le siège est vaudois et X=3 pour les entreprises de catégorie « PM » dont le siège est hors Vaud (hors Canton ou étranger)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="siege" type="xs:string"/>
+			<xs:element name="NumCommune" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>AAAA</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codeBarre" type="STypeCodeBarreDI" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeQuestSNCRappel">
+		<xs:sequence>
+			<xs:element name="periodeFiscale" type="xs:gYear">
+				<xs:annotation>
+					<xs:documentation>AAAA</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nomSociete" type="xs:string"/>
+			<xs:element name="siege" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeImmeuble">
+		<xs:sequence>
+			<xs:element name="commune" type="xs:string"/>
+			<xs:element name="noParcelle" type="xs:string"/>
+			<xs:element name="type" type="xs:string"/>
+			<xs:element name="nature" type="xs:string" minOccurs="0"/>
+			<xs:element name="montantFiscalRF" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeDegrevementImm">
+		<xs:sequence>
+			<xs:element name="periodeFiscale" type="xs:gYear">
+				<xs:annotation>
+					<xs:documentation>AAAA</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="siege" type="xs:string"/>
+			<xs:element name="codeBarre" type="STypeCodeBarreDI"/>
+			<xs:element name="codeControleNIP" type="STypeCodeNIP" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>X12345</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="immeuble" type="CTypeImmeuble"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="STypePrefixeTECHN">
+		<xs:restriction base="xs:string">
+			<xs:whiteSpace value="preserve"/>
+			<xs:pattern value="[A-Z0-9]{8}TECHN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeFilename">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9]{8}_[0-9]{8}.xml"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeSigleApplication">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeCodeTraitement">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]"/>
+			<xs:enumeration value="D"/>
+			<xs:enumeration value="B"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STyperReturnFormat">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{3}"/>
+			<xs:enumeration value="AFP"/>
+			<xs:enumeration value="PCL"/>
+			<xs:enumeration value="PDF"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STyperCodePorteAdresse">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]"/>
+			<xs:enumeration value="M"/>
+			<xs:enumeration value="N"/>
+			<xs:enumeration value="C"/>
+			<xs:enumeration value=" "/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeTypeDoc">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeCodeDoc">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeGenreDecision">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeImpot">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumeroTaxation">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumeroVersion">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeIndicateurDENC">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypePopulation">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeZoneAffranchissement">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}"/>
+			<xs:enumeration value="CH"/>
+			<xs:enumeration value="EU"/>
+			<xs:enumeration value="RM"/>
+			<xs:enumeration value="NA"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeTypeAffranchissement">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]"/>
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="B"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeDocument">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeDossier">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumeroContribuable">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[1-9][0-9.]{0,10}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumTelFax">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="25"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumCCP">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{1,2}-[0-9]{1,6}-[0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumIBAN">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{2}[0-9A-Z ]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypePrefixeROUTE">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9]{8}ROUTE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypePrefixeDOCUM">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9]{8}DOCUM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeNumIDE">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{3}-[0-9]{3}\.[0-9]{3}\.[0-9]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeDate">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeCodeBarreDI">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{26}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeCodeNIP">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9]{6}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeCodeRoutage">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{2}-[0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeDocIDFolders">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z\d][a-zA-Z\d_\-\+\\ $]{0,39}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeCodeFlyer">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeLettreBienvenue">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="InscriptionVD"/>
+			<xs:enumeration value="APM"/>
+			<xs:enumeration value="HCHSImmeubleVD"/>
+			<xs:enumeration value="HCHSEtablissementStableVD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeLettreRappel">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LettreBienvenue"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeReferenceAnnexeDI">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A01a"/>
+			<xs:enumeration value="A01b"/>
+			<xs:enumeration value="A01c"/>
+			<xs:enumeration value="A01d"/>
+			<xs:enumeration value="A01e"/>
+			<xs:enumeration value="A02"/>
+			<xs:enumeration value="A03"/>
+			<xs:enumeration value="A04a"/>
+			<xs:enumeration value="A04b"/>
+			<xs:enumeration value="DI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeReferenceAnnexeDIAPM">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A01a"/>
+			<xs:enumeration value="A01b"/>
+			<xs:enumeration value="A02"/>
+			<xs:enumeration value="A03a"/>
+			<xs:enumeration value="A03b"/>
+			<xs:enumeration value="A04"/>
+			<xs:enumeration value="DI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeLettreLiquidation">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LettreLiquidation"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="STypeVersionXSD">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="16.8"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>
