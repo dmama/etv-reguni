@@ -31,6 +31,7 @@ import noNamespace.TypAdresse;
 import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -320,7 +321,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	/**
 	 * Alimente un objet DI
 	 */
-	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
+	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, @NotNull List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
 
 		final String avecCourrierExplicatif = (isFromBatchImmeuble ? "O" : "N");
 		final DI di = DIDocument.Factory.newInstance().addNewDI();

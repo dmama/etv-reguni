@@ -210,11 +210,11 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), null, false);
+			final DI di2008 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), new ArrayList<>(), false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), null, false);
+			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), new ArrayList<>(), false);
 			assertNotNull(di2009);
-			final DI diCourante = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declarationCourante, null), null, false);
+			final DI diCourante = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declarationCourante, null), new ArrayList<>(), false);
 			assertNotNull(diCourante);
 
 
@@ -329,11 +329,11 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		declarationCourante.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), null, false);
+			final DI di2008 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), new ArrayList<>(), false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), null, false);
+			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), new ArrayList<>(), false);
 			assertNotNull(di2009);
-			final DI diCourante = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declarationCourante, null), null, false);
+			final DI diCourante = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declarationCourante, null), new ArrayList<>(), false);
 			assertNotNull(diCourante);
 
 			DIBase.InfoDI info2008 = di2008.getInfoDI();
@@ -384,9 +384,9 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2008 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), null, false);
+			final DI di2008 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), new ArrayList<>(), false);
 			assertNotNull(di2008);
-			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), null, false);
+			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), new ArrayList<>(), false);
 			assertNotNull(di2009);
 
 
@@ -455,7 +455,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
 		{
 
-			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), null, false);
+			final DI di2009 = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2009, null), new ArrayList<>(), false);
 			assertNotNull(di2009);
 
 			final String formuleAppel = di2009.getFormuleAppel();
@@ -556,7 +556,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			assertNull(adresse.getAdresseCourrierLigne6());
 
 			// .. sur le code bar
-			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2007, null), null, false);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2007, null), new ArrayList<>(), false);
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
@@ -590,7 +590,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			assertNull(adresse.getAdresseCourrierLigne6());
 
 			// .. sur le code bar
-			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), null, false);
+			final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), new ArrayList<>(), false);
 			assertNotNull(di);
 			final DI.InfoDI info = di.getInfoDI();
 			assertNotNull(info);
@@ -627,7 +627,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 		declaration2008.setRetourCollectiviteAdministrativeId(vevey.getId());
 
-		final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), null, false);
+		final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), new ArrayList<>(), false);
 		assertNotNull(di);
 
 		final DIRetour.AdresseRetour retour = di.getAdresseRetour();
@@ -658,7 +658,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 		declaration2008.setRetourCollectiviteAdministrativeId(aci.getId());
 
-		final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), null, false);
+		final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2008, null), new ArrayList<>(), false);
 		assertNotNull(di);
 
 		final DIBase.InfoDI infoDi = di.getInfoDI();
@@ -862,7 +862,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>(), false);
 				assertNotNull(di);
 				//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
 				assertNull(di.getEnfants());
@@ -937,7 +937,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), new ArrayList<>(), false);
 				assertNotNull(di);
 
 				assertNotNull(di.getEnfants());
@@ -1005,7 +1005,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>(), false);
 				assertNotNull(di);
 				//le NIP doit être présent
 				assertNotNull(di.getInfoDI().getNIP());
@@ -1039,7 +1039,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), null, false);
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), new ArrayList<>(), false);
 				assertNotNull(di);
 				//le NIP ne doit pas être présent
 				assertNull(di.getInfoDI().getNIP());
@@ -1113,7 +1113,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), new ArrayList<>(), false);
 				assertNotNull(di);
 				assertNull(di.getEnfants());
 			}
@@ -1166,7 +1166,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 				assertNull(adresse.getAdresseCourrierLigne6());
 
 				// .. sur le code bar
-				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
+				final DI di = impressionDIPPHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), new ArrayList<>(), false);
 				assertNotNull(di);
 				final DI.InfoDI info = di.getInfoDI();
 				assertNotNull(info);
