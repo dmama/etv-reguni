@@ -278,7 +278,8 @@ public class TiersCreateController {
 		final Set<CategorieEntreprise> pmApm = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.DPPM, CategorieEntreprise.APM, CategorieEntreprise.DPAPM);
 		if (pmApm.contains(categorieEntreprise)) {
 			final boolean vd = civilView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			final RegDate dateOuvertureFiscale = vd ? dateOuverture.getOneDayAfter() : dateOuverture;
+			final boolean nonApm = categorieEntreprise != CategorieEntreprise.APM; // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les APM.
+			final RegDate dateOuvertureFiscale = vd && nonApm ? dateOuverture.getOneDayAfter() : dateOuverture;
 
 			// Récupération du type de régime fiscal
 			final TypeRegimeFiscal trf = tiersService.getTypeRegimeFiscalParDefault(categorieEntreprise);

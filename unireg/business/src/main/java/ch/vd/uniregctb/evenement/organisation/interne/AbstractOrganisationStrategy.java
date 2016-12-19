@@ -13,7 +13,9 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntreprise;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -245,6 +247,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
 		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
 		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final boolean isApm = CategorieEntrepriseHelper.map(organisation.getFormeLegale(dateEvenement)) == CategorieEntreprise.APM; // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les APM.
 		final boolean inscritAuRC = organisation.isInscriteAuRC(dateEvenement);
 		final RegDate dateInscriptionRCVd;
 		final RegDate dateInscriptionRC;
@@ -276,7 +279,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		}
 		else {
 			isCreation = isCreation(event.getType(), organisation, dateEvenement);
-			if (isCreation && isVaudoise) {
+			if (isCreation && isVaudoise && !isApm) { // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les APM.
 				dateDeCreation = dateEvenement;
 				dateOuvertureFiscale = dateEvenement.getOneDayAfter();
 			}
