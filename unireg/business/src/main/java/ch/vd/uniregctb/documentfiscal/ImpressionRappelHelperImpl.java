@@ -39,7 +39,7 @@ public class ImpressionRappelHelperImpl extends EditiqueAbstractHelperImpl imple
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateRappel(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final FichierImpression.Document.LettreRappel rappel = new FichierImpression.Document.LettreRappel(STypeLettreRappel.LETTRE_BIENVENUE);
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, rappel, null, null, null, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, rappel, null, null, null, null, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

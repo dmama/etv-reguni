@@ -38,6 +38,12 @@ public enum TypeDocumentEditique {
 	LETTRE_TYPE_INFO_LIQUIDATION("U1PSLIQU", "413", "lettreTypeInfoLiquidation"),
 
 	//
+	// Demandes de dégrèvement
+	//
+	DEMANDE_DEGREVEMENT("U1PTXXXX", "414", "demandeDegrevement"),                   // TODO code document à finaliser
+	RAPPEL_DEMANDE_DEGREVEMENT("U1PUXXXX", "415", "rappelDemandeDegrevement"),      // TODO code document à finaliser
+
+	//
 	// Autour des questionnaires SNC
 	//
 

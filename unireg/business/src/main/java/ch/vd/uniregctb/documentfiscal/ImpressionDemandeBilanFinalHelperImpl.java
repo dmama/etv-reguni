@@ -42,7 +42,7 @@ public class ImpressionDemandeBilanFinalHelperImpl extends EditiqueAbstractHelpe
 
 			final FichierImpression.Document.DemandeBilanFinal dbf = new FichierImpression.Document.DemandeBilanFinal(XmlUtils.regdate2xmlcal(RegDate.get(lettre.getPeriodeFiscale())),
 			                                                                                                          RegDateHelper.toIndexString(lettre.getDateRequisitionRadiation()));
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, null, null, dbf, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, null, null, dbf, null, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
