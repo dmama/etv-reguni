@@ -40,8 +40,9 @@ public enum TypeDocumentEditique {
 	//
 	// Demandes de dégrèvement
 	//
-	DEMANDE_DEGREVEMENT("U1PTXXXX", "414", "demandeDegrevement"),                   // TODO code document à finaliser
-	RAPPEL_DEMANDE_DEGREVEMENT("U1PUXXXX", "415", "rappelDemandeDegrevement"),      // TODO code document à finaliser
+
+	DEMANDE_DEGREVEMENT("U1PTLDEG", "414", "demandeDegrevement"),
+	RAPPEL_DEMANDE_DEGREVEMENT("U1PULDEG", "415", "rappelDemandeDegrevement"),
 
 	//
 	// Autour des questionnaires SNC
