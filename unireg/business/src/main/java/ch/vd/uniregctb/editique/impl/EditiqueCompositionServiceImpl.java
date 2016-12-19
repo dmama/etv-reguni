@@ -7,12 +7,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoArchivageDocument;
 import noNamespace.TypFichierImpression;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,6 +221,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		this.evenementDocumentSortantService = evenementDocumentSortantService;
 	}
 
+	@NotNull
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
 		return buildDefaultAnnexes(listFeuille);
@@ -235,6 +238,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return null;
 	}
 
+	@NotNull
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexesForBatch(DeclarationImpotOrdinaire di) {
 		// il faut trouver le bon type de document
 		final TypeDocument typeDocument;
@@ -259,10 +263,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 	}
 
+	@NotNull
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(Set<ModeleFeuilleDocument> listFeuille) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		final List<ModeleFeuilleDocument> listeTriee = new ArrayList<>(listFeuille);
-		Collections.sort(listeTriee, Comparator.comparing(ModeleFeuilleDocument::getIndex));
+		listeTriee.sort(Comparator.comparing(ModeleFeuilleDocument::getIndex));
 		for (ModeleFeuilleDocument feuille : listeTriee) {
 			final ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique(feuille, 1);
 			annexes.add(feuilleEditique);
@@ -270,6 +275,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return annexes;
 	}
 
+	@NotNull
 	private static List<ModeleFeuilleDocumentEditique> buildAnnexesImmeuble(Set<ModeleFeuilleDocument> listFeuille, int nombreAnnexes) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
@@ -319,11 +325,17 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocumentMessage = impressionDIPPHelper.getTypeDocumentEditique(typeDocument);
 		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
 
+		final InfoArchivageDocument.InfoArchivage infoArchivage = documents[0].getInfoArchivage();
+		final boolean withArchivage = infoArchivage != null;
+		if (withArchivage) {
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, true);
+		}
+
 		final String description = String.format("Document '%s %d' du contribuable %s",
 		                                         typeDocument.getDescription(),
 		                                         declaration.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, false, description);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, withArchivage, description);
 	}
 
 	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
@@ -364,8 +376,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			documents[1] = document;
 		}
 		editiqueDI.setDocumentArray(documents);
+
+		final InfoArchivageDocument.InfoArchivage infoArchivage = documents[0].getInfoArchivage();
+		final boolean withArchivage = infoArchivage != null;
+		if (withArchivage) {
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, false);
+		}
+
 		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, withArchivage);
 	}
 
 	@Override
@@ -393,22 +412,42 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionDIPPHelper.getTypeDocumentEditique(typeDoc);
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeuble), true);
 		Assert.notNull(document);
+
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
+		final boolean withArchivage = infoArchivage != null;
+		if (withArchivage) {
+			evenementDocumentSortantService.signaleAnnexeImmeuble(infosDocument, infoArchivage, false);
+		}
+
 		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[]{document};
 		editiqueDI.setDocumentArray(documents);
 		final int annee = infosDocument.getAnnee();
 		final Integer idDoc = infosDocument.getIdDocument();
 		final Tiers tiers = infosDocument.getTiers();
 		final String nomDocument = impressionDIPPHelper.construitIdDocument(annee, idDoc, tiers);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, withArchivage);
 		return nombreAnnexesImmeuble;
 	}
 
 	@Override
 	public void imprimeLRForBatch(DeclarationImpotSource lr) throws EditiqueException {
 		final FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, null);
+
+		final InfoArchivageDocument.InfoArchivage infoArchivage = Optional.of(document)
+				.map(FichierImpressionDocument::getFichierImpression)
+				.map(TypFichierImpression::getDocumentArray)
+				.filter(docs -> docs.length > 0)
+				.map(docs -> docs[0])
+				.map(TypFichierImpression.Document::getInfoArchivage)
+				.orElse(null);
+		final boolean withArchivage = infoArchivage != null;
+		if (withArchivage) {
+			evenementDocumentSortantService.signaleListeRecapitulative(lr, infoArchivage, false);
+		}
+
 		final TypeDocumentEditique typeDocument = impressionLRHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, withArchivage);
 	}
 
 	@Override
@@ -707,11 +746,24 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException {
-		String[] traitePar = getInfoOperateur();
-		FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
+		final String[] traitePar = getInfoOperateur();
+		final FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
+
+		final InfoArchivageDocument.InfoArchivage infoArchivage = Optional.of(document)
+				.map(FichierImpressionDocument::getFichierImpression)
+				.map(TypFichierImpression::getDocumentArray)
+				.filter(docs -> docs.length > 0)
+				.map(docs -> docs[0])
+				.map(TypFichierImpression.Document::getInfoArchivage)
+				.orElse(null);
+		final boolean withArchivage = infoArchivage != null;
+		if (withArchivage) {
+			evenementDocumentSortantService.signaleListeRecapitulative(lr, infoArchivage, true);
+		}
+
 		final TypeDocumentEditique typeDocumentMessage = impressionLRHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
-		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, document, false);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, document, withArchivage);
 	}
 
 	@Override

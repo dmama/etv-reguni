@@ -24,6 +24,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
@@ -226,6 +227,18 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       infoArchivage);
+	}
+
+	@Override
+	public void signaleAnnexeImmeuble(InformationsDocumentAdapter infoDocument, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local) {
+		final TypeDocument typeDocument = infoDocument.getTypeDocument();
+		signaleDocumentSortant("ANNIMM",
+		                       TYPE_DI_PP_SORTANTE.get(typeDocument),
+		                       infoDocument.getTiers(),
+		                       local,
+		                       infoDocument.getAnnee(),
+		                       infoDocument.getIdDocument(),
 		                       infoArchivage);
 	}
 

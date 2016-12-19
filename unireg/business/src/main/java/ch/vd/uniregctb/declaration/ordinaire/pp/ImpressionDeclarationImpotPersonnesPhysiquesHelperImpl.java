@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import noNamespace.Annexe320Type;
 import noNamespace.CleRgpDocument.CleRgp;
@@ -18,6 +20,7 @@ import noNamespace.DIRetourCivil;
 import noNamespace.DIRetourCivilEnfant;
 import noNamespace.DIVDTAXDocument;
 import noNamespace.DIVDTAXDocument.DIVDTAX;
+import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
 import noNamespace.InfoEnteteDocumentDocument1;
@@ -258,35 +261,49 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	 * Alimente un objet Document pour l'impression des DI
 	 */
 	@Override
-	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression, List<ModeleFeuilleDocumentEditique> annexes,
-	                                            boolean isFromBatchImmeuble) throws EditiqueException {
+	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression,
+	                                            List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
 
-
-		InfoDocument infoDocument = remplitInfoDocument(informationsDocument);
-		InfoEnteteDocument infoEnteteDocument;
+		final InfoDocument infoDocument = remplitInfoDocument(informationsDocument);
+		final InfoEnteteDocument infoEnteteDocument;
 		try {
 			infoEnteteDocument = remplitEnteteDocument(informationsDocument);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
-		Document document = typeFichierImpression.addNewDocument();
+
+		final Document document = typeFichierImpression.addNewDocument();
 		final TypeDocument typeDocument = informationsDocument.getTypeDocument();
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-			DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatchImmeuble);
+
+			// on veut ici que les annexes soient toujours représentées par une collection, même vide
+			// (afin que la méthode remplitSpecifiqueDI puisse éventuellement générer à la volée une valeur par défaut et l'insérer dans la liste,
+			// et que finalement cette liste puisse-t-être utilisée pour détecter la présence d'une fourre principale, qui conditionne l'archivage
+			// et l'envoi au DPerm)
+			annexes = Optional.ofNullable(annexes).orElseGet(ArrayList::new);
+
+			final DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatchImmeuble);
 			document.setDI(di);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
-			DIDP didp = remplitSpecifiqueDIDP(informationsDocument, annexes);
+			final DIDP didp = remplitSpecifiqueDIDP(informationsDocument, annexes);
 			document.setDIDP(didp);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE) {
-			DIHC dihc = remplitSpecifiqueDIHC(informationsDocument, annexes);
+			final DIHC dihc = remplitSpecifiqueDIHC(informationsDocument, annexes);
 			document.setDIHC(dihc);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-			DIVDTAX divdtax = remplitSpecifiqueDIVDTAX(informationsDocument, annexes);
+			final DIVDTAX divdtax = remplitSpecifiqueDIVDTAX(informationsDocument, annexes);
 			document.setDIVDTAX(divdtax);
+		}
+
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(typeDocument);
+		if (typeDocumentEditique.getCodeDocumentArchivage() != null && (hasFourrePrincipale(annexes) || isFromBatchImmeuble)) {
+			final String cleArchivage = construitCleArchivageDocument(informationsDocument);
+			final InfoArchivageDocument.InfoArchivage infoArchivage = legacyEditiqueHelper.buildInfoArchivage(typeDocumentEditique, informationsDocument.getTiers().getNumero(), cleArchivage, RegDate.get());
+			document.setInfoArchivage(infoArchivage);
 		}
 
 		document.setInfoEnteteDocument(infoEnteteDocument);
@@ -294,12 +311,16 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		return document;
 	}
 
+	private static boolean hasFourrePrincipale(List<ModeleFeuilleDocumentEditique> annexes) {
+		return annexes.stream()
+				.filter(modele -> modele.getNombreFeuilles() > 0)
+				.anyMatch(ModeleFeuilleDocumentEditique::isPrincipal);
+	}
 
 	/**
 	 * Alimente un objet DI
 	 */
 	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
-
 
 		final String avecCourrierExplicatif = (isFromBatchImmeuble ? "O" : "N");
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
@@ -319,6 +340,17 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		int correctionAnnexes210 = 0;
 		if (nbAnnexes210 == 0 && nbAnnexes220 == 0 && nbAnnexes230 == 0 && nbAnnexes240 == 0 && nbAnnexes310 == 0 && nbAnnexes320 == 0 && nbAnnexes330 == 0) {
 			correctionAnnexes210 = NBRE_COPIE_ANNEXE_DEFAUT;
+
+			// on s'assure de bien modifier la collection d'annexes pour que ce nombre soit bien pris en compte partout
+			final Optional<ModeleFeuilleDocumentEditique> feuille = annexes.stream()
+					.filter(modele -> modele.getNoCADEV() == ModeleFeuille.ANNEXE_210.getNoCADEV())
+					.findFirst();
+			if (feuille.isPresent()) {
+				feuille.get().setNombreFeuilles(correctionAnnexes210);
+			}
+			else {
+				annexes.add(new ModeleFeuilleDocumentEditique(ModeleFeuille.ANNEXE_210, correctionAnnexes210));
+			}
 		}
 
 		final DI.Annexes a = di.addNewAnnexes();
@@ -926,6 +958,23 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())
 		);
 
+	}
+
+	/**
+	 * Construction d'une clé d'archivage
+	 * @param infoDocument les informations du document imprimé
+	 * @return la clé d'archivage à utiliser
+	 */
+	private static String construitCleArchivageDocument(InformationsDocumentAdapter infoDocument) {
+		return String.format(
+				"%04d%02d %s %s",
+				infoDocument.annee,
+				infoDocument.idDocument,
+				StringUtils.rightPad("DI PP", 19, ' '),
+				new SimpleDateFormat("MMddHHmmssSSS").format(
+						DateHelper.getCurrentDate()
+				)
+		);
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {

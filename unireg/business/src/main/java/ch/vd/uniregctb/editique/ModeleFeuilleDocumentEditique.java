@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique;
 
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.type.ModeleFeuille;
 
 public class ModeleFeuilleDocumentEditique {
 
@@ -15,6 +16,14 @@ public class ModeleFeuilleDocumentEditique {
 
 	public ModeleFeuilleDocumentEditique(ModeleFeuilleDocument modele, int nombreFeuilles) {
 		this.intituleFeuille = modele.getIntituleFeuille();
+		this.noCADEV = modele.getNoCADEV();
+		this.noFormulaireACI = modele.getNoFormulaireACI();
+		this.principal = modele.isPrincipal();
+		this.nombreFeuilles = nombreFeuilles;
+	}
+
+	public ModeleFeuilleDocumentEditique(ModeleFeuille modele, int nombreFeuilles) {
+		this.intituleFeuille = modele.getDescription();
 		this.noCADEV = modele.getNoCADEV();
 		this.noFormulaireACI = modele.getNoFormulaireACI();
 		this.principal = modele.isPrincipal();

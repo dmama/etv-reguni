@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import noNamespace.BVRSTDDocument.BVRSTD;
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.FichierImpressionDocument;
+import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
 import noNamespace.InfoEnteteDocumentDocument1;
@@ -29,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -113,11 +116,10 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper
 		}
 
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
-		TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();
-		Document[] documents = new Document[1];
+		final TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();
 
-		InfoDocument infoDocument = remplitInfoDocument(lr);
-		InfoEnteteDocument infoEnteteDocument;
+		final InfoDocument infoDocument = remplitInfoDocument(lr);
+		final InfoEnteteDocument infoEnteteDocument;
 		try {
 			infoEnteteDocument = remplitEnteteDocument(lr, traitePar);
 		}
@@ -125,16 +127,20 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper
 			throw new EditiqueException(e);
 		}
 
-		LRLCBVR lrlcbvr = remplitSpecifiqueListeRecap(lr);
-		Document document = impressionIS.addNewDocument();
-
+		final LRLCBVR lrlcbvr = remplitSpecifiqueListeRecap(lr);
+		final Document document = impressionIS.addNewDocument();
 		document.setInfoEnteteDocument(infoEnteteDocument);
 		document.setInfoDocument(infoDocument);
 		document.setLRLCBVR(lrlcbvr);
-		documents[0] = document;
 
-		impressionIS.setDocumentArray(documents);
+		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
+		if (typeDocumentEditique.getCodeDocumentArchivage() != null) {
+			final String cleArchivage = construitCleArchivageDocument(lr);
+			final InfoArchivageDocument.InfoArchivage infoArchivage = legacyEditiqueHelper.buildInfoArchivage(typeDocumentEditique, dpi.getNumero(), cleArchivage, RegDate.get());
+			document.setInfoArchivage(infoArchivage);
+		}
 
+		impressionIS.setDocumentArray(new Document[] { document });
 		return mainDocument;
 	}
 
@@ -407,12 +413,21 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper
 	 */
 	@Override
 	public String construitIdDocument(DeclarationImpotSource lr) {
-		return String.format(
-				"%s %s",
-				StringUtils.leftPad(lr.getTiers().getNumero().toString(), 9, '0'),
-				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(
-						lr.getLogCreationDate()
-				)
-		);
+		return String.format("%s %s",
+		                     StringUtils.leftPad(lr.getTiers().getNumero().toString(), 9, '0'),
+		                     new SimpleDateFormat("yyyyMMddHHmmssSSS").format(lr.getLogCreationDate()));
+	}
+
+	/**
+	 * Construit une clé d'archivage pour la LR
+	 * @param lr liste récapitulative IS dont pour laquelle on veut générer une clé d'archivage
+	 * @return la clé d'archivage générée
+	 */
+	private static String construitCleArchivageDocument(DeclarationImpotSource lr) {
+		return String.format("%04d%02d %s %s",
+		                     lr.getPeriode().getAnnee(),
+		                     lr.getDateFin().month(),
+		                     StringUtils.rightPad("LR IS", 19, ' '),
+		                     new SimpleDateFormat("MMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 	}
 }
