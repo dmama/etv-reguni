@@ -4,6 +4,7 @@ import java.util.List;
 
 import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.declaration.Declaration;
@@ -48,8 +49,8 @@ public interface ImpressionDeclarationImpotPersonnesPhysiquesHelper {
 
 
 
-	Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression, List<ModeleFeuilleDocumentEditique> annexes,
-	                                     boolean isFromBatchImmeuble) throws EditiqueException;
+	Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression,
+	                                     @NotNull List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException;
 	/**
 	 * Calcul le prefixe
 	 *

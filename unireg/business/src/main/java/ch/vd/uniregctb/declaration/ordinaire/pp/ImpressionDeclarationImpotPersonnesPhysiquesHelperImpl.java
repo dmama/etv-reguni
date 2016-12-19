@@ -274,16 +274,15 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 			throw new EditiqueException(e);
 		}
 
+		// on veut ici que les annexes soient toujours représentées par une collection, même vide
+		// (afin que la méthode remplitSpecifiqueDI puisse éventuellement générer à la volée une valeur par défaut et l'insérer dans la liste,
+		// et que finalement cette liste puisse-t-être utilisée pour détecter la présence d'une fourre principale, qui conditionne l'archivage
+		// et l'envoi au DPerm)
+		annexes = Optional.ofNullable(annexes).orElseGet(ArrayList::new);
+
 		final Document document = typeFichierImpression.addNewDocument();
 		final TypeDocument typeDocument = informationsDocument.getTypeDocument();
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-
-			// on veut ici que les annexes soient toujours représentées par une collection, même vide
-			// (afin que la méthode remplitSpecifiqueDI puisse éventuellement générer à la volée une valeur par défaut et l'insérer dans la liste,
-			// et que finalement cette liste puisse-t-être utilisée pour détecter la présence d'une fourre principale, qui conditionne l'archivage
-			// et l'envoi au DPerm)
-			annexes = Optional.ofNullable(annexes).orElseGet(ArrayList::new);
-
 			final DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatchImmeuble);
 			document.setDI(di);
 		}

@@ -973,7 +973,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 				final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final TypFichierImpression.Document document =
 						impressionDIPPHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
-						                                               null, false);
+						                                                 null, false);
 				assertNotNull(document);
 				assertEquals(ZoneAffranchissementEditique.INCONNU.getCode(), document.getInfoDocument().getAffranchissement().getZone());
 			}

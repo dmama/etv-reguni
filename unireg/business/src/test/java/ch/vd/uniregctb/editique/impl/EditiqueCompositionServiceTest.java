@@ -31,6 +31,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.mock.MockEditiqueService;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl;
+import ch.vd.uniregctb.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelper;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelper;
@@ -63,6 +64,7 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 		service.setImpressionBordereauMouvementDossierHelper(getBean(ImpressionBordereauMouvementDossierHelper.class, "impressionBordereauMouvementDossierHelper"));
 		service.setServiceSecurite(getBean(ServiceSecuriteService.class, "serviceSecuriteService"));
 		service.setImpressionEfactureHelper(getBean(ImpressionDocumentEfactureHelperImpl.class, "impressionEfactureHelper"));
+		service.setEvenementDocumentSortantService(getBean(EvenementDocumentSortantService.class, "evenementDocumentSortantService"));
 	}
 
 	/**

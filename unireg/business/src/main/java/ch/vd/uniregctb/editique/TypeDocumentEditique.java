@@ -8,10 +8,10 @@ public enum TypeDocumentEditique {
 	// Autour des déclarations d'impôt des personnes physiques
 	//
 
-	DI_ORDINAIRE_COMPLETE("RGPI0801", null, "impressionDI"),
-	DI_ORDINAIRE_VAUDTAX("RGPI0802", null, "impressionDI"),
-	DI_HC_IMMEUBLE("RGPI0803", null, "impressionDI"),
-	DI_DEPENSE("RGPI0804", null, "impressionDI"),
+	DI_ORDINAIRE_COMPLETE("RGPI0801", "380", "impressionDI"),
+	DI_ORDINAIRE_VAUDTAX("RGPI0802", "381", "impressionDI"),
+	DI_HC_IMMEUBLE("RGPI0803", "382", "impressionDI"),
+	DI_DEPENSE("RGPI0804", "383", "impressionDI"),
 	SOMMATION_DI("RGPS0801", "385", "sommationDI"),
 	CHEMISE_TO("RGPT0801", null, "chemiseTO"),
 	CONFIRMATION_DELAI("RGPC0801", "387", "confirmationDelai"),
@@ -55,7 +55,7 @@ public enum TypeDocumentEditique {
 	// Autour des listes récapitulatives IS
 	//
 
-	LR("ISPL0801", null, "impressionLR"),
+	LR("ISPL0801", "350", "impressionLR"),
 	SOMMATION_LR("ISPS0801", "355", "sommationLR"),
 
 	//
