@@ -879,23 +879,26 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// dans tous les cas le contact
 		traiterContact(entreprise, adresseCourrier.getContact(), telProfessionnel);
 
-		final Pair<String, Adresse> raisonSocialeEtAdresse = adresseCourrier.split(infraService, tiersService, dateReference);
-		if (raisonSocialeEtAdresse == null) {
-			tacheService.genereTacheControleDossier(entreprise, Motifs.ADRESSE_NON_TRAITEE);
-			addRemarque(entreprise, String.format("Les données d'adresse/raison sociale trouvées dans la DI %d/%d n'ont pas pu être interprétées de manière concluante (%s).",
-			                                      pf, noSequence,
-			                                      adresseCourrier.toDisplayString(infraService, adresseService, dateReference)));
-			return;
+		// [SIFISC-22080] si on n'a que le destinataire, c'est là que l'on s'arrête...
+		if (!adresseCourrier.isDestinataireSeul()) {
+			final Pair<String, Adresse> raisonSocialeEtAdresse = adresseCourrier.split(infraService, tiersService, dateReference);
+			if (raisonSocialeEtAdresse == null) {
+				tacheService.genereTacheControleDossier(entreprise, Motifs.ADRESSE_NON_TRAITEE);
+				addRemarque(entreprise, String.format("Les données d'adresse/raison sociale trouvées dans la DI %d/%d n'ont pas pu être interprétées de manière concluante (%s).",
+				                                      pf, noSequence,
+				                                      adresseCourrier.toDisplayString(infraService, adresseService, dateReference)));
+				return;
+			}
+
+			// il faut comparer avec l'adresse courrier "à la date de quittancement de la dernière DI retournée"... quelle est cette date ?
+			final RegDate dateReferenceExistant = getDateQuittancementDerniereDeclarationRetournee(entreprise);
+
+			// d'abord l'adresse courrier
+			traiteAdresseCourrier(entreprise, pf, noSequence, dateReference, dateReferenceExistant, adresseCourrier, raisonSocialeEtAdresse.getRight());
+
+			// puis la raison sociale
+			traiteRaisonSociale(entreprise, pf, noSequence, dateReferenceExistant, raisonSocialeEtAdresse.getLeft());
 		}
-
-		// il faut comparer avec l'adresse courrier "à la date de quittancement de la dernière DI retournée"... quelle est cette date ?
-		final RegDate dateReferenceExistant = getDateQuittancementDerniereDeclarationRetournee(entreprise);
-
-		// d'abord l'adresse courrier
-		traiteAdresseCourrier(entreprise, pf, noSequence, dateReference, dateReferenceExistant, adresseCourrier, raisonSocialeEtAdresse.getRight());
-
-		// puis la raison sociale
-		traiteRaisonSociale(entreprise, pf, noSequence, dateReferenceExistant, raisonSocialeEtAdresse.getLeft());
 	}
 
 	/**
@@ -1016,7 +1019,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		// ne rien toucher avant d'être sûr...
 		final AdresseSupplementaire nouvelleAdresse;
 		try {
-			nouvelleAdresse = buildSurchargeCourrier(dateReferenceExistant, adresseTranscrite);
+			nouvelleAdresse = buildSurchargeCourrier(dateReferenceExistant, entreprise, adresseTranscrite);
 		}
 		catch (AdresseException e) {
 			// on n'a pas réussi à générer une adresse utilisable...
@@ -1085,7 +1088,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * @throws AdresseException en cas de souci à la transcription
 	 */
 	@NotNull
-	private AdresseSupplementaire buildSurchargeCourrier(RegDate dateDebut, @NotNull Adresse source) throws AdresseException {
+	private AdresseSupplementaire buildSurchargeCourrier(RegDate dateDebut, Entreprise entreprise, @NotNull Adresse source) throws AdresseException {
 		// il y a deux type d'adresses supplémentaires : suisse ou étrangère...
 		final AdresseSupplementaire result;
 		final Integer ofsPays = source.getNoOfsPays();
@@ -1113,6 +1116,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		result.setNumeroAppartement(source.getNumeroAppartement());
 		result.setNumeroMaison(source.getNumero());
 		result.setRue(source.getRue());
+		result.setTiers(entreprise);
 
 		// validation anticipée pour ne pas être surpris en fin de course...
 		final ValidationResults vr = validationService.validate(result);

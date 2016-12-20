@@ -2483,6 +2483,78 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testContactAvecAdresseStructureeNonModifiee() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebutEntreprise = date(2015, 2, 1);
+		final RegDate dateQuittance = date(annee + 1, 5, 13);
+
+		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma petite entreprise SARL");
+				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebutEntreprise, date(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 5));
+				addEtatDeclarationRetournee(di, dateQuittance);
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// réception des données de retour
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, "Ma petite entreprise SARL", null, null, "Monsieur moi-même");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.DestinataireSeulement(destinataire);
+		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
+		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// vérification du résultat obtenu
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idEntreprise);
+				Assert.assertNotNull(entreprise);
+				Assert.assertEquals("Monsieur moi-même", entreprise.getPersonneContact());
+
+				// pas d'adresse surchargée présente
+				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+				Assert.assertNotNull(surcharges);
+				Assert.assertEquals(0, surcharges.size());
+
+				// aucune tâche de contrôle de dossier ni remarque
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setNumeroCTB(idEntreprise);
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				tacheCriteria.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(0, taches.size());
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+			}
+		});
+	}
+
+	@Test
 	public void testAdresseCourrierLibreAvecSurchargeIdentiquePresente() throws Exception {
 
 		final int annee = 2015;
