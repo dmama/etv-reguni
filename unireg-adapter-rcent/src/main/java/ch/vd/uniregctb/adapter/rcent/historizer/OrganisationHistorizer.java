@@ -33,7 +33,6 @@ import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueIndexedDataC
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.SingleValueIndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.AdresseEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.BURRegistrationDataEqualator;
-import ch.vd.uniregctb.adapter.rcent.historizer.equalator.BusinessPublicationEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.CapitalEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.NamedOrganisationIdEqualator;
@@ -45,7 +44,6 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.BURRegistrationDataExt
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationAdditionalNameExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferFromExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferToExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBusinessPublicationExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationIdentifiersExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationLegalFormExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationMunicipalityExtractor;
@@ -114,10 +112,6 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, Integer, BigInteger> locationMunicipalityCollector = new SingleValueIndexedDataCollector<>(new LocationMunicipalityExtractor(),
 		                                                                                                                                    Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, BusinessPublication, BigInteger> locationBusinessPublicationCollector = new MultiValueIndexedDataCollector<>(new LocationBusinessPublicationExtractor(),
-		                                                                                                                                                      new BusinessPublicationEqualator(),
-		                                                                                                                                                      Function.identity()
-		);
 		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationUidReplacedByCollector = new SingleValueIndexedDataCollector<>(new LocationUidReplacedByExtractor(),
 		                                                                                                                                        Equalator.DEFAULT
 		);
@@ -183,7 +177,6 @@ public class OrganisationHistorizer {
 		                                                    locationKindsOfLocationCollector,
 		                                                    locationLegalFormsCollector,
 		                                                    locationMunicipalityCollector,
-		                                                    locationBusinessPublicationCollector,
 		                                                    locationUidInReplacementOfCollector,
 		                                                    locationUidReplacedByCollector,
 		                                                    locationBurTransferToCollector,
@@ -205,15 +198,19 @@ public class OrganisationHistorizer {
 
 		));
 
-		// Données non historisées
-		//Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = new HashMap<>();
+		// Données non historisées (Chronologie des métadonnées d'événement FOSC)
 		final Map.Entry<RegDate, Organisation> lastSnapshot = organisationMap.entrySet().stream()
 				.max(Comparator.comparing(Map.Entry::getKey))
 				.orElse(null);
+		// Evénement FOSC RC
 		final Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = lastSnapshot.getValue().getOrganisationLocation().stream()
 				.filter(l -> l.getCommercialRegisterData() != null)
 				.filter(l -> l.getCommercialRegisterData().getDiaryEntry() != null && ! l.getCommercialRegisterData().getDiaryEntry().isEmpty())
 				.collect(Collectors.toMap(OrganisationLocation::getCantonalId, l -> l.getCommercialRegisterData().getDiaryEntry()));
+		// Evénement FOSC non RC
+		final Map<BigInteger, List<BusinessPublication>> businessPublications = lastSnapshot.getValue().getOrganisationLocation().stream()
+				.filter(l -> l.getBusinessPublication() != null && ! l.getBusinessPublication().isEmpty())
+				.collect(Collectors.toMap(OrganisationLocation::getCantonalId, OrganisationLocation::getBusinessPublication));
 
 		// Composition des
 		// Etablissement
@@ -224,7 +221,7 @@ public class OrganisationHistorizer {
 				locationAdditionalNameCollector.getCollectedData(),
 				locationKindsOfLocationCollector.getCollectedData(),
 				locationLegalFormsCollector.getCollectedData(),
-				locationBusinessPublicationCollector.getCollectedData(),
+				businessPublications,
 				locationMunicipalityCollector.getCollectedData(),
 				Collections.emptyMap(),
 				locationBurTransferToCollector.getCollectedData(),

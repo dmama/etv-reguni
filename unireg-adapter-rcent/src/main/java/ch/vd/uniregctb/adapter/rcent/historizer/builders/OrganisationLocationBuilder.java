@@ -34,7 +34,7 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<TypeOfLocation>>> kindOfLocations;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<LegalForm>>> legalForm;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Integer>>> seats;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication;
+	private final Map<BigInteger, List<BusinessPublication>> businessPublication;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Function>>> function;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferTo;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferFrom;
@@ -61,7 +61,7 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> additionalName,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<TypeOfLocation>>> kindOfLocations,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<LegalForm>>> legalForm,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication,
+	                                   Map<BigInteger, List<BusinessPublication>> businessPublication,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Integer>>> seats,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Function>>> function,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferTo,
@@ -132,7 +132,7 @@ public class OrganisationLocationBuilder {
 				                                   seats.get(e.getKey()),
 				                                   businessPublication.get(e.getKey()) == null
 						                                   ? null
-						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(businessPublication.get(e.getKey()), fosc -> fosc.getSwissGazetteOfCommercePublication().getPublicationDate(), java.util.function.Function.identity()),
+						                                   : businessPublication.get(e.getKey()),
 				                                   function.get(e.getKey()) == null
 						                                   ? null
 						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(function.get(e.getKey()), f -> f.getParty().getPerson().getName(), OrganisationFunction::new),

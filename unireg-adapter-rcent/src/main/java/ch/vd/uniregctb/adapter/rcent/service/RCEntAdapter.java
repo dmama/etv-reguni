@@ -1,22 +1,25 @@
 package ch.vd.uniregctb.adapter.rcent.service;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0022.v3.BusinessPublication;
+import ch.vd.evd0022.v3.CommercialRegisterData;
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
 import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.OrganisationSnapshot;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
@@ -102,7 +105,7 @@ public class RCEntAdapter {
 	 * les pseudo historiques des organisations touchées par l'événement, indexés par no cantonal d'organisation
 	 *
  	 * @param eventId Identifiant de l'événement RCEnt
-	 * @return
+	 * @return une map d'événements, un par organisation touchée par l'événement orginal
 	 */
 	public Map<Long, OrganisationEvent> getOrganisationEvent(long eventId) {
 		Map<Long, OrganisationEvent> resultMap = new HashMap<>();
@@ -169,68 +172,138 @@ public class RCEntAdapter {
 
 			// Constitution de l'objet représentant l'événement pour cet organisation
 			final OrganisationEvent eventResult = new OrganisationEvent(eventId, targetLocationId, pseudoHistory);
-			// Ajout des métadonnées. NOTE: actuellement, l'établissement cible est unique pour un evt. RCEnt. Donc il touche potentiellement un
-			// qui fait partie d'une autre organisation!
 
-			// Da'bord trouver l'établissement concerné et s'assurer qu'on a bien zero ou une et une seule entrée au RC.
-			for (NoticeOrganisation org : after.getOrganisation()) {
-				for (ch.vd.evd0022.v3.OrganisationLocation location : org.getOrganisation().getOrganisationLocation()) {
-					if (location.getCantonalId().longValue() == targetLocationId && location.getCommercialRegisterData() != null) {
-						final List<CommercialRegisterDiaryEntry> allDiaryEntries = location.getCommercialRegisterData().getDiaryEntry();
-						if (allDiaryEntries != null && !allDiaryEntries.isEmpty()) {
-							CommercialRegisterDiaryEntry logEntryRC = null;
-							if (allDiaryEntries.size() > 1) {
-								final List<CommercialRegisterDiaryEntry> diaryEntriesForTheDay = new ArrayList<>();
-								for (CommercialRegisterDiaryEntry entry : allDiaryEntries) {
-									if (entry.getSwissGazetteOfCommercePublication().getPublicationDate() == evtDate) {
-										diaryEntriesForTheDay.add(entry);
-									}
-								}
-								// SIFISC-19916 On supporte qu'il y a plusieurs entrées pour le même jour, mais si c'est le cas, c'est comme s'il n'y en avait pas.
-								if (diaryEntriesForTheDay.size() == 1) {
-									logEntryRC = diaryEntriesForTheDay.iterator().next();
-								}
-							} else {
-								// On a bien trouvé une entrée au journal du RC, on peut prendre les valeurs
-								logEntryRC = allDiaryEntries.iterator().next();
-							}
-							if (logEntryRC != null) {
-								eventResult.setCommercialRegisterEntryNumber(logEntryRC.getDiaryEntryNumber().longValue());
-								eventResult.setCommercialRegisterEntryDate(logEntryRC.getDiaryEntryDate());
-								eventResult.setDocumentNumberFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getDocumentNumber());
-								eventResult.setPublicationDateFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getPublicationDate());
-								break;
-							}
-						}
-						else if (location.getBusinessPublication() != null && !location.getBusinessPublication().isEmpty()) {
-							BusinessPublication businessPublication = null;
-							if (location.getBusinessPublication().size() > 1) {
-								final List<BusinessPublication> businessPublicationsForTheDay = new ArrayList<>();
-								for (BusinessPublication publication : location.getBusinessPublication()) {
-									if (publication.getSwissGazetteOfCommercePublication().getPublicationDate() == evtDate) {
-										businessPublicationsForTheDay.add(publication);
-									}
-								}
-								// SIFISC-19916 On supporte qu'il y a plusieurs entrées pour le même jour, mais si c'est le cas, c'est comme s'il n'y en avait pas.
-								if (businessPublicationsForTheDay.size() == 1) {
-									businessPublication = businessPublicationsForTheDay.iterator().next();
-								}
-							} else {
-								businessPublication = location.getBusinessPublication().iterator().next();
-							}
-							if (businessPublication != null) {
-								eventResult.setDocumentNumberFOSC(businessPublication.getSwissGazetteOfCommercePublication().getDocumentNumber());
-								eventResult.setPublicationDateFOSC(businessPublication.getSwissGazetteOfCommercePublication().getPublicationDate());
-								break;
-							}
-						}
+			// Ajout des métadonnées. NOTE: actuellement, l'établissement cible est unique pour un evt. RCEnt. Comme on sépare un événement RCEnt en
+			// autant qu'il en faut pour chaque organisation, l'établissement cible peut ne pas être représenté dans l'événement en cours d'analyse, car
+			// faisant partie d'une autre organisation.
+
+			// Trouver les entrées de journal de l'événement pour le jour, avant et après. Cela implique de trouver le site cible de l'événement.
+			final ch.vd.evd0022.v3.OrganisationLocation locationBefore = getTargetLocation(before, targetLocationId);
+			final List<CommercialRegisterDiaryEntry> diaryEntriesBefore = getEntriesForTheDay(locationBefore, evtDate);
+
+			final ch.vd.evd0022.v3.OrganisationLocation locationAfter = getTargetLocation(after, targetLocationId);
+			if (locationAfter == null) {
+				throw new RCEntAdapterException(String.format("The OrganisationLocation no %s targeted by this RCEnt event cannot be found in the event's data!", targetLocationId));
+			}
+			final List<CommercialRegisterDiaryEntry> diaryEntriesAfter = getEntriesForTheDay(locationAfter, evtDate);
+
+			final CommercialRegisterDiaryEntry logEntryRC;
+
+			if (!diaryEntriesAfter.isEmpty()) {
+				// Exactement une entrée pour le jour, c'est si simple
+				if (diaryEntriesAfter.size() == 1) {
+					logEntryRC = diaryEntriesAfter.get(0);
+				}
+				// Exactement une entrée de moins avant qu'après pour le jour, on peut encore déterminer laquelle est à l'origine de l'événement.
+				else if (diaryEntriesBefore.size() == diaryEntriesAfter.size() - 1) {
+
+					// La nouvelle entrée est celle qui est présente dans la nouvelle liste mais pas l'ancienne
+					final List<CommercialRegisterDiaryEntry> entryForEvt = diaryEntriesAfter.stream()
+							.filter(e ->
+									        diaryEntriesBefore.stream()
+											        .filter(eb -> eb.getDiaryEntryNumber().equals(e.getDiaryEntryNumber()))
+											        .collect(Collectors.toList()).size() == 0
+							)
+							.collect(Collectors.toList());
+					if (entryForEvt.size() != 1) {
+						// On a un problème, les deux listes ne se correspondent pas de tel sorte que l'une est identique à l'autre + 1 entrée.
+						// Tant pis. Si RCEnt n'est pas capabe de fournir quelque chose de cohérent, qu'y peut-on?
+						logEntryRC = null;
+					}
+					else {
+						// Chic, on a trouvé l'entrée nouvelle
+						logEntryRC = entryForEvt.get(0);
 					}
 				}
+				else {
+					logEntryRC = null;
+				}
+				// Pas d'entrée de journal, avant/après sont identiques (si ce n'est pas le cas, c'est qu'il y a un problème, mais ce n'est pas notre problème).
+
+				if (logEntryRC != null) {
+					eventResult.setCommercialRegisterEntryNumber(logEntryRC.getDiaryEntryNumber().longValue());
+					eventResult.setCommercialRegisterEntryDate(logEntryRC.getDiaryEntryDate());
+					eventResult.setDocumentNumberFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getDocumentNumber());
+					eventResult.setPublicationDateFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getPublicationDate());
+				}
 			}
+			else {
+				// On n'a pas d'entrée de journal RC, mais on a une publication FOSC peut-être? On recherche selon le même principe.
+				BusinessPublication businessPublication;
+
+				final List<BusinessPublication> publicationsBefore = getPublicationsForTheDay(locationBefore, evtDate);
+				final List<BusinessPublication> publicationsAfter = getPublicationsForTheDay(locationAfter, evtDate);
+
+
+				if (publicationsAfter.size() == 1) {
+					businessPublication = publicationsAfter.get(0);
+				}
+				else if (publicationsBefore.size() == publicationsAfter.size() - 1) {
+					final List<BusinessPublication> publicationForEvt = publicationsAfter.stream()
+							.filter(e ->
+									        publicationsBefore.stream()
+											        .filter(eb -> eb.getSwissGazetteOfCommercePublication().getDocumentNumber().equals(e.getSwissGazetteOfCommercePublication().getDocumentNumber()))
+											        .collect(Collectors.toList()).size() == 0
+							)
+							.collect(Collectors.toList());
+					if (publicationForEvt.size() != 1) {
+						businessPublication = null;
+					}
+					else {
+						businessPublication = publicationForEvt.get(0);
+					}
+				} else {
+					businessPublication = null;
+				}
+				if (businessPublication != null) {
+					eventResult.setDocumentNumberFOSC(businessPublication.getSwissGazetteOfCommercePublication().getDocumentNumber());
+					eventResult.setPublicationDateFOSC(businessPublication.getSwissGazetteOfCommercePublication().getPublicationDate());
+				}
+			}
+
 			resultMap.put(cantonalId, eventResult);
 		}
 
 		return resultMap;
+	}
+
+	private List<CommercialRegisterDiaryEntry> getEntriesForTheDay(@Nullable OrganisationLocation organisationLocationAfter, RegDate evtDate) {
+		if (organisationLocationAfter == null) {
+			return Collections.emptyList();
+		}
+		final CommercialRegisterData commercialRegisterData = organisationLocationAfter.getCommercialRegisterData();
+		if (commercialRegisterData == null) {
+			return Collections.emptyList();
+		}
+		return commercialRegisterData
+				.getDiaryEntry().stream()
+				.filter(e -> RegDateHelper.equals(e.getSwissGazetteOfCommercePublication().getPublicationDate(), evtDate))
+				.collect(Collectors.toList());
+	}
+
+	private ch.vd.evd0022.v3.OrganisationLocation getTargetLocation(@Nullable  OrganisationsOfNotice notice, Long targetLocationId) {
+		if (notice == null) {
+			return null;
+		}
+
+		return notice.getOrganisation().stream()
+				.map(NoticeOrganisation::getOrganisation)
+				.flatMap(organisation -> organisation.getOrganisationLocation().stream())
+				.filter(l -> l.getCantonalId().longValue() == targetLocationId)
+				.findFirst().orElseGet(() -> null);
+	}
+
+	private List<BusinessPublication> getPublicationsForTheDay(@Nullable OrganisationLocation location, RegDate evtDate) {
+		if (location == null) {
+			return Collections.emptyList();
+		}
+		final List<BusinessPublication> businessPublication = location.getBusinessPublication();
+		if (businessPublication == null) {
+			return Collections.emptyList();
+		}
+		return businessPublication.stream()
+				.filter(publication -> publication.getSwissGazetteOfCommercePublication().getPublicationDate() == evtDate)
+				.collect(Collectors.toList());
 	}
 
 	/**

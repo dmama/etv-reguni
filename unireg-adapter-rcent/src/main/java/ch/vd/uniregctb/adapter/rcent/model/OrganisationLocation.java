@@ -30,7 +30,7 @@ public class OrganisationLocation {
 	public final RCEntUIDData uid;
 	public final RCEntBURData bur;
 
-	public final Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication;
+	public final List<BusinessPublication> businessPublication;
 
 	private final Map<String,List<DateRangeHelper.Ranged<String>>> identifiers;
 	private final List<DateRangeHelper.Ranged<String>> additionalName;
@@ -46,7 +46,7 @@ public class OrganisationLocation {
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid, RCEntBURData bur,
 	                            Map<String, List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> additionalName,
 	                            List<DateRangeHelper.Ranged<TypeOfLocation>> typeOfLocation, List<DateRangeHelper.Ranged<LegalForm>> legalForm,
-	                            List<DateRangeHelper.Ranged<Integer>> seat, Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication,
+	                            List<DateRangeHelper.Ranged<Integer>> seat, List<BusinessPublication> businessPublication,
 	                            Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function, List<DateRangeHelper.Ranged<Long>> burTransferTo,
 	                            List<DateRangeHelper.Ranged<Long>> burTransferFrom, List<DateRangeHelper.Ranged<Long>> uidReplacedBy,
 	                            List<DateRangeHelper.Ranged<Long>> UidInReplacementOf) {
@@ -130,7 +130,7 @@ public class OrganisationLocation {
 	/**
 	 * @return Les historiques de publication FOSC, indexés par date de publication.
 	 */
-	public Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> getBusinessPublication() {
+	public List<BusinessPublication> getBusinessPublication() {
 		return businessPublication;
 	}
 

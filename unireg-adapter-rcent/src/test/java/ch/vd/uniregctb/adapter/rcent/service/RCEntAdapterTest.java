@@ -728,4 +728,55 @@ public class RCEntAdapterTest {
 		assertNull(organisationEvent.getPublicationDateFOSC());
 	}
 
+	// SIFISC-19922 - Déterminer l'entrée de journal en cours, par différentiel des listes avant/après.
+	@Test
+	public void testGetOrgaOfNoticePublicationForEventWithMultiplesPublicationsFoscUnIncrement() throws JAXBException {
+		final long eventId = 505765L;
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-multi-one-increment-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-multi-one-increment-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
+
+		final Long noOrganisation = 101580748L;
+
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
+
+		final OrganisationEvent organisationEvent = historyMap.get(noOrganisation);
+
+		assertThat(organisationEvent.getPseudoHistory().getCantonalId(), equalTo(noOrganisation));
+
+		assertThat(organisationEvent.getCommercialRegisterEntryNumber(), equalTo(4444L));
+		assertThat(organisationEvent.getCommercialRegisterEntryDate(), equalTo(RegDate.get(2016, 8, 11)));
+		assertThat(organisationEvent.getDocumentNumberFOSC(), equalTo("3325344444"));
+		assertThat(organisationEvent.getPublicationDateFOSC(), equalTo(RegDate.get(2016, 8, 14)));
+	}
+
+	// SIFISC-19922 - Déterminer la publication FOSC en cours, par différentiel des listes avant/après.
+	@Test
+	public void testGetOrgaOfNoticePublicationForEventWithMultiplesPublicationsBusinessUnIncrement() throws JAXBException {
+		final long eventId = 505765L;
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-bp-multi-one-increment-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-505765-bp-multi-one-increment-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
+
+		final Long noOrganisation = 101580748L;
+
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
+
+		final OrganisationEvent organisationEvent = historyMap.get(noOrganisation);
+
+		assertThat(organisationEvent.getPseudoHistory().getCantonalId(), equalTo(noOrganisation));
+
+		assertThat(organisationEvent.getCommercialRegisterEntryNumber(), nullValue());
+		assertThat(organisationEvent.getCommercialRegisterEntryDate(), nullValue());
+		assertThat(organisationEvent.getDocumentNumberFOSC(), equalTo("3325344444"));
+		assertThat(organisationEvent.getPublicationDateFOSC(), equalTo(RegDate.get(2016, 8, 14)));
+	}
 }

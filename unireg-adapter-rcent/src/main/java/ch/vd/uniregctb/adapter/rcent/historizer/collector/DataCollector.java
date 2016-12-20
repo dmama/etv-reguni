@@ -50,7 +50,7 @@ public abstract class DataCollector<S> {
 		throw new IllegalArgumentException("A date identical to or greater than the starting date of the previous period has been encountered.\n" +
 				                                   "  This can mean a few things, such as:\n" +
 				                                   "  - There more than one snapshot per day. Only one is allowed in the incoming snapshot stream.\n" +
-				                                   "  - The wrong DataCollector is being used. Multiple values are obviously collected per snapshot, where a single one is expected.\n" +
+				                                   "  - Multiple values are collected per snapshot for a single field/entity, where only one is expected. Check the DataCollector in use.\n" +
 				                                   "  - Snapshots are processed out of orders. Cannot happen. [Historizer bug]\n");
 	}
 

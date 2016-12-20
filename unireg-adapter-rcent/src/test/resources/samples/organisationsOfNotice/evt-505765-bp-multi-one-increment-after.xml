@@ -1,0 +1,325 @@
+<eVD-0023:organisationsOfNotice xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/6" xmlns:eCH-0097="http://www.ech.ch/xmlns/eCH-0097/2" xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/3"
+                                xmlns:eVD-0023="http://evd.vd.ch/xmlns/eVD-0023/3">
+	<eVD-0022:notice>
+		<eVD-0022:noticeId>505765</eVD-0022:noticeId>
+		<eVD-0022:typeOfNotice>2</eVD-0022:typeOfNotice>
+		<eVD-0022:noticeDate>2016-08-14</eVD-0022:noticeDate>
+	</eVD-0022:notice>
+	<eVD-0022:organisation>
+		<eVD-0022:organisationLocationIdentification>
+			<eVD-0022:cantonalId>101790630</eVD-0022:cantonalId>
+			<eVD-0022:identifier>
+				<eCH-0097:organisationIdCategory>CH.IDE</eCH-0097:organisationIdCategory>
+				<eCH-0097:organisationId>CHE178831105</eCH-0097:organisationId>
+			</eVD-0022:identifier>
+			<eVD-0022:identifier>
+				<eCH-0097:organisationIdCategory>CH.OFRC</eCH-0097:organisationIdCategory>
+				<eCH-0097:organisationId>1266496</eCH-0097:organisationId>
+			</eVD-0022:identifier>
+			<eVD-0022:identifier>
+				<eCH-0097:organisationIdCategory>CH.RC</eCH-0097:organisationIdCategory>
+				<eCH-0097:organisationId>CH-550.1.167.784-7</eCH-0097:organisationId>
+			</eVD-0022:identifier>
+			<eVD-0022:identifier>
+				<eCH-0097:organisationIdCategory>VD.RC</eCH-0097:organisationIdCategory>
+				<eCH-0097:organisationId>2016/09342</eCH-0097:organisationId>
+			</eVD-0022:identifier>
+			<eVD-0022:name>Swiss Educational Programs SA, succursale de Montreux</eVD-0022:name>
+		</eVD-0022:organisationLocationIdentification>
+		<eVD-0022:organisation>
+			<eVD-0022:cantonalId>101580748</eVD-0022:cantonalId>
+			<eVD-0022:organisationLocation xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/6">
+				<eVD-0022:cantonalId>101790630</eVD-0022:cantonalId>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.IDE</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>CHE178831105</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.OFRC</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>1266496</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.RC</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>CH-550.1.167.784-7</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>VD.RC</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>2016/09342</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:name>Swiss Educational Programs SA, succursale de Montreux</eVD-0022:name>
+				<eVD-0022:typeOfLocation>2</eVD-0022:typeOfLocation>
+				<eVD-0022:legalForm>0151</eVD-0022:legalForm>
+				<eVD-0022:municipality>
+					<eCH-0007:municipalityId>5886</eCH-0007:municipalityId>
+					<eCH-0007:municipalityName>Montreux</eCH-0007:municipalityName>
+					<eCH-0007:cantonAbbreviation>VD</eCH-0007:cantonAbbreviation>
+					<eCH-0007:historyMunicipalityId>14550</eCH-0007:historyMunicipalityId>
+				</eVD-0022:municipality>
+				<eVD-0022:commercialRegisterData>
+					<eVD-0022:registrationStatus>2</eVD-0022:registrationStatus>
+					<eVD-0022:registrationDate>2016-06-08</eVD-0022:registrationDate>
+					<eVD-0022:VdRegistrationDate>2016-06-08</eVD-0022:VdRegistrationDate>
+					<eVD-0022:webLink>http://www.rc2.vd.ch/registres/hrcintapp-pub/externalCompanyReport.action?companyOfrcId13=CH55011677847&amp;ofrcLanguage=1</eVD-0022:webLink>
+				</eVD-0022:commercialRegisterData>
+				<eVD-0022:businessPublication>
+					<eVD-0022:typeOfBusinessPublication>10</eVD-0022:typeOfBusinessPublication>
+					<eVD-0022:eventDate>2016-08-11</eVD-0022:eventDate>
+					<eVD-0022:swissGazetteOfCommercePublication>
+						<eVD-0022:documentNumber>3325344444</eVD-0022:documentNumber>
+						<eVD-0022:publicationDate>2016-08-14</eVD-0022:publicationDate>
+						<eVD-0022:publicationText>Truc bidule publication pour test 2 publications le même jour.
+						</eVD-0022:publicationText>
+					</eVD-0022:swissGazetteOfCommercePublication>
+					<eVD-0022:typeOfFusion>5</eVD-0022:typeOfFusion>
+				</eVD-0022:businessPublication>
+				<eVD-0022:businessPublication>
+					<eVD-0022:typeOfBusinessPublication>10</eVD-0022:typeOfBusinessPublication>
+					<eVD-0022:eventDate>2016-08-11</eVD-0022:eventDate>
+					<eVD-0022:swissGazetteOfCommercePublication>
+						<eVD-0022:documentNumber>333333</eVD-0022:documentNumber>
+						<eVD-0022:publicationDate>2016-08-14</eVD-0022:publicationDate>
+						<eVD-0022:publicationText>Truc bidule publication pour test 2 publications le même jour.
+						</eVD-0022:publicationText>
+					</eVD-0022:swissGazetteOfCommercePublication>
+					<eVD-0022:typeOfFusion>4</eVD-0022:typeOfFusion>
+				</eVD-0022:businessPublication>
+				<eVD-0022:businessPublication>
+					<eVD-0022:typeOfBusinessPublication>10</eVD-0022:typeOfBusinessPublication>
+					<eVD-0022:eventDate>2016-06-08</eVD-0022:eventDate>
+					<eVD-0022:swissGazetteOfCommercePublication>
+						<eVD-0022:documentNumber>2886205</eVD-0022:documentNumber>
+						<eVD-0022:publicationDate>2016-06-13</eVD-0022:publicationDate>
+						<eVD-0022:publicationText>, à , rue Igor-Stravinsky 4, 1820 Montreux, . Succursale de Swiss Educational Programs SA (), à Lausanne, société anonyme. Signature individuelle
+							est conférée à Thammavong Hélène, de France, à Montreux, directrice de la succursale.Swiss Educational Programs SA, succursale de
+							MontreuxMontreuxCHE-178.831.105CHE-106.040.576
+						</eVD-0022:publicationText>
+					</eVD-0022:swissGazetteOfCommercePublication>
+					<eVD-0022:typeOfFusion>3</eVD-0022:typeOfFusion>
+				</eVD-0022:businessPublication>
+				<eVD-0022:businessPublication>
+					<eVD-0022:typeOfBusinessPublication>10</eVD-0022:typeOfBusinessPublication>
+					<eVD-0022:eventDate>2016-06-07</eVD-0022:eventDate>
+					<eVD-0022:swissGazetteOfCommercePublication>
+						<eVD-0022:documentNumber>2222222</eVD-0022:documentNumber>
+						<eVD-0022:publicationDate>2016-06-13</eVD-0022:publicationDate>
+						<eVD-0022:publicationText>Truc bidule publication pour test 2eme publication le même jour.
+						</eVD-0022:publicationText>
+					</eVD-0022:swissGazetteOfCommercePublication>
+					<eVD-0022:typeOfFusion>2</eVD-0022:typeOfFusion>
+				</eVD-0022:businessPublication>
+				<eVD-0022:businessPublication>
+					<eVD-0022:typeOfBusinessPublication>10</eVD-0022:typeOfBusinessPublication>
+					<eVD-0022:eventDate>2016-05-01</eVD-0022:eventDate>
+					<eVD-0022:swissGazetteOfCommercePublication>
+						<eVD-0022:documentNumber>1111111</eVD-0022:documentNumber>
+						<eVD-0022:publicationDate>2016-05-05</eVD-0022:publicationDate>
+						<eVD-0022:publicationText>Truc bidule publication pour test
+						</eVD-0022:publicationText>
+					</eVD-0022:swissGazetteOfCommercePublication>
+					<eVD-0022:typeOfFusion>1</eVD-0022:typeOfFusion>
+				</eVD-0022:businessPublication>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<name>Thammavong</name>
+							<firstName>Hélène</firstName>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<placeOfResidenceName>à Montreux</placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>directrice de la succursale</eVD-0022:functionText>
+					<eVD-0022:authorisation>1</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<eVD-0022:addresses>
+					<eVD-0022:legalAddress>
+						<eVD-0022:addressInformation>
+							<eCH-0010:street>Rue Igor-Stravinsky</eCH-0010:street>
+							<eCH-0010:houseNumber>4</eCH-0010:houseNumber>
+							<eCH-0010:town>Montreux</eCH-0010:town>
+							<eCH-0010:swissZipCode>1820</eCH-0010:swissZipCode>
+							<eCH-0010:country>
+								<eCH-0010:countryIdISO2>CH</eCH-0010:countryIdISO2>
+								<eCH-0010:countryNameShort>CH</eCH-0010:countryNameShort>
+							</eCH-0010:country>
+						</eVD-0022:addressInformation>
+					</eVD-0022:legalAddress>
+				</eVD-0022:addresses>
+			</eVD-0022:organisationLocation>
+			<eVD-0022:organisationLocation xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/6">
+				<eVD-0022:cantonalId>101045575</eVD-0022:cantonalId>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.IDE</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>CHE106040576</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.IDE.TVA</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>CHE106040576</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.OFRC</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>52757</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.RC</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>CH55001024617</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>CH.TVA</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>602895</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<eCH-0097:organisationIdCategory>VD.RC</eCH-0097:organisationIdCategory>
+					<eCH-0097:organisationId>H988/03410</eCH-0097:organisationId>
+				</eVD-0022:identifier>
+				<eVD-0022:name>Swiss Educational Programs SA</eVD-0022:name>
+				<eVD-0022:typeOfLocation>1</eVD-0022:typeOfLocation>
+				<eVD-0022:legalForm>0106</eVD-0022:legalForm>
+				<eVD-0022:nogaCode>855901</eVD-0022:nogaCode>
+				<eVD-0022:municipality>
+					<eCH-0007:municipalityId>5586</eCH-0007:municipalityId>
+					<eCH-0007:municipalityName>Lausanne</eCH-0007:municipalityName>
+					<eCH-0007:cantonAbbreviation>VD</eCH-0007:cantonAbbreviation>
+					<eCH-0007:historyMunicipalityId>14649</eCH-0007:historyMunicipalityId>
+				</eVD-0022:municipality>
+				<eVD-0022:commercialRegisterData>
+					<eVD-0022:registrationStatus>2</eVD-0022:registrationStatus>
+					<eVD-0022:registrationDate>1988-10-27</eVD-0022:registrationDate>
+					<eVD-0022:VdRegistrationDate>1988-10-27</eVD-0022:VdRegistrationDate>
+					<eVD-0022:webLink>http://www.rc2.vd.ch/registres/hrcintapp-pub/externalCompanyReport.action?companyOfrcId13=CH55001024617&amp;ofrcLanguage=1</eVD-0022:webLink>
+					<eVD-0022:purpose>La société a pour but la gestion d'un centre pour l'enseignement des langues et l'informatique de tout genre, la location et la vente de matériel didactique,
+						l'acquisition de participations et/ou la création de sociétés ayant un but analogue (pour but complet cf. statuts).
+					</eVD-0022:purpose>
+					<eVD-0022:topic>
+						<eVD-0022:typeOfTopic>127</eVD-0022:typeOfTopic>
+						<eVD-0022:topicText>Autre L'identification sous le numéro CH-550-0102461-7 est remplacée par le numéro d'identification des entreprises (IDE/UID) CHE-106.040.576.
+						</eVD-0022:topicText>
+					</eVD-0022:topic>
+					<eVD-0022:topic>
+						<eVD-0022:typeOfTopic>190</eVD-0022:typeOfTopic>
+						<eVD-0022:topicText>Feuille officielle suisse du commerce</eVD-0022:topicText>
+					</eVD-0022:topic>
+					<eVD-0022:topic>
+						<eVD-0022:typeOfTopic>127</eVD-0022:typeOfTopic>
+						<eVD-0022:topicText>Dissolution La société est d'office déclarée dissoute, en application des art. 708 CO et 86 ORC.</eVD-0022:topicText>
+					</eVD-0022:topic>
+					<eVD-0022:topic>
+						<eVD-0022:typeOfTopic>127</eVD-0022:typeOfTopic>
+						<eVD-0022:topicText>Révocation dissolution La situation légale étant rétablie, la dissolution est révoquée, conformément à l'art. 86, al. 3 ORC.</eVD-0022:topicText>
+					</eVD-0022:topic>
+					<eVD-0022:topic>
+						<eVD-0022:typeOfTopic>182</eVD-0022:typeOfTopic>
+						<eVD-0022:topicText>Fusion: reprise des actifs et passifs de LANGUAGE SUCCESS FRIBOURG S.A., à Fribourg (CHE-105.516.725), selon contrat de fusion du 10 juin 2015 et bilan au
+							31 décembre 2014, présentant des actifs de CHF 946'722.32, des passifs envers les tiers de CHF 852'672.79, soit un actif net de CHF 94'049.53. La totalité du
+							capital-actions des deux sociétés étant détenue par le même actionnaire, la fusion ne donne pas lieu à une augmentation du capital, ni à une attribution d'actions.
+						</eVD-0022:topicText>
+					</eVD-0022:topic>
+					<eVD-0022:topic>
+						<eVD-0022:typeOfTopic>182</eVD-0022:typeOfTopic>
+						<eVD-0022:topicText>Fusion: reprise des actifs et passifs de EP Educational Programs Genève SA, à Genève (CHE-106.513.758), selon contrat de fusion du 27 mai 2014 et bilan au
+							31 décembre 2013, présentant des actifs de CHF 1'375'288.24, des passifs envers les tiers de CHF 1'246'304.92, soit un actif net de CHF 128'983.32. La totalité du
+							capital-actions des deux sociétés étant détenue par le même actionnaire, la fusion ne donne pas lieu à une augmentation du capital, ni à une attribution d'actions.
+						</eVD-0022:topicText>
+					</eVD-0022:topic>
+					<eVD-0022:capital>
+						<eVD-0022:typeOfCapital>2</eVD-0022:typeOfCapital>
+						<eVD-0022:currency>CHF</eVD-0022:currency>
+						<eVD-0022:capitalAmount>100000.0</eVD-0022:capitalAmount>
+						<eVD-0022:cashedInAmount>100000.0</eVD-0022:cashedInAmount>
+						<eVD-0022:division>200 actions au porteur de CHF 500.</eVD-0022:division>
+					</eVD-0022:capital>
+					<eVD-0022:byLawsDate>2014-08-28</eVD-0022:byLawsDate>
+				</eVD-0022:commercialRegisterData>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<name>Wooding</name>
+							<firstName>Richard</firstName>
+							<origin>
+								<placeOfOriginName>d'Australie</placeOfOriginName>
+							</origin>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<placeOfResidenceName>à Romont (FR)</placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>directeur</eVD-0022:functionText>
+					<eVD-0022:authorisation>1</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<name>Galtos</name>
+							<firstName>Nicholas</firstName>
+							<origin>
+								<placeOfOriginName>de Grèce</placeOfOriginName>
+							</origin>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<placeOfResidenceName>à Montreux</placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>adm.</eVD-0022:functionText>
+					<eVD-0022:authorisation>1</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<name>Multifiduciaire Léman SA</name>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence xmlns="http://evd.vd.ch/xmlns/eVD-0022/3">
+							<placeOfResidenceName>à Montreux</placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>organe de révision</eVD-0022:functionText>
+					<eVD-0022:authorisation>0</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<eVD-0022:addresses>
+					<eVD-0022:legalAddress>
+						<eVD-0022:addressInformation>
+							<eCH-0010:street>Rue du Simplon</eCH-0010:street>
+							<eCH-0010:houseNumber>34</eCH-0010:houseNumber>
+							<eCH-0010:town>Lausanne</eCH-0010:town>
+							<eCH-0010:swissZipCode>1006</eCH-0010:swissZipCode>
+							<eCH-0010:swissZipCodeAddOn>0</eCH-0010:swissZipCodeAddOn>
+							<eCH-0010:swissZipCodeId>153</eCH-0010:swissZipCodeId>
+							<eCH-0010:country>
+								<eCH-0010:countryIdISO2>CH</eCH-0010:countryIdISO2>
+								<eCH-0010:countryNameShort>CH</eCH-0010:countryNameShort>
+							</eCH-0010:country>
+						</eVD-0022:addressInformation>
+						<eVD-0022:federalBuildingId>2119660</eVD-0022:federalBuildingId>
+						<eVD-0022:xCoordinate>537696</eVD-0022:xCoordinate>
+						<eVD-0022:yCoordinate>152037</eVD-0022:yCoordinate>
+					</eVD-0022:legalAddress>
+					<eVD-0022:effectiveAddress>
+						<eVD-0022:addressInformation>
+							<eCH-0010:street>Rue du Simplon</eCH-0010:street>
+							<eCH-0010:houseNumber>34</eCH-0010:houseNumber>
+							<eCH-0010:town>Lausanne</eCH-0010:town>
+							<eCH-0010:swissZipCode>1006</eCH-0010:swissZipCode>
+							<eCH-0010:swissZipCodeAddOn>0</eCH-0010:swissZipCodeAddOn>
+							<eCH-0010:swissZipCodeId>153</eCH-0010:swissZipCodeId>
+							<eCH-0010:country>
+								<eCH-0010:countryIdISO2>CH</eCH-0010:countryIdISO2>
+								<eCH-0010:countryNameShort>CH</eCH-0010:countryNameShort>
+							</eCH-0010:country>
+						</eVD-0022:addressInformation>
+						<eVD-0022:federalBuildingId>2119660</eVD-0022:federalBuildingId>
+						<eVD-0022:xCoordinate>537696</eVD-0022:xCoordinate>
+						<eVD-0022:yCoordinate>152037</eVD-0022:yCoordinate>
+					</eVD-0022:effectiveAddress>
+				</eVD-0022:addresses>
+				<eVD-0022:uidRegisterData>
+					<eVD-0022:registrationStatus>3</eVD-0022:registrationStatus>
+					<eVD-0022:kindOfUidEntity>1</eVD-0022:kindOfUidEntity>
+					<eVD-0022:publicStatus>1</eVD-0022:publicStatus>
+				</eVD-0022:uidRegisterData>
+				<eVD-0022:vatRegisterData>
+					<eVD-0022:registrationStatus>2</eVD-0022:registrationStatus>
+					<eVD-0022:registrationDate>2004-01-30</eVD-0022:registrationDate>
+				</eVD-0022:vatRegisterData>
+			</eVD-0022:organisationLocation>
+		</eVD-0022:organisation>
+	</eVD-0022:organisation>
+</eVD-0023:organisationsOfNotice>
