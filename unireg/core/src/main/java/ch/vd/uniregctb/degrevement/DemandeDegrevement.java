@@ -7,7 +7,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -103,11 +102,5 @@ public class DemandeDegrevement extends AutreDocumentFiscalAvecSuivi {
 
 	public void setDelaiRappel(RegDate delaiRappel) {
 		this.delaiRappel = delaiRappel;
-	}
-
-	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		// FIXME (msi) : vérifier que l'on peut bien ne pas valider l'entreprise sur laquelle on ajoute un dégrèvement
-		return null;
 	}
 }

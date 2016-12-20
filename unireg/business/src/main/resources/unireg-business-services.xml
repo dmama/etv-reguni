@@ -377,6 +377,9 @@
 		<constructor-arg ref="hibernateTemplate"/>
 		<constructor-arg ref="serviceInfrastructureService"/>
 		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="globalTiersIndexer"/>
+		<constructor-arg ref="validationInterceptor"/>
+		<constructor-arg ref="tacheSynchronizerInterceptor"/>
 		<constructor-arg ref="transactionManager"/>
 	</bean>
 

@@ -11,6 +11,7 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
@@ -18,6 +19,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 import static org.junit.Assert.assertEquals;
@@ -36,7 +38,9 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final ImmeubleRFDAO immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
-		importer = new MigrationDDImporter(tiersDAO, hibernateTemplate, infraService, immeubleRFDAO, transactionManager);
+		final GlobalTiersIndexer tiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
+		final TacheSynchronizerInterceptor tacheSynchronizerInterceptor = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
+		importer = new MigrationDDImporter(tiersDAO, hibernateTemplate, infraService, immeubleRFDAO, tiersIndexer, validationInterceptor, tacheSynchronizerInterceptor, transactionManager);
 	}
 
 	@Test

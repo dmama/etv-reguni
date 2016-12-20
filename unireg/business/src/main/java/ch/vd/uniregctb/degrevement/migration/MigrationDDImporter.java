@@ -37,12 +37,15 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.degrevement.DemandeDegrevement;
 import ch.vd.uniregctb.degrevement.MotifEnvoiDD;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 public class MigrationDDImporter {
 
@@ -57,17 +60,26 @@ public class MigrationDDImporter {
 	private final HibernateTemplate hibernateTemplate;
 	private final ServiceInfrastructureService infraService;
 	private final ImmeubleRFDAO immeubleRFDAO;
+	private final GlobalTiersIndexer tiersIndexer;
+	private final ValidationInterceptor validationInterceptor;
+	private final TacheSynchronizerInterceptor tacheSynchronizerInterceptor;
 	private final PlatformTransactionManager transactionManager;
 
 	public MigrationDDImporter(TiersDAO tiersDAO,
 	                           HibernateTemplate hibernateTemplate,
 	                           ServiceInfrastructureService infraService,
 	                           ImmeubleRFDAO immeubleRFDAO,
+	                           GlobalTiersIndexer tiersIndexer,
+	                           ValidationInterceptor validationInterceptor,
+	                           TacheSynchronizerInterceptor tacheSynchronizerInterceptor,
 	                           PlatformTransactionManager transactionManager) {
 		this.tiersDAO = tiersDAO;
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.immeubleRFDAO = immeubleRFDAO;
+		this.tiersIndexer = tiersIndexer;
+		this.validationInterceptor = validationInterceptor;
+		this.tacheSynchronizerInterceptor = tacheSynchronizerInterceptor;
 		this.transactionManager = transactionManager;
 	}
 
@@ -181,6 +193,12 @@ public class MigrationDDImporter {
 			@Override
 			public void beforeTransaction() {
 				subRapport.set(new MigrationDDImporterResults(nbThreads));
+				// on désactive la validation automatique des données sauvées car la validation
+				// des entreprises est très coûteuse et - surtout - les demandes de dégrèvements
+				// migrées de SIMPA-PM n'influence pas sur l'état valide ou non des entreprises.
+				validationInterceptor.setEnabled(false);
+				tiersIndexer.setOnTheFlyIndexation(false);      // les demandes de dégrèvements ne sont pas indexées
+				tacheSynchronizerInterceptor.setEnabled(false); // aucune tâche ne dépend des demandes de dégrèvement
 			}
 
 			@Override
@@ -198,6 +216,9 @@ public class MigrationDDImporter {
 
 			@Override
 			public void afterTransactionCommit() {
+				validationInterceptor.setEnabled(true);
+				tiersIndexer.setOnTheFlyIndexation(true);
+				tacheSynchronizerInterceptor.setEnabled(true);
 				synchronized (rapport) {
 					rapport.addAll(subRapport.get());
 				}
@@ -207,6 +228,9 @@ public class MigrationDDImporter {
 
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				validationInterceptor.setEnabled(true);
+				tiersIndexer.setOnTheFlyIndexation(true);
+				tacheSynchronizerInterceptor.setEnabled(true);
 				if (!willRetry) {
 					synchronized (rapport) {
 						rapport.addDemandeEnErreur(last.get(), e.getMessage());
