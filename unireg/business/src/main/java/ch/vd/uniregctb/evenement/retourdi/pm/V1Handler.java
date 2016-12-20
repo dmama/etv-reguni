@@ -144,7 +144,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			if (destinataire == null) {
 				return null;
 			}
-			return new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, null, null, null, null, null, null, null, null);
+			return new AdresseRaisonSociale.DestinataireSeulement(destinataire);
 		}
 
 		// Suisse ou pas Suisse ?

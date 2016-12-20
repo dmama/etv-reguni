@@ -77,6 +77,13 @@ public abstract class AdresseRaisonSociale {
 	public abstract DestinataireAdresse getDestinataire();
 
 	/**
+	 * @return <code>true</code> si cette adresse ne contient que des informations sur le destinataire, par construction (parce que les autres ont été explicitement et volontairement ignorées)
+	 */
+	public boolean isDestinataireSeul() {
+		return false;
+	}
+
+	/**
 	 * Cas d'une saisie libre : 5 lignes complètement libres + un NPA et une localité postale
 	 */
 	public static final class Brutte extends AdresseRaisonSociale {
@@ -675,6 +682,47 @@ public abstract class AdresseRaisonSociale {
 			}
 		}
 	}
+
+	/**
+	 * Adresse avec destinataire seulement (pour les données de contact)
+	 */
+	public static final class DestinataireSeulement extends Structuree {
+
+		public DestinataireSeulement(DestinataireAdresse destinataire) {
+			super(destinataire, null, null, null, null, null, null);
+		}
+
+		@Override
+		public boolean isDestinataireSeul() {
+			return true;
+		}
+
+		@Override
+		public Integer getNumeroOrdrePostal() {
+			return null;
+		}
+
+		@Override
+		public String getNumeroPostal() {
+			return null;
+		}
+
+		@Override
+		public String getNumeroPostalComplementaire() {
+			return null;
+		}
+
+		@Override
+		public Integer getNoOfsPays() {
+			return null;
+		}
+
+		@Override
+		public Integer getNumeroRue() {
+			return null;
+		}
+	}
+
 
 	/**
 	 * Adresse structurée en Suisse

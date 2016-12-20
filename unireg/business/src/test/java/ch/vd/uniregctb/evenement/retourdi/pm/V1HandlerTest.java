@@ -65,6 +65,8 @@ public class V1HandlerTest extends BusinessTest {
 
 		final InformationsEntreprise infoEntreprise = handler.extractInformationsEntreprise(info);
 		Assert.assertNotNull(infoEntreprise);
+		Assert.assertNotNull(infoEntreprise.getAdresseCourrier());
+		Assert.assertEquals(AdresseRaisonSociale.DestinataireSeulement.class, infoEntreprise.getAdresseCourrier().getClass());
 		Assert.assertEquals("Mme Albertine Martin", infoEntreprise.getAdresseCourrier().getContact());
 		Assert.assertNotNull(infoEntreprise.getAdresseCourrier().getDestinataire());
 		Assert.assertEquals("Mme Albertine Martin", infoEntreprise.getAdresseCourrier().getDestinataire().getContact());
