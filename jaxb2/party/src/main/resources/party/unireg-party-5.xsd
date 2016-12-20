@@ -952,7 +952,7 @@
 			</xs:enumeration>
 			<xs:enumeration value="IMMOVABLE_PROPERTIES">
 				<xs:annotation>
-					<xs:documentation>Les immeubles du contribuable.</xs:documentation>
+					<xs:documentation>Les immeubles du contribuable (pour les données &lt; 2017, remplacé par LAND_RIGHTS pour les données &gt;= 2017).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="CHILDREN">
@@ -978,6 +978,11 @@
 			<xs:enumeration value="LABELS">
 				<xs:annotation>
 					<xs:documentation>Les étiquettes associées au tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAND_RIGHTS">
+				<xs:annotation>
+					<xs:documentation>Les droits du tiers sur des propriétés foncières (droits de propriété, d'usufruit ou d'habitation).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

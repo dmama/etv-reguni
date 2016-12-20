@@ -30,5 +30,6 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/othercommunity/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-othercommunity-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/establishment/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-establishment-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/establishment/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-establishment-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/landregistry/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-landregistry-1.xsd" />
 
 </xs:schema>
