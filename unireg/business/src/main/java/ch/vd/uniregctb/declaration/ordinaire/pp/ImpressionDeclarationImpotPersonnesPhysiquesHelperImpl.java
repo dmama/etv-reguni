@@ -251,7 +251,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	 */
 	@Override
 	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinairePP declaration, TypFichierImpression typeFichierImpression,
-	                                            @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
+	                                            @Nullable TypeDocument typeDocumentOverride, @Nullable List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		// SIFISC-8417 / SIFISC-9875 : l'appelant peut imposer un type de document spécifique qui n'est pas nécessairement sauvegardé en base
 		final InformationsDocumentAdapter infoAdapter = new InformationsDocumentAdapter(declaration, typeDocumentOverride);
@@ -263,7 +263,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	 */
 	@Override
 	public Document remplitEditiqueSpecifiqueDI(InformationsDocumentAdapter informationsDocument, TypFichierImpression typeFichierImpression,
-	                                            List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
+	                                            @Nullable List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
 
 		final InfoDocument infoDocument = remplitInfoDocument(informationsDocument);
 		final InfoEnteteDocument infoEnteteDocument;
