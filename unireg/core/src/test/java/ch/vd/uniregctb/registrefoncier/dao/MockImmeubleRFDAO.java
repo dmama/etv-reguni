@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
+import org.hibernate.NonUniqueResultException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,6 +55,12 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 				.filter(i -> i.getDateRadiation() == null)
 				.map(ImmeubleRF::getIdRF)
 				.collect(Collectors.toSet());
+	}
+
+	@Nullable
+	@Override
+	public ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws NonUniqueResultException {
+		throw new NotImplementedException();
 	}
 
 	@Override

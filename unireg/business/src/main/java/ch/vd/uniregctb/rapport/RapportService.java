@@ -26,6 +26,7 @@ import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
+import ch.vd.uniregctb.degrevement.migration.MigrationDDImporterResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
 import ch.vd.uniregctb.document.AnnoncesIDERapport;
 import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
@@ -69,6 +70,7 @@ import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
@@ -695,7 +697,6 @@ public interface RapportService {
 	 */
 	IdentifierContribuableFromListeRapport generateRapport(IdentifierContribuableFromListeResults results, StatusManager status);
 
-
 	/**
 	 * Génère le rapport d'exécution du batch qui traite les mutations des immeubles du RF
 	 *
@@ -704,4 +705,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	MutationsRFProcessorRapport generateRapport(MutationsRFProcessorResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui migre les demandes de dégrèvement de SIMPA-PM.
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	MigrationDDCsvLoaderRapport generateRapport(MigrationDDImporterResults results, StatusManager status);
 }

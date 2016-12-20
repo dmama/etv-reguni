@@ -341,6 +341,13 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
+	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.degrevement.migration.MigrationDDJob">
+		<constructor-arg value="454"/>
+		<constructor-arg value="Importer le fichier CSV des demandes de dégrèvement de SIMPA-PM."/>
+		<property name="loader" ref="migrationDDCsvLoader"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 	<bean id="determineQuestionnairesSNCJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.snc.DeterminerQuestionnairesSNCJob">
 		<constructor-arg value="460"/>
 		<constructor-arg value="Déterminer les questionnaires SNC à envoyer et créer des tâches en instance"/>

@@ -432,6 +432,10 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				throw new ServiceInfrastructureException("Plusieurs communes (" + communesFiltrees.size() + ") avec le nom [" + nomOfficiel + "] ont été trouvées.");
 			}
 
+			if (communesFiltrees.isEmpty()) {
+				return null;
+			}
+
 			return CommuneImpl.get(communesFiltrees.get(0));
 		}
 		catch (FidorClientException e) {
