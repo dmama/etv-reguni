@@ -2,7 +2,6 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 
 /**
@@ -11,12 +10,9 @@ import ch.vd.registre.base.date.RegDate;
  *
  * @author Raphaël Marmier, 2016-02-19, <raphael.marmier@vd.ch>
  */
-public class PublicationBusiness implements Serializable, DateRange {
+public class PublicationBusiness implements Serializable {
 
 	private static final long serialVersionUID = 8011593550198411983L;
-
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
 
 	private final RegDate dateEvenement;
 	private final TypeDePublicationBusiness typeDePublication;
@@ -28,11 +24,9 @@ public class PublicationBusiness implements Serializable, DateRange {
 	private final TypeDeTransfere typeDeTransfere;
 	private final TypeDeLiquidation typeDeLiquidation;
 
-	public PublicationBusiness(RegDate dateDebut, RegDate dateFin, RegDate dateEvenement, TypeDePublicationBusiness typeDePublication, String foscNumeroDeDocument, RegDate foscDateDePublication,
+	public PublicationBusiness(RegDate dateEvenement, TypeDePublicationBusiness typeDePublication, String foscNumeroDeDocument, RegDate foscDateDePublication,
 	                           String foscTexteDeLaPublication, TypeDeFusion typeDeFusion, TypeDeReductionDuCapital typeDeReductionDuCapital, TypeDeTransfere typeDeTransfere,
 	                           TypeDeLiquidation typeDeLiquidation) {
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
 		this.dateEvenement = dateEvenement;
 		this.typeDePublication = typeDePublication;
 		this.foscNumeroDeDocument = foscNumeroDeDocument;
@@ -42,16 +36,6 @@ public class PublicationBusiness implements Serializable, DateRange {
 		this.typeDeReductionDuCapital = typeDeReductionDuCapital;
 		this.typeDeTransfere = typeDeTransfere;
 		this.typeDeLiquidation = typeDeLiquidation;
-	}
-
-	@Override
-	public RegDate getDateDebut() {
-		return dateDebut;
-	}
-
-	@Override
-	public RegDate getDateFin() {
-		return dateFin;
 	}
 
 	public RegDate getDateEvenement() {

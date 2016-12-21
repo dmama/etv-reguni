@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
  */
 public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
-	private static final long serialVersionUID = 3583385556567048114L;
+	private static final long serialVersionUID = 7428788715221796719L;
 
 	/**
 	 * Le numéro technique du site pour Unireg
@@ -41,7 +41,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	public final DonneesRegistreIDE ide;
 	public final DonneesREE ree;
 
-	private final Map<RegDate, List<PublicationBusiness>> publications;
+	private final List<PublicationBusiness> publications;
 
 	private final List<DateRanged<Long>> ideRemplacePar;
 	private final List<DateRanged<Long>> ideEnRemplacementDe;
@@ -60,7 +60,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	                             @NotNull DonneesRC rc,
 	                             @NotNull DonneesRegistreIDE ide,
 	                             @NotNull DonneesREE ree,
-	                             Map<RegDate, List<PublicationBusiness>> publications,
+	                             List<PublicationBusiness> publications,
 	                             List<DateRanged<Long>> ideRemplacePar,
 	                             List<DateRanged<Long>> ideEnRemplacementDe,
 	                             List<DateRanged<Long>> burTransfereA,
@@ -248,13 +248,13 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
-	public Map<RegDate, List<PublicationBusiness>>  getPublications() {
+	public List<PublicationBusiness>  getPublications() {
 		return publications;
 	}
 
 	@Override
 	public List<PublicationBusiness>  getPublications(RegDate date) {
-		return publications.get(date);
+		return OrganisationHelper.getPublications(this.getPublications(), date);
 	}
 
 	@Override

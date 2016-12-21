@@ -54,7 +54,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> domicile = new TreeMap<>();
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
-	private final NavigableMap<RegDate, List<PublicationBusiness>> publicationsBusiness = new TreeMap<>();
+	private final List<PublicationBusiness> publicationsBusiness = new ArrayList<>();
 	private final MockDonneesRegistreIDE donneesRegistreIDE;
 	private final MockDonneesRC donneesRC;
 	private final MockDonneesREE donneesREE;
@@ -109,8 +109,8 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		MockOrganisationHelper.addRangedData(rc, dateDebut, dateFin, nouveauNumeroRC);
 	}
 
-	public void addPublicationBusiness(RegDate dateDebut, List<PublicationBusiness> nouvelleListePublicationBusiness) {
-		publicationsBusiness.put(dateDebut, nouvelleListePublicationBusiness);
+	public void addPublicationBusiness(PublicationBusiness nouvellePublicationBusiness) {
+		publicationsBusiness.add(nouvellePublicationBusiness);
 	}
 
 	public void addIdeRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
@@ -312,13 +312,13 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public Map<RegDate, List<PublicationBusiness>> getPublications() {
+	public List<PublicationBusiness> getPublications() {
 		return publicationsBusiness;
 	}
 
 	@Override
 	public List<PublicationBusiness> getPublications(RegDate date) {
-		return publicationsBusiness.get(date);
+			return OrganisationHelper.getPublications(publicationsBusiness, date);
 	}
 
 	@Override

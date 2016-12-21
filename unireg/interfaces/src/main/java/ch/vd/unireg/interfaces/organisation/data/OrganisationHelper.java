@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -846,6 +847,11 @@ public abstract class OrganisationHelper {
 			LOGGER.warn(String.format("Le calcul de l'activité pour le site RCEnt %d a retourné plus d'une période.", site.getNumeroSite()));
 		}
 		return combinesNonRadies;
+	}
+
+	public static List<PublicationBusiness> getPublications(List<PublicationBusiness> publications, RegDate datePublication) {
+		return publications.stream()
+				.filter(p -> RegDateHelper.equals(p.getFoscDateDePublication(), datePublication)).collect(Collectors.toList());
 	}
 
 	private static RegDate defaultDate(RegDate date) {

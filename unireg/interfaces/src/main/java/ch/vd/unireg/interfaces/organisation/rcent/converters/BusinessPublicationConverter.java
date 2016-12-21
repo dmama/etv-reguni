@@ -4,10 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.SwissGazetteOfCommercePublication;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 
-public class BusinessPublicationConverter extends RangedToRangeBaseConverter<ch.vd.evd0022.v3.BusinessPublication, PublicationBusiness> {
+public class BusinessPublicationConverter implements Converter<BusinessPublication, PublicationBusiness> {
 
 	private static final TypeOfBusinessPublicationConverter TYPE_OF_BUSINESS_PUBLICATION_CONVERTER = new TypeOfBusinessPublicationConverter();
 	private static final TypeOfFusionConverter TYPE_OF_FUSION_CONVERTER = new TypeOfFusionConverter();
@@ -17,23 +16,18 @@ public class BusinessPublicationConverter extends RangedToRangeBaseConverter<ch.
 
 	@NotNull
 	@Override
-	protected PublicationBusiness convert(@NotNull DateRangeHelper.Ranged<ch.vd.evd0022.v3.BusinessPublication> businessPublicationRange) {
-		final BusinessPublication businessPublication = businessPublicationRange.getPayload();
+	public PublicationBusiness apply(@NotNull BusinessPublication businessPublication) {
 		SwissGazetteOfCommercePublication fosc = null;
-		if (businessPublication != null) {
-			fosc = businessPublication.getSwissGazetteOfCommercePublication();
-		}
-		return new PublicationBusiness(businessPublicationRange.getDateDebut(),
-		                               businessPublicationRange.getDateFin(),
-		                               businessPublication == null ? null : businessPublication.getEventDate(),
-		                               businessPublication == null ? null : TYPE_OF_BUSINESS_PUBLICATION_CONVERTER.apply(businessPublication.getTypeOfBusinessPublication()),
+		fosc = businessPublication.getSwissGazetteOfCommercePublication();
+		return new PublicationBusiness(businessPublication.getEventDate(),
+		                               TYPE_OF_BUSINESS_PUBLICATION_CONVERTER.apply(businessPublication.getTypeOfBusinessPublication()),
 		                               fosc == null ? null : fosc.getDocumentNumber(),
 		                               fosc == null ? null : fosc.getPublicationDate(),
 		                               fosc == null ? null : fosc.getPublicationText(),
-		                               businessPublication == null ? null : TYPE_OF_FUSION_CONVERTER.apply(businessPublication.getTypeOfFusion()),
-		                               businessPublication == null ? null : TYPE_OF_CAPITAL_REDUCTION_CONVERTER.apply(businessPublication.getTypeOfCapitalReduction()),
-		                               businessPublication == null ? null : TYPE_OF_TRANSFER_CONVERTER.apply(businessPublication.getTypeOfTransfer()),
-		                               businessPublication == null ? null : TYPE_OF_LIQUIDATION_CONVERTER.apply(businessPublication.getTypeOfLiquidation())
+		                               TYPE_OF_FUSION_CONVERTER.apply(businessPublication.getTypeOfFusion()),
+		                               TYPE_OF_CAPITAL_REDUCTION_CONVERTER.apply(businessPublication.getTypeOfCapitalReduction()),
+		                               TYPE_OF_TRANSFER_CONVERTER.apply(businessPublication.getTypeOfTransfer()),
+		                               TYPE_OF_LIQUIDATION_CONVERTER.apply(businessPublication.getTypeOfLiquidation())
 		);
 	}
 }

@@ -62,7 +62,7 @@ public class RCEntSiteOrganisationHelper {
 				createDonneesRC(rc),
 				createDonneesIDE(uid),
 				createDonneesREE(bur),
-				RCEntHelper.convertAndMapDerange(rcEntLocation.getBusinessPublication(), BUSINESS_PUBLICATION_CONVERTER),
+				RCEntHelper.convert(rcEntLocation.getBusinessPublication(), BUSINESS_PUBLICATION_CONVERTER),
 				RCEntHelper.convert(rcEntLocation.getUidReplacedBy()),
 				RCEntHelper.convert(rcEntLocation.getUidInReplacementOf()),
 				RCEntHelper.convert(rcEntLocation.getBurTransferTo()),

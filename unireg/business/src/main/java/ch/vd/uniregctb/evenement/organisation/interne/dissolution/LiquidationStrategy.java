@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.interne.dissolution;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,33 +53,30 @@ public class LiquidationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
 
-		final Map<RegDate, List<PublicationBusiness>> publications = sitePrincipal.getPublications();
+		final List<PublicationBusiness> publicationBusinessesDuJour = sitePrincipal.getPublications(event.getDateEvenement());
 		final InscriptionRC inscriptionRC = sitePrincipal.getDonneesRC().getInscription(dateApres);
 		final StatusInscriptionRC statusInscription = inscriptionRC != null ? inscriptionRC.getStatus() : null;
 		final StatusRegistreIDE statusRegistreIDE = sitePrincipal.getDonneesRegistreIDE().getStatus(dateApres);
 
 		if (statusInscription == StatusInscriptionRC.EN_LIQUIDATION
 				&& statusRegistreIDE == StatusRegistreIDE.RADIE
-				&& publications != null
-				&& !publications.isEmpty()) {
+				&& publicationBusinessesDuJour != null
+				&& !publicationBusinessesDuJour.isEmpty()) {
 
-			final List<PublicationBusiness> publicationBusinessesDuJour = publications.get(event.getDateEvenement());
-			if (publicationBusinessesDuJour != null) {
-				for (PublicationBusiness publication : publicationBusinessesDuJour) {
-					if (publication.getTypeDeLiquidation() != null) {
-						switch (publication.getTypeDeLiquidation()) {
-						case SOCIETE_ANONYME:
-						case SOCIETE_RESPONSABILITE_LIMITE:
-						case SOCIETE_COOPERATIVE:
-						case ASSOCIATION:
-						case FONDATION:
-						case SOCIETE_NOM_COLLECTIF:
-						case SOCIETE_COMMANDITE:
-						case SOCIETE_COMMANDITE_PAR_ACTION:
-							return new Liquidation(event, organisation, entreprise, context, options);
-						default:
-							return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de liquidation inconnu: %s", publication.getTypeDeLiquidation()));
-						}
+			for (PublicationBusiness publication : publicationBusinessesDuJour) {
+				if (publication.getTypeDeLiquidation() != null) { // Partant du principe qu'un seul type de liquidation ne peut avoir lieu sur un même jour, on renvoie le premier trouvé.
+					switch (publication.getTypeDeLiquidation()) {
+					case SOCIETE_ANONYME:
+					case SOCIETE_RESPONSABILITE_LIMITE:
+					case SOCIETE_COOPERATIVE:
+					case ASSOCIATION:
+					case FONDATION:
+					case SOCIETE_NOM_COLLECTIF:
+					case SOCIETE_COMMANDITE:
+					case SOCIETE_COMMANDITE_PAR_ACTION:
+						return new Liquidation(event, organisation, entreprise, context, options);
+					default:
+						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de liquidation inconnu: %s", publication.getTypeDeLiquidation()));
 					}
 				}
 			}

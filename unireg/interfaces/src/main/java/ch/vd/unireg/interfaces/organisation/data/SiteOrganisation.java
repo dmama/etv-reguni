@@ -102,11 +102,15 @@ public interface SiteOrganisation {
 	/**
 	 * @return La map des publications concernant le site, indexée par date.
 	 */
-	Map<RegDate, List<PublicationBusiness>> getPublications();
+	List<PublicationBusiness> getPublications();
 
 	/**
-	 * @param date la date
-	 * @return la liste des publications concernant l'entité à la date donnée
+	 * Les publications FOSC publiées à une certaine date.
+	 *
+	 * Attention, ne pas confondre date de publication et date de valeur.
+	 *
+	 * @param date la date de publication pour laquelle on cherche les publications FOSC
+	 * @return la liste des publications concernant l'entité publiées à la date donnée
 	 */
 	List<PublicationBusiness>  getPublications(RegDate date);
 

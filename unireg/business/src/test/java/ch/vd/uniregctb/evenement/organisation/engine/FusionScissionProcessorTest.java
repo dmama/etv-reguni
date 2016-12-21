@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -63,10 +62,8 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
-						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, null, null, null,
-						                        TypeDeFusion.FUSION_INTERNATIONALE, null, null, null)
-				));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, "123456", date(2015, 7, 5),
+				                                                             "Blah blah publication FOSC", TypeDeFusion.FUSION_INTERNATIONALE, null, null, null));
 				addOrganisation(organisation);
 
 			}
@@ -131,10 +128,8 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
-						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, null, null, null,
-						                        null, null, null, null)
-				));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, "1233634231", date(2015, 7, 5),
+				                                                             "blah blah publication.", null, null, null, null));
 				addOrganisation(organisation);
 
 			}
@@ -197,10 +192,8 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
-						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, null, null, null,
-						                        TypeDeFusion.SCISSION_ART_45_LFUS, null, null, null)
-				));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, "123456", date(2015, 7, 5),
+				                                                             "Blah blah publication FOSC", TypeDeFusion.SCISSION_ART_45_LFUS, null, null, null));
 				addOrganisation(organisation);
 
 			}

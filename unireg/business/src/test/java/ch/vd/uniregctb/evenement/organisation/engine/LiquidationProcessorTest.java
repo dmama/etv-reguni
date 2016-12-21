@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -63,10 +62,15 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
-						new PublicationBusiness(date(2015, 7, 5), null, date(2015, 7, 5), TypeDePublicationBusiness.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, null, null, null,
-						                        null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)
-				));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMUNICATION_DANS_FAILLITE, "123456", date(2015, 7, 5),
+				                                                             "Blah blah publication FOSC",
+				                                                             null, null, null, null));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, "123457", date(2015, 7, 5),
+				                                                             "Blah blah publication FOSC",
+				                                                             null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMUNICATION_DANS_FAILLITE, "123458", date(2015, 7, 5),
+				                                                             "Blah blah publication FOSC",
+				                                                             null, null, null, null));
 				addOrganisation(organisation);
 
 			}
@@ -131,9 +135,8 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
-						new PublicationBusiness(date(2015, 7, 5), null, date(2015, 7, 5), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, null, null, null,
-						                        null, null, null, null)));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 3), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, "123456", date(2015, 7, 5),
+				                                                             "Blah blah publication FOSC",null, null, null, null));
 				addOrganisation(organisation);
 
 			}
@@ -196,10 +199,8 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996", BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
-						new PublicationBusiness(date(2015, 7, 5), null, date(2015, 7, 5), TypeDePublicationBusiness.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, null, null, null,
-						                        null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)
-				));
+				sitePrincipal.addPublicationBusiness(new PublicationBusiness(date(2015, 7, 5), TypeDePublicationBusiness.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, null, null, null,
+				                                                             null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE));
 				addOrganisation(organisation);
 
 			}
