@@ -8,6 +8,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.uniregctb.degrevement.DemandeDegrevement;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
@@ -57,4 +58,8 @@ public interface EvenementDocumentSortantService {
 	void signaleConfirmationDelai(DeclarationImpotOrdinairePP di, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 
 	void signaleDocumentEFacture(TypeDocument typeDoc, Tiers tiers, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
+
+	void signaleDemandeDegrevement(DemandeDegrevement dd, CTypeInfoArchivage infoArchivage, boolean local);
+
+	void signaleRappelDemandeDegrevement(DemandeDegrevement dd, CTypeInfoArchivage infoArchivage, boolean local);
 }

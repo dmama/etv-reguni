@@ -25,6 +25,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.uniregctb.degrevement.DemandeDegrevement;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
@@ -306,6 +307,28 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       tiers,
 		                       local,
 		                       null,
+		                       null,
+		                       infoArchivage);
+	}
+
+	@Override
+	public void signaleDemandeDegrevement(DemandeDegrevement dd, CTypeInfoArchivage infoArchivage, boolean local) {
+		signaleDocumentSortant("DD",
+		                       TypeDocumentSortant.DEMANDE_DEGREVEMENT,
+		                       dd.getEntreprise(),
+		                       local,
+		                       dd.getDateEnvoi().year(),                // date de l'envoi du courrier initial
+		                       null,
+		                       infoArchivage);
+	}
+
+	@Override
+	public void signaleRappelDemandeDegrevement(DemandeDegrevement dd, CTypeInfoArchivage infoArchivage, boolean local) {
+		signaleDocumentSortant("RDD",
+		                       TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT,
+		                       dd.getEntreprise(),
+		                       local,
+		                       dd.getDateEnvoi().year(),                // date de l'envoi du courrier initial
 		                       null,
 		                       infoArchivage);
 	}
