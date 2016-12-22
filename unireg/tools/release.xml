@@ -6,40 +6,44 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>tools/lib</outputDirectory>
 			<scope>runtime</scope>
 		</dependencySet>
 	</dependencySets>
 	<files>
 		<file>
 			<source>src/main/scripts/dbuniteditor.sh</source>
-			<destName>dbuniteditor.sh</destName>
+			<destName>tools/dbuniteditor.sh</destName>
 		</file>
 		<file>
 			<source>src/main/scripts/perfs2.sh</source>
-			<destName>perfs2.sh</destName>
+			<destName>tools/perfs2.sh</destName>
 		</file>
 		<file>
 			<source>src/main/scripts/perfs3.sh</source>
-			<destName>perfs3.sh</destName>
+			<destName>tools/perfs3.sh</destName>
 		</file>
 		<file>
 			<source>src/main/scripts/etatcivilcomp3.sh</source>
-			<destName>etatcivilcomp3.sh</destName>
+			<destName>tools/etatcivilcomp3.sh</destName>
 		</file>
 		<file>
 			<source>src/main/scripts/ws-analyzer.sh</source>
-			<destName>ws-analyzer.sh</destName>
+			<destName>tools/ws-analyzer.sh</destName>
+		</file>
+		<file>
+			<source>src/main/scripts/photosimpa.sh</source>
+			<destName>tools/photosimpa.sh</destName>
 		</file>
 		<file>
 			<source>src/main/resources/log4j.xml</source>
-			<destName>log4j.xml</destName>
+			<destName>tools/log4j.xml</destName>
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
 			<source>target/uniregctb-tools-7.0.1-SNAPSHOT.jar</source>
 			<!-- END_LVERSION -->
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>tools/lib</outputDirectory>
 			<destName>uniregctb-tools.jar</destName>
 		</file>
 	</files>

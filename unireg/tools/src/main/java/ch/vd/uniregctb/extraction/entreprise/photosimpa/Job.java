@@ -1,22 +1,31 @@
 package ch.vd.uniregctb.extraction.entreprise.photosimpa;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorCompletionService;
@@ -27,9 +36,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0007.v1.Country;
@@ -61,45 +72,103 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class Job {
 
-	// PRE-PRODUCTION
-	private static final String urlWebServiceUnireg = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/v7";
-	private static final String userWebServiceUnireg = "web-it";
-	private static final String pwdWebServiceUnireg = "unireg_1014";
-	private static final String urlWebServiceFidor = "http://rp-ws-va.etat-de-vaud.ch/fiscalite/fidor/ws/v5";
-	private static final String userWebServiceFidor = "gvd0unireg";
-	private static final String pwdWebServiceFidor = "Welc0me_";
-
-	// PRODUCTION
-//	private static final String urlWebServiceUnireg = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/v7";
-//	private static final String userWebServiceUnireg = "se renseigner...";
-//	private static final String pwdWebServiceUnireg = "se renseigner...";
-//	private static final String urlWebServiceFidor = "http://rp-ws-pr.etat-de-vaud.ch/fiscalite/fidor/ws/v5";
-//	private static final String userWebServiceFidor = "gvd0unireg";
-//	private static final String pwdWebServiceFidor = "Welc0me_";
-
-	private static final String userId = "usrreg06";
-	private static final int oid = 22;
-
-	private static final String inputDataFilename = "input.csv";
-	private static final String outputFilename = "/tmp/entreprises.csv";
-	private static final String outputCharset = "ISO-8859-1";
-
 	private static final int TAILLE_LOT = 20;
 	private static final int NB_THREADS = 4;
 
-	public static void main(String[] args) throws Exception {
+	private static final String DB_DRIVER_CLASS = "db.driver.class";
+	private static final String DB_URL = "db.url";
+	private static final String DB_USER = "db.user";
+	private static final String DB_PASSWORD = "db.password";
+	private static final String DB_SCHEMA = "db.schema";
 
-		// lecture des données d'entrée
-		final List<Integer> input = loadInputData();
+	private static final String UNIREG_URL = "unireg.ws.url";
+	private static final String UNIREG_USER = "unireg.ws.user";
+	private static final String UNIREG_PASSWORD = "unireg.ws.password";
+	private static final String UNIREG_IFOSEC_USER = "unireg.ifosec.user";
+	private static final String UNIREG_IFOSEC_OID = "unireg.ifosec.oid";
+
+	private static final String FIDOR_URL = "fidor.ws.url";
+	private static final String FIDOR_USER = "fidor.ws.user";
+	private static final String FIDOR_PASSWORD = "fidor.ws.password";
+
+	private static final String OUTPUT_FILE = "out.filename";
+	private static final String OUTPUT_ENCODING = "out.encoding";
+
+	private static final String[] PROPERTIES = {
+			DB_DRIVER_CLASS,
+			DB_URL,
+			DB_USER,
+			DB_PASSWORD,
+			DB_SCHEMA,
+
+			UNIREG_URL,
+			UNIREG_USER,
+			UNIREG_PASSWORD,
+			UNIREG_IFOSEC_USER,
+			UNIREG_IFOSEC_OID,
+
+			FIDOR_URL,
+			FIDOR_USER,
+			FIDOR_PASSWORD,
+
+			OUTPUT_FILE,
+			OUTPUT_ENCODING
+	};
+
+	@FunctionalInterface
+	private interface ExceptionThrowingConsumer<T> {
+		void accept(T value) throws Exception;
+	}
+
+	private static final Map<String, ExceptionThrowingConsumer<String[]>> ACTIONS = buildActions();
+
+	private static Map<String, ExceptionThrowingConsumer<String[]>> buildActions() {
+		final Map<String, ExceptionThrowingConsumer<String[]>> map = new HashMap<>();
+		map.put("dumpConfigFile", Job::dumpDummyConfig);
+		map.put("extract", Job::extractWithConfigFile);
+		return Collections.unmodifiableMap(map);
+	}
+
+	public static void main(String[] args) throws Exception {
+		final ExceptionThrowingConsumer<String[]> action = Optional.of(args)
+				.filter(array -> array.length > 0)
+				.map(array -> array[0])
+				.map(ACTIONS::get)
+				.orElse(null);
+		if (action == null) {
+			showSyntax();
+			System.exit(1);
+		}
+		else {
+			action.accept(args);
+		}
+	}
+
+	private static void showSyntax() {
+		System.err.println("Modes de fonctionnement :");
+		System.err.println("- 'dumpConfigFile' : pour générer (sur la sortie standard) un fichier (vide) de propriétés nécessaires au fonctionnement des modes d'extraction");
+		System.err.println("- 'extract' : pour procéder à l'extraction (le paramètre suivant doit être un fichier au format fourni dans le mode 'dumpConfigFile')");
+	}
+
+	@NotNull
+	private static String getParameter(Map<String, String> parameters, String param) {
+		final String value = parameters.get(param);
+		if (StringUtils.isBlank(value)) {
+			throw new IllegalArgumentException("Missing value for " + param + " parameter");
+		}
+		return value;
+	}
+
+	private static void fetchAndDumpData(Map<String, String> parameters, List<Integer> idEntreprises) throws Exception {
 
 		// récupération des régimes fiscaux depuis fidor
-		final Map<String, String> codesRegimesFiscaux = fetchRegimesFiscaux();
+		final Map<String, String> codesRegimesFiscaux = fetchRegimesFiscaux(parameters);
 
 		// découpage en petit (?) lots
-		final BatchIterator<Integer> iteratorLot = new StandardBatchIterator<>(input, TAILLE_LOT);
+		final BatchIterator<Integer> iteratorLot = new StandardBatchIterator<>(idEntreprises, TAILLE_LOT);
 
 		// client fidor avec cache
-		final FidorClient fidorClient = buildCache(FidorClient.class, buildFidorClient());
+		final FidorClient fidorClient = buildCache(FidorClient.class, buildFidorClient(parameters));
 
 		// mise en place de l'infrastructure d'exécuteurs
 		final ExecutorService execService = Executors.newFixedThreadPool(NB_THREADS);
@@ -109,7 +178,7 @@ public class Job {
 			// lancement des récupérations d'information
 			int nbLotsEnvoyes = 0;
 			while (iteratorLot.hasNext()) {
-				completionService.submit(new DataExtractor(iteratorLot.next(), codesRegimesFiscaux, fidorClient));
+				completionService.submit(new DataExtractor(iteratorLot.next(), codesRegimesFiscaux, fidorClient, parameters));
 				++ nbLotsEnvoyes;
 			}
 
@@ -117,8 +186,9 @@ public class Job {
 			execService.shutdown();
 
 			// préparation du fichier de sortie
-			try (OutputStream os = new FileOutputStream(outputFilename);
-			     Writer w = new OutputStreamWriter(os, outputCharset);
+			final File outputFile = new File(getParameter(parameters, OUTPUT_FILE)).getCanonicalFile();
+			try (OutputStream os = new FileOutputStream(outputFile);
+			     Writer w = new OutputStreamWriter(os, getParameter(parameters, OUTPUT_ENCODING));
 			     BufferedWriter bw = new BufferedWriter(w)) {
 
 				bw.write("NO_CTB;NO_IDE;RAISON_SOCIALE;FOR_PRINCIPAL;NPA_NO_POLICE;FORME_JURIDIQUE;DEPUIS_LE;REGIME_FISCAL_CH;REGIME_FISCAL_VD;DEBUT_ICC;FIN_ICC;");
@@ -132,7 +202,7 @@ public class Job {
 							final List<OutputData> taskResult = future.get();
 							for (OutputData data : taskResult) {
 								// dump dans le fichier de sortie
-								dump(bw, data);
+								dumpData(bw, data);
 							}
 							break;
 						}
@@ -141,6 +211,8 @@ public class Job {
 					}
 				}
 			}
+
+			System.out.println("Fichier " + outputFile.getPath() + " terminé.");
 		}
 		finally {
 			execService.shutdownNow();
@@ -150,7 +222,7 @@ public class Job {
 		}
 	}
 
-	private static void dump(BufferedWriter bw, OutputData data) throws IOException {
+	private static void dumpData(BufferedWriter bw, OutputData data) throws IOException {
 		final String pairSeparator = "-";
 		bw.write(String.format("%d;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;",
 		                       data.noEntreprise,
@@ -191,36 +263,11 @@ public class Job {
 		return String.format("\"%s\"", string);
 	}
 
-	private static List<Integer> loadInputData() throws IOException {
-		try (InputStream is = Job.class.getResourceAsStream(inputDataFilename);
-		     Reader r = new InputStreamReader(is);
-		     BufferedReader br = new BufferedReader(r)) {
-
-			final List<Integer> data = new LinkedList<>();
-			String line = br.readLine();
-			while (line != null) {
-				// on extrait déjà ici les lignes de commentaires
-				if (!line.startsWith("#")) {
-					try {
-						final Integer parsed = Integer.parseInt(line);
-						data.add(parsed);
-					}
-					catch (NumberFormatException e) {
-						System.err.println("Ligne ignorée : " + line);
-					}
-				}
-				line = br.readLine();
-			}
-
-			return data;
-		}
-	}
-
 	/**
 	 * @return une map des libellés de régimes fiscaux indexés par leur code
 	 */
-	private static Map<String, String> fetchRegimesFiscaux() {
-		final FidorClient fidorClient = buildFidorClient();
+	private static Map<String, String> fetchRegimesFiscaux(Map<String, String> parameters) {
+		final FidorClient fidorClient = buildFidorClient(parameters);
 		final List<RegimeFiscal> regimes = fidorClient.getRegimesFiscaux();
 		final Map<String, String> map = new HashMap<>(regimes.size());
 		for (RegimeFiscal regime : regimes) {
@@ -229,11 +276,11 @@ public class Job {
 		return map;
 	}
 
-	private static FidorClient buildFidorClient() {
+	private static FidorClient buildFidorClient(Map<String, String> parameters) {
 		final FidorClientImpl client = new FidorClientImpl();
-		client.setServiceUrl(urlWebServiceFidor);
-		client.setUsername(userWebServiceFidor);
-		client.setPassword(pwdWebServiceFidor);
+		client.setServiceUrl(getParameter(parameters, FIDOR_URL));
+		client.setUsername(getParameter(parameters, FIDOR_USER));
+		client.setPassword(getParameter(parameters, FIDOR_PASSWORD));
 		return client;
 	}
 
@@ -255,18 +302,27 @@ public class Job {
 		private final List<Integer> input;
 		private final Map<String, String> regimesFiscaux;
 		private final FidorClient fidorClient;
+		private final Map<String, String> parameters;
 
 		public DataExtractor(List<Integer> input,
 		                     Map<String, String> regimesFiscaux,
-		                     FidorClient fidorClient) {
+		                     FidorClient fidorClient,
+		                     Map<String, String> parameters) {
 			this.input = input;
 			this.regimesFiscaux = regimesFiscaux;
 			this.fidorClient = fidorClient;
+			this.parameters = parameters;
 		}
 
 		@Override
 		public List<OutputData> call() throws Exception {
-			final Parties parties = WebServiceV7Helper.getParties(urlWebServiceUnireg, userWebServiceUnireg, pwdWebServiceUnireg, userId, oid, input, PARTS);
+			final Parties parties = WebServiceV7Helper.getParties(getParameter(parameters, UNIREG_URL),
+			                                                      getParameter(parameters, UNIREG_USER),
+			                                                      getParameter(parameters, UNIREG_PASSWORD),
+			                                                      getParameter(parameters, UNIREG_IFOSEC_USER),
+			                                                      Integer.valueOf(getParameter(parameters, UNIREG_IFOSEC_OID)),
+			                                                      input,
+			                                                      PARTS);
 			final List<OutputData> output = new ArrayList<>(input.size());
 			for (Entry partyEntry : parties.getEntries()) {
 				if (partyEntry.getError() != null) {
@@ -500,4 +556,62 @@ public class Job {
 		}
 	}
 
+	private static void dumpDummyConfig(String[] args) throws IOException {
+		Stream.of(PROPERTIES)
+				.map(prop -> prop + '=')
+				.forEach(System.out::println);
+	}
+
+	private static void extractWithConfigFile(String[] args) throws Exception {
+		final Properties properties = new Properties();
+		try (FileInputStream fis = new FileInputStream(args[1]);
+		     Reader reader = new InputStreamReader(fis, "UTF-8")) {
+
+			properties.load(reader);
+		}
+
+		final Map<String, String> map = Stream.of(PROPERTIES)
+				.map(name -> Pair.of(name, properties.getProperty(name)))
+				.peek(pair -> {
+					if (StringUtils.isBlank(pair.getRight())) {
+						throw new IllegalArgumentException("Missing value for attribute " + pair.getLeft());
+					}
+				})
+				.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+		extract(Collections.unmodifiableMap(map));
+	}
+
+	private static void extract(Map<String, String> parameters) throws Exception {
+
+		// 2 phases :
+		// - récupération de tous les identifiants des entreprises en base
+		// - récupération des informations concernant ces entreprises
+
+		final List<Integer> ids = fetchEntreprises(parameters);
+		System.out.println("Nombre d'entreprises trouvées : " + ids.size());
+
+		fetchAndDumpData(parameters, ids);
+	}
+
+	private static List<Integer> fetchEntreprises(Map<String, String> parameters) throws ClassNotFoundException, SQLException {
+		Class.forName(getParameter(parameters, DB_DRIVER_CLASS));
+		try (Connection connection = DriverManager.getConnection(getParameter(parameters, DB_URL),
+		                                                         getParameter(parameters, DB_USER),
+		                                                         getParameter(parameters, DB_PASSWORD))) {
+			connection.setAutoCommit(false);
+
+			final List<Integer> ids = new LinkedList<>();
+			final String sql = String.format("SELECT NUMERO FROM %s.TIERS WHERE TIERS_TYPE='Entreprise' ORDER BY NUMERO ASC", getParameter(parameters, DB_SCHEMA));
+			try (PreparedStatement ps = connection.prepareStatement(sql)) {
+				final ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					final BigDecimal bd = rs.getBigDecimal(1);
+					ids.add(bd.intValue());
+				}
+			}
+
+			return ids;
+		}
+	}
 }
