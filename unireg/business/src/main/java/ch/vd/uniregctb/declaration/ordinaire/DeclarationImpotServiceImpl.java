@@ -808,7 +808,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                             int nbThreads,
 	                                             StatusManager statusManager) throws DeclarationException {
 		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(hibernateTemplate, periodeDAO,
-		                                                                                this, assujettissementService, periodeImpositionService,
+		                                                                                this, assujettissementService,
 		                                                                                tailleLot, transactionManager, parametres, ticketService);
 		return processor.run(periodeFiscale, categorieEnvoi, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
 	}

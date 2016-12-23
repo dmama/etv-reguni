@@ -53,15 +53,13 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
@@ -73,21 +71,19 @@ public class EnvoiDeclarationsPMProcessor {
 	private final PeriodeFiscaleDAO periodeDAO;
 	private final DeclarationImpotService declarationImpotService;
 	private final AssujettissementService assujettissementService;
-	private final PeriodeImpositionService periodeImpositionService;
 	private final int tailleLot;
 	private final PlatformTransactionManager transactionManager;
 	private final ParametreAppService parametres;
 	private final TicketService ticketService;
 
 	public EnvoiDeclarationsPMProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, DeclarationImpotService declarationImpotService,
-	                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, int tailleLot,
+	                                    AssujettissementService assujettissementService, int tailleLot,
 	                                    PlatformTransactionManager transactionManager, ParametreAppService parametres,
 	                                    TicketService ticketService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.declarationImpotService = declarationImpotService;
 		this.assujettissementService = assujettissementService;
-		this.periodeImpositionService = periodeImpositionService;
 		this.tailleLot = tailleLot;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
@@ -226,7 +222,7 @@ public class EnvoiDeclarationsPMProcessor {
 		final Collection<DeclarationImpotOrdinairePM> declarationsSurPeriode = informationsFiscales.getDeclarationsSurPeriodeFiscale(pm);
 		if (!declarationsSurPeriode.isEmpty()) {
 			final List<DeclarationImpotOrdinairePM> trieesNonAnnuleesSurPeriode = AnnulableHelper.sansElementsAnnules(declarationsSurPeriode);
-			Collections.sort(trieesNonAnnuleesSurPeriode, new DateRangeComparator<>());
+			trieesNonAnnuleesSurPeriode.sort(DateRangeComparator::compareRanges);
 			if (!trieesNonAnnuleesSurPeriode.isEmpty()) {
 				if (DateRangeHelper.intersect(tache, trieesNonAnnuleesSurPeriode)) {
 					// ahah... il y a ou bien conflit ou bien redondance...
@@ -454,7 +450,16 @@ public class EnvoiDeclarationsPMProcessor {
 	 * @return <code>true</code> si les deux ne sont pas compatibles
 	 */
 	private static boolean areIncompatibles(DeclarationImpotOrdinairePM di, TacheEnvoiDeclarationImpotPM tache) {
-		return di.getTypeDeclaration() != tache.getTypeDocument() || !DateRangeHelper.equals(di, tache);
+		final boolean typesCompatibles;
+		if (di.getTypeDeclaration() == tache.getTypeDocument()) {
+			typesCompatibles = true;
+		}
+		else {
+			final GroupeTypesDocumentBatchLocal groupeTypeDI = GroupeTypesDocumentBatchLocal.of(di.getTypeDeclaration());
+			final GroupeTypesDocumentBatchLocal groupeTypeTache = GroupeTypesDocumentBatchLocal.of(tache.getTypeDocument());
+			typesCompatibles = groupeTypeDI != null && groupeTypeTache != null && groupeTypeDI == groupeTypeTache;
+		}
+		return !typesCompatibles || !DateRangeHelper.equals(di, tache);
 	}
 
 	/**
@@ -462,7 +467,6 @@ public class EnvoiDeclarationsPMProcessor {
 	 */
 	private final class InformationsFiscales {
 
-		private final Map<Long, List<PeriodeImpositionPersonnesMorales>> periodesImposition = new HashMap<>();
 		private final Map<Long, List<Assujettissement>> assujettissements = new HashMap<>();
 		private final Map<Long, List<DeclarationImpotOrdinairePM>> declarations = new HashMap<>();
 		private final PeriodeFiscale periodeFiscale;
@@ -489,7 +493,7 @@ public class EnvoiDeclarationsPMProcessor {
 				return assujettissements.get(ctb.getNumero());
 			}
 			final List<Assujettissement> computed = assujettissementService.determine(ctb);
-			final List<Assujettissement> saved = computed == null ? Collections.<Assujettissement>emptyList() : computed;
+			final List<Assujettissement> saved = computed == null ? Collections.emptyList() : computed;
 			assujettissements.put(ctb.getNumero(), saved);
 			return saved;
 		}
@@ -503,46 +507,6 @@ public class EnvoiDeclarationsPMProcessor {
 		public List<Assujettissement> getAssujettissements(ContribuableImpositionPersonnesMorales ctb) throws DeclarationException {
 			try {
 				return Collections.unmodifiableList(_getAssujettissement(ctb));
-			}
-			catch (AssujettissementException e) {
-				throw new DeclarationException(e);
-			}
-		}
-
-		/**
-		 * @param ctb contribuable personne morale
-		 * @return les périodes d'imposition de la personne morale, calculées une fois et maintenues en cache pour les appels ultérieurs
-		 * @throws AssujettissementException en cas de souci
-		 */
-		@NotNull
-		private List<PeriodeImpositionPersonnesMorales> _getPeriodesImposition(ContribuableImpositionPersonnesMorales ctb) throws AssujettissementException {
-			if (periodesImposition.containsKey(ctb.getNumero())) {
-				return periodesImposition.get(ctb.getNumero());
-			}
-			final List<PeriodeImposition> computed = periodeImpositionService.determine(ctb);
-			final List<PeriodeImpositionPersonnesMorales> saved;
-			if (computed == null || computed.isEmpty()) {
-				saved = Collections.emptyList();
-			}
-			else {
-				saved = new ArrayList<>(computed.size());
-				for (PeriodeImposition pi : computed) {
-					saved.add((PeriodeImpositionPersonnesMorales) pi);
-				}
-			}
-			periodesImposition.put(ctb.getNumero(), saved);
-			return saved;
-		}
-
-		/**
-		 * @param ctb contribuable personne morale
-		 * @return les périodes d'imposition de la personne morale, calculées une fois et maintenues en cache pour les appels ultérieurs (dans une collection non-modifiable pour être sûr de ne pas faire de bêtise)
-		 * @throws DeclarationException en cas de souci
-		 */
-		@NotNull
-		public List<PeriodeImpositionPersonnesMorales> getPeriodesImposition(ContribuableImpositionPersonnesMorales ctb) throws DeclarationException {
-			try {
-				return Collections.unmodifiableList(_getPeriodesImposition(ctb));
 			}
 			catch (AssujettissementException e) {
 				throw new DeclarationException(e);

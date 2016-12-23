@@ -41,6 +41,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -80,6 +81,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -6174,6 +6176,137 @@ public class TacheServiceTest extends BusinessTest {
 				Assert.assertFalse(ffp.isAnnule());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-22583] mauvaise gestion des tâches d'annulation de DI et d'envoi de DI quand une DI a été émise en local
+	 * par rapport à une tache en batch -> on vérifie qu'un simple recalcul corrige tout ça
+	 */
+	@Test
+	public void testSynchronisationTacheEnvoiDiBatchSurDeclarationExistanteLocale() throws Exception {
+
+		final int year = RegDate.get().year();
+		final int pf = year - 1;
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		final long pmId;
+		final int oldPremierePeriode = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(Math.min(pf, oldPremierePeriode));
+		try {
+
+			// mise en place fiscale
+			pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					// l'entreprise
+					final Entreprise e = addEntrepriseInconnueAuCivil();
+					addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+					addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+					addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
+					addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
+					addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
+
+					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+					final PeriodeFiscale periodeFiscale = pfDAO.getPeriodeFiscaleByYear(pf);
+					final ModeleDocument modeleBatch = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+					final ModeleDocument modeleLocal = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periodeFiscale);
+
+					// une déclaration envoyée à la main (et déjà retournée, en plus)
+					final DeclarationImpotOrdinairePM di = addDeclarationImpot(e, periodeFiscale, date(pf - 1, 5, 3), date(pf, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleLocal);
+					addEtatDeclarationEmise(di, date(pf, 7, 4));
+					addEtatDeclarationRetournee(di, date(pf, 7, 4), "WEB");     // quittancement manuel immédiat
+
+					// la tâche de DI "pf" (= celle que l'on va normalement annuler) - on peut légitimement se demander ce qu'elle fait là, mais bon...
+					addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30),
+					                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
+					                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
+
+					// la tâche d'annulation de la DI existante
+					addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, e, oipm);
+
+					return e.getNumero();
+				}
+			});
+
+			// vérification que les tâches ne sont pas encore annulées et lancement du recalcul
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+					final List<Tache> taches = tacheDAO.find(pmId);
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(2, taches.size());
+					taches.sort(Comparator.comparingLong(Tache::getId));
+					{
+						final Tache tache = taches.get(0);
+						Assert.assertNotNull(tache);
+						Assert.assertFalse(tache.isAnnule());
+						Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+						Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+					}
+					{
+						final Tache tache = taches.get(1);
+						Assert.assertNotNull(tache);
+						Assert.assertFalse(tache.isAnnule());
+						Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+						Assert.assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
+					}
+
+					tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId));
+				}
+			});
+		}
+		finally {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriode);
+		}
+
+		// vérification que la tâche a bien été annulée après le recalcul
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				// tâche d'envoi
+				{
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setAnnee(pf);
+					criteria.setNumeroCTB(pmId);
+					criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+					criteria.setInclureTachesAnnulees(true);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertTrue("La tâche n'est pas annulée !", tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+				}
+
+				// tâche d'annulation de DI
+				{
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setAnnee(pf);
+					criteria.setNumeroCTB(pmId);
+					criteria.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+					criteria.setInclureTachesAnnulees(true);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertTrue("La tâche n'est pas annulée !", tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
+				}
 			}
 		});
 	}

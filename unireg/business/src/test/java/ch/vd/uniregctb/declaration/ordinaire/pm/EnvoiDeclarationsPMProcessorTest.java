@@ -19,6 +19,7 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -27,7 +28,6 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationSommable;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -61,10 +61,9 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
-		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 
 		processor = new EnvoiDeclarationsPMProcessor(hibernateTemplate, periodeDAO, diService, assujettissementService,
-		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, ticketService);
+		                                             TAILLE_LOT, transactionManager, parametreAppService, ticketService);
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
@@ -1021,6 +1020,120 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
 					Assert.assertEquals(date(pf, 6, 15), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
+					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
+				}
+			});
+		}
+	}
+
+	/**
+	 * [SIFISC-22583] le batch d'envoi des DI PM ne savait pas quoi faire avec une tâche "BATCH"
+	 * en présence d'une déclaration "LOCAL" préalable
+	 */
+	@Test
+	public void testTraitementTacheBatchEnPresenceDeclarationLocale() throws Exception {
+
+		final int year = RegDate.get().year();
+		final int pf = year - 1;
+		final RegDate dateTraitement = date(pf, 7, 31);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// l'entreprise
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
+				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
+				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
+
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
+				final ModeleDocument modeleBatch = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+				final ModeleDocument modeleLocal = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periodeFiscale);
+
+				// une déclaration envoyée à la main (et déjà retournée, en plus)
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(e, periodeFiscale, date(pf - 1, 5, 3), date(pf, 6, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleLocal);
+				addEtatDeclarationEmise(di, date(pf, 7, 4));
+				addEtatDeclarationRetournee(di, date(pf, 7, 4), "WEB");     // quittancement manuel immédiat
+
+				// la tâche de DI "pf" (= celle que l'on va traiter) - on peut légitimement se demander ce qu'elle fait là, mais bon...
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30),
+				                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
+
+				return e.getNumero();
+			}
+		});
+
+		// lancement du job "pf"
+		{
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, dateTraitement, null, dateTraitement, 1, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.getEnvoyees().size());
+			Assert.assertEquals(1, res.getIgnorees().size());
+			Assert.assertEquals(0, res.getErreurs().size());
+			Assert.assertEquals(date(pf, 7, 31), res.getDateLimiteBouclements());
+			Assert.assertEquals(dateTraitement, res.getDateTraitement());
+			Assert.assertEquals(1, res.getNbContribuablesVus());
+			Assert.assertNull(res.getNbMaxEnvois());
+			Assert.assertEquals(1, res.getNbThreads());
+			Assert.assertEquals(pf, res.getPeriodeFiscale());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
+
+			final EnvoiDIsPMResults.TacheIgnoree ignoree = res.getIgnorees().get(0);
+			Assert.assertNotNull(ignoree);
+			Assert.assertEquals(pmId, ignoree.getNoCtb());
+			Assert.assertEquals(date(pf - 1, 5, 3), ignoree.getDateDebut());
+			Assert.assertEquals(date(pf, 6, 30), ignoree.getDateFin());
+			Assert.assertEquals(EnvoiDIsPMResults.IgnoreType.DECLARATION_EXISTANTE, ignoree.getType());
+
+			// vérification des données en base
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+					Assert.assertNotNull(e);
+					Assert.assertNotNull(e.getDeclarations());
+					Assert.assertEquals(1, e.getDeclarations().size());
+
+					final Declaration declaration = e.getDeclarations().iterator().next();
+					Assert.assertNotNull(declaration);
+					Assert.assertFalse(declaration.isAnnule());
+					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
+					Assert.assertEquals(date(pf, 6, 30), declaration.getDateFin());
+					Assert.assertEquals(date(pf, 7, 4), declaration.getDateRetour());
+					Assert.assertNotNull(declaration.getDernierEtat());
+					Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
+					Assert.assertNotNull(declaration.getDelais());
+
+					final List<Tache> taches = tacheDAO.find(e.getNumero());
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+
+					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
+					Assert.assertEquals(date(pf, 6, 30), tidipm.getDateFin());
+					Assert.assertFalse(tidipm.isAnnule());
+					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
