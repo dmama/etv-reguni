@@ -31,7 +31,7 @@ public class IdentificationContribuableCache {
 
 	private static <T> Collection<T> findValues(Map<IdentificationContribuableEtatFilter, Collection<T>> all, IdentificationContribuableEtatFilter filter) {
 		final Collection<T> col = all.get(filter);
-		return col != null ? col : Collections.<T>emptyList();
+		return col != null ? col : Collections.emptyList();
 	}
 
 	private static <T> Map<IdentificationContribuableEtatFilter, Collection<T>> buildDataStructureFromMap(Map<IdentificationContribuable.Etat, List<T>> map) {

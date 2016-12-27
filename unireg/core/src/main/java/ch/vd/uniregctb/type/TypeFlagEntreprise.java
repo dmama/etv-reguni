@@ -88,6 +88,6 @@ public enum TypeFlagEntreprise {
 	@NotNull
 	public static Set<TypeFlagEntreprise> ofGroupe(GroupeFlagsEntreprise groupe) {
 		final Set<TypeFlagEntreprise> set = PAR_GROUPE.get(groupe);
-		return set == null ? Collections.<TypeFlagEntreprise>emptySet() : set;
+		return set == null ? Collections.emptySet() : set;
 	}
 }

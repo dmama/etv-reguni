@@ -109,7 +109,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		final Session session = getCurrentSession();
 		final Query query = session.createQuery(hql);
 		query.setParameterList("etats", ETATS_NON_TRAITES);
-		return new HashSet<Long>(query.list());
+		return new HashSet<>(query.list());
 	}
 
 	@Override

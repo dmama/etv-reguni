@@ -91,7 +91,7 @@ public abstract class DestinataireAdresse {
 			final String raisonSociale = buildRaisonSociale();
 			final Set<DonneeCivileEntreprise> donneesCiviles;
 			if (StringUtils.isNotBlank(raisonSociale)) {
-				donneesCiviles = Collections.<DonneeCivileEntreprise>singleton(new RaisonSocialeFiscaleEntreprise(null, null, raisonSociale));
+				donneesCiviles = Collections.singleton(new RaisonSocialeFiscaleEntreprise(null, null, raisonSociale));
 			}
 			else {
 				donneesCiviles = Collections.emptySet();

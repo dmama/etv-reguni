@@ -42,7 +42,7 @@ public interface GlobalTiersIndexer {
 	 */
 	void sync();
 
-	public enum Mode {
+	enum Mode {
 		FULL,
 		INCREMENTAL,
 		DIRTY_ONLY

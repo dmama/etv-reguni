@@ -86,7 +86,7 @@ public abstract class NationaliteHelper {
 		return filter(nationalites, nationalite -> nationalite.getDateFin() == date ? FilteringResult.TAKE_IT_AND_CONTINUE : FilteringResult.DONT_TAKE_IT);
 	}
 
-	private static enum FilteringResult {
+	private enum FilteringResult {
 		TAKE_IT_AND_STOP(true, true),
 		TAKE_IT_AND_CONTINUE(true, false),
 		DONT_TAKE_IT(false, false);

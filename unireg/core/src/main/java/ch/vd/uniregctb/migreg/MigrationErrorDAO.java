@@ -7,18 +7,18 @@ import ch.vd.uniregctb.type.TypeMigRegError;
 
 public interface MigrationErrorDAO extends GenericDAO<MigrationError, Long> {
 
-	public MigrationError getErrorForContribuable(long numeroCtb);
+	MigrationError getErrorForContribuable(long numeroCtb);
 
-	public boolean existsForContribuable(long numeroCtb);
+	boolean existsForContribuable(long numeroCtb);
 
-	public void removeForContribuable(long numeroCtb);
+	void removeForContribuable(long numeroCtb);
 
-	public List<Long> getAllNoCtb();
+	List<Long> getAllNoCtb();
 
-	public List<Long> getAllNoCtbForTypeError(TypeMigRegError type);
+	List<Long> getAllNoCtbForTypeError(TypeMigRegError type);
 
-	public List<Long> getAllNoCtbForTypeErrorNeq(TypeMigRegError type);
+	List<Long> getAllNoCtbForTypeErrorNeq(TypeMigRegError type);
 
-	public List<MigrationError> getMigregErrorsInCtbRange(int ctbStart, int ctbEnd);
+	List<MigrationError> getMigregErrorsInCtbRange(int ctbStart, int ctbEnd);
 
 }

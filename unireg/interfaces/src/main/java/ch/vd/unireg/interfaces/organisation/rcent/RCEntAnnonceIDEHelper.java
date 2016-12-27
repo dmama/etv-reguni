@@ -221,7 +221,7 @@ public class RCEntAnnonceIDEHelper {
 		body.setTypeOfLocation(typeDeSite == null ? null :TYPE_DE_SITE_CONVERTER.convert(typeDeSite));
 
 		final NumeroIDE noIde = proto.getNoIde();
-		body.setUid(noIde == null ? null : new UidStructure(UidOrganisationIdCategorie.CHE, noIde.getValeurBrute()));;
+		body.setUid(noIde == null ? null : new UidStructure(UidOrganisationIdCategorie.CHE, noIde.getValeurBrute()));
 		final NumeroIDE noIdeRemplacant = proto.getNoIdeRemplacant();
 		body.setUidReplacement(noIdeRemplacant == null ? null : new UidStructure(UidOrganisationIdCategorie.CHE, noIdeRemplacant.getValeurBrute()));
 

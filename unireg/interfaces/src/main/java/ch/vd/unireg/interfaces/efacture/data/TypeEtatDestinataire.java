@@ -13,7 +13,7 @@ public enum TypeEtatDestinataire {
 
 	private final String description;
 
-	private TypeEtatDestinataire(String description) {
+	TypeEtatDestinataire(String description) {
 		this.description = description;
 	}
 

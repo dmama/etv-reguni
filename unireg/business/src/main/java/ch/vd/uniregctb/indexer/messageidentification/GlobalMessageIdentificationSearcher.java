@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 
 public interface GlobalMessageIdentificationSearcher {
 
-	 static final int MAX_RESULTS = 1000;
+	 int MAX_RESULTS = 1000;
 
 	/**
 	 * Récupère les données indexées en fonction des critères fournis

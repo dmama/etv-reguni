@@ -9,16 +9,16 @@ import org.hibernate.type.Type;
 
 public interface LinkedInterceptor {
 
-	public void afterTransactionBegin(Transaction tx);
-	public void afterTransactionCompletion(Transaction tx);
-	public void beforeTransactionCompletion(Transaction tx);
+	void afterTransactionBegin(Transaction tx);
+	void afterTransactionCompletion(Transaction tx);
+	void beforeTransactionCompletion(Transaction tx);
 
 	
-	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException;
-	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException;
-	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException;
+	boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException;
+	boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException;
+	boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException;
 
-	public void postFlush(Iterator<?> entities) throws CallbackException;
-	public void preFlush(Iterator<?> entities) throws CallbackException;
+	void postFlush(Iterator<?> entities) throws CallbackException;
+	void preFlush(Iterator<?> entities) throws CallbackException;
 
 }

@@ -26,7 +26,7 @@ public class IndexerFormatHelper {
 	 *     <li>{@link #STORAGE} indique que la valeur sert à la construction d'un élément pour le stockage simple (ou comme critère de recherche).</li>
 	 * </ul>
 	 */
-	public static enum DateStringMode {
+	public enum DateStringMode {
 		INDEXATION,
 		STORAGE
 	}

@@ -192,7 +192,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
         }
     }
 
-	public static enum TypeContribuableAcompte {
+	public enum TypeContribuableAcompte {
 		VAUDOIS_ORDINAIRE("OR"),
 		VAUDOIS_DEPENSE("DE"),
 		VAUDOIS_MIXTE_137_1("SM1"),
@@ -202,7 +202,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 
 		private final String display;
 
-		private TypeContribuableAcompte(String display) {
+		TypeContribuableAcompte(String display) {
 			this.display = display;
 		}
 
@@ -222,7 +222,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 			this.typeContribuable = typeContribuable;
 			this.noOfsForPrincipal = noOfsForPrincipal;
 			this.noOfsForGestion = noOfsForGestion;
-			this.ofsForsSecondaires = ofsForsSecondaires == null ? Collections.<Integer>emptySet() : Collections.unmodifiableSet(ofsForsSecondaires);
+			this.ofsForsSecondaires = ofsForsSecondaires == null ? Collections.emptySet() : Collections.unmodifiableSet(ofsForsSecondaires);
 			this.anneeFiscale = anneeFiscale;
 		}
 	}

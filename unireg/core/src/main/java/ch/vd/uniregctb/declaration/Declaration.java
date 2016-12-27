@@ -334,7 +334,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 				etatsOfType.add(etat);
 			}
 		}
-		return etatsOfType.isEmpty() ? Collections.<EtatDeclaration>emptyList() : etatsOfType;
+		return etatsOfType.isEmpty() ? Collections.emptyList() : etatsOfType;
 	}
 
 	/**

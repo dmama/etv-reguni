@@ -30,7 +30,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 		final TaxLiabilityControlResult<T> result;
 
 		//Recherche des parents:
-		final List<Parente> parentes = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.<Parente>emptyList();
+		final List<Parente> parentes = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.emptyList();
 		if (parentes.isEmpty()) {
 			result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null));
 		}

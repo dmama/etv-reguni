@@ -5,7 +5,7 @@ package ch.vd.uniregctb.common;
  */
 public class JvmVersionHelper {
 
-	public static enum Version {
+	public enum Version {
 		JAVA_1_5("1.5.", "1.5"),
 		JAVA_1_6("1.6.", "1.6"),
 		JAVA_1_7("1.7.", "1.7"),
@@ -14,7 +14,7 @@ public class JvmVersionHelper {
 		private final String prefixe;
 		private final String displayName;
 
-		private Version(String prefixe, String displayName) {
+		Version(String prefixe, String displayName) {
 			this.prefixe = prefixe;
 			this.displayName = displayName;
 		}

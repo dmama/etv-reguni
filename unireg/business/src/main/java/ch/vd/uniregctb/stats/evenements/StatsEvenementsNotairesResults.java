@@ -111,10 +111,10 @@ public class StatsEvenementsNotairesResults {
 	                                      List<UniteTraitementForceesInfo> manipulationsManuelles) {
 
 
-		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatTraitement, Integer>emptyMap();
-		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<EtatTraitement, Integer>emptyMap();
-		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.<UniteTraitementEnErreurInfo>emptyList();
-		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.<UniteTraitementForceesInfo>emptyList();
+		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.emptyMap();
+		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.emptyMap();
+		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.emptyList();
+		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.emptyList();
 	}
 
 	public Map<EtatTraitement, Integer> getEtats() {

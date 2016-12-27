@@ -24,7 +24,7 @@ public enum ActionEvenementCivilEch {
 		}
 	}
 
-	private ActionEvenementCivilEch(int code, int priorite) {
+	ActionEvenementCivilEch(int code, int priorite) {
 		this.echCode = code;
 		this.priorite = priorite;
 	}

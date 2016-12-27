@@ -133,7 +133,7 @@ public class CcfDumper {
 		writer.write(str);
 	}
 
-	private static interface ConnectionCallback<T> {
+	private interface ConnectionCallback<T> {
 		T doInConnection(Connection con) throws SQLException;
 	}
 
@@ -199,7 +199,7 @@ public class CcfDumper {
 		}
 	}
 
-	private static interface Dumper {
+	private interface Dumper {
 		String getFilename();
 		String getSqlQuery();
 	}

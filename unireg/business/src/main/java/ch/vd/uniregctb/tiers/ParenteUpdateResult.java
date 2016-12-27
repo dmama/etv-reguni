@@ -8,7 +8,7 @@ import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 
 public final class ParenteUpdateResult {
 
-	public static final ParenteUpdateResult EMPTY = new ParenteUpdateResult(Collections.<ParenteUpdateInfo>emptyList(), Collections.<Error>emptyList());
+	public static final ParenteUpdateResult EMPTY = new ParenteUpdateResult(Collections.emptyList(), Collections.emptyList());
 
 	public static final class Error {
 

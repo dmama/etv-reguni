@@ -41,7 +41,7 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -56,7 +56,7 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 
 		private final String description;
 
-		private IgnoreType(String description) {
+		IgnoreType(String description) {
 			this.description = description;
 		}
 
@@ -71,7 +71,7 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 
 		private final String description;
 
-		private AVerifierType(String description) {
+		AVerifierType(String description) {
 			this.description = description;
 		}
 

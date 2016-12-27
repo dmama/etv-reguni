@@ -334,6 +334,6 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 			// cela ne devrait pas être possible maintenant que l'on gère les conflits à ce niveau
 			throw new RuntimeException(e);
 		}
-		return conflits.isEmpty() ? Collections.<DroitAccesConflit>emptyList() : conflits;
+		return conflits.isEmpty() ? Collections.emptyList() : conflits;
 	}
 }

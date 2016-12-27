@@ -215,12 +215,7 @@ public abstract class CollectionsUtils {
 		return toString(col, renderer, separator, StringUtils.EMPTY);
 	}
 
-	private static final StringRenderer<String> STRING_TRIMMER = new StringRenderer<String>() {
-		@Override
-		public String toString(String str) {
-			return StringUtils.trimToEmpty(str);
-		}
-	};
+	private static final StringRenderer<String> STRING_TRIMMER = StringUtils::trimToEmpty;
 
 	public static String concat(List<String> list, String separator) {
 		return toString(list, STRING_TRIMMER, separator);
@@ -228,12 +223,12 @@ public abstract class CollectionsUtils {
 
 	@NotNull
 	public static <K, V> Map<K, V> unmodifiableNeverNull(@Nullable Map<? extends K, ? extends V> source) {
-		return source != null ? Collections.unmodifiableMap(source) : Collections.<K, V>emptyMap();
+		return source != null ? Collections.unmodifiableMap(source) : Collections.emptyMap();
 	}
 
 	@NotNull
 	public static <T> List<T> unmodifiableNeverNull(@Nullable List<? extends T> source) {
-		return source != null ? Collections.unmodifiableList(source) : Collections.<T>emptyList();
+		return source != null ? Collections.unmodifiableList(source) : Collections.emptyList();
 	}
 
 	/**

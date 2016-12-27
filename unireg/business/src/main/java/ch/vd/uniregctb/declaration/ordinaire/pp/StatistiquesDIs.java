@@ -21,7 +21,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

@@ -38,7 +38,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
 
         private final String description;
 
-        private ErreurType(String description) {
+        ErreurType(String description) {
             this.description = description;
         }
 

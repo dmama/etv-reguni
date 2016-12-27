@@ -294,7 +294,7 @@ public class Mariage extends EvenementCivilInterne {
 
 	private static class ConjointBizarreException extends Exception {
 
-		static enum TypeDeBizarrerie {
+		enum TypeDeBizarrerie {
 			ETAT_CIVIL,  // Lorsque la bizarrerie est relative à l'état civil
 			LIEN         // Lorsque la bizarrerie est relative au lien entre les conjoints dans le civil
 		}

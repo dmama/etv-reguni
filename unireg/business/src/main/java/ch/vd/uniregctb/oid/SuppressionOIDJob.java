@@ -191,19 +191,19 @@ public class SuppressionOIDJob extends JobDefinition {
 				final Set<Long> ids = new TreeSet<>();
 
 				// sur le tiers lui-même
-				ids.addAll(hibernateTemplate.<Long>find("select tiers.id from Tiers tiers where tiers.officeImpotId=:oid", oidParam, null));
+				ids.addAll(hibernateTemplate.find("select tiers.id from Tiers tiers where tiers.officeImpotId=:oid", oidParam, null));
 
 				// sur ces déclarations
-				ids.addAll(hibernateTemplate.<Long>find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId=:officeImpotId", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId=:officeImpotId", officeImpotIdParam, null));
 
 				// sur les mouvements de dossier
-				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice.id=:officeImpotId", officeImpotIdParam, null));
-				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire.id=:officeImpotId",
-				                                        officeImpotIdParam, null));
-				ids.addAll(hibernateTemplate.<Long>find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice.id=:officeImpotId", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice.id=:officeImpotId", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire.id=:officeImpotId",
+				                                  officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice.id=:officeImpotId", officeImpotIdParam, null));
 
 				// sur les tâches
-				ids.addAll(hibernateTemplate.<Long>find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee.id=:officeImpotId", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee.id=:officeImpotId", officeImpotIdParam, null));
 
 				return ids;
 			}

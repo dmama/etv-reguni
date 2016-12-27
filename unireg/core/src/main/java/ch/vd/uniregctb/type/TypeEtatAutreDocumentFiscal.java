@@ -18,5 +18,5 @@ public enum TypeEtatAutreDocumentFiscal {
 	/**
 	 * Une lettre de rappel a été envoyée
 	 */
-	RAPPELE;
+	RAPPELE
 }

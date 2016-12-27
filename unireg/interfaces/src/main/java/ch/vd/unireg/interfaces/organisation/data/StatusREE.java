@@ -6,5 +6,5 @@ public enum StatusREE {
 	INACTIF,
 	RADIE,
 	INCONNU,
-	TRANSFERE;
+	TRANSFERE
 }

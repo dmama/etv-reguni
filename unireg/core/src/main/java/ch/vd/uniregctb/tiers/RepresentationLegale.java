@@ -94,7 +94,7 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 		List list = super.getLinkedEntities(includeAnnuled);
 		if (autoriteTutelaireId != null) {
 			if (list == null) {
-				list = new ArrayList<Object>();
+				list = new ArrayList<>();
 			}
 			list.add(new EntityKey(Tiers.class, autoriteTutelaireId));
 		}

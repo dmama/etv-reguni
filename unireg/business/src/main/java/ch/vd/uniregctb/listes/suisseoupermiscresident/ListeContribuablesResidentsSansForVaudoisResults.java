@@ -27,7 +27,7 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 
 		private final String description;
 
-		private CauseIgnorance(String description) {
+		CauseIgnorance(String description) {
 			this.description = description;
 		}
 
@@ -89,6 +89,6 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		super.sort();
 
 		Collections.sort(contribuablesIdentifies);
-		Collections.sort(contribuablesIgnores, (c1, c2) -> Long.compare(c1.ctbId, c2.ctbId));
+		Collections.sort(contribuablesIgnores, Comparator.comparingLong(c -> c.ctbId));
 	}
 }

@@ -6259,7 +6259,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		final List<DateRange> res = DateRangeHelper.collateRange(brutto);
-		return res.isEmpty() ? Collections.<DateRange>emptyList() : brutto;
+		return res.isEmpty() ? Collections.emptyList() : brutto;
 	}
 
 	@Override

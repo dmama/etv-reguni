@@ -41,7 +41,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	private TiersService tiersService;
 	private AdresseService adresseService;
 
-	protected static enum TypeRefusDemande {
+	protected enum TypeRefusDemande {
 
 		NUMERO_AVS_OU_SECURITE_SOCIALE_ABSENT("Pas de numéro AVS ni de numéro de sécurité sociale étranger."),
 		EMAIL_ABSENT("Adresse de courrier électronique absente."),
@@ -54,7 +54,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 		private final String description;
 
-		private TypeRefusDemande(String description) {
+		TypeRefusDemande(String description) {
 			this.description = description;
 		}
 

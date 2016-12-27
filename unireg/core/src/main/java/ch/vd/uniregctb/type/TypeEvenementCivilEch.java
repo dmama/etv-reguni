@@ -74,7 +74,7 @@ public enum TypeEvenementCivilEch {
 		}
 	}
 
-	private TypeEvenementCivilEch(int codeECH, Integer priorite) {
+	TypeEvenementCivilEch(int codeECH, Integer priorite) {
 		this.codeECH = codeECH;
 		this.priorite = priorite;
 	}

@@ -12,7 +12,7 @@ public enum TypeRole {
 
 	private final String displayName;
 
-	private TypeRole(String displayName) {
+	TypeRole(String displayName) {
 		this.displayName = displayName;
 	}
 

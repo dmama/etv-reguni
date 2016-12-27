@@ -8,7 +8,7 @@ public enum ZoneAffranchissementEditique {
 
 	private final String code;
 
-	private ZoneAffranchissementEditique(String code) {
+	ZoneAffranchissementEditique(String code) {
 		this.code = code;
 	}
 

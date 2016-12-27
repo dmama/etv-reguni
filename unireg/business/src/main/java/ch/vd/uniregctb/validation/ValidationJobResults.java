@@ -25,7 +25,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

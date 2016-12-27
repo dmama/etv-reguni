@@ -80,7 +80,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 		protected abstract String toStringPart();
 	}
 
-	private static interface KeyGetPaysByNoOfs {
+	private interface KeyGetPaysByNoOfs {
 		int getNoOfs();
 
 		/**
@@ -214,7 +214,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 		}
 	}
 
-	private static interface KeyGetPaysByCodeIso {
+	private interface KeyGetPaysByCodeIso {
 		@NotNull String getCodeIso();
 		int hashCode();
 	}

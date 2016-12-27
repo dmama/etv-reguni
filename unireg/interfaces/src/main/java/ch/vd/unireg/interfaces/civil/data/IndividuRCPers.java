@@ -473,7 +473,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			fillHoles(adresses);
 		}
 
-		Collections.sort(adresses, new DateRangeComparator<Adresse>());
+		Collections.sort(adresses, new DateRangeComparator<>());
 		return adresses;
 	}
 

@@ -13,7 +13,7 @@ public enum TypeInscription {
 
 	private final String displayName;
 
-	private TypeInscription(String displayName) {
+	TypeInscription(String displayName) {
 		this.displayName = displayName;
 	}
 

@@ -88,7 +88,7 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 				if (!situation.isAnnule())
 					situations.add(situation);
 			}
-			Collections.sort(situations, new DateRangeComparator<SituationFamille>());
+			Collections.sort(situations, new DateRangeComparator<>());
 		}
 		return situations;
 	}

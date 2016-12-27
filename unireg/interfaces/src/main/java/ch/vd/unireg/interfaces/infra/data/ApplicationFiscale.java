@@ -14,7 +14,7 @@ public enum ApplicationFiscale {
 
 	private String messageKey;
 
-	private ApplicationFiscale(String messageKey) {
+	ApplicationFiscale(String messageKey) {
 		this.messageKey = messageKey;
 	}
 

@@ -42,7 +42,7 @@ public interface EvenementCivilNotificationQueue {
 
 		protected Batch(long noIndividu, @Nullable List<EvenementCivilEchBasicInfo> contenu) {
 			this.noIndividu = noIndividu;
-			this.contenu = contenu != null ? contenu : Collections.<EvenementCivilEchBasicInfo>emptyList();
+			this.contenu = contenu != null ? contenu : Collections.emptyList();
 		}
 	}
 

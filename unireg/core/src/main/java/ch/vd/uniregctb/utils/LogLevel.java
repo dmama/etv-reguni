@@ -15,7 +15,7 @@ public abstract class LogLevel {
 	 * Allowed levels, as an enum. Import using "import [package].LogLevel.Level"
 	 * Every logging implementation has something like this except SLF4J.
 	 */
-	public static enum Level {
+	public enum Level {
 		TRACE, DEBUG, INFO, WARN, ERROR, FATAL
 	}
 

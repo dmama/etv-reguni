@@ -19,7 +19,7 @@ public class ProprietaireRapproche extends ProprietaireFoncier {
 	private String nomCourrier2;
 	private CodeRetour resultat;
 
-	public static enum CodeRetour {
+	public enum CodeRetour {
 		INDIVIDU_TROUVE_EXACT("00"),
 		INDIVIDU_TROUVE_EXACT_SAUF_NAISSANCE("10"),
 		INDIVIDU_TROUVE_NON_EXACT("20"),
@@ -30,7 +30,7 @@ public class ProprietaireRapproche extends ProprietaireFoncier {
 
 		private final String valeur;
 
-		private CodeRetour(String valeur) {
+		CodeRetour(String valeur) {
 			this.valeur = valeur;
 		}
 

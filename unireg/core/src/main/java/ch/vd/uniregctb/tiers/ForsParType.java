@@ -80,22 +80,22 @@ public class ForsParType {
 
 		if (sort) {
 			if (principauxPP != Collections.EMPTY_LIST) {
-				Collections.sort(principauxPP, new DateRangeComparator<ForFiscalPrincipalPP>());
+				Collections.sort(principauxPP, new DateRangeComparator<>());
 			}
 			if (principauxPM != Collections.EMPTY_LIST) {
-				Collections.sort(principauxPM, new DateRangeComparator<ForFiscalPrincipalPM>());
+				Collections.sort(principauxPM, new DateRangeComparator<>());
 			}
 			if (secondaires != Collections.EMPTY_LIST) {
-				Collections.sort(secondaires, new DateRangeComparator<ForFiscalSecondaire>());
+				Collections.sort(secondaires, new DateRangeComparator<>());
 			}
 			if (dpis != Collections.EMPTY_LIST) {
-				Collections.sort(dpis, new DateRangeComparator<ForDebiteurPrestationImposable>());
+				Collections.sort(dpis, new DateRangeComparator<>());
 			}
 			if (autreElementImpot != Collections.EMPTY_LIST) {
-				Collections.sort(autreElementImpot, new DateRangeComparator<ForFiscalAutreElementImposable>());
+				Collections.sort(autreElementImpot, new DateRangeComparator<>());
 			}
 			if (autresImpots != Collections.EMPTY_LIST) {
-				Collections.sort(autresImpots, new DateRangeComparator<ForFiscalAutreImpot>());
+				Collections.sort(autresImpots, new DateRangeComparator<>());
 			}
 		}
 	}

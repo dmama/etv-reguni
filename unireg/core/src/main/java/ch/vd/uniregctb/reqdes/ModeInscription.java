@@ -12,7 +12,7 @@ public enum ModeInscription {
 
 	private final String displayName;
 
-	private ModeInscription(String displayName) {
+	ModeInscription(String displayName) {
 		this.displayName = displayName;
 	}
 

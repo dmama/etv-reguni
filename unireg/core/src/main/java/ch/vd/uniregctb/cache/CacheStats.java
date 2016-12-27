@@ -10,32 +10,32 @@ public interface CacheStats {
 	/**
 	 * @return le percentage de hits sur le cache du service; ou <b>null</b> si cette information n'est pas disponible
 	 */
-	public Long getHitsPercent();
+	Long getHitsPercent();
 
 	/**
 	 * @return le nombre de hits sur le cache du service
 	 */
-	public long getHitsCount();
+	long getHitsCount();
 
 	/**
 	 * @return le nombre d'appels sur le cache du service
 	 */
-	public long getTotalCount();
+	long getTotalCount();
 
 	/**
 	 * @return time-to-idle en secondes; ou <b>null</b> si cette information n'est pas applicable
 	 */
-	public Long getTimeToIdle();
+	Long getTimeToIdle();
 
 	/**
 	 * @return time-to-live en secondes; ou <b>null</b> si cette information n'est pas applicable
 	 */
-	public Long getTimeToLive();
+	Long getTimeToLive();
 
 	/**
 	 * @return nombre maximum d'éléments en mémoire; ou <b>null</b> si cette information n'est pas applicable
 	 */
-	public Integer getMaxElements();
+	Integer getMaxElements();
 
-	public String toString();
+	String toString();
 }

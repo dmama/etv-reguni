@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.wsclient.host;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -170,7 +172,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			tracing.end(time, t, "getCollectivitesAdministratives", new Object() {
 				@Override
 				public String toString() {
-					return String.format("Types=%s", types.toString());
+					return String.format("Types=%s", Arrays.toString(types));
 				}
 			});
 		}

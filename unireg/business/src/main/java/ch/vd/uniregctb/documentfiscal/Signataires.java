@@ -69,7 +69,7 @@ public final class Signataires {
 	private final List<VisaFonction> signataires;
 
 	public Signataires(List<VisaFonction> signataires) {
-		this.signataires = signataires == null ? Collections.<VisaFonction>emptyList() : Collections.unmodifiableList(signataires);
+		this.signataires = signataires == null ? Collections.emptyList() : Collections.unmodifiableList(signataires);
 	}
 
 	public List<VisaFonction> getSignataires() {

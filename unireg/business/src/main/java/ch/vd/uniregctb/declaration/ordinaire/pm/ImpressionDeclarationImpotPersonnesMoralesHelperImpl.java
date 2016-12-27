@@ -140,7 +140,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		try {
 			final TypeDocumentEditique typeDocumentEditique;
-			final boolean hasFeuilletPrincipal = hasFeuilletPrincipal(annexes);;
+			final boolean hasFeuilletPrincipal = hasFeuilletPrincipal(annexes);
 			final FichierImpression.Document document = new FichierImpression.Document();
 			if (GroupeTypesDocumentBatchLocal.DI_PM.hasType(declaration.getTypeDeclaration())) {
 				final CTypeDeclarationImpotPM dipm = new CTypeDeclarationImpotPM();

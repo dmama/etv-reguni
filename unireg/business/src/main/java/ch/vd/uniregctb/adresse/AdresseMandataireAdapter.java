@@ -20,7 +20,7 @@ public class AdresseMandataireAdapter extends AdresseFiscaleAdapter<AdresseManda
 		this.source = new Source(SourceType.MANDATAIRE, new Entreprise() {
 			@Override
 			public Set<DonneeCivileEntreprise> getDonneesCiviles() {
-				return Collections.<DonneeCivileEntreprise>singleton(new RaisonSocialeFiscaleEntreprise(null, null, adresse.getNomDestinataire()));
+				return Collections.singleton(new RaisonSocialeFiscaleEntreprise(null, null, adresse.getNomDestinataire()));
 			}
 		});
 	}

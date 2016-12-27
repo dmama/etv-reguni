@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.listes.afc;
 
-import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -29,13 +28,7 @@ public class ExtractionDonneesRptRevenuSourcePureResults extends ExtractionDonne
 	@Override
 	protected String filterAssujettissements(Contribuable ctb, List<Assujettissement> listeAFiltrer) {
 		// ici, on ne prend en compte que les assujettissements "source pur"
-		final Iterator<Assujettissement> iterator = listeAFiltrer.iterator();
-		while (iterator.hasNext()) {
-			final Assujettissement a = iterator.next();
-			if (!(a instanceof SourcierPur)) {
-				iterator.remove();
-			}
-		}
+		listeAFiltrer.removeIf(a -> !(a instanceof SourcierPur));
 
 		return listeAFiltrer.isEmpty() ? ASSUJETTI_ORDINAIRE : null;
 	}

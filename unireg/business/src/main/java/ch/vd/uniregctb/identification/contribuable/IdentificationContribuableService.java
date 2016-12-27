@@ -32,7 +32,7 @@ public interface IdentificationContribuableService {
 	/**
 	 * Au delà de 5 résultats positifs d'identification pour une demande, on ne donne plus le détail...
 	 */
-	static final int NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION = 5;
+	int NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION = 5;
 
 	/**
 	 * Effectue une recherche des contribuables (= personnes physiques) en utilisant les critères spécifiés. Toutes les critères spécifiés

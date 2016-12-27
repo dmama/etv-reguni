@@ -90,12 +90,7 @@ public class EtatCivilCompClient {
 			client = new EtatCivilCompClient(serviceUrl, username, password, query, threadsCount, accessFilename);
 
 			// Enregistre un shutdown hook de manière à afficher les stats même lorsque l'application est interrompue avec un Ctlr-C.
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					shutdown();
-				}
-			});
+			Runtime.getRuntime().addShutdownHook(new Thread(EtatCivilCompClient::shutdown));
 
 			client.run();
 		}

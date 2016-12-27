@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.wsclient.host;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -114,7 +116,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			tracing.end(time, t, "getOperateurs", new Object() {
 				@Override
 				public String toString() {
-					return String.format("typeCollectivite=%s",types.toString());
+					return String.format("typeCollectivite=%s", Arrays.toString(types));
 				}
 			});
 		}

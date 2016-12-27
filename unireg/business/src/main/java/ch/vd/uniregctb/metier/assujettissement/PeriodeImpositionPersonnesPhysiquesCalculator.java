@@ -85,7 +85,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		 * @param tous la liste de tous les assujettissements (= données d'entrée), triée si non-vide
 		 */
 		public DonneesAssujettissement(List<Assujettissement> tous) {
-			this.tous = (tous == null ? Collections.<Assujettissement>emptyList() : tous);
+			this.tous = (tous == null ? Collections.emptyList() : tous);
 		}
 
 		/**
@@ -434,7 +434,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 				}
 			}
 		}
-		return dis.isEmpty() ? Collections.<DeclarationImpotOrdinairePP>emptyList() : dis;
+		return dis.isEmpty() ? Collections.emptyList() : dis;
 	}
 
 	private static DeclarationImpotOrdinairePP getDeclarationPrecedente(ContribuableImpositionPersonnesPhysiques contribuable, int anneePrecedente) {

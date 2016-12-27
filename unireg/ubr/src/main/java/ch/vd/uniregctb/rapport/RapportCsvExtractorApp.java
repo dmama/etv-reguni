@@ -151,7 +151,7 @@ public class RapportCsvExtractorApp {
 		return reader;
 	}
 
-	private static interface Traitement<T extends PdfObject> {
+	private interface Traitement<T extends PdfObject> {
 		void traite(T element);
 	}
 

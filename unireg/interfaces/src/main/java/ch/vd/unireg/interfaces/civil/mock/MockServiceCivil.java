@@ -176,10 +176,10 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setAdresses(sdresses);
 
 		// Conjoints
-		individu.setConjoints(new ArrayList<RelationVersIndividu>());
+		individu.setConjoints(new ArrayList<>());
 
 		// Parents
-		individu.setParents(new ArrayList<RelationVersIndividu>());
+		individu.setParents(new ArrayList<>());
 
 		// Permis
 		individu.setPermis(new PermisListImpl());

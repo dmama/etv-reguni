@@ -48,7 +48,7 @@ public enum EtatEvenementCivil {
 
 	private final boolean isTraite;
 
-	private EtatEvenementCivil(boolean isTraite) {
+	EtatEvenementCivil(boolean isTraite) {
 		this.isTraite = isTraite;
 	}
 

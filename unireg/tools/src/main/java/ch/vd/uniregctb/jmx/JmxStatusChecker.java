@@ -19,7 +19,7 @@ import java.util.TreeMap;
 
 public class JmxStatusChecker {
 
-	private static enum Environment {
+	private enum Environment {
 
 		IN("slv2655v.etat-de-vaud.ch:50609", false),
 		I2("ssv0309v.etat-de-vaud.ch:54609", false),
@@ -32,7 +32,7 @@ public class JmxStatusChecker {
 		private final String hostWithPort;
 		private final boolean withAuth;
 
-		private Environment(String hostWithPort, boolean withAuth) {
+		Environment(String hostWithPort, boolean withAuth) {
 			this.hostWithPort = hostWithPort;
 			this.withAuth = withAuth;
 		}
@@ -49,13 +49,13 @@ public class JmxStatusChecker {
 	private static final String USER = "monitorRole";
 	private static final String PWD = "...se renseigner...";
 
-	private static interface ValueFetcher<T> {
+	private interface ValueFetcher<T> {
 		Class<T> getResultingClass();
 		T getValue(MBeanServerConnection mbeanServer) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException;
 		String getValueDescription();
 	}
 
-	private static interface AttributeSpecific {
+	private interface AttributeSpecific {
 		String getAttributeName();
 	}
 
@@ -366,8 +366,8 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("Catalina:*,type=ThreadPool"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new ThreadPoolCurrentSizeFetcher(name),
-					                                               new ThreadPoolBusySizeFetcher(name)));
+					fetchers.put(name, Arrays.asList(new ThreadPoolCurrentSizeFetcher(name),
+					                                 new ThreadPoolBusySizeFetcher(name)));
 				}
 			}
 
@@ -375,10 +375,10 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=Application,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new ApplicationNameFetcher(name),
-					                                               new ApplicationVersionFetcher(name),
-					                                               new ApplicationStatusFetcher(name),
-					                                               new ApplicationUptimeFetcher(name)));
+					fetchers.put(name, Arrays.asList(new ApplicationNameFetcher(name),
+					                                 new ApplicationVersionFetcher(name),
+					                                 new ApplicationStatusFetcher(name),
+					                                 new ApplicationUptimeFetcher(name)));
 				}
 			}
 
@@ -386,9 +386,9 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:*,type=JmsListeners"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new DestinationNameFetcher(name),
-					                                               new RunningFlagFetcher(name),
-					                                               new NbReceivedMessagesFetcher(name)));
+					fetchers.put(name, Arrays.asList(new DestinationNameFetcher(name),
+					                                 new RunningFlagFetcher(name),
+					                                 new NbReceivedMessagesFetcher(name)));
 				}
 			}
 
@@ -396,9 +396,9 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=Oracle,type=Connections"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new MaxActiveFetcher(name),
-					                                               new NbActiveFetcher(name),
-					                                               new NbIdleFetcher(name)));
+					fetchers.put(name, Arrays.asList(new MaxActiveFetcher(name),
+					                                 new NbActiveFetcher(name),
+					                                 new NbIdleFetcher(name)));
 				}
 			}
 
@@ -406,8 +406,8 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=*Load,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new LoadFetcher(name),
-					                                               new AverageLoadFetcher(name)));
+					fetchers.put(name, Arrays.asList(new LoadFetcher(name),
+					                                 new AverageLoadFetcher(name)));
 				}
 			}
 
@@ -415,8 +415,8 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=*,resourceName=WebserviceLoad,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new LoadFetcher(name),
-					                                               new AverageLoadFetcher(name)));
+					fetchers.put(name, Arrays.asList(new LoadFetcher(name),
+					                                 new AverageLoadFetcher(name)));
 				}
 			}
 
@@ -424,12 +424,12 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=EvenementsCivils,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new NbMeaningfullEventsReceivedFetcher(name),
-					                                               new NbIndividualsAwaitingTreatmentFetcher(name),
-					                                               new NbBatchEventsRejectedExceptionFetcher(name),
-					                                               new NbBatchEventsRejectedToErrorQueueFetcher(name),
-					                                               new NbManualEventsRejectedExceptionFetcher(name),
-					                                               new NbManualEventsRejectedToErrorQueueFetcher(name)));
+					fetchers.put(name, Arrays.asList(new NbMeaningfullEventsReceivedFetcher(name),
+					                                 new NbIndividualsAwaitingTreatmentFetcher(name),
+					                                 new NbBatchEventsRejectedExceptionFetcher(name),
+					                                 new NbBatchEventsRejectedToErrorQueueFetcher(name),
+					                                 new NbManualEventsRejectedExceptionFetcher(name),
+					                                 new NbManualEventsRejectedToErrorQueueFetcher(name)));
 				}
 
 			}

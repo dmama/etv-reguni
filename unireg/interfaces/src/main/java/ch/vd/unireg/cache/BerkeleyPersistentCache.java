@@ -2,7 +2,6 @@ package ch.vd.unireg.cache;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -212,13 +211,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 
 	@Override
 	public void removeValues(Predicate<? super T> removal) {
-		final Iterator<Map.Entry<ObjectKey, T>> iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			final Map.Entry<ObjectKey, T> entry = iterator.next();
-			if (removal.evaluate(entry.getValue())) {
-				iterator.remove();
-			}
-		}
+		map.entrySet().removeIf(entry -> removal.evaluate(entry.getValue()));
 	}
 
 	/**

@@ -17,7 +17,7 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 	private static final String ATTRIBUT = "nationalité";
 	private static final String DATES = "dates";
 
-	private static enum StatutNationalite {
+	private enum StatutNationalite {
 		AUCUNE,
 		INCONNUE,
 		APATRIDE,

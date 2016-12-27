@@ -534,7 +534,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 	 */
 	protected DeclarationImpotOrdinairePP creeDI(TacheEnvoiDeclarationImpotPP tache, AbstractEnvoiDIsPPResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tache.getContribuable();
+		final ContribuableImpositionPersonnesPhysiques contribuable = tache.getContribuable();
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, tache.getDateFin());
 		if (forGestion == null) {
 			String message = "Impossible de trouver un for de gestion pour le contribuable no [" + contribuable.getNumero()
@@ -664,7 +664,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 	protected void ajouterDelaisDeRetourInitial(DeclarationImpotOrdinairePP di, RegDate dateTraitement, RegDate dateExpedition) {
 
 		final PeriodeFiscale periode = di.getPeriode();
-		final Contribuable contribuable = (Contribuable) di.getTiers();
+		final Contribuable contribuable = di.getTiers();
 		Assert.notNull(periode);
 		Assert.notNull(contribuable);
 

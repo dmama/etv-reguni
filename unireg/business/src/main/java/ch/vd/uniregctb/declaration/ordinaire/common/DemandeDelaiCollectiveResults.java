@@ -29,7 +29,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -43,7 +43,7 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 
 		private final String description;
 
-		private IgnoreType(String description) {
+		IgnoreType(String description) {
 			this.description = description;
 		}
 

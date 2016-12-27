@@ -22,7 +22,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 
 		private final String description;
 
-		private Raison(String description) {
+		Raison(String description) {
 			this.description = description;
 		}
 

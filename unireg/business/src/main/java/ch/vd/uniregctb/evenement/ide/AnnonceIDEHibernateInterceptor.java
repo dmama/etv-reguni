@@ -48,12 +48,7 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 	private Dialect dialect;
 	private ServiceIDEService serviceIDEService;
 
-	private final ThreadLocal<HashSet<Long>> modifiedNosEntreprises = new ThreadLocal<HashSet<Long>>() {
-		@Override
-		protected HashSet<Long> initialValue() {
-			return new HashSet<>();
-		}
-	};
+	private final ThreadLocal<HashSet<Long>> modifiedNosEntreprises = ThreadLocal.withInitial(HashSet::new);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 

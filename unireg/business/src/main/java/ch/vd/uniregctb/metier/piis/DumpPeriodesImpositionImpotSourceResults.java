@@ -76,13 +76,13 @@ public class DumpPeriodesImpositionImpotSourceResults extends AbstractJobResults
 		}
 	}
 
-	public static enum CauseIgnorance {
+	public enum CauseIgnorance {
 		ANNULE("La personne physique est annulée"),
 		AUCUNE_PIIS("Aucune période d'imposition IS calculée");
 
 		public final String msg;
 
-		private CauseIgnorance(String msg) {
+		CauseIgnorance(String msg) {
 			this.msg = msg;
 		}
 	}

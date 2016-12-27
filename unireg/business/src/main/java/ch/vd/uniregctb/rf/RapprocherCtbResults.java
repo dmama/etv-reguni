@@ -23,7 +23,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

@@ -16,12 +16,12 @@ public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAcces
 
 //	private static final Logger LOGGER = LoggerFactory.getLogger(ListeDroitsAccesResults.class);
 
-	public static enum ErreurType {
+	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION);
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

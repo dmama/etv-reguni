@@ -7,5 +7,5 @@ public enum TypeAnnonceIDE {
 	CREATION,
 	MUTATION,
 	RADIATION,
-	REACTIVATION;
+	REACTIVATION
 }

@@ -36,7 +36,7 @@ public class PermisListImpl implements PermisList, Serializable {
 	}
 
 	public PermisListImpl() {
-		this(Collections.<Permis>emptyList());
+		this(Collections.emptyList());
 	}
 
 	protected void sort(List<Permis> list) {

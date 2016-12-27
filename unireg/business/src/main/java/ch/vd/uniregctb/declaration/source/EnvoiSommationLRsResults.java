@@ -37,7 +37,7 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

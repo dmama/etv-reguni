@@ -144,7 +144,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				for (Country o : list) {
 					pays.add(PaysImpl.get(o));
 				}
-				Collections.sort(pays, new DateRangeComparator<Pays>());
+				Collections.sort(pays, new DateRangeComparator<>());
 				return Collections.unmodifiableList(pays);
 			}
 		}
@@ -305,7 +305,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				for (PostalLocality fidorLocalite : fidorLocalites) {
 					localites.add(LocaliteImpl.get(fidorLocalite, map));
 				}
-				Collections.sort(localites, new DateRangeComparator<Localite>());
+				Collections.sort(localites, new DateRangeComparator<>());
 				return localites;
 			}
 			else {

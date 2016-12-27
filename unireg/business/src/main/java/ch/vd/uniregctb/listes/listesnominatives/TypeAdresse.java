@@ -23,7 +23,7 @@ public enum TypeAdresse {
 
 	private final String description;
 
-	private TypeAdresse(String description) {
+	TypeAdresse(String description) {
 		this.description = description;
 	}
 

@@ -23,7 +23,7 @@ public class ErreurTraitement extends HibernateEntity {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ErreurTraitement.class);
 
-	public static enum TypeErreur {
+	public enum TypeErreur {
 		ERROR,
 		WARNING
 	}

@@ -8,13 +8,13 @@ import java.util.TreeSet;
 
 public final class EvenementsCivilsNonTraites {
 
-	public static enum Source {
+	public enum Source {
 		REGPP("RegPP"),
 		RCPERS("RCPers");
 
 		private final String libelle;
 
-		private Source(String libelle) {
+		Source(String libelle) {
 			this.libelle = libelle;
 		}
 

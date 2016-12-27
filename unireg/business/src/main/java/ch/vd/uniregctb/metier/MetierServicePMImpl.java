@@ -323,28 +323,26 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	private Map<DomicileStatutKey, List<Etablissement>> buildKeyedEtablissements(RegDate date, List<Etablissement> etablissements) throws MetierServiceException {
-		Map<DomicileStatutKey, List<Etablissement>> map = new HashMap<>();
+		final Map<DomicileStatutKey, List<Etablissement>> map = new HashMap<>();
 		for (Etablissement etablissement : etablissements) {
-			DomicileStatutKey key = createEtablissementKey(date, etablissement);
+			final DomicileStatutKey key = createEtablissementKey(date, etablissement);
 			if (key == null) {
 				continue;
 			}
-			if (map.get(key) == null) {
-				map.put(key, new ArrayList<>());
-			}
+			map.computeIfAbsent(key, k -> new ArrayList<>());
 			map.get(key).add(etablissement);
 		}
 		return map;
 	}
 
 	private Map<DomicileStatutKey, List<SiteOrganisation>> buildKeyedSites(RegDate date, Map<Long, SiteOrganisation> sites) {
-		Map<DomicileStatutKey, List<SiteOrganisation>> map = new HashMap<>();
+		final Map<DomicileStatutKey, List<SiteOrganisation>> map = new HashMap<>();
 		for (SiteOrganisation site : sites.values()) {
-			DomicileStatutKey key = createSiteKey(date, site);
-			if (key == null) continue;
-			if (map.get(key) == null) {
-				map.put(key, new ArrayList<>());
+			final DomicileStatutKey key = createSiteKey(date, site);
+			if (key == null) {
+				continue;
 			}
+			map.computeIfAbsent(key, k -> new ArrayList<>());
 			map.get(key).add(site);
 		}
 		return map;

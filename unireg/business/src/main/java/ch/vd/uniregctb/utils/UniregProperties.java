@@ -21,7 +21,7 @@ public interface UniregProperties {
 	/**
 	 * Property adapter factory bean
 	 */
-	static class UniregPropertiesAdapterFactoryBean extends PropertiesAdapterFactoryBean {
+	class UniregPropertiesAdapterFactoryBean extends PropertiesAdapterFactoryBean {
 		@Override
 		public PropertiesAdapter createInstance(Object obj) {
 			if (obj instanceof UniregProperties) {

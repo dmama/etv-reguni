@@ -111,7 +111,7 @@ public enum TypeEvenementCivil {
 	 * @param i   code identifiant le type d'événement
 	 * @param description description du type d'événement
 	 */
-	private TypeEvenementCivil(int i, String description) {
+	TypeEvenementCivil(int i, String description) {
 		this(i, description, false);
 	}
 
@@ -122,7 +122,7 @@ public enum TypeEvenementCivil {
 	 * @param description description du type d'événement
 	 * @param ignore vrai si un événement civil de ce type doit être complètement ignoré
 	 */
-	private TypeEvenementCivil(int i, String description, boolean ignore) {
+	TypeEvenementCivil(int i, String description, boolean ignore) {
 		this.id = i;
 		this.description = description;
 		this.ignore = ignore;

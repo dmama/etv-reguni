@@ -12,7 +12,7 @@ public enum TypeResultatQuittancement {
 	private final boolean ok;
 	private final String description;
 
-	private TypeResultatQuittancement(boolean ok, String description) {
+	TypeResultatQuittancement(boolean ok, String description) {
 		this.ok = ok;
 		this.description = description;
 	}

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.listes.assujettis;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -82,14 +81,14 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		}
 	}
 
-	public static enum CauseIgnorance {
+	public enum CauseIgnorance {
 		SOURCIER_PUR("Sourcier pur"),
 		NON_ASSUJETTI_FIN_PERIODE("Non assujetti en fin de période fiscale"),
 		NON_ASSUJETTI("Non assujetti");
 
 		public final String description;
 
-		private CauseIgnorance(String description) {
+		CauseIgnorance(String description) {
 			this.description = description;
 		}
 	}
@@ -125,13 +124,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 
 			// si on ne doit pas tenir compte des assujettissement source pure, on les enlève maintenant
 			if (!avecSourciersPurs) {
-				final Iterator<Assujettissement> iterator = assujettissements.iterator();
-				while (iterator.hasNext()) {
-					final Assujettissement assujettissement = iterator.next();
-					if (assujettissement instanceof SourcierPur) {
-						iterator.remove();
-					}
-				}
+				assujettissements.removeIf(assujettissement -> assujettissement instanceof SourcierPur);
 
 				// s'il ne reste plus rien, c'est que le contribuable était toujours sourcier pur...
 				if (assujettissements.isEmpty()) {

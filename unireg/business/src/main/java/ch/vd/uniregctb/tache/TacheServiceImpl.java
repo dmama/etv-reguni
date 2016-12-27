@@ -1626,7 +1626,7 @@ public class TacheServiceImpl implements TacheService {
 
 	private List<PeriodeImposition> getPeriodesImpositionHisto(Contribuable contribuable) throws AssujettissementException {
 		final List<PeriodeImposition> pis = periodeImpositionService.determine(contribuable);
-		return pis == null ? Collections.<PeriodeImposition>emptyList() : pis;
+		return pis == null ? Collections.emptyList() : pis;
 	}
 
 	@SuppressWarnings({"unchecked"})

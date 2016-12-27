@@ -131,11 +131,11 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 
 	@Override
 	public <T> List<T> find(String hql, @Nullable FlushMode flushMode) {
-		return find(hql, (Map<String, ?>) null, flushMode);
+		return find(hql, null, flushMode);
 	}
 
 	@Override
 	public <T> Iterator<T> iterate(String hql, @Nullable FlushMode flushMode) {
-		return iterate(hql, (Map<String, ?>) null, flushMode);
+		return iterate(hql, null, flushMode);
 	}
 }

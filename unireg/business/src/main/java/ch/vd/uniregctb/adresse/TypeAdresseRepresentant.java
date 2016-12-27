@@ -37,7 +37,7 @@ public enum TypeAdresseRepresentant {
 	final TypeRapportEntreTiers typeRapport;
 	final SourceType typeSource;
 
-	private TypeAdresseRepresentant(TypeRapportEntreTiers typeRapport, SourceType typeSource) {
+	TypeAdresseRepresentant(TypeRapportEntreTiers typeRapport, SourceType typeSource) {
 		this.typeRapport = typeRapport;
 		this.typeSource = typeSource;
 	}

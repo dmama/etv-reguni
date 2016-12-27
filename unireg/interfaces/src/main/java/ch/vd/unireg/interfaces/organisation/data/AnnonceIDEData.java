@@ -77,7 +77,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		if (statut != null) {
 			this.statut = statut;
 		} else {
-			new StatutImpl(StatutAnnonce.A_TRANSMETTRE, dateAnnonce, Collections.<Pair<String,String>>emptyList());
+			new StatutImpl(StatutAnnonce.A_TRANSMETTRE, dateAnnonce, Collections.emptyList());
 		}
 		this.infoServiceIDEObligEtendues = infoServiceIDEObligEtendues;
 	}

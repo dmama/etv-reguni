@@ -15,7 +15,7 @@ public enum TypeAdresseFiscale {
 
 	private final TypeAdresseTiers coreType;
 
-	private TypeAdresseFiscale(TypeAdresseTiers coreType) {
+	TypeAdresseFiscale(TypeAdresseTiers coreType) {
 		this.coreType = coreType;
 	}
 

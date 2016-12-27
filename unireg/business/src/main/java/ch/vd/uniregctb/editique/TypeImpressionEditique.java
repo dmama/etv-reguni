@@ -17,7 +17,7 @@ public enum TypeImpressionEditique {
 
 	private final String code;
 
-	private TypeImpressionEditique(String code) {
+	TypeImpressionEditique(String code) {
 		this.code = code;
 	}
 

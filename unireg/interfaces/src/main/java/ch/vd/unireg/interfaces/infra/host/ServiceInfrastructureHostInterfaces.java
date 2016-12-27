@@ -306,7 +306,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
 		final Rue rue = getRueByNumero(numero, null);
-		return rue != null ? Collections.singletonList(rue) : Collections.<Rue>emptyList();
+		return rue != null ? Collections.singletonList(rue) : Collections.emptyList();
 	}
 
 	/**
@@ -329,7 +329,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	public List<Localite> getLocalitesByONRP(int numeroOrdre) throws ServiceInfrastructureException {
 		try {
 			final Localite localite = LocaliteImpl.get(serviceInfrastructure.getLocalite(numeroOrdre));
-			return localite == null ? Collections.<Localite>emptyList() : Collections.singletonList(localite);
+			return localite == null ? Collections.emptyList() : Collections.singletonList(localite);
 		}
 		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la localite", e);

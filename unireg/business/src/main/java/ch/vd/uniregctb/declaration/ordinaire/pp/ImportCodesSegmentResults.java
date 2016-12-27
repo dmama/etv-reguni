@@ -30,7 +30,7 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 		}
 	}
 
-	public static enum ErreurType {
+	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION),
 		CTB_INCONNU("Le contribuable est inconnu"),
 		TIERS_PAS_CONTRIBUABLE("Le tiers n'est pas un contribuable"),
@@ -40,7 +40,7 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

@@ -10,7 +10,7 @@ public enum TypeAttenteDemande {
 	private final int code;
 	private final String description;
 
-	private TypeAttenteDemande(int code, String motif) {
+	TypeAttenteDemande(int code, String motif) {
 		this.code = code;
 		this.description = motif;
 	}

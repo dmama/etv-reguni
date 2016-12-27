@@ -58,8 +58,8 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 		Assert.notNull(periode, "La période fiscale ne doit pas être nulle.");
 
 		// Recherche du modèle de document correspondant
-		final Map<String, Object> params = buildNamedParameters(Pair.<String, Object>of("pf", periode),
-		                                                        Pair.<String, Object>of("typeDocument", TypeDocument.LISTE_RECAPITULATIVE));
+		final Map<String, Object> params = buildNamedParameters(Pair.of("pf", periode),
+		                                                        Pair.of("typeDocument", TypeDocument.LISTE_RECAPITULATIVE));
 		final String query = "FROM ModeleDocument m WHERE m.periodeFiscale = :pf AND m.typeDocument = :typeDocument";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 		final List<ModeleDocument> list = find(query, params, mode);

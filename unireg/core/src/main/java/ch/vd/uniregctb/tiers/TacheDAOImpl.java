@@ -283,10 +283,10 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		}
 		else {
 			commentSql = " and tache.commentaire=:commentaire";
-			parametres.add(Pair.<String, Object>of("commentaire", commentaire));
+			parametres.add(Pair.of("commentaire", commentaire));
 		}
 		final String query = String.format("from Tache tache where tache.contribuable.id = :noCtb and tache.annulationDate is null and tache.etat in ('EN_INSTANCE', 'EN_COURS')%s", commentSql);
-		parametres.add(Pair.<String, Object>of("noCtb", noCtb));
+		parametres.add(Pair.of("noCtb", noCtb));
 		final List<Tache> list = find(query, buildNamedParameters(parametres), FlushMode.MANUAL);
 		return !list.isEmpty();
 	}
@@ -316,9 +316,9 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		// Recherche dans la base de données
 		final String query = "from TacheEnvoiDeclarationImpotPP tache where tache.contribuable.id = :noCtb and tache.dateDebut = :debut and tache.dateFin = :fin and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
 		final List<Tache> list = find(query,
-		                              buildNamedParameters(Pair.<String, Object>of("noCtb", noCtb),
-		                                                   Pair.<String, Object>of("debut", dateDebut),
-		                                                   Pair.<String, Object>of("fin", dateFin)),
+		                              buildNamedParameters(Pair.of("noCtb", noCtb),
+		                                                   Pair.of("debut", dateDebut),
+		                                                   Pair.of("fin", dateFin)),
 		                              FlushMode.MANUAL);
 		return !list.isEmpty();
 	}
@@ -333,7 +333,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 		final Map<TypeTache, List<String>> map = new EnumMap<>(TypeTache.class);
 		final List<Object[]> commentaires = (List<Object[]>) query.list();
 		for (Object[] row : commentaires) {
-			final TypeTache type = typesTachesDiscriminators.get((String) row[0]);
+			final TypeTache type = typesTachesDiscriminators.get(row[0]);
 			final List<String> list;
 			if (map.containsKey(type)) {
 				list = map.get(type);

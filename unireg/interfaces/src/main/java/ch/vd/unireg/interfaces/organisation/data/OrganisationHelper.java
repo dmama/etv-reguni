@@ -175,13 +175,13 @@ public abstract class OrganisationHelper {
 	}
 
 	public static List<Adresse> getAdresses(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<AdresseLegaleRCEnt>(), new SiteDataExtractor<List<AdresseLegaleRCEnt>>() {
+		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), new SiteDataExtractor<List<AdresseLegaleRCEnt>>() {
 			@Override
 			public List<AdresseLegaleRCEnt> extractData(SiteOrganisation site) {
 				return site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
 			}
 		});
-		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<AdresseEffectiveRCEnt>(), new SiteDataExtractor<List<AdresseEffectiveRCEnt>>() {
+		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), new SiteDataExtractor<List<AdresseEffectiveRCEnt>>() {
 			@Override
 			public List<AdresseEffectiveRCEnt> extractData(SiteOrganisation site) {
 				return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
@@ -208,7 +208,7 @@ public abstract class OrganisationHelper {
 	 * @return La succession de plage contenant l'information de capital.
 	 */
 	public static List<Capital> getCapitaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<Capital>(), new SiteDataExtractor<List<Capital>>() {
+		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), new SiteDataExtractor<List<Capital>>() {
 			@Override
 			public List<Capital> extractData(SiteOrganisation site) {
 				return site.getDonneesRC() != null ? site.getDonneesRC().getCapital() : null;
@@ -231,12 +231,7 @@ public abstract class OrganisationHelper {
 	 * @return La succession de plage contenant l'information de siege.
 	 */
 	public static List<Domicile> getSiegesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<Domicile>(), new SiteDataExtractor<List<Domicile>>() {
-			@Override
-			public List<Domicile> extractData(SiteOrganisation site) {
-				return site.getDomiciles();
-			}
-		});
+		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), SiteOrganisation::getDomiciles);
 	}
 
 	/**
@@ -250,12 +245,7 @@ public abstract class OrganisationHelper {
 	 * @return La succession de plage contenant l'information de nom.
 	 */
 	public static List<DateRanged<String>> getNomsPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<String>>>() {
-			@Override
-			public List<DateRanged<String>> extractData(SiteOrganisation site) {
-				return site.getNom();
-			}
-		});
+		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNom);
 	}
 
 	/**
@@ -269,12 +259,7 @@ public abstract class OrganisationHelper {
 	 * @return La succession de plage contenant l'information de nom.
 	 */
 	public static List<DateRanged<String>> getNomsAdditionnelsPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<String>>>() {
-			@Override
-			public List<DateRanged<String>> extractData(SiteOrganisation site) {
-				return site.getNomAdditionnel();
-			}
-		});
+		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getNomAdditionnel);
 	}
 
 	/**
@@ -288,12 +273,7 @@ public abstract class OrganisationHelper {
 	 * @return La succession de plage contenant l'information de forme legale.
 	 */
 	public static List<DateRanged<FormeLegale>> getFormesLegalesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<FormeLegale>>>() {
-			@Override
-			public List<DateRanged<FormeLegale>> extractData(SiteOrganisation site) {
-				return site.getFormeLegale();
-			}
-		});
+		return extractRangedDataFromSitesPrincipaux(donneesSites, SiteOrganisation::getFormeLegale);
 	}
 
 	/**

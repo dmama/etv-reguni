@@ -218,8 +218,8 @@ public class DeterminationDIsPMAEmettreProcessor {
 		 * @param aIgnorer Périodes d'imposition sur la bonne PF mais dont la date de fin est postérieure (ou égale) à la date de traitement (= à ignorer)
 		 */
 		public TraitementPeriodesImpositionData(List<PeriodeImpositionPersonnesMorales> aTraiter, List<PeriodeImpositionPersonnesMorales> aIgnorer) {
-			this.aTraiter = aTraiter == null ? Collections.<PeriodeImpositionPersonnesMorales>emptyList() : aTraiter;
-			this.aIgnorer = aIgnorer == null ? Collections.<PeriodeImpositionPersonnesMorales>emptyList() : aIgnorer;
+			this.aTraiter = aTraiter == null ? Collections.emptyList() : aTraiter;
+			this.aIgnorer = aIgnorer == null ? Collections.emptyList() : aIgnorer;
 		}
 	}
 

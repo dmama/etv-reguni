@@ -221,7 +221,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			}
 		}
 		// TODO le jour où on introduira la notion d'historique dans le Mock, il ne faudra pas oublier de trier les valeurs ici...
-		return localite == null ? Collections.<Localite>emptyList() : Collections.singletonList(localite);
+		return localite == null ? Collections.emptyList() : Collections.singletonList(localite);
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 				histo.add(p);
 			}
 		}
-		return histo.isEmpty() ? Collections.<Pays>emptyList() : histo;
+		return histo.isEmpty() ? Collections.emptyList() : histo;
 	}
 
 	@Override
@@ -482,12 +482,12 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Override
 	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
-		return Arrays.<TypeRegimeFiscal>asList(MockTypeRegimeFiscal.ALL);
+		return Arrays.asList(MockTypeRegimeFiscal.ALL);
 	}
 
 	@Override
 	public List<GenreImpotMandataire> getTousLesGenresImpotMandataires() {
-		return Arrays.<GenreImpotMandataire>asList(MockGenreImpotMandataire.ALL);
+		return Arrays.asList(MockGenreImpotMandataire.ALL);
 	}
 
 	@Override

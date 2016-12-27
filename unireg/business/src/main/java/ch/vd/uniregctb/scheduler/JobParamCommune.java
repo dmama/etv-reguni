@@ -11,7 +11,7 @@ public class JobParamCommune extends JobParamInteger {
 
 	private final TypeCommune type;
 
-	public static enum TypeCommune {
+	public enum TypeCommune {
 		COMMUNE_CH,
 		COMMUNE_VD,
 		COMMUNE_HC

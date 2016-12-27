@@ -26,7 +26,7 @@ public interface ListeRecapListManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<ListeRecapDetailView> find(ListeRecapCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException;
+	List<ListeRecapDetailView> find(ListeRecapCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException;
 
 	/**
 	 * Renvoie le nombre de listes récapitulatives correspondant aux critères donnés
@@ -34,6 +34,6 @@ public interface ListeRecapListManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int count(ListeRecapCriteria lrCriteria);
+	int count(ListeRecapCriteria lrCriteria);
 
 }

@@ -16,7 +16,7 @@ public class MockEtatCivilList extends AbstractEtatCivilList {
 	private final boolean frozen;
 
 	public MockEtatCivilList() {
-		this(Collections.<EtatCivil>emptyList(), false);
+		this(Collections.emptyList(), false);
 	}
 
 	public MockEtatCivilList(List<EtatCivil> list, boolean frozen) {

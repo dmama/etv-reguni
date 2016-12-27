@@ -18,7 +18,7 @@ public class EchoirDIsPPResults extends JobResults<IdentifiantDeclaration, Echoi
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

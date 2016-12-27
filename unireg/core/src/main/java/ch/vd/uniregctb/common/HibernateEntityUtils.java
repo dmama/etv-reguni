@@ -69,7 +69,7 @@ public abstract class HibernateEntityUtils {
 	 * @throws Exception si les deux entités ne sont pas égales
 	 */
 	public static void assertEntityEquals(HibernateEntity expected, HibernateEntity actual) throws Exception {
-		assertEntityEquals(expected, actual, "", new HashSet<EntityKey>());
+		assertEntityEquals(expected, actual, "", new HashSet<>());
 	}
 
 	@SuppressWarnings({"unchecked"})

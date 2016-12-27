@@ -12,7 +12,7 @@ public enum TypeExtractionDonneesRpt {
 
 	private final String description;
 
-	private TypeExtractionDonneesRpt(String description) {
+	TypeExtractionDonneesRpt(String description) {
 		this.description = description;
 	}
 

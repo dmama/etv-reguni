@@ -419,12 +419,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final List<ITable> retTables;
 			if (parts.rapportsEntreTiers && !allRETIds.isEmpty()) {
 				// Les rapports-entre-tiers
-				retTables = queryDataSet(allRETIds, connection, "Récupération des rapports-entre-tiers", status, new QueryDataSetCallback() {
-					@Override
-					public QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException {
-						return queryRapportEntreTiersData(ids, connection);
-					}
-				});
+				retTables = queryDataSet(allRETIds, connection, "Récupération des rapports-entre-tiers", status, DatabaseServiceImpl::queryRapportEntreTiersData);
 			}
 			else {
 				retTables = Collections.emptyList();

@@ -22,8 +22,8 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	@SuppressWarnings("unchecked")
 	private ParametrePeriodeFiscalePP getPPByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
 		final List<ParametrePeriodeFiscalePP> list = find("FROM ParametrePeriodeFiscalePP p WHERE p.periodefiscale = :pf and p.typeContribuable = :typeCtb",
-		                                                  buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
-		                                                                       Pair.<String, Object>of("typeCtb", typeCtb)),
+		                                                  buildNamedParameters(Pair.of("pf", periodeFiscale),
+		                                                                       Pair.of("typeCtb", typeCtb)),
 		                                                  null);
 		if (list == null || list.isEmpty()) {
 			return null;
@@ -34,8 +34,8 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	@SuppressWarnings("unchecked")
 	private ParametrePeriodeFiscalePM getPMByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
 		final List<ParametrePeriodeFiscalePM> list = find("FROM ParametrePeriodeFiscalePM p WHERE p.periodefiscale = :pf and p.typeContribuable = :typeCtb",
-		                                                  buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
-		                                                                       Pair.<String, Object>of("typeCtb", typeCtb)),
+		                                                  buildNamedParameters(Pair.of("pf", periodeFiscale),
+		                                                                       Pair.of("typeCtb", typeCtb)),
 		                                                  null);
 		if (list == null || list.isEmpty()) {
 			return null;
@@ -101,8 +101,8 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 
 	private ParametrePeriodeFiscaleEmolument getEmolumentByPeriodeFiscaleEtTypeDocument(PeriodeFiscale periodeFiscale, TypeDocumentEmolument typeDocument) {
 		final List<ParametrePeriodeFiscaleEmolument> list = find("FROM ParametrePeriodeFiscaleEmolument p WHERE p.periodefiscale = :pf AND p.typeDocument = :typeDoc",
-		                                                         buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
-		                                                                              Pair.<String, Object>of("typeDoc", typeDocument)),
+		                                                         buildNamedParameters(Pair.of("pf", periodeFiscale),
+		                                                                              Pair.of("typeDoc", typeDocument)),
 		                                                         null);
 		if (list == null || list.isEmpty()) {
 			return null;

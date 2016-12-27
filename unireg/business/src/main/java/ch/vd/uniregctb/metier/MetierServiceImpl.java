@@ -1692,7 +1692,7 @@ public class MetierServiceImpl implements MetierService {
 		 */
 		tiersService.reopenRapportsEntreTiers(menage,
 		                                      date.getOneDayBefore(),
-		                                      Collections.<TypeRapportEntreTiers>emptySet(),
+		                                      Collections.emptySet(),
 		                                      EnumSet.allOf(TypeRapportEntreTiers.class));
 
 		/*

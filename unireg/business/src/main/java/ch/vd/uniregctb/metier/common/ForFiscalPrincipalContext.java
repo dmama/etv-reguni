@@ -146,7 +146,7 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		if (current == null) {
 			throw new IllegalStateException("Je refuse de glisser vers l'abîme !");
 		}
-		final List<FFP> newNext = nexts.size() > 1 ? new ArrayList<>(nexts.subList(1, nexts.size())) : Collections.<FFP>emptyList();
+		final List<FFP> newNext = nexts.size() > 1 ? new ArrayList<>(nexts.subList(1, nexts.size())) : Collections.emptyList();
 		final List<FFP> newPrevious = new ArrayList<>(previouses.size() + 1);
 		newPrevious.add(current);
 		newPrevious.addAll(previouses);
@@ -164,7 +164,7 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		final List<FFP> newNext = new ArrayList<>(nexts.size() + 1);
 		newNext.add(current);
 		newNext.addAll(nexts);
-		final List<FFP> newPrevious = previouses.size() > 1 ? new ArrayList<>(previouses.subList(1, previouses.size())) : Collections.<FFP>emptyList();
+		final List<FFP> newPrevious = previouses.size() > 1 ? new ArrayList<>(previouses.subList(1, previouses.size())) : Collections.emptyList();
 		final FFP newCurrent = previouses.isEmpty() ? null : previouses.get(0);
 		return new ForFiscalPrincipalContext<>(newCurrent, newNext, newPrevious);
 	}

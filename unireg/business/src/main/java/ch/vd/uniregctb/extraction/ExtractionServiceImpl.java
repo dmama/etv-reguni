@@ -99,7 +99,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		this.inboxService = inboxService;
 	}
 
-	private static enum JobState {
+	private enum JobState {
 		/**
 		 * Premier état : en attente de démarrage
 		 */

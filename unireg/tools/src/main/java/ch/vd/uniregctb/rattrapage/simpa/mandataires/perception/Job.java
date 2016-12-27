@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,12 +60,7 @@ public class Job {
 		try (InputStream is = Job.class.getResourceAsStream(MAPPING);
 		     Reader r = new InputStreamReader(is, Charset.defaultCharset())) {
 
-			data = Helper.loadFile(MAPPING, r, new Helper.Parser<MappingMigration>() {
-				@Override
-				public MappingMigration parse(String string) throws ParseException {
-					return MappingMigration.of(string);
-				}
-			});
+			data = Helper.loadFile(MAPPING, r, MappingMigration::of);
 		}
 
 		System.err.println("Fichier " + MAPPING + " : " + data.size() + " ligne(s) chargée(s).");
@@ -81,14 +75,9 @@ public class Job {
 	private static Map<Long, List<ExtractionSimpa>> loadExtractionParMandant() throws IOException {
 		final List<ExtractionSimpa> extraction;
 		try (InputStream is = Job.class.getResourceAsStream(EXTRACTION);
-		     Reader r = new InputStreamReader(is, Charset.defaultCharset())) {;
+		     Reader r = new InputStreamReader(is, Charset.defaultCharset())) {
 
-			extraction = Helper.loadFile(EXTRACTION, r, new Helper.Parser<ExtractionSimpa>() {
-				@Override
-				public ExtractionSimpa parse(String string) throws ParseException {
-					return ExtractionSimpa.of(string);
-				}
-			});
+			extraction = Helper.loadFile(EXTRACTION, r, ExtractionSimpa::of);
 		}
 
 		System.err.println("Fichier " + EXTRACTION + " : " + extraction.size() + " ligne(s) chargée(s).");

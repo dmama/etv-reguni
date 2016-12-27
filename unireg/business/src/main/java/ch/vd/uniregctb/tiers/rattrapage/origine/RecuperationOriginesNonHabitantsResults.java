@@ -42,7 +42,7 @@ public class RecuperationOriginesNonHabitantsResults extends AbstractJobResults<
 		this.interrupted = interrupted;
 	}
 
-	public static enum RaisonIgnorement {
+	public enum RaisonIgnorement {
 		HABITANT_VD("Habitant vaudois"),
 		AUCUNE_ORIGINE_CIVILE_CONNUE("Ancient habitant pour lequel le registre civil ne connait pas d'origine"),
 		NON_HABITANT_SANS_LIBELLE_ORIGINE("Aucune donnée"),
@@ -51,7 +51,7 @@ public class RecuperationOriginesNonHabitantsResults extends AbstractJobResults<
 
 		private final String libelle;
 
-		private RaisonIgnorement(String libelle) {
+		RaisonIgnorement(String libelle) {
 			this.libelle = libelle;
 		}
 

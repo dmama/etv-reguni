@@ -119,7 +119,7 @@ public class TableFillerWithCivilValues {
 		serviceCivil = serviceCivilTracing;
 	}
 
-	private static interface ConnectionCallback<T> {
+	private interface ConnectionCallback<T> {
 		T doInConnection(Connection con) throws SQLException;
 	}
 
@@ -644,7 +644,7 @@ public class TableFillerWithCivilValues {
 		return StringUtils.abbreviate(msg, 255);
 	}
 
-	private static enum TypeAdresse { CONTACT, RESIDENCE }
+	private enum TypeAdresse { CONTACT, RESIDENCE }
 
 	private static Adresse getCurrentAdresse(Collection<Adresse> all, TypeAdresse type) {
 		final TypeAdresseCivil typeCivil;

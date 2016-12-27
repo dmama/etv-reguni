@@ -123,7 +123,7 @@ public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
 	private TemporaryFile asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsPMResults.Info> list, String filename, StatusManager status) {
 		final TemporaryFile content;
 		if (!list.isEmpty()) {
-			content = CsvHelper.asCsvTemporaryFile((List<EnvoiSommationsDIsPMResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsPMResults.Info>() {
+			content = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<EnvoiSommationsDIsPMResults.Info>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append(list.get(0).getCsvEntete());

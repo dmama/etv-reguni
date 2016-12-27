@@ -203,7 +203,7 @@ public class AutreCommunauteDataExtractor {
 			list.addAll(ac.getUidNumbers().getUidNumber());
 		}
 		Collections.sort(list);
-		return list.isEmpty() ? Collections.<String>emptyList() : list;
+		return list.isEmpty() ? Collections.emptyList() : list;
 	}
 }
 

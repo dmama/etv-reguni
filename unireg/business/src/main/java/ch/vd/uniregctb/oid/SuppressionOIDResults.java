@@ -18,7 +18,7 @@ public class SuppressionOIDResults extends JobResults<Long, SuppressionOIDResult
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

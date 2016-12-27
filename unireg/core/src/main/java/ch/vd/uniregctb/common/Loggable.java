@@ -5,16 +5,16 @@ import java.util.Date;
 
 public interface Loggable extends Annulable {
 
-	public String getLogCreationUser();
+	String getLogCreationUser();
 
-	public Date getLogCreationDate();
+	Date getLogCreationDate();
 
-	public String getLogModifUser();
+	String getLogModifUser();
 
-	public Timestamp getLogModifDate();
+	Timestamp getLogModifDate();
 
-	public Date getAnnulationDate();
+	Date getAnnulationDate();
 
-	public String getAnnulationUser();
+	String getAnnulationUser();
 
 }

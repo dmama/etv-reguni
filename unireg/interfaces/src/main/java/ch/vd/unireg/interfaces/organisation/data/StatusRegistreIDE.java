@@ -9,5 +9,5 @@ public enum StatusRegistreIDE {
 	EN_MUTATION,
 	RADIE,
 	DEFINITIVEMENT_RADIE,
-	ANNULE;
+	ANNULE
 }

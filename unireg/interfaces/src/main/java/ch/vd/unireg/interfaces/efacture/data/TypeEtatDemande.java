@@ -19,7 +19,7 @@ public enum TypeEtatDemande {
 
 	private final TypeAttenteDemande typeAttente;
 
-	private TypeEtatDemande(@Nullable TypeAttenteDemande type) {
+	TypeEtatDemande(@Nullable TypeAttenteDemande type) {
 		this.typeAttente = type;
 	}
 

@@ -440,7 +440,7 @@ public class AppariementServiceImpl implements AppariementService {
 		for (RapportEntreTiers rapport : rapports) {
 			if (!rapport.isAnnule() && rapport.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && !((ActiviteEconomique) rapport).isPrincipal()) {
 				final Etablissement etb = (Etablissement) tiersService.getTiers(rapport.getObjetId());
-				liste.add(Pair.<Etablissement, DateRange>of(etb, rapport));
+				liste.add(Pair.of(etb, rapport));
 			}
 		}
 

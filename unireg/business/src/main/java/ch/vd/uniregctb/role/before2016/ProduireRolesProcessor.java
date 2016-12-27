@@ -151,7 +151,7 @@ public class ProduireRolesProcessor {
 
 		@Override
 		public Set<Integer> getCommunes(Integer ofsReference) {
-			return ofsCommunes.contains(ofsReference) ? Collections.unmodifiableSet(ofsCommunes) : Collections.<Integer>emptySet();
+			return ofsCommunes.contains(ofsReference) ? Collections.unmodifiableSet(ofsCommunes) : Collections.emptySet();
 		}
 	}
 
@@ -919,7 +919,7 @@ public class ProduireRolesProcessor {
 				fors = new DecompositionForsPeriode(ctb, rangePrecedent.getDateDebut(), rangePrecedent.getDateFin());
 			}
 			final List<Assujettissement> computed = determineAssujettissement(fors, ctb, rapport);
-			final List<Assujettissement> newlyStored = computed != null ? computed : Collections.<Assujettissement>emptyList();
+			final List<Assujettissement> newlyStored = computed != null ? computed : Collections.emptyList();
 			assujettissementPeriodePrecedente.put(dateDebutPeriodeCourante, newlyStored);
 			return computed;
 		}

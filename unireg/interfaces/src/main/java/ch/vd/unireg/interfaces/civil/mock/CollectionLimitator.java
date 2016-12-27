@@ -3,7 +3,6 @@ package ch.vd.unireg.interfaces.civil.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -69,13 +68,7 @@ public class CollectionLimitator {
 		else {
 			final List<T> limited = new ArrayList<>(original);
 			if (date != null) {
-				final Iterator<T> iter = limited.iterator();
-				while (iter.hasNext()) {
-					final T element = iter.next();
-					if (!limitator.keep(element, date)) {
-						iter.remove();
-					}
-				}
+				limited.removeIf(element -> !limitator.keep(element, date));
 			}
 			return Collections.unmodifiableList(limited.size() == original.size() ? new ArrayList<>(original) : limited);
 		}

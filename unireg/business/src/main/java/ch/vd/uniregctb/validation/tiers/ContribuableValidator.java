@@ -66,7 +66,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 
 	@NotNull
 	protected static <T> List<T> neverNull(List<T> list) {
-		return list == null ? Collections.<T>emptyList() : list;
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override

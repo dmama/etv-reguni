@@ -41,7 +41,6 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiqu
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.parametrage.DelaisService;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -295,7 +294,7 @@ public class EnvoiSommationsDIsPPProcessor {
 	 * Si la DI était optionelle (ou remplacée par une note), alors il ne faut pas la sommer
 	 */
 	private boolean isOptionnelle(DeclarationImpotOrdinaire di, List<Assujettissement> assujettissements) {
-		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
+		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(di.getTiers(), di.getPeriode().getAnnee());
 		boolean optionnel = true;
 		for (Assujettissement a : assujettissements) {
 			final PeriodeImpositionPersonnesPhysiques periodeImposition = periodeImpositionService.determinePeriodeImposition(fors, a);

@@ -35,8 +35,8 @@ public class StatsEvenementsExternesResults {
 	private final List<EvenementExterneErreur> erreurs;
 
 	public StatsEvenementsExternesResults(Map<EtatEvenementExterne, Integer> etats, List<EvenementExterneErreur> erreurs) {
-		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementExterne, Integer>emptyMap();
-		this.erreurs = erreurs != null ? Collections.unmodifiableList(erreurs) : Collections.<EvenementExterneErreur>emptyList();
+		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.emptyMap();
+		this.erreurs = erreurs != null ? Collections.unmodifiableList(erreurs) : Collections.emptyList();
 	}
 
 	public Map<EtatEvenementExterne, Integer> getEtats() {

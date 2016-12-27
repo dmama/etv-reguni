@@ -43,7 +43,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	@Override
 	public OrganisationRCEnt build() {
-		return new OrganisationRCEnt(numeroOrganisation, Collections.<String, List<DateRanged<String>>>emptyMap(), sites,
+		return new OrganisationRCEnt(numeroOrganisation, Collections.emptyMap(), sites,
 		                             donneesSites);
 	}
 

@@ -160,9 +160,9 @@ public class StatsEvenementsIdentificationContribuableResults {
 	public StatsEvenementsIdentificationContribuableResults(Map<IdentificationContribuable.Etat, Integer> etats,
 	                                                        Map<IdentificationContribuable.Etat, Integer> etatsNouveaux,
 	                                                        List<EvenementInfo> aTraiter) {
-		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<IdentificationContribuable.Etat, Integer>emptyMap();
-		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<IdentificationContribuable.Etat, Integer>emptyMap();
-		this.aTraiter = aTraiter != null ? Collections.unmodifiableList(aTraiter) : Collections.<EvenementInfo>emptyList();
+		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.emptyMap();
+		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.emptyMap();
+		this.aTraiter = aTraiter != null ? Collections.unmodifiableList(aTraiter) : Collections.emptyList();
 	}
 
 	public Map<IdentificationContribuable.Etat, Integer> getEtats() {

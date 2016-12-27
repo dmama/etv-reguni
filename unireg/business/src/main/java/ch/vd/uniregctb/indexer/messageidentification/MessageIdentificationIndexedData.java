@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.StringParser;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
@@ -62,12 +61,7 @@ public class MessageIdentificationIndexedData implements Serializable {
 	public MessageIdentificationIndexedData(Document doc) {
 		this.id = DocumentExtractorHelper.getLongValue(LuceneHelper.F_ENTITYID, doc);
 		this.typeMesssage = DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.TYPE_MESSAGE, doc);
-		this.typeDemande = DocumentExtractorHelper.getValue(LuceneHelper.F_DOCSUBTYPE, doc, new StringParser<TypeDemande>() {
-			@Override
-			public TypeDemande parse(String string) throws IllegalArgumentException {
-				return DOCSUBTYPE_TYPE_DEMANDE_MAP.get(string);
-			}
-		});
+		this.typeDemande = DocumentExtractorHelper.getValue(LuceneHelper.F_DOCSUBTYPE, doc, DOCSUBTYPE_TYPE_DEMANDE_MAP::get);
 		this.periodeFiscale = DocumentExtractorHelper.getIntegerValue(MessageIdentificationIndexableData.PERIODE_FISCALE, doc);
 		this.emetteurId = DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.EMETTEUR, doc);
 		this.priorite = DocumentExtractorHelper.getEnumValue(MessageIdentificationIndexableData.PRIORITE, doc, Demande.PrioriteEmetteur.class);

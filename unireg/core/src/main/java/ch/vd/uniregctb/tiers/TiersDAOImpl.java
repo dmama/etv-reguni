@@ -156,11 +156,11 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	private interface TiersIdGetter<T extends HibernateEntity> {
-		public Long getTiersId(T entity);
+		Long getTiersId(T entity);
 	}
 
 	private interface EntitySetSetter<T extends HibernateEntity> {
-		public void setEntitySet(Tiers tiers, Set<T> set);
+		void setEntitySet(Tiers tiers, Set<T> set);
 	}
 
 	private <T extends HibernateEntity> Map<Long, Set<T>> groupByTiersId(Session session, List<T> entities, TiersIdGetter<T> getter) {
@@ -1291,7 +1291,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	 */
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
-		return addAndSave(tiers, forFiscal, new ForFiscalAccessor<T>());
+		return addAndSave(tiers, forFiscal, new ForFiscalAccessor<>());
 	}
 
 	@Override
@@ -1518,7 +1518,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public <T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
-		return addAndSave(entreprise, allegement, new AllegementFiscalAccessor<T>());
+		return addAndSave(entreprise, allegement, new AllegementFiscalAccessor<>());
 	}
 
 	private static final EntityAccessor<Entreprise, DonneeCivileEntreprise> DONNEE_CIVILE_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, DonneeCivileEntreprise>() {
@@ -1675,7 +1675,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
-		return addAndSave(entreprise, document, new AutreDocumentFiscalAccessor<T>());
+		return addAndSave(entreprise, document, new AutreDocumentFiscalAccessor<>());
 	}
 
 	@SuppressWarnings({"unchecked"})

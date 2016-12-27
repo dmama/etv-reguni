@@ -111,7 +111,7 @@ public class CorrectionRelation extends EvenementCivilInterne {
 				}
 			}
 		}
-		return set.isEmpty() ? Collections.<RelationConjoint>emptyList() : new ArrayList<>(set);
+		return set.isEmpty() ? Collections.emptyList() : new ArrayList<>(set);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class CorrectionRelation extends EvenementCivilInterne {
 			finEtatCivil = ec.getDateDebut().getOneDayBefore();
 		}
 
-		return set.isEmpty() ? Collections.<RelationConjoint>emptyList() : new ArrayList<>(set);
+		return set.isEmpty() ? Collections.emptyList() : new ArrayList<>(set);
 	}
 
 	@NotNull
@@ -169,6 +169,6 @@ public class CorrectionRelation extends EvenementCivilInterne {
 				actifs.add(candidate);
 			}
 		}
-		return actifs.isEmpty() ? Collections.<EtatCivil>emptyList() : actifs;
+		return actifs.isEmpty() ? Collections.emptyList() : actifs;
 	}
 }

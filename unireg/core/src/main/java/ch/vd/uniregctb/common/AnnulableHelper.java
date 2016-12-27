@@ -89,7 +89,7 @@ public abstract class AnnulableHelper {
 				res.add(elt);
 			}
 		}
-		return res.size() == 0 ? Collections.<T>emptyList() : res;
+		return res.size() == 0 ? Collections.emptyList() : res;
 	}
 
 	/**

@@ -38,7 +38,7 @@ public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResul
 		this.interrupted = interrupted;
 	}
 
-	public static enum RaisonIgnorement {
+	public enum RaisonIgnorement {
 		PAS_PERSONNE_PHYSIQUE("Pas (plus ?) une personne physique"),
 		HABITANT("La personne physique est habitante"),
 		JAMAIS_ETE_HABITANT("La personne physique est inconnue du registre civil"),
@@ -47,7 +47,7 @@ public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResul
 
 		public final String description;
 
-		private RaisonIgnorement(String description) {
+		RaisonIgnorement(String description) {
 			this.description = description;
 		}
 	}

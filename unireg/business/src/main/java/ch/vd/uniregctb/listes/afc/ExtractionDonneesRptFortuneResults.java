@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.listes.afc;
 
-import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -40,13 +39,7 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 		// pour la fortune, on ne s'intéresse qu'aux contribuables au rôle ordinaire assujettis en fin d'année fiscale
 
 		// on enlève donc toutes les périodes qui ne couvrent pas la fin de l'année
-		final Iterator<PeriodeImposition> iterFinAnnee = listeAFiltrer.iterator();
-		while (iterFinAnnee.hasNext()) {
-			final PeriodeImposition p = iterFinAnnee.next();
-			if (!p.isValidAt(finAnnee)) {
-				iterFinAnnee.remove();
-			}
-		}
+		listeAFiltrer.removeIf(p -> !p.isValidAt(finAnnee));
 
 		if (listeAFiltrer.isEmpty()) {
 			return NON_ASSUJETTI_31_12;

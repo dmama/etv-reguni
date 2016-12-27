@@ -33,7 +33,7 @@ public enum CategorieImpotSource implements RestrictedAccess {
 
 	private final String texte;
 
-	private CategorieImpotSource(String texte) {
+	CategorieImpotSource(String texte) {
 		this.texte = texte;
 	}
 

@@ -69,9 +69,9 @@ public class ForsParTypeAt {
 		}
 
 		if (sort) {
-			Collections.sort(secondaires, new DateRangeComparator<ForFiscalSecondaire>());
-			Collections.sort(autreElementImpot, new DateRangeComparator<ForFiscalAutreElementImposable>());
-			Collections.sort(autresImpots, new DateRangeComparator<ForFiscalAutreImpot>());
+			Collections.sort(secondaires, new DateRangeComparator<>());
+			Collections.sort(autreElementImpot, new DateRangeComparator<>());
+			Collections.sort(autresImpots, new DateRangeComparator<>());
 		}
 	}
 

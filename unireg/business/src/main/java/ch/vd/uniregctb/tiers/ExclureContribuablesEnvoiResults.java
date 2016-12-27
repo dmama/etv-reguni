@@ -17,7 +17,7 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -31,7 +31,7 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 
 		private final String description;
 
-		private IgnoreType(String description) {
+		IgnoreType(String description) {
 			this.description = description;
 		}
 

@@ -154,7 +154,6 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		final File tempfile = new File(tempname);
 
 		// on sérialise l'objet dans un fichier temporaire
-		;
 		try (FileOutputStream fos = new FileOutputStream(tempfile);
 			 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 

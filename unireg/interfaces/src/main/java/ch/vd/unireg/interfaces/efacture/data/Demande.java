@@ -24,7 +24,7 @@ public class Demande {
 	/**
 	 * Seule la distinction entre inscription et désinscription nous intéresse, pas vrai ?
 	 */
-	public static enum Action {
+	public enum Action {
 		INSCRIPTION("Inscription"),
 		DESINSCRIPTION("Désinscription");
 
@@ -42,7 +42,7 @@ public class Demande {
 			}
 		}
 
-		private Action(String description) {
+		Action(String description) {
 			this.description = description;
 		}
 

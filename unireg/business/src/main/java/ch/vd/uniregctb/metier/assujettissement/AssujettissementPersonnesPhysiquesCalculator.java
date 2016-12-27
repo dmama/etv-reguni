@@ -173,7 +173,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 * @return les assujettissements <i>rôle</i> et <i>source</i> fusionnés
 	 */
 	private static List<Assujettissement> fusionneAssujettissements(List<Assujettissement> role, List<SourcierPur> source) {
-		return DateRangeHelper.override(new ArrayList<Assujettissement>(source), role, new OverrideAssujettissementCallback<>());
+		return DateRangeHelper.override(new ArrayList<>(source), role, new OverrideAssujettissementCallback<>());
 	}
 
 	@NotNull

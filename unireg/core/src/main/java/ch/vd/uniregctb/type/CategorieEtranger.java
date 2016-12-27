@@ -25,7 +25,7 @@ public enum CategorieEtranger {
 
 	private final String displayName;
 
-	private CategorieEtranger(String displayName) {
+	CategorieEtranger(String displayName) {
 		this.displayName = displayName;
 	}
 

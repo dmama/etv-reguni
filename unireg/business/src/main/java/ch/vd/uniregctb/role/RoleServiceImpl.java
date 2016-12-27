@@ -178,7 +178,7 @@ public class RoleServiceImpl implements RoleService {
 						.filter(OfficeImpot::isOID)
 						.map(OfficeImpot::getNoColAdm)
 						.filter(colAdmId -> oid == null || oid.equals(colAdmId))
-						.map(colAdmId -> infraService.getListeCommunesByOID(colAdmId).stream().map(commune -> Pair.<Integer, Integer>of(commune.getNoOFS(), colAdmId)))
+						.map(colAdmId -> infraService.getListeCommunesByOID(colAdmId).stream().map(commune -> Pair.of(commune.getNoOFS(), colAdmId)))
 						.flatMap(Function.identity())
 						.distinct()
 						.collect(Collectors.toMap(Pair::getLeft, Pair::getRight));

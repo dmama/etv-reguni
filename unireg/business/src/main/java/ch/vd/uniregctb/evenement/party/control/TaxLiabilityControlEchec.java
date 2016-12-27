@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class TaxLiabilityControlEchec {
 
-	public static enum EchecType {
+	public enum EchecType {
 		CONTROLE_NUMERO_KO,
 		AUCUN_MC_ASSOCIE_TROUVE,
 		UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES,

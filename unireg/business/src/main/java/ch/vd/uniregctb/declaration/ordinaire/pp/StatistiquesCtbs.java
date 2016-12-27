@@ -19,7 +19,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -54,7 +54,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 
 		private final String description;
 
-		private TypeContribuable(String description) {
+		TypeContribuable(String description) {
 			this.description = description;
 		}
 

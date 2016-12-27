@@ -264,7 +264,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		}
 		List<AdresseTiers> list = new ArrayList<>();
 		list.addAll(adressesTiers);
-		Collections.sort(list, new DateRangeComparator<AdresseTiers>());
+		Collections.sort(list, new DateRangeComparator<>());
 		return list;
 	}
 
@@ -279,7 +279,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				list.add(adr);
 			}
 		}
-		Collections.sort(list, new DateRangeComparator<AdresseTiers>());
+		Collections.sort(list, new DateRangeComparator<>());
 		return list;
 	}
 
@@ -306,7 +306,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				list.add(a);
 			}
 		}
-		Collections.sort(list, new DateRangeComparator<AdresseTiers>());
+		Collections.sort(list, new DateRangeComparator<>());
 
 		// Extrait et retourne l'adresse demandée
 		final int size = list.size();
@@ -714,7 +714,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscal> getForsFiscauxNonAnnules(boolean sort) {
 		final List<ForFiscal> fors = AnnulableHelper.sansElementsAnnules(forsFiscaux);
 		if (sort) {
-			Collections.sort(fors, new DateRangeComparator<ForFiscal>());
+			Collections.sort(fors, new DateRangeComparator<>());
 		}
 		return fors;
 	}

@@ -7,7 +7,7 @@ import java.util.Set;
  */
 public class TaxLiabilityControlResult<T extends Enum<T>> {
 
-	public static enum Origine {
+	public enum Origine {
 		INITIAL,
 		MENAGE_COMMUN,
 		PARENT,

@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,8 +13,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
-
-import static ch.vd.uniregctb.rapport.PdfRapport.*;
 
 
 /**
@@ -149,7 +146,7 @@ public class PdfEnvoiSommationsDIsPPRapport extends PdfRapport {
 	private TemporaryFile asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsPPResults.Info> list, String filename, StatusManager status) {
 		final TemporaryFile content;
 		if (!list.isEmpty()) {
-			content = CsvHelper.asCsvTemporaryFile((List<EnvoiSommationsDIsPPResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsPPResults.Info>() {
+			content = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<EnvoiSommationsDIsPPResults.Info>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append(list.get(0).getCsvEntete());

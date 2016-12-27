@@ -41,7 +41,7 @@ public interface EvenementOrganisationNotificationQueue {
 
 		protected Batch(long noOrganisation, @Nullable List<EvenementOrganisationBasicInfo> contenu) {
 			this.noOrganisation = noOrganisation;
-			this.contenu = contenu != null ? contenu : Collections.<EvenementOrganisationBasicInfo>emptyList();
+			this.contenu = contenu != null ? contenu : Collections.emptyList();
 		}
 	}
 

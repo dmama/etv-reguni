@@ -32,7 +32,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 

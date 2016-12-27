@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -336,7 +337,7 @@ public class MigrationDDImporter {
 		}
 		else {
 			// il y a plusieurs années, il s'agit d'un bug de l'export SIMPA, on corrige en prenant la dernière année fiscale
-			Collections.sort(list, (l, r) -> Integer.compare(l.getAnneeFiscale(), r.getAnneeFiscale()));
+			Collections.sort(list, Comparator.comparingInt(MigrationDD::getAnneeFiscale));
 			toSave = list.get(size - 1);
 			for (int i = 0; i < size - 1; ++i) {
 				rapport.addDemandeIgnoree(list.get(i), "Une demande de dégrèvement plus récente (" + toSave.getAnneeFiscale() + ") existe dans l'export (cette demande = " + list.get(i).getAnneeFiscale() + ").");

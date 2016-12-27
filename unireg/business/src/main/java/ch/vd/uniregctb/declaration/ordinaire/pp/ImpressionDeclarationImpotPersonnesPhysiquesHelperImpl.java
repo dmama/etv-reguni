@@ -402,7 +402,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 
 	private void remplitEnfants(InformationsDocumentAdapter informationsDocument, DIRetourCivilEnfant di) {
 		if (informationsDocument.tiers instanceof Contribuable) {
-			final List<PersonnePhysique> enfants = tiersService.getEnfantsForDeclaration((Contribuable) informationsDocument.tiers, informationsDocument.dateReference);
+			final List<PersonnePhysique> enfants = tiersService.getEnfantsForDeclaration(informationsDocument.tiers, informationsDocument.dateReference);
 			if (!enfants.isEmpty()) {
 				DIRetourCivilEnfant.Enfants diEnfants = di.addNewEnfants();
 				final int anneeDeclaration = informationsDocument.getAnnee();

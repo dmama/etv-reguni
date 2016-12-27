@@ -272,7 +272,7 @@ public abstract class AdresseRaisonSociale {
 				return Collections.singletonList(unique);
 			}
 			else {
-				return all.isEmpty() ? Collections.<Localite>emptyList() : all;
+				return all.isEmpty() ? Collections.emptyList() : all;
 			}
 		}
 
@@ -665,10 +665,10 @@ public abstract class AdresseRaisonSociale {
 			if (destinataire != null) {
 				final Tiers tiers = destinataire.buildDummyTiers();
 				final String raisonSociale = tiersService.getNomRaisonSociale(tiers);
-				return Pair.<String, Adresse>of(raisonSociale, this);
+				return Pair.of(raisonSociale, this);
 			}
 			else {
-				return Pair.<String, Adresse>of(null, this);
+				return Pair.of(null, this);
 			}
 		}
 	}

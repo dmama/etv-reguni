@@ -90,13 +90,13 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 	}
 
-	public static enum Raison {
+	public enum Raison {
 		ENCORE_LR_A_EMETTRE_SUR_PF("Il reste au moins une LR à émettre sur la période fiscale."),
 		EXCEPTION(EXCEPTION_DESCRIPTION);
 
 		private final String description;
 
-		private Raison(String description) {
+		Raison(String description) {
 			this.description = description;
 		}
 

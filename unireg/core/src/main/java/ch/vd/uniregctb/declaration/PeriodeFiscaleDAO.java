@@ -11,7 +11,7 @@ public interface PeriodeFiscaleDAO extends GenericDAO<PeriodeFiscale, Long> {
 	 *
 	 * @return une liste de PeriodeFiscale
 	 */
-	public List<PeriodeFiscale> getAllDesc();
+	List<PeriodeFiscale> getAllDesc();
 
 	/**
 	 * Renvoie la période fiscale de l'année demandée.
@@ -23,5 +23,5 @@ public interface PeriodeFiscaleDAO extends GenericDAO<PeriodeFiscale, Long> {
 	 *
 	 * @return PeriodeFiscale la période fiscale demandée
 	 */
-	public PeriodeFiscale getPeriodeFiscaleByYear(final int year);
+	PeriodeFiscale getPeriodeFiscaleByYear(final int year);
 }

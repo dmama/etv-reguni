@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -185,7 +186,7 @@ public class DroitRFDetector {
 					//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
 					nouveauxDroits.stream()
 							.map(PersonEigentumAnteil::getGemeinschaft)
-							.filter(g -> g != null)
+							.filter(Objects::nonNull)
 							.forEach(g -> processAyantDroit(parentImport, g));
 
 				});

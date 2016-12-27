@@ -18,7 +18,7 @@ public enum TypeAssujettissement {
 
 	private final String description;
 
-	private TypeAssujettissement(String description) {
+	TypeAssujettissement(String description) {
 		this.description = description;
 	}
 

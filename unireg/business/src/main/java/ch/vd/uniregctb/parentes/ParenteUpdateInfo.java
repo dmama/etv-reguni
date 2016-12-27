@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tiers.Parente;
 
 public final class ParenteUpdateInfo implements Comparable<ParenteUpdateInfo> {
 
-	public static enum Action {
+	public enum Action {
 		CREATION, ANNULATION
 	}
 

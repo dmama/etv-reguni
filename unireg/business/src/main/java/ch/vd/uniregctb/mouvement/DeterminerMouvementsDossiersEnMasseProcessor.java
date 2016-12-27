@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.mouvement;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -181,13 +180,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		if (assujettissements != null) {
 
 			// on enlève donc tous les assujettissements de type "sourcier pur"
-			final Iterator<Assujettissement> iterator = assujettissements.iterator();
-			while (iterator.hasNext()) {
-				final Assujettissement a = iterator.next();
-				if (a instanceof SourcierPur) {
-					iterator.remove();
-				}
-			}
+			assujettissements.removeIf(a -> a instanceof SourcierPur);
 
 			// si la collection d'asujettissements est maintenant vide, cela signifie que nous avions affaire
 			// à un sourcier pur qui l'a toujours été -> contribuable ignoré

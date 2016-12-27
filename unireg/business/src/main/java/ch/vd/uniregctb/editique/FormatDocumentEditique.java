@@ -11,7 +11,7 @@ public enum FormatDocumentEditique {
 
 	private final String code;
 
-	private FormatDocumentEditique(String code) {
+	FormatDocumentEditique(String code) {
 		this.code = code;
 	}
 

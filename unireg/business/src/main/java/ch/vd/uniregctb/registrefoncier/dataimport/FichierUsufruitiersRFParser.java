@@ -32,7 +32,7 @@ public class FichierUsufruitiersRFParser {
 	/**
 	 * Interface orientée-événement pour recevoir les entités au fur et à mesure qu'elles sont parsées.
 	 */
-	public static interface Callback {
+	public interface Callback {
 		void onDroit(@NotNull Dienstbarkeit droit);
 	}
 

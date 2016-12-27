@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -414,13 +413,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 			}
 
 			// on prend en compte les arrêts intervenus depuis le dernier pointage
-			final Iterator<JobDefinition> iter = arretDemande.iterator();
-			while (iter.hasNext()) {
-				final JobDefinition job = iter.next();
-				if (!job.isRunning()) {
-					iter.remove();
-				}
-			}
+			arretDemande.removeIf(job -> !job.isRunning());
 
 			final long now = System.currentTimeMillis();
 			if (now - startWait > maxWait) {

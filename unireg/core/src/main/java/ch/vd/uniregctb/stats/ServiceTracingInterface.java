@@ -68,5 +68,5 @@ public interface ServiceTracingInterface {
 	/**
 	 * @return les données détaillée par sous-systèmes, ou <i>null</i> si ces informations ne sont pas disponibles.
 	 */
-	public Map<String, ? extends ServiceTracingInterface> getDetailedData();
+	Map<String, ? extends ServiceTracingInterface> getDetailedData();
 }

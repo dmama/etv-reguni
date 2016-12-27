@@ -261,7 +261,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			synchronized (listeners) {
 				if (listeners.remove(id) == null) {
 					throw new IllegalStateException("Already unregistered!");
-				};
+				}
 			}
 		}
 	}

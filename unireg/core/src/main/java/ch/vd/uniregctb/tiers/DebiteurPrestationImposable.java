@@ -223,7 +223,7 @@ public class DebiteurPrestationImposable extends Tiers {
 				list.add(p);
 			}
 		}
-		Collections.sort(list, new DateRangeComparator<Periodicite>());
+		Collections.sort(list, new DateRangeComparator<>());
 		return list;
 	}
 
@@ -265,7 +265,7 @@ public class DebiteurPrestationImposable extends Tiers {
 			}
 		}
 		if (sort) {
-			Collections.sort(periodicitesNonAnnulees, new DateRangeComparator<Periodicite>());
+			Collections.sort(periodicitesNonAnnulees, new DateRangeComparator<>());
 		}
 		return periodicitesNonAnnulees;
 	}

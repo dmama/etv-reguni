@@ -33,7 +33,7 @@ public enum EtatMouvementDossier {
 		etatsEnInstance = Collections.unmodifiableList(enInstance);
 	}
 
-	private EtatMouvementDossier(String description) {
+	EtatMouvementDossier(String description) {
 		this.description = description;
 	}
 

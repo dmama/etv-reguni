@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +76,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				}
 			}
 			liste = new ArrayList<>(tempList);
-			Collections.sort(liste, new DateRangeComparator<T>());
+			Collections.sort(liste, new DateRangeComparator<>());
 		}
 		else {
 			liste = Collections.emptyList();
@@ -93,7 +92,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	@NotNull
 	private static List<ForFiscalPrincipalPP> getForsPrincipaux(ContribuableImpositionPersonnesPhysiques ctb, boolean rw) {
 		final List<ForFiscalPrincipalPP> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
-		return ffps != null ? ffps : (rw ? new ArrayList<>() : Collections.<ForFiscalPrincipalPP>emptyList());
+		return ffps != null ? ffps : (rw ? new ArrayList<>() : Collections.emptyList());
 	}
 
 	/**
@@ -206,7 +205,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				res.add(range);
 			}
 		}
-		return res.isEmpty() ? Collections.<T>emptyList() : res;
+		return res.isEmpty() ? Collections.emptyList() : res;
 	}
 
 	/**
@@ -493,13 +492,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			}
 
 			// supprimons les périodes invalides
-			final Iterator<ProtoPeriodeImpositionImpotSource> iterProtos = protos.iterator();
-			while (iterProtos.hasNext()) {
-				final ProtoPeriodeImpositionImpotSource proto = iterProtos.next();
-				if (!proto.isValid()) {
-					iterProtos.remove();
-				}
-			}
+			protos.removeIf(proto -> !proto.isValid());
 
 			// [SIFISC-12981] on regroupe déjà les proto-périodes
 			final List<ProtoPeriodeImpositionImpotSource> collatedProtos = collate(protos);
@@ -574,7 +567,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			}
 		}
 
-		return piis.isEmpty() ? Collections.<PeriodeImpositionImpotSource>emptyList() : collate(piis);
+		return piis.isEmpty() ? Collections.emptyList() : collate(piis);
 	}
 
 	/**

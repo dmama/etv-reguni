@@ -27,7 +27,7 @@ public class DeterminationDIsPPResults extends JobResults<Long, DeterminationDIs
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -47,7 +47,7 @@ public class DeterminationDIsPPResults extends JobResults<Long, DeterminationDIs
 
 		private final String description;
 
-		private IgnoreType(String description) {
+		IgnoreType(String description) {
 			this.description = description;
 		}
 
@@ -91,7 +91,7 @@ public class DeterminationDIsPPResults extends JobResults<Long, DeterminationDIs
 
 		private final String description;
 
-		private TraiteType(String description) {
+		TraiteType(String description) {
 			this.description = description;
 		}
 

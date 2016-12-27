@@ -198,7 +198,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		if (evts != null && evts.size() > 0) {
 			final List<EvenementCivilEchBasicInfo> liste = buildInfos(evts, noIndividu);
 			buildReferenceAwareInformation(liste);
-			return liste.size() > 0 ? liste : Collections.<EvenementCivilEchBasicInfo>emptyList();
+			return liste.size() > 0 ? liste : Collections.emptyList();
 		}
 		else {
 			return Collections.emptyList();
@@ -336,7 +336,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
 						// et le non-issu de eCH-99 devient un élément principal dans la liste des événements
 						final List<EvenementCivilEchBasicInfo> newReferrers = remainingReferrers.size() == referrers.size() - 1
-								? Collections.<EvenementCivilEchBasicInfo>emptyList()
+								? Collections.emptyList()
 								: referrers.subList(indexFirstNonEch99 + 1, referrers.size());
 						firstNonEch99.setReferrers(newReferrers);
 						toAdd.add(firstNonEch99);

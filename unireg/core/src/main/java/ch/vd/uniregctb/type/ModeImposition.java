@@ -17,7 +17,7 @@ public enum ModeImposition {
 	private final boolean source;
 	private final boolean role;
 
-	private ModeImposition(String format, String formatEnrichi, boolean source, boolean role) {
+	ModeImposition(String format, String formatEnrichi, boolean source, boolean role) {
 		this.texte = format;
 		this.texteEnrichi = formatEnrichi;
 		this.source = source;

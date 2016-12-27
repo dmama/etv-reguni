@@ -15,5 +15,5 @@ public enum StatutAnnonce {
 	REJET_RCENT,
 	VALIDATION_SANS_ERREUR,
 	ACCEPTE_REE,
-	REFUSE_REE;
+	REFUSE_REE
 }

@@ -26,9 +26,9 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	public DroitAcces getDroitAcces(long operateurId, long tiersId, RegDate date) {
 		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.noIndividuOperateur = :operId and da.annulationDate is null and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef) order by da.dateDebut desc";
 		final List<DroitAcces> list = find(query,
-		                                   buildNamedParameters(Pair.<String, Object>of("tiersId", tiersId),
-		                                                        Pair.<String, Object>of("operId", operateurId),
-		                                                        Pair.<String, Object>of("dateRef", date)),
+		                                   buildNamedParameters(Pair.of("tiersId", tiersId),
+		                                                        Pair.of("operId", operateurId),
+		                                                        Pair.of("dateRef", date)),
 		                                   null);
 		if (list.isEmpty()) {
 			return null;
@@ -103,8 +103,8 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	public List<DroitAcces> getDroitsAccessTiers(long tiersId, RegDate date) {
 		final String query = "from DroitAcces da where da.tiers.id = :tiersId and da.dateDebut <= :dateRef and (da.dateFin is null or da.dateFin >= :dateRef)";
 		return find(query,
-		            buildNamedParameters(Pair.<String, Object>of("tiersId", tiersId),
-		                                 Pair.<String, Object>of("dateRef", date)),
+		            buildNamedParameters(Pair.of("tiersId", tiersId),
+		                                 Pair.of("dateRef", date)),
 		            null);
 	}
 
