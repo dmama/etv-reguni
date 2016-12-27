@@ -79,12 +79,7 @@ public abstract class Localisation {
 
 	private static Localisation buildHorsCanton(@Nullable String sigleCanton) {
 		synchronized (HC) {
-			Localisation hc = HC.get(sigleCanton);
-			if (hc == null) {
-				hc = new LocalisationHorsCanton(sigleCanton);
-				HC.put(sigleCanton, hc);
-			}
-			return hc;
+			return HC.computeIfAbsent(sigleCanton, k -> new LocalisationHorsCanton(sigleCanton));
 		}
 	}
 

@@ -164,16 +164,8 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			final String typeMessage = (String) row[0];
 			final TypeDemande typeDemande = (TypeDemande) row[1];
 			final Etat etat = (Etat) row[2];
-			Map<Etat, List<String>> mapPourTypeDonne = globalMap.get(typeDemande);
-			if (mapPourTypeDonne == null) {
-				mapPourTypeDonne = new EnumMap<>(Etat.class);
-				globalMap.put(typeDemande, mapPourTypeDonne);
-			}
-			List<String> typesMessages = mapPourTypeDonne.get(etat);
-			if (typesMessages == null) {
-				typesMessages = new LinkedList<>();
-				mapPourTypeDonne.put(etat, typesMessages);
-			}
+			final Map<Etat, List<String>> mapPourTypeDonne = globalMap.computeIfAbsent(typeDemande, k -> new EnumMap<>(Etat.class));
+			final List<String> typesMessages = mapPourTypeDonne.computeIfAbsent(etat, k -> new LinkedList<>());
 			typesMessages.add(typeMessage);
 		}
 		return globalMap;
@@ -205,11 +197,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 			final Object[] row = iterator.next();
 			final T value = unmarshaller.apply(row[0]);
 			final Etat etat = (Etat) row[1];
-			List<T> ids = map.get(etat);
-			if (ids == null) {
-				ids = new LinkedList<>();
-				map.put(etat, ids);
-			}
+			final List<T> ids = map.computeIfAbsent(etat, k -> new LinkedList<>());
 			ids.add(value);
 		}
 		return map;

@@ -7,12 +7,9 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import java.util.function.Consumer;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 @SuppressWarnings("unused")
 public class TxSyncManagerImpl implements TxSyncManager {
 
-	@Autowired
 	private TransactionManager transactionManager;
 
 	public void setTransactionManager(TransactionManager transactionManager) {

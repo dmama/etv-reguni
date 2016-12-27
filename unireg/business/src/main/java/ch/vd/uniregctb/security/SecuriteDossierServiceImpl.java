@@ -373,11 +373,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		// trie les droits par contribuable
 		final Map<Long, List<DroitAcces>> map = new HashMap<>(idsPP.size());
 		for (DroitAcces d : droitsAll) {
-			List<DroitAcces> l = map.get(d.getTiers().getNumero());
-			if (l == null) {
-				l = new ArrayList<>();
-				map.put(d.getTiers().getNumero(), l);
-			}
+			final List<DroitAcces> l = map.computeIfAbsent(d.getTiers().getNumero(), k -> new ArrayList<>());
 			l.add(d);
 		}
 

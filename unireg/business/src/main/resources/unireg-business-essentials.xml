@@ -52,7 +52,6 @@
 
 	<bean id="annonceIDEHibernateInterceptor" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEHibernateInterceptor">
 		<property name="parent" ref="modificationInterceptor"/>
-		<property name="serviceIDEService" ref="serviceIDEService"/>
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="dialect" ref="hibernateDialect" />

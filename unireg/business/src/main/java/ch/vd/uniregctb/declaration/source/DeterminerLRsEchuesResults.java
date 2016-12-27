@@ -54,12 +54,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 
 		@NotNull
 		private List<InfoLrEchue> getOrCreateMapEntry(Integer key) {
-			List<InfoLrEchue> list = lrEchues.get(key);
-			if (list == null) {
-				list = new LinkedList<>();
-				lrEchues.put(key, list);
-			}
-			return list;
+			return lrEchues.computeIfAbsent(key, k -> new LinkedList<>());
 		}
 
 		public List<InfoLrEchue> getLrEchues(int pf) {

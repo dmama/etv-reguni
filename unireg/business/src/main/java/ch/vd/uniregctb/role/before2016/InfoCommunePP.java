@@ -21,12 +21,7 @@ public class InfoCommunePP extends InfoCommune<InfoContribuablePP, InfoCommunePP
 
 	public InfoContribuablePP getOrCreateInfoPourContribuable(ContribuableImpositionPersonnesPhysiques ctb, final int annee, final AdresseService adresseService, final TiersService tiersService) {
 		final Long key = ctb.getNumero();
-		InfoContribuablePP info = infosContribuables.get(key);
-		if (info == null) {
-			info = new InfoContribuablePP(ctb, annee, adresseService, tiersService);
-			infosContribuables.put(key, info);
-		}
-		return info;
+		return infosContribuables.computeIfAbsent(key, k -> new InfoContribuablePP(ctb, annee, adresseService, tiersService));
 	}
 
 	@Override

@@ -23,7 +23,6 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 
 /**
@@ -32,12 +31,6 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionSommationDeclarationImpotPersonnesMoralesHelper {
 
 	private static final String CODE_DOCUMENT_SOMMATION_PM = TypeDocumentEditique.SOMMATION_DI_PM.getCodeDocumentEditique().substring(0, 4);
-
-	private DelaisService delaisService;
-
-	public void setDelaisService(DelaisService delaisService) {
-		this.delaisService = delaisService;
-	}
 
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {

@@ -81,11 +81,7 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 			for (PeriodeImposition p : periodesBrutes) {
 				final RegDate dateDebut = p.getDateDebut();
 				final PeriodeImposition periodeRegroupee = DateRangeHelper.rangeAt(periodes, dateDebut);
-				List<Assujettissement> assujettissementsMappes = mapping.get(periodeRegroupee);
-				if (assujettissementsMappes == null) {
-					assujettissementsMappes = new ArrayList<>();
-					mapping.put(periodeRegroupee, assujettissementsMappes);
-				}
+				final List<Assujettissement> assujettissementsMappes = mapping.computeIfAbsent(periodeRegroupee, k -> new ArrayList<>());
 				assujettissementsMappes.addAll(mappingNonRegroupe.get(p));
 			}
 		}

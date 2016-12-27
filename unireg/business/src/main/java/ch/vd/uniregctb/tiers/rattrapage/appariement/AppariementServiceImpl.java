@@ -321,11 +321,7 @@ public class AppariementServiceImpl implements AppariementService {
 			final Map<Localisation, List<T>> submap = map.get(active);
 			final T data = pair.getLeft();
 			final Localisation localisation = localisationExtractor.extract(data);
-			List<T> onLocalisation = submap.get(localisation);
-			if (onLocalisation == null) {
-				onLocalisation = new ArrayList<>(source.size());
-				submap.put(localisation, onLocalisation);
-			}
+			final List<T> onLocalisation = submap.computeIfAbsent(localisation, k -> new ArrayList<>(source.size()));
 			onLocalisation.add(data);
 		}
 		return map;
@@ -336,11 +332,7 @@ public class AppariementServiceImpl implements AppariementService {
 		final Map<K, List<V>> map = new HashMap<>(collection.size());
 		for (V data : collection) {
 			final K key = keyExtractor.extract(data);
-			List<V> list = map.get(key);
-			if (list == null) {
-				list = new ArrayList<>(collection.size());
-				map.put(key, list);
-			}
+			final List<V> list = map.computeIfAbsent(key, k -> new ArrayList<>(collection.size()));
 			list.add(data);
 		}
 		return map;

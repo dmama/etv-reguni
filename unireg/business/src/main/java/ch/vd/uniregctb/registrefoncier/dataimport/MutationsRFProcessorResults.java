@@ -166,22 +166,14 @@ public class MutationsRFProcessorResults extends JobResults<Long, MutationsRFPro
 
 	public void addProcessed(long mutationId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation) {
 		final ProcessedKey key = new ProcessedKey(typeEntite, typeMutation);
-		MutableLong count = processed.get(key);
-		if (count == null) {
-			count = new MutableLong(0);
-			processed.put(key, count);
-		}
+		final MutableLong count = processed.computeIfAbsent(key, k -> new MutableLong(0));
 		count.increment();
 	}
 
 	@Override
 	public void addAll(MutationsRFProcessorResults right) {
 		right.processed.entrySet().forEach(e -> {
-			MutableLong count = processed.get(e.getKey());
-			if (count == null) {
-				count = new MutableLong(0);
-				processed.put(e.getKey(), count);
-			}
+			final MutableLong count = processed.computeIfAbsent(e.getKey(), k -> new MutableLong(0));
 			count.add(e.getValue().getValue());
 		});
 		erreurs.addAll(right.erreurs);

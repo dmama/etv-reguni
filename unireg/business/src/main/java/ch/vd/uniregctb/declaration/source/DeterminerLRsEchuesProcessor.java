@@ -215,11 +215,7 @@ public class DeterminerLRsEchuesProcessor {
 								final RegDate echeanceReelle = getSeuilEcheanceSommation(sommation);
 								if (dateTraitement.isAfter(echeanceReelle)) {
 									final long idDebiteur = ((Number) row[1]).longValue();
-									DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos.get(idDebiteur);
-									if (infoDebiteur == null) {
-										infoDebiteur = new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur);
-										infos.put(idDebiteur, infoDebiteur);
-									}
+									final DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos.computeIfAbsent(idDebiteur, k -> new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur));
 
 									final long id = ((Number) row[0]).longValue();
 									final int indexDebut = ((Number) row[2]).intValue();

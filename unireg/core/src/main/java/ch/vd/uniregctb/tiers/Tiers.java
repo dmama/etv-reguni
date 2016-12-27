@@ -654,11 +654,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 					if (filtreMotifRattachement != null && ffsec.getMotifRattachement() != filtreMotifRattachement) {
 						continue;
 					}
-					List<ForFiscalSecondaire> ffps = map.get(ffsec.getNumeroOfsAutoriteFiscale());
-					if (ffps == null) {
-						ffps = new ArrayList<>();
-						map.put(ffsec.getNumeroOfsAutoriteFiscale(), ffps);
-					}
+					final List<ForFiscalSecondaire> ffps = map.computeIfAbsent(ffsec.getNumeroOfsAutoriteFiscale(), k -> new ArrayList<>());
 					ffps.add(ffsec);
 				}
 			}

@@ -26,11 +26,7 @@ public class BuilderHelper {
 		if (map == null) {
 			map = new HashMap<>();
 		}
-		List<V> l = map.get(key);
-		if (l == null) {
-			l = new ArrayList<>();
-			map.put(key, l);
-		}
+		final List<V> l = map.computeIfAbsent(key, k -> new ArrayList<>());
 		l.add(value);
 		return map;
 	}

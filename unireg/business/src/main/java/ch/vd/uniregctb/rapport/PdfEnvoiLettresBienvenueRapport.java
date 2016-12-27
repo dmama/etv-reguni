@@ -6,7 +6,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -113,11 +112,7 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 	private static Map<TypeLettreBienvenue, MutableInt> buildStatsEnvois(List<EnvoiLettresBienvenueResults.Traite> traites) {
 		final Map<TypeLettreBienvenue, MutableInt> map = new EnumMap<>(TypeLettreBienvenue.class);
 		for (EnvoiLettresBienvenueResults.Traite traite : traites) {
-			MutableInt compteur = map.get(traite.typeLettreEnvoyee);
-			if (compteur == null) {
-				compteur = new MutableInt();
-				map.put(traite.typeLettreEnvoyee, compteur);
-			}
+			final MutableInt compteur = map.computeIfAbsent(traite.typeLettreEnvoyee, k -> new MutableInt());
 			compteur.increment();
 		}
 		return map;

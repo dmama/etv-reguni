@@ -2,20 +2,14 @@ package ch.vd.uniregctb.evenement.ide;
 
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.NumeroIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TiersException;
@@ -26,42 +20,15 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class ReponseIDEProcessorImpl implements ReponseIDEProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AnnonceIDEService.class);
-
 	private TiersService tiersService;
-	private AnnonceIDEService annonceIDEService;
 	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
-	private ServiceIDEService serviceIDEService;
-	private AdresseService adresseService;
-	private ServiceInfrastructureService infraService;
-	private ServiceOrganisationService serviceOrganisation;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
-	public void setAnnonceIDEService(AnnonceIDEService annonceIDEService) {
-		this.annonceIDEService = annonceIDEService;
-	}
-
 	public void setReferenceAnnonceIDEDAO(ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO) {
 		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
-	}
-
-	public void setServiceIDEService(ServiceIDEService serviceIDEService) {
-		this.serviceIDEService = serviceIDEService;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
-	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
-		this.infraService = serviceInfra;
-	}
-
-	public void setServiceOrganisation(ServiceOrganisationService serviceOrganisation) {
-		this.serviceOrganisation = serviceOrganisation;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.organisation.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -115,7 +116,7 @@ public class AnnonceIDEQuery implements Serializable {
 	}
 
 	public String toString() {
-		ArrayList values = new ArrayList();
+		final List<String> values = new ArrayList<>();
 		if (this.noticeId != null) {
 			values.add("noticeId=" + this.noticeId);
 		}

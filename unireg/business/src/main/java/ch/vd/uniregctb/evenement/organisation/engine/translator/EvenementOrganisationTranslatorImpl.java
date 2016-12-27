@@ -30,7 +30,6 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
@@ -113,7 +112,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private TiersService tiersService;
 	private MetierServicePM metierServicePM;
 	private AdresseService adresseService;
-	private ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO;
 	private GlobalTiersIndexer indexer;
 	private IdentificationContribuableService identCtbService;
 	private EvenementFiscalService evenementFiscalService;
@@ -637,11 +635,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setReferenceAnnonceIDEDAO(ReferenceAnnonceIDEDAO referenceAnnonceIDEDAO) {
-		this.referenceAnnonceIDEDAO = referenceAnnonceIDEDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

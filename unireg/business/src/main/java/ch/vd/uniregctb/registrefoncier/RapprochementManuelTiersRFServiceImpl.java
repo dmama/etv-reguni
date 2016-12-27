@@ -56,9 +56,7 @@ public class RapprochementManuelTiersRFServiceImpl implements RapprochementManue
 		final List<IdentificationContribuable> found = identCtbDAO.find(TypeDemande.RAPPROCHEMENT_RF, emetteurDemandeIdentification, String.format("%d ", tiersRF.getId()));
 		return found != null && found.stream()
 				.map(IdentificationContribuable::getEtat)
-				.filter(IdentificationContribuable.Etat::isEncoreATraiter)
-				.findFirst()
-				.isPresent();
+				.anyMatch(IdentificationContribuable.Etat::isEncoreATraiter);
 	}
 
 	private void creerDemandeIdentificationManuelle(TiersRF tiersRF) {

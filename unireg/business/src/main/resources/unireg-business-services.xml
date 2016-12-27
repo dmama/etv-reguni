@@ -286,9 +286,7 @@
 		<property name="delaisService" ref="delaisService" />		 
 	</bean>
 	
-	<bean id="impressionSommationDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl">
-		<property name="delaisService" ref="delaisService" />
-	</bean>
+	<bean id="impressionSommationDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl"/>
 
 	<bean id="impressionRappelQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.snc.ImpressionRappelQuestionnaireSNCHelperImpl"/>
 

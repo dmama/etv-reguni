@@ -14,7 +14,6 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierServicePM" ref="metierServicePM" />
 		<property name="adresseService" ref="adresseService"/>
-		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
 		<property name="indexer" ref="globalTiersIndexer" />
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />

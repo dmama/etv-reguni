@@ -193,11 +193,7 @@ public class EnvoiSommationsDIsPPResults extends JobResults<IdentifiantDeclarati
 	}
 
 	public void addDiSommee(Integer periode, DeclarationImpotOrdinaire di) {
-		List<Info> dis = sommationsParPeriode.get(periode);
-		if (dis == null ) {
-			dis = new LinkedList<>();
-			sommationsParPeriode.put(periode, dis);			
-		}
+		final List<Info> dis = sommationsParPeriode.computeIfAbsent(periode, k -> new LinkedList<>());
 		dis.add(new Info(di));
 	}
 

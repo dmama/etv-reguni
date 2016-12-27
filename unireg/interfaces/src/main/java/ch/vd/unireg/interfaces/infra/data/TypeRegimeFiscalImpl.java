@@ -101,9 +101,7 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 	@Override
 	public boolean isExoneration(int periodeFiscale) {
 		return exonerations.stream()
-				.filter(exo -> exo.isDansPlage(periodeFiscale))
-				.findFirst()
-				.isPresent();
+				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));
 	}
 
 	@Override

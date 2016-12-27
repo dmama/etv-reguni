@@ -314,11 +314,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 			total.items += items;
 
 			if (name != null) {
-				Data d = details.get(name);
-				if (d == null) {
-					d = new Data(true);
-					details.put(name, d);
-				}
+				final Data d = details.computeIfAbsent(name, k -> new Data(true));
 
 				d.time += time;
 				d.calls++;

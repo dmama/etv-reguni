@@ -126,7 +126,7 @@ public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatch
 
 	// expression régulière mappant les caractères qui peuvent être utilisé comme séparateur dans les localités invalides
 	// On match ainsi les strings du type: "I N C O N N U","Non-Indiqué", "E_T_R_A_N_G_E_R", "S/DC"
-	private final String REGEXP_SEPARATEURS = "[ -./_,\\\\:;|*]*";
+	private static final String REGEXP_SEPARATEURS = "[ -./_,\\\\:;|*]*";
 
 	private String buildRegExpLocaliteInvalide (String terme) {
 		StringBuilder sb = new StringBuilder();

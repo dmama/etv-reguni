@@ -21,7 +21,6 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
@@ -103,7 +102,6 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));

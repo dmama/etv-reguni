@@ -36,7 +36,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
- * [SIFISC-9096] Cet intercepteur recalcule automatiquement les parentés sur les personnes physiques connues du civil et modifiées après le commit de chaque transaction.
+ * Intercepteur de collecte des entreprises modifiées pour une éventuelle annonce de la modification à l'IDE
  */
 public class AnnonceIDEHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
 
@@ -46,7 +46,6 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 	private SessionFactory sessionFactory;
 	private TransactionManager transactionManager;
 	private Dialect dialect;
-	private ServiceIDEService serviceIDEService;
 
 	private final ThreadLocal<HashSet<Long>> modifiedNosEntreprises = ThreadLocal.withInitial(HashSet::new);
 
@@ -191,10 +190,6 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 
 	public void setParent(ModificationInterceptor parent) {
 		this.parent = parent;
-	}
-
-	public void setServiceIDEService(ServiceIDEService serviceIDEService) {
-		this.serviceIDEService = serviceIDEService;
 	}
 
 	public void setSessionFactory(SessionFactory sessionFactory) {

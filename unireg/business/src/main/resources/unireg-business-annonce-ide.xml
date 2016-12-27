@@ -21,11 +21,7 @@
 
 	<bean id="reponseIDEProcessor" class="ch.vd.uniregctb.evenement.ide.ReponseIDEProcessorImpl">
 		<property name="tiersService" ref="tiersService" />
-		<property name="annonceIDEService" ref="annonceIDEService" />
 		<property name="referenceAnnonceIDEDAO" ref="referenceAnnonceIDEDAO" />
-		<property name="adresseService" ref="adresseService" />
-		<property name="serviceInfra" ref="serviceInfrastructureService" />
-		<property name="serviceOrganisation" ref="serviceOrganisationService" />
 	</bean>
 
 </beans>

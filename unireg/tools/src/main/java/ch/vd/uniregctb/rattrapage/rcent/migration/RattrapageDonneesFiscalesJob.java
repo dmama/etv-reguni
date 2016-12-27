@@ -88,11 +88,7 @@ public class RattrapageDonneesFiscalesJob {
 					final Matcher newEntrepriseMatcher = NEW_ENTREPRISE.matcher(line);
 					if (newEntrepriseMatcher.matches()) {
 						final long noEntreprise = Long.parseLong(newEntrepriseMatcher.group(1));
-						entrepriseData = result.get(noEntreprise);
-						if (entrepriseData == null) {
-							entrepriseData = new HashMap<>();
-							result.put(noEntreprise, entrepriseData);
-						}
+						entrepriseData = result.computeIfAbsent(noEntreprise, k -> new HashMap<>());
 						entrepriseCategoryData = null;
 					}
 					else {
@@ -102,11 +98,7 @@ public class RattrapageDonneesFiscalesJob {
 							if (entrepriseData == null) {
 								throw new IllegalStateException("Nouvelle catégorie " + category + " déclarée en dehors du scope d'une entreprise...");
 							}
-							entrepriseCategoryData = entrepriseData.get(category);
-							if (entrepriseCategoryData == null) {
-								entrepriseCategoryData = new LinkedList<>();
-								entrepriseData.put(category, entrepriseCategoryData);
-							}
+							entrepriseCategoryData = entrepriseData.computeIfAbsent(category, k -> new LinkedList<>());
 						}
 						else {
 							final Matcher relevantLineMatcher = RELEVANT_LINE.matcher(line);

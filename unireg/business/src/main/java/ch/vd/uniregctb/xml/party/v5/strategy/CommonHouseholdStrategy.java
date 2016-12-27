@@ -176,9 +176,8 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 	}
 
 	private static void fillEtiquettesTiersParEtiquette(Map<Etiquette, List<DateRange>> map, Tiers tiers) {
-		tiers.getEtiquettesNonAnnuleesTriees().stream()
-				.forEach(etiqTiers -> map.merge(etiqTiers.getEtiquette(),
-				                                Collections.singletonList(etiqTiers),
-				                                (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+		tiers.getEtiquettesNonAnnuleesTriees().forEach(etiqTiers -> map.merge(etiqTiers.getEtiquette(),
+		                                                                      Collections.singletonList(etiqTiers),
+		                                                                      (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 	}
 }

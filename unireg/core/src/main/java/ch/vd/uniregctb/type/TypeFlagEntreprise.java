@@ -56,11 +56,7 @@ public enum TypeFlagEntreprise {
 		// constuction de la map
 		final Map<GroupeFlagsEntreprise, Set<TypeFlagEntreprise>> map = new EnumMap<>(GroupeFlagsEntreprise.class);
 		for (TypeFlagEntreprise type : TypeFlagEntreprise.values()) {
-			Set<TypeFlagEntreprise> set = map.get(type.groupe);
-			if (set == null) {
-				set = EnumSet.noneOf(TypeFlagEntreprise.class);
-				map.put(type.groupe, set);
-			}
+			final Set<TypeFlagEntreprise> set = map.computeIfAbsent(type.groupe, k -> EnumSet.noneOf(TypeFlagEntreprise.class));
 			set.add(type);
 		}
 

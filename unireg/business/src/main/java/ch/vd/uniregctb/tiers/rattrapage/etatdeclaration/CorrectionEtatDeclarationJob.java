@@ -176,11 +176,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 					final Long diId = (Long) values[0];
 					final EtatDeclaration etat = (EtatDeclaration) values[1];
 
-					List<EtatDeclaration> etats = map.get(diId);
-					if (etats == null) {
-						etats = new ArrayList<>();
-						map.put(diId, etats);
-					}
+					final List<EtatDeclaration> etats = map.computeIfAbsent(diId, k -> new ArrayList<>());
 					etats.add(etat);
 				}
 

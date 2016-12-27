@@ -28,7 +28,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
@@ -137,7 +136,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -216,7 +214,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -308,7 +305,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -414,7 +410,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -691,7 +686,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -830,7 +824,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
@@ -993,7 +986,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAppariementService(getBean(AppariementService.class, "appariementService"));
@@ -1104,7 +1096,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -1205,7 +1196,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -1312,7 +1302,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -1418,7 +1407,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -1494,7 +1482,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
@@ -1583,7 +1570,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));

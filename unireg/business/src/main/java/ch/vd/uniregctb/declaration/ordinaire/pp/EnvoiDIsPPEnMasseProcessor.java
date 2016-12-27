@@ -871,13 +871,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 		 */
 		public void addDeclaration(DeclarationImpotOrdinairePP di) {
 			final Long numero = di.getTiers().getNumero();
-
-			List<DeclarationImpotOrdinairePP> l = map.get(numero);
-			if (l == null) {
-				l = new ArrayList<>();
-				map.put(numero, l);
-			}
-
+			final List<DeclarationImpotOrdinairePP> l = map.computeIfAbsent(numero, k -> new ArrayList<>());
 			l.add(di);
 		}
 

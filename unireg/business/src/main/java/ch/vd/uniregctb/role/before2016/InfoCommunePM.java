@@ -24,12 +24,7 @@ public class InfoCommunePM extends InfoCommune<InfoContribuablePM, InfoCommunePM
 
 	public InfoContribuablePM getOrCreateInfoPourContribuable(Entreprise entreprise, RegDate dateBouclement, AdresseService adresseService, TiersService tiersService) {
 		final Pair<Long, RegDate> key = Pair.of(entreprise.getNumero(), dateBouclement);
-		InfoContribuablePM info = infosContribuables.get(key);
-		if (info == null) {
-			info = new InfoContribuablePM(entreprise, dateBouclement, adresseService, tiersService);
-			infosContribuables.put(key, info);
-		}
-		return info;
+		return infosContribuables.computeIfAbsent(key, k -> new InfoContribuablePM(entreprise, dateBouclement, adresseService, tiersService));
 	}
 
 	@Override

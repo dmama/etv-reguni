@@ -335,12 +335,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	@Override
 	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
 		final KeyGetPaysHisto key = new KeyGetPaysHisto(numeroOFS);
-		List<Pays> resultat = paysHistoCache.get(key);
-		if (resultat == null) {
-			resultat = target.getPaysHisto(numeroOFS);
-			paysHistoCache.put(key, resultat);
-		}
-		return resultat;
+		return paysHistoCache.computeIfAbsent(key, k -> target.getPaysHisto(numeroOFS));
 	}
 
 	@Override

@@ -138,13 +138,9 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	}
 
 	public void addStats(int oid, TypeContribuable typeCtb, TypeEtatDeclaration etat) {
-		Key key = new Key(oid, typeCtb, etat);
-		Value value = stats.get(key);
-		if (value == null) {
-			value = new Value();
-			stats.put(key, value);
-		}
-		value.nombre++;
+		final Key key = new Key(oid, typeCtb, etat);
+		final Value value = stats.computeIfAbsent(key, k -> new Value());
+		++ value.nombre;
 	}
 
 	public void addErrorException(DeclarationImpotOrdinaire di, Exception e) {
@@ -170,11 +166,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	}
 
 	public void mergeStats(Key rightKey, Value rightValue) {
-		Value value = stats.get(rightKey);
-		if (value == null) {
-			value = new Value();
-			stats.put(rightKey, value);
-		}
+		final Value value = stats.computeIfAbsent(rightKey, k -> new Value());
 		value.nombre += rightValue.nombre;
 	}
 }

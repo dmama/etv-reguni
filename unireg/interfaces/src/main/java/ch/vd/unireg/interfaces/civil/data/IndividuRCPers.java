@@ -568,11 +568,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 		for (Residence r : residence) {
 			final Integer key = r.getResidenceMunicipality().getMunicipalityId();
-			List<Residence> list = map.get(key);
-			if (list == null) {
-				list = new ArrayList<>();
-				map.put(key, list);
-			}
+			final List<Residence> list = map.computeIfAbsent(key, k -> new ArrayList<>());
 			list.add(r);
 		}
 
@@ -583,11 +579,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		final Map<TypeAdresseCivil, List<Residence>> map = new HashMap<>(TypeAdresseCivil.values().length);
 		for (Residence r : residence) {
 			final TypeAdresseCivil type = AdresseRCPers.getTypeAdresseResidence(r);
-			List<Residence> list = map.get(type);
-			if (list == null) {
-				list = new ArrayList<>();
-				map.put(type, list);
-			}
+			final List<Residence> list = map.computeIfAbsent(type, k -> new ArrayList<>());
 			list.add(r);
 		}
 		return map;

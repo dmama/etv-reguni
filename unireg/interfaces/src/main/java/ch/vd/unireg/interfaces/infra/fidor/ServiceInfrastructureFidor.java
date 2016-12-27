@@ -264,11 +264,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 		// rassemblement par numéro OFS
 		for (Commune commune : liste) {
-			List<Commune> slot = map.get(commune.getNoOFS());
-			if (slot == null) {
-				slot = new ArrayList<>();
-				map.put(commune.getNoOFS(), slot);
-			}
+			final List<Commune> slot = map.computeIfAbsent(commune.getNoOFS(), k -> new ArrayList<>());
 			slot.add(commune);
 		}
 

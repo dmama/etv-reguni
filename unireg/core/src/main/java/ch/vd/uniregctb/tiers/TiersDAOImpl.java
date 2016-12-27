@@ -170,11 +170,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		for (T e : entities) {
 			session.setReadOnly(e, true);
 			final Long tiersId = getter.getTiersId(e);
-			Set<T> set = map.get(tiersId);
-			if (set == null) {
-				set = new HashSet<>();
-				map.put(tiersId, set);
-			}
+			final Set<T> set = map.computeIfAbsent(tiersId, k -> new HashSet<>());
 			set.add(e);
 		}
 

@@ -179,14 +179,8 @@ public class TracingManager {
 	}
 
 	private static Stack<TracePoint> getStackForThread() {
-
 		long threadId = Thread.currentThread().getId();
-		Stack<TracePoint> points = threadStacks.get(threadId);
-		if (points == null) {
-			points = new Stack<>();
-			threadStacks.put(threadId, points);
-		}
-		return points;
+		return threadStacks.computeIfAbsent(threadId, k -> new Stack<>());
 	}
 
 	private static TracePoint getLastTracePoint() {

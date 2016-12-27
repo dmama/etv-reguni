@@ -468,12 +468,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 				final Integer oid = (Integer) tuple[0];
 				final Long count = (Long) tuple[1];
 
-				TacheStats s = stats.get(oid);
-				if (s == null) {
-					s = new TacheStats();
-					stats.put(oid, s);
-				}
-
+				final TacheStats s = stats.computeIfAbsent(oid, k -> new TacheStats());
 				s.tachesEnInstance = count.intValue();
 			}
 		}
@@ -485,16 +480,11 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO, 
 
 			final List list = query.list();
 			for (Object o : list) {
-				Object tuple[] = (Object[]) o;
+				final Object tuple[] = (Object[]) o;
 				final Integer oid = (Integer) tuple[0];
 				final Long count = (Long) tuple[1];
 
-				TacheStats s = stats.get(oid);
-				if (s == null) {
-					s = new TacheStats();
-					stats.put(oid, s);
-				}
-
+				final TacheStats s = stats.computeIfAbsent(oid, k -> new TacheStats());
 				s.dossiersEnInstance = count.intValue();
 			}
 		}

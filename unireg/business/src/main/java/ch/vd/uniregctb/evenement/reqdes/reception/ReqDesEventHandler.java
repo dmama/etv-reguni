@@ -591,11 +591,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 			for (Integer ofsCommune : t.getMunicipalityId()) {
 				for (StakeholderReferenceWithRole sh : t.getStakeholder()) {
 					final Pair<RoleDansActe, Integer> role = Pair.of(RoleDansActe.valueOf(sh.getRole()), index);
-					List<Pair<RoleDansActe, Integer>> roles = map.get(sh.getStakeholderId());
-					if (roles == null) {
-						roles = new LinkedList<>();
-						map.put(sh.getStakeholderId(), roles);
-					}
+					final List<Pair<RoleDansActe, Integer>> roles = map.computeIfAbsent(sh.getStakeholderId(), k -> new LinkedList<>());
 					roles.add(role);
 				}
 				++ index;

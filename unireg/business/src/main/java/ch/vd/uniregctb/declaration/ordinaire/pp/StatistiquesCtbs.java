@@ -158,13 +158,9 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	}
 
 	public void addStats(Integer oid, Commune commune, TypeContribuable typeCtb) {
-		Key key = new Key(oid, commune, typeCtb);
-		Value value = stats.get(key);
-		if (value == null) {
-			value = new Value();
-			stats.put(key, value);
-		}
-		value.nombre++;
+		final Key key = new Key(oid, commune, typeCtb);
+		final Value value = stats.computeIfAbsent(key, k -> new Value());
+		++ value.nombre;
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
@@ -189,11 +185,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	}
 
 	public void mergeStats(Key rightKey, Value rightValue) {
-		Value value = stats.get(rightKey);
-		if (value == null) {
-			value = new Value();
-			stats.put(rightKey, value);
-		}
+		final Value value = stats.computeIfAbsent(rightKey, k -> new Value());
 		value.nombre += rightValue.nombre;
 	}
 }

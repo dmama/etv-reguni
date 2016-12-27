@@ -112,15 +112,15 @@ public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements Au
 			public Object doInTransaction(TransactionStatus status) {
 				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 				final long id = getNextId();
-				final Query query = getCurrentSession().createSQLQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
-				query.setLong(0, id);
-				query.setParameter(1, line.getLevel().toString());
-				query.setParameter(2, line.getDocumentId(), StandardBasicTypes.LONG);
-				query.setParameter(3, line.getEvenementId(), StandardBasicTypes.LONG);
-				query.setParameter(4, line.getThreadId(), StandardBasicTypes.LONG);
-				query.setParameter(5, line.getMessage());
-				query.setTimestamp(6, now);
-				query.setParameter(7, AuthenticationHelper.getCurrentPrincipal());
+				final Query query = getCurrentSession().createSQLQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (:id, :logLevel, :docId, :evtId, :threadId, :msg, :logDate, :logUser)");
+				query.setLong("id", id);
+				query.setParameter("logLevel", line.getLevel().toString());
+				query.setParameter("docId", line.getDocumentId(), StandardBasicTypes.LONG);
+				query.setParameter("evtId", line.getEvenementId(), StandardBasicTypes.LONG);
+				query.setParameter("threadId", line.getThreadId(), StandardBasicTypes.LONG);
+				query.setParameter("msg", line.getMessage());
+				query.setTimestamp("logDate", now);
+				query.setParameter("logUser", AuthenticationHelper.getCurrentPrincipal());
 				query.executeUpdate();
 				return null;
 			}

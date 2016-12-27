@@ -280,13 +280,9 @@ public class AjustementForsSecondairesEtablissementHelper {
 	 */
 	@NotNull
 	private static Map<GenreImpot, List<ForFiscalPrincipalPM>> indexForPrincipauxParGenre(List<ForFiscalPrincipalPM> forsfiscaux) {
-		Map<GenreImpot, List<ForFiscalPrincipalPM>> forFiscauxParGenre = new EnumMap<>(GenreImpot.class);
+		final Map<GenreImpot, List<ForFiscalPrincipalPM>> forFiscauxParGenre = new EnumMap<>(GenreImpot.class);
 		for (ForFiscalPrincipalPM ffp : forsfiscaux) {
-			List<ForFiscalPrincipalPM> forFiscals = forFiscauxParGenre.get(ffp.getGenreImpot());
-			if (forFiscals == null) {
-				forFiscals = new ArrayList<>();
-				forFiscauxParGenre.put(ffp.getGenreImpot(), forFiscals);
-			}
+			final List<ForFiscalPrincipalPM> forFiscals = forFiscauxParGenre.computeIfAbsent(ffp.getGenreImpot(), k -> new ArrayList<>());
 			forFiscals.add(ffp);
 		}
 		return forFiscauxParGenre;

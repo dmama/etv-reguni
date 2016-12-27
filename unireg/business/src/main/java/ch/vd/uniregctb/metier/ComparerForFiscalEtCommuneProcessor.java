@@ -109,6 +109,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 				final Criteria crit = session.createCriteria(Contribuable.class);
 				crit.add(Restrictions.in("id", batch));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				//noinspection unchecked
 				return crit.list();
 			}
 		});

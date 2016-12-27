@@ -140,11 +140,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	protected void addLiensBatiments(Map<Integer, List<MockLienCommuneBatiment>> map, MockCommune c) {
 		for (MockLienCommuneBatiment lien : c.getLiensBatiments()) {
 			final Integer egid = lien.getBatiment().getEgid();
-			List<MockLienCommuneBatiment> list = map.get(egid);
-			if (list == null) {
-				list = new ArrayList<>();
-				map.put(egid, list);
-			}
+			final List<MockLienCommuneBatiment> list = map.computeIfAbsent(egid, k -> new ArrayList<>());
 			list.add(lien);
 		}
 	}

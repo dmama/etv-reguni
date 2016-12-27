@@ -29,7 +29,6 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
@@ -143,7 +142,6 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
@@ -253,7 +251,6 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -383,7 +380,6 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
@@ -482,7 +478,6 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -623,7 +618,6 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {
@@ -763,7 +757,6 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setReferenceAnnonceIDEDAO(getBean(ReferenceAnnonceIDEDAO.class, "referenceAnnonceIDEDAO"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setAssujettissementService(new AssujettissementService() {

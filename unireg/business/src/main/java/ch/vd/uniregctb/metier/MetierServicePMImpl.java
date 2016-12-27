@@ -126,11 +126,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						continue; // On ne crée des fors secondaires que pour VD
 					}
-					List<Domicile> histoPourCommune = tousLesDomicilesVD.get(domicile.getNumeroOfsAutoriteFiscale());
-					if (histoPourCommune == null) {
-						histoPourCommune = new ArrayList<>();
-						tousLesDomicilesVD.put(domicile.getNumeroOfsAutoriteFiscale(), histoPourCommune);
-					}
+					final List<Domicile> histoPourCommune = tousLesDomicilesVD.computeIfAbsent(domicile.getNumeroOfsAutoriteFiscale(), k -> new ArrayList<>());
 					if (first) {
 						final RegDate debutFor = domicile.getDateDebut();
 						if (domicile.getDateFin() == null || debutFor.isBeforeOrEqual(domicile.getDateFin())) {
