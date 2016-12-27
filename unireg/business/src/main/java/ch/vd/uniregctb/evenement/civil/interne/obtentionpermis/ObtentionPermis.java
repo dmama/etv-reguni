@@ -114,7 +114,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 
 		/* Seul le permis C a une influence */
 		if (getTypePermis() != TypePermis.ETABLISSEMENT) {
-			Audit.info(getNumeroEvenement(), "Permis non C : ignoré fiscalement");
+			Audit.info(getNumeroEvenement(), String.format("Permis non C (%s) : ignoré fiscalement", getTypePermis()));
 			return HandleStatus.TRAITE;
 		}
 		else {

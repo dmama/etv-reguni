@@ -93,7 +93,7 @@ public class FinPermis extends EvenementCivilInterne {
 			}
 		}
 		else {
-			Audit.info(getNumeroEvenement(), "Permis non C : ignoré");
+			Audit.info(getNumeroEvenement(), String.format("Permis non C (%s) : ignoré", getTypePermis()));
 		}
 	}
 
