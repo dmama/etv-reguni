@@ -84,6 +84,11 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		final SiteOrganisation succursaleACreer = succursalesRCVD.get(0);
 		final RegDate dateDeCreation = succursaleACreer.getDateInscriptionRCVd(getDateEvt());
 
+		if (dateDeCreation == null) {
+			throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour la succursale au RC VD n°%s.",
+			                                                       succursaleACreer.getNumeroSite()
+			));
+		}
 
 		// Création & vérification de la surcharge corrective s'il y a lieu
 		SurchargeCorrectiveRange surchargeCorrectiveRange = null;
