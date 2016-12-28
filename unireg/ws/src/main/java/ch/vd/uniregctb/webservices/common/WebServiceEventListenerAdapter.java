@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -62,7 +63,10 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 
 	@Override
 	public void onOrganisationChange(long id) {
-		// TODO: FIXME: Implement like onIndividuChange()
+		final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(id);
+		if (entreprise != null) {
+			onTiersChange(entreprise.getNumero());
+		}
 	}
 
 	@Override
