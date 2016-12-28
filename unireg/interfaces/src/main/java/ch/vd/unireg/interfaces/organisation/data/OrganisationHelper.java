@@ -830,8 +830,12 @@ public abstract class OrganisationHelper {
 	}
 
 	public static List<PublicationBusiness> getPublications(List<PublicationBusiness> publications, RegDate datePublication) {
+		final RegDate dateEffective = defaultDate(datePublication);
+		if (publications == null) {
+			return Collections.emptyList();
+		}
 		return publications.stream()
-				.filter(p -> RegDateHelper.equals(p.getFoscDateDePublication(), datePublication)).collect(Collectors.toList());
+				.filter(p -> RegDateHelper.equals(p.getFoscDateDePublication(), dateEffective)).collect(Collectors.toList());
 	}
 
 	private static RegDate defaultDate(RegDate date) {
