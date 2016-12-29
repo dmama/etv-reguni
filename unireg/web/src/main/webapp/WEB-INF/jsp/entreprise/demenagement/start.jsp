@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="actionCommand" type="ch.vd.uniregctb.entreprise.complexe.DemenagementSiegeView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
 	<tiles:put name="title">
 		<fmt:message key="title.traitement.demenagement.siege">
 			<fmt:param>
-				<unireg:numCTB numero="${command.idEntreprise}"/>
+				<unireg:numCTB numero="${actionCommand.idEntreprise}"/>
 			</fmt:param>
 		</fmt:message>
 		<c:choose>
@@ -20,7 +22,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<unireg:bandeauTiers numero="${command.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
+		<unireg:bandeauTiers numero="${actionCommand.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
 		<fieldset>
@@ -79,7 +81,7 @@
 			</table>
 		</fieldset>
 
-		<form:form method="post" id="recapDemenagement" name="recapDemenagement">
+		<form:form method="post" id="recapDemenagement" name="recapDemenagement" commandName="actionCommand">
 			<form:hidden path="idEntreprise"/>
 
 			<script type="application/javascript">
@@ -164,7 +166,7 @@
 							</label>
 						</td>
 						<td>
-							<input id="autoriteFiscale" size="25" value="${command.nomAutoriteFiscale}"/>
+							<input id="autoriteFiscale" size="25" value="${actionCommand.nomAutoriteFiscale}"/>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 							<form:hidden path="nomAutoriteFiscale" />
@@ -184,7 +186,7 @@
 
 		<script type="application/javascript">
 			$(function() {
-				selectAutoriteFiscale('${command.typeAutoriteFiscale}', false);
+				selectAutoriteFiscale('${actionCommand.typeAutoriteFiscale}', false);
 			});
 		</script>
 

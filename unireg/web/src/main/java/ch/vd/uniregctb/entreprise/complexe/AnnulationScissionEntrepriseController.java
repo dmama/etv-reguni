@@ -84,7 +84,7 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 	}
 
 	private String showStart(final Model model, final ScissionEntrepriseView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 
 		final List<RegDate> datesContrat = getDatesContratScissionExistantes(view.getIdEntrepriseScindee());
 		if (datesContrat.isEmpty()) {
@@ -96,7 +96,7 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 	}
 
 	@RequestMapping(value = "/choix-date.do", method = RequestMethod.POST)
-	public String doAnnulationScission(Model model, @Valid @ModelAttribute(SearchTiersComponent.COMMAND) final ScissionEntrepriseView view, BindingResult bindingResult) {
+	public String doAnnulationScission(Model model, @Valid @ModelAttribute(ACTION_COMMAND) final ScissionEntrepriseView view, BindingResult bindingResult) {
 		checkDroitAcces();
 		if (bindingResult.hasErrors()) {
 			return showStart(model, view);

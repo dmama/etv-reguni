@@ -73,12 +73,12 @@ public class ReinscriptionRCController extends AbstractProcessusComplexeRecherch
 	}
 
 	private String showStart(Model model, ReinscriptionRCView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 		return "entreprise/reinscriptionrc/start";
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doFaillite(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final ReinscriptionRCView view, BindingResult bindingResult) throws Exception {
+	public String doFaillite(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final ReinscriptionRCView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {

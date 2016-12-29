@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="actionCommand" type="ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
 	<tiles:put name="title">
@@ -11,10 +13,10 @@
 		<c:set var="titre">
 			<fmt:message key="label.caracteristiques.fusion.entreprise.absorbante"/>
 		</c:set>
-		<unireg:bandeauTiers numero="${command.idEntrepriseAbsorbante}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titre}"/>
+		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseAbsorbante}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titre}"/>
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapDatesFusion" name="recapDatesFusion" action="choix-dates.do">
+		<form:form method="post" id="recapDatesFusion" name="recapDatesFusion" action="choix-dates.do" commandName="actionCommand">
 			<form:hidden path="idEntrepriseAbsorbante"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.fusion.entreprises" /></span></legend>

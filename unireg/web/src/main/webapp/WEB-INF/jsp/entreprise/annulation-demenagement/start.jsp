@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="actionCommand" type="ch.vd.uniregctb.entreprise.complexe.AnnulationDemenagementSiegeView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
 	<tiles:put name="title">
 		<fmt:message key="title.traitement.annulation.demenagement.siege">
 			<fmt:param>
-				<unireg:numCTB numero="${command.idEntreprise}"/>
+				<unireg:numCTB numero="${actionCommand.idEntreprise}"/>
 			</fmt:param>
 		</fmt:message>
 		<c:choose>
@@ -20,7 +22,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<unireg:bandeauTiers numero="${command.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
+		<unireg:bandeauTiers numero="${actionCommand.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
 		<unireg:nextRowClass reset="0"/>
 
 		<table border="0">
@@ -197,7 +199,7 @@
 			</tr>
 		</table>
 
-		<form:form method="post" id="recapDemenagement" name="recapDemenagement">
+		<form:form method="post" id="recapDemenagement" name="recapDemenagement" commandName="actionCommand">
 			<form:hidden path="idEntreprise"/>
 			<form:hidden path="dateDebutSiegeActuel"/>
 

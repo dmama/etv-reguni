@@ -145,12 +145,12 @@ public class TransfertPatrimoineController extends AbstractProcessusComplexeCont
 	}
 
 	private String showStart(Model model, TransfertPatrimoineView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 		return "entreprise/transfertpatrimoine/choix-date";
 	}
 
 	@RequestMapping(value = "/choix-date.do", method = RequestMethod.POST)
-	public String doSetDates(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final TransfertPatrimoineView view, BindingResult bindingResult, HttpSession session) throws Exception {
+	public String doSetDates(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final TransfertPatrimoineView view, BindingResult bindingResult, HttpSession session) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseEmettrice());
 		if (bindingResult.hasErrors()) {

@@ -84,7 +84,7 @@ public class AnnulationTransfertPatrimoineController extends AbstractProcessusCo
 	}
 
 	private String showStart(final Model model, final TransfertPatrimoineView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 
 		final List<RegDate> datesTransfert = getDatesTransfertExistantes(view.getIdEntrepriseEmettrice());
 		if (datesTransfert.isEmpty()) {
@@ -96,7 +96,7 @@ public class AnnulationTransfertPatrimoineController extends AbstractProcessusCo
 	}
 
 	@RequestMapping(value = "/choix-date.do", method = RequestMethod.POST)
-	public String doAnnulationScission(Model model, @Valid @ModelAttribute(SearchTiersComponent.COMMAND) final TransfertPatrimoineView view, BindingResult bindingResult) {
+	public String doAnnulationScission(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final TransfertPatrimoineView view, BindingResult bindingResult) {
 		checkDroitAcces();
 		if (bindingResult.hasErrors()) {
 			return showStart(model, view);

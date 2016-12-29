@@ -80,12 +80,12 @@ public abstract class AnnulationRevocationFailliteController extends AbstractPro
 	}
 
 	private String showStart(Model model, FailliteView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 		return String.format("entreprise/%s-faillite/start", viewPath);
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doFaillite(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final FailliteView view, BindingResult bindingResult) throws Exception {
+	public String doFaillite(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final FailliteView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {

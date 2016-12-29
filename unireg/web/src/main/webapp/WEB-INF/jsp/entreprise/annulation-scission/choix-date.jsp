@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="actionCommand" type="ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
 	<tiles:put name="title">
 		<fmt:message key="title.traitement.annulation.scission.entreprise">
 			<fmt:param>
-				<unireg:numCTB numero="${command.idEntrepriseScindee}"/>
+				<unireg:numCTB numero="${actionCommand.idEntrepriseScindee}"/>
 			</fmt:param>
 		</fmt:message>
 	</tiles:put>
@@ -15,10 +17,10 @@
 		<c:set var="titre">
 			<fmt:message key="label.caracteristiques.scission.entreprise.scindee"/>
 		</c:set>
-		<unireg:bandeauTiers numero="${command.idEntrepriseScindee}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titre}"/>
+		<unireg:bandeauTiers numero="${actionCommand.idEntrepriseScindee}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true" titre="${titre}"/>
 		<unireg:nextRowClass reset="0"/>
 
-		<form:form method="post" id="recapDateScission" name="recapDateScission" action="choix-date.do">
+		<form:form method="post" id="recapDateScission" name="recapDateScission" action="choix-date.do" commandName="actionCommand">
 			<form:hidden path="idEntrepriseScindee"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.scission.entreprise"/></span></legend>

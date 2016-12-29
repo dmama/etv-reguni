@@ -22,10 +22,13 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
 import ch.vd.uniregctb.transaction.TransactionHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 public abstract class AbstractProcessusComplexeController implements MessageSourceAware {
+
+	public static final String ACTION_COMMAND = "actionCommand";
 
 	protected TiersService tiersService;
 	protected TiersMapHelper tiersMapHelper;
@@ -71,9 +74,15 @@ public abstract class AbstractProcessusComplexeController implements MessageSour
 	}
 
 	@InitBinder(value = SearchTiersComponent.COMMAND)
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(validator);
+	protected void initSearchCommandBinder(WebDataBinder binder) {
+		binder.setValidator(new TiersCriteriaValidator());
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+
+	@InitBinder(value = ACTION_COMMAND)
+	protected void initActionCommandBinder(WebDataBinder binder) {
+		binder.setValidator(validator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	/**

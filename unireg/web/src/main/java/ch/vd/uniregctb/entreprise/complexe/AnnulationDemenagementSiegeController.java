@@ -97,7 +97,7 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 	}
 
 	private String showStart(final Model model, final AnnulationDemenagementSiegeView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 		return doInReadOnlyTransaction(new TransactionCallback<String>() {
 			@Override
 			public String doInTransaction(TransactionStatus status) {
@@ -169,7 +169,7 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doDemenagement(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final AnnulationDemenagementSiegeView view, BindingResult bindingResult) throws Exception {
+	public String doDemenagement(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final AnnulationDemenagementSiegeView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {

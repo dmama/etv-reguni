@@ -175,7 +175,7 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 	}
 
 	private String showStart(final Model model, final FusionEntreprisesView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 
 		final List<RegDate> datesBilan = getDatesBilanFusionExistantes(view.getIdEntrepriseAbsorbante());
 		if (datesBilan.isEmpty()) {
@@ -190,7 +190,7 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 	}
 
 	@RequestMapping(value = "/choix-dates.do", method = RequestMethod.POST)
-	public String doAnnulationFusion(Model model, @Valid @ModelAttribute(SearchTiersComponent.COMMAND) final FusionEntreprisesView view, BindingResult bindingResult) {
+	public String doAnnulationFusion(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final FusionEntreprisesView view, BindingResult bindingResult) {
 		checkDroitAcces();
 		if (bindingResult.hasErrors()) {
 			return showStart(model, view);

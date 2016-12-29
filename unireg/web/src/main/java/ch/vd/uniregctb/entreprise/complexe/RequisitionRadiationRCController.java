@@ -85,12 +85,12 @@ public class RequisitionRadiationRCController extends AbstractProcessusComplexeR
 	}
 
 	private String showStart(Model model, FinActiviteView view) {
-		model.addAttribute(SearchTiersComponent.COMMAND, view);
+		model.addAttribute(ACTION_COMMAND, view);
 		return "entreprise/requisitionradiationrc/start";
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doFinActivite(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final RequisitionRadiationRCView view, BindingResult bindingResult) throws Exception {
+	public String doFinActivite(Model model, @Valid @ModelAttribute(value = ACTION_COMMAND) final RequisitionRadiationRCView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {
