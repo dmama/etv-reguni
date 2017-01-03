@@ -19,6 +19,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -46,6 +47,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		validator.setTiersDAO(tiersDAO);
 		validator.setDiDAO(diDAO);
 		validator.setTiersService(tiersService);
+		validator.setManager(getBean(DeclarationImpotEditManager.class, "diEditManager"));
 	}
 
 	@Test
@@ -290,6 +292,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 	@Test
 	public void testChevauchementExerciceCommercial() throws Exception {
 		final RegDate dateDebut = date(2000, 7, 1);
+		final int annee = RegDate.get().year();
 
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -311,10 +314,10 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
 				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
 				view.setTiersId(pmId);
-				view.setPeriodeFiscale(2016);
-				view.setDateDebutPeriodeImposition(date(2016, 1, 1));
-				view.setDateFinPeriodeImposition(date(2016, 8, 31));        // 2 mois de trop
-				view.setDelaiAccorde(date(2017, 4, 30));
+				view.setPeriodeFiscale(annee);
+				view.setDateDebutPeriodeImposition(date(annee, 1, 1));
+				view.setDateFinPeriodeImposition(date(annee, 8, 31));        // 2 mois de trop
+				view.setDelaiAccorde(date(annee + 1, 4, 30));
 				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
 				final Errors errors = new BeanPropertyBindingResult(view, "view");

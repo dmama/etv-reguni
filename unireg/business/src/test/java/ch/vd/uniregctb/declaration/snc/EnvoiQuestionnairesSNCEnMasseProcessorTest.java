@@ -1045,7 +1045,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 3), date(periode, 4, 1), CategorieEntreprise.SP, entreprise, oipm);

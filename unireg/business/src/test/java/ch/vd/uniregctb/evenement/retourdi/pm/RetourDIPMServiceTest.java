@@ -487,7 +487,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTard() throws Exception {
 
-		final int annee = RegDate.get().year();
+		final int annee = RegDate.get().year() - 1;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 3, 31);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
@@ -582,7 +582,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTot() throws Exception {
 
-		final int annee = RegDate.get().year();
+		final int annee = RegDate.get().year() - 1;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 6, 30);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
@@ -677,7 +677,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTotAvecDeclarationExistanteNonRetourneeUlterieure() throws Exception {
 
-		final int annee = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 6, 30);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
@@ -795,7 +795,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTardAvecDeclarationExistanteNonRetourneeUlterieure() throws Exception {
 
-		final int annee = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 3, 31);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
@@ -913,7 +913,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTotAvecDeclarationExistanteUlterieureRetournee() throws Exception {
 
-		final int annee = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 6, 30);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
@@ -1040,7 +1040,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTardAvecDeclarationExistanteUlterieureRetournee() throws Exception {
 
-		final int annee = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 3, 31);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant

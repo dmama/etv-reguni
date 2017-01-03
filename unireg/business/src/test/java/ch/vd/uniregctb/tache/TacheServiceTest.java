@@ -4663,7 +4663,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testTacheAnnulationDIQuittanceeSurAnnulationDepartHS() throws Exception {
 
 		// exemple:
-		// - départ dans la période courante (= hier)
+		// - départ dans la période courante (= avant-hier)
 		// - une DI est émise (et quittancée) pour le début de l'année passée sur le sol helvétique
 		// - en fait, le départ est annulé
 		// - on devrait donc avoir une tâche d'annulation de DI
@@ -4677,8 +4677,8 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Bussigny);
-				addForPrincipal(pp, aujourdhui, MotifFor.DEPART_HS, MockPays.EtatsUnis);
+				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui.addDays(-2), MotifFor.DEPART_HS, MockCommune.Bussigny);
+				addForPrincipal(pp, aujourdhui.getOneDayBefore(), MotifFor.DEPART_HS, MockPays.EtatsUnis);
 
 				// le contribuable avait déclaré son départ, mais la date n'était pas la date du véritable départ
 				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
@@ -4709,7 +4709,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(di.isAnnule());
 				assertFalse(di.isLibre());      // la DI a été adaptée au for
 				assertEquals(date(anneeCourante, 1, 1), di.getDateDebut());
-				assertEquals(aujourdhui.getOneDayBefore(), di.getDateFin());
+				assertEquals(aujourdhui.addDays(-2), di.getDateFin());
 				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
 
 				final TacheCriteria criterion = new TacheCriteria();
@@ -4734,7 +4734,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final ForFiscalPrincipal forHS = pp.getDernierForFiscalPrincipal();
 				assertNotNull(forHS);
-				assertEquals(aujourdhui, forHS.getDateDebut());
+				assertEquals(aujourdhui.getOneDayBefore(), forHS.getDateDebut());
 				assertNull(forHS.getDateFin());
 				assertEquals(TypeAutoriteFiscale.PAYS_HS, forHS.getTypeAutoriteFiscale());
 
@@ -4777,7 +4777,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(diAAnnuler.isAnnule());
 				assertFalse(diAAnnuler.isLibre());      // la DI a été adaptée au for
 				assertEquals(date(anneeCourante, 1, 1), diAAnnuler.getDateDebut());
-				assertEquals(aujourdhui.getOneDayBefore(), diAAnnuler.getDateFin());
+				assertEquals(aujourdhui.addDays(-2), diAAnnuler.getDateFin());
 				assertEquals(TypeEtatDeclaration.RETOURNEE, diAAnnuler.getDernierEtat().getEtat());
 
 				return null;
