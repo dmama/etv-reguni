@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.CallbackException;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
@@ -66,7 +66,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 			for (Tiers tiers : dirty.values()) {
 				final Integer oid = tiersService.calculateCurrentOfficeID(tiers);
 				final Integer old = tiers.getOfficeImpotId();
-				if (!ObjectUtils.equals(oid,old)) {
+				if (!Objects.equals(oid, old)) {
 					tiers.setOfficeImpotId(oid);
 					modifs.put(tiers.getNumero(), oid);
 				}
@@ -92,10 +92,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 
 		final Integer oid = tiersService.calculateCurrentOfficeID(tiers);
 		final Integer old = tiers.getOfficeImpotId();
-		if(ObjectUtils.equals(oid,old)){ // on évite de rendre le tiers dirty pour rien
-		return false;
+		if (Objects.equals(oid, old)) { // on évite de rendre le tiers dirty pour rien
+			return false;
 		}
-
 
 		// l'oid doit être mis-à-jour
 		getUpdatedOids().put(tiers.getNumero(), oid);
@@ -129,7 +128,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 			return false;
 		}
 
-		Tiers tiers = getRelatedTiers(entity);
+		final Tiers tiers = getRelatedTiers(entity);
 		if (tiers != null) {
 			// on attend l'événement de pre-flush, car l'entité spécifiée est potentiellement encore incomplète.
 			addDirtyEntity(tiers);
@@ -210,9 +209,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 				continue;
 			}
 
-			Integer oid = tiersService.calculateCurrentOfficeID(tiers);
+			final Integer oid = tiersService.calculateCurrentOfficeID(tiers);
 			final Integer old = tiers.getOfficeImpotId();
-			if (!ObjectUtils.equals(oid,old)) {
+			if (!Objects.equals(oid, old)) {
 				// Met-à-jour l'OID sur le tiers
 				tiers.setOfficeImpotId(oid);
 

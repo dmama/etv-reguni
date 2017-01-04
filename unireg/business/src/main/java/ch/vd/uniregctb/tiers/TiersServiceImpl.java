@@ -4145,8 +4145,8 @@ public class TiersServiceImpl implements TiersService {
             return null;
         }
 
-        final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxSorted();
-        if (forsFiscaux == null || forsFiscaux.isEmpty()) {
+        final List<ForFiscal> forsFiscaux = AnnulableHelper.sansElementsAnnules(tiers.getForsFiscaux());
+        if (forsFiscaux.isEmpty()) {
             return null;
         }
 
@@ -4154,8 +4154,13 @@ public class TiersServiceImpl implements TiersService {
         ForGestion forGestion;
         if (date == null) {
             // on essaie tout d'abord à la date de fin du dernier for fiscal
-            forGestion = getForGestionActif(tiers, forsFiscaux.get(forsFiscaux.size() - 1).getDateFin());
-        } else {
+	        final RegDate dateDernierForFical = forsFiscaux.stream()
+			        .max(Comparator.comparing(ForFiscal::getDateFin, NullDateBehavior.LATEST::compare))
+			        .map(ForFiscal::getDateFin)
+			        .orElse(null);
+            forGestion = getForGestionActif(tiers, dateDernierForFical);
+        }
+        else {
             // on essaie tout d'abord à la date spécifiée
             forGestion = getForGestionActif(tiers, date);
         }
