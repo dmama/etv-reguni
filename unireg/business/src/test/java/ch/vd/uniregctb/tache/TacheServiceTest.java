@@ -4681,9 +4681,17 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(pp, aujourdhui.getOneDayBefore(), MotifFor.DEPART_HS, MockPays.EtatsUnis);
 
 				// le contribuable avait déclaré son départ, mais la date n'était pas la date du véritable départ
+				final RegDate dateFinPI;
+				if (aujourdhui == date(anneeCourante, 1, 3)) {
+					dateFinPI = date(anneeCourante, 1, 2);
+				}
+				else {
+					dateFinPI = date(anneeCourante, 1, 1);
+				}
+
 				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), date(anneeCourante, 1, 2), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), dateFinPI, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				di.addEtat(new EtatDeclarationEmise(aujourdhui));
 				di.addEtat(new EtatDeclarationRetournee(aujourdhui, "TEST"));
 				di.setLibre(true);
