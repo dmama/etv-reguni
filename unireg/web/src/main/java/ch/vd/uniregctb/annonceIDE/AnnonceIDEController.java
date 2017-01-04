@@ -136,8 +136,8 @@ public class AnnonceIDEController {
 
 					if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
 						for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
-							final AnnonceIDEEnvoyee annonceIDE = organisationService.getAnnonceIDE(ref.getId());
-							listeAnnonces.add((AnnonceIDE) annonceIDE);
+							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId());
+							listeAnnonces.add(annonceIDE);
 						}
 					}
 

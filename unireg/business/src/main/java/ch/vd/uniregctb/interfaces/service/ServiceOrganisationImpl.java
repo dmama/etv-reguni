@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
-import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
@@ -113,7 +112,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
-	public AnnonceIDEEnvoyee getAnnonceIDE(Long numero) {
+	public AnnonceIDE getAnnonceIDE(Long numero) {
 		return target.getAnnonceIDE(numero);
 	}
 
