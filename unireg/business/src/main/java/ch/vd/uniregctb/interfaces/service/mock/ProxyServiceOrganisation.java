@@ -32,6 +32,7 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	private final ServiceOrganisationImpl service;
 
 	public ProxyServiceOrganisation(ServiceInfrastructureService serviceInfra) {
+		this.target = null;
 		this.service = new ServiceOrganisationImpl(serviceInfra);
 	}
 
@@ -72,29 +73,34 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 
 	@Override
 	public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+		assertTargetNotNull();
 		return service.getAdressesSiteOrganisationHisto(noSite);
 	}
 
 	@Nullable
 	@Override
 	public AnnonceIDE getAnnonceIDE(Long numero) {
-		return target.getAnnonceIDE(numero);
+		assertTargetNotNull();
+		return service.getAnnonceIDE(numero);
 	}
 
 	@NotNull
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
-		return target.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
+		assertTargetNotNull();
+		return service.findAnnoncesIDE(query, order, pageNumber, resultsPerPage);
 	}
 
 	@Override
 	public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE annonceIDE) {
-		return target.validerAnnonceIDE(annonceIDE);
+		assertTargetNotNull();
+		return service.validerAnnonceIDE(annonceIDE);
 	}
 
 	@NotNull
 	@Override
 	public String createOrganisationDescription(Organisation organisation, RegDate date) {
+		assertTargetNotNull();
 		return service.createOrganisationDescription(organisation, date);
 	}
 
