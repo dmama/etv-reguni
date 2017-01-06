@@ -197,6 +197,24 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="residencyPeriods" minOccurs="0" maxOccurs="unbounded" type="person:residencyPeriodType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des périodes de résidence vaudoise de la personne physique, uniquement rempli si la part RESIDENCY_PERIODS est demandée.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding3" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
@@ -558,4 +576,36 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="residencyPeriodType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Une période (bornes comprises) pendant laquelle une personne physique est résidente vaudoise (= habitante).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateTo" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de la résidence vaudoise. Cette donnée n'est pas renseigné sur si la période est toujours valable.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de la résidence vaudoise.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+
 </xs:schema>
