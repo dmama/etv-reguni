@@ -89,6 +89,7 @@ import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType;
 import ch.vd.unireg.xml.party.person.v5.Origin;
+import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
 import ch.vd.unireg.xml.party.person.v5.Sex;
 import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
@@ -2896,6 +2897,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Gautier", "Mafalda", Sexe.FEMININ);
 				ind.setTousPrenoms("Mafalda Henriette");
 				ind.setNomNaissance("Dupont");
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateNaissance, dateDepartHS);
 				addOrigine(ind, MockCommune.Bern);
 				addNationalite(ind, MockPays.France, dateNaissance, null);
 				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
@@ -3177,6 +3179,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(date(2014, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
 				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateTo()));
 				Assert.assertNull(tp.getTaxDeclarationId());
+			}
+
+			final List<ResidencyPeriod> residencyPeriods = np.getResidencyPeriods();
+			Assert.assertNotNull(residencyPeriods);
+			Assert.assertEquals(1, residencyPeriods.size());
+			{
+				final ResidencyPeriod rp = residencyPeriods.get(0);
+				Assert.assertNotNull(rp);
+				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rp.getDateFrom()));
+				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rp.getDateTo()));
 			}
 		}
 	}

@@ -88,6 +88,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -160,6 +161,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				ind.setNomNaissance("Bolomey-de-naissance");
 				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
 				addNationalite(ind, MockPays.France, dateNaissance.addMonths(1), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Morges.RueDeLAvenir, null, dateNaissance, null);
 			}
 		});
 
@@ -1522,10 +1524,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkCorporationFlags = PartyPart.CORPORATION_FLAGS == p;
 		boolean checkAgents = PartyPart.AGENTS == p;
 		boolean checkLabels = PartyPart.LABELS == p;
+		boolean checkLandRights = PartyPart.LAND_RIGHTS == p;
+		boolean checkResidencyPeriods = PartyPart.RESIDENCY_PERIODS == p;
+
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
-				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels, "La partie [" + p + "] est inconnue");
+				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
+				              || checkLandRights || checkResidencyPeriods, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -1570,6 +1576,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		if (tiers instanceof NaturalPerson) {
 			final NaturalPerson np = (NaturalPerson) tiers;
 			assertNullOrNotNull(checkWithholdingTaxDeclarationPeriods, np.getWithholdingTaxationPeriods(), "withholdingTaxDelarationPeriods");
+			assertNullOrNotNull(checkResidencyPeriods, np.getResidencyPeriods(), "residencyPeriods");
 		}
 	}
 

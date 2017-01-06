@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -27,6 +28,7 @@ import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategoryType;
 import ch.vd.unireg.xml.party.person.v5.Origin;
 import ch.vd.unireg.xml.party.person.v5.ParentFullName;
+import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
@@ -43,6 +45,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.v5.ResidencyPeriodBuilder;
 import ch.vd.uniregctb.xml.party.v5.WithholdingTaxationPeriodBuilder;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
@@ -225,6 +228,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (parts != null && parts.contains(PartyPart.WITHHOLDING_TAXATION_PERIODS)) {
 			initWithholdingTaxationPeriods(to, pp, context);
 		}
+		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
+			initResidencyPeriods(to, pp, context);
+		}
 	}
 
 	@Override
@@ -233,6 +239,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 		if (parts != null && parts.contains(PartyPart.WITHHOLDING_TAXATION_PERIODS)) {
 			copyColl(to.getWithholdingTaxationPeriods(), from.getWithholdingTaxationPeriods());
+		}
+		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
+			copyColl(to.getResidencyPeriods(), from.getResidencyPeriods());
 		}
 	}
 
@@ -268,5 +277,25 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				left.getWithholdingTaxationPeriods().add(period);
 			}
 		}
+	}
+
+	private static void initResidencyPeriods(NaturalPerson left, PersonnePhysique pp, Context context) throws ServiceException {
+		final List<DateRange> list;
+		try {
+			list = context.tiersService.getPeriodesDeResidence(pp, false);
+		}
+		catch (IndividuNotFoundException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.UNKNOWN_INDIVIDUAL);
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw ExceptionHelper.newBusinessException(e, BusinessExceptionCode.INFRASTRUCTURE);
+		}
+
+		final List<ResidencyPeriod> residencyPeriods = left.getResidencyPeriods();
+		list.stream()
+				.map(ResidencyPeriodBuilder::newPeriod)
+				.forEach(residencyPeriods::add);
 	}
 }

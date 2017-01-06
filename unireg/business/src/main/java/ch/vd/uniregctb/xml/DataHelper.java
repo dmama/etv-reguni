@@ -1079,6 +1079,7 @@ public abstract class DataHelper {
 
 		return results;
 	}
+
 	public static Set<TiersDAO.Parts> xmlToCoreV5(Set<ch.vd.unireg.xml.party.v5.PartyPart> parts) {
 
 		if (parts == null) {
@@ -1157,7 +1158,11 @@ public abstract class DataHelper {
 				break;
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
+			case RESIDENCY_PERIODS:
 				// rien à faire
+				break;
+			case LAND_RIGHTS:
+				// TODO rien à faire pour le moment, mais ce n'est que partie remise...
 				break;
 			default:
 				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');

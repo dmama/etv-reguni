@@ -9780,5 +9780,262 @@ debut PF                                                                        
 			}
 		});
 	}
+
+	@Test
+	public void testPeriodesDeResidenceSurInconnuAuCivil() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = addNonHabitant("Alfred", "Dirladada", date(1987, 5, 12), Sexe.MASCULIN);
+			addAdresseSuisse(ctb, TypeAdresseTiers.COURRIER, date(1987, 5, 12), null, MockRue.CossonayVille.CheminDeRiondmorcel);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertNull(ctb.getNumeroIndividu());
+
+				Assert.assertEquals(Collections.emptyList(), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Collections.emptyList(), tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
+
+	@Test
+	public void testPeriodesDeResidenceSurHabitantPrincipalParti() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+		final RegDate dateDepart = date(2015, 2, 13);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, dateDepart);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertEquals((Long) noIndividu, ctb.getNumeroIndividu());
+				Assert.assertFalse(ctb.isHabitantVD());
+
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, dateDepart)), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, dateDepart)), tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
+
+	@Test
+	public void testPeriodesDeResidenceSurHabitantSecondaireParti() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+		final RegDate dateDepart = date(2015, 2, 13);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, dateDepart);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertEquals((Long) noIndividu, ctb.getNumeroIndividu());
+				Assert.assertFalse(ctb.isHabitantVD());
+
+				Assert.assertEquals(Collections.emptyList(), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, dateDepart)), tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
+
+	@Test
+	public void testPeriodesDeResidenceSurHabitantPrincipalToujoursLa() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = addHabitant(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertEquals((Long) noIndividu, ctb.getNumeroIndividu());
+				Assert.assertTrue(ctb.isHabitantVD());
+
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, null)), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, null)), tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
+
+	@Test
+	public void testPeriodesDeResidenceSurHabitantSecondaireToujoursLa() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = addHabitant(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertEquals((Long) noIndividu, ctb.getNumeroIndividu());
+				Assert.assertTrue(ctb.isHabitantVD());
+
+				Assert.assertEquals(Collections.emptyList(), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, null)), tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
+
+	@Test
+	public void testPeriodesDeResidenceSurPrincipalPartiEtRevenuEnSecondaireToujoursLa() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+		final RegDate dateDepart = date(2010, 4, 22);
+		final RegDate dateRetour = date(2015, 3, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateRetour, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = addHabitant(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertEquals((Long) noIndividu, ctb.getNumeroIndividu());
+				Assert.assertTrue(ctb.isHabitantVD());
+
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, dateDepart)), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Arrays.asList(new DateRangeHelper.Range(dateNaissance, dateDepart),
+				                                  new DateRangeHelper.Range(dateRetour, null)),
+				                    tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
+
+	@Test
+	public void testPeriodesDeResidenceSurAncienHabitantDecede() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+		final RegDate dateDeces = date(2010, 4, 22);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				individu.setDateDeces(dateDeces);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				Assert.assertNotNull(ctb);
+				Assert.assertEquals((Long) noIndividu, ctb.getNumeroIndividu());
+				Assert.assertFalse(ctb.isHabitantVD());
+
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, dateDeces)), tiersService.getPeriodesDeResidence(ctb, true));
+				Assert.assertEquals(Collections.singletonList(new DateRangeHelper.Range(dateNaissance, dateDeces)), tiersService.getPeriodesDeResidence(ctb, false));
+			}
+		});
+	}
 }
 

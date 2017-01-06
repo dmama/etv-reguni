@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -192,6 +193,15 @@ public interface TiersService {
 	 */
 	@NotNull
 	PersonnePhysique createNonHabitantFromIndividu(long numeroIndividu);
+
+	/**
+	 * @param pp                           une personne physique
+	 * @param residencePrincipaleSeulement <code>true</code> si on ne doit tenir compte que des résidences principales, <code>false</code> si les résidences secondaires sont aussi à prendre en compte
+	 * @return la liste des périodes temporelles pendant lesquelles cette personne physique est considérées comme résidente vaudoise (= habitante)
+	 * @throws DonneesCivilesException en cas de souci avec les données d'adresses civiles de la personne physique donnée
+	 */
+	@NotNull
+	List<DateRange> getPeriodesDeResidence(PersonnePhysique pp, boolean residencePrincipaleSeulement) throws DonneesCivilesException;
 
 	/**
 	 * @return  le statut du ménage commun

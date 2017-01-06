@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -113,6 +115,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -2042,6 +2045,39 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return null;
+	}
+
+	@NotNull
+	public List<DateRange> getPeriodesDeResidence(PersonnePhysique pp, boolean residencePrincipaleSeulement) throws DonneesCivilesException {
+		final Long numeroIndividu = pp.getNumeroIndividu();
+		if (numeroIndividu == null) {
+			// inconnu au civil -> pas de période de résidence possible
+			return Collections.emptyList();
+		}
+
+		// je demande déjà ici la part ADRESSES car un nouvel appel au service civil est fait juste après avec cette part aussi...
+		// si on peut garantir d'utiliser le cache local, tant mieux, non ?
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, null, AttributeIndividu.ADRESSES);
+		if (individu == null) {
+			throw new IndividuNotFoundException(pp);
+		}
+
+		final RegDate dateDeces = individu.getDateDeces();      // les décédés civils ne sont plus habitants...
+		final DateRange limitationRangeDeces = new DateRangeHelper.Range(null, dateDeces);
+
+		final AdressesCivilesHistoriques adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
+		final List<DateRange> presencesVaudoises = Stream.of(adresses.principales,
+		                                                     residencePrincipaleSeulement ? null : adresses.secondaires)
+				.filter(Objects::nonNull)
+				.flatMap(List::stream)
+				.filter(this::isAdresseVaudoise)
+				.map(adresse -> DateRangeHelper.intersection(adresse, limitationRangeDeces))
+				.filter(Objects::nonNull)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
+
+		final List<DateRange> periodes = DateRangeHelper.merge(presencesVaudoises);
+		return periodes != null ? periodes : Collections.emptyList();
 	}
 
 	private Commune getCommuneForAdresse(Adresse adresse, boolean faitiereOnly) {
