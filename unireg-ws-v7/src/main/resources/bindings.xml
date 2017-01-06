@@ -128,6 +128,9 @@
 		<jxb:bindings node="//xs:complexType[@name='nationalityType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='residencyPeriodType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="person-5" />
 		</jxb:bindings>

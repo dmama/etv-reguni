@@ -985,6 +985,11 @@
 					<xs:documentation>Les droits du tiers sur des propriétés foncières (droits de propriété, d'usufruit ou d'habitation).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="RESIDENCY_PERIODS">
+				<xs:annotation>
+					<xs:documentation>Les périodes pendant lesquelles la personne physique est considérée comme résidente vaudoise (= habitante).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
