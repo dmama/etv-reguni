@@ -17,7 +17,9 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(UniregJUnit4Runner.class)
@@ -105,6 +107,39 @@ public class SurfaceAuSolRFHelperTest {
 		assertTrue(SurfaceAuSolRFHelper.dataEquals(surface1, surface1));
 		assertTrue(SurfaceAuSolRFHelper.dataEquals(surface2, surface2));
 		assertTrue(SurfaceAuSolRFHelper.dataEquals(surface3, surface3));
+	}
+
+	/**
+	 * [SIFISC-22504] Ce test vérifie que la création d'une surface au sol à partir d'une donnée RF normale fonctionne bien.
+	 */
+	@Test
+	public void testNewSurfaceAuSol() throws Exception {
+
+		final Bodenbedeckung bodendeckung = new Bodenbedeckung();
+		bodendeckung.setGrundstueckIDREF("1f109152381046080138104a9c595368");
+		bodendeckung.setFlaeche(49);
+		bodendeckung.setArt(new CapiCode("", "Pisicine"));
+
+		final SurfaceAuSolRF surfaceAuSolRF = SurfaceAuSolRFHelper.newSurfaceAuSolRF(bodendeckung);
+		assertNotNull(surfaceAuSolRF);
+		assertEquals(49, surfaceAuSolRF.getSurface());
+		assertEquals("Pisicine", surfaceAuSolRF.getType());
+	}
+
+	/**
+	 * [SIFISC-22504] Ce test vérifie que la création d'une surface au sol à partir d'une donnée RF sans type ne crashe pas et que le type utilisé est 'Indéterminé'.
+	 */
+	@Test
+	public void testNewSurfaceAuSolSansType() throws Exception {
+
+		final Bodenbedeckung bodendeckung = new Bodenbedeckung();
+		bodendeckung.setGrundstueckIDREF("1f109152381046080138104a9c595368");
+		bodendeckung.setFlaeche(49);
+
+		final SurfaceAuSolRF surfaceAuSolRF = SurfaceAuSolRFHelper.newSurfaceAuSolRF(bodendeckung);
+		assertNotNull(surfaceAuSolRF);
+		assertEquals(49, surfaceAuSolRF.getSurface());
+		assertEquals("Indéterminé", surfaceAuSolRF.getType());
 	}
 
 	@NotNull

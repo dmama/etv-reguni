@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.helper;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
 
@@ -24,7 +26,10 @@ public abstract class SurfaceAuSolRFHelper {
 	public static SurfaceAuSolRF newSurfaceAuSolRF(@NotNull Bodenbedeckung bodenbedeckung) {
 		final SurfaceAuSolRF surface = new SurfaceAuSolRF();
 		surface.setSurface(bodenbedeckung.getFlaeche());
-		surface.setType(bodenbedeckung.getArt().getTextFr());
+		surface.setType(Optional.of(bodenbedeckung)
+				                .map(Bodenbedeckung::getArt)
+				                .map(CapiCode::getTextFr)
+				                .orElse("Indéterminé"));    // SIFISC-22504
 		return surface;
 	}
 
