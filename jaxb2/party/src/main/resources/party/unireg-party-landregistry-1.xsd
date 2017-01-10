@@ -176,6 +176,15 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
+			<xs:element name="id" type="xs:long">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'identifiant technique Unireg de la communauté.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="type" type="land:communityOfOwnersTypeType">
 				<xs:annotation>
 					<xs:appinfo>
@@ -208,7 +217,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="caseIdentifierType" abstract="true">
+	<xs:complexType name="caseIdentifierType">
 		<xs:sequence>
 			<xs:element name="officeNumber" type="xs:int">
 				<xs:annotation>
@@ -336,7 +345,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="id" type="xs:int">
+			<xs:element name="id" type="xs:long">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -861,7 +870,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="id" type="xs:int">
+			<xs:element name="id" type="xs:long">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
