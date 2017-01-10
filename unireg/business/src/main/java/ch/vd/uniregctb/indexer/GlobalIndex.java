@@ -31,6 +31,9 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalIndex.class);
 
+	public static final String BAD_CONTEXT_MESSAGE =
+			"Il n'y a aucun index à écraser: soit l'index n'a pas été initialisé par afterPropertiesSet(), soit le context a été conservé malgré l'échec de cette méthode (possible en test avec Spring).";
+
 	private final IndexProvider provider;
 	protected LuceneIndex index = null;
 
@@ -68,7 +71,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 
 	private void closeIndex() {
 
-		Assert.notNull(index);
+		Assert.notNull(index, BAD_CONTEXT_MESSAGE);
 		try {
 			index.close();
 		}
@@ -82,6 +85,8 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 
 	@Override
 	public void overwriteIndex() {
+
+		Assert.notNull(index, BAD_CONTEXT_MESSAGE);
 		try {
 			index.overwrite();
 		}
