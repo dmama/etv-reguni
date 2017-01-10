@@ -59,6 +59,7 @@ import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
+@SuppressWarnings("Duplicates")
 public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceEndPoint.class);

@@ -70,6 +70,11 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -94,6 +99,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.v7.BusinessWebService;
 
@@ -214,6 +220,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 				// une adresse mandataire
 				addAdresseMandataireSuisse(eric, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
+
+				// un droit de propriété
+				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+				final BienFondRF immeuble = addBienFondRF("01faeee", laSarraz, 579, 3, null, null);
+				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", dateNaissance);
+				addDroitPropriete(tiersRF, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
+				addRapprochementRF(eric, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
 
 				return null;
 			}
@@ -1571,12 +1584,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH");
 			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats");
 			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears");
+			assertNullOrNotNull(checkLandRights, pm.getLandRights(), "landRights");
 		}
 
 		if (tiers instanceof NaturalPerson) {
 			final NaturalPerson np = (NaturalPerson) tiers;
 			assertNullOrNotNull(checkWithholdingTaxDeclarationPeriods, np.getWithholdingTaxationPeriods(), "withholdingTaxDelarationPeriods");
 			assertNullOrNotNull(checkResidencyPeriods, np.getResidencyPeriods(), "residencyPeriods");
+			assertNullOrNotNull(checkLandRights, np.getLandRights(), "landRights");
 		}
 	}
 

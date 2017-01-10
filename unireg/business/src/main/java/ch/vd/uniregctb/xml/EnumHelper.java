@@ -4,16 +4,20 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -4229,6 +4233,38 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.SOLE_OWNERSHIP_COMPANY;
 		default:
 			throw new IllegalArgumentException("Type de catégorie d'entreprise inconnu : [" + categorie + ']');
+		}
+	}
+
+	@NotNull
+	public static CommunityOfOwnersType coreToXMLv5(@NotNull TypeCommunaute type) {
+		switch (type) {
+		case COMMUNAUTE_DE_BIENS:
+			return CommunityOfOwnersType.COMMUNITY_OF_PROPERTY;
+		case COMMUNAUTE_HEREDITAIRE:
+			return CommunityOfOwnersType.COMMUNITY_OF_HEIRS;
+		case INDIVISION:
+			return CommunityOfOwnersType.JOINT_OWNERSHIP;
+		case SOCIETE_SIMPLE:
+			return CommunityOfOwnersType.SIMPLE_PARTNERSHIP;
+		case INCONNU:
+			return CommunityOfOwnersType.UNKNOWN;
+		default:
+			throw new IllegalArgumentException("Type de communauté inconnu = [" + type + "]");
+		}
+	}
+
+	@NotNull
+	public static OwnershipType coreToXMLv5(@NotNull GenrePropriete regime) {
+		switch (regime) {
+		case COMMUNE:
+			return OwnershipType.COLLECTIVE_OWNERSHIP;
+		case COPROPRIETE:
+			return OwnershipType.SIMPLE_CO_OWNERSHIP;
+		case INDIVIDUELLE:
+			return OwnershipType.SOLE_OWNERSHIP;
+		default:
+			throw new IllegalArgumentException("Genre de proriété inconnu = [" + regime + "]");
 		}
 	}
 }

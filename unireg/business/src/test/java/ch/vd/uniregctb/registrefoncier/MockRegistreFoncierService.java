@@ -3,10 +3,12 @@ package ch.vd.uniregctb.registrefoncier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
+import ch.vd.uniregctb.tiers.Contribuable;
 
 public class MockRegistreFoncierService implements RegistreFoncierService {
 
@@ -40,6 +42,12 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public void forceAllMutations(long importId) {
+		throw new NotImplementedException();
+	}
+
+	@NotNull
+	@Override
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb) {
 		throw new NotImplementedException();
 	}
 

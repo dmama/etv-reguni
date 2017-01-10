@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,6 +59,16 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
@@ -111,6 +122,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
@@ -362,7 +374,67 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         });
     }
 
-    protected interface ExecuteCallback<T> {
+	protected RapprochementRF addRapprochementRF(@NotNull PersonnePhysique ctb, @NotNull PersonnePhysiqueRF tiersRF, RegDate dateDebut, RegDate dateFin, TypeRapprochementRF type) {
+		RapprochementRF rapprochement = new RapprochementRF();
+		rapprochement.setDateDebut(dateDebut);
+		rapprochement.setDateFin(dateFin);
+		rapprochement.setContribuable(ctb);
+		rapprochement.setTiersRF(tiersRF);
+		rapprochement.setTypeRapprochement(type);
+		return hibernateTemplate.merge(rapprochement);
+	}
+
+	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, BienFondRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin,
+	                                                             String motifDebut, String motifFin,
+	                                                             IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
+		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setCommunaute(communaute);
+		droit0.setRegime(regime);
+		droit0.setPart(part);
+		droit0.setDateDebut(dateDebut);
+		droit0.setDateDebutOfficielle(dateDebutOfficielle);
+		droit0.setDateFin(dateFin);
+		droit0.setMotifDebut(motifDebut);
+		droit0.setMotifFin(motifFin);
+		droit0.setNumeroAffaire(numeroAffaire);
+		droit0.setAyantDroit(tiersRF);
+		droit0.setMasterIdRF(masterIdRF);
+		droit0.setImmeuble(immeuble);
+		return hibernateTemplate.merge(droit0);
+	}
+
+	protected PersonnePhysiqueRF addPersonnePhysiqueRF(String idRF, String prenom, String nom, RegDate dateNaissance) {
+		PersonnePhysiqueRF tiersRF = new PersonnePhysiqueRF();
+		tiersRF.setNom(nom);
+		tiersRF.setPrenom(prenom);
+		tiersRF.setIdRF(idRF);
+		tiersRF.setDateNaissance(dateNaissance);
+		tiersRF = hibernateTemplate.merge(tiersRF);
+		return tiersRF;
+	}
+
+	@NotNull
+	protected CommuneRF addCommuneRF(int noRf, String nomRf, int noOfs) {
+		return hibernateTemplate.merge(new CommuneRF(noRf, nomRf, noOfs));
+	}
+
+	@NotNull
+	protected BienFondRF addBienFondRF(String idRF, CommuneRF commune, int noParcelle, Integer index1, Integer index2, Integer index3) {
+		final SituationRF situation = new SituationRF();
+		situation.setDateDebut(RegDate.get(2000, 1, 1));
+		situation.setNoParcelle(noParcelle);
+		situation.setIndex1(index1);
+		situation.setIndex2(index2);
+		situation.setIndex3(index3);
+		situation.setCommune(commune);
+
+		BienFondRF im0 = new BienFondRF();
+		im0.setIdRF(idRF);
+		im0.addSituation(situation);
+		return hibernateTemplate.merge(im0);
+	}
+
+	protected interface ExecuteCallback<T> {
         T execute() throws Exception;
     }
 

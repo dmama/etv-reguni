@@ -82,6 +82,11 @@ import ch.vd.unireg.xml.party.debtor.v5.Debtor;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
 import ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty;
+import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
@@ -151,6 +156,11 @@ import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -188,9 +198,11 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 
+@SuppressWarnings("Duplicates")
 public class BusinessWebServiceTest extends WebserviceTest {
 
 	private BusinessWebService service;
@@ -2908,6 +2920,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int pp;
 			int dpi;
 			long di;
+			long immeuble;
 		}
 
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
@@ -2937,10 +2950,18 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				assertValidInteger(pp.getNumero());
 				assertValidInteger(dpi.getNumero());
 
+				// un droit de propriété sur un immeuble
+				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+				final BienFondRF immeuble = addBienFondRF("01faeee", laSarraz, 579, 3, null, null);
+				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", dateNaissance);
+				addDroitPropriete(tiersRF, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
+				addRapprochementRF(pp, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
 				final Ids ids = new Ids();
 				ids.pp = pp.getNumero().intValue();
 				ids.dpi = dpi.getNumero().intValue();
 				ids.di = di.getId();
+				ids.immeuble =  immeuble.getId();
 				return ids;
 			}
 		});
@@ -3189,6 +3210,23 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNotNull(rp);
 				Assert.assertEquals(dateNaissance, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rp.getDateFrom()));
 				Assert.assertEquals(dateDepartHS, ch.vd.uniregctb.xml.DataHelper.xmlToCore(rp.getDateTo()));
+			}
+
+			final List<LandRight> landRights = np.getLandRights();
+			Assert.assertNotNull(landRights);
+			Assert.assertEquals(1, landRights.size());
+			{
+				final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
+				Assert.assertNotNull(landRight0);
+				Assert.assertNull(landRight0.getCommunity());
+				Assert.assertEquals(OwnershipType.SOLE_OWNERSHIP, landRight0.getType());
+				assertShare(1, 1, landRight0.getShare());
+				Assert.assertEquals(date(2004, 4, 12), ch.vd.uniregctb.xml.DataHelper.xmlToCore(landRight0.getDateFrom()));
+				Assert.assertNull(landRight0.getDateTo());
+				Assert.assertEquals("Achat", landRight0.getStartReason());
+				Assert.assertNull(landRight0.getEndReason());
+				assertCaseIdentifier(123, 2004, 202, 3, landRight0.getCaseIdentifier());
+				Assert.assertEquals(ids.immeuble, landRight0.getImmovablePropertyId());
 			}
 		}
 	}
@@ -4623,5 +4661,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertEquals(idCollAdmNouvelleEntite, ca.getPartyNumber());
 			}
 		}
+	}
+
+	private void assertShare(int numerator, int denominator, Share share) {
+		Assert.assertNotNull(share);
+		Assert.assertEquals(numerator, share.getNumerator());
+		Assert.assertEquals(denominator, share.getDenominator());
+	}
+
+	private void assertCaseIdentifier(int officeNumber, Integer year, Integer number, Integer index, CaseIdentifier caseIdentifier) {
+		Assert.assertNotNull(caseIdentifier);
+		Assert.assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
+		Assert.assertEquals(year, caseIdentifier.getYear());
+		Assert.assertEquals(number, caseIdentifier.getCaseNumber());
+		Assert.assertEquals(index, caseIdentifier.getCaseIndex());
 	}
 }

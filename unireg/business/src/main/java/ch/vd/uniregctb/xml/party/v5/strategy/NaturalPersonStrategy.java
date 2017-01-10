@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
@@ -34,6 +35,7 @@ import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
@@ -45,9 +47,11 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
 import ch.vd.uniregctb.xml.party.v5.ResidencyPeriodBuilder;
 import ch.vd.uniregctb.xml.party.v5.WithholdingTaxationPeriodBuilder;
 
+@SuppressWarnings("Duplicates")
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ch.vd.uniregctb.xml.party.v3.strategy.NaturalPersonStrategy.class);
@@ -231,6 +235,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
 			initResidencyPeriods(to, pp, context);
 		}
+		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
+			initLandRights(to, pp, context);
+		}
 	}
 
 	@Override
@@ -242,6 +249,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		}
 		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
 			copyColl(to.getResidencyPeriods(), from.getResidencyPeriods());
+		}
+		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
+			copyColl(to.getLandRights(), from.getLandRights());
 		}
 	}
 
@@ -297,5 +307,15 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		list.stream()
 				.map(ResidencyPeriodBuilder::newPeriod)
 				.forEach(residencyPeriods::add);
+	}
+
+	private void initLandRights(NaturalPerson to, PersonnePhysique pp, Context context) {
+
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp);
+
+		final List<LandRight> landRights = to.getLandRights();
+		droits.stream()
+				.map(LandRightBuilder::newLandRight)
+				.forEach(landRights::add);
 	}
 }

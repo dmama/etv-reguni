@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
+import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
  * Service qui expose des actions métier sur les données importée hebdomadairement du registre foncier (Capistastra).
@@ -51,4 +55,13 @@ public interface RegistreFoncierService {
 	 * @param importId l'id d'un import
 	 */
 	void forceAllMutations(long importId);
+
+	/**
+	 * Détermine les droits sur des immeubles d'un contribuable Unireg.
+	 *
+	 * @param ctb un contribuable Unireg
+	 * @return une liste de droits.
+	 */
+	@NotNull
+	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb);
 }

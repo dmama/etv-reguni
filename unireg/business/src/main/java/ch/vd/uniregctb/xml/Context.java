@@ -18,6 +18,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -69,4 +70,6 @@ public class Context {
 	public ExerciceCommercialHelper exerciceCommercialHelper;
 
 	public EvenementFiscalService evenementFiscalService;
+
+	public RegistreFoncierService registreFoncierService;
 }

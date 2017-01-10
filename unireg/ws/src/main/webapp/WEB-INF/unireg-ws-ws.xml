@@ -403,6 +403,7 @@
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
 </beans>

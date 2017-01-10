@@ -19,9 +19,11 @@ import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v5.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v5.MonetaryAmount;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
@@ -39,8 +41,10 @@ import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v5.BusinessYearBuilder;
 import ch.vd.uniregctb.xml.party.v5.CorporationFlagBuilder;
+import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
 import ch.vd.uniregctb.xml.party.v5.TaxLighteningBuilder;
 
+@SuppressWarnings("Duplicates")
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@Override
@@ -116,6 +120,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		if (parts != null && parts.contains(PartyPart.CORPORATION_FLAGS)) {
 			initFlags(to, entreprise);
+		}
+
+		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
+			initLandRights(to, entreprise, context);
 		}
 	}
 
@@ -277,5 +285,19 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (parts != null && parts.contains(PartyPart.CORPORATION_FLAGS)) {
 			copyColl(to.getCorporationFlags(), from.getCorporationFlags());
 		}
+
+		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
+			copyColl(to.getLandRights(), from.getLandRights());
+		}
+	}
+
+	private void initLandRights(Corporation to, Entreprise entreprise, Context context) {
+
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise);
+
+		final List<LandRight> landRights = to.getLandRights();
+		droits.stream()
+				.map(LandRightBuilder::newLandRight)
+				.forEach(landRights::add);
 	}
 }

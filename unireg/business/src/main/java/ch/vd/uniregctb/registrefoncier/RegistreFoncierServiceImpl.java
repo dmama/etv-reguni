@@ -1,13 +1,17 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -18,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.TraiterImportRFJob;
 import ch.vd.uniregctb.registrefoncier.dataimport.TraiterMutationsRFJob;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class RegistreFoncierServiceImpl implements RegistreFoncierService {
@@ -112,5 +117,16 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public void forceAllMutations(long importId) {
 		// on force les mutations
 		evenementRFMutationDAO.forceMutations(importId);
+	}
+
+	@NotNull
+	@Override
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb) {
+		return ctb.getRapprochementsRF().stream()
+				.filter(r -> r.isValidAt(null))         // on ne prend que les rapprochements valides
+				.map(RapprochementRF::getTiersRF)       // on général, il n'y a qu'un tiers RF, mais le modèle permet d'en avoir plusieurs
+				.flatMap(r -> r.getDroits().stream())   // si on a plusieurs tiers rapprochés, on prend l'ensemble des droits
+				.sorted(new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING))
+				.collect(Collectors.toList());
 	}
 }
