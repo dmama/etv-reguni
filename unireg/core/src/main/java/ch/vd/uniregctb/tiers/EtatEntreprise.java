@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -106,7 +107,7 @@ public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Com
 	}
 
 	@Override
-	public int compareTo(EtatEntreprise o) {
+	public int compareTo(@NotNull EtatEntreprise o) {
 		int comparison = NullDateBehavior.EARLIEST.compare(dateObtention, o.dateObtention);
 		if (comparison == 0) {
 			comparison = Long.compare(id, o.id);

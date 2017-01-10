@@ -56,6 +56,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:WEB-INF/unireg-web-activation.xml",
 		"classpath:WEB-INF/unireg-web-identification.xml",
 		"classpath:WEB-INF/unireg-web-supergra.xml",
+		"classpath:WEB-INF/unireg-web-entreprise.xml",
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_ADRESSES,
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,

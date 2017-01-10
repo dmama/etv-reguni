@@ -70,21 +70,13 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.searchAbsorbanteComponent = buildSearchComponent(CRITERIA_NAME_ABSORBANTE, "entreprise/fusion/list-absorbante",
-		                                                      new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                      @Override
-			                                                      public void fill(TiersCriteriaView data) {
-				                                                      data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
-				                                                      data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
-			                                                      }
+		                                                      data -> {
+			                                                      data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
+			                                                      data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
 		                                                      });
 
 		this.searchAbsorbeeComponent = buildSearchComponent(CRITERIA_NAME_ABSORBEE, "entreprise/fusion/list-absorbees",
-		                                                    new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                    @Override
-			                                                    public void fill(TiersCriteriaView data) {
-				                                                    fillCriteresImperatifsPourEntrepriseAbsorbee(data);
-			                                                    }
-		                                                    },
+		                                                    this::fillCriteresImperatifsPourEntrepriseAbsorbee,
 		                                                    new SearchTiersComponent.ModelFiller() {
 			                                                    @Override
 			                                                    public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
@@ -221,21 +213,21 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 						else {
 							final Entreprise entreprise = getTiers(Entreprise.class, searchResult.getNumero());
 							final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
-							String explicationTrouvee = null;
-							for (EtatEntreprise etat : etats) {
-								if (RegDateHelper.isBefore(etat.getDateObtention(), dateSeuil, NullDateBehavior.LATEST)) {
-									if (etat.getType() == TypeEtatEntreprise.DISSOUTE) {
-										explicationTrouvee = messageSource.getMessage("label.fusion.entreprise.dissoute.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
-										break;
-									}
-									else if (etat.getType() == TypeEtatEntreprise.RADIEE_RC) {
-										explicationTrouvee = messageSource.getMessage("label.fusion.entreprise.radiee.rc.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
-										break;
-									}
-								}
-							}
+							final TypeEtatEntreprise etatAvantAbsorption = etats.stream()
+									.filter(etat -> RegDateHelper.isBeforeOrEqual(etat.getDateObtention(), dateSeuil, NullDateBehavior.EARLIEST))
+									.reduce((a, b) -> b)            // on veut le dernier avant la date seuil (pas la peine de re-trier, puisque la liste de départ l'était déjà)
+									.map(EtatEntreprise::getType)
+									.orElse(null);
 
-							explicationNonSelectionnable = explicationTrouvee;
+							if (etatAvantAbsorption == TypeEtatEntreprise.DISSOUTE) {
+								explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.dissoute.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
+							}
+							else if (etatAvantAbsorption == TypeEtatEntreprise.RADIEE_RC) {
+								explicationNonSelectionnable = messageSource.getMessage("label.fusion.entreprise.radiee.rc.avant.dates.fusion", null, WebContextUtils.getDefaultLocale());
+							}
+							else {
+								explicationNonSelectionnable = null;
+							}
 						}
 
 						final SelectionEntrepriseView view = new SelectionEntrepriseView(searchResult, explicationNonSelectionnable);
