@@ -1042,11 +1042,15 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	};
 
 	/**
-	 * Recherche l'Entreprise par son numéro d'organisation au registre des entreprises qui
-	 * tient compte des annulations, désactivations et réactivations.
+	 * <p>
+	 *     Recherche l'Entreprise par son numéro d'organisation au registre des entreprises qui tient compte des annulations, désactivations et réactivations.
+	 * </p>
+	 * <p>
+	 *     Ne retourne que les tiers Entreprise, et dans le cas où un tiers d'un autre type existerait, null est retourné quand même.
+	 * </p>
 	 *
 	 * @param numeroOrganisation Le numéro RCEnt
-	 * @return L'entreprise correspondant au numéro, ou null si aucune n'est trouvée.
+	 * @return L'entreprise correspondant au numéro, ou null si aucune Entreprise n'est trouvée pour ce numéro.
 	 */
 	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
 
@@ -1055,7 +1059,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ENTREPRISE, numeroOrganisation);
 		final Entreprise entreprise;
 		if (id != null) {
-			entreprise = (Entreprise) get(id);
+			entreprise = (Entreprise) get(id); // Par la magie d'Hibernate, si on a un numéro, c'est qu'on a une Entreprise.
 		}
 		else {
 			entreprise = null;
@@ -1081,10 +1085,15 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	};
 
 	/**
-	 * Recherche l'établissement par son numéro de site au registre des entreprises.
+	 * <p>
+	 *     Recherche l'Etablissement par son numéro d'organisation au registre des entreprises qui tient compte des annulations, désactivations et réactivations.
+	 * </p>
+	 * <p>
+	 *     Ne retourne que les tiers Etablissement, et dans le cas où un tiers d'un autre type existerait, null est retourné quand même.
+	 * </p>
 	 *
 	 * @param numeroSite Le numéro RCEnt
-	 * @return L'établissement correspondant au numéro, ou null si aucune n'est trouvée.
+	 * @return L'établissement correspondant au numéro, ou null si aucun Etablissement n'est trouvé pour ce numéro.
 	 */
 	@Override
 	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
@@ -1093,7 +1102,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ETABLISSEMENT, numeroSite);
 		final Etablissement etablissement;
 		if (id != null) {
-			etablissement = (Etablissement) get(id);
+			etablissement = (Etablissement) get(id); // Par la magie d'Hibernate, si on a un numéro, c'est qu'on a un Etablissement.
 		}
 		else {
 			etablissement = null;
