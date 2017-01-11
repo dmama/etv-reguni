@@ -37,7 +37,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.data.DataEventListener;
+import ch.vd.uniregctb.data.SinkDataEventListener;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
@@ -102,7 +102,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private ValidationInterceptor validationInterceptor;
 	private GlobalTiersIndexer globalTiersIndexer;
 	private Dialect dialect;
-	private DataEventListener autorisationCache;
+	private SinkDataEventListener autorisationCache;
 
 	private List<String> annotatedClass;
 	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<>(EntityType.class);
@@ -229,7 +229,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		this.dialect = dialect;
 	}
 
-	public void setAutorisationCache(DataEventListener autorisationCache) {
+	public void setAutorisationCache(SinkDataEventListener autorisationCache) {
 		this.autorisationCache = autorisationCache;
 	}
 

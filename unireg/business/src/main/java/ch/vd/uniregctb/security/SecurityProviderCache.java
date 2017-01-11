@@ -28,15 +28,15 @@ import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.SinkDataEventListener;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, DataEventListener, InitializingBean {
+public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, SinkDataEventListener, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityProviderCache.class);
 
@@ -357,16 +357,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 				tiersExistenceDeltaCache.put(id, Boolean.TRUE);
 			}
 		}
-	}
-
-	@Override
-	public void onOrganisationChange(long id) {
-		// rien à faire ici
-	}
-
-	@Override
-	public void onIndividuChange(long id) {
-		// rien à faire ici
 	}
 
 	@Override

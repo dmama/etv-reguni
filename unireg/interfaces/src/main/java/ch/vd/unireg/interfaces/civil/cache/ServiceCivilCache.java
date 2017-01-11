@@ -34,16 +34,15 @@ import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.SourceDataEventListener;
 import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface, KeyDumpableCache, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface, KeyDumpableCache, SourceDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilCache.class);
 
@@ -331,32 +330,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	}
 
 	@Override
-	public void onTiersChange(long id) {
-		// rien à faire
-	}
-
-	@Override
 	public void onOrganisationChange(long id) {
-		// rien à faire
-	}
-
-	@Override
-	public void onDroitAccessChange(long tiersId) {
-		// rien à faire
-	}
-
-	@Override
-	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		// rien à faire
-	}
-
-	@Override
-	public void onTruncateDatabase() {
-		// rien à faire
-	}
-
-	@Override
-	public void onLoadDatabase() {
 		// rien à faire
 	}
 

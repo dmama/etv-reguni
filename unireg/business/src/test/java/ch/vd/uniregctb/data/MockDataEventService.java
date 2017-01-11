@@ -11,7 +11,12 @@ public class MockDataEventService implements DataEventService {
 	public final List<Long> changedTiers = new ArrayList<>();
 
 	@Override
-	public void register(DataEventListener listener) {
+	public void register(SourceDataEventListener listener) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void register(SinkDataEventListener listener) {
 		throw new NotImplementedException();
 	}
 

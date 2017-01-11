@@ -28,15 +28,14 @@ import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.data.DataEventListener;
-import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.SourceDataEventListener;
+import ch.vd.uniregctb.data.SourceDataEventService;
 import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, SourceDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilPersistentCache.class);
 
@@ -46,7 +45,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	private ServiceCivilRaw target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private DataEventService dataEventService;
+	private SourceDataEventService dataEventService;
 
 	public void setTarget(ServiceCivilRaw target) {
 		this.target = target;
@@ -67,7 +66,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(DataEventService dataEventService) {
+	public void setDataEventService(SourceDataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
 
@@ -284,32 +283,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	}
 
 	@Override
-	public void onTiersChange(long id) {
-		// rien à faire
-	}
-
-	@Override
 	public void onOrganisationChange(long id) {
-		// rien à faire
-	}
-
-	@Override
-	public void onDroitAccessChange(long tiersId) {
-		// rien à faire
-	}
-
-	@Override
-	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		// rien à faire
-	}
-
-	@Override
-	public void onTruncateDatabase() {
-		// rien à faire
-	}
-
-	@Override
-	public void onLoadDatabase() {
 		// rien à faire
 	}
 

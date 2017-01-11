@@ -29,11 +29,10 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.data.DataEventListener;
-import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.SourceDataEventListener;
+import ch.vd.uniregctb.data.SourceDataEventService;
 import ch.vd.uniregctb.stats.MockStatsService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,45 +41,17 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 	private CallCounterServiceOrganisation target;
 	private ServiceOrganisationCache cache;
 
-	private final DataEventService dataEventService = new DataEventService() {
+	private final SourceDataEventService dataEventService = new SourceDataEventService() {
 		@Override
-		public void register(DataEventListener listener) {
-
-		}
-
-		@Override
-		public void onTiersChange(long id) {
-
+		public void register(SourceDataEventListener listener) {
 		}
 
 		@Override
 		public void onIndividuChange(long id) {
-
 		}
 
 		@Override
 		public void onOrganisationChange(long id) {
-
-		}
-
-		@Override
-		public void onDroitAccessChange(long ppId) {
-
-		}
-
-		@Override
-		public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-
-		}
-
-		@Override
-		public void onLoadDatabase() {
-
-		}
-
-		@Override
-		public void onTruncateDatabase() {
-
 		}
 	};
 

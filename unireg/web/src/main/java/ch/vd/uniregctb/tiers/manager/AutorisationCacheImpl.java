@@ -26,8 +26,8 @@ import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.KeyValueDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.SinkDataEventListener;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -38,7 +38,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
+public class AutorisationCacheImpl implements AutorisationCache, SinkDataEventListener, InitializingBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutorisationCacheImpl.class);
 
@@ -277,16 +277,6 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 		for (long otherId : otherIds) {
 			evictTiers(otherId);
 		}
-	}
-
-	@Override
-	public void onIndividuChange(long id) {
-		// rien à faire
-	}
-
-	@Override
-	public void onOrganisationChange(long id) {
-		// rien à faire
 	}
 
 	@Override

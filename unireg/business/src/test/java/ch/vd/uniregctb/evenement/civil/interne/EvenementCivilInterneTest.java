@@ -15,8 +15,9 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.data.SinkDataEventListener;
+import ch.vd.uniregctb.data.SourceDataEventListener;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
@@ -155,7 +156,11 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		private final Set<Long> droitsChanged = new HashSet<>();
 
 		@Override
-		public void register(DataEventListener listener) {
+		public void register(SourceDataEventListener listener) {
+		}
+
+		@Override
+		public void register(SinkDataEventListener listener) {
 		}
 
 		@Override
