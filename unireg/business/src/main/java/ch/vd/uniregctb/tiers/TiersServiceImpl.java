@@ -2564,6 +2564,7 @@ public class TiersServiceImpl implements TiersService {
 
 	private void afterForFiscalPrincipalAdded(ForFiscalPrincipalPM forFiscalPrincipal) {
 	    this.evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalPrincipal);
+	    resetFlagBlocageRemboursementAutomatiqueSelonFors(forFiscalPrincipal.getTiers());
 	}
 
 	private void afterForFiscalPrincipalAdded(ForFiscalPrincipalPP forFiscalPrincipal) {
@@ -2671,6 +2672,7 @@ public class TiersServiceImpl implements TiersService {
 	private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
 	    evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalSecondaire);
         tacheService.genereTacheDepuisOuvertureForSecondaire(contribuable, forFiscalSecondaire);
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
     }
 
 	@Override
@@ -3038,6 +3040,7 @@ public class TiersServiceImpl implements TiersService {
     private void afterForFiscalSecondaireClosed(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
 	    evenementFiscalService.publierEvenementFiscalFermetureFor(forFiscalSecondaire);
         tacheService.genereTacheDepuisFermetureForSecondaire(contribuable, forFiscalSecondaire);
+	    resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
     }
 
 
@@ -3651,10 +3654,11 @@ public class TiersServiceImpl implements TiersService {
     /**
      * [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois, blocage en cas de fermeture de for principal vaudois
      * [SIFISC-12290] Calcul décalé en fin de transaction
+     * [SIFISC-21857] Les entreprises sont maintenant également concernées
      * @param tiers le tiers dont on veut débloquer le reboursement automatique.
      */
     private void resetFlagBlocageRemboursementAutomatiqueSelonFors(Tiers tiers) {
-        if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
+        if (tiers instanceof ContribuableImpositionPersonnesPhysiques || tiers instanceof Entreprise) {
 	        flagBlocageRembAutoCalculateurDecale.enregistrerDemandeRecalcul(tiers.getNumero());
         }
     }

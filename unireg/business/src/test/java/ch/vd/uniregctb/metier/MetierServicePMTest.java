@@ -78,6 +78,7 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
+@SuppressWarnings("Duplicates")
 public class MetierServicePMTest extends BusinessTest {
 
 	private MetierServicePMImpl metierServicePM;
@@ -412,6 +413,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -439,6 +441,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.faillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle...");
 			}
 		});
@@ -449,6 +452,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. les fors doivent être fermés pour motif FAILLITE
 				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
@@ -547,21 +551,11 @@ public class MetierServicePMTest extends BusinessTest {
 	}
 
 	private static <T extends Annulable> Map<Boolean, List<T>> segmenterAnnulables(Collection<T> elements) {
-		return segmenter(elements, new Extractor<T, Boolean>() {
-			@Override
-			public Boolean extract(T source) {
-				return source.isAnnule();
-			}
-		}, Boolean.TRUE, Boolean.FALSE);
+		return segmenter(elements, Annulable::isAnnule, Boolean.TRUE, Boolean.FALSE);
 	}
 
 	private static <T> Map<Class<? extends T>, List<T>> segmenterParClasse(Collection<T> elements) {
-		return segmenter(elements, new Extractor<T, Class<? extends T>>() {
-			@Override
-			public Class<? extends T> extract(T source) {
-				return (Class<? extends T>) source.getClass();
-			}
-		});
+		return segmenter(elements, source -> (Class<? extends T>) source.getClass());
 	}
 
 	private interface Extractor<T, U> {
@@ -576,11 +570,7 @@ public class MetierServicePMTest extends BusinessTest {
 		}
 		for (T element : elements) {
 			final U key = extractor.extract(element);
-			List<T> list = map.get(key);
-			if (list == null) {
-				list = new ArrayList<>(elements.size());
-				map.put(key, list);
-			}
+			final List<T> list = map.computeIfAbsent(key, k -> new ArrayList<>(elements.size()));
 			list.add(element);
 		}
 		return map;
@@ -595,7 +585,7 @@ public class MetierServicePMTest extends BusinessTest {
 			}
 		}
 		if (comparator != null) {
-			Collections.sort(liste, comparator);
+			liste.sort(comparator);
 		}
 		return liste;
 	}
@@ -625,6 +615,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, datePrononceFaillite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -653,6 +644,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.annuleFaillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle pour l'annulation...");
 			}
 		});
@@ -663,6 +655,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. les fors doivent être ré-ouverts
 				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
@@ -801,6 +794,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, datePrononceFaillite, MotifFor.FAILLITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, datePrononceFaillite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -823,12 +817,13 @@ public class MetierServicePMTest extends BusinessTest {
 			}
 		});
 
-		// traitement de l'annulation de la faillite
+		// traitement de la révocation de la faillite
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.revoqueFaillite(entreprise, datePrononceFaillite, "Une jolie remarque toute belle pour la révocation...");
 			}
 		});
@@ -839,6 +834,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. le for principal doit être ré-ouvert
 				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
@@ -986,9 +982,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 
-				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.BENEFICE_CAPITAL);
 
 				final Etablissement etablissementPrincipal = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
@@ -1056,6 +1050,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreation, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreation, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -1078,6 +1073,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
 			}
 		});
@@ -1088,6 +1084,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. le for principal doit avoir été déplacé
 				final ForsParType fpt = entreprise.getForsParType(true);
@@ -1168,7 +1165,7 @@ public class MetierServicePMTest extends BusinessTest {
 	}
 
 	@Test
-	public void testDemenagementSiegeEntrepriseConnueAuCivil() throws Exception {
+	public void testDemenagementSiegeEntrepriseConnueAuCivilVersHorsCantonAvecForSecondaire() throws Exception {
 
 		final long noCantonalEntreprise = 378326478L;
 		final long noCantonalEtablissementPrincipal = 4378257L;
@@ -1203,6 +1200,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreation, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreation, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -1225,6 +1223,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sierre.getNoOFS());
 			}
 		});
@@ -1235,6 +1234,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());     // reste débloqué car, même si le for principal est hors-Canton, il y a un for secondaire ouvert
 
 				// 1. le for principal doit avoir été déplacé
 				final ForsParType fpt = entreprise.getForsParType(true);
@@ -1297,6 +1297,126 @@ public class MetierServicePMTest extends BusinessTest {
 	}
 
 	@Test
+	public void testDemenagementSiegeEntrepriseConnueAuCivilVersHorsCantonSansForSecondaire() throws Exception {
+
+		final long noCantonalEntreprise = 378326478L;
+		final long noCantonalEtablissementPrincipal = 4378257L;
+		final RegDate dateCreation = date(2000, 5, 1);
+		final RegDate dateDemenagement = date(2010, 6, 23);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				MockSiteOrganisationFactory.addSite(noCantonalEtablissementPrincipal, org, dateCreation, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
+				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                    MockCommune.Grandson.getNoOFS(), StatusInscriptionRC.NON_INSCRIT, null,
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996", null, null);
+			}
+		});
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+				addRegimeFiscalCH(entreprise, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalVD(entreprise, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateCreation, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(entreprise, dateCreation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
+
+				addAdresseMandataireSuisse(entreprise, dateCreation, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+
+				final Etablissement etablissementPrincipal = addEtablissement();
+				etablissementPrincipal.setNumeroEtablissement(noCantonalEtablissementPrincipal);
+				addActiviteEconomique(entreprise, etablissementPrincipal, dateCreation, null, true);
+
+				addEtatEntreprise(entreprise, dateCreation, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+				final Ids ids = new Ids();
+				ids.idEntreprise = entreprise.getNumero();
+				ids.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+				return ids;
+			}
+		});
+
+		// déménagement de siège vers Sierre (VS)
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+				metierServicePM.demenageSiege(entreprise, dateDemenagement, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sierre.getNoOFS());
+			}
+		});
+
+		// vérification des données après déménagement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());     // bloqué car le for principal est hors-Canton en absence de for secondaire
+
+				// 1. le for principal doit avoir été déplacé
+				final ForsParType fpt = entreprise.getForsParType(true);
+				final List<ForFiscalPrincipalPM> forsPrincipaux = fpt.principauxPM;
+				Assert.assertNotNull(forsPrincipaux);
+				Assert.assertEquals(2, forsPrincipaux.size());
+				{
+					final ForFiscalPrincipalPM ffp = forsPrincipaux.get(0);
+					Assert.assertNotNull(ffp);
+					Assert.assertFalse(ffp.isAnnule());
+					Assert.assertEquals(dateCreation, ffp.getDateDebut());
+					Assert.assertEquals(dateDemenagement.getOneDayBefore(), ffp.getDateFin());
+					Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifFermeture());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Grandson.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				}
+				{
+					final ForFiscalPrincipalPM ffp = forsPrincipaux.get(1);
+					Assert.assertNotNull(ffp);
+					Assert.assertFalse(ffp.isAnnule());
+					Assert.assertEquals(dateDemenagement, ffp.getDateDebut());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Sierre.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				}
+
+				// 2. toujours pas de for secondaire...
+				final List<ForFiscalSecondaire> forsSecondaires = fpt.secondaires;
+				Assert.assertNotNull(forsSecondaires);
+				Assert.assertEquals(0, forsSecondaires.size());
+
+				// 3. le domicile de l'établissement principal ne doit pas avoir bougé
+				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtablissementPrincipal);
+				Assert.assertNotNull(etb);
+				Assert.assertFalse(etb.isAnnule());
+
+				final List<DomicileEtablissement> domiciles = etb.getSortedDomiciles(true);
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(0, domiciles.size());       // tout est géré au civil
+			}
+		});
+	}
+
+	@Test
 	public void testFusionEntreprises() throws Exception {
 
 		final RegDate dateDebutAbsorbante = date(2000, 5, 12);
@@ -1328,6 +1448,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(absorbante, dateDebutAbsorbante, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				absorbante.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(absorbante, dateDebutAbsorbante, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(absorbante, TypeAdresseTiers.COURRIER, dateDebutAbsorbante, null, MockRue.Prilly.RueDesMetiers);
@@ -1346,6 +1467,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(absorbee1, dateDebutAbsorbee1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(absorbee1, dateDebutAbsorbee1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
 				addForPrincipal(absorbee1, dateDebutAbsorbee1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				absorbee1.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalAbsorbee1 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalAbsorbee1, dateDebutAbsorbee1, null, MockCommune.Lausanne);
@@ -1361,6 +1483,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(absorbee2, dateDebutAbsorbee2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(absorbee2, dateDebutAbsorbee2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
 				addForPrincipal(absorbee2, dateDebutAbsorbee2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+				absorbee2.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalAbsorbee2 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalAbsorbee2, dateDebutAbsorbee2, null, MockCommune.Prilly);
@@ -1387,6 +1510,9 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
 				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
 				final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
+				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(absorbee1.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(absorbee2.getBlocageRemboursementAutomatique());
 				metierServicePM.fusionne(absorbante, Arrays.asList(absorbee1, absorbee2), dateContratFusion, dateBilanFusion);
 			}
 		});
@@ -1400,6 +1526,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 1.1. rien n'a changé sauf l'apparition de nouveaux rapports entre tiers
 				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
 				Assert.assertNotNull(absorbante);
+				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
 			    Assert.assertEquals(2, absorbante.getForsFiscaux().size());
 				final ForFiscalPrincipalPM ffp = absorbante.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -1468,6 +1595,8 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
 				final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
 				for (Entreprise absorbee : Arrays.asList(absorbee1, absorbee2)) {
+
+					Assert.assertTrue(absorbee.getBlocageRemboursementAutomatique());
 
 					// 2.1 les rapports entre tiers "FusionEntreprises" ont été testés plus haut
 
@@ -1567,6 +1696,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(absorbante, dateDebutAbsorbante, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(absorbante, dateDebutAbsorbante, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				absorbante.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(absorbante, dateDebutAbsorbante, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(absorbante, TypeAdresseTiers.COURRIER, dateDebutAbsorbante, null, MockRue.Prilly.RueDesMetiers);
@@ -1585,6 +1715,8 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(absorbee1, dateDebutAbsorbee1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(absorbee1, dateDebutAbsorbee1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
 				addForPrincipal(absorbee1, dateDebutAbsorbee1, MotifFor.DEBUT_EXPLOITATION, dateBilanFusion, MotifFor.FUSION_ENTREPRISES, MockCommune.Lausanne);
+				absorbee1.setBlocageRemboursementAutomatique(Boolean.TRUE);
+
 				final AdresseSuisse adresseSuisseAbsorbee1 = addAdresseSuisse(absorbee1, TypeAdresseTiers.COURRIER, dateContratFusion1, null, MockRue.Prilly.RueDesMetiers);
 				adresseSuisseAbsorbee1.setComplement("p.a. Ma grande entreprise");
 
@@ -1603,6 +1735,8 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(absorbee2, dateDebutAbsorbee2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(absorbee2, dateDebutAbsorbee2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
 				addForPrincipal(absorbee2, dateDebutAbsorbee2, MotifFor.DEBUT_EXPLOITATION, dateBilanFusion, MotifFor.FUSION_ENTREPRISES, MockCommune.Prilly);
+				absorbee2.setBlocageRemboursementAutomatique(Boolean.TRUE);
+
 				final AdresseSuisse adresseSuisseAbsorbee2 = addAdresseSuisse(absorbee2, TypeAdresseTiers.COURRIER, dateContratFusion2, null, MockRue.Prilly.RueDesMetiers);
 				adresseSuisseAbsorbee2.setComplement("p.a. Ma grande entreprise");
 
@@ -1635,6 +1769,9 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
 				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
 				final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
+				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(absorbee1.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(absorbee2.getBlocageRemboursementAutomatique());
 
 				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
 				try {
@@ -1660,6 +1797,8 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
 				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
+				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(absorbee1.getBlocageRemboursementAutomatique());
 				metierServicePM.annuleFusionEntreprises(absorbante, Collections.singletonList(absorbee1), dateContratFusion1, dateBilanFusion);
 			}
 		});
@@ -1673,6 +1812,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 1.1. rien n'a changé sauf l'annulation du rapport entre tiers "fusion" existant avec l'entreprise absorbee1
 				final Entreprise absorbante = (Entreprise) tiersDAO.get(ids.idAbsorbante);
 				Assert.assertNotNull(absorbante);
+				Assert.assertFalse(absorbante.getBlocageRemboursementAutomatique());
 				Assert.assertFalse(absorbante.isAnnule());
 				Assert.assertEquals(2, absorbante.getForsFiscaux().size());
 				final ForFiscalPrincipalPM ffp = absorbante.getDernierForFiscalPrincipal();
@@ -1743,6 +1883,7 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
 				Assert.assertNotNull(absorbee1);
 				Assert.assertFalse(absorbee1.isAnnule());
+				Assert.assertFalse(absorbee1.getBlocageRemboursementAutomatique());
 
 				// 2.1 for ré-ouvert
 				final ForFiscalPrincipalPM ffp1 = absorbee1.getDernierForFiscalPrincipal();
@@ -1807,6 +1948,7 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
 				Assert.assertNotNull(absorbee2);
 				Assert.assertFalse(absorbee2.isAnnule());
+				Assert.assertTrue(absorbee2.getBlocageRemboursementAutomatique());
 
 				// 3.1. for toujours fermé
 				final ForFiscalPrincipalPM ffp2 = absorbee2.getDernierForFiscalPrincipal();
@@ -1857,6 +1999,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -1884,6 +2027,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
 			}
 		});
@@ -1894,6 +2038,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. les fors doivent être fermés pour motif FAILLITE
 				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
@@ -2001,6 +2146,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -2029,6 +2175,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour l'annulation...", true);
 			}
 		});
@@ -2039,6 +2186,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. les fors doivent être ré-ouverts
 				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
@@ -2165,6 +2313,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 
@@ -2193,6 +2342,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour la reprise partielle...", false);
 			}
 		});
@@ -2203,6 +2353,7 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
 
 				// 1. le for principal doit être ré-ouvert
 				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
@@ -2347,6 +2498,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(scindee, dateDebutScindee, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				scindee.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(scindee, dateDebutScindee, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(scindee, TypeAdresseTiers.COURRIER, dateDebutScindee, null, MockRue.Prilly.RueDesMetiers);
@@ -2365,6 +2517,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(resultante1, dateDebutResultante1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(resultante1, dateDebutResultante1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
 				addForPrincipal(resultante1, dateDebutResultante1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				resultante1.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalResultante1 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalResultante1, dateDebutResultante1, null, MockCommune.Lausanne);
@@ -2380,6 +2533,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(resultante2, dateDebutResultante2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(resultante2, dateDebutResultante2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
 				addForPrincipal(resultante2, dateDebutResultante2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+				resultante2.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalResultante2 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalResultante2, dateDebutResultante2, null, MockCommune.Prilly);
@@ -2406,6 +2560,9 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
 				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
 				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(resultante2.getBlocageRemboursementAutomatique());
 				metierServicePM.scinde(scindee, Arrays.asList(resultante1, resultante2), dateContratScission);
 			}
 		});
@@ -2419,6 +2576,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 1.1. rien n'a changé sauf l'apparition de nouveaux rapports entre tiers
 				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
 				Assert.assertNotNull(scindee);
+				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
 				Assert.assertEquals(2, scindee.getForsFiscaux().size());
 				final ForFiscalPrincipalPM ffp = scindee.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -2487,6 +2645,8 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
 				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
 				for (Entreprise resultante : Arrays.asList(resultante1, resultante2)) {
+
+					Assert.assertFalse(resultante.getBlocageRemboursementAutomatique());
 
 					// 2.1 les rapports entre tiers "ScissionEntreprise" ont été testés plus haut
 
@@ -2560,6 +2720,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(scindee, dateDebutScindee, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				scindee.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(scindee, dateDebutScindee, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(scindee, TypeAdresseTiers.COURRIER, dateDebutScindee, null, MockRue.Prilly.RueDesMetiers);
@@ -2578,6 +2739,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(resultante1, dateDebutResultante1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(resultante1, dateDebutResultante1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
 				addForPrincipal(resultante1, dateDebutResultante1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				resultante1.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalResultante1 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalResultante1, dateDebutResultante1, null, MockCommune.Lausanne);
@@ -2593,6 +2755,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(resultante2, dateDebutResultante2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(resultante2, dateDebutResultante2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
 				addForPrincipal(resultante2, dateDebutResultante2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+				resultante2.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalResultante2 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalResultante2, dateDebutResultante2, null, MockCommune.Prilly);
@@ -2622,6 +2785,9 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
 				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
 				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(resultante2.getBlocageRemboursementAutomatique());
 
 				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
 				try {
@@ -2647,6 +2813,8 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
 				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
 				metierServicePM.annuleScission(scindee, Collections.singletonList(resultante1), dateContratScission1);
 			}
 		});
@@ -2660,6 +2828,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 1.1. rien n'a changé sauf l'annulation du rapport entre tiers "scission" existant avec l'entreprise resultante1
 				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
 				Assert.assertNotNull(scindee);
+				Assert.assertFalse(scindee.getBlocageRemboursementAutomatique());
 				Assert.assertFalse(scindee.isAnnule());
 				Assert.assertEquals(2, scindee.getForsFiscaux().size());
 				final ForFiscalPrincipalPM ffp = scindee.getDernierForFiscalPrincipal();
@@ -2730,6 +2899,7 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
 				Assert.assertNotNull(resultante1);
 				Assert.assertFalse(resultante1.isAnnule());
+				Assert.assertFalse(resultante1.getBlocageRemboursementAutomatique());
 
 				// 2.1 for inchangé
 				final ForFiscalPrincipalPM ffp1 = resultante1.getDernierForFiscalPrincipal();
@@ -2767,6 +2937,7 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
 				Assert.assertNotNull(resultante2);
 				Assert.assertFalse(resultante2.isAnnule());
+				Assert.assertFalse(resultante2.getBlocageRemboursementAutomatique());
 
 				// 3.1. pas d'impact sur les fors
 				final ForFiscalPrincipalPM ffp2 = resultante2.getDernierForFiscalPrincipal();
@@ -2823,6 +2994,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(emettrice, dateDebutEmettrice, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				emettrice.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(emettrice, dateDebutEmettrice, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(emettrice, TypeAdresseTiers.COURRIER, dateDebutEmettrice, null, MockRue.Prilly.RueDesMetiers);
@@ -2841,6 +3013,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(receptrice1, dateDebutReceptrice1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(receptrice1, dateDebutReceptrice1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
 				addForPrincipal(receptrice1, dateDebutReceptrice1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				receptrice1.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalReceptrice1 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalReceptrice1, dateDebutReceptrice1, null, MockCommune.Lausanne);
@@ -2856,6 +3029,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(receptrice2, dateDebutReceptrice2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(receptrice2, dateDebutReceptrice2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
 				addForPrincipal(receptrice2, dateDebutReceptrice2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+				receptrice2.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalReceptrice2 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalReceptrice2, dateDebutReceptrice2, null, MockCommune.Prilly);
@@ -2882,6 +3056,9 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
 				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
 				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(receptrice2.getBlocageRemboursementAutomatique());
 				metierServicePM.transferePatrimoine(emettrice, Arrays.asList(receptrice1, receptrice2), dateTransfert);
 			}
 		});
@@ -2895,6 +3072,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 1.1. rien n'a changé sauf l'apparition de nouveaux rapports entre tiers
 				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
 				Assert.assertNotNull(emettrice);
+				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
 				Assert.assertEquals(2, emettrice.getForsFiscaux().size());
 				final ForFiscalPrincipalPM ffp = emettrice.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -2963,6 +3141,8 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
 				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
 				for (Entreprise receptrice : Arrays.asList(receptrice1, receptrice2)) {
+
+					Assert.assertFalse(receptrice.getBlocageRemboursementAutomatique());
 
 					// 2.1 les rapports entre tiers "TransfertPatrimoine" ont été testés plus haut
 
@@ -3035,6 +3215,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addBouclement(emettrice, dateDebutEmettrice, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
 				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				emettrice.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				addAdresseMandataireSuisse(emettrice, dateDebutEmettrice, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(emettrice, TypeAdresseTiers.COURRIER, dateDebutEmettrice, null, MockRue.Prilly.RueDesMetiers);
@@ -3053,6 +3234,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(receptrice1, dateDebutReceptrice1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(receptrice1, dateDebutReceptrice1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
 				addForPrincipal(receptrice1, dateDebutReceptrice1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				receptrice1.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalReceptrice1 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalReceptrice1, dateDebutReceptrice1, null, MockCommune.Lausanne);
@@ -3068,6 +3250,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(receptrice2, dateDebutReceptrice2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(receptrice2, dateDebutReceptrice2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
 				addForPrincipal(receptrice2, dateDebutReceptrice2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+				receptrice2.setBlocageRemboursementAutomatique(Boolean.FALSE);
 
 				final Etablissement etablissementPrincipalReceptrice2 = addEtablissement();
 				addDomicileEtablissement(etablissementPrincipalReceptrice2, dateDebutReceptrice2, null, MockCommune.Prilly);
@@ -3097,6 +3280,9 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
 				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
 				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(receptrice2.getBlocageRemboursementAutomatique());
 
 				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
 				try {
@@ -3122,6 +3308,8 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
 				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
+				Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
 				metierServicePM.annuleTransfertPatrimoine(emettrice, Collections.singletonList(receptrice1), dateTransfert1);
 			}
 		});
@@ -3135,6 +3323,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 1.1. rien n'a changé sauf l'annulation du rapport entre tiers "transfert de patrimoine" existant avec l'entreprise receptrice1
 				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
 				Assert.assertNotNull(emettrice);
+				Assert.assertFalse(emettrice.getBlocageRemboursementAutomatique());
 				Assert.assertFalse(emettrice.isAnnule());
 				Assert.assertEquals(2, emettrice.getForsFiscaux().size());
 				final ForFiscalPrincipalPM ffp = emettrice.getDernierForFiscalPrincipal();
@@ -3205,6 +3394,7 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
 				Assert.assertNotNull(receptrice1);
 				Assert.assertFalse(receptrice1.isAnnule());
+				Assert.assertFalse(receptrice1.getBlocageRemboursementAutomatique());
 
 				// 2.1 for inchangé
 				final ForFiscalPrincipalPM ffp1 = receptrice1.getDernierForFiscalPrincipal();
@@ -3242,6 +3432,7 @@ public class MetierServicePMTest extends BusinessTest {
 				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
 				Assert.assertNotNull(receptrice2);
 				Assert.assertFalse(receptrice2.isAnnule());
+				Assert.assertFalse(receptrice2.getBlocageRemboursementAutomatique());
 
 				// 3.1. pas d'impact sur les fors
 				final ForFiscalPrincipalPM ffp2 = receptrice2.getDernierForFiscalPrincipal();
@@ -3285,6 +3476,7 @@ public class MetierServicePMTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Grandson);
+				entreprise.setBlocageRemboursementAutomatique(Boolean.TRUE);
 
 				addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
 				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Prilly.RueDesMetiers);
@@ -3306,6 +3498,7 @@ public class MetierServicePMTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
 				Assert.assertNotNull(entreprise);
+				Assert.assertTrue(entreprise.getBlocageRemboursementAutomatique());
 				metierServicePM.reinscritRC(entreprise, dateRadiationRC, "Une remarque...");
 			}
 		});
@@ -3316,14 +3509,11 @@ public class MetierServicePMTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
 				Assert.assertNotNull(entreprise);
+				Assert.assertFalse(entreprise.getBlocageRemboursementAutomatique());
+
 				final List<EtatEntreprise> tousEtats = new ArrayList<>(entreprise.getEtats());
 				Assert.assertEquals(3, tousEtats.size());
-				Collections.sort(tousEtats, new Comparator<EtatEntreprise>() {
-					@Override
-					public int compare(EtatEntreprise o1, EtatEntreprise o2) {
-						return NullDateBehavior.LATEST.compare(o1.getDateObtention(), o2.getDateObtention());
-					}
-				});
+				tousEtats.sort(Comparator.comparing(EtatEntreprise::getDateObtention, NullDateBehavior.LATEST::compare));
 				{
 					final EtatEntreprise etat = tousEtats.get(0);
 					Assert.assertNotNull(etat);

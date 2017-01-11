@@ -21,6 +21,7 @@ import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Intercepteur de transaction qui recalcule de manière différée (juste avant le commit de la transaction)
@@ -93,7 +94,7 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 			final Map<Long, Contribuable> map = new HashMap<>(ids.size() * 3);      // un MC devient un MC + max 2 PP
 			for (Long id : ids) {
 				final Tiers tiers = tiersDAO.get(id);
-				if (tiers instanceof PersonnePhysique) {
+				if (tiers instanceof PersonnePhysique || tiers instanceof Entreprise) {
 					map.put(id, (Contribuable) tiers);
 				}
 				else if (tiers instanceof MenageCommun) {
@@ -117,10 +118,16 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 
 			// et phase 2 : on lance le recalcul sur tous ces contribuables
 			for (Contribuable ctb : map.values()) {
-				final ForFiscalPrincipal forVaudois = ctb.getDernierForFiscalPrincipalVaudois();
+
+				// pour les entreprises, la seule présence d'un for vaudois ouvert est suffisante... alors qu'il faut
+				// un for principal pour les assimilés PP
+				final boolean hasForVaudoisOuvert = ctb.getForsFiscauxNonAnnules(false).stream()
+						.filter(ff -> ff.getDateFin() == null)
+						.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+						.anyMatch(ff -> ctb instanceof Entreprise || ff.isPrincipal());
 
 				final boolean bloque;
-				if (forVaudois != null && forVaudois.getDateFin() == null) {
+				if (hasForVaudoisOuvert) {
 					// for vaudois ouvert -> débloqué
 					bloque = false;
 				}

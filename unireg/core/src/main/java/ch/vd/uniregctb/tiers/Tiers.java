@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -676,27 +677,14 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 *@return les fors triés par - La date d'ouverture - Leur type, selon l'ordinal de l'enum TypeAutoriteFiscale
-	 *
+	 * @return les fors triés par - La date d'ouverture - Leur type, selon l'ordinal de l'enum TypeAutoriteFiscale
 	 */
 	@Transient
 	public List<ForFiscal> getForsFiscauxSorted() {
 		List<ForFiscal> fors = null;
 		if (forsFiscaux != null) {
 			fors = new ArrayList<>(forsFiscaux);
-			Collections.sort(fors, new DateRangeComparator<ForFiscal>() {
-				@Override
-				public int compare(ForFiscal o1, ForFiscal o2) {
-					int comparisonDates = super.compare(o1, o2);
-					if (comparisonDates == 0) {
-						// à dates égales, il faut comparer selon le type d'autorité fiscale
-						return o1.getTypeAutoriteFiscale().ordinal() - o2.getTypeAutoriteFiscale().ordinal();
-					}
-					else {
-						return comparisonDates;
-					}
-				}
-			});
+			fors.sort(new DateRangeComparator<ForFiscal>().thenComparing(Comparator.comparing(ForFiscal::getTypeAutoriteFiscale)));
 		}
 		return fors;
 	}
@@ -710,7 +698,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscal> getForsFiscauxNonAnnules(boolean sort) {
 		final List<ForFiscal> fors = AnnulableHelper.sansElementsAnnules(forsFiscaux);
 		if (sort) {
-			Collections.sort(fors, new DateRangeComparator<>());
+			fors.sort(DateRangeComparator::compareRanges);
 		}
 		return fors;
 	}
