@@ -18,7 +18,7 @@ import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
-import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierImportService;
 import ch.vd.uniregctb.transaction.MockTxSyncManager;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +32,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 	private EvenementRFImportEsbHandler handler;
 
 	private final MutableInt receivedCount = new MutableInt(0);
-	private MockRegistreFoncierService serviceRF;
+	private MockRegistreFoncierImportService serviceImportRF;
 
 	@Before
 	public void setup() throws Exception {
@@ -53,7 +53,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		evenementRFImportDAO = new MockEvenementRFImportDAO();
-		serviceRF = new MockRegistreFoncierService();
+		serviceImportRF = new MockRegistreFoncierImportService();
 
 		handler = new EvenementRFImportEsbHandler() {
 			@Override
@@ -72,7 +72,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		};
 		handler.setEvenementRFImportDAO(evenementRFImportDAO);
 		handler.setTxSyncManager(new MockTxSyncManager());
-		handler.setServiceRF(serviceRF);
+		handler.setServiceImportRF(serviceImportRF);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
@@ -133,7 +133,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		assertEquals("http://example.com/turlututu", event.getFileUrl());
 
 		// le batch doit être démarré
-		final List<Long> started = serviceRF.getStartedImports();
+		final List<Long> started = serviceImportRF.getStartedImports();
 		assertEquals(1, started.size());
 		assertEquals(event.getId(), started.get(0));
 	}

@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.transaction.TxSyncManager;
 
@@ -25,7 +25,7 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 
 	private TxSyncManager txSyncManager;
 	private EvenementRFImportDAO evenementRFImportDAO;
-	private RegistreFoncierService serviceRF;
+	private RegistreFoncierImportService serviceImportRF;
 
 	public void setTxSyncManager(TxSyncManager txSyncManager) {
 		this.txSyncManager = txSyncManager;
@@ -35,8 +35,8 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 		this.evenementRFImportDAO = evenementRFImportDAO;
 	}
 
-	public void setServiceRF(RegistreFoncierService serviceRF) {
-		this.serviceRF = serviceRF;
+	public void setServiceImportRF(RegistreFoncierImportService serviceImportRF) {
+		this.serviceImportRF = serviceImportRF;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 	private void startBatch(@NotNull Long eventId) {
 		AuthenticationHelper.pushPrincipal("JMS-ImportRF");
 		try {
-			serviceRF.startImport(eventId);
+			serviceImportRF.startImport(eventId);
 		}
 		catch (JobAlreadyStartedException | SchedulerException e) {
 			LOGGER.error("Le job n'a pas pu être démarré pour la raison suivante :", e);

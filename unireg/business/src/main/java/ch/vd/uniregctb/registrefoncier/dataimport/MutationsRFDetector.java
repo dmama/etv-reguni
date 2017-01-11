@@ -32,7 +32,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.AyantDroitRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.BatimentRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.DroitRFDetector;
@@ -48,7 +48,7 @@ public class MutationsRFDetector implements InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MutationsRFDetector.class);
 
-	private final RegistreFoncierService serviceRF;
+	private final RegistreFoncierImportService serviceImportRF;
 	private final FichierImmeublesRFParser parser;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final PlatformTransactionManager transactionManager;
@@ -60,7 +60,7 @@ public class MutationsRFDetector implements InitializingBean {
 	private final ImmeubleRFDetector immeubleRFDetector;
 	private final SurfaceAuSolRFDetector surfaceAuSolRFDetector;
 
-	public MutationsRFDetector(RegistreFoncierService serviceRF,
+	public MutationsRFDetector(RegistreFoncierImportService serviceImportRF,
 	                           FichierImmeublesRFParser parser,
 	                           EvenementRFImportDAO evenementRFImportDAO,
 	                           PlatformTransactionManager transactionManager,
@@ -70,7 +70,7 @@ public class MutationsRFDetector implements InitializingBean {
 	                           DroitRFDetector droitRFDetector,
 	                           ImmeubleRFDetector immeubleRFDetector,
 	                           SurfaceAuSolRFDetector surfaceAuSolRFDetector) {
-		this.serviceRF = serviceRF;
+		this.serviceImportRF = serviceImportRF;
 		this.parser = parser;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.transactionManager = transactionManager;
@@ -241,7 +241,7 @@ public class MutationsRFDetector implements InitializingBean {
 
 		statusManager.setMessage("Effacement des mutations préexistantes...");
 
-		serviceRF.deleteExistingMutations(importId);
+		serviceImportRF.deleteExistingMutations(importId);
 	}
 
 	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable Exception exception) {

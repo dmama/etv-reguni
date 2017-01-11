@@ -51,12 +51,12 @@ public class ImportRFController {
 	private static final int IMPORT_PAGE_SIZE = 10;
 	private static final int MUTATION_PAGE_SIZE = 50;
 
-	private RegistreFoncierService serviceRF;
+	private RegistreFoncierImportService serviceImportRF;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 
-	public void setServiceRF(RegistreFoncierService serviceRF) {
-		this.serviceRF = serviceRF;
+	public void setServiceImportRF(RegistreFoncierImportService serviceImportRF) {
+		this.serviceImportRF = serviceImportRF;
 	}
 
 	public void setEvenementRFImportDAO(EvenementRFImportDAO evenementRFImportDAO) {
@@ -144,7 +144,7 @@ public class ImportRFController {
 		LOGGER.info("Relance du job de traitement de l'import du registre foncier sur l'import id=[" + importId + "]");
 
 		try {
-			serviceRF.startImport(importId);
+			serviceImportRF.startImport(importId);
 			Flash.message("Le job de traitement de l'import n°" + importId + " est démarré.");
 			return "redirect:/registrefoncier/import/list.do";
 		}
@@ -162,7 +162,7 @@ public class ImportRFController {
 		LOGGER.info("Forçage de l'import du registre foncier avec l'id=[" + importId + "]");
 
 		// on force le job
-		serviceRF.forceImport(importId);
+		serviceImportRF.forceImport(importId);
 
 		Flash.message("Le job n°" + importId + " a été forcé.");
 		return "redirect:/registrefoncier/import/list.do";
@@ -188,7 +188,7 @@ public class ImportRFController {
 
 		try {
 			// on relance le job
-			serviceRF.startMutations(importId);
+			serviceImportRF.startMutations(importId);
 			Flash.message("Le job de traitement des mutations de l'import n°" + importId + " est démarré.");
 		}
 		catch (JobAlreadyStartedException | SchedulerException e) {
@@ -217,7 +217,7 @@ public class ImportRFController {
 		}
 
 		// on force la mutation
-		serviceRF.forceMutation(mutId);
+		serviceImportRF.forceMutation(mutId);
 
 		Flash.message("La mutation n°" + mutId + " a été forcée.");
 
@@ -238,7 +238,7 @@ public class ImportRFController {
 		LOGGER.info("Forçage des mutations du registre foncier correspondant à l'import id=[" + importId + "]");
 
 		// on force toutes les mutations non-traitée
-		serviceRF.forceAllMutations(importId);
+		serviceImportRF.forceAllMutations(importId);
 
 		Flash.message("Les mutations du job n°" + importId + " on été forcées.");
 

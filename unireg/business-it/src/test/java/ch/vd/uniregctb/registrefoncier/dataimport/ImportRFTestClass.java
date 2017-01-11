@@ -47,7 +47,7 @@ import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
 		BusinessTestingConstants.UNIREG_BUSINESS_JOBS,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_REGISTREFONCIER,
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_REGISTREFONCIER_IMPORT,
 		"classpath:ut/unireg-businessit-jms.xml"
 })
 public abstract class ImportRFTestClass extends BusinessItTest {
