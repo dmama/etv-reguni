@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
@@ -263,9 +264,8 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		if (adressesTiers == null) {
 			return null;
 		}
-		List<AdresseTiers> list = new ArrayList<>();
-		list.addAll(adressesTiers);
-		Collections.sort(list, new DateRangeComparator<>());
+		final List<AdresseTiers> list = new ArrayList<>(adressesTiers);
+		list.sort(DateRangeComparator::compareRanges);
 		return list;
 	}
 
@@ -274,14 +274,10 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		if (adressesTiers == null) {
 			return null;
 		}
-		List<AdresseTiers> list = new ArrayList<>();
-		for (AdresseTiers adr : adressesTiers) {
-			if (adr.getUsage() == type) {
-				list.add(adr);
-			}
-		}
-		Collections.sort(list, new DateRangeComparator<>());
-		return list;
+		return adressesTiers.stream()
+				.filter(a -> type == a.getUsage())
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -301,13 +297,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		}
 
 		// Construit une collection triée des adresses du type spécifié
-		List<AdresseTiers> list = new ArrayList<>();
-		for (AdresseTiers a : adressesTiers) {
-			if (!a.isAnnule() && type == a.getUsage()) {
-				list.add(a);
-			}
-		}
-		Collections.sort(list, new DateRangeComparator<>());
+		final List<AdresseTiers> list = adressesTiers.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(a -> type == a.getUsage())
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 
 		// Extrait et retourne l'adresse demandée
 		final int size = list.size();
@@ -557,7 +551,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				triees.add((T) declaration);
 			}
 		}
-		Collections.sort(triees, new DateRangeComparator<>());
+		triees.sort(DateRangeComparator::compareRanges);
 		return triees;
 	}
 
@@ -579,7 +573,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			return Collections.emptyList();
 		}
 		else {
-			Collections.sort(filtrees, new DateRangeComparator<>());
+			filtrees.sort(DateRangeComparator::compareRanges);
 			return filtrees;
 		}
 	}
@@ -635,7 +629,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 					ffps.add((ForFiscalPrincipal) ff);
 				}
 			}
-			Collections.sort(ffps, new DateRangeComparator<ForFiscal>());
+			ffps.sort(DateRangeComparator::compareRanges);
 		}
 		return ffps;
 	}
@@ -659,9 +653,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 					ffps.add(ffsec);
 				}
 			}
-			for (Map.Entry<Integer, List<ForFiscalSecondaire>> e : map.entrySet()) {
-				Collections.sort(e.getValue(), new DateRangeComparator<ForFiscal>());
-			}
+			map.values().forEach(list -> list.sort(DateRangeComparator::compareRanges));
 		}
 		return map;
 	}
@@ -773,38 +765,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 					return (ForFiscalPrincipal) forFiscal;
 				}
 			}
-		}
-		return null;
-	}
-
-	@Transient
-	public ForFiscal getPremierForFiscalVd() {
-		Set<ForFiscal> fors = getForsFiscaux();
-		if (fors != null) {
-			List<ForFiscal> list = new ArrayList<>(fors);
-			Collections.sort(list, new ForFiscalFirstOpenedFirstComparator());
-			return getFirstVdNonAnnule(list);
-		}
-		return null;
-	}
-
-	@Nullable
-	private ForFiscal getFirstVdNonAnnule(List<ForFiscal> list) {
-		for (ForFiscal forFiscal : list) {
-			if (!forFiscal.isAnnule() && forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				return forFiscal;
-			}
-		}
-		return null;
-	}
-
-	@Transient
-	public ForFiscal getDernierForFiscalVd() {
-		Set<ForFiscal> fors = getForsFiscaux();
-		if (fors != null) {
-			List<ForFiscal> list = new ArrayList<>(fors);
-			Collections.sort(list, new ForFiscalLastOpenFirstComparator());
-			return getFirstVdNonAnnule(list);
 		}
 		return null;
 	}
@@ -1071,7 +1031,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	public List<EtiquetteTiers> getEtiquettesNonAnnuleesTriees() {
 		final List<EtiquetteTiers> nonAnnulees = AnnulableHelper.sansElementsAnnules(etiquettes);
-		Collections.sort(nonAnnulees, DateRangeComparator::compareRanges);
+		nonAnnulees.sort(DateRangeComparator::compareRanges);
 		return nonAnnulees;
 	}
 
