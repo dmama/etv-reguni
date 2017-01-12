@@ -28,11 +28,11 @@ public interface EvenementDocumentSortantService {
 
 	void signaleLettreTypeInformationLiquidation(LettreTypeInformationLiquidation lettre, CTypeInfoArchivage infoArchivage, boolean local);
 
-	void signaleQuestionnaireSNC(QuestionnaireSNC questionnaire, CTypeInfoArchivage infoArchivage, boolean local);
+	void signaleQuestionnaireSNC(QuestionnaireSNC questionnaire, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata);
 
 	void signaleRappelQuestionnaireSNC(QuestionnaireSNC questionnaire, CTypeInfoArchivage infoArchivage, boolean local);
 
-	void signaleDeclarationImpot(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local);
+	void signaleDeclarationImpot(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata);
 
 	void signaleAccordDelai(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local);
 
@@ -46,13 +46,13 @@ public interface EvenementDocumentSortantService {
 	
 	void signaleRappelLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local);
 
-	void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
+	void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local, boolean duplicata);
 
 	void signaleAnnexeImmeuble(InformationsDocumentAdapter infoDocument, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 
 	void signaleSommationDeclarationImpot(DeclarationImpotOrdinairePP di, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 
-	void signaleListeRecapitulative(DeclarationImpotSource lr, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
+	void signaleListeRecapitulative(DeclarationImpotSource lr, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local, boolean duplicata);
 
 	void signaleSommationListeRecapitulative(DeclarationImpotSource lr, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 

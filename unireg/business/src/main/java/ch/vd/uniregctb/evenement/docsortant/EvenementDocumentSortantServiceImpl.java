@@ -100,9 +100,9 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleQuestionnaireSNC(QuestionnaireSNC questionnaire, CTypeInfoArchivage infoArchivage, boolean local) {
+	public void signaleQuestionnaireSNC(QuestionnaireSNC questionnaire, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata) {
 		signaleDocumentSortant("QSNC",
-		                       TypeDocumentSortant.QSNC,
+		                       duplicata ? TypeDocumentSortant.DUPLICATA_QSNC : TypeDocumentSortant.QSNC,
 		                       questionnaire.getTiers(),
 		                       local,
 		                       questionnaire.getPeriode().getAnnee(),
@@ -152,6 +152,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	private static final Map<TypeDocument, TypeDocumentSortant> TYPE_DI_ENTREPRISE_SORTANTE = buildMappingTypesDeclarationImpotEntrepriseSortante();
+	private static final Map<TypeDocument, TypeDocumentSortant> TYPE_DUPLICATA_DI_ENTREPRISE_SORTANTE = buildMappingTypesDuplicataDeclarationImpotEntrepriseSortante();
 
 	private static Map<TypeDocument, TypeDocumentSortant> buildMappingTypesDeclarationImpotEntrepriseSortante() {
 		final Map<TypeDocument, TypeDocumentSortant> map = new EnumMap<>(TypeDocument.class);
@@ -162,11 +163,20 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		return map;
 	}
 
+	private static Map<TypeDocument, TypeDocumentSortant> buildMappingTypesDuplicataDeclarationImpotEntrepriseSortante() {
+		final Map<TypeDocument, TypeDocumentSortant> map = new EnumMap<>(TypeDocument.class);
+		map.put(TypeDocument.DECLARATION_IMPOT_APM_BATCH, TypeDocumentSortant.DUPLICATA_DI_APM);
+		map.put(TypeDocument.DECLARATION_IMPOT_APM_LOCAL, TypeDocumentSortant.DUPLICATA_DI_APM);
+		map.put(TypeDocument.DECLARATION_IMPOT_PM_BATCH, TypeDocumentSortant.DUPLICATA_DI_PM);
+		map.put(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, TypeDocumentSortant.DUPLICATA_DI_PM);
+		return map;
+	}
+
 	@Override
-	public void signaleDeclarationImpot(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local) {
+	public void signaleDeclarationImpot(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata) {
 		final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
 		signaleDocumentSortant("DI",
-		                       TYPE_DI_ENTREPRISE_SORTANTE.get(typeDocument),
+		                       (duplicata ? TYPE_DUPLICATA_DI_ENTREPRISE_SORTANTE : TYPE_DI_ENTREPRISE_SORTANTE).get(typeDocument),
 		                       di.getTiers(),
 		                       local,
 		                       di.getPeriode().getAnnee(),
@@ -259,9 +269,10 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       infoArchivage);
 	}
 
-	private static final Map<TypeDocument, TypeDocumentSortant> TYPE_DI_PP_SORTANTE = buildMappingTYpesDeclarationImpotPersonnePhysiqueSortante();
+	private static final Map<TypeDocument, TypeDocumentSortant> TYPE_DI_PP_SORTANTE = buildMappingTypesDeclarationImpotPersonnePhysiqueSortante();
+	private static final Map<TypeDocument, TypeDocumentSortant> TYPE_DUPLICATA_DI_PP_SORTANTE = buildMappingTypesDuplicataDeclarationImpotPersonnePhysiqueSortante();
 
-	private static Map<TypeDocument, TypeDocumentSortant> buildMappingTYpesDeclarationImpotPersonnePhysiqueSortante() {
+	private static Map<TypeDocument, TypeDocumentSortant> buildMappingTypesDeclarationImpotPersonnePhysiqueSortante() {
 		final Map<TypeDocument, TypeDocumentSortant> map = new EnumMap<>(TypeDocument.class);
 		map.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeDocumentSortant.DI_PP_COMPLETE);
 		map.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeDocumentSortant.DI_PP_COMPLETE);
@@ -271,11 +282,21 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		return map;
 	}
 
+	private static Map<TypeDocument, TypeDocumentSortant> buildMappingTypesDuplicataDeclarationImpotPersonnePhysiqueSortante() {
+		final Map<TypeDocument, TypeDocumentSortant> map = new EnumMap<>(TypeDocument.class);
+		map.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeDocumentSortant.DUPLICATA_DI_PP_COMPLETE);
+		map.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeDocumentSortant.DUPLICATA_DI_PP_COMPLETE);
+		map.put(TypeDocument.DECLARATION_IMPOT_DEPENSE, TypeDocumentSortant.DUPLICATA_DI_PP_DEPENSE);
+		map.put(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeDocumentSortant.DUPLICATA_DI_PP_HC_IMMEUBLE);
+		map.put(TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeDocumentSortant.DUPLICATA_DI_PP_VAUDTAX);
+		return map;
+	}
+
 	@Override
-	public void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local) {
+	public void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local, boolean duplicata) {
 		final TypeDocument typeDocument = typeDocumentOverride != null ? typeDocumentOverride : di.getModeleDocument().getTypeDocument();
 		signaleDocumentSortant("DI",
-		                       TYPE_DI_PP_SORTANTE.get(typeDocument),
+		                       (duplicata ? TYPE_DUPLICATA_DI_PP_SORTANTE : TYPE_DI_PP_SORTANTE).get(typeDocument),
 		                       di.getTiers(),
 		                       local,
 		                       di.getPeriode().getAnnee(),
@@ -313,9 +334,9 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleListeRecapitulative(DeclarationImpotSource lr, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local) {
+	public void signaleListeRecapitulative(DeclarationImpotSource lr, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local, boolean duplicata) {
 		signaleDocumentSortant("LR",
-		                       TypeDocumentSortant.LR,
+		                       duplicata ? TypeDocumentSortant.DUPLICATA_LR : TypeDocumentSortant.LR,
 		                       lr.getTiers(),
 		                       local,
 		                       lr.getPeriode().getAnnee(),

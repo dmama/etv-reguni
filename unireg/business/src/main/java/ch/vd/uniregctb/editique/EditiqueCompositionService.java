@@ -275,6 +275,16 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException;
 
 	/**
+	 * Imprime la liste récapitulative spécifiée on-line
+	 *
+	 * @param lr
+	 * @param typeDocument
+	 * @return
+	 * @throws EditiqueException
+	 */
+	EditiqueResultat imprimeDuplicataLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException;
+
+	/**
 	 * Envoie à l'éditique le bordereau de mouvements de dossiers correspondant aux mouvement donnés
 	 *
 	 * @param bordereauMouvementDossier les mouvements qui doivent apparaître sur le bordereau

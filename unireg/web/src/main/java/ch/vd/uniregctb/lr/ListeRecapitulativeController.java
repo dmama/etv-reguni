@@ -543,7 +543,7 @@ public class ListeRecapitulativeController {
 		                         RegDateHelper.dateToDashString(lr.getDateDebut()),
 		                         RegDateHelper.dateToDashString(lr.getDateFin())));
 
-		final EditiqueResultat resultat = editiqueCompositionService.imprimeLROnline(lr, TypeDocument.LISTE_RECAPITULATIVE);
+		final EditiqueResultat resultat = editiqueCompositionService.imprimeDuplicataLROnline(lr, TypeDocument.LISTE_RECAPITULATIVE);
 		return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(resultat,
 		                                                              "lr",
 		                                                              "redirect:edit-lr.do?id=" + idListe,

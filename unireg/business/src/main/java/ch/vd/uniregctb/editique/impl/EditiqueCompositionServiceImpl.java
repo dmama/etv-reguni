@@ -311,25 +311,25 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration));
+		return imprimeDIOnline(declaration, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration), false);
 	}
 
 	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, buildDefaultAnnexes(declaration));
+		return imprimeDIOnline(declaration, buildDefaultAnnexes(declaration), false);
 	}
 
 	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, typeDocument, annexes);
+		return imprimeDIOnline(declaration, typeDocument, annexes, true);
 	}
 
 	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, annexes);
+		return imprimeDIOnline(declaration, annexes, true);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
@@ -341,7 +341,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
-			evenementDocumentSortantService.signaleDeclarationImpot(declaration, typeDocument, infoArchivage, true);
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, typeDocument, infoArchivage, true, isDuplicata);
 		}
 
 		final String description = String.format("Document '%s %d' du contribuable %s",
@@ -351,7 +351,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, withArchivage, description);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, annexes);
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
@@ -360,7 +360,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, true);
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, true, isDuplicata);
 		}
 
 		final String description = String.format("Document '%s %d' du contribuable %s",
@@ -384,7 +384,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
-			evenementDocumentSortantService.signaleDeclarationImpot(declaration, null, infoArchivage, false);
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, null, infoArchivage, false, false);
 		}
 
 		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
@@ -400,7 +400,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, false);
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, false, false);
 		}
 
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
@@ -446,7 +446,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 				.orElse(null);
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
-			evenementDocumentSortantService.signaleListeRecapitulative(lr, infoArchivage, false);
+			evenementDocumentSortantService.signaleListeRecapitulative(lr, infoArchivage, false, false);
 		}
 
 		final TypeDocumentEditique typeDocument = impressionLRHelper.getTypeDocumentEditique();
@@ -750,6 +750,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException {
+		return imprimeLROnline(lr, typeDocument, false);
+	}
+
+	@Override
+	public EditiqueResultat imprimeDuplicataLROnline(DeclarationImpotSource lr, TypeDocument typeDocument) throws EditiqueException, JMSException {
+		return imprimeLROnline(lr, typeDocument, true);
+	}
+
+	private EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, TypeDocument typeDocument, boolean isDuplicata) throws EditiqueException, JMSException {
 		final String[] traitePar = getInfoOperateur();
 		final FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
 
@@ -762,7 +771,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 				.orElse(null);
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
-			evenementDocumentSortantService.signaleListeRecapitulative(lr, infoArchivage, true);
+			evenementDocumentSortantService.signaleListeRecapitulative(lr, infoArchivage, true, isDuplicata);
 		}
 
 		final TypeDocumentEditique typeDocumentMessage = impressionLRHelper.getTypeDocumentEditique();
@@ -805,7 +814,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, true);
+			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, true, false);
 		}
 
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
@@ -821,7 +830,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, true);
+			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, true, true);
 		}
 
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
@@ -842,7 +851,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final CTypeInfoArchivage infoArchivage = document.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, false);
+			evenementDocumentSortantService.signaleQuestionnaireSNC(questionnaire, infoArchivage, false, false);
 		}
 
 		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
