@@ -96,7 +96,7 @@
 	<!-- Data Event Service du cache centralisé Nexus -->
 	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
-		<property name="serviceInterface" value="ch.vd.uniregctb.data.SourceDataEventService" />
+		<property name="serviceInterface" value="ch.vd.uniregctb.data.CivilDataEventService" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
 		<property name="executor" ref="dataEventServiceHttpRequestExecutor" />
@@ -104,7 +104,7 @@
 	</bean>
 
 	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus et les organisations -->
-	<bean id="nexusDataEventListener" class="ch.vd.uniregctb.data.SourceDataEventSlaveServiceListener">
+	<bean id="nexusDataEventListener" class="ch.vd.uniregctb.data.CivilDataEventSlaveServiceListener">
 		<property name="master" ref="dataEventService"/>
 		<property name="slave" ref="nexusDataEventService"/>
 	</bean>

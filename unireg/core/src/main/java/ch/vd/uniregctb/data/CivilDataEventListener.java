@@ -2,9 +2,9 @@ package ch.vd.uniregctb.data;
 
 /**
  * Interface de notification de changements sur les données Unireg, quand la source du changement
- * provient des sources de données (civiles)
+ * provient des données civiles
  */
-public interface SourceDataEventListener {
+public interface CivilDataEventListener {
 
 	/**
 	 * Cette méthode est appelée lorsqu'une organisation a été ajouté/modifié dans le registre des entreprises.

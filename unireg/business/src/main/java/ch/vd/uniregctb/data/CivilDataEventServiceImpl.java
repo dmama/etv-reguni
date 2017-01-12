@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Partie "source" du service de notification des modifications de données
+ * Partie "civile" du service de notification des modifications de données
  */
-public class SourceDataEventServiceImpl implements SourceDataEventService {
+public class CivilDataEventServiceImpl implements CivilDataEventService {
 
-	private final List<SourceDataEventListener> listeners = new ArrayList<>();
+	private final List<CivilDataEventListener> listeners = new ArrayList<>();
 
 	@Override
-	public void register(SourceDataEventListener listener) {
+	public void register(CivilDataEventListener listener) {
 		listeners.add(listener);
 	}
 

@@ -6,14 +6,14 @@ import java.util.List;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
- * Partie "sink" du service de notification des modifications de données
+ * Partie "fisale" du service de notification des modifications de données
  */
-public class SinkDataEventServiceImpl implements SinkDataEventService {
+public class FiscalDataEventServiceImpl implements FiscalDataEventService {
 
-	private final List<SinkDataEventListener> listeners = new ArrayList<>();
+	private final List<FiscalDataEventListener> listeners = new ArrayList<>();
 
 	@Override
-	public void register(SinkDataEventListener listener) {
+	public void register(FiscalDataEventListener listener) {
 		listeners.add(listener);
 	}
 
@@ -34,11 +34,11 @@ public class SinkDataEventServiceImpl implements SinkDataEventService {
 
 	@Override
 	public void onLoadDatabase() {
-		DataEventServiceHelper.dispatch(listeners, SinkDataEventListener::onLoadDatabase);
+		DataEventServiceHelper.dispatch(listeners, FiscalDataEventListener::onLoadDatabase);
 	}
 
 	@Override
 	public void onTruncateDatabase() {
-		DataEventServiceHelper.dispatch(listeners, SinkDataEventListener::onTruncateDatabase);
+		DataEventServiceHelper.dispatch(listeners, FiscalDataEventListener::onTruncateDatabase);
 	}
 }

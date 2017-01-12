@@ -1,15 +1,15 @@
 package ch.vd.uniregctb.data;
 
-public interface DataEventService extends SourceDataEventService, SinkDataEventService {
+public interface DataEventService extends CivilDataEventService, FiscalDataEventService {
 
 	/**
-	 * Enregistre un listener à la fois "source" et "sink"
+	 * Enregistre un listener à la fois "civil" et "fiscal"
 	 *
 	 * @param listener le listener à enregistrer
 	 */
 	default void register(DataEventListener listener) {
-		register((SourceDataEventListener) listener);
-		register((SinkDataEventListener) listener);
+		register((CivilDataEventListener) listener);
+		register((FiscalDataEventListener) listener);
 	}
 
 }

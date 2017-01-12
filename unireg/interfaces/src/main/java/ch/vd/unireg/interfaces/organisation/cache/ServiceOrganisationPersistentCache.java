@@ -26,11 +26,11 @@ import ch.vd.uniregctb.cache.ObjectKey;
 import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.data.SourceDataEventListener;
-import ch.vd.uniregctb.data.SourceDataEventService;
+import ch.vd.uniregctb.data.CivilDataEventListener;
+import ch.vd.uniregctb.data.CivilDataEventService;
 import ch.vd.uniregctb.stats.StatsService;
 
-public class ServiceOrganisationPersistentCache implements ServiceOrganisationRaw, UniregCacheInterface, SourceDataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
+public class ServiceOrganisationPersistentCache implements ServiceOrganisationRaw, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationPersistentCache.class);
 
@@ -41,7 +41,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	private ServiceOrganisationRaw target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private SourceDataEventService dataEventService;
+	private CivilDataEventService dataEventService;
 
 	public void setTarget(ServiceOrganisationRaw target) {
 		this.target = target;
@@ -67,7 +67,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(SourceDataEventService dataEventService) {
+	public void setDataEventService(CivilDataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
 

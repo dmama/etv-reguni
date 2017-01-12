@@ -34,15 +34,15 @@ import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.data.CivilDataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.data.SourceDataEventListener;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.utils.LogLevel;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface, KeyDumpableCache, SourceDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface, KeyDumpableCache, CivilDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilCache.class);
 

@@ -29,8 +29,8 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.data.SourceDataEventListener;
-import ch.vd.uniregctb.data.SourceDataEventService;
+import ch.vd.uniregctb.data.CivilDataEventListener;
+import ch.vd.uniregctb.data.CivilDataEventService;
 import ch.vd.uniregctb.stats.MockStatsService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -41,9 +41,9 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 	private CallCounterServiceOrganisation target;
 	private ServiceOrganisationCache cache;
 
-	private final SourceDataEventService dataEventService = new SourceDataEventService() {
+	private final CivilDataEventService dataEventService = new CivilDataEventService() {
 		@Override
-		public void register(SourceDataEventListener listener) {
+		public void register(CivilDataEventListener listener) {
 		}
 
 		@Override

@@ -6,7 +6,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  * Interface de notification de changements sur les données Unireg, quand la source du changement
  * est dans les données fiscales
  */
-public interface SinkDataEventListener {
+public interface FiscalDataEventListener {
 
 	/**
 	 * Cette méthode est appelée lorsqu'un tiers va être ajouté/modifié dans la base de données.

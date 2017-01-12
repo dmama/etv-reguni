@@ -5,16 +5,16 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Ce listener s'enregistre dans un service maître, et délégue tous les appels à un service esclave.
  */
-public class SourceDataEventSlaveServiceListener implements SourceDataEventListener, InitializingBean {
+public class CivilDataEventSlaveServiceListener implements CivilDataEventListener, InitializingBean {
 
-	private SourceDataEventService master;
-	private SourceDataEventService slave;
+	private CivilDataEventService master;
+	private CivilDataEventService slave;
 
-	public void setMaster(SourceDataEventService master) {
+	public void setMaster(CivilDataEventService master) {
 		this.master = master;
 	}
 
-	public void setSlave(SourceDataEventService slave) {
+	public void setSlave(CivilDataEventService slave) {
 		this.slave = slave;
 	}
 

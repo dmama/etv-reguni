@@ -6,6 +6,6 @@
 
 	<bean id="uniregCacheManager" class="ch.vd.uniregctb.cache.UniregCacheManagerImpl" />
 
-	<bean id="dataEventService" class="ch.vd.uniregctb.data.SourceDataEventServiceImpl" />
+	<bean id="dataEventService" class="ch.vd.uniregctb.data.CivilDataEventServiceImpl" />
 
 </beans>

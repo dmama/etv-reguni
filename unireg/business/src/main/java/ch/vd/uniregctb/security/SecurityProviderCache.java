@@ -29,14 +29,14 @@ import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.data.SinkDataEventListener;
+import ch.vd.uniregctb.data.FiscalDataEventListener;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, SinkDataEventListener, InitializingBean {
+public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, FiscalDataEventListener, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityProviderCache.class);
 

@@ -28,14 +28,14 @@ import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.data.SourceDataEventListener;
-import ch.vd.uniregctb.data.SourceDataEventService;
+import ch.vd.uniregctb.data.CivilDataEventListener;
+import ch.vd.uniregctb.data.CivilDataEventService;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, SourceDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, CivilDataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCivilPersistentCache.class);
 
@@ -45,7 +45,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	private ServiceCivilRaw target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private SourceDataEventService dataEventService;
+	private CivilDataEventService dataEventService;
 
 	public void setTarget(ServiceCivilRaw target) {
 		this.target = target;
@@ -66,7 +66,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(SourceDataEventService dataEventService) {
+	public void setDataEventService(CivilDataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
 

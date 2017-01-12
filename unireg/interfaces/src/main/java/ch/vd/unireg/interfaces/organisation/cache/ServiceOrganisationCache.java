@@ -33,12 +33,12 @@ import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.data.SourceDataEventListener;
-import ch.vd.uniregctb.data.SourceDataEventService;
+import ch.vd.uniregctb.data.CivilDataEventListener;
+import ch.vd.uniregctb.data.CivilDataEventService;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, SourceDataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
+public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, CivilDataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationCache.class);
 
@@ -48,7 +48,7 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
-	private SourceDataEventService dataEventService;
+	private CivilDataEventService dataEventService;
 
 	public void setTarget(ServiceOrganisationRaw target) {
 		this.target = target;
@@ -74,7 +74,7 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataEventService(SourceDataEventService dataEventService) {
+	public void setDataEventService(CivilDataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
 

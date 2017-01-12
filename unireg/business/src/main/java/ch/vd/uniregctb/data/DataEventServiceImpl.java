@@ -4,51 +4,51 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class DataEventServiceImpl implements DataEventService {
 
-	private final SourceDataEventService source = new SourceDataEventServiceImpl();
-	private final SinkDataEventService sink = new SinkDataEventServiceImpl();
+	private final CivilDataEventService civil = new CivilDataEventServiceImpl();
+	private final FiscalDataEventService fiscal = new FiscalDataEventServiceImpl();
 
 	@Override
-	public void register(SourceDataEventListener listener) {
-		source.register(listener);
+	public void register(CivilDataEventListener listener) {
+		civil.register(listener);
 	}
 
 	@Override
-	public void register(SinkDataEventListener listener) {
-		sink.register(listener);
+	public void register(FiscalDataEventListener listener) {
+		fiscal.register(listener);
 	}
 
 	@Override
 	public void onTruncateDatabase() {
-		sink.onTruncateDatabase();
+		fiscal.onTruncateDatabase();
 	}
 
 	@Override
 	public void onLoadDatabase() {
-		sink.onLoadDatabase();
+		fiscal.onLoadDatabase();
 	}
 
 	@Override
 	public void onTiersChange(long id) {
-		sink.onTiersChange(id);
+		fiscal.onTiersChange(id);
 	}
 
 	@Override
 	public void onIndividuChange(long id) {
-		source.onIndividuChange(id);
+		civil.onIndividuChange(id);
 	}
 
 	@Override
 	public void onOrganisationChange(long id) {
-		source.onOrganisationChange(id);
+		civil.onOrganisationChange(id);
 	}
 
 	@Override
 	public void onDroitAccessChange(long ppId) {
-		sink.onDroitAccessChange(ppId);
+		fiscal.onDroitAccessChange(ppId);
 	}
 
 	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
-		sink.onRelationshipChange(type, sujetId, objetId);
+		fiscal.onRelationshipChange(type, sujetId, objetId);
 	}
 }
