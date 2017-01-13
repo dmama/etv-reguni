@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.evenement.organisation.manager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,12 +141,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
 			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
 		}
-		Collections.sort(evtView.getEvtErreurs(), new Comparator<ErreurEvenementOrganisationView>() {
-			@Override
-			public int compare(ErreurEvenementOrganisationView o1, ErreurEvenementOrganisationView o2) {
-				return Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId());
-			}
-		});
+		evtView.getEvtErreurs().sort((o1, o2) -> Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId()));
 
 		final Long numeroOrganisation = evt.getNoOrganisation();
 		evtView.setNoOrganisation(numeroOrganisation);
@@ -162,10 +156,17 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 
 			evtView.setOrganisation(new OrganisationView(organisationEvent.getPseudoHistory(), evt.getDateEvenement()));
 			evtView.setAdresse(retrieveAdresse(numeroOrganisation));
-			retrieveTiersAssocie(evt.getNoEvenement(), numeroOrganisation, evtView);
 		}
 		catch (Exception e) {
 			evtView.setOrganisationError(e.getMessage());
+		}
+
+		try {
+			retrieveTiersAssocie(evt.getNoEvenement(), numeroOrganisation, evtView);
+		}
+		catch (Exception e) {
+			final String previousError = evtView.getOrganisationError();
+			evtView.setOrganisationError(StringUtils.isBlank(previousError) ? e.getMessage() : String.format("%s; %s", previousError, e.getMessage()));
 		}
 
 		try {
@@ -174,7 +175,8 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			evtView.setRecyclable(evaluateRecyclable(evtView.getEvtId(), list));
 		}
 		catch (Exception e) {
-			evtView.setOrganisationError(e.getMessage());
+			final String previousError = evtView.getOrganisationError();
+			evtView.setOrganisationError(StringUtils.isBlank(previousError) ? e.getMessage() : String.format("%s; %s", previousError, e.getMessage()));
 		}
 		evtView.setForcable(evaluateForcable(evt.getEtat(), evtView.isRecyclable()));
 		return evtView;
@@ -197,7 +199,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
 			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
 		}
-		Collections.sort(evtView.getEvtErreurs(), (o1, o2) -> Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId()));
+		evtView.getEvtErreurs().sort((o1, o2) -> Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId()));
 
 		evtView.setNoOrganisation(evt.getNoOrganisation());
 
@@ -369,9 +371,9 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return noCtb;
 	}
 
-	protected void retrieveTiersAssocie(Long noEvenement, Long numeroIndividu, EvenementOrganisationDetailView evtView) throws AdresseException {
+	protected void retrieveTiersAssocie(Long noEvenement, Long numeroOrganisation, EvenementOrganisationDetailView evtView) throws AdresseException {
 		try {
-			final Entreprise entreprise = tiersService.getEntrepriseByNumeroOrganisation(numeroIndividu);
+			final Entreprise entreprise = tiersService.getEntrepriseByNumeroOrganisation(numeroOrganisation);
 			if (entreprise != null) {
 				final TiersAssocieView tiersAssocie = createTiersAssocieView(entreprise);
 				evtView.setTiersAssocie(tiersAssocie);
