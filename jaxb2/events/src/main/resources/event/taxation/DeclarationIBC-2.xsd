@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by ETAT DE VAUD (Direction des systèmes d`information) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" targetNamespace="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" targetNamespace="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
 	<xs:annotation>
 		<xs:documentation>
-			<!-- 07.112016 (zciedt) v2.0 -->
+			<!-- 07.11.2016 (zciedt) v2.0 -->
 			SIFISC-21671: ajouter une balise pour le numéro de téléphone professionnel pour mise à jour Unireg: contactTelephoneIndicatif et contactTelephoneNumero
-			SIFISC-21271: Ajout dans le XSD DI PM l'information "Domicile" dans l'annexe 3: ID2204, ID2214, ID2224, ID2234			
+			SIFISC-21271: Ajout dans le XSD DI PM l'information "Domicile" dans l'annexe 3: ID2204, ID2214, ID2224, ID2234		
+			<!-- 09.01.2017 (zciedt) v2.1 -->	
+			typAdresse: Ajout d'une balise PersonneContact pour le mode Papier, suppression de la ligne d'adresse 5
 		</xs:documentation>
 	</xs:annotation>
 	<!-- ELEMENT PRINCIPAL -->
@@ -300,7 +302,7 @@ ID2425-ID2431 et ID2433-2438 (par fors suisse et étranger)
 			<xs:element name="adresseLigne2" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="adresseLigne3" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="adresseLigne4" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="adresseLigne5" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="personneContact" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="adresseNpa" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="adresseLocalite" type="typTxtMax40Attr" nillable="true" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
