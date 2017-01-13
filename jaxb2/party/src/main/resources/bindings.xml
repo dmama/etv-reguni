@@ -857,6 +857,12 @@
 		<jxb:bindings node="//xs:complexType[@name='buildingDescriptionType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxEstimateType']">
+			<jxb:bindings node=".//xs:element[@name='amount']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="land-1" />
 		</jxb:bindings>

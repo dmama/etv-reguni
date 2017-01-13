@@ -38,6 +38,7 @@
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-party-7.xsd" uri="ws/unireg-ws-party-7.xsd" />
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-searchparty-7.xsd" uri="ws/unireg-ws-searchparty-7.xsd" />
 	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-fiscalevents-7.xsd" uri="ws/unireg-ws-fiscalevents-7.xsd" />
+	<system systemId="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-landregistry-7.xsd" uri="ws/unireg-ws-landregistry-7.xsd" />
 
 	<!--<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />-->
 

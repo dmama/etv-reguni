@@ -443,4 +443,13 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/registre/unireg-ws-landregistry-7.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.ws.landregistry.v7" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ws-landregistry-7" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

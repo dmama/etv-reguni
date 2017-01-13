@@ -60,7 +60,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="immovablePropertyId" type="xs:int">
+			<xs:element name="immovablePropertyId" type="xs:long">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -403,7 +403,7 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>La ou les implantations des bâtiments sur la parcelle avec leurs historiques.</jxb:javadoc>
+							<jxb:javadoc>La ou les implantations de bâtiments sur la parcelle de l'immeuble (avec leurs historiques).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -413,6 +413,15 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>L'URL d'accès Intercapi pour l'immeuble considéré.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de radiation métier de l'immeuble.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -848,7 +857,16 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="buildingId" type="xs:int">
+			<xs:element name="immovablePropertyId" type="xs:long">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'id technique Unireg de l'immeuble correspondant.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="buildingId" type="xs:long">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -884,6 +902,15 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>L'historique de la description du bâtiment.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="settings" type="land:buildingSettingType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La ou les implantations du bâtiment sur la ou les parcelles correspondantes (avec leurs historiques).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -937,7 +964,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="area" type="xs:string" minOccurs="0">
+			<xs:element name="area" type="xs:int" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>

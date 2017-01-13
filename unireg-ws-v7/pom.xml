@@ -20,17 +20,17 @@
 		<dependency>
 			<artifactId>unireg-jaxb2-party</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>6.0</version>
+			<version>${unireg.jaxb2.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>unireg-jaxb2-events</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>6.0</version>
+			<version>${unireg.jaxb2.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>unireg-jaxb2-infra</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
-			<version>6.0</version>
+			<version>${unireg.jaxb2.version}</version>
 		</dependency>
 	</dependencies>
 	
@@ -228,6 +228,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<junit.version>4.12</junit.version>
+		<unireg.jaxb2.version>6.2-SNAPSHOT</unireg.jaxb2.version>
 	</properties>
 	
 </project>
