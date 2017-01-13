@@ -141,7 +141,9 @@ public class AnnonceIDEJob extends JobDefinition {
 				else {
 					annonceIDE = serviceIDEService.synchroniseIDE(entreprise);
 				}
-				resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
+				if (annonceIDE != null) {
+					resultatEntreprise.addAnnonceIDE(entreprise.getNumero(), annonceIDE);
+				}
 			}
 		}
 		else {

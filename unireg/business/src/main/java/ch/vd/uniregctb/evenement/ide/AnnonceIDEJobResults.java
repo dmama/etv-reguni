@@ -2,6 +2,9 @@ package ch.vd.uniregctb.evenement.ide;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.uniregctb.common.AbstractJobResults;
@@ -17,9 +20,9 @@ public class AnnonceIDEJobResults extends AbstractJobResults<Long, AnnonceIDEJob
 
 	public static class AnnonceInfo extends Info {
 		public final BaseAnnonceIDE annonceIDE;
-		public AnnonceInfo(long entrepriseId, BaseAnnonceIDE annonceIDE) {
+		public AnnonceInfo(long entrepriseId, @NotNull BaseAnnonceIDE annonceIDE) {
 			super(entrepriseId);
-			this.annonceIDE = annonceIDE;
+			this.annonceIDE = Objects.requireNonNull(annonceIDE);
 		}
 	}
 
@@ -40,7 +43,7 @@ public class AnnonceIDEJobResults extends AbstractJobResults<Long, AnnonceIDEJob
 		this.simulation = simulation;
 	}
 
-	public void addAnnonceIDE(long entrepriseId, BaseAnnonceIDE annonceIDE) {
+	public void addAnnonceIDE(long entrepriseId, @NotNull BaseAnnonceIDE annonceIDE) {
 		annoncesIDE.add(new AnnonceInfo(entrepriseId, annonceIDE));
 	}
 
