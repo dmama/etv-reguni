@@ -93,15 +93,17 @@ public abstract class AdresseRaisonSociale {
 		private final String ligne3;
 		private final String ligne4;
 		private final String ligne5;
+		private final String personneContact;
 		private final String npa;
 		private final String localite;
 
-		public Brutte(String ligne1, String ligne2, String ligne3, String ligne4, String ligne5, String npa, String localite) {
+		public Brutte(String ligne1, String ligne2, String ligne3, String ligne4, String ligne5, String personneContact, String npa, String localite) {
 			this.ligne1 = StringUtils.trimToNull(ligne1);
 			this.ligne2 = StringUtils.trimToNull(ligne2);
 			this.ligne3 = StringUtils.trimToNull(ligne3);
 			this.ligne4 = StringUtils.trimToNull(ligne4);
 			this.ligne5 = StringUtils.trimToNull(ligne5);
+			this.personneContact = StringUtils.trimToNull(personneContact);
 			this.npa = StringUtils.trimToNull(npa);
 			this.localite = StringUtils.trimToNull(localite);
 		}
@@ -124,6 +126,10 @@ public abstract class AdresseRaisonSociale {
 
 		public String getLigne5() {
 			return ligne5;
+		}
+
+		public String getPersonneContact() {
+			return personneContact;
 		}
 
 		public String getNpa() {
@@ -515,8 +521,7 @@ public abstract class AdresseRaisonSociale {
 		@Nullable
 		@Override
 		public String getContact() {
-			// aucune chance...
-			return null;
+			return personneContact;
 		}
 
 		@Nullable

@@ -134,6 +134,7 @@ public class V1Handler extends AbstractRetourDIHandler implements RetourDiHandle
 			                                                                           extractStringMax40(libre.getAdresseLigne3()),
 			                                                                           extractStringMax40(libre.getAdresseLigne4()),
 			                                                                           extractStringMax40(libre.getAdresseLigne5()),
+																		null,
 			                                                                           extractStringMax40(libre.getAdresseNpa()),
 			                                                                           extractStringMax40(libre.getAdresseLocalite()));
 			return brutte.isEmpty() ? null : brutte;

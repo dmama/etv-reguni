@@ -18,7 +18,7 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseBrutteSimple() throws Exception {
 
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de Mornex 25bis", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de Mornex 25bis", null, null, null,null, "1003", "Lausanne");
 
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
@@ -35,7 +35,7 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseBrutteAutreChoseApresNumeroMaison() throws Exception {
 
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de Mornex 25bis - machin", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de Mornex 25bis - machin", null, null, null,null, "1003", "Lausanne");
 
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
@@ -52,7 +52,7 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseBrutteRaisonSocialeSurPlusieursLignes() throws Exception {
 
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion", "SARL", "Chemin de Mornex 25bis", null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion", "SARL", "Chemin de Mornex 25bis", null, null, null,"1003", "Lausanne");
 
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
@@ -69,7 +69,7 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseBrutteRaisonSocialeAbsente() throws Exception {
 
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Chemin de Mornex 25bis", null, null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Chemin de Mornex 25bis", null, null, null, null, null,"1003", "Lausanne");
 
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
@@ -86,7 +86,7 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseBrutteAdresseSurPlusieursLignes() throws Exception {
 
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de", "Mornex 25bis", null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de", "Mornex 25bis", null, null, null,"1003", "Lausanne");
 
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
@@ -102,14 +102,14 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 
 	@Test
 	public void testSplitAdresseBrutteInconnue() throws Exception {
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin des petits bisous 14", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin des petits bisous 14", null, null, null,null, "1003", "Lausanne");
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNull(resultat);
 	}
 
 	@Test
 	public void testSplitAdresseBrutteMauvaisNPA() throws Exception {
-		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin des petits bisous 14", null, null, null, "3", "Mirage city");
+		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin des petits bisous 14", null, null, null, null,"3", "Mirage city");
 		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNull(resultat);
 	}

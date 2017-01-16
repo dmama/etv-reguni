@@ -2256,7 +2256,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Ratatatsointsoin 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Ratatatsointsoin 24", null, null, null, null,"1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -2334,7 +2334,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, null,"1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -2577,7 +2577,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null,null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -2665,7 +2665,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "avenue de beaulieu 24", null, null, null, null,"1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -2754,7 +2754,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -2855,7 +2855,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -2951,7 +2951,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma petite entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -3047,7 +3047,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma grande entreprise SARL", "Avenue de Beaulieu 24", null, null, null, "1003", "Lausanne");
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Ma grande entreprise SARL", "Avenue de Beaulieu 24", null, null, null,null, "1003", "Lausanne");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, adresse, null, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -5079,7 +5079,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 		// réception des données de retour (ici, la particularité est qu'une adresse sans raison sociale est fournie - on notera de plus que l'adresse n'est pas
 		// tout-à-fait la même, puisque le nom officiel contient un tiret...)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Avenue Guiseppe Motta 42", null, null, null, null, MockLocalite.Geneve.getNPA().toString(), MockLocalite.Geneve.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Avenue Guiseppe Motta 42", null, null, null, null,null, MockLocalite.Geneve.getNPA().toString(), MockLocalite.Geneve.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 		final RegDate dateTraitement = RegDate.get();
@@ -5189,7 +5189,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est qu'une complètement différente est fournie)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Voltastrasse 42", null, null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Voltastrasse 42", null, null, null, null, null,MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 		final RegDate dateTraitement = RegDate.get();
@@ -5302,7 +5302,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est qu'une complètement différente est fournie)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null,null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 		final RegDate dateTraitement = RegDate.get();
@@ -5415,7 +5415,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est que l'adresse fournie n'est pas connue dans l'infrastructure)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null,null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 		final RegDate dateTraitement = RegDate.get();
@@ -5537,7 +5537,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (ici, la particularité est que l'adresse fournie n'est pas connue dans l'infrastructure)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Mandataire bidon", "Rue de la bonne arnaque 63e", null, null, null,null, MockLocalite.Renens.getNPA().toString(), MockLocalite.Renens.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(null, adresseMandataire, null, null);
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 
@@ -5764,7 +5764,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (nouveau mandataire)
-		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
+		final AdresseRaisonSociale adresseMandataire = new AdresseRaisonSociale.Brutte("Freundlicherweise AG", "Voltastrasse 42", null, null, null,null, MockLocalite.Zurich8044.getNPA().toString(), MockLocalite.Zurich8044.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(ideMandataire, adresseMandataire, Boolean.TRUE, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, null, infosMandataire);
 		final RegDate dateTraitement = RegDate.get();
@@ -6375,7 +6375,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// réception des données de retour (pas de numéro IDE, adresse non-reconnue)
-		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Chapi chapo", "Tralalo", "Chapo chapi", "Tralali", null, MockLocalite.Bussigny.getNPA().toString(), MockLocalite.Bussigny.getNom());
+		final AdresseRaisonSociale adresse = new AdresseRaisonSociale.Brutte("Chapi chapo", "Tralalo", "Chapo chapi", "Tralali", null,null, MockLocalite.Bussigny.getNPA().toString(), MockLocalite.Bussigny.getNom());
 		final InformationsMandataire infosMandataire = new InformationsMandataire(null, adresse, Boolean.FALSE, "0211234567");
 		final RetourDI retour = new RetourDI(ids.idEntreprise, annee, 1, null, infosMandataire);
 

@@ -754,6 +754,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		assertEquals("Ou pas", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne3());
 		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne4());
 		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne5());
+		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getPersonneContact());
 		assertEquals("1004", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getNpa());
 		assertEquals("Lausanne", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLocalite());
 	}
@@ -858,6 +859,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		assertEquals("Ou pas", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne3());
 		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne4());
 		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLigne5());
+		assertNull(((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getPersonneContact());
 		assertEquals("1004", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getNpa());
 		assertEquals("Lausanne", ((AdresseRaisonSociale.Brutte) q.getMandataire().getAdresse()).getLocalite());
 	}
