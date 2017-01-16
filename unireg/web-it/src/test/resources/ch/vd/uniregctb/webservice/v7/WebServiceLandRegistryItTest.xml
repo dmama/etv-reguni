@@ -216,18 +216,18 @@
 		<column>TYPE</column>
 		<column>BATIMENT_ID</column>
 		<row>
-			<value>266023444</value>
-			<value>Habitation</value>
-			<null />
-			<null />
-			<value>20160913</value>
-			<value>TraiterMutationsRFJob</value>
-			<value>2016-12-14 11:43:31.544000</value>
-			<value>TraiterMutationsRFJob</value>
-			<value>2016-12-14 11:43:31.544000</value>
-			<null />
-			<null />
 			<value>266023448</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:43:31.544000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:43:31.544000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<null />
+			<value>Habitation</value>
+			<value>266023444</value>
 		</row>
 	</table>
 	<table name="RF_IMPLANTATION">
