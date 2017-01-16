@@ -99,18 +99,6 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		}
 	}
 
-	@Override
-	public void onTearDown() throws Exception {
-		// petit passage par l'indexation des tiers activée pour forcer un "sync" en sortie
-		setWantIndexationTiers(true);
-		try {
-			super.onTearDown();
-		}
-		finally {
-			setWantIndexationTiers(false);
-		}
-	}
-
 	/**
 	 * Petite classe de callback qui permet de temporairement placer la première année d'envoi des DI PM
 	 * à une valeur donnée (en production, c'est 2016, ce qui ne laisse, à l'heure où ces lignes sont écrites,

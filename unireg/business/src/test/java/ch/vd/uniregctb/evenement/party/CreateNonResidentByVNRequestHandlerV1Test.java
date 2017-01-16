@@ -57,18 +57,6 @@ public class CreateNonResidentByVNRequestHandlerV1Test extends BusinessTest {
 		}
 	}
 
-	@Override
-	public void onTearDown() throws Exception {
-		// petit passage par l'indexation des tiers activée pour forcer un "sync" en sortie
-		setWantIndexationTiers(true);
-		try {
-			super.onTearDown();
-		}
-		finally {
-			setWantIndexationTiers(false);
-		}
-	}
-
 	@Test
 	public void testSansDroit() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider());
