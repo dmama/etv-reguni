@@ -8,7 +8,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 /**
  * Partie "fisale" du service de notification des modifications de données
  */
-public class FiscalDataEventServiceImpl implements FiscalDataEventService {
+public class FiscalDataEventServiceImpl implements FiscalDataEventService, FiscalDataEventListener {
 
 	private final List<FiscalDataEventListener> listeners = new ArrayList<>();
 

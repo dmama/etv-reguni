@@ -33,7 +33,7 @@
 
 	<bean name="dataEventServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="dataEventService" />
-		<property name="serviceInterface" value="ch.vd.uniregctb.data.CivilDataEventService" />
+		<property name="serviceInterface" value="ch.vd.uniregctb.data.CivilDataEventListener" />
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

@@ -3,18 +3,18 @@ package ch.vd.uniregctb.data;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Ce listener s'enregistre dans un service maître, et délégue tous les appels à un service esclave.
+ * Ce listener s'enregistre dans un service maître, et délégue tous les appels à un listener esclave.
  */
 public class CivilDataEventSlaveServiceListener implements CivilDataEventListener, InitializingBean {
 
 	private CivilDataEventService master;
-	private CivilDataEventService slave;
+	private CivilDataEventListener slave;
 
 	public void setMaster(CivilDataEventService master) {
 		this.master = master;
 	}
 
-	public void setSlave(CivilDataEventService slave) {
+	public void setSlave(CivilDataEventListener slave) {
 		this.slave = slave;
 	}
 

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Partie "civile" du service de notification des modifications de données
  */
-public class CivilDataEventServiceImpl implements CivilDataEventService {
+public class CivilDataEventServiceImpl implements CivilDataEventService, CivilDataEventListener {
 
 	private final List<CivilDataEventListener> listeners = new ArrayList<>();
 
