@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.manager;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -141,7 +142,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
 			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
 		}
-		evtView.getEvtErreurs().sort((o1, o2) -> Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId()));
+		evtView.getEvtErreurs().sort(Comparator.comparingLong(ErreurEvenementOrganisationView::getErrorId));
 
 		final Long numeroOrganisation = evt.getNoOrganisation();
 		evtView.setNoOrganisation(numeroOrganisation);
