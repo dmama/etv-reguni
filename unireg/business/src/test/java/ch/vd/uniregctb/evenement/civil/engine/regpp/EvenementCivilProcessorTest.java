@@ -529,6 +529,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
+		// indexation en cours...
+		globalTiersIndexer.sync();
+
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
