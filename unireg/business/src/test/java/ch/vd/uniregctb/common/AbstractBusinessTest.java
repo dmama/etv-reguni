@@ -262,12 +262,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	@Override
 	public void onTearDown() throws Exception {
-		if (wantIndexationTiers) {
-			// si l'indexation asynchrone est demandée, on s'assure qu'elle est terminée avant la fin du test afin que
-			// le test suivant ne tente pas de vider la base de données alors que l'indexation est encore en cours, ce qui peut
-			// aller jusqu'à causer un deadlock (que l'on voit parfois çà et là dans les tests Jenkins)
-			globalTiersIndexer.sync();
-		}
+		// dans tous les cas, que l'indexation asynchrone soit demandée ou pas, on s'assure qu'elle est terminée avant la fin du test afin que
+		// le test suivant ne tente pas de vider la base de données alors que l'indexation est encore en cours, ce qui peut
+		// aller jusqu'à causer un deadlock (que l'on voit parfois çà et là dans les tests Jenkins)
+		// (on doit le faire dans tous les cas car même si l'indexation asynchrone n'est pas demandée, elle est toujours active sur un nouveau thread par défaut,
+		// et donc si le test est multi-threadé, certaines indexations on-the-fly peuvent tout de même être lancées...)
+		globalTiersIndexer.sync();
 		super.onTearDown();
 	}
 
