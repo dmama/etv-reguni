@@ -1,7 +1,9 @@
 package ch.vd.unireg.interfaces.organisation;
 
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
@@ -69,12 +71,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationHistory", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noOrganisation=%d", noOrganisation);
-				}
-			});
+			tracing.end(time, t, "getOrganisationHistory", items, () -> String.format("noOrganisation=%d", noOrganisation));
 		}
 	}
 
@@ -95,12 +92,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationPourSite", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noSite=%d", noSite);
-				}
-			});
+			tracing.end(time, t, "getOrganisationPourSite", items, () -> String.format("noSite=%d", noSite));
 		}
 	}
 
@@ -121,12 +113,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationByNoIde", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ide=%s", noide);
-				}
-			});
+			tracing.end(time, t, "getOrganisationByNoIde", items, () -> String.format("ide=%s", noide));
 		}
 	}
 
@@ -147,12 +134,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPseudoOrganisationHistory", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noEvenement=%d", noEvenement);
-				}
-			});
+			tracing.end(time, t, "getPseudoOrganisationHistory", items, () -> String.format("noEvenement=%d", noEvenement));
 		}
 	}
 
@@ -173,12 +155,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getAnnonceIDE", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noAnnonceIDE=%d", numero);
-				}
-			});
+			tracing.end(time, t, "getAnnonceIDE", items, () -> String.format("noAnnonceIDE=%d", numero));
 		}
 	}
 
@@ -198,12 +175,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "findAnnoncesIDE", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("query=%s, order=%s, pageNumber=%d, resultsPerPage=%d", query, order, pageNumber, resultsPerPage);
-				}
-			});
+			tracing.end(time, t, "findAnnoncesIDE", items, () -> String.format("query=%s, order=%s, pageNumber=%d, resultsPerPage=%d", query, order, pageNumber, resultsPerPage));
 		}
 	}
 
@@ -224,13 +196,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "validerAnnonceIDE", items, new Object() {
-				@Override
-				public String toString() {
-					final BaseAnnonceIDE.Contenu contenu = modele.getContenu();
-					return String.format("nomEntreprise=%s", contenu == null ? "" : contenu.getNom());
-				}
-			});
+			tracing.end(time, t, "validerAnnonceIDE", items, () -> String.format("nomEntreprise=%s", Optional.ofNullable(modele.getContenu()).map(BaseAnnonceIDE.Contenu::getNom).orElse(StringUtils.EMPTY)));
 		}
 	}
 

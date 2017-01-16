@@ -53,12 +53,7 @@ public class CivilDataEventTracing implements CivilDataEventListener, Initializi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "onOrganisationChange", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", id);
-				}
-			});
+			tracing.end(time, t, "onOrganisationChange", () -> String.format("id=%d", id));
 		}
 	}
 
@@ -74,12 +69,7 @@ public class CivilDataEventTracing implements CivilDataEventListener, Initializi
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "onIndividuChange", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", id);
-				}
-			});
+			tracing.end(time, t, "onIndividuChange", () -> String.format("id=%d", id));
 		}
 	}
 }

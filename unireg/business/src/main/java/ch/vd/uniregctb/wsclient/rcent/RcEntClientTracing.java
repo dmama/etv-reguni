@@ -68,12 +68,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisation", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d, referenceDate=%s, history=%s", id, ServiceTracing.toString(referenceDate), withHistory);
-				}
-			});
+			tracing.end(time, t, "getOrganisation", items, () -> String.format("id=%d, referenceDate=%s, history=%s", id, ServiceTracing.toString(referenceDate), withHistory));
 		}
 	}
 
@@ -94,12 +89,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationsOfNotice", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noticeId=%d, when=%s", noticeId, when);
-				}
-			});
+			tracing.end(time, t, "getOrganisationsOfNotice", items, () -> String.format("noticeId=%d, when=%s", noticeId, when));
 		}
 	}
 
@@ -120,12 +110,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationByNoIDE", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ide=%s, referenceDate=%s, withHistory=%s", noide, ServiceTracing.toString(referenceDate), withHistory);
-				}
-			});
+			tracing.end(time, t, "getOrganisationByNoIDE", items, () -> String.format("ide=%s, referenceDate=%s, withHistory=%s", noide, ServiceTracing.toString(referenceDate), withHistory));
 		}
 	}
 
@@ -146,12 +131,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "validateNoticeRequest", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noticeRequest=%s", noticeRequest.getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
-				}
-			});
+			tracing.end(time, t, "validateNoticeRequest", items, () -> String.format("noticeRequest=%s", noticeRequest.getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId()));
 		}
 	}
 
@@ -172,12 +152,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getNoticeRequest", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%s", id);
-				}
-			});
+			tracing.end(time, t, "getNoticeRequest", items, () -> String.format("id=%s", id));
 		}
 	}
 
@@ -198,12 +173,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getNoticeRequest", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("query=%s, order=%s, pageNumber=%d, resultsPerPage=%d", query, order, pageNumber, resultsPerPage);
-				}
-			});
+			tracing.end(time, t, "getNoticeRequest", items, () -> String.format("query=%s, order=%s, pageNumber=%d, resultsPerPage=%d", query, order, pageNumber, resultsPerPage));
 		}
 	}
 

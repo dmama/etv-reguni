@@ -92,12 +92,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.indexEntity(data);
 		}
 		finally {
-			tracing.end(time, "indexEntity", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d, type=%s, subtype=%s", data.getId(), data.getType(), data.getSubType());
-				}
-			});
+			tracing.end(time, "indexEntity", () -> String.format("id=%d, type=%s, subtype=%s", data.getId(), data.getType(), data.getSubType()));
 		}
 	}
 
@@ -108,12 +103,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.indexEntities(data);
 		}
 		finally {
-			tracing.end(time, "indexEntities", new Object() {
-				@Override
-				public String toString() {
-					return String.format("data=%s", ServiceTracing.toString(data));
-				}
-			});
+			tracing.end(time, "indexEntities", () -> String.format("data=%s", ServiceTracing.toString(data)));
 		}
 	}
 
@@ -146,12 +136,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.removeEntity(id);
 		}
 		finally {
-			tracing.end(time, "removeEntity", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", id);
-				}
-			});
+			tracing.end(time, "removeEntity", () -> String.format("id=%d", id));
 		}
 	}
 
@@ -162,12 +147,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.removeThenIndexEntity(data);
 		}
 		finally {
-			tracing.end(time, "removeThenIndexEntity", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d, type=%s, subtype=%s", data.getId(), data.getType(), data.getSubType());
-				}
-			});
+			tracing.end(time, "removeThenIndexEntity", () -> String.format("id=%d, type=%s, subtype=%s", data.getId(), data.getType(), data.getSubType()));
 		}
 	}
 
@@ -178,12 +158,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.removeThenIndexEntities(data);
 		}
 		finally {
-			tracing.end(time, "removeThenIndexEntities", new Object() {
-				@Override
-				public String toString() {
-					return String.format("data=%s", ServiceTracing.toString(data));
-				}
-			});
+			tracing.end(time, "removeThenIndexEntities", () -> String.format("data=%s", ServiceTracing.toString(data)));
 		}
 	}
 
@@ -205,12 +180,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.search(query, maxHits, callback);
 		}
 		finally {
-			tracing.end(time, "search", new Object() {
-				@Override
-				public String toString() {
-					return String.format("query='%s', maxHits=%d", query, maxHits);
-				}
-			});
+			tracing.end(time, "search", () -> String.format("query='%s', maxHits=%d", query, maxHits));
 		}
 	}
 
@@ -221,12 +191,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.search(query, maxHits, callback);
 		}
 		finally {
-			tracing.end(time, "search", new Object() {
-				@Override
-				public String toString() {
-					return String.format("queryString='%s', maxHits=%d", query, maxHits);
-				}
-			});
+			tracing.end(time, "search", () -> String.format("queryString='%s', maxHits=%d", query, maxHits));
 		}
 	}
 
@@ -237,12 +202,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 			target.search(query, maxHits, sort, callback);
 		}
 		finally {
-			tracing.end(time, "search", new Object() {
-				@Override
-				public String toString() {
-					return String.format("query='%s', maxHits=%d, sorting=%s", query, maxHits, sort);
-				}
-			});
+			tracing.end(time, "search", () -> String.format("query='%s', maxHits=%d, sorting=%s", query, maxHits, sort));
 		}
 	}
 

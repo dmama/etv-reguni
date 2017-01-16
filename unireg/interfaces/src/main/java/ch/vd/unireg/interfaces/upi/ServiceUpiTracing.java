@@ -43,12 +43,7 @@ public class ServiceUpiTracing implements ServiceUpiRaw, InitializingBean, Dispo
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonInfo", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noAvs13='%s'", noAvs13);
-				}
-			});
+			tracing.end(time, t, "getPersonInfo", items, () -> String.format("noAvs13='%s'", noAvs13));
 		}
 	}
 

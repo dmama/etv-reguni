@@ -47,12 +47,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesUtilisateur", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("visaOperateur=%s", visaOperateur);
-				}
-			});
+			tracing.end(time, t, "getCollectivitesUtilisateur", items, () -> String.format("visaOperateur=%s", visaOperateur));
 		}
 	}
 
@@ -71,12 +66,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateur", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("individuNoTechnique=%d", individuNoTechnique);
-				}
-			});
+			tracing.end(time, t, "getOperateur", items, () -> String.format("individuNoTechnique=%d", individuNoTechnique));
 		}
 	}
 
@@ -95,12 +85,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateur", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("visa=%s", visa);
-				}
-			});
+			tracing.end(time, t, "getOperateur", items, () -> String.format("visa=%s", visa));
 		}
 	}
 
@@ -116,12 +101,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getProfileUtilisateur", new Object() {
-				@Override
-				public String toString() {
-					return String.format("visaOperateur=%s, codeCollectivite=%d", visaOperateur, codeCollectivite);
-				}
-			});
+			tracing.end(time, t, "getProfileUtilisateur", () -> String.format("visaOperateur=%s, codeCollectivite=%d", visaOperateur, codeCollectivite));
 		}
 	}
 
@@ -140,12 +120,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getUtilisateurs", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("typesCollectivites=%s", ServiceTracing.toString(typesCollectivite));
-				}
-			});
+			tracing.end(time, t, "getUtilisateurs", items, () -> String.format("typesCollectivites=%s", ServiceTracing.toString(typesCollectivite)));
 		}
 	}
 	

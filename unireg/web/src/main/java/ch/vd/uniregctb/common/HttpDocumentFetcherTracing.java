@@ -47,12 +47,7 @@ public class HttpDocumentFetcherTracing implements HttpDocumentFetcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(start, t, "fetch", new Object() {
-				@Override
-				public String toString() {
-					return String.format("url=%s, timeoutms=%d", url, timeoutms);
-				}
-			});
+			tracing.end(start, t, "fetch", () -> String.format("url=%s, timeoutms=%d", url, timeoutms));
 		}
 	}
 }

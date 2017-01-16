@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.stats;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 public interface ServiceTracingRecorder {
@@ -23,9 +25,9 @@ public interface ServiceTracingRecorder {
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 * @param name  le nom de la méthode
-	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 * @param params un constructeur de chaîne de caractères pour décrire les paramètres de la méthode
 	 */
-	void end(long start, String name, @Nullable Object params);
+	void end(long start, String name, @Nullable Supplier<String> params);
 
 	/**
 	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau INFO),
@@ -34,9 +36,9 @@ public interface ServiceTracingRecorder {
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 * @param thrown l'exception éventuellement reçue dans l'appel
 	 * @param name  le nom de la méthode
-	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 * @param params un constructeur de chaîne de caractères pour décrire les paramètres de la méthode
 	 */
-	void end(long start, @Nullable Throwable thrown, String name, @Nullable Object params);
+	void end(long start, @Nullable Throwable thrown, String name, @Nullable Supplier<String> params);
 
 	/**
 	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau INFO),
@@ -46,7 +48,7 @@ public interface ServiceTracingRecorder {
 	 * @param thrown l'exception éventuellement reçue dans l'appel
 	 * @param name  le nom de la méthode
 	 * @param items le nombre d'éléments à prendre en compte dans l'appel de la méthode (sera utilisé pour calculer une moyenne du temps de réponse par élément).
-	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 * @param params un constructeur de chaîne de caractères pour décrire les paramètres de la méthode
 	 */
-	void end(long start, @Nullable Throwable thrown, String name, int items, @Nullable Object params);
+	void end(long start, @Nullable Throwable thrown, String name, int items, @Nullable Supplier<String> params);
 }

@@ -223,7 +223,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsByteArray", encoding);
+			recorder.end(start, t, "getBodyAsByteArray", () -> String.format("encoding=%s", encoding));
 		}
 	}
 
@@ -255,7 +255,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "getBodyAsString", encoding);
+			recorder.end(start, t, "getBodyAsString", () -> String.format("encoding=%s", encoding));
 		}
 	}
 
@@ -297,7 +297,7 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 			throw e;
 		}
 		finally {
-			recorder.end(start, t, "bodyToOutputStream", encoding);
+			recorder.end(start, t, "bodyToOutputStream", () -> String.format("encoding=%s", encoding));
 		}
 	}
 

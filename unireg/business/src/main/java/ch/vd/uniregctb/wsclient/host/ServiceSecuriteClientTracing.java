@@ -47,12 +47,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesUtilisateur", new Object() {
-				@Override
-				public String toString() {
-					return String.format("visa=%s", visa);
-				}
-			});
+			tracing.end(time, t, "getCollectivitesUtilisateur", () -> String.format("visa=%s", visa));
 		}
 	}
 
@@ -69,12 +64,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesUtilisateurCommunicationTier", new Object() {
-				@Override
-				public String toString() {
-					return String.format("visa=%s", visa);
-				}
-			});
+			tracing.end(time, t, "getCollectivitesUtilisateurCommunicationTier", () -> String.format("visa=%s", visa));
 		}
 	}
 
@@ -91,12 +81,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getProfileUtilisateur", new Object() {
-				@Override
-				public String toString() {
-					return String.format("visa=%s, codeCollectivite=%d", visa,codeCollectivite);
-				}
-			});
+			tracing.end(time, t, "getProfileUtilisateur", () -> String.format("visa=%s, codeCollectivite=%d", visa,codeCollectivite));
 		}
 	}
 
@@ -113,12 +98,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateurs", new Object() {
-				@Override
-				public String toString() {
-					return String.format("typeCollectivite=%s", Arrays.toString(types));
-				}
-			});
+			tracing.end(time, t, "getOperateurs", () -> String.format("typeCollectivite=%s", Arrays.toString(types)));
 		}
 	}
 
@@ -135,12 +115,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateur", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero individu=%d",numeroInd);
-				}
-			});
+			tracing.end(time, t, "getOperateur", () -> String.format("noIndividu=%d", numeroInd));
 		}
 	}
 
@@ -157,12 +132,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateurTous", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero individu=%d",numeroInd);
-				}
-			});
+			tracing.end(time, t, "getOperateurTous", () -> String.format("noIndividu=%d", numeroInd));
 		}
 	}
 
@@ -179,12 +149,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateur", new Object() {
-				@Override
-				public String toString() {
-					return String.format("visa=%s",visa);
-				}
-			});
+			tracing.end(time, t, "getOperateur", () -> String.format("visa=%s", visa));
 		}
 	}
 
@@ -201,12 +166,7 @@ public class ServiceSecuriteClientTracing implements ServiceSecuriteClient, Init
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateurTous", new Object() {
-				@Override
-				public String toString() {
-					return String.format("visa=%s",visa);
-				}
-			});
+			tracing.end(time, t, "getOperateurTous", () -> String.format("visa=%s",visa));
 		}
 	}
 

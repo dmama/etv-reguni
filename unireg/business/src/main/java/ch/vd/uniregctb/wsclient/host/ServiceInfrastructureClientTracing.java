@@ -69,12 +69,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivite", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noColAdm=%d", noColAdm);
-				}
-			});
+			tracing.end(time, t, "getCollectivite", () -> String.format("noColAdm=%d", noColAdm));
 		}
 	}
 
@@ -94,21 +89,16 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRueByNumero", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero=%d", numero);
-				}
-			});
+			tracing.end(time, t, "getRueByNumero", () -> String.format("numero=%d", numero));
 		}
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectivite(final String var1) throws ServiceInfrastructureClientException {
+	public CollectiviteAdministrative getCollectivite(final String sigle) throws ServiceInfrastructureClientException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getCollectivite(var1);
+			return target.getCollectivite(sigle);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -119,21 +109,16 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivite", new Object() {
-				@Override
-				public String toString() {
-					return String.format("Sigle=%s", var1);
-				}
-			});
+			tracing.end(time, t, "getCollectivite", () -> String.format("sigle=%s", sigle));
 		}
 	}
 
 	@Override
-	public ListeCollectiviteAdministrative getCollectivitesAdministratives(final String var1) throws ServiceInfrastructureClientException {
+	public ListeCollectiviteAdministrative getCollectivitesAdministratives(final String canton) throws ServiceInfrastructureClientException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getCollectivitesAdministratives(var1);
+			return target.getCollectivitesAdministratives(canton);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -144,12 +129,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesAdministratives", new Object() {
-				@Override
-				public String toString() {
-					return String.format("Sigle canton=%s", var1);
-				}
-			});
+			tracing.end(time, t, "getCollectivitesAdministratives", () -> String.format("canton=%s", canton));
 		}
 	}
 
@@ -169,21 +149,16 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesAdministratives", new Object() {
-				@Override
-				public String toString() {
-					return String.format("Types=%s", Arrays.toString(types));
-				}
-			});
+			tracing.end(time, t, "getCollectivitesAdministratives", () -> String.format("types=%s", Arrays.toString(types)));
 		}
 	}
 
 	@Override
-	public ListeCollectiviteAdministrative getCollectivitesAdministrativesPourTypeCommunication(final TypeCommunicationPourTier var1) throws ServiceInfrastructureClientException {
+	public ListeCollectiviteAdministrative getCollectivitesAdministrativesPourTypeCommunication(final TypeCommunicationPourTier typeCommunication) throws ServiceInfrastructureClientException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getCollectivitesAdministrativesPourTypeCommunication(var1);
+			return target.getCollectivitesAdministrativesPourTypeCommunication(typeCommunication);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -194,21 +169,16 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesAdministrativesPourTypeCommunication", new Object() {
-				@Override
-				public String toString() {
-					return String.format("TypeCommunications=%s", var1.toString());
-				}
-			});
+			tracing.end(time, t, "getCollectivitesAdministrativesPourTypeCommunication", () -> String.format("typeCommunication=%s", typeCommunication));
 		}
 	}
 
 	@Override
-	public CollectiviteAdministrative getOidDeCommune(final int var1) throws ServiceInfrastructureClientException {
+	public CollectiviteAdministrative getOidDeCommune(final int noOfsCommune) throws ServiceInfrastructureClientException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getOidDeCommune(var1);
+			return target.getOidDeCommune(noOfsCommune);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -219,12 +189,7 @@ public class ServiceInfrastructureClientTracing implements ServiceInfrastructure
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOidDeCommune", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero ommune=%d", var1);
-				}
-			});
+			tracing.end(time, t, "getOidDeCommune", () -> String.format("ofsCommune=%d", noOfsCommune));
 		}
 	}
 

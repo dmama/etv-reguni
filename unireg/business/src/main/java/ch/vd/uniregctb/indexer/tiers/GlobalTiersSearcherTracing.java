@@ -60,12 +60,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "search", new Object() {
-				@Override
-				public String toString() {
-					return String.format("criteria={%s}", criteria);
-				}
-			});
+			tracing.end(time, t, "search", () -> String.format("criteria={%s}", criteria));
 		}
 	}
 
@@ -85,12 +80,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "searchTop", new Object() {
-				@Override
-				public String toString() {
-					return String.format("criteria={%s}, max=%d", criteria, max);
-				}
-			});
+			tracing.end(time, t, "searchTop", () -> String.format("criteria={%s}, max=%d", criteria, max));
 		}
 	}
 
@@ -110,12 +100,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "searchTop", new Object() {
-				@Override
-				public String toString() {
-					return String.format("keywords='%s', max=%d", keywords, max);
-				}
-			});
+			tracing.end(time, t, "searchTop", () -> String.format("keywords='%s', max=%d", keywords, max));
 		}
 	}
 
@@ -135,12 +120,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "exists", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero=%s", numero);
-				}
-			});
+			tracing.end(time, t, "exists", () -> String.format("numero=%s", numero));
 		}
 	}
 
@@ -160,12 +140,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "get", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero=%s", numero);
-				}
-			});
+			tracing.end(time, t, "get", () -> String.format("numero=%s", numero));
 		}
 	}
 
@@ -249,12 +224,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "flowSearch", new Object() {
-				@Override
-				public String toString() {
-					return String.format("criteria={%s}", criteria);
-				}
-			});
+			tracing.end(time, t, "flowSearch", () -> String.format("criteria={%s}", criteria));
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.wsclient.rcpers;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import ch.ech.ech0085.v1.GetInfoPersonResponse;
 import org.springframework.beans.factory.DisposableBean;
@@ -48,12 +49,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersons", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);
-				}
-			});
+			tracing.end(time, t, "getPersons", items, () -> String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory));
 		}
 	}
 
@@ -72,12 +68,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonsBySocialsNumbers", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("numbers=%s, date=%s, withHistory=%s", ServiceTracing.toString(numbers), ServiceTracing.toString(date), withHistory);
-				}
-			});
+			tracing.end(time, t, "getPersonsBySocialsNumbers", items, () -> String.format("numbers=%s, date=%s, withHistory=%s", ServiceTracing.toString(numbers), ServiceTracing.toString(date), withHistory));
 		}
 	}
 
@@ -96,12 +87,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonByEvent", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("evtId=%d, date=%s, withHistory=%s", evtId, ServiceTracing.toString(date), withHistory);
-				}
-			});
+			tracing.end(time, t, "getPersonByEvent", items, () -> String.format("evtId=%d, date=%s, withHistory=%s", evtId, ServiceTracing.toString(date), withHistory));
 		}
 	}
 
@@ -122,12 +108,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getEvent", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("eventId=%d", eventId);
-				}
-			});
+			tracing.end(time, t, "getEvent", items, () -> String.format("eventId=%d", eventId));
 		}
 	}
 
@@ -154,10 +135,10 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "findPersons", items, new Object() {
+			tracing.end(time, t, "findPersons", items, new Supplier<String>() {
 				@Override
-				public String toString() {
-					StringBuilder s = new StringBuilder();
+				public String get() {
+					final StringBuilder s = new StringBuilder();
 					addCriterion(s, "sex", sex);
 					addCriterion(s, "firstNames", firstNames);
 					addCriterion(s, "officialName", officialName);
@@ -203,12 +184,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getInfoPersonUpi", new Object() {
-				@Override
-				public String toString() {
-					return String.format("avs13=%d", avs13);
-				}
-			});
+			tracing.end(time, t, "getInfoPersonUpi", () -> String.format("avs13=%d", avs13));
 		}
 	}
 

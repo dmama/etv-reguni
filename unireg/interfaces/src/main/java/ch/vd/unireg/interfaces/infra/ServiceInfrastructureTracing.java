@@ -77,12 +77,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivite", new Object() {
-				@Override
-				public String toString() {
-					return String.format("noColAdm=%d", noColAdm);
-				}
-			});
+			tracing.end(time, t, "getCollectivite", () -> String.format("noColAdm=%d", noColAdm));
 		}
 	}
 
@@ -120,12 +115,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesAdministratives", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("typesCollectivite=%s", ServiceTracing.toString(typesCollectivite));
-				}
-			});
+			tracing.end(time, t, "getCollectivitesAdministratives", items, () -> String.format("typesCollectivite=%s", ServiceTracing.toString(typesCollectivite)));
 		}
 	}
 
@@ -141,12 +131,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getNoOfsCommuneByEgid", new Object() {
-				@Override
-				public String toString() {
-					return String.format("egid=%d, date=%s", egid, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getNoOfsCommuneByEgid", () -> String.format("egid=%d, date=%s", egid, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -162,12 +147,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommuneByLocalite", new Object() {
-				@Override
-				public String toString() {
-					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
-				}
-			});
+			tracing.end(time, t, "getCommuneByLocalite", () -> String.format("localite=%s", localite != null ? localite.getNoOrdre() : null));
 		}
 	}
 
@@ -184,12 +164,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "findCommuneByNomOfficiel", new Object() {
-				@Override
-				public String toString() {
-					return String.format("nom=%s, includeFaitieres=%s, includeFractions=%s, date=%s", nomOfficiel, includeFaitieres, includeFractions, date);
-				}
-			});
+			tracing.end(time, t, "findCommuneByNomOfficiel", () -> String.format("nom=%s, includeFaitieres=%s, includeFractions=%s, date=%s", nomOfficiel, includeFaitieres, includeFractions, date));
 		}
 	}
 
@@ -208,12 +183,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommuneHistoByNumeroOfs", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noOfsCommune=%d", noOfsCommune);
-				}
-			});
+			tracing.end(time, t, "getCommuneHistoByNumeroOfs", items, () -> String.format("noOfsCommune=%d", noOfsCommune));
 		}
 	}
 
@@ -251,12 +221,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getListeCommunes", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
-				}
-			});
+			tracing.end(time, t, "getListeCommunes", items, () -> String.format("canton=%s", canton != null ? canton.getSigleOFS() : null));
 		}
 	}
 
@@ -291,12 +256,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocaliteByONRP", new Object() {
-				@Override
-				public String toString() {
-					return String.format("onrp=%d", onrp);
-				}
-			});
+			tracing.end(time, t, "getLocaliteByONRP", () -> String.format("onrp=%d", onrp));
 		}
 	}
 
@@ -369,12 +329,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPaysHisto", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numeroOFS=%d", numeroOFS);
-				}
-			});
+			tracing.end(time, t, "getPaysHisto", () -> String.format("numeroOFS=%d", numeroOFS));
 		}
 	}
 
@@ -390,12 +345,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPays", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numeroOFS=%d, date=%s", numeroOFS, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getPays", () -> String.format("numeroOFS=%d, date=%s", numeroOFS, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -411,12 +361,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPays", new Object() {
-				@Override
-				public String toString() {
-					return String.format("codePays=%s, date=%s", codePays, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getPays", () -> String.format("codePays=%s, date=%s", codePays, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -432,12 +377,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRueByNumero", new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero=%d, date=%s", numero, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getRueByNumero", () -> String.format("numero=%d, date=%s", numero, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -456,12 +396,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRues", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
-				}
-			});
+			tracing.end(time, t, "getRues", items, () -> String.format("localite=%s", localite != null ? localite.getNoOrdre() : null));
 		}
 	}
 
@@ -480,12 +415,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRuesHisto", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("numero=%d", numero);
-				}
-			});
+			tracing.end(time, t, "getRuesHisto", items, () -> String.format("numero=%d", numero));
 		}
 	}
 
@@ -501,12 +431,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getInstitutionFinanciere", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", id);
-				}
-			});
+			tracing.end(time, t, "getInstitutionFinanciere", () -> String.format("id=%d", id));
 		}
 	}
 
@@ -525,12 +450,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getInstitutionsFinancieres", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noClearing=%s", noClearing);
-				}
-			});
+			tracing.end(time, t, "getInstitutionsFinancieres", items, () -> String.format("noClearing=%s", noClearing));
 		}
 	}
 
@@ -563,12 +483,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocalitesByNPA", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("npa=%d, dateReference=%s", npa, ServiceTracing.toString(dateReference));
-				}
-			});
+			tracing.end(time, t, "getLocalitesByNPA", items, () -> String.format("npa=%d, dateReference=%s", npa, ServiceTracing.toString(dateReference)));
 		}
 	}
 
@@ -584,12 +499,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getUrlVers", new Object() {
-				@Override
-				public String toString() {
-					return String.format("application=%s, tiersId=%d, oid=%d", application.name(), tiersId, oid);
-				}
-			});
+			tracing.end(time, t, "getUrlVers", () -> String.format("application=%s, tiersId=%d, oid=%d", application.name(), tiersId, oid));
 		}
 	}
 
@@ -605,12 +515,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLogiciel", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", idLogiciel);
-				}
-			});
+			tracing.end(time, t, "getLogiciel", () -> String.format("id=%d", idLogiciel));
 		}
 	}
 
@@ -645,12 +550,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getDistrict", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", code);
-				}
-			});
+			tracing.end(time, t, "getDistrict", () -> String.format("id=%d", code));
 		}
 	}
 
@@ -666,12 +566,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRegion", new Object() {
-				@Override
-				public String toString() {
-					return String.format("id=%d", code);
-				}
-			});
+			tracing.end(time, t, "getRegion", () -> String.format("id=%d", code));
 		}
 	}
 

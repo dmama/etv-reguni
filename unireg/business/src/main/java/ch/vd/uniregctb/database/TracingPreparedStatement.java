@@ -41,7 +41,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 			return target.executeQuery();
 		}
 		finally {
-			tracing.end(start, "executeQuery", sql);
+			tracing.end(start, "executeQuery", () -> sql);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 			return target.executeUpdate();
 		}
 		finally {
-			tracing.end(start, "executeUpdate", sql);
+			tracing.end(start, "executeUpdate", () -> sql);
 		}
 	}
 
@@ -219,7 +219,7 @@ public class TracingPreparedStatement extends TracingStatement implements Prepar
 			return target.execute();
 		}
 		finally {
-			tracing.end(start, "execute", sql);
+			tracing.end(start, "execute", () -> sql);
 		}
 	}
 

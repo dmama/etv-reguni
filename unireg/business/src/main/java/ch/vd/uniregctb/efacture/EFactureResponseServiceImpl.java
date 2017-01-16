@@ -67,7 +67,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 			storage.add(businessId, null);
 		}
 		finally {
-			serviceTracing.end(start, "onNewResponse", businessId);
+			serviceTracing.end(start, "onNewResponse", () -> String.format("businessId='%s'", businessId));
 		}
 	}
 
@@ -92,12 +92,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 			return false;
 		}
 		finally {
-			serviceTracing.end(start, "waitForResponse", new Object() {
-				@Override
-				public String toString() {
-					return String.format("businessId='%s', timeout=%dms", businessId, timeoutMs);
-				}
-			});
+			serviceTracing.end(start, "waitForResponse", () -> String.format("businessId='%s', timeout=%dms", businessId, timeoutMs));
 		}
 	}
 

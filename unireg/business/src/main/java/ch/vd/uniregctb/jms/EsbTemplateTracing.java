@@ -64,12 +64,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			super.send(esbMessage);
 		}
 		finally {
-			tracing.end(time, "send", new Object() {
-				@Override
-				public String toString() {
-					return String.format("queue=%s, businessId='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId());
-				}
-			});
+			tracing.end(time, "send", () -> String.format("queue=%s, businessId='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId()));
 		}
 	}
 
@@ -81,12 +76,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			super.sendInternal(esbMessage);
 		}
 		finally {
-			tracing.end(time, "sendInternal", new Object() {
-				@Override
-				public String toString() {
-					return String.format("queue=%s, businessId='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId());
-				}
-			});
+			tracing.end(time, "sendInternal", () -> String.format("queue=%s, businessId='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId()));
 		}
 	}
 
@@ -98,12 +88,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			return super.receive(destinationName);
 		}
 		finally {
-			tracing.end(time, "receive", new Object() {
-				@Override
-				public String toString() {
-					return String.format("destinationName=%s", destinationName);
-				}
-			});
+			tracing.end(time, "receive", () -> String.format("destinationName=%s", destinationName));
 		}
 	}
 
@@ -115,12 +100,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			return super.receiveSelected(destinationName, messageSelector);
 		}
 		finally {
-			tracing.end(time, "receiveSelected", new Object() {
-				@Override
-				public String toString() {
-					return String.format("destinationName=%s, selector='%s'", destinationName, messageSelector);
-				}
-			});
+			tracing.end(time, "receiveSelected", () -> String.format("destinationName=%s, selector='%s'", destinationName, messageSelector));
 		}
 	}
 
@@ -132,12 +112,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			return super.receiveInternal(destinationName);
 		}
 		finally {
-			tracing.end(time, "receiveInternal", new Object() {
-				@Override
-				public String toString() {
-					return String.format("destinatioName=%s", destinationName);
-				}
-			});
+			tracing.end(time, "receiveInternal", () -> String.format("destinatioName=%s", destinationName));
 		}
 	}
 
@@ -149,12 +124,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			return super.receiveSelectedInternal(destinationName, messageSelector);
 		}
 		finally {
-			tracing.end(time, "receiveSelectedInternal", new Object() {
-				@Override
-				public String toString() {
-					return String.format("destinationName=%s, selector='%s'", destinationName, messageSelector);
-				}
-			});
+			tracing.end(time, "receiveSelectedInternal", () -> String.format("destinationName=%s, selector='%s'", destinationName, messageSelector));
 		}
 	}
 }

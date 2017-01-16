@@ -74,12 +74,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommuneParNoOFS", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ofsId=%d, date=%s", ofsId, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getCommuneParNoOFS", items, () -> String.format("ofsId=%d, date=%s", ofsId, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -100,12 +95,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommunesParNoOFS", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ofsId=%d", ofsId);
-				}
-			});
+			tracing.end(time, t, "getCommunesParNoOFS", items, () -> String.format("ofsId=%d", ofsId));
 		}
 	}
 
@@ -126,12 +116,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommunesParCanton", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ofsId=%d, date=%s", ofsId, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getCommunesParCanton", items, () -> String.format("ofsId=%d, date=%s", ofsId, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -193,12 +178,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "findCommuneByNomOfficiel", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("nom=%s, date=%s", nomOfficiel, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "findCommuneByNomOfficiel", items, () -> String.format("nom=%s, date=%s", nomOfficiel, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -219,12 +199,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommuneParBatiment", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("egid=%d, date=%s", egid, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getCommuneParBatiment", items, () -> String.format("egid=%d, date=%s", egid, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -245,12 +220,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPaysDetail", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ofsId=%d, date=%s", ofsId, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getPaysDetail", items, () -> String.format("ofsId=%d, date=%s", ofsId, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -271,12 +241,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPaysDetail", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("iso2Id=%s, date=%s", iso2Id, ServiceTracing.toString(date));
-				}
-			});
+			tracing.end(time, t, "getPaysDetail", items, () -> String.format("iso2Id=%s, date=%s", iso2Id, ServiceTracing.toString(date)));
 		}
 	}
 
@@ -297,12 +262,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPaysHisto", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("ofsId=%d", ofsId);
-				}
-			});
+			tracing.end(time, t, "getPaysHisto", items, () -> String.format("ofsId=%d", ofsId));
 		}
 	}
 
@@ -344,12 +304,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLogicielDetail", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("logicielId=%d", logicielId);
-				}
-			});
+			tracing.end(time, t, "getLogicielDetail", items, () -> String.format("logicielId=%d", logicielId));
 		}
 	}
 
@@ -391,12 +346,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getDistrict", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("code=%d", code);
-				}
-			});
+			tracing.end(time, t, "getDistrict", items, () -> String.format("code=%d", code));
 		}
 	}
 
@@ -417,12 +367,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRegion", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("code=%d", code);
-				}
-			});
+			tracing.end(time, t, "getRegion", items, () -> String.format("code=%d", code));
 		}
 	}
 
@@ -443,12 +388,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getUrl", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("app=%s, access=%s, targetType=%s, map=%s", app, acces, targetType, mapToString(map));
-				}
-			});
+			tracing.end(time, t, "getUrl", items, () -> String.format("app=%s, access=%s, targetType=%s, map=%s", app, acces, targetType, mapToString(map)));
 		}
 	}
 
@@ -490,13 +430,8 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocalitesPostales", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("dateReference=%s, npa=%d, noOrdrePostal=%d, nom=%s, cantonOfsId=%d",
-					                     ServiceTracing.toString(dateReference), npa, noOrdrePostal, nom, cantonOfsId);
-				}
-			});
+			tracing.end(time, t, "getLocalitesPostales", items, () -> String.format("dateReference=%s, npa=%d, noOrdrePostal=%d, nom=%s, cantonOfsId=%d",
+			                                                                        ServiceTracing.toString(dateReference), npa, noOrdrePostal, nom, cantonOfsId));
 		}
 	}
 
@@ -517,12 +452,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocalitesPostalesHisto", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noOrdrePostal=%d", noOrdrePostal);
-				}
-			});
+			tracing.end(time, t, "getLocalitesPostalesHisto", items, () -> String.format("noOrdrePostal=%d", noOrdrePostal));
 		}
 	}
 
@@ -543,12 +473,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocalitePostale", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("dateReference=%s, noOrdrePostal=%d", ServiceTracing.toString(dateReference), noOrdrePostal);
-				}
-			});
+			tracing.end(time, t, "getLocalitePostale", items, () -> String.format("dateReference=%s, noOrdrePostal=%d", ServiceTracing.toString(dateReference), noOrdrePostal));
 		}
 	}
 
@@ -569,12 +494,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRuesParNumeroOrdrePostalEtDate", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noOrdrePostal=%d, dateReference=%s", noOrdrePostal, ServiceTracing.toString(dateReference));
-				}
-			});
+			tracing.end(time, t, "getRuesParNumeroOrdrePostalEtDate", items, () -> String.format("noOrdrePostal=%d, dateReference=%s", noOrdrePostal, ServiceTracing.toString(dateReference)));
 		}
 	}
 
@@ -595,12 +515,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRuesParEstrid", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("estrid=%d, dateReference=%s", estrid, ServiceTracing.toString(dateReference));
-				}
-			});
+			tracing.end(time, t, "getRuesParEstrid", items, () -> String.format("estrid=%d, dateReference=%s", estrid, ServiceTracing.toString(dateReference)));
 		}
 	}
 
@@ -621,12 +536,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRegimeFiscalParCode", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("code='%s'", code);
-				}
-			});
+			tracing.end(time, t, "getRegimeFiscalParCode", items, () -> String.format("code='%s'", code));
 		}
 	}
 

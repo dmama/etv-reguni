@@ -44,15 +44,12 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getBVRDemande", new Object() {
-				@Override
-				public String toString() {
-					if (bvrDemande != null) {
-						return String.format("bvrDemande={ndc=%s, anneeTaxation=%d, typeDebiteurIS=%s}", bvrDemande.getNdc(), bvrDemande.getAnneeTaxation(), bvrDemande.getTypeDebiteurIS());
-					}
-					else {
-						return "null";
-					}
+			tracing.end(time, t, "getBVRDemande", () -> {
+				if (bvrDemande != null) {
+					return String.format("bvrDemande={ndc=%s, anneeTaxation=%d, typeDebiteurIS=%s}", bvrDemande.getNdc(), bvrDemande.getAnneeTaxation(), bvrDemande.getTypeDebiteurIS());
+				}
+				else {
+					return "null";
 				}
 			});
 		}

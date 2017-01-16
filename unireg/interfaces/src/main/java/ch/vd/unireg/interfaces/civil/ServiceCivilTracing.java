@@ -55,12 +55,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividu", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("noIndividu=%d, parties=%s", noIndividu, ServiceTracing.toString(parties));
-				}
-			});
+			tracing.end(time, t, "getIndividu", items, () -> String.format("noIndividu=%d, parties=%s", noIndividu, ServiceTracing.toString(parties)));
 		}
 	}
 
@@ -83,12 +78,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividus", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("nosIndividus=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(parties));
-				}
-			});
+			tracing.end(time, t, "getIndividus", items, () -> String.format("nosIndividus=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(parties)));
 		}
 	}
 
@@ -113,12 +103,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividuByEvent", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("evtId=%d, parties=%s", evtId, ServiceTracing.toString(parties));
-				}
-			});
+			tracing.end(time, t, "getIndividuByEvent", items, () -> String.format("evtId=%d, parties=%s", evtId, ServiceTracing.toString(parties)));
 		}
 	}
 
@@ -139,12 +124,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividuAfterEvent", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("eventId=%d", eventId);
-				}
-			});
+			tracing.end(time, t, "getIndividuAfterEvent", items, () -> String.format("eventId=%d", eventId));
 		}
 	}
 

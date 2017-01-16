@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -363,6 +365,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 */
+	@Override
 	public void end(long start) {
 		end(start, null, null);
 	}
@@ -372,9 +375,10 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	 *
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 * @param name  le nom de la méthode
-	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 * @param params un constructeur de chaîne de caractères pour décrire les paramètres de la méthode
 	 */
-	public void end(long start, String name, @Nullable Object params) {
+	@Override
+	public void end(long start, String name, @Nullable Supplier<String> params) {
 		end(start, null, name, params);
 	}
 
@@ -385,20 +389,15 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	 * @param start la valeur retournée par la méthode {@link #start()}.
 	 * @param thrown l'exception éventuellement reçue dans l'appel
 	 * @param name  le nom de la méthode
-	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 * @param params un constructeur de chaîne de caractères pour décrire les paramètres de la méthode
 	 */
-	public void end(long start, @Nullable Throwable thrown, String name, @Nullable Object params) {
+	@Override
+	public void end(long start, @Nullable Throwable thrown, String name, @Nullable Supplier<String> params) {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);
 		if (detailLogger != null && detailLogger.isInfoEnabled()) {
-			final String paramString;
-			if (params != null) {
-				paramString = params.toString();
-			}
-			else {
-				paramString = null;
-			}
+			final String paramString = Optional.ofNullable(params).map(Supplier::get).orElse(null);
 			final String throwableString;
 			if (thrown != null) {
 				throwableString = String.format(", %s thrown", thrown.getClass().getName());
@@ -423,20 +422,15 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	 * @param thrown l'exception éventuellement reçue dans l'appel
 	 * @param name  le nom de la méthode
 	 * @param items le nombre d'éléments à prendre en compte dans l'appel de la méthode (sera utilisé pour calculer une moyenne du temps de réponse par élément).
-	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 * @param params un constructeur de chaîne de caractères pour décrire les paramètres de la méthode
 	 */
-	public void end(long start, @Nullable Throwable thrown, String name, int items, @Nullable Object params) {
+	@Override
+	public void end(long start, @Nullable Throwable thrown, String name, int items, @Nullable Supplier<String> params) {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, items, name);
 		if (detailLogger != null && detailLogger.isInfoEnabled()) {
-			final String paramString;
-			if (params != null) {
-				paramString = params.toString();
-			}
-			else {
-				paramString = null;
-			}
+			final String paramString = Optional.ofNullable(params).map(Supplier::get).orElse(null);
 			final String returnInfo = (thrown == null ? String.format(" => %d item(s)", items) : String.format(", %s thrown", thrown.getClass().getName()));
 			if (StringUtils.isBlank(paramString)) {
 				detailLogger.info(String.format("(%d ms) %s%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), returnInfo));
@@ -448,7 +442,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	}
 
 	/**
-	 * Les temps de réponses (voir méthode {@link #end(long, String, Object) end()}) sont loggués en niveau INFO ;
+	 * Les temps de réponses (voir méthode {@link #end(long, String, Supplier<String>) end()}) sont loggués en niveau INFO ;
 	 * cette méthode permet d'inclure un peu plus de détails seulement en mode debug
 	 * @return <code>true</code> si le logguer est actif au niveau DEBUG, <code>false</code> sinon
 	 */
