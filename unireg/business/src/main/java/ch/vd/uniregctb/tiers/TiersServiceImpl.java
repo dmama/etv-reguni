@@ -833,7 +833,7 @@ public class TiersServiceImpl implements TiersService {
 			final DegreAssociationRegistreCivil degreAssociationRegistreCivil = determineDegreAssociationCivil(etablissement, aujourdhui);
 			if (degreAssociationRegistreCivil == DegreAssociationRegistreCivil.CIVIL_ESCLAVE) {
 				throw new AccessDeniedException(
-						String.format("Impossible d'éditer l'établissement n°%s, elle est connue au civil et Unireg n'est pas service IDE à obligations étendues.",
+						String.format("Impossible d'éditer l'établissement n°%s, il est connu au civil et Unireg n'est pas service IDE à obligations étendues.",
 						              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())
 						)
 				);

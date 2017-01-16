@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersView"--%>
+<%--@elvariable id="data" type="ch.vd.uniregctb.entreprise.TiersView"--%>
 <%--@elvariable id="etablissement" type="ch.vd.uniregctb.entreprise.EtablissementView"--%>
 
 <c:choose>
@@ -65,8 +66,13 @@
 			<td><c:out value="${etablissement.raisonSociale}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="20%"><fmt:message key="label.nom.enseigne" />&nbsp;:</td>
+			<td width="15%"><fmt:message key="label.nom.enseigne" />&nbsp;:</td>
 			<td><c:out value="${etablissement.enseigne}"/></td>
+			<td width="10%">
+				<c:if test="${page != 'edit' && etablissement.degreAssocCivilEntreprise == 'CIVIL_ESCLAVE' && autorisations.donneesCiviles}">
+					<unireg:linkTo name="" action="/civil/etablissement/enseigne/edit.do?tiersId=${etablissement.id}" link_class="edit" title="Editer l'enseigne de l'établissement"/>
+				</c:if>
+			</td>
 		</tr>
 	</table>
 </fieldset>

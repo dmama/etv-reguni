@@ -89,6 +89,7 @@ public class CivilEtablissementEditController {
 			addSubValidator(EtablissementView.class, new DummyValidator<>(EtablissementView.class));
 			addSubValidator(RaisonSocialeView.class, new RaisonSocialeViewValidator());
 			addSubValidator(EditRaisonEnseigneEtablissementView.class, new EditRaisonEnseigneEtablissementViewValidator());
+			addSubValidator(EditEnseigneEtablissementView.class, new EditEnseigneEtablissementViewValidator());
 			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
 			addSubValidator(DomicileView.Add.class, new DomicileViewValidator());
 			addSubValidator(DomicileView.Edit.class, new DomicileViewValidator());
@@ -184,6 +185,49 @@ public class CivilEtablissementEditController {
 		return "redirect:/civil/etablissement/edit.do?id=" + tiers.getNumero();
 	}
 
+	/* Enseigne uniquement pour édition séparée lorsque l'édition du tiers est par ailleurs interdite */
+
+	@RequestMapping(value = "/enseigne/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editEnseigne(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
+
+		final Tiers tiers = tiersDAO.get(tiersId);
+		if (tiers == null || !(tiers instanceof Etablissement)) {
+			throw new TiersNotFoundException(tiersId);
+		}
+
+		final Autorisations auth = getAutorisations(tiers);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+		}
+
+		model.addAttribute("command", new EditEnseigneEtablissementView((Etablissement) tiers));
+		return "donnees-civiles/edit-enseigne";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/enseigne/edit.do", method = RequestMethod.POST)
+	public String editEnseigne(@Valid @ModelAttribute("command") final EditEnseigneEtablissementView view, BindingResult result, Model model) throws Exception {
+
+		if (result.hasErrors()) {
+			model.addAttribute("command", view);
+			return "donnees-civiles/edit-enseigne";
+		}
+
+		final Tiers tiers = tiersDAO.get(view.getTiersId());
+		if (tiers == null || !(tiers instanceof Etablissement)) {
+			throw new TiersNotFoundException(view.getTiersId());
+		}
+
+		final Etablissement etablissement = (Etablissement) tiers;
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
+		}
+
+		etablissement.setEnseigne(view.getEnseigne());
+		return "redirect:/tiers/visu.do?id=" + tiers.getNumero();
+	}
 
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.GET)
