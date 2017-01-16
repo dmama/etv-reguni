@@ -1214,6 +1214,20 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "La période fiscale " + anneeNouvelleFinExercice + " n'existe pas dans Unireg.", null);
 		}
 
+		// [SIFISC-22459] si la nouvelle date de fin de l'exercice commercial est antérieure à la date de début de la DI, c'est qu'il y a souci, non ?
+		if (dateFinExerciceCommercial.isBefore(di.getDateDebutExerciceCommercial())) {
+			tacheService.genereTacheControleDossier(entreprise, Motifs.DATE_EXERCICE_COMMERCIAL_IGNOREE);
+			addRemarque(entreprise,
+			            String.format("Le retour de la DI %d/%d annonce une nouvelle fin d'exercice commercial au %s, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (%s).",
+			                          di.getPeriode().getAnnee(),
+			                          di.getNumero(),
+			                          RegDateHelper.dateToDisplayString(dateFinExerciceCommercial),
+			                          RegDateHelper.dateToDisplayString(di.getDateDebutExerciceCommercial())));
+
+			// pas la peine d'aller plus loin...
+			return;
+		}
+
 		// re-calcul des cycles de bouclement souhaités
 		final List<ExerciceCommercial> anciensExercicesCommerciaux = exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		final Set<RegDate> datesBouclement = anciensExercicesCommerciaux.stream()

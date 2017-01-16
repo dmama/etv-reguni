@@ -7452,4 +7452,101 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * SIFISC-22459 : la date d'exercice commercial annoncée par la DI est, par erreur (faute de frappe ?) antérieure à la date de début de la DI
+	 * (il ne faut alors pas en tenir compte...)
+	 */
+	@Test
+	public void testFinExerciceCommercialAnnonceeAnterieureADebutConnu() throws Exception {
+
+		final RegDate dateDebut = date(2016, 4, 27);
+
+		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+
+				final PeriodeFiscale pfFinale = addPeriodeFiscale(dateDebut.year() - 1);
+				final PeriodeFiscale pfInitiale = addPeriodeFiscale(dateDebut.year());
+				final ModeleDocument mdFinal = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfFinale);
+				final ModeleDocument mdInitial = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfInitiale);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pfInitiale, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, mdInitial);
+				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+
+				return entreprise.getNumero();
+			}
+		});
+
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year() - 1, 12, 31), null, null, null, null, null, null);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+			}
+		});
+
+		// vérification du résultat
+		// - la DI n'a pas été déplacée en 2015
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+				Assert.assertNotNull(entreprise);
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals(String.format("Le retour de la DI %d/1 annonce une nouvelle fin d'exercice commercial au 31.12.2015, mais celle-ci n'a pas été prise en compte automatiquement car elle est antérieure à la date de début de l'exercice commercial de la DI (27.04.2016).",
+				                                  dateDebut.year()),
+				                    remarque.getTexte());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(1, tachesControle.size());
+				{
+					final Tache tache = tachesControle.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals("Retour DI - Date de fin de l'exercice commercial", tache.getCommentaire());
+				}
+
+				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+				Assert.assertNotNull(dis);
+				Assert.assertEquals(1, dis.size());
+				final DeclarationImpotOrdinairePM di = dis.get(0);
+				Assert.assertNotNull(di);
+				Assert.assertFalse(di.isAnnule());
+				Assert.assertEquals(dateDebut, di.getDateDebut());
+				Assert.assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
+				Assert.assertEquals(date(dateDebut.year(), 9, 30), di.getDateFin());
+				Assert.assertEquals(date(dateDebut.year(), 9, 30), di.getDateFinExerciceCommercial());
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+				Assert.assertTrue(String.valueOf(exercices.size()), exercices.size() > 0);
+				final ExerciceCommercial exercice = exercices.get(0);
+				Assert.assertNotNull(exercice);
+				Assert.assertEquals(dateDebut, exercice.getDateDebut());
+				Assert.assertEquals(date(dateDebut.year(), 9, 30), exercice.getDateFin());
+			}
+		});
+	}
 }
