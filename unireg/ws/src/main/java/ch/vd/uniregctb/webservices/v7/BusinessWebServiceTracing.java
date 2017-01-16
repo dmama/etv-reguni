@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,6 +20,8 @@ import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -281,6 +284,40 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getFiscalEvents", null);
+		}
+	}
+
+	@Nullable
+	@Override
+	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getImmovablePropery(user, immId);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getImmovablePropery", null);
+		}
+	}
+
+	@Nullable
+	@Override
+	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getBuilding(user, buildingId);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getBuilding", null);
 		}
 	}
 }

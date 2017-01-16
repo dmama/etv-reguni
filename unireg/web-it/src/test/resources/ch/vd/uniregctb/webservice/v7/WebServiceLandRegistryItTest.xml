@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="RF_IMMEUBLE">
+		<column>TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_RADIATION</column>
+		<column>EGRID</column>
+		<column>ID_RF</column>
+		<column>URL_INTERCAPI</column>
+		<column>CFA</column>
+		<column>QUOTE_PART_DENOM</column>
+		<column>QUOTE_PART_NUM</column>
+		<row>
+			<value>BienFond</value>
+			<value>264310664</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.920000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:01:11.928000</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<value>CH785283458046</value>
+			<value>_1f109152381059670138105e5e5148b2</value>
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="RF_COMMUNE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>NO_OFS</column>
+		<column>NO_RF</column>
+		<column>NOM_RF</column>
+		<row>
+			<value>263397516</value>
+			<null />
+			<null />
+			<value>2016-12-14 10:33:34.590000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 10:33:34.590000</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<null />
+			<value>5706</value>
+			<value>227</value>
+			<value>Borex</value>
+		</row>
+	</table>
+	<table name="RF_SITUATION">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>INDEX1</column>
+		<column>INDEX2</column>
+		<column>INDEX3</column>
+		<column>NO_PARCELLE</column>
+		<column>COMMUNE_ID</column>
+		<column>IMMEUBLE_ID</column>
+		<row>
+			<value>264310669</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.922000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:01:11.922000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>59</value>
+			<value>263397516</value>
+			<value>264310664</value>
+		</row>
+	</table>
+	<table name="RF_SURFACE_TOTALE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>SURFACE</column>
+		<column>IMMEUBLE_ID</column>
+		<row>
+			<value>264310670</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.923000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:01:11.923000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>1200</value>
+			<value>264310664</value>
+		</row>
+	</table>
+	<table name="RF_SURFACE_AU_SOL">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>SURFACE</column>
+		<column>TYPE</column>
+		<column>IMMEUBLE_ID</column>
+		<row>
+			<value>265763318</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:37:41.083000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:37:41.083000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>1050</value>
+			<value>Place-jardin</value>
+			<value>264310664</value>
+		</row>
+	</table>
+	<table name="RF_ESTIMATION">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>DATE_ESTIMATION</column>
+		<column>EN_REVISION</column>
+		<column>MONTANT</column>
+		<column>REFERENCE</column>
+		<column>IMMEUBLE_ID</column>
+		<row>
+			<value>264310667</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.921000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:01:11.921000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<null />
+			<value>0</value>
+			<value>570000</value>
+			<value>RG94</value>
+			<value>264310664</value>
+		</row>
+	</table>
+	<table name="RF_BATIMENT">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>MASTER_ID_RF</column>
+		<row>
+			<value>266023444</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:43:31.543000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:43:32.363000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>1f1091523810596701381061910f0943</value>
+		</row>
+	</table>
+	<table name="RF_DESCRIPTION_BATIMENT">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>SURFACE</column>
+		<column>TYPE</column>
+		<column>BATIMENT_ID</column>
+		<row>
+			<value>266023444</value>
+			<value>Habitation</value>
+			<null />
+			<null />
+			<value>20160913</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:43:31.544000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:43:31.544000</value>
+			<null />
+			<null />
+			<value>266023448</value>
+		</row>
+	</table>
+	<table name="RF_IMPLANTATION">
+		<column>IMMEUBLE_ID</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>SURFACE</column>
+		<column>BATIMENT_ID</column>
+		<row>
+			<value>264310664</value>
+			<value>266023451</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:43:31.545000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:43:31.545000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>150</value>
+			<value>266023444</value>
+		</row>
+	</table>
+</dataset>

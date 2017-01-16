@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -16,6 +17,8 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -172,4 +175,22 @@ public interface BusinessWebService {
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ce genre de recherche
 	 */
 	FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException;
+
+	/**
+	 * @param user  désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param immId l'id technique Unireg de l'immeuble.
+	 * @return un immmeuble du registre foncier avec son historique; ou <b>null</b> si l'immeuble est inconnu.
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
+	 */
+	@Nullable
+	ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException;
+
+	/**
+	 * @param user       désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param buildingId l'id technique Unireg du bâtiment.
+	 * @return un bâtiment du registre foncier avec son historique; ou <b>null</b> si le bâtiment est inconnu.
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
+	 */
+	@Nullable
+	Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException;
 }

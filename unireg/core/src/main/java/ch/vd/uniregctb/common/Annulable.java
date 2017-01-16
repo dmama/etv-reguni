@@ -6,10 +6,15 @@ package ch.vd.uniregctb.common;
  */
 public interface Annulable {
 
-	/**Permet de dire si une entite est annulé ou non
-	 *
-	 * @return true si l'entite est annulée false sinon
+	/**
+	 * @return <b>true</b> si l'entite est annulée; <b>false</b> si elle ne l'est pas.
 	 */
 	boolean isAnnule();
 
+	/**
+	 * @return <b>false</b> si l'entite n'est pas annulée; <b>oui</b> si elle l'est.
+	 */
+	default boolean isNotAnnule() {
+		return !this.isAnnule();
+	}
 }

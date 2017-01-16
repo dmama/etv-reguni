@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -19,4 +20,18 @@ public interface RegistreFoncierService {
 	 */
 	@NotNull
 	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb);
+
+	/**
+	 * @param immeubleId l'id technique d'un immeuble
+	 * @return l'immeuble qui correspond à l'id; ou <b>null</b> si aucun immeuble ne correspond.
+	 */
+	@Nullable
+	ImmeubleRF getImmeuble(long immeubleId);
+
+	/**
+	 * @param batimentId l'id technique d'un bâtiment
+	 * @return le bâtiment qui correspond à l'id; ou <b>null</b> si aucun bâtiment ne correspond.
+	 */
+	@Nullable
+	BatimentRF getBatiment(long batimentId);
 }

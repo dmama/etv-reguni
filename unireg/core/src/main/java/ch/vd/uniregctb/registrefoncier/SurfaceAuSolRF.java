@@ -15,7 +15,9 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
@@ -97,5 +99,27 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity {
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
+	}
+
+	/**
+	 * Compare la surface courante avec une autre surface. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 *     <li>les dates de début et de fin</li>
+	 *     <li>le type de surface</li>
+	 *     <li>la surface</li>
+	 * </ul>
+	 * @param right une autre surface.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	public int compareTo(@NotNull SurfaceAuSolRF right) {
+		int c = DateRangeComparator.compareRanges(this, right);
+		if (c != 0) {
+			return c;
+		}
+		c = type.compareTo(right.type);
+		if (c != 0) {
+			return c;
+		}
+		return Integer.compare(surface, right.surface);
 	}
 }

@@ -82,10 +82,15 @@ import ch.vd.unireg.xml.party.debtor.v5.Debtor;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
 import ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
+import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.Location;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
@@ -156,6 +161,7 @@ import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -2952,7 +2958,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 				// un droit de propriété sur un immeuble
 				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondRF immeuble = addBienFondRF("01faeee", laSarraz, 579, 3, null, null);
+				final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", dateNaissance);
 				addDroitPropriete(tiersRF, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
 				addRapprochementRF(pp, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
@@ -4663,6 +4669,78 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-20373] Ce test vérifie que le WS de récupération d'un immeuble fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetImmovableProperty() throws Exception {
+
+		// on ajoute un immeuble dans la base
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
+			return immeuble.getId();
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovablePropery(user, id);
+		Assert.assertNotNull(immo);
+		Assert.assertTrue(immo instanceof RealEstate);
+
+		final RealEstate realEstate =(RealEstate) immo;
+		Assert.assertEquals(id.longValue(), realEstate.getId());
+		Assert.assertEquals("some egrid", realEstate.getEgrid());
+		Assert.assertNull(realEstate.getCancellationDate());
+
+		final List<Location> locations = realEstate.getLocations();
+		Assert.assertEquals(1, locations.size());
+		assertLocation(RegDate.get(2000, 1, 1), null, 579, 3, null, null, 5498, locations.get(0));
+	}
+
+	@Test
+	public void testGetBuilding() throws Exception {
+
+		class Ids {
+			long immeuble;
+			long batiment;
+
+			public Ids(long immeuble, long batiment) {
+				this.immeuble = immeuble;
+				this.batiment = batiment;
+			}
+		}
+
+		// on ajoute un immeuble dans la base
+		final Ids ids = doInNewTransaction(status -> {
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
+			final BatimentRF batiment = addBatimentRF("483838ace8e8");
+			addDescriptionBatimentRF(RegDate.get(2000, 1, 1), null, "Centrale électrique", 300, batiment);
+			addImplantationRF(RegDate.get(2000, 1, 1), null, 310, immeuble, batiment);
+			return new Ids(immeuble.getId(), batiment.getId());
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Building building = service.getBuilding(user, ids.batiment);
+		Assert.assertNotNull(building);
+		Assert.assertEquals(ids.batiment, building.getId());
+
+		final List<BuildingDescription> descriptions = building.getDescriptions();
+		Assert.assertEquals(1, descriptions.size());
+		final BuildingDescription description0 = descriptions.get(0);
+		Assert.assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(description0.getDateFrom()));
+		Assert.assertNull(description0.getDateTo());
+		Assert.assertEquals("Centrale électrique", description0.getType());
+		Assert.assertEquals(Integer.valueOf(300), description0.getArea());
+
+		final List<BuildingSetting> settings = building.getSettings();
+		Assert.assertEquals(1, settings.size());
+		final BuildingSetting setting0 = settings.get(0);
+		Assert.assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(setting0.getDateFrom()));
+		Assert.assertNull(setting0.getDateTo());
+		Assert.assertEquals(Integer.valueOf(310), setting0.getArea());
+	}
+
 	private void assertShare(int numerator, int denominator, Share share) {
 		Assert.assertNotNull(share);
 		Assert.assertEquals(numerator, share.getNumerator());
@@ -4675,5 +4753,16 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(year, caseIdentifier.getYear());
 		Assert.assertEquals(number, caseIdentifier.getCaseNumber());
 		Assert.assertEquals(index, caseIdentifier.getCaseIndex());
+	}
+
+	private static void assertLocation(RegDate dateFrom, RegDate dateTo, int parcelNumber, Integer index1, Integer index2, Integer index3, int noOfsCommune, Location location) {
+		Assert.assertNotNull(location);
+		Assert.assertEquals(dateFrom, DataHelper.webToRegDate(location.getDateFrom()));
+		Assert.assertEquals(dateTo, DataHelper.webToRegDate(location.getDateTo()));
+		Assert.assertEquals(parcelNumber, location.getParcelNumber());
+		Assert.assertEquals(index1, location.getIndex1());
+		Assert.assertEquals(index2, location.getIndex2());
+		Assert.assertEquals(index3, location.getIndex3());
+		Assert.assertEquals(noOfsCommune, location.getMunicipalityFsoId());
 	}
 }

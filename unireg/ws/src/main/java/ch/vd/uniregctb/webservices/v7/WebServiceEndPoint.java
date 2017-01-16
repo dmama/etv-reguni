@@ -43,6 +43,8 @@ import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -85,6 +87,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.search.party.v7.ObjectFactory searchPartyObjectFactory = new ch.vd.unireg.ws.search.party.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.party.v7.ObjectFactory partyObjectFactory = new ch.vd.unireg.ws.party.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.fiscalevents.v7.ObjectFactory fiscalEventsObjectFactory = new ch.vd.unireg.ws.fiscalevents.v7.ObjectFactory();
+	private final ch.vd.unireg.ws.landregistry.v7.ObjectFactory landRegistryObjectFactory = new ch.vd.unireg.ws.landregistry.v7.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -554,6 +557,44 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events)).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+
+		});
+	}
+
+	@Override
+	public Response getImmovableProperty(long immNo, String user) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getImmovableProperty{immNo=%d, user=%s}", immNo, WebServiceHelper.enquote(user));
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final ImmovableProperty immovable = target.getImmovablePropery(userLogin, immNo);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable)).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+
+		});
+	}
+
+	@Override
+	public Response getBuilding(long buildingNo, String user) {
+		final Object params = new Object() {
+			@Override
+			public String toString() {
+				return String.format("getBuilding{buildingNo=%d, user=%s}", buildingNo, WebServiceHelper.enquote(user));
+			}
+		};
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final Building building = target.getBuilding(userLogin, buildingNo);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createBuilding(building)).build());
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 

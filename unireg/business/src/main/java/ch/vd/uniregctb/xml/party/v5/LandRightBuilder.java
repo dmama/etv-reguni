@@ -116,7 +116,7 @@ public abstract class LandRightBuilder {
 	}
 
 	@Nullable
-	private static Share getShare(@Nullable Fraction part) {
+	public static Share getShare(@Nullable Fraction part) {
 		if (part == null) {
 			return null;
 		}

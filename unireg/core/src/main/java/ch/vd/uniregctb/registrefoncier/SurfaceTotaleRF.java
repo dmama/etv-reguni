@@ -14,7 +14,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
 /**
@@ -80,5 +82,22 @@ public class SurfaceTotaleRF extends HibernateDateRangeEntity {
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
+	}
+
+	/**
+	 * Compare la surface courante avec une autre surface. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 *     <li>les dates de début et de fin</li>
+	 *     <li>la surface</li>
+	 * </ul>
+	 * @param right une autre surface.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	public int compareTo(@NotNull SurfaceTotaleRF right) {
+		int c = DateRangeComparator.compareRanges(this, right);
+		if (c != 0) {
+			return c;
+		}
+		return Integer.compare(surface, right.surface);
 	}
 }

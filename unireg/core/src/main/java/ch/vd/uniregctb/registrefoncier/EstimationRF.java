@@ -12,11 +12,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Objects;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -131,5 +134,32 @@ public class EstimationRF extends HibernateDateRangeEntity {
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
+	}
+
+	/**
+	 * Compare l'estimation courante avec une autre estimation. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 *     <li>les dates de début et de fin</li>
+	 *     <li>la date d'estimation</li>
+	 *     <li>le numéro de référence</li>
+	 *     <li>le montant</li>
+	 * </ul>
+	 * @param right une autre estimation.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	public int compareTo(@NotNull EstimationRF right) {
+		int c = DateRangeComparator.compareRanges(this, right);
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(dateEstimation, right.dateEstimation, RegDate::compareTo);
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(reference, right.reference, String::compareTo);
+		if (c != 0) {
+			return c;
+		}
+		return Objects.compare(montant, right.montant, Long::compareTo);
 	}
 }

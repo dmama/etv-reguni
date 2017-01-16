@@ -59,12 +59,16 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
@@ -420,7 +424,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	@NotNull
-	protected BienFondRF addBienFondRF(String idRF, CommuneRF commune, int noParcelle, Integer index1, Integer index2, Integer index3) {
+	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle, Integer index1, Integer index2, Integer index3) {
 		final SituationRF situation = new SituationRF();
 		situation.setDateDebut(RegDate.get(2000, 1, 1));
 		situation.setNoParcelle(noParcelle);
@@ -431,8 +435,34 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 		BienFondRF im0 = new BienFondRF();
 		im0.setIdRF(idRF);
+		im0.setEgrid(egrid);
 		im0.addSituation(situation);
 		return hibernateTemplate.merge(im0);
+	}
+
+	@NotNull
+	protected BatimentRF addBatimentRF(String masterIdRF) {
+		final BatimentRF batiment = new BatimentRF();
+		batiment.setMasterIdRF(masterIdRF);
+		return hibernateTemplate.merge(batiment);
+	}
+
+	protected void addDescriptionBatimentRF(RegDate dateDebut, RegDate dateFin, String type, Integer surface, BatimentRF batiment) {
+		final DescriptionBatimentRF description = new DescriptionBatimentRF();
+		description.setDateDebut(dateDebut);
+		description.setDateFin(dateFin);
+		description.setType(type);
+		description.setSurface(surface);
+		batiment.addDescription(description);
+	}
+
+	protected void addImplantationRF(RegDate dateDebut, RegDate dateFin, Integer surface, ImmeubleRF immeuble, BatimentRF batiment) {
+		final ImplantationRF implantation = new ImplantationRF();
+		implantation.setDateDebut(dateDebut);
+		implantation.setDateFin(dateFin);
+		implantation.setSurface(surface);
+		implantation.setImmeuble(immeuble);
+		batiment.addImplantation(implantation);
 	}
 
 	protected interface ExecuteCallback<T> {

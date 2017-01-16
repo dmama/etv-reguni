@@ -111,4 +111,14 @@ public interface WebService {
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("/fiscalEvents/{partyNo}")
 	Response getFiscalEvents(@PathParam("partyNo") int partyNo, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/immovableProperty/{immNo}")
+	Response getImmovableProperty(@PathParam("immNo") long immNo, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/building/{buildingNo}")
+	Response getBuilding(@PathParam("buildingNo") long buildingNo, @QueryParam("user") String user);
 }

@@ -61,8 +61,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", laSarraz, 579, 3, null, null);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", gland, 4298, null, null, null);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298, null, null, null);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Charles", "Widmer", date(1970, 7, 2));
 

@@ -4,11 +4,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class RegistreFoncierServiceImpl implements RegistreFoncierService {
+
+	private ImmeubleRFDAO immeubleRFDAO;
+	private BatimentRFDAO batimentRFDAO;
+
+	public void setImmeubleRFDAO(ImmeubleRFDAO immeubleRFDAO) {
+		this.immeubleRFDAO = immeubleRFDAO;
+	}
+
+	public void setBatimentRFDAO(BatimentRFDAO batimentRFDAO) {
+		this.batimentRFDAO = batimentRFDAO;
+	}
 
 	@NotNull
 	@Override
@@ -19,5 +33,17 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.flatMap(r -> r.getDroits().stream())   // si on a plusieurs tiers rapprochés, on prend l'ensemble des droits
 				.sorted(new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING))
 				.collect(Collectors.toList());
+	}
+
+	@Nullable
+	@Override
+	public ImmeubleRF getImmeuble(long immeubleId) {
+		return immeubleRFDAO.get(immeubleId);
+	}
+
+	@Nullable
+	@Override
+	public BatimentRF getBatiment(long batimentId) {
+		return batimentRFDAO.get(batimentId);
 	}
 }

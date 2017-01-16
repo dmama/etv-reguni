@@ -12,11 +12,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Objects;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
@@ -117,5 +120,23 @@ public class ImplantationRF extends HibernateDateRangeEntity {
 
 	public void setBatiment(BatimentRF batiment) {
 		this.batiment = batiment;
+	}
+
+	/**
+	 * Compare l'implantation courante avec une autre implantation. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 * <li>les dates de début et de fin</li>
+	 * <li>la surface</li>
+	 * </ul>
+	 *
+	 * @param right une autre implantation.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	public int compareTo(@NotNull ImplantationRF right) {
+		int c = DateRangeComparator.compareRanges(this, right);
+		if (c != 0) {
+			return c;
+		}
+		return Objects.compare(surface, right.surface, Integer::compareTo);
 	}
 }

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,8 @@ import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -135,8 +139,11 @@ import ch.vd.uniregctb.webservices.common.WebServiceHelper;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.infra.v1.TaxOfficesBuilder;
+import ch.vd.uniregctb.xml.party.v5.BuildingBuilder;
+import ch.vd.uniregctb.xml.party.v5.ImmovablePropertyBuilder;
 import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
 
+@SuppressWarnings("Duplicates")
 public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BusinessWebServiceImpl.class);
@@ -422,7 +429,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	/**
 	 * Envoi du quittancement vers le BAM
-	 * @param di la DI quittancée
+	 *
+	 * @param di                la DI quittancée
 	 * @param dateQuittancement date de quittancement de la DI
 	 */
 	private void sendQuittancementToBam(DeclarationImpotOrdinaire di, RegDate dateQuittancement) {
@@ -432,7 +440,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		try {
 			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, dateQuittancement, null);
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
-			final String processDefinitionId = di instanceof DeclarationImpotOrdinairePM ? BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PM : BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PP;       // pour le moment, tous les quittancements par le WS concenent les DI "papier"
+			final String processDefinitionId =
+					di instanceof DeclarationImpotOrdinairePM ? BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PM : BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PP;       // pour le moment, tous les quittancements par le WS concenent les DI "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
 			context.bamSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 		}
@@ -918,7 +927,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		int nbRemainingTasks = 0;
 		while (iterator.hasNext()) {
 			executor.submit(new PartiesTask(iterator.next(), parts, user, context));
-			++ nbRemainingTasks;
+			++nbRemainingTasks;
 		}
 
 		// et on récolte ce que l'on a semé
@@ -927,7 +936,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			try {
 				final Future<Parties> future = executor.poll(1, TimeUnit.SECONDS);
 				if (future != null) {
-					-- nbRemainingTasks;
+					--nbRemainingTasks;
 					finalResult.getEntries().addAll(future.get().getEntries());
 				}
 			}
@@ -1020,4 +1029,21 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		});
 	}
 
+	@Nullable
+	@Override
+	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+		return doInTransaction(true, status ->
+				Optional.ofNullable(context.registreFoncierService.getImmeuble(immId))
+						.map(ImmovablePropertyBuilder::newImmovableProperty)
+						.orElse(null));
+	}
+
+	@Nullable
+	@Override
+	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
+		return doInTransaction(true, status ->
+				Optional.ofNullable(context.registreFoncierService.getBatiment(buildingId))
+						.map(BuildingBuilder::newBuilding)
+						.orElse(null));
+	}
 }

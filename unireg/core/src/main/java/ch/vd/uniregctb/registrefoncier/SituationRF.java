@@ -12,10 +12,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Objects;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
 /**
@@ -141,5 +144,40 @@ public class SituationRF extends HibernateDateRangeEntity {
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
+	}
+
+	/**
+	 * Compare la situation courante avec une autre situation. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 *     <li>les dates de début et de fin</li>
+	 *     <li>le numéro Ofs de commune</li>
+	 *     <li>le numéro de parcelle</li>
+	 *     <li>les indexes PPE</li>
+	 * </ul>
+	 * @param right une autre situation.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	public int compareTo(@NotNull SituationRF right) {
+		int c = DateRangeComparator.compareRanges(this, right);
+		if (c != 0) {
+			return c;
+		}
+		c = Integer.compare(commune.getNoOfs(), right.commune.getNoOfs());
+		if (c != 0) {
+			return c;
+		}
+		c = Integer.compare(noParcelle, right.noParcelle);
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(index1, right.index1, Integer::compareTo);
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(index2, right.index2, Integer::compareTo);
+		if (c != 0) {
+			return c;
+		}
+		return Objects.compare(index3, right.index3, Integer::compareTo);
 	}
 }

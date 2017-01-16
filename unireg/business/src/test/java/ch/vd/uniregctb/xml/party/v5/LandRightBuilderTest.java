@@ -22,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -60,7 +61,7 @@ public class LandRightBuilderTest {
 		assertNotNull(landOwnershipRight);
 		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(2, 5, landOwnershipRight.getShare());
-		assertEquals(RegDate.get(2016, 9, 22), ch.vd.uniregctb.xml.DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
 		assertNull(landOwnershipRight.getDateTo());
 		assertEquals("Achat", landOwnershipRight.getStartReason());
 		assertNull(landOwnershipRight.getEndReason());
@@ -94,7 +95,7 @@ public class LandRightBuilderTest {
 		assertNotNull(landOwnershipRight);
 		assertEquals(OwnershipType.SOLE_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(3, 5, landOwnershipRight.getShare());
-		assertEquals(RegDate.get(2016, 9, 22), ch.vd.uniregctb.xml.DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
 		assertNull(landOwnershipRight.getDateTo());
 		assertEquals("Achat", landOwnershipRight.getStartReason());
 		assertNull(landOwnershipRight.getEndReason());

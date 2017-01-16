@@ -30,6 +30,8 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -38,7 +40,6 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.avatar.ImageData;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -55,6 +56,7 @@ import ch.vd.uniregctb.webservices.v7.PartySearchType;
 import ch.vd.uniregctb.webservices.v7.SearchMode;
 import ch.vd.uniregctb.xml.ServiceException;
 
+@SuppressWarnings("Duplicates")
 public class BusinessWebServiceCache implements BusinessWebService, UniregCacheInterface, KeyDumpableCache, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "WebService7";
@@ -361,6 +363,38 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		return target.getFiscalEvents(user, partyNo);
 	}
 
+	@Nullable
+	@Override
+	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+		final ImmovableProperty immovable;
+		final GetImmovablePropertyKey key = new GetImmovablePropertyKey(immId);
+		final Element element = cache.get(key);
+		if (element == null) {
+			immovable = target.getImmovablePropery(user, immId);
+			cache.put(new Element(key, immovable));
+		}
+		else {
+			immovable = (ImmovableProperty) element.getObjectValue();
+		}
+		return immovable;
+	}
+
+	@Nullable
+	@Override
+	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
+		final Building immovable;
+		final GetBuildingKey key = new GetBuildingKey(buildingId);
+		final Element element = cache.get(key);
+		if (element == null) {
+			immovable = target.getBuilding(user, buildingId);
+			cache.put(new Element(key, immovable));
+		}
+		else {
+			immovable = (Building) element.getObjectValue();
+		}
+		return immovable;
+	}
+
 	/**
 	 * Vide le cache de toute donnée concernant le tiers dont le numéro est donné
 	 * @param partyNo numéro du tiers à oublier
@@ -372,5 +406,13 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 				cache.remove(k);
 			}
 		}
+	}
+
+	// TODO (msi) câbler un système de clear des données du RF après chaque import.
+	public void evictLandRegistryData() {
+		final List<?> keys = cache.getKeys();
+		keys.stream()
+				.filter(k -> k instanceof LandRegistryCacheKey)
+				.forEach(k -> cache.remove(k));
 	}
 }

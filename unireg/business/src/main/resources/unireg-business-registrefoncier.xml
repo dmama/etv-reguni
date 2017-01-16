@@ -3,7 +3,10 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean id="serviceRF" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl" />
+	<bean id="serviceRF" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl">
+		<property name="batimentRFDAO" ref="batimentRFDAO"/>
+		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
+	</bean>
 
 	<bean id="communeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" parent="dateRangeEntityValidator" />
