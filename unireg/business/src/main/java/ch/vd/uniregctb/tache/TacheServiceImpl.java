@@ -1010,7 +1010,8 @@ public class TacheServiceImpl implements TacheService {
 
 			@Override
 			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
-				if (di.getTypeContribuable() == pi.getTypeContribuable() && DateRangeHelper.equals(di, pi)) {
+				// [SIFISC-20682] on ne touche pas au type de contribuable des DI sur lesquelles il est vide (en fait, si c'est la seule différence, on l'oublie, tout simplement)
+				if (DateRangeHelper.equals(di, pi) && (di.getTypeContribuable() == null || di.getTypeContribuable() == pi.getTypeContribuable())) {
 					// [SIFISC-19894] sur une DI migrée de SIMPA, il n'y a pas de type de déclaration... la comparaison ne fait alors pas de sens
 					// [SIFISC-19894] sauf qu'en fait, le type de document a été rattrapé par script (afin de pouvoir faire des duplicata) et il faut comparer les types par groupe
 					final boolean areTypeDocumentEquivalent = areEquivalent(di.getTypeDeclaration(), pi.getTypeDocumentDeclaration());

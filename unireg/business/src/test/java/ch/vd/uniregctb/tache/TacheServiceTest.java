@@ -6318,4 +6318,62 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testNonMiseAJourTypeContribuableVideSurDIPM() throws Exception {
+
+		final RegDate dateDebut = date(2009, 6, 30);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		// mise en place fiscale (sans synchronisation des taches...)
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(entreprise, dateDebut, null, "Truculenterie SA");
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(2016, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne);
+
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			for (int annee = dateDebut.year() ; annee <= 2016 ; ++ annee) {
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final RegDate debut = annee == dateDebut.year() ? dateDebut : date(annee, 1, 1);
+				addDeclarationImpot(entreprise, pf, debut, date(annee, 12, 31), oipm, null, md);        // type contribuable est "null"
+			}
+
+			return entreprise.getNumero();
+		});
+
+		// lancement de la synchronisation des tâches
+		final TacheSyncResults results = doInNewTransactionAndSession(status -> tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId)));
+
+		// et vérification
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getActions().size());
+		Assert.assertEquals(0, results.getExceptions().size());
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				final DeclarationImpotOrdinaire diAvecTypeContribuable = entreprise.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true).stream()
+						.filter(di -> di.getTypeContribuable() != null)
+						.findAny()
+						.orElse(null);
+				Assert.assertNull(diAvecTypeContribuable);
+			}
+		});
+	}
 }
