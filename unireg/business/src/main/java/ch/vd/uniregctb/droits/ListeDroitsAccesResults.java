@@ -59,7 +59,7 @@ public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAcces
 			this.oidGestion = oidGestion;
 			if (adresseEnvoi != null) {
 				this.nomsRaisonsSociales.addAll(adresseEnvoi.getNomsPrenomsOuRaisonsSociales());
-				this.adresseEnvoi = adresseEnvoi.getLignes();
+				this.adresseEnvoi = adresseEnvoi.getLignes().asTexte();
 			}
 			this.type = type;
 			this.niveau = niveau;

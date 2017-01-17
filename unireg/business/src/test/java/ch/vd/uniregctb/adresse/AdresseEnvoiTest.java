@@ -8,7 +8,7 @@ public class AdresseEnvoiTest {
 
 	@Test
 	public void testAddLine() {
-		AdresseEnvoi adresse = new AdresseEnvoi();
+		final AdresseEnvoi adresse = new AdresseEnvoi();
 		adresse.addLine("Ligne 1");
 		adresse.addLine("Ligne 2");
 		adresse.addLine("Ligne 3");
@@ -16,7 +16,7 @@ public class AdresseEnvoiTest {
 		adresse.addLine("Ligne 5");
 		adresse.addLine("Ligne 6");
 
-		final String[] lignes = adresse.getLignes();
+		final String[] lignes = adresse.getLignes().asTexte();
 		assertEquals("Ligne 1", lignes[0]);
 		assertEquals("Ligne 2", lignes[1]);
 		assertEquals("Ligne 3", lignes[2]);
@@ -24,12 +24,12 @@ public class AdresseEnvoiTest {
 		assertEquals("Ligne 5", lignes[4]);
 		assertEquals("Ligne 6", lignes[5]);
 
-		assertEquals("Ligne 1", adresse.getLigne(1));
-		assertEquals("Ligne 2", adresse.getLigne(2));
-		assertEquals("Ligne 3", adresse.getLigne(3));
-		assertEquals("Ligne 4", adresse.getLigne(4));
-		assertEquals("Ligne 5", adresse.getLigne(5));
-		assertEquals("Ligne 6", adresse.getLigne(6));
+		assertEquals("Ligne 1", adresse.getLigne(1).getTexte());
+		assertEquals("Ligne 2", adresse.getLigne(2).getTexte());
+		assertEquals("Ligne 3", adresse.getLigne(3).getTexte());
+		assertEquals("Ligne 4", adresse.getLigne(4).getTexte());
+		assertEquals("Ligne 5", adresse.getLigne(5).getTexte());
+		assertEquals("Ligne 6", adresse.getLigne(6).getTexte());
 
 		assertEquals("Ligne 1", adresse.getLigne1());
 		assertEquals("Ligne 2", adresse.getLigne2());
@@ -59,12 +59,12 @@ public class AdresseEnvoiTest {
 		AdresseEnvoi adresse = new AdresseEnvoi();
 
 		// Ajout de six lignes optionnelles
-		adresse.addLine("Ligne optionnelle 1", 1);
-		adresse.addLine("Ligne optionnelle 2", 2);
-		adresse.addLine("Ligne optionnelle 3", 3);
-		adresse.addLine("Ligne optionnelle 4", 4);
-		adresse.addLine("Ligne optionnelle 5", 5);
-		adresse.addLine("Ligne optionnelle 6", 6);
+		adresse.addLine("Ligne optionnelle 1", 1, false);
+		adresse.addLine("Ligne optionnelle 2", 2, false);
+		adresse.addLine("Ligne optionnelle 3", 3, false);
+		adresse.addLine("Ligne optionnelle 4", 4, false);
+		adresse.addLine("Ligne optionnelle 5", 5, false);
+		adresse.addLine("Ligne optionnelle 6", 6, false);
 
 		assertEquals("Ligne optionnelle 1", adresse.getLigne1());
 		assertEquals("Ligne optionnelle 2", adresse.getLigne2());
@@ -143,9 +143,9 @@ public class AdresseEnvoiTest {
 		/*
 		 * on ajoute des lignes optionnelles -> elles doivent être ignorées puisque six lignes existent déjà
 		 */
-		adresse.addLine("Ligne optionnelle 1", 1);
-		adresse.addLine("Ligne optionnelle 2", 2);
-		adresse.addLine("Ligne optionnelle 3", 3);
+		adresse.addLine("Ligne optionnelle 1", 1, false);
+		adresse.addLine("Ligne optionnelle 2", 2, false);
+		adresse.addLine("Ligne optionnelle 3", 3, false);
 		assertEquals("Ligne 1", adresse.getLigne1());
 		assertEquals("Ligne 2", adresse.getLigne2());
 		assertEquals("Ligne 3", adresse.getLigne3());
@@ -163,8 +163,8 @@ public class AdresseEnvoiTest {
 		adresse.addLine("Ligne obligatoire 2");
 		adresse.addLine("Ligne obligatoire 3");
 		adresse.addLine("Ligne obligatoire 4");
-		adresse.addLine("Ligne optionnelle 5", 1);
-		adresse.addLine("Ligne optionnelle 6", 1);
+		adresse.addLine("Ligne optionnelle 5", 1, false);
+		adresse.addLine("Ligne optionnelle 6", 1, false);
 
 		/*
 		 * La granularité des adresses optionnelles n'est pas suffisante -> on ne peut choisir laquelle des deux adresses optionnelle doit

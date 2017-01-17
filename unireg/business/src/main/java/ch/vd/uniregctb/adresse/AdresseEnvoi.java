@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -12,25 +15,23 @@ import ch.vd.registre.base.utils.Assert;
  */
 public class AdresseEnvoi implements Serializable {
 
-	private static final long serialVersionUID = -1580808921461842994L;
+	private static final long serialVersionUID = 7681401476758849547L;
 
 	private static final int MAX_LIGNES = 6;
 	private static final int MANDATORY = 0;
 
-	private static class Data implements Serializable {
+	private static class Data extends LigneAdresse {
 
-		private static final long serialVersionUID = 4491962901544271213L;
+		private static final long serialVersionUID = 4861441051607209404L;
 
-		/** le contenu string d'une ligne d'adresse. */
-		public final String ligne;
 		/**
 		 * le degré d'optionalité d'une ligne d'adresse. Plus il est élevé et plus l'adresse risque d'être supprimée en case dépassement du
 		 * nombre de lignes autorisé.
 		 */
 		public final int optionalite;
 
-		public Data(String ligne, int optionalite) {
-			this.ligne = ligne != null ? ligne.trim() : null;
+		public Data(String ligne, int optionalite, boolean wrapping) {
+			super(ligne, wrapping);
 			this.optionalite = optionalite;
 		}
 	}
@@ -38,7 +39,7 @@ public class AdresseEnvoi implements Serializable {
 	private final List<Data> input = new ArrayList<>();
 	private int maxOptionalite;
 
-	private final String[] lignes = new String[MAX_LIGNES];
+	private final LigneAdresse[] lignes = new LigneAdresse[MAX_LIGNES];
 
 	public AdresseEnvoi() {
 		maxOptionalite = MANDATORY;
@@ -50,7 +51,7 @@ public class AdresseEnvoi implements Serializable {
 	 */
 	private void computeLines() {
 
-		List<Data> temp = new ArrayList<>(input);
+		final List<Data> temp = new ArrayList<>(input);
 		int niveau = maxOptionalite;
 
 		if (temp.size() > MAX_LIGNES) {
@@ -77,7 +78,7 @@ public class AdresseEnvoi implements Serializable {
 
 		/* copie des lignes existantes */
 		for (int i = 0; i < temp.size(); ++i) {
-			lignes[i] = temp.get(i).ligne;
+			lignes[i] = temp.get(i);
 		}
 
 		/* mise à null des lignes non-existantes */
@@ -91,7 +92,11 @@ public class AdresseEnvoi implements Serializable {
 	 * @param line  la ligne à ajouter
 	 */
 	public void addLine(String line) {
-		addLine(line, MANDATORY);
+		addLine(line, MANDATORY, false);
+	}
+
+	public void addLine(String line, boolean wrapping) {
+		addLine(line, MANDATORY, wrapping);
 	}
 
 	/**
@@ -103,16 +108,17 @@ public class AdresseEnvoi implements Serializable {
 	 *            le degré d'optionalite de la ligne : plus il est élevé et plus la ligne à de chance d'être supprimée en cas de dépassement
 	 *            du nombre de lignes autorisé.
 	 */
-	public void addLine(String line, int optionalite) {
-		input.add(new Data(line, optionalite));
+	public void addLine(String line, int optionalite, boolean wrapping) {
+		input.add(new Data(line, optionalite, wrapping));
 		if (optionalite > maxOptionalite) {
 			maxOptionalite = optionalite;
 		}
 		computeLines();
 	}
 
-	public String[] getLignes() {
-		return lignes;
+	@NotNull
+	public LignesAdresse getLignes() {
+		return new LignesAdresse(lignes);
 	}
 
 	/**
@@ -122,32 +128,32 @@ public class AdresseEnvoi implements Serializable {
 	 *            le numéro de la ligne [1-6]
 	 * @return la valeur de la ligne spécifiée
 	 */
-	public String getLigne(int no) {
+	public LigneAdresse getLigne(int no) {
 		return lignes[no - 1];
 	}
 
 	public String getLigne1() {
-		return lignes[0];
+		return Optional.ofNullable(lignes[0]).map(LigneAdresse::getTexte).orElse(null);
 	}
 
 	public String getLigne2() {
-		return lignes[1];
+		return Optional.ofNullable(lignes[1]).map(LigneAdresse::getTexte).orElse(null);
 	}
 
 	public String getLigne3() {
-		return lignes[2];
+		return Optional.ofNullable(lignes[2]).map(LigneAdresse::getTexte).orElse(null);
 	}
 
 	public String getLigne4() {
-		return lignes[3];
+		return Optional.ofNullable(lignes[3]).map(LigneAdresse::getTexte).orElse(null);
 	}
 
 	public String getLigne5() {
-		return lignes[4];
+		return Optional.ofNullable(lignes[4]).map(LigneAdresse::getTexte).orElse(null);
 	}
 
 	public String getLigne6() {
-		return lignes[5];
+		return Optional.ofNullable(lignes[5]).map(LigneAdresse::getTexte).orElse(null);
 	}
 
 	@Override
@@ -156,7 +162,6 @@ public class AdresseEnvoi implements Serializable {
 		if (!(o instanceof AdresseEnvoi)) return false;
 
 		final AdresseEnvoi that = (AdresseEnvoi) o;
-
 		return Arrays.equals(lignes, that.lignes);
 	}
 
@@ -167,8 +172,6 @@ public class AdresseEnvoi implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AdresseEnvoi{" +
-				"lignes=" + (lignes == null ? null : Arrays.asList(lignes)) +
-				'}';
+		return "AdresseEnvoi{" + "lignes=" + Arrays.asList(lignes) + '}';
 	}
 }

@@ -121,7 +121,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 		this.salutations = formule.salutations();
 		this.formuleAppel = formule.formuleAppel();
 		if (this.salutations != null) {
-			addLine(this.salutations, optionalite);
+			addLine(this.salutations, optionalite, false);
 		}
 	}
 
@@ -132,17 +132,17 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 	public void addNomPrenom(NomPrenom ligne, int optionalite) {
 		this.nomsPrenoms.add(ligne);
-		addLine(ligne.getNomPrenom(), optionalite);
+		addLine(ligne.getNomPrenom(), optionalite, false);
 	}
 
 	public void addRaisonSociale(String ligne) {
 		this.raisonsSociales.add(ligne);
-		addLine(ligne);
+		addLine(ligne, this.raisonsSociales.size() > 1);
 	}
 
 	public void addRaisonSociale(String ligne, int optionalite) {
 		this.raisonsSociales.add(ligne);
-		addLine(ligne, optionalite);
+		addLine(ligne, optionalite, this.raisonsSociales.size() > 1);
 	}
 
 	public void addComplement(String ligne) {
@@ -152,7 +152,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 	public void addComplement(String ligne, int optionalite) {
 		this.complement = ligne;
-		addLine(ligne, optionalite);
+		addLine(ligne, optionalite, false);
 	}
 
 	public void addPourAdresse(String ligne) {
@@ -162,7 +162,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 	public void addPourAdresse(String ligne, int optionalite) {
 		this.pourAdresse = ligne;
-		addLine(ligne, optionalite);
+		addLine(ligne, optionalite, false);
 	}
 
 	public void addRueEtNumero(RueEtNumero ligne) {
@@ -172,7 +172,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 	public void addRueEtNumero(RueEtNumero ligne, int optionalite) {
 		this.rueEtNumero = ligne;
-		addLine(ligne.getRueEtNumero(), optionalite);
+		addLine(ligne.getRueEtNumero(), optionalite, false);
 	}
 
 	public void addCasePostale(CasePostale ligne) {
@@ -182,7 +182,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 	public void addCasePostale(CasePostale ligne, int optionalite) {
 		this.casePostale = ligne;
-		addLine(ligne.toString(), optionalite);
+		addLine(ligne.toString(), optionalite, false);
 	}
 
 	public void addNpaEtLocalite(NpaEtLocalite ligne) {
@@ -192,7 +192,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 
 	public void addNpaEtLocalite(NpaEtLocalite ligne, int optionalite) {
 		this.npaEtLocalite = ligne;
-		addLine(ligne.toString(), optionalite);
+		addLine(ligne.toString(), optionalite, false);
 	}
 
 	public void addPays(Pays pays) {
@@ -205,7 +205,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 	public void addPays(Pays pays, int optionalite) {
 		this.pays = pays;
 		if (pays != null && !pays.isSuisse()) {
-			addLine(pays.getNomCourt(), optionalite);
+			addLine(pays.getNomCourt(), optionalite, false);
 		}
 	}
 

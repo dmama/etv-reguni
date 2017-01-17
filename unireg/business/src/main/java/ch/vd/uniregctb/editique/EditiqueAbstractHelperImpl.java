@@ -3,6 +3,8 @@ package ch.vd.uniregctb.editique;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,8 +37,8 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseMandataireAdapter;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.LigneAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
@@ -194,7 +196,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	@Nullable
 	protected CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
 		final List<String> lignes = new ArrayList<>(6);
-		for (String ligne : adresseEnvoi.getLignes()) {
+		for (String ligne : adresseEnvoi.getLignes().asTexte()) {
 			lignes.add(StringUtils.trimToEmpty(ligne));
 		}
 
@@ -346,7 +348,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		final CTypeInfoDocument originalInfoDocument = original.getInfoDocument();
 
 		// calcul des lignes de "copie à"
-		final List<String> texteCopieA = buildCopieA(adresseEditique);
+		final List<String> texteCopieA = buildCopieA(adresse);
 
 		// il faut donc générer un double du document original pour le mandataire...
 		final CTypeInfoDocument copieInfoDocument = new CTypeInfoDocument(originalInfoDocument.getVersionXSD(),
@@ -415,30 +417,37 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return null;
 	}
 
+	private static String concat(LigneAdresse[] source, int inclusiveFrom, int exclusiveTo) {
+		final StringBuilder b = new StringBuilder();
+		for (int i = inclusiveFrom ; i < exclusiveTo ; ++ i) {
+			final LigneAdresse ligne = source[i];
+			if (ligne != null) {
+				if (b.length() > 0) {
+					b.append(ligne.isWrapping() ? " " : ", ");
+				}
+				b.append(StringUtils.trimToEmpty(ligne.getTexte()));
+			}
+		}
+		return StringUtils.trimToNull(b.toString());
+	}
+
 	@NotNull
-	private static List<String> buildCopieA(CTypeAdresse adresse) {
-		final List<String> lignesBruttes = adresse.getAdresseLigne();
+	private static List<String> buildCopieA(AdresseEnvoiDetaillee adresse) {
+		final LigneAdresse[] lignesBruttes = adresse.getLignes().asLignes();
 		final List<String> lignesCopiesA = new ArrayList<>(2);
-		if (lignesBruttes.size() > 0) {
-			final String ligne1 = StringUtils.trimToNull(CollectionsUtils.concat(lignesBruttes.subList(0, Math.min(3, lignesBruttes.size())), ", "));
+		if (lignesBruttes.length > 0) {
+			final String ligne1 = concat(lignesBruttes, 0, Math.min(3, lignesBruttes.length));
 			final String ligne2;
-			if (lignesBruttes.size() > 3) {
-				ligne2 = StringUtils.trimToNull(CollectionsUtils.concat(lignesBruttes.subList(3, lignesBruttes.size()), ", "));
+			if (lignesBruttes.length > 3) {
+				ligne2 = concat(lignesBruttes, 3, lignesBruttes.length);
 			}
 			else {
 				ligne2 = null;
 			}
 
-			if (ligne1 != null && ligne2 != null) {
-				lignesCopiesA.add(String.format("%s,", ligne1));
-				lignesCopiesA.add(ligne2);
-			}
-			else if (ligne1 != null) {
-				lignesCopiesA.add(ligne1);
-			}
-			else if (ligne2 != null) {
-				lignesCopiesA.add(ligne2);
-			}
+			Stream.of(ligne1, ligne2)
+					.filter(Objects::nonNull)
+					.forEach(lignesCopiesA::add);
 		}
 		return lignesCopiesA;
 	}

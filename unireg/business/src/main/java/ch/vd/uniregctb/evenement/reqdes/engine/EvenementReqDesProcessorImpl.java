@@ -1335,7 +1335,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			final AdresseEnvoi envoi = adresseService.buildAdresseEnvoi(pp, adresse, date);
 
 			// récupération des lignes d'adresse non-vides
-			final String[] lignesBruttes = envoi.getLignes();
+			final String[] lignesBruttes = envoi.getLignes().asTexte();
 			final List<String> lignes = new ArrayList<>(lignesBruttes.length);
 			for (String ligne : lignesBruttes) {
 				if (StringUtils.isNotBlank(ligne)) {

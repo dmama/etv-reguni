@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.LignesAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.GentilComparator;
@@ -86,12 +88,10 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 			adresseEnvoi = null;
 		}
 
-		if (adresseEnvoi != null) {
-			this.adresseEnvoi = adresseEnvoi.getLignes();
-		}
-		else {
-			this.adresseEnvoi = null;
-		}
+		this.adresseEnvoi = Optional.ofNullable(adresseEnvoi)
+				.map(AdresseEnvoiDetaillee::getLignes)
+				.map(LignesAdresse::asTexte)
+				.orElse(null);
 	}
 
 	/**

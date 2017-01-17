@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,6 +42,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.LignesAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -235,6 +237,13 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		}
    	}
 
+   	private static String[] extractLignes(@Nullable AdresseEnvoiDetaillee adresse) {
+	    return Optional.ofNullable(adresse)
+			    .map(AdresseEnvoiDetaillee::getLignes)
+			    .map(LignesAdresse::asTexte)
+			    .orElse(null);
+    }
+
 	/**
 	 * Traitement des informations de mandataire général présentes dans la déclaration retournée
 	 * @param entreprise entreprise ciblée
@@ -374,7 +383,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 					return;
 				}
 			}
-			lignesAdresseMandataireFourni = representation != null ? representation.getLignes() : null;
+			lignesAdresseMandataireFourni = extractLignes(representation);
 		}
 		else {
 			lignesAdresseMandataireFourni = null;
@@ -401,7 +410,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				final Tiers mandataireConnu = tiersService.getTiers(mandatConnu.getObjetId());
 				avecCopieMandataireConnu = mandatConnu.getWithCopy() != null && mandatConnu.getWithCopy();
 				final AdresseEnvoiDetaillee adresseMandataireActif = adresseService.getAdresseEnvoi(mandataireConnu, null, TypeAdresseFiscale.REPRESENTATION, false);
-				lignesAdresseConnue = adresseMandataireActif.getLignes();
+				lignesAdresseConnue = extractLignes(adresseMandataireActif);
 				noTelContactMandataireConnu = mandatConnu.getNoTelephoneContact();
 				contactMandataireConnu = mandatConnu.getNomPersonneContact();
 			}
@@ -409,7 +418,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				avecCopieMandataireConnu = adresseMandataireConnue.isWithCopy();
 				final AdresseGenerique adresseGenerique = new AdresseMandataireAdapter(adresseMandataireConnue, infraService);
 				final AdresseEnvoiDetaillee adresseDetaillee = adresseService.buildAdresseEnvoi(adresseGenerique.getSource().getTiers(), adresseGenerique, dateReference);
-				lignesAdresseConnue = adresseDetaillee.getLignes();
+				lignesAdresseConnue = extractLignes(adresseDetaillee);
 				noTelContactMandataireConnu = adresseMandataireConnue.getNoTelephoneContact();
 				contactMandataireConnu = adresseMandataireConnue.getNomPersonneContact();
 			}
@@ -960,7 +969,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		try {
 			final AdresseGenerique generique = new AdresseCivileAdapter(adresse, destinataire, false, infraService);
 			final AdresseEnvoiDetaillee detaillee = adresseService.buildAdresseEnvoi(destinataire, generique, dateReference);
-			return detaillee.getLignes();
+			return extractLignes(detaillee);
 		}
 		catch (DonneesCivilesException e) {
 			// pas vraiment possible ici car les dates de début et de fin sont toujours nulles....
@@ -986,7 +995,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			final AdresseEnvoiDetaillee ancienneAdresse = adresseService.getAdresseEnvoi(entreprise, dateReferenceExistant, TypeAdresseFiscale.COURRIER, false);
 
 			// on compare juste la représentation visuelle des adresses (= les 6 lignes)
-			final boolean sameAddresses = areEquals(nouvelleAdresse, ancienneAdresse.getLignes());
+			final boolean sameAddresses = areEquals(nouvelleAdresse, extractLignes(ancienneAdresse));
 			if (sameAddresses) {
 				// rien à faire, les adresses sont les mêmes
 				return;

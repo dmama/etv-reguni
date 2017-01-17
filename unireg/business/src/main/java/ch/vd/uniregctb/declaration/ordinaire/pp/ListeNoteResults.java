@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.LignesAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -84,19 +86,15 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 				adresseEnvoi = null;
 			}
 
-			if (adresseEnvoi != null) {
-				this.adresseEnvoi = adresseEnvoi.getLignes();
-			}
-			else {
-				this.adresseEnvoi = null;
-			}
+			this.adresseEnvoi = Optional.ofNullable(adresseEnvoi)
+					.map(AdresseEnvoiDetaillee::getLignes)
+					.map(LignesAdresse::asTexte)
+					.orElse(null);
 
-			nomsPrenoms = new ArrayList<>(2);
-			nosAvs = new ArrayList<>(2);
+			this.nomsPrenoms = new ArrayList<>(2);
+			this.nosAvs = new ArrayList<>(2);
 			fillNomsPrenomsEtNosAvs(ctb, date.year(), tiersService, nomsPrenoms, nosAvs);
 			fillSituationFiscale(ctb, date, tiersService, infraService);
-
-
 		}
 
 		private void fillSituationFiscale(Contribuable ctb, RegDate date, TiersService tiersService, ServiceInfrastructureService infraService) {

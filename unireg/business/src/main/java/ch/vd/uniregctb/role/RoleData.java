@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.LignesAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -108,7 +109,10 @@ public abstract class RoleData {
 	private static String[] fillAdresseEnvoi(Contribuable contribuable, RegDate dateReference, AdresseService adresseService) {
 		try {
 			final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(contribuable, dateReference, TypeAdresseFiscale.COURRIER, false);
-			return Optional.ofNullable(adresse).map(AdresseEnvoiDetaillee::getLignes).orElse(null);
+			return Optional.ofNullable(adresse)
+					.map(AdresseEnvoiDetaillee::getLignes)
+					.map(LignesAdresse::asTexte)
+					.orElse(null);
 		}
 		catch (AdresseException e) {
 			LOGGER.error("Impossible de récupérer l'adresse du contribuable " + FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()) + " au " + RegDateHelper.dateToDisplayString(dateReference), e);

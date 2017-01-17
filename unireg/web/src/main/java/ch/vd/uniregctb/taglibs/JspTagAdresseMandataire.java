@@ -114,7 +114,7 @@ public class JspTagAdresseMandataire extends BodyTagSupport {
 				try {
 					final AdresseGenerique generique = new AdresseMandataireAdapter(am, infraService);
 					final AdresseEnvoiDetaillee envoi = adresseService.buildAdresseEnvoi(generique.getSource().getTiers(), generique, am.getDateFin());
-					lignes = envoi.getLignes();
+					lignes = envoi.getLignes().asTexte();
 				}
 				catch (AdresseException e) {
 					LOGGER.error("Erreur à la constitution de l'adresse mandataire " + idAdresse, e);
