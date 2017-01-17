@@ -78,7 +78,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 
 				//entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
 
 				return entreprise.getNumero();

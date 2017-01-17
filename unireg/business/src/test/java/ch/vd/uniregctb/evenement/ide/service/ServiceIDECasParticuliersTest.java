@@ -68,7 +68,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 
 				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
 
 				return entreprise.getNumero();
@@ -166,7 +166,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 
 				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1");
 
 				return entreprise.getNumero();
@@ -236,7 +236,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 
 				entreprise.changeSecteurActivite("Fabrication d'objets synthétiques");
 
-				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.DOMICILE, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
+				final AdresseSuisse adresseSuisse = addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(2016, 9, 5), null, MockRue.Renens.QuatorzeAvril);
 				adresseSuisse.setNumeroMaison("1"); // On laisse l'adresse ouverte, pas envie de configurer une adresse RCEnt propre car le test ne porte pas dessus.
 
 				return entreprise.getNumero();
