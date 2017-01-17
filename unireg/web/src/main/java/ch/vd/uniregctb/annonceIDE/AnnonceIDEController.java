@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
-import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
@@ -150,7 +150,7 @@ public class AnnonceIDEController {
 				annonces = organisationService.findAnnoncesIDE(view.toQuery(), order, pageNumber, pageSize);
 			}
 		}
-		catch (RcEntClientException e) {
+		catch (ServiceOrganisationException e) {
 			LOGGER.warn("Erreur lors de la recherche de demandes à l'IDE", e);
 			Flash.warning("L'appel à RCEnt a levé l'erreur suivante : " + e.getMessage() + ". Veuillez réessayer plus tard.");
 			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));

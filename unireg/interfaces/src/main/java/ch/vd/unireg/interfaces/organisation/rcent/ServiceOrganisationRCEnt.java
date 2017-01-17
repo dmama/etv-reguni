@@ -150,22 +150,27 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
 
-		final Sort sort = (order == null ? null : new Sort(order));
-		final PageRequest pageable = new PageRequest(pageNumber, resultsPerPage, sort);
+		try {
+			final Sort sort = (order == null ? null : new Sort(order));
+			final PageRequest pageable = new PageRequest(pageNumber, resultsPerPage, sort);
 
-		// on fait la requête au client
-		final Page<NoticeRequestReport> notices = client.findNotices(query.toFindNoticeQuery(), order, pageNumber + 1, resultsPerPage);
-		if (notices == null) {
-			return new PageImpl<>(Collections.<AnnonceIDE>emptyList(), pageable, 0);
-		}
-		else {
-			// on adapte les réponses
-			final List<AnnonceIDE> annonces = new ArrayList<>(notices.getNumberOfElements());
-			for (NoticeRequestReport n : notices.getContent()) {
-				final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
-				annonces.add(a);
+			// on fait la requête au client
+			final Page<NoticeRequestReport> notices = client.findNotices(query.toFindNoticeQuery(), order, pageNumber + 1, resultsPerPage);
+			if (notices == null) {
+				return new PageImpl<>(Collections.<AnnonceIDE>emptyList(), pageable, 0);
 			}
-			return new PageImpl<>(annonces, pageable, notices.getTotalElements());
+			else {
+				// on adapte les réponses
+				final List<AnnonceIDE> annonces = new ArrayList<>(notices.getNumberOfElements());
+				for (NoticeRequestReport n : notices.getContent()) {
+					final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
+					annonces.add(a);
+				}
+				return new PageImpl<>(annonces, pageable, notices.getTotalElements());
+			}
+		}
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
 		}
 	}
 
