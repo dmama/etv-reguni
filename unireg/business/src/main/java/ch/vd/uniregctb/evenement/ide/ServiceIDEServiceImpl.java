@@ -138,13 +138,11 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 
 		final AdressesFiscales adressesFiscales = adressesFiscalHisto.at(date);
 
-		if (adressesFiscales.domicile != null && !adressesFiscales.domicile.isAnnule()) {
-			return adressesFiscales.domicile;
-		} else if (adressesFiscales.courrier != null && !adressesFiscales.courrier.isAnnule()) {
+		if (adressesFiscales.courrier != null && !adressesFiscales.courrier.isDefault() && !adressesFiscales.courrier.isAnnule()) {
 			return adressesFiscales.courrier;
-		} else if (adressesFiscales.representation != null && !adressesFiscales.representation.isAnnule()) {
+		} else if (adressesFiscales.representation != null && !adressesFiscales.representation.isDefault() && !adressesFiscales.representation.isAnnule()) {
 			return adressesFiscales.representation;
-		} else if (adressesFiscales.poursuite != null && !adressesFiscales.poursuite.isAnnule()) {
+		} else if (adressesFiscales.poursuite != null && !adressesFiscales.poursuite.isDefault() && !adressesFiscales.poursuite.isAnnule()) {
 			return adressesFiscales.poursuite;
 		}
 		return null;
