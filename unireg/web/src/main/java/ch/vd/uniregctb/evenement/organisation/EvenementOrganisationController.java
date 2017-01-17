@@ -168,7 +168,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                          @ModelAttribute("evenementOrganisationCriteria") @Valid EvenementOrganisationCriteriaView criteriaInSession,
 	                                          BindingResult bindingResult,
