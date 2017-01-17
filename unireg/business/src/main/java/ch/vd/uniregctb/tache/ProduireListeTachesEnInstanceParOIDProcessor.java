@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.tache;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -28,6 +30,20 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 
+	private static final Map<String, TypeTache> TYPES_TACHE = buildTypesTacheMapping();
+
+	protected static Map<String, TypeTache> buildTypesTacheMapping() {
+		final Map<String, TypeTache> mapping = new HashMap<>();
+		mapping.put("NOUVEAU_DOSSIER", TypeTache.TacheNouveauDossier);
+		mapping.put("TRANS_DOSSIER", TypeTache.TacheTransmissionDossier);
+		mapping.put("CTRL_DOSSIER", TypeTache.TacheControleDossier);
+		mapping.put("ENVOI_DI_PP", TypeTache.TacheEnvoiDeclarationImpotPP);
+		mapping.put("ENVOI_DI_PM", TypeTache.TacheEnvoiDeclarationImpotPM);
+		mapping.put("ANNUL_DI", TypeTache.TacheAnnulationDeclarationImpot);
+		mapping.put("ENVOI_QSNC", TypeTache.TacheEnvoiQuestionnaireSNC);
+		mapping.put("ANNUL_QSNC", TypeTache.TacheAnnulationQuestionnaireSNC);
+		return mapping;
+	}
 
 	public ProduireListeTachesEnInstanceParOIDProcessor(HibernateTemplate hibernateTemplate,
 	                                                    TiersService tiersService,
@@ -110,24 +126,6 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 	}
 
 	private TypeTache translateTypeTache(String code){
-		if ("NOUVEAU_DOSSIER".equals(code)) {
-			return TypeTache.TacheNouveauDossier;
-		}
-		else if ("TRANS_DOSSIER".equals(code)) {
-			return TypeTache.TacheTransmissionDossier;
-		}
-		else if ("CTRL_DOSSIER".equals(code)) {
-			return TypeTache.TacheControleDossier;
-		}
-		else if ("ENVOI_DI_PP".equals(code)) {
-			return TypeTache.TacheEnvoiDeclarationImpotPP;
-		}
-		else if ("ENVOI_DI_PM".equals(code)) {
-			return TypeTache.TacheEnvoiDeclarationImpotPM;
-		}
-		else if ("ANNUL_DI".equals(code)) {
-			return TypeTache.TacheAnnulationDeclarationImpot;
-		}
-		return null;
+		return TYPES_TACHE.get(code);
 	}
 }

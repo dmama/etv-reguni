@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.tache;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,11 +16,13 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTest {
 
@@ -36,6 +41,20 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 		final int year = RegDate.get().year();
 		addForPrincipal(pp, date(year, 1, 1), MotifFor.ARRIVEE_HS, communeFor);
 		return pp;
+	}
+
+	@Test
+	public void testTousTypesDeTacheSupportes() throws Exception {
+		final Map<String, TypeTache> mapping = ProduireListeTachesEnInstanceParOIDProcessor.buildTypesTacheMapping();
+		Assert.assertNotNull(mapping);
+
+		final Set<TypeTache> allTypes = EnumSet.allOf(TypeTache.class);
+		Assert.assertEquals(allTypes.size(), mapping.size());
+
+		allTypes.removeAll(mapping.values());
+		if (!allTypes.isEmpty()) {
+			Assert.fail("Le mapping des types de tâches ne comprend pas les types " + CollectionsUtils.toString(allTypes, TypeTache::name, ", "));
+		}
 	}
 
 	@Test
