@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
@@ -72,7 +72,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	/**
 	 * Moniteur des appels en cours
 	 */
-	private final DetailedLoadMeter<Object> loadMeter = new DetailedLoadMeter<>();
+	private final DetailedLoadMeter<Supplier<String>> loadMeter = new DetailedLoadMeter<>(Supplier::get);
 
 	private final ch.vd.unireg.ws.security.v6.ObjectFactory securityObjectFactory = new ch.vd.unireg.ws.security.v6.ObjectFactory();
 	private final ch.vd.unireg.ws.ack.v6.ObjectFactory ackObjectFactory = new ch.vd.unireg.ws.ack.v6.ObjectFactory();
@@ -122,7 +122,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		ExecutionResult execute() throws Exception;
 	}
 
-	private Response execute(Object callDescription, Logger accessLog, ExecutionCallback callback) {
+	private Response execute(Supplier<String> callDescription, Logger accessLog, ExecutionCallback callback) {
 		Throwable t = null;
 		Response r = null;
 		Integer nbItems = null;
@@ -180,7 +180,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		ExecutionResult execute(UserLogin userLogin) throws Exception;
 	}
 
-	private Response execute(final String user, Object callDescription, Logger accessLog, final ExecutionCallbackWithUser callback) {
+	private Response execute(final String user, Supplier<String> callDescription, Logger accessLog, final ExecutionCallbackWithUser callback) {
 		return execute(callDescription, accessLog, () -> {
 			final UserLogin userLogin = WebServiceHelper.parseLoginParameter(user);
 			if (userLogin == null) {
@@ -200,13 +200,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response setAutomaticRepaymentBlockingFlag(final int partyNo, final String user, final String value) {
-
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s, value=%s}", partyNo, WebServiceHelper.enquote(user), WebServiceHelper.enquote(value));
-			}
-		};
+		final Supplier<String> params = () -> String.format("setAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s, value=%s}", partyNo, WebServiceHelper.enquote(user), WebServiceHelper.enquote(value));
 		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
 			if (value == null || !BOOLEAN_PATTERN.matcher(value).matches()) {
 				LOGGER.error("Wrong or missing new flag value");
@@ -221,12 +215,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getAutomaticRepaymentBlockingFlag(final int partyNo, final String user) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
-			}
-		};
+		final Supplier<String> params = () -> String.format("getAutomaticRepaymentBlockingFlag{partyNo=%d, user=%s}", partyNo, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final boolean blocked = target.getAutomaticRepaymentBlockingFlag(partyNo, userLogin);
 			return ExecutionResult.with(Response.ok(blocked, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE).build());
@@ -235,17 +224,12 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response ping() {
-		return execute("ping", READ_ACCESS_LOG, () -> ExecutionResult.with(Response.ok(DateHelper.getCurrentDate().getTime(), WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build()));
+		return execute(() -> "ping", READ_ACCESS_LOG, () -> ExecutionResult.with(Response.ok(DateHelper.getCurrentDate().getTime(), WebServiceHelper.TEXT_PLAIN_WITH_UTF8_CHARSET_TYPE).build()));
 	}
 
 	@Override
 	public Response getSecurityOnParty(final String user, final int partyNo) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("getSecurityOnParty{user=%s, partyNo=%d}", WebServiceHelper.enquote(user), partyNo);
-			}
-		};
+		final Supplier<String> params = () -> String.format("getSecurityOnParty{user=%s, partyNo=%d}", WebServiceHelper.enquote(user), partyNo);
 		return execute(params, READ_ACCESS_LOG, () -> {
 			final SecurityResponse response = target.getSecurityOnParty(user, partyNo);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
@@ -261,13 +245,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getParty(final int partyNo, final String user, final Set<PartyPart> parts) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
-				final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
-				return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(sortedParts));
-			}
+		final Supplier<String> params = () -> {
+			// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
+			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
+			return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(sortedParts));
 		};
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			try {
@@ -302,13 +283,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getParties(final String user, final List<Integer> partyNos, final Set<PartyPart> parts) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
-				final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
-				return String.format("getParties{user=%s, partyNo=%s, parts=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos), WebServiceHelper.toString(sortedParts));
-			}
+		final Supplier<String> params = () -> {
+			// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
+			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
+			return String.format("getParties{user=%s, partyNo=%s, parts=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos), WebServiceHelper.toString(sortedParts));
 		};
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			try {
@@ -349,15 +327,12 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	                            final boolean onlyActiveMainTaxResidence, final Set<PartySearchType> partyTypes, final DebtorCategory debtorCategory, final Boolean activeParty,
 	                            final Long oldWithholdingNumber) {
 
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[partyTypes.size()]));
-				return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, uidNumber=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
-				                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
-				                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), WebServiceHelper.enquote(uidNumber), taxResidenceFSOId,
-				                     onlyActiveMainTaxResidence, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
-			}
+		final Supplier<String> params = () -> {
+			final String partyTypesStr = Arrays.toString(partyTypes.toArray(new PartySearchType[partyTypes.size()]));
+			return String.format("searchParty{user=%s, partyNo=%s, name=%s, nameSearchMode=%s, townOrCountry=%s, dateOfBirth=%s, vn=%s, uidNumber=%s, taxResidenceFSOId=%d, onlyActiveMainTaxResidence=%s, partyTypes=%s, debtorCategory=%s, activeParty=%s, oldWithholdingNumber=%d}",
+			                     WebServiceHelper.enquote(user), WebServiceHelper.enquote(partyNo), WebServiceHelper.enquote(name), nameSearchMode, WebServiceHelper.enquote(townOrCountry),
+			                     WebServiceHelper.enquote(dateOfBirthStr), WebServiceHelper.enquote(socialInsuranceNumber), WebServiceHelper.enquote(uidNumber), taxResidenceFSOId,
+			                     onlyActiveMainTaxResidence, partyTypesStr, debtorCategory, activeParty, oldWithholdingNumber);
 		};
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final RegDate dateNaissance;
@@ -402,12 +377,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getTaxOffices(final int municipalityId, final String dateStr) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("getTaxOffices{municipalityId=%d, date=%s}", municipalityId, WebServiceHelper.enquote(dateStr));
-			}
-		};
+		final Supplier<String> params = () -> String.format("getTaxOffices{municipalityId=%d, date=%s}", municipalityId, WebServiceHelper.enquote(dateStr));
 		return execute(params, READ_ACCESS_LOG, () -> {
 			final RegDate date;
 			try {
@@ -444,12 +414,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response ackOrdinaryTaxDeclarations(final String user, final OrdinaryTaxDeclarationAckRequest request) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("ackOrdinaryTaxDeclarations{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
-			}
-		};
+		final Supplier<String> params = () -> String.format("ackOrdinaryTaxDeclarations{user=%s, request=%s}", WebServiceHelper.enquote(user), request);
 		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
 			final OrdinaryTaxDeclarationAckResponse response = target.ackOrdinaryTaxDeclarations(userLogin, request);
 			return ExecutionResult.with(Response.ok(ackObjectFactory.createOrdinaryTaxDeclarationAckResponse(response)).build());
@@ -459,12 +424,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	@Override
 	public Response newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo,
 	                                                  final String user, final DeadlineRequest request) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("newOrdinaryTaxDeclarationDeadline{user=%s, partyNo=%d, pf=%d, seqNo=%d, request=%s}", WebServiceHelper.enquote(user), partyNo, pf, seqNo, request);
-			}
-		};
+		final Supplier<String> params = () -> String.format("newOrdinaryTaxDeclarationDeadline{user=%s, partyNo=%d, pf=%d, seqNo=%d, request=%s}", WebServiceHelper.enquote(user), partyNo, pf, seqNo, request);
 		return execute(user, params, WRITE_ACCESS_LOG, userLogin -> {
 			final DeadlineResponse response = target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, userLogin, request);
 			return ExecutionResult.with(Response.ok(deadlineObjectFactory.createDeadlineResponse(response)).build());
@@ -473,12 +433,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getModifiedTaxPayers(final String user, final Long since, final Long until) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("getModifiedTaxPayers{user=%s, since=%d, until=%d}", WebServiceHelper.enquote(user), since, until);
-			}
-		};
+		final Supplier<String> params = () -> String.format("getModifiedTaxPayers{user=%s, since=%d, until=%d}", WebServiceHelper.enquote(user), since, until);
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			if (since == null || until == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.BAD_REQUEST, getAcceptableMediaTypes(), ErrorType.TECHNICAL, "'since' and 'until' are required parameters."));
@@ -503,12 +458,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getDebtorInfo(final int debtorNo, final int pf, final String user) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s}", debtorNo, pf, WebServiceHelper.enquote(user));
-			}
-		};
+		final Supplier<String> params = () -> String.format("getDebtorInfo{debtorNo=%d, fiscalPeriod=%d, user=%s}", debtorNo, pf, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final DebtorInfo info = target.getDebtorInfo(userLogin, debtorNo, pf);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
@@ -524,12 +474,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 
 	@Override
 	public Response getAvatar(final int partyNo) {
-		final Object params = new Object() {
-			@Override
-			public String toString() {
-				return String.format("getAvatar{partyNo=%d}", partyNo);
-			}
-		};
+		final Supplier<String> params = () -> String.format("getAvatar{partyNo=%d}", partyNo);
 		return execute(params, READ_ACCESS_LOG, () -> {
 			try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream(16 * 1024)) {
 				IOUtils.copy(data.getDataStream(), bos);

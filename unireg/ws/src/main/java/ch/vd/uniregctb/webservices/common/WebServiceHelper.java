@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +47,7 @@ public abstract class WebServiceHelper {
 	 * Utilisé pour le log d'un appel web-service
 	 * @param accessLogger le logger dans lequel (au niveau INFO) on enverra les informations de l'appel
 	 * @param request requête HTTP entrante (pour y récupérer l'éventuelle donnée d'authentification)
-	 * @param params un objet dont la méthode {@link #toString()} sera appelée pour la documentation de l'appel
+	 * @param params un <i>supplier</i> capable de donner une description de l'appel
 	 * @param duration durée de l'appel, en nano-secondes
 	 * @param load nombre d'appel en cours (y compris celui-ci)
 	 * @param contentType le <i>content-type</i> de la réponse fournie, si explicite
@@ -54,14 +55,14 @@ public abstract class WebServiceHelper {
 	 * @param nbItems dans les cas où cela a un sens, le nombre d'éléments retournés par la requête
 	 * @param t éventuelle exception lancée pendant l'appel
 	 */
-	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Object params, long duration, int load, @Nullable String contentType, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
+	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Supplier<String> params, long duration, int load, @Nullable String contentType, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
 		if (accessLogger.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser(request);
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 			final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
 			final String itemString = (nbItems == null ? StringUtils.EMPTY : String.format(" => %d item(s)", nbItems));
 			final String typeString = StringUtils.isBlank(contentType) ? StringUtils.EMPTY : String.format(" content-type='%s'", contentType);
-			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s%s%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), load, statusString, typeString, itemString, exceptionString));
+			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s%s%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.get(), load, statusString, typeString, itemString, exceptionString));
 		}
 	}
 
