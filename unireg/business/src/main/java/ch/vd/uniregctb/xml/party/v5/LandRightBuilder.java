@@ -3,6 +3,7 @@ package ch.vd.uniregctb.xml.party.v5;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFInfo;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
@@ -31,26 +33,38 @@ import ch.vd.uniregctb.xml.EnumHelper;
 @SuppressWarnings("Duplicates")
 public abstract class LandRightBuilder {
 
-	private static final Map<Class, Function<DroitRF, ? extends LandRight>> strategies = new HashMap<>();
+	/**
+	 * Permet de récupérer les informations d'une communauté à partir de son id.
+	 */
+	public interface CommunauteInfoProvider extends Function<Long, CommunauteRFInfo> {
+	}
+
+	/**
+	 * Stratégie de création d'un droit web à part d'un droit core.
+	 */
+	public interface Strategy <L extends LandRight> extends BiFunction<DroitRF, CommunauteInfoProvider, L> {
+	}
+
+	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(DroitHabitationRF.class, d -> newHousingRight((DroitHabitationRF) d));
-		strategies.put(DroitProprieteCommunauteRF.class, d -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
-		strategies.put(DroitProprietePersonneMoraleRF.class, d -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d));
-		strategies.put(DroitProprietePersonnePhysiqueRF.class, d -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d));
-		strategies.put(UsufruitRF.class, d -> newUsufructRight((UsufruitRF) d));
+		strategies.put(DroitHabitationRF.class, (d, p) -> newHousingRight((DroitHabitationRF) d));
+		strategies.put(DroitProprieteCommunauteRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
+		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
+		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
+		strategies.put(UsufruitRF.class, (d, p) -> newUsufructRight((UsufruitRF) d));
 	}
 
 	private LandRightBuilder() {
 	}
 
 	@NotNull
-	public static LandRight newLandRight(@NotNull DroitRF droitRF) {
-		final Function<DroitRF, ? extends LandRight> strategy = strategies.get(droitRF.getClass());
+	public static LandRight newLandRight(@NotNull DroitRF droitRF, @NotNull CommunauteInfoProvider communauteInfoProvider) {
+		final Strategy<?> strategy = strategies.get(droitRF.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type de droit [" + droitRF.getClass() + "] est inconnu");
 		}
-		return strategy.apply(droitRF);
+		return strategy.apply(droitRF, communauteInfoProvider);
 	}
 
 	@NotNull
@@ -65,14 +79,14 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF, @NotNull CommunauteInfoProvider communauteInfoProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
 		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
 		right.setStartReason(droitRF.getMotifDebut());
 		right.setEndReason(droitRF.getMotifFin());
-		right.setCommunity(getCommunity(droitRF.getCommunaute()));
+		right.setCommunity(getCommunity(droitRF.getCommunaute(), communauteInfoProvider));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId().intValue());
@@ -80,14 +94,14 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF, @NotNull CommunauteInfoProvider communauteInfoProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
 		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
 		right.setStartReason(droitRF.getMotifDebut());
 		right.setEndReason(droitRF.getMotifFin());
-		right.setCommunity(getCommunity(droitRF.getCommunaute()));
+		right.setCommunity(getCommunity(droitRF.getCommunaute(), communauteInfoProvider));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId().intValue());
@@ -99,19 +113,22 @@ public abstract class LandRightBuilder {
 		throw new NotImplementedException();
 	}
 
-	private static CommunityOfOwners newCommunity(@NotNull CommunauteRF communaute) {
+	private static CommunityOfOwners newCommunity(@NotNull CommunauteRF communaute, @NotNull CommunauteInfoProvider communauteInfoProvider) {
 		final CommunityOfOwners c = new CommunityOfOwners();
 		c.setId(communaute.getId());
 		c.setType(EnumHelper.coreToXMLv5(communaute.getType()));
-		c.setMemberCount(666);  // TODO (msi)
-		c.getMemberIds().add(666); // TODO (msi)
+		final CommunauteRFInfo info = communauteInfoProvider.apply(communaute.getId());
+		if (info != null) {
+			c.setMemberCount(info.getMemberCount());
+			c.getMemberIds().addAll(info.getMemberIds());
+		}
 		return c;
 	}
 
 	@Nullable
-	private static CommunityOfOwners getCommunity(@Nullable CommunauteRF communauteRF) {
+	private static CommunityOfOwners getCommunity(@Nullable CommunauteRF communauteRF, @NotNull CommunauteInfoProvider communauteInfoProvider) {
 		return Optional.ofNullable(communauteRF)
-				.map(LandRightBuilder::newCommunity)
+				.map(communaute -> newCommunity(communaute, communauteInfoProvider))
 				.orElse(null);
 	}
 

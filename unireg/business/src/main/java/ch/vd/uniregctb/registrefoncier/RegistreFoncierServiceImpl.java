@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -15,6 +16,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	private ImmeubleRFDAO immeubleRFDAO;
 	private BatimentRFDAO batimentRFDAO;
+	private AyantDroitRFDAO ayantDroitRFDAO;
 
 	public void setImmeubleRFDAO(ImmeubleRFDAO immeubleRFDAO) {
 		this.immeubleRFDAO = immeubleRFDAO;
@@ -22,6 +24,10 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	public void setBatimentRFDAO(BatimentRFDAO batimentRFDAO) {
 		this.batimentRFDAO = batimentRFDAO;
+	}
+
+	public void setAyantDroitRFDAO(AyantDroitRFDAO ayantDroitRFDAO) {
+		this.ayantDroitRFDAO = ayantDroitRFDAO;
 	}
 
 	@NotNull
@@ -45,5 +51,11 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public BatimentRF getBatiment(long batimentId) {
 		return batimentRFDAO.get(batimentId);
+	}
+
+	@Nullable
+	@Override
+	public CommunauteRFInfo getCommunauteInfo(long communauteId) {
+		return ayantDroitRFDAO.getCommunauteInfo(communauteId);
 	}
 }

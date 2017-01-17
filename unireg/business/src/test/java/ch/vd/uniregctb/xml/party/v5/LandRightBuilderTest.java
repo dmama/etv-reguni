@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
@@ -14,6 +15,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFInfo;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -53,7 +55,7 @@ public class LandRightBuilderTest {
 		droit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
 		droit.setImmeuble(immeuble);
 
-		final LandRight landRight = LandRightBuilder.newLandRight(droit);
+		final LandRight landRight = LandRightBuilder.newLandRight(droit, id -> new CommunauteRFInfo(1, Collections.singletonList(23030292)));
 		assertNotNull(landRight);
 		assertTrue(landRight instanceof LandOwnershipRight);
 
@@ -67,7 +69,7 @@ public class LandRightBuilderTest {
 		assertNull(landOwnershipRight.getEndReason());
 		assertCaseIdentifier(21, 2016, 322, 3, landOwnershipRight.getCaseIdentifier());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
-		assertCommunity(8765887L, CommunityOfOwnersType.COMMUNITY_OF_HEIRS, 666, Collections.singletonList(666), landOwnershipRight.getCommunity());
+		assertCommunity(8765887L, CommunityOfOwnersType.COMMUNITY_OF_HEIRS, 1, Collections.singletonList(23030292), landOwnershipRight.getCommunity());
 	}
 
 	@Test
@@ -87,7 +89,9 @@ public class LandRightBuilderTest {
 		droit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
 		droit.setImmeuble(immeuble);
 
-		final LandRight landRight = LandRightBuilder.newLandRight(droit);
+		final LandRight landRight = LandRightBuilder.newLandRight(droit, id -> {
+			throw new NotImplementedException();
+		});
 		assertNotNull(landRight);
 		assertTrue(landRight instanceof LandOwnershipRight);
 

@@ -34,4 +34,13 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	BatimentRF getBatiment(long batimentId);
+
+	/**
+	 * Construit et retourne les informations du point-de-vue Unireg sur les membres d'une communauté RF.
+	 *
+	 * @param communauteId l'id technique Unireg d'une communauté
+	 * @return les infos trouvée; ou <b>null</b> si la communauté est inconnue.
+	 */
+	@Nullable
+	CommunauteRFInfo getCommunauteInfo(long communauteId);
 }

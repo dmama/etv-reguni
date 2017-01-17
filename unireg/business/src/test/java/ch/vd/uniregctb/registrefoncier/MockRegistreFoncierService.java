@@ -27,4 +27,10 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	public BatimentRF getBatiment(long batimentId) {
 		throw new NotImplementedException();
 	}
+
+	@Nullable
+	@Override
+	public CommunauteRFInfo getCommunauteInfo(long communauteId) {
+		throw new NotImplementedException();
+	}
 }

@@ -6,6 +6,7 @@
 	<bean id="serviceRF" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl">
 		<property name="batimentRFDAO" ref="batimentRFDAO"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
+		<property name="ayantDroitRFDAO" ref="ayantDroitRFDAO"/>
 	</bean>
 
 	<bean id="communeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />

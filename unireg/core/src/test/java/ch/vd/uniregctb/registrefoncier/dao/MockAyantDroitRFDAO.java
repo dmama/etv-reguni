@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFInfo;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
@@ -99,5 +100,11 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 				.filter(a -> !a.getDroits().isEmpty())
 				.map(AyantDroitRF::getIdRF)
 				.collect(Collectors.toSet());
+	}
+
+	@Nullable
+	@Override
+	public CommunauteRFInfo getCommunauteInfo(long communauteId) {
+		throw new NotImplementedException();
 	}
 }

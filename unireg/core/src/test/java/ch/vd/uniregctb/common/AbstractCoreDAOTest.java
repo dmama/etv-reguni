@@ -34,6 +34,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -72,11 +73,18 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.PartPropriete;
@@ -1536,5 +1544,53 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		final RapprochementRF saved = merge(rrf);
 		ctb.addRapprochementRF(saved);
 		return saved;
+	}
+
+	protected BienFondRF addImmeubleRF(String idRF) {
+		final BienFondRF immeuble = new BienFondRF();
+		immeuble.setIdRF(idRF);
+		return merge(immeuble);
+	}
+
+	protected CommunauteRF addCommunauteRF(String idRF, TypeCommunaute type) {
+		final CommunauteRF communauteRF = new CommunauteRF();
+		communauteRF.setIdRF(idRF);
+		communauteRF.setType(type);
+		return merge(communauteRF);
+	}
+	@NotNull
+	protected DroitProprietePersonnePhysiqueRF addDroitPersonnePhysiqueRF(RegDate dateDebut, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	                                                                      PersonnePhysiqueRF ayantDroit,
+	                                                                      BienFondRF immeuble, CommunauteRF communaute) {
+		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setAyantDroit(ayantDroit);
+		droit.setCommunaute(communaute);
+		droit.setImmeuble(immeuble);
+		droit.setDateDebut(dateDebut);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setNumeroAffaire(numeroAffaire);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		return merge(droit);
+	}
+
+	@NotNull
+	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	                                                          CommunauteRF communauteRF, BienFondRF immeuble) {
+		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setImmeuble(immeuble);
+		droit.setAyantDroit(communauteRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setNumeroAffaire(numeroAffaire);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		return merge(droit);
 	}
 }
