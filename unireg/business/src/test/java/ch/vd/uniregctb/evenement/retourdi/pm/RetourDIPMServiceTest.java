@@ -138,7 +138,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus transactionStatus) throws Exception {
-					service.traiterRetour(retour, Collections.<String, String>emptyMap());
+					service.traiterRetour(retour, Collections.emptyMap());
 				}
 			});
 			Assert.fail("La transaction ne doit pas pouvoir avoir été committée normalement, puisque le tiers 42 n'existe pas...");
@@ -169,7 +169,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus transactionStatus) throws Exception {
-					service.traiterRetour(retour, Collections.<String, String>emptyMap());
+					service.traiterRetour(retour, Collections.emptyMap());
 				}
 			});
 			Assert.fail("La transaction ne doit pas pouvoir avoir été committée normalement, puisque le tiers donné n'est pas une entreprise...");
@@ -208,7 +208,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus transactionStatus) throws Exception {
-					service.traiterRetour(retour, Collections.<String, String>emptyMap());
+					service.traiterRetour(retour, Collections.emptyMap());
 				}
 			});
 			Assert.fail("La transaction ne doit pas pouvoir avoir été committée normalement, puisque la déclaration n'existe pas...");
@@ -256,7 +256,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -345,7 +345,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -433,7 +433,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -511,7 +511,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -606,7 +606,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -712,7 +712,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -830,7 +830,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -949,7 +949,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -1076,7 +1076,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -1206,7 +1206,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -1372,7 +1372,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(2014), new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -1585,7 +1585,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSessionWithInitCleanup(initCleanup, new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -1778,7 +1778,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -1922,7 +1922,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2103,7 +2103,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSessionWithInitCleanup(new ChangementPremiereAnneeDeclarationPMInitCleanupCallback(anneeFinale), new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2264,7 +2264,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2342,7 +2342,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2424,7 +2424,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2509,7 +2509,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2585,7 +2585,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2673,7 +2673,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2762,7 +2762,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2863,7 +2863,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -2959,7 +2959,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3055,7 +3055,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3183,7 +3183,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3265,7 +3265,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3354,7 +3354,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3444,7 +3444,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3534,7 +3534,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3624,7 +3624,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3721,7 +3721,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3819,7 +3819,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3922,7 +3922,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -3999,7 +3999,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4076,7 +4076,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4153,7 +4153,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4238,7 +4238,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4315,7 +4315,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4392,7 +4392,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4468,7 +4468,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4543,7 +4543,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4629,7 +4629,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4719,7 +4719,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4794,7 +4794,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4873,7 +4873,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -4977,7 +4977,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5088,7 +5088,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5198,7 +5198,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5311,7 +5311,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5424,7 +5424,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5545,7 +5545,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5665,7 +5665,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5773,7 +5773,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -5893,7 +5893,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6019,7 +6019,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6147,7 +6147,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6271,7 +6271,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6383,7 +6383,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6484,7 +6484,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6557,7 +6557,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6786,7 +6786,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6864,7 +6864,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -6942,7 +6942,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -7014,7 +7014,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -7095,7 +7095,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -7205,7 +7205,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -7347,7 +7347,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -7458,7 +7458,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
@@ -7559,7 +7559,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				service.traiterRetour(retour, Collections.<String, String>emptyMap());
+				service.traiterRetour(retour, Collections.emptyMap());
 			}
 		});
 
