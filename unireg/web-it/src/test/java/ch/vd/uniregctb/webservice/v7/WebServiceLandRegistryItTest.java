@@ -58,7 +58,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final RealEstate realEstate = (RealEstate) immo;
 		assertEquals(noImmo, realEstate.getId());
 		assertEquals("CH785283458046", realEstate.getEgrid());
-		assertEquals("todo", realEstate.getUrlIntercapi());
+		assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=227&kr=0&n1=59&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug&sec=WUcNIuAaAn07zT5ky-Pi-g1sLdOQx2ccPgnp0PmINA0SComhxznkhXe6oY5P5pW2-q5y5NRgFZ7s4crPzqU-Yg%3D%3D]", realEstate.getUrlIntercapi());
 		assertFalse(realEstate.isCfa());
 
 		final List<Location> locations = realEstate.getLocations();
