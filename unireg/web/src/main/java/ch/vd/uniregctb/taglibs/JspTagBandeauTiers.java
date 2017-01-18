@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +27,6 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.activation.ActivationDesactivationHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.LigneAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.TypeAvatar;
@@ -445,7 +443,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			// lignes 2 à 6
 			boolean typeAdresseEcrit = false;
 			for (int i = 2; i <= 6; ++i) {
-				final String ligne = Optional.ofNullable(adresse.getLigne(i)).map(LigneAdresse::getTexte).orElse(null);
+				final String ligne = adresse.getLigne(i);
 				if (StringUtils.isNotBlank(ligne)) {
 					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 					s.append("\t<td width=\"15%\">");

@@ -148,7 +148,7 @@ public abstract class EditiqueAbstractLegacyHelper {
 	@Nullable
 	protected CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
 		final List<String> lignes = new ArrayList<>(6);
-		for (String ligne : adresseEnvoi.getLignes().asTexte()) {
+		for (String ligne : adresseEnvoi.getLignes()) {
 			if (StringUtils.isNotBlank(ligne)) {
 				lignes.add(ligne);
 			}

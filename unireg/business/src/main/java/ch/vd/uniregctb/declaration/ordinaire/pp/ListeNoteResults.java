@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.LignesAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -88,7 +87,6 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 
 			this.adresseEnvoi = Optional.ofNullable(adresseEnvoi)
 					.map(AdresseEnvoiDetaillee::getLignes)
-					.map(LignesAdresse::asTexte)
 					.orElse(null);
 
 			this.nomsPrenoms = new ArrayList<>(2);

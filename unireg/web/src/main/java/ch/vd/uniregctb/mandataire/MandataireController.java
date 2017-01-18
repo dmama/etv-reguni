@@ -291,7 +291,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 				try {
 					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(mandataire, mandat.getDateFin(), TypeAdresseFiscale.REPRESENTATION, false);
-					return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes().asTexte()));
+					return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
 				}
 				catch (AdresseException e) {
 					LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + mandataire.getNumero(), e);
@@ -314,7 +314,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 				try {
 					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.REPRESENTATION, false);
-					return new LignesAdressesView(Arrays.asList(adresse.getLignes().asTexte()));
+					return new LignesAdressesView(Arrays.asList(adresse.getLignes()));
 				}
 				catch (AdresseException e) {
 					LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + tiers.getNumero(), e);
@@ -341,7 +341,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 				try {
 					final AdresseMandataireAdapter adapter = new AdresseMandataireAdapter(mandat, infraService);
 					final AdresseEnvoiDetaillee adresse = adresseService.buildAdresseEnvoi(adapter.getSource().getTiers(), adapter, mandat.getDateFin());
-					return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes().asTexte()));
+					return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
 				}
 				catch (AdresseException e) {
 					LOGGER.error("Problème à la construction de l'adresse mandataire " + mandat.getId(), e);

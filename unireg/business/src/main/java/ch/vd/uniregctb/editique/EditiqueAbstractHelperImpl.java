@@ -196,7 +196,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	@Nullable
 	protected CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
 		final List<String> lignes = new ArrayList<>(6);
-		for (String ligne : adresseEnvoi.getLignes().asTexte()) {
+		for (String ligne : adresseEnvoi.getLignes()) {
 			lignes.add(StringUtils.trimToEmpty(ligne));
 		}
 
@@ -433,7 +433,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	@NotNull
 	private static List<String> buildCopieA(AdresseEnvoiDetaillee adresse) {
-		final LigneAdresse[] lignesBruttes = adresse.getLignes().asLignes();
+		final LigneAdresse[] lignesBruttes = adresse.getLignesAdresse();
 		final List<String> lignesCopiesA = new ArrayList<>(2);
 		if (lignesBruttes.length > 0) {
 			final String ligne1 = concat(lignesBruttes, 0, Math.min(3, lignesBruttes.length));

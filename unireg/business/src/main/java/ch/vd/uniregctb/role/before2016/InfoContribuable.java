@@ -16,7 +16,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.LignesAdresse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.GentilComparator;
@@ -90,7 +89,6 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 
 		this.adresseEnvoi = Optional.ofNullable(adresseEnvoi)
 				.map(AdresseEnvoiDetaillee::getLignes)
-				.map(LignesAdresse::asTexte)
 				.orElse(null);
 	}
 

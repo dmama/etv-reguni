@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -15,7 +16,7 @@ import ch.vd.registre.base.utils.Assert;
  */
 public class AdresseEnvoi implements Serializable {
 
-	private static final long serialVersionUID = 7681401476758849547L;
+	private static final long serialVersionUID = 1565959562688896213L;
 
 	private static final int MAX_LIGNES = 6;
 	private static final int MANDATORY = 0;
@@ -116,9 +117,23 @@ public class AdresseEnvoi implements Serializable {
 		computeLines();
 	}
 
+	@Nullable
+	private static String toTexte(@Nullable LigneAdresse ligne) {
+		return Optional.ofNullable(ligne).map(LigneAdresse::getTexte).orElse(null);
+	}
+
 	@NotNull
-	public LignesAdresse getLignes() {
-		return new LignesAdresse(lignes);
+	public String[] getLignes() {
+		final String[] textes = new String[lignes.length];
+		for (int i = 0 ; i < lignes.length ; ++ i) {
+			textes[i] = toTexte(lignes[i]);
+		}
+		return textes;
+	}
+
+	@NotNull
+	public LigneAdresse[] getLignesAdresse() {
+		return lignes;
 	}
 
 	/**
@@ -128,32 +143,32 @@ public class AdresseEnvoi implements Serializable {
 	 *            le numéro de la ligne [1-6]
 	 * @return la valeur de la ligne spécifiée
 	 */
-	public LigneAdresse getLigne(int no) {
-		return lignes[no - 1];
+	public String getLigne(int no) {
+		return toTexte(lignes[no - 1]);
 	}
 
 	public String getLigne1() {
-		return Optional.ofNullable(lignes[0]).map(LigneAdresse::getTexte).orElse(null);
+		return toTexte(lignes[0]);
 	}
 
 	public String getLigne2() {
-		return Optional.ofNullable(lignes[1]).map(LigneAdresse::getTexte).orElse(null);
+		return toTexte(lignes[1]);
 	}
 
 	public String getLigne3() {
-		return Optional.ofNullable(lignes[2]).map(LigneAdresse::getTexte).orElse(null);
+		return toTexte(lignes[2]);
 	}
 
 	public String getLigne4() {
-		return Optional.ofNullable(lignes[3]).map(LigneAdresse::getTexte).orElse(null);
+		return toTexte(lignes[3]);
 	}
 
 	public String getLigne5() {
-		return Optional.ofNullable(lignes[4]).map(LigneAdresse::getTexte).orElse(null);
+		return toTexte(lignes[4]);
 	}
 
 	public String getLigne6() {
-		return Optional.ofNullable(lignes[5]).map(LigneAdresse::getTexte).orElse(null);
+		return toTexte(lignes[5]);
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 			final String nomPrenom = tiersService.getNomPrenom(pp);
 			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
 				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
-				addTiers(ctb.getNumero(), nomPrenom, null, adresse.getLignes().asTexte());
+				addTiers(ctb.getNumero(), nomPrenom, null, adresse.getLignes());
 			}
 			else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
 				final AdresseCourrierPourRF adresse = adresseService.getAdressePourRF(ctb, null);
@@ -131,7 +131,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 				}
 				if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
 					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
-					addTiers(ctb.getNumero(), nomPrenomPrincipal, nomPrenomConjoint, adresse.getLignes().asTexte());
+					addTiers(ctb.getNumero(), nomPrenomPrincipal, nomPrenomConjoint, adresse.getLignes());
 				}
 				else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
 					final AdresseCourrierPourRF adresse = adresseService.getAdressePourRF(ctb, null);
@@ -151,7 +151,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
 			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
 				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
-				addTiers(ctb.getNumero(), raisonSociale, null, adresse.getLignes().asTexte());
+				addTiers(ctb.getNumero(), raisonSociale, null, adresse.getLignes());
 			}
 			else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
 				final AdresseCourrierPourRF adresse = adresseService.getAdressePourRF(ctb, null);
@@ -184,7 +184,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
         if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
             final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
-            addTiers(debiteur.getNumero(), nom1, nom2, adresse.getLignes().asTexte());
+            addTiers(debiteur.getNumero(), nom1, nom2, adresse.getLignes());
         }
         else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
 	        addErrorNonConcerneParAdressesRF(debiteur);
@@ -221,7 +221,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
             String[] lignesAdresse = LIGNES_ADRESSE_VIDE;
             try {
                 final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-                lignesAdresse = adresse.getLignes().asTexte();
+                lignesAdresse = adresse.getLignes();
             }
             catch (Exception ex) {
                 // erreur absorbée... c'est juste pour le log, donc pas important ici

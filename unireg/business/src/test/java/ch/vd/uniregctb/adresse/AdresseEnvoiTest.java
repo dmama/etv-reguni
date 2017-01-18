@@ -16,7 +16,7 @@ public class AdresseEnvoiTest {
 		adresse.addLine("Ligne 5");
 		adresse.addLine("Ligne 6");
 
-		final String[] lignes = adresse.getLignes().asTexte();
+		final String[] lignes = adresse.getLignes();
 		assertEquals("Ligne 1", lignes[0]);
 		assertEquals("Ligne 2", lignes[1]);
 		assertEquals("Ligne 3", lignes[2]);
@@ -24,12 +24,12 @@ public class AdresseEnvoiTest {
 		assertEquals("Ligne 5", lignes[4]);
 		assertEquals("Ligne 6", lignes[5]);
 
-		assertEquals("Ligne 1", adresse.getLigne(1).getTexte());
-		assertEquals("Ligne 2", adresse.getLigne(2).getTexte());
-		assertEquals("Ligne 3", adresse.getLigne(3).getTexte());
-		assertEquals("Ligne 4", adresse.getLigne(4).getTexte());
-		assertEquals("Ligne 5", adresse.getLigne(5).getTexte());
-		assertEquals("Ligne 6", adresse.getLigne(6).getTexte());
+		assertEquals("Ligne 1", adresse.getLigne(1));
+		assertEquals("Ligne 2", adresse.getLigne(2));
+		assertEquals("Ligne 3", adresse.getLigne(3));
+		assertEquals("Ligne 4", adresse.getLigne(4));
+		assertEquals("Ligne 5", adresse.getLigne(5));
+		assertEquals("Ligne 6", adresse.getLigne(6));
 
 		assertEquals("Ligne 1", adresse.getLigne1());
 		assertEquals("Ligne 2", adresse.getLigne2());
