@@ -10,7 +10,8 @@ public enum ApplicationFiscale {
 	TAO_IS_DEBITEUR("label.TAOIS"),
 	TAO_PM("label.TAOPM"),
 	SIPF("label.SIPF"),
-	DPERM("label.DPERM");
+	DPERM("label.DPERM"),
+	CAPITASTRA("label.CAPITASTRA");
 
 	private String messageKey;
 

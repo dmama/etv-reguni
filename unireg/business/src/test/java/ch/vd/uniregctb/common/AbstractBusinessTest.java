@@ -70,6 +70,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -424,7 +425,24 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	@NotNull
-	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle, Integer index1, Integer index2, Integer index3) {
+	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle) {
+		final SituationRF situation = new SituationRF();
+		situation.setDateDebut(RegDate.get(2000, 1, 1));
+		situation.setNoParcelle(noParcelle);
+		situation.setIndex1(null);
+		situation.setIndex2(null);
+		situation.setIndex3(null);
+		situation.setCommune(commune);
+
+		BienFondRF im0 = new BienFondRF();
+		im0.setIdRF(idRF);
+		im0.setEgrid(egrid);
+		im0.addSituation(situation);
+		return hibernateTemplate.merge(im0);
+	}
+
+	@NotNull
+	protected ProprieteParEtageRF addProprieteParEtageRF(String idRF, String egrid, Fraction quotePart, CommuneRF commune, int noParcelle, Integer index1, Integer index2, Integer index3) {
 		final SituationRF situation = new SituationRF();
 		situation.setDateDebut(RegDate.get(2000, 1, 1));
 		situation.setNoParcelle(noParcelle);
@@ -433,9 +451,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		situation.setIndex3(index3);
 		situation.setCommune(commune);
 
-		BienFondRF im0 = new BienFondRF();
+		ProprieteParEtageRF im0 = new ProprieteParEtageRF();
 		im0.setIdRF(idRF);
 		im0.setEgrid(egrid);
+		im0.setQuotePart(quotePart);
 		im0.addSituation(situation);
 		return hibernateTemplate.merge(im0);
 	}

@@ -45,6 +45,10 @@ public class ImmovablePropertyBuilderTest {
 
 	public static final CommuneRF BUSSIGNY = new CommuneRF(33, "Bussigny", MockCommune.Bussigny.getNoOFS());
 
+	private static String getCapitastraUrl(Long immeubleId) {
+		return "http://capitastra/" + immeubleId;
+	}
+
 	@Test
 	public void testNewCondominiumOwnership() throws Exception {
 
@@ -77,10 +81,10 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setQuotePart(new Fraction(1, 23));
 
 		// conversion core -> ws
-		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe);
+		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl);
 		assertEquals(48383L, condo.getId());
 		assertEquals("rhoooo", condo.getEgrid());
-		assertEquals("todo", condo.getUrlIntercapi());
+		assertEquals("http://capitastra/48383", condo.getUrlIntercapi());
 		assertNull(condo.getCancellationDate());
 		assertShare(1, 23, condo.getShare());
 
@@ -135,10 +139,10 @@ public class ImmovablePropertyBuilderTest {
 		pcp.setQuotePart(new Fraction(1, 1));
 
 		// conversion core -> ws
-		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp);
+		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl);
 		assertEquals(480302L, coos.getId());
 		assertEquals("raoul t'es là ?", coos.getEgrid());
-		assertEquals("todo", coos.getUrlIntercapi());
+		assertEquals("http://capitastra/480302", coos.getUrlIntercapi());
 		assertNull(coos.getCancellationDate());
 		assertShare(1, 1, coos.getShare());
 
@@ -190,10 +194,10 @@ public class ImmovablePropertyBuilderTest {
 		ddp.setDateRadiation(null);
 
 		// conversion core -> ws
-		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp);
+		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl);
 		assertEquals(480302L, dpr.getId());
 		assertEquals("raoul t'es là ?", dpr.getEgrid());
-		assertEquals("todo", dpr.getUrlIntercapi());
+		assertEquals("http://capitastra/480302", dpr.getUrlIntercapi());
 		assertNull(dpr.getCancellationDate());
 
 		final List<Location> locations = dpr.getLocations();
@@ -244,10 +248,10 @@ public class ImmovablePropertyBuilderTest {
 		ddp.setDateRadiation(null);
 
 		// conversion core -> ws
-		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(ddp);
+		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl);
 		assertEquals(480302L, mine.getId());
 		assertEquals("la fuite vibrante du câble", mine.getEgrid());
-		assertEquals("todo", mine.getUrlIntercapi());
+		assertEquals("http://capitastra/480302", mine.getUrlIntercapi());
 		assertNull(mine.getCancellationDate());
 
 		final List<Location> locations = mine.getLocations();
@@ -302,10 +306,10 @@ public class ImmovablePropertyBuilderTest {
 		bienFond.setDateRadiation(null);
 
 		// conversion core -> ws
-		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond);
+		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl);
 		assertEquals(48383L, realEstate.getId());
 		assertEquals("rhoooo", realEstate.getEgrid());
-		assertEquals("todo", realEstate.getUrlIntercapi());
+		assertEquals("http://capitastra/48383", realEstate.getUrlIntercapi());
 		assertNull(realEstate.getCancellationDate());
 
 		final List<Location> locations = realEstate.getLocations();

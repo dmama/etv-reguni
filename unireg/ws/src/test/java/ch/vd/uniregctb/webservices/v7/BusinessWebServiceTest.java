@@ -33,6 +33,8 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -221,6 +223,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		service = getBean(BusinessWebService.class, "wsv7Business");
 		efactureService = getBean(EFactureServiceProxy.class, "efactureService");
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
+
+		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+			@Override
+			public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+				return "https://secure.vd.ch/territoire/intercapi/faces?bfs={noCommune}&kr=0&n1={noParcelle}&n2={index1}&n3={index2}&n4={index3}&type=grundstueck_grundbuch_auszug";
+			}
+		});
 	}
 
 	private static void assertValidInteger(long value) {
@@ -2958,7 +2967,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 				// un droit de propriété sur un immeuble
 				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
+				final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", dateNaissance);
 				addDroitPropriete(tiersRF, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
 				addRapprochementRF(pp, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
@@ -4678,7 +4687,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// on ajoute un immeuble dans la base
 		final Long id = doInNewTransaction(status -> {
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
+			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
 			return immeuble.getId();
 		});
 
@@ -4694,7 +4703,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final List<Location> locations = realEstate.getLocations();
 		Assert.assertEquals(1, locations.size());
-		assertLocation(RegDate.get(2000, 1, 1), null, 579, 3, null, null, 5498, locations.get(0));
+		assertLocation(RegDate.get(2000, 1, 1), null, 579, null, null, null, 5498, locations.get(0));
 	}
 
 	@Test
@@ -4713,7 +4722,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// on ajoute un immeuble dans la base
 		final Ids ids = doInNewTransaction(status -> {
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
+			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
 			final BatimentRF batiment = addBatimentRF("483838ace8e8");
 			addDescriptionBatimentRF(RegDate.get(2000, 1, 1), null, "Centrale électrique", 300, batiment);
 			addImplantationRF(RegDate.get(2000, 1, 1), null, 310, immeuble, batiment);

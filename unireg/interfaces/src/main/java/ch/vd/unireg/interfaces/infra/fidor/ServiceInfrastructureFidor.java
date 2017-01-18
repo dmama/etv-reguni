@@ -552,6 +552,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					final String patternTaoPM = getUrl("TAOPM", "synthese");
 					final String patternSipf = getUrl("SIPF", "explorer");
 					final String patternDPerm = getUrl("REPELEC", "contribuable");
+					final String patternCapitastra = getUrl("CAPITASTRA", "immeuble");
 
 					final Map<ApplicationFiscale, String> map = new EnumMap<>(ApplicationFiscale.class);
 					map.put(ApplicationFiscale.TAO_PP, patternTaoPP);
@@ -561,6 +562,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					map.put(ApplicationFiscale.TAO_PM, patternTaoPM);
 					map.put(ApplicationFiscale.SIPF, patternSipf); // [UNIREG-2409]
 					map.put(ApplicationFiscale.DPERM, patternDPerm);
+					map.put(ApplicationFiscale.CAPITASTRA, patternCapitastra);
 					LOGGER.info("URLs externes (FiDoR) :\n" +
 							" * TAOPP = " + patternTaoPP + '\n' +
 							" * TAOBA = " + patternTaoBA + '\n' +
@@ -568,7 +570,8 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 							" * TAOIS = " + patternTaoISDebiteur + '\n' +
 							" * TAOPM = " + patternTaoPM + '\n' +
 							" * SIPF = " + patternSipf + '\n' +
-							" * DPERM = " + patternDPerm);
+							" * DPERM = " + patternDPerm + '\n' +
+							" * CAPITASTRA = " + patternCapitastra);
 
 					urlsApplication = map;
 				}

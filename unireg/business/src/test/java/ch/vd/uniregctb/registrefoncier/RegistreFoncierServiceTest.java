@@ -9,6 +9,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -29,6 +31,13 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		serviceRF = getBean(RegistreFoncierService.class, "serviceRF");
+
+		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
+			@Override
+			public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+				return "https://secure.vd.ch/territoire/intercapi/faces?bfs={noCommune}&kr=0&n1={noParcelle}&n2={index1}&n3={index2}&n4={index3}&type=grundstueck_grundbuch_auszug";
+			}
+		});
 	}
 
 	/**
@@ -61,8 +70,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579, 3, null, null);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298, null, null, null);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Charles", "Widmer", date(1970, 7, 2));
 
@@ -120,4 +129,39 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * [SIFISC-20373] Ce test vérifie que la résolution des URLs vers Capitastra fonctionne correctement.
+	 */
+	@Test
+	public void testGetCapitastraURL() throws Exception {
+
+		class Ids {
+			long bienFond;
+			long ppe;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("02faeee", "some egrid", new Fraction(1, 4), gland, 4298, 3, null, null);
+
+			ids.bienFond = immeuble0.getId();
+			ids.ppe = immeuble1.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFond));
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+			}
+		});
+	}
 }

@@ -1034,7 +1034,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(immId))
-						.map(ImmovablePropertyBuilder::newImmovableProperty)
+						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble, context.registreFoncierService::getCapitastraURL))
 						.orElse(null));
 	}
 

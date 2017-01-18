@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class MockRegistreFoncierService implements RegistreFoncierService {
@@ -31,6 +32,12 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	@Nullable
 	@Override
 	public CommunauteRFInfo getCommunauteInfo(long communauteId) {
+		throw new NotImplementedException();
+	}
+
+	@NotNull
+	@Override
+	public String getCapitastraURL(long immeubleId) throws ObjectNotFoundException {
 		throw new NotImplementedException();
 	}
 }

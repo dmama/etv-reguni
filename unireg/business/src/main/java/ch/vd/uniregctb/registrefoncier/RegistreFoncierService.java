@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
@@ -43,4 +44,14 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	CommunauteRFInfo getCommunauteInfo(long communauteId);
+
+	/**
+	 * Construit l'URL de visualisation de l'immeuble spécifié dans l'interface Web de Capitastra.
+	 *
+	 * @param immeubleId l'id technique d'un immeuble
+	 * @return l'URL demandée
+	 * @throws ObjectNotFoundException si l'immeuble est inconnu.
+	 */
+	@NotNull
+	String getCapitastraURL(long immeubleId) throws ObjectNotFoundException;
 }
