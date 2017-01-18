@@ -910,11 +910,14 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	private void traiterContact(Entreprise entreprise, @Nullable String contact, @Nullable String telProfessionnel) {
 		// [SIFISC-21738] Dans le cas où une donnée de contact est fournie, et qu'elle est différente de la donnée
 		// préalablement connue, il faut effacer les numéros de téléphone...
-		if (StringUtils.isNotBlank(contact) && !Objects.equals(contact, entreprise.getPersonneContact())) {
+		// [SIFISC-22248] Cette comparaison doit être insensible à la casse
+		if (StringUtils.isNotBlank(contact)) {
+			if (!StringUtils.equalsIgnoreCase(contact, entreprise.getPersonneContact())) {
+				entreprise.setNumeroTelephonePortable(null);
+				entreprise.setNumeroTelephonePrive(null);
+				entreprise.setNumeroTelecopie(null);
+			}
 			entreprise.setPersonneContact(contact);
-			entreprise.setNumeroTelephonePortable(null);
-			entreprise.setNumeroTelephonePrive(null);
-			entreprise.setNumeroTelecopie(null);
 		}
 
 		// [SIFISC-21693] On met-à-jour le numéro de téléphone professionnel dans tous les cas
