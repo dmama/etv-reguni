@@ -111,7 +111,7 @@
 			<tr>
 				<th colspan="2">Période</th>
 				<th colspan="2">Fors Principaux</th>
-				<th colspan="<c:out value="${command.table.forsSecondairesSize}"/>">Fors Secondaires</th>
+				<th id="th-fs" colspan="<c:out value="${command.table.forsSecondairesSize}"/>">Fors Secondaires</th>
 				<c:if test="${command.showForsGestion && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}"><th>Fors de Gestion</th></c:if>
 				<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
 					<c:if test="${command.showAssujettissementsSource}"><th>Assujettissements source</th></c:if>
@@ -231,13 +231,13 @@
 					</c:choose>
 					
 					<%-- fors secondaires --%>
-					<c:forEach var="fs" items="${ligne.forsSecondaires}" >
+					<c:forEach var="fs" items="${ligne.forsSecondaires}" varStatus="fsLoop">
 						<c:choose>
 							<c:when test="${fs.filler}">			
-								<td class="filler" />
+								<td class="filler <c:if test="${fsLoop.index > 14}">fs-hideable</c:if>"/>
 							</c:when>
 							<c:when test="${!fs.span && !fs.filler}">
-								<td class="secondaire tooltip_cell" id="ffs-${fs.range.id}" rowspan="<c:out value="${fs.longueurAffichage}" />">
+								<td class="secondaire tooltip_cell <c:if test="${fsLoop.index > 14}">fs-hideable</c:if>" id="ffs-${fs.range.id}" rowspan="<c:out value="${fs.longueurAffichage}" />">
                                     <unireg:commune ofs="${fs.range.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fs.range.dateDebut}"/>
                                     <div id="ffs-${fs.range.id}-tooltip" style="display:none;">
                                         For fiscal secondaire <b>#${fs.range.id}</b><br/>
@@ -253,6 +253,12 @@
 							</c:when>
 						</c:choose>
 					</c:forEach>
+					<td id="fs-more" class="tooltip_cell" style="display: none;" rowspan="${command.table.rows.size()}" onclick="TimelineForsSecondaires.show();">
+						<b>...</b>
+						<div id="fs-more-tooltip" style="display: none;">
+							<span style="font-style: italic;">Cliquer pour voir<br/>tous les fors secondaires...</span>
+						</div>
+					</td>
 
 					<%-- fors de gestion --%>
 					<c:if test="${command.showForsGestion && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
@@ -476,6 +482,27 @@
 		</c:if>
 
 		<script type="text/javascript">
+
+			const TimelineForsSecondaires = {
+				hide : function() {
+					const fsHidden = $("td.fs-hideable");
+					if (fsHidden.length !== 0) {
+						fsHidden.hide();
+						$("#fs-more").show();
+						$("#th-fs").attr("colspan", 16);
+					}
+				},
+
+				show : function() {
+					const fsHidden = $("td.fs-hideable");
+					if (fsHidden.length !== 0) {
+						fsHidden.show();
+						$("#fs-more").hide();
+						$("#th-fs").attr("colspan", ${command.table.forsSecondairesSize});
+					}
+				}
+			};
+
 			$(function() {
 				$('.tooltip_cell').tooltip({
 					items: "[id]",
@@ -485,6 +512,8 @@
 					}
 				});
 				$("#legend").dialog({title: 'Légende', position: ['right','bottom']});
+
+				TimelineForsSecondaires.hide();
 			});
 		</script>
 
