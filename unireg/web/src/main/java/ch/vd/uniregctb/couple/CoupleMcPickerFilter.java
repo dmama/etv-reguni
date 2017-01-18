@@ -4,11 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.search.SearchTiersFilterWithPostFiltering;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -90,15 +90,10 @@ public class CoupleMcPickerFilter implements SearchTiersFilterWithPostFiltering 
 			final MenageCommun menage = (MenageCommun) tiers;
 
 			// [UNIREG-1212], [UNIREG-1881] Seuls les ménages communs ne possédant aucun lien d'appartenance ménage non-annulé sont considérés valides
-			boolean rapportNonAnnuleTrouve = false;
-			for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
-				if (!rapport.isAnnule()) {
-					rapportNonAnnuleTrouve = true;
-					break;
-				}
-			}
-
-			valide = !rapportNonAnnuleTrouve;
+			// [SIFISC-20656] dans les cas de réconciliation, on peut avoir à reprendre des cas où il existe des rapports non-annulés fermés
+			valide = menage.getRapportsObjet().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.noneMatch(r -> r.getDateFin() == null);
 		}
 		else {
 			valide = false;
