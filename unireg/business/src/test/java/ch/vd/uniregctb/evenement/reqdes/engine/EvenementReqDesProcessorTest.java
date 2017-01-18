@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -7633,8 +7634,414 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		});
 	}
 
+	/**
+	 * [SIFISC-18033] immeubles/domicile de la partie prenante sur une commune faîtière
+	 */
 	@Test
-	public void testAchatImmeubleParSourcierPurVaudois() throws Exception {
+	public void testDomicileCommuneFaitiereSourceCivile() throws Exception {
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
 
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Fraction.LeSentier);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setSourceCivile(true);
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Le Chenit");
+				pp.setOfsCommune(MockCommune.LeChenit.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.LeSentier.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// pas d'erreur, pas d'action...
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(1, allPps.size());
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18033] immeubles/domicile de la partie prenante sur une commune faîtière
+	 */
+	@Test
+	public void testDomicileCommuneFaitiereSourceFiscale() throws Exception {
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Fraction.LeSentier);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setNumeroContribuable(ctb.getNumero());      // = source fiscale
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Le Chenit");
+				pp.setOfsCommune(MockCommune.LeChenit.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.LeSentier.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(2, ut.getErreurs().size());
+
+				final List<ErreurTraitement> erreurs = ut.getErreurs().stream()
+						.sorted(Comparator.comparing(ErreurTraitement::getMessage))
+						.collect(Collectors.toList());
+				{
+					final ErreurTraitement erreur = erreurs.get(0);
+					Assert.assertNotNull(erreur);
+					Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+					Assert.assertEquals("La commune 'Le Chenit' (5872) est une commune faîtière de fractions.", erreur.getMessage());
+				}
+				{
+					final ErreurTraitement erreur = erreurs.get(1);
+					Assert.assertNotNull(erreur);
+					Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+					Assert.assertEquals("La commune de résidence (Le Chenit/5872) est vaudoise.", erreur.getMessage());
+				}
+
+				// erreur, pas d'action...
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(1, allPps.size());
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18033] immeubles/domicile de la partie prenante sur une commune faîtière
+	 */
+	@Test
+	public void testImmeubleCommuneFaitiereAcquereurSourceCivile() throws Exception {
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setSourceCivile(true);
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Lausanne");
+				pp.setOfsCommune(MockCommune.Lausanne.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.Lausanne.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Le Chenit", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.LeChenit.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// erreur, pas d'action...
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(1, allPps.size());
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18033] immeubles/domicile de la partie prenante sur une commune faîtière
+	 */
+	@Test
+	public void testImmeubleCommuneFaitiereAcquereurSourceFiscale() throws Exception {
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setNumeroContribuable(ctb.getNumero());      // source fiscale
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Genève");
+				pp.setOfsCommune(MockCommune.Geneve.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.Geneve.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Le Chenit", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.LeChenit.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final List<ErreurTraitement> erreurs = ut.getErreurs().stream()
+						.sorted(Comparator.comparing(ErreurTraitement::getMessage))
+						.collect(Collectors.toList());
+				{
+					final ErreurTraitement erreur = erreurs.get(0);
+					Assert.assertNotNull(erreur);
+					Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+					Assert.assertEquals("La commune 'Le Chenit' (5872) est une commune faîtière de fractions.", erreur.getMessage());
+				}
+
+				// erreur, pas d'action...
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(1, allPps.size());
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18033] immeubles/domicile de la partie prenante sur une commune faîtière
+	 */
+	@Test
+	public void testImmeubleCommuneFaitiereAlienateurSourceFiscale() throws Exception {
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setNumeroContribuable(ctb.getNumero());      // source fiscale
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Genève");
+				pp.setOfsCommune(MockCommune.Geneve.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.Geneve.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Le Chenit", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.LeChenit.getNoOFS());
+				addRole(pp, ti1, TypeRole.ALIENATEUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// erreur, pas d'action...
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(1, allPps.size());
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+			}
+		});
 	}
 }

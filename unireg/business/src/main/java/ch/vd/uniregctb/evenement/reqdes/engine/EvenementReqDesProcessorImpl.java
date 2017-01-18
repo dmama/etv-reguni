@@ -578,7 +578,9 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			if (ofsCommuneDomicile != null) {
 				// problématique des fractions (-> les fors ne peuvent pas être ouverts sur les communes faîtières de fractions)
 				final Commune commune = infraService.getCommuneByNumeroOfs(ofsCommuneDomicile, dateActe);
-				checkCommune(ofsCommuneDomicile, dateActe, commune, errorCollector);
+
+				// [SIFISC-18033] si la source n'est pas civile, il faut vérifier que la commune n'est pas une commune faîtière
+				checkCommune(ofsCommuneDomicile, dateActe, commune, errorCollector, !pp.isSourceCivile());
 
 				// [SIFISC-14606] La commune peut être vaudoise si la source est civile
 				// la commune de résidence ne doit pas être vaudoise pour une mise à jour automatique
@@ -609,7 +611,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			for (RolePartiePrenante role : pp.getRoles()) {
 				final int ofsCommuneImmeuble = role.getTransaction().getOfsCommune();
 				final Commune commune = infraService.getCommuneByNumeroOfs(ofsCommuneImmeuble, dateActe);
-				checkCommune(ofsCommuneImmeuble, dateActe, commune, errorCollector);
+				checkCommune(ofsCommuneImmeuble, dateActe, commune, errorCollector, isRoleAcquereurPropriete(role) && !pp.isSourceCivile());
 			}
 
 			final EtatCivil etatCivil = pp.getEtatCivil();
@@ -657,11 +659,11 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		}
 	}
 
-	private static void checkCommune(int noOfsCommune, RegDate dateActe, Commune commune, MessageCollector errorCollector) throws EvenementReqDesException {
+	private static void checkCommune(int noOfsCommune, RegDate dateActe, Commune commune, MessageCollector errorCollector, boolean checkCommunePrincipale) throws EvenementReqDesException {
 		if (commune == null) {
 			errorCollector.addNewMessage(String.format("Commune %d inconnue au %s.", noOfsCommune, RegDateHelper.dateToDisplayString(dateActe)));
 		}
-		else if (commune.isPrincipale()) {
+		else if (checkCommunePrincipale && commune.isPrincipale()) {
 			errorCollector.addNewMessage(String.format("La commune '%s' (%d) est une commune faîtière de fractions.", commune.getNomOfficiel(), noOfsCommune));
 		}
 	}
