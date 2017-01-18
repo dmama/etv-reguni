@@ -140,7 +140,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		final ListOfNoticeRequest noticeRequests = client.getNoticeRequest(String.valueOf(numero));
 		if (noticeRequests == null || noticeRequests.getNumberOfResults() == 0) {
 			return null;
-		} else if (noticeRequests.getNumberOfResults() > 2) {
+		} else if (noticeRequests.getNumberOfResults() > 1 || noticeRequests.getResults().size() > 1) {
 			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
 		}
 		return RCEntAnnonceIDEHelper.buildAnnonceIDE(noticeRequests.getResults().get(0));
