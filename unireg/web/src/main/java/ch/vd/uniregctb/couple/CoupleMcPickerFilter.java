@@ -12,6 +12,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Filtre spécialisé pour l'écran de recherche d'un troisième tiers dans la constitution d'un couple.
@@ -93,6 +94,7 @@ public class CoupleMcPickerFilter implements SearchTiersFilterWithPostFiltering 
 			// [SIFISC-20656] dans les cas de réconciliation, on peut avoir à reprendre des cas où il existe des rapports non-annulés fermés
 			valide = menage.getRapportsObjet().stream()
 					.filter(AnnulableHelper::nonAnnule)
+					.filter(r -> r.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE)
 					.noneMatch(r -> r.getDateFin() == null);
 		}
 		else {
