@@ -97,12 +97,6 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 	private void validateImprimerNouvelleDI(ImprimerNouvelleDeclarationImpotView view, Errors errors) {
 
-		if (errors.hasErrors()) {
-			// S'il y a déjà des erreurs de saisie dans le formulaire pas la peine d'aller plus loin dans
-			// la validation (effets de bord indesirables)
-			return;
-		}
-
 		// Vérifie que les paramètres reçus sont valides
 
 		final Tiers tiers = tiersDAO.get(view.getTiersId());
@@ -132,7 +126,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 		else if (view.getDateFinPeriodeImposition().year() != view.getPeriodeFiscale()) {
 			errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.pas.dans.periode.fiscale");
 		}
-		else {
+		else if (view.getDateDebutPeriodeImposition() != null) {
 			// cas spécial pour les entreprise, la période d'imposition choisie pour la DI
 			// ne doit pas être à cheval sur plusieurs exercices commerciaux
 			if (ctb instanceof Entreprise) {

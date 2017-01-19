@@ -415,4 +415,52 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-21604] date de début vide et autres renseignées -> NPE
+	 */
+	@Test
+	public void testDateDebutDeclarationVideSurDeclarationLibre() throws Exception {
+		final RegDate dateDebut = date(2000, 7, 1);
+		final RegDate today = RegDate.get();
+		final int pf = today.year();
+
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);          // tous les 31.12
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				return entreprise.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+				view.setTiersId(pmId);
+				view.setPeriodeFiscale(pf);
+				view.setDateDebutPeriodeImposition(null);
+				view.setDateFinPeriodeImposition(date(pf, 12, 31));
+				view.setDelaiAccorde(date(pf + 1, 12, 31));
+				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+
+				final Errors errors = new BeanPropertyBindingResult(view, "view");
+				validator.validate(view, errors);
+
+				final List<ObjectError> allErrors = errors.getAllErrors();
+				assertNotNull(allErrors);
+				assertEquals(1, allErrors.size());
+
+				final ObjectError error = allErrors.get(0);
+				assertEquals("error.date.debut.vide", error.getCode());
+			}
+		});
+	}
 }
