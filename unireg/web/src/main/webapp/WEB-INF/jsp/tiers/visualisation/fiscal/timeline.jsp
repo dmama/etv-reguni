@@ -39,7 +39,7 @@
 
 	<tiles:put name="body">
 
-	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.timeline.ForsTimelineView"--%>
+		<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.timeline.ForsTimelineView"--%>
 		<c:if test="${command.forPrint}">
 				<h1><c:out value="${command.title}"/></h1>
 				<h3><c:out value="${command.description}"/></h3>
@@ -231,13 +231,14 @@
 					</c:choose>
 					
 					<%-- fors secondaires --%>
+					<c:set var="defaultMaxColsFS" value="12"/><%-- Nombre maximal de colonnes utilisées par défaut pour les fors secondaires --%>
 					<c:forEach var="fs" items="${ligne.forsSecondaires}" varStatus="fsLoop">
 						<c:choose>
 							<c:when test="${fs.filler}">			
-								<td class="filler <c:if test="${fsLoop.index > 14}">fs-hideable</c:if>"/>
+								<td class="filler <c:if test="${fsLoop.index >= defaultMaxColsFS}">fs-hideable</c:if>"/>
 							</c:when>
 							<c:when test="${!fs.span && !fs.filler}">
-								<td class="secondaire tooltip_cell <c:if test="${fsLoop.index > 14}">fs-hideable</c:if>" id="ffs-${fs.range.id}" rowspan="<c:out value="${fs.longueurAffichage}" />">
+								<td class="secondaire tooltip_cell <c:if test="${fsLoop.index >= defaultMaxColsFS}">fs-hideable</c:if>" id="ffs-${fs.range.id}" rowspan="<c:out value="${fs.longueurAffichage}" />">
                                     <unireg:commune ofs="${fs.range.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fs.range.dateDebut}"/>
                                     <div id="ffs-${fs.range.id}-tooltip" style="display:none;">
                                         For fiscal secondaire <b>#${fs.range.id}</b><br/>
@@ -253,12 +254,14 @@
 							</c:when>
 						</c:choose>
 					</c:forEach>
-					<td id="fs-more" class="tooltip_cell" style="display: none;" rowspan="${command.table.rows.size()}" onclick="TimelineForsSecondaires.show();">
-						<b>...</b>
-						<div id="fs-more-tooltip" style="display: none;">
-							<span style="font-style: italic;">Cliquer pour voir<br/>tous les fors secondaires...</span>
-						</div>
-					</td>
+					<c:if test="${status.index == 0}">
+						<td id="fs-more" class="tooltip_cell" style="display: none;" rowspan="${command.table.rows.size()}" onclick="TimelineForsSecondaires.show();">
+							<b>...</b>
+							<div id="fs-more-tooltip" style="display: none;">
+								<span style="font-style: italic;">Cliquer pour voir<br/>tous les fors secondaires...</span>
+							</div>
+						</td>
+					</c:if>
 
 					<%-- fors de gestion --%>
 					<c:if test="${command.showForsGestion && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
@@ -489,7 +492,7 @@
 					if (fsHidden.length !== 0) {
 						fsHidden.hide();
 						$("#fs-more").show();
-						$("#th-fs").attr("colspan", 16);
+						$("#th-fs").attr("colspan", ${defaultMaxColsFS + 1});
 					}
 				},
 
