@@ -12,6 +12,8 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.LinkedEntity;
@@ -52,21 +54,45 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final Tiers tiers = (Tiers) entity;
 			final Long numero = tiers.getNumero();
 			if (numero != null) {
-				onTiersChange(numero);
+				dataEventService.onTiersChange(numero);
+			}
+		}
+		else if (entity instanceof ImmeubleRF) {
+			// Un immeuble a été modifié en base => on envoie un événement correspondant
+			final ImmeubleRF immeuble = (ImmeubleRF) entity;
+			final Long i = immeuble.getId();
+			if (i != null) {
+				dataEventService.onImmeubleChange(i);
+			}
+		}
+		else if (entity instanceof BatimentRF) {
+			// Un bâtiment a été modifié en base => on envoie un événement correspondant
+			final BatimentRF batiment = (BatimentRF) entity;
+			final Long i = batiment.getId();
+			if (i != null) {
+				dataEventService.onBatimentChange(i);
 			}
 		}
 		else if (entity instanceof RapportEntreTiers) {
 			final RapportEntreTiers ret = (RapportEntreTiers) entity;
-			onRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
-			onTiersChange(ret.getSujetId());
-			onTiersChange(ret.getObjetId());
+			dataEventService.onRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
+			dataEventService.onTiersChange(ret.getSujetId());
+			dataEventService.onTiersChange(ret.getObjetId());
 		}
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
 			final LinkedEntity child = (LinkedEntity) entity;
 			// [SIFISC-915] En cas d'annulation, on DOIT inclure les liens nouvellement annulés pour invalider correctement les caches
-			final Set<Tiers> tiers = tiersService.getLinkedTiers(child, isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(child, Tiers.class, isAnnulation);
 			for (Tiers t : tiers) {
-				onTiersChange(t.getNumero());
+				dataEventService.onTiersChange(t.getNumero());
+			}
+			final Set<ImmeubleRF> immeubles = tiersService.getLinkedEntities(child, ImmeubleRF.class, isAnnulation);
+			for (ImmeubleRF i : immeubles) {
+				dataEventService.onImmeubleChange(i.getId());
+			}
+			final Set<BatimentRF> batiments = tiersService.getLinkedEntities(child, BatimentRF.class, isAnnulation);
+			for (BatimentRF b : batiments) {
+				dataEventService.onBatimentChange(b.getId());
 			}
 		}
 		else if (entity instanceof DroitAcces) {
@@ -77,7 +103,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			// le tiers lui-même
 			final Long numero = ctb.getNumero();
 			if (numero != null) {
-				onDroitAccesChange(numero);
+				dataEventService.onDroitAccessChange(numero);
 			}
 
 			// tous les ménages communs auxquel il a pu appartenir, ou les établissements liés
@@ -87,24 +113,12 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 				                                                            TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 				for (RapportEntreTiers r : rapports) {
 					if (!r.isAnnule() && typesPropages.contains(r.getType())) {
-						onDroitAccesChange(r.getObjetId());
+						dataEventService.onDroitAccessChange(r.getObjetId());
 					}
 				}
 			}
 		}
 		return false;
-	}
-
-	private void onTiersChange(Long id) {
-		dataEventService.onTiersChange(id);
-	}
-
-	private void onDroitAccesChange(Long id) {
-		dataEventService.onDroitAccessChange(id);
-	}
-
-	private void onRelationshipChange(TypeRapportEntreTiers type, Long sujetId, Long objetId) {
-		dataEventService.onRelationshipChange(type, sujetId, objetId);
 	}
 
 	@Override

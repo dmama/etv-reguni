@@ -398,6 +398,16 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		// rien à faire, car il n'y a pas de droit d'accès particulier sur les immeubles
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		// rien à faire, car il n'y a pas de droit d'accès particulier sur les bâtiments
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		clearCaches();
 	}

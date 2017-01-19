@@ -34,6 +34,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
+// TODO (msi) implémenter l'interface LinkedEntity pour retourner les tiers concernés par ce droit
 public abstract class DroitRF extends HibernateDateRangeEntity {
 
 	/**

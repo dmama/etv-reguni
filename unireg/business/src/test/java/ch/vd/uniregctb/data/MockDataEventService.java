@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -9,6 +11,8 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 public class MockDataEventService implements DataEventService {
 
 	public final List<Long> changedTiers = new ArrayList<>();
+	public final Set<Long> changedImmeubles = new HashSet<>();
+	public final Set<Long> changedBatiments = new HashSet<>();
 
 	@Override
 	public void register(CivilDataEventListener listener) {
@@ -22,6 +26,8 @@ public class MockDataEventService implements DataEventService {
 
 	public void clear() {
 		changedTiers.clear();
+		changedImmeubles.clear();
+		changedBatiments.clear();
 	}
 
 	@Override
@@ -40,6 +46,16 @@ public class MockDataEventService implements DataEventService {
 
 	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
+	}
+
+	@Override
+	public void onImmeubleChange(long immeubleId) {
+		changedImmeubles.add(immeubleId);
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		changedBatiments.add(batimentId);
 	}
 
 	@Override

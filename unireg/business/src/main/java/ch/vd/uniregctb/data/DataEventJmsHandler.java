@@ -18,10 +18,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.ImmeubleChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
@@ -61,6 +63,8 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		addToMap(map, IndividuChangeEvent.class, new IndividuChangeEventHandler());
 		addToMap(map, TiersChangeEvent.class, new TiersChangeEventHandler());
 		addToMap(map, RelationChangeEvent.class, new RelationChangeEventHandler());
+		addToMap(map, ImmeubleChangeEvent.class, new ImmeubleChangeEventHandler());
+		addToMap(map, BatimentChangeEvent.class, new BatimentChangeEventHandler());
 		return map;
 	}
 
@@ -181,6 +185,26 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 					throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}
 			dataEventService.onRelationshipChange(type, event.getSujetId(), event.getObjetId());
+		}
+	}
+
+	private final class ImmeubleChangeEventHandler implements Handler<ImmeubleChangeEvent> {
+		@Override
+		public void onEvent(ImmeubleChangeEvent event) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Réception d'un événement db de changement sur l'immeuble n°" + event.getId());
+			}
+			dataEventService.onImmeubleChange(event.getId());
+		}
+	}
+
+	private final class BatimentChangeEventHandler implements Handler<BatimentChangeEvent> {
+		@Override
+		public void onEvent(BatimentChangeEvent event) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Réception d'un événement db de changement sur le bâtiment n°" + event.getId());
+			}
+			dataEventService.onBatimentChange(event.getId());
 		}
 	}
 

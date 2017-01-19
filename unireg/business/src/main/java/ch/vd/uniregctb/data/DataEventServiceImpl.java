@@ -33,6 +33,16 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		fiscal.onImmeubleChange(immeubleId);
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		fiscal.onBatimentChange(batimentId);
+	}
+
+	@Override
 	public void onIndividuChange(long id) {
 		civil.onIndividuChange(id);
 	}

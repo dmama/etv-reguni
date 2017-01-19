@@ -20,10 +20,12 @@ import org.w3c.dom.Document;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.ImmeubleChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
@@ -111,6 +113,8 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		private final Set<Long> individuChange = new HashSet<>();
 		private final Set<Long> organisationChange = new HashSet<>();
 		private final Set<Long> droitsAccesChange = new HashSet<>();
+		private final Set<Long> immeubleChange = new HashSet<>();
+		private final Set<Long> batimentChange = new HashSet<>();
 		private final Set<RelationshipKey> relationshipChange = new HashSet<>();
 
 		public AlreadySentData() {
@@ -168,6 +172,22 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		 */
 		public boolean addRelationshipChange(RelationshipKey key) {
 			return relationshipChange.add(key);
+		}
+
+		/**
+		 * @param id identifiant de l'immeuble qui a été modifié
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme immeuble modifié
+		 */
+		public boolean addImmeubleChange(Long id) {
+			return immeubleChange.add(id);
+		}
+
+		/**
+		 * @param id identifiant du bâtiment qui a été modifié
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme bâtiment modifié
+		 */
+		public boolean addBatimentChange(Long id) {
+			return batimentChange.add(id);
 		}
 	}
 
@@ -406,6 +426,50 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				throw new IllegalArgumentException("Type de relation inconnu = [" + type + ']');
 		}
 		return relationship;
+	}
+
+	@Override
+	public void onImmeubleChange(long id) {
+		final OnNotificationAction action = data -> data.addImmeubleChange(id);
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement DB de changement sur l'immeuble n°" + id);
+				}
+
+				final ImmeubleChangeEvent event = objectFactory.createImmeubleChangeEvent();
+				event.setId(id);
+				sendDataEvent(String.valueOf(id), event);
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un événement DB de changement de l'immeuble n°" + id, e);
+			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur l'immeuble n°" + id + " (une émission est déjà prévue dans la transaction courante)");
+		}
+	}
+
+	@Override
+	public void onBatimentChange(long id) {
+		final OnNotificationAction action = data -> data.addBatimentChange(id);
+		if (onNewNotification(action)) {
+			try {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement DB de changement sur le bâtiment n°" + id);
+				}
+
+				final BatimentChangeEvent event = objectFactory.createBatimentChangeEvent();
+				event.setId(id);
+				sendDataEvent(String.valueOf(id), event);
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible d'envoyer un événement DB de changement du bâtiment n°" + id, e);
+			}
+		}
+		else if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur le bâtiment n°" + id + " (une émission est déjà prévue dans la transaction courante)");
+		}
 	}
 
 	@Override

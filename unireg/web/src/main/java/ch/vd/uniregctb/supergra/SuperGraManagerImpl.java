@@ -347,7 +347,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				}
 			}
 			else if (entity instanceof LinkedEntity) {
-				final Set<Tiers> linked = tiersService.getLinkedTiers((LinkedEntity) entity, isAnnulation(d));
+				final Set<Tiers> linked = tiersService.getLinkedEntities((LinkedEntity) entity, Tiers.class, isAnnulation(d));
 				for (Tiers t : linked) {
 					if (t != null && !tiers.containsKey(t.getId())) {
 						tiers.put(t.getId(), t);

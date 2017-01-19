@@ -187,6 +187,14 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public void onImmeubleChange(long immeubleId) {
+		}
+
+		@Override
+		public void onBatimentChange(long batimentId) {
+		}
+
+		@Override
 		public void onLoadDatabase() {
 		}
 

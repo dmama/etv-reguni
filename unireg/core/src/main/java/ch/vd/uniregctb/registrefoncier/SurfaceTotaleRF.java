@@ -12,12 +12,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * La surface totale d'un immeuble inscrit au registre foncier.
@@ -28,7 +31,7 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
-public class SurfaceTotaleRF extends HibernateDateRangeEntity {
+public class SurfaceTotaleRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -99,5 +102,10 @@ public class SurfaceTotaleRF extends HibernateDateRangeEntity {
 			return c;
 		}
 		return Integer.compare(surface, right.surface);
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		return Collections.singletonList(immeuble);
 	}
 }

@@ -28,11 +28,11 @@ public class ImmeubleRFValidator extends EntityValidatorImpl<ImmeubleRF> {
 
 		if (immeuble.getDateRadiation() != null) {
 			// l'immeuble est radié, tous les droits, surfaces, etc... devraient être fermées.
-			validateCollectionFermee(results, immeuble.getEstimations(), "L'immeuble raidé avec l'idRF=[" + immeuble.getIdRF() + "] possède une estimation fiscale active");
-			validateCollectionFermee(results, immeuble.getImplantations(), "L'immeuble raidé avec l'idRF=[" + immeuble.getIdRF() + "] possède un implantation active");
-			validateCollectionFermee(results, immeuble.getSituations(), "L'immeuble raidé avec l'idRF=[" + immeuble.getIdRF() + "] possède une situation active");
-			validateCollectionFermee(results, immeuble.getSurfacesAuSol(), "L'immeuble raidé avec l'idRF=[" + immeuble.getIdRF() + "] possède une surface au sol active");
-			validateCollectionFermee(results, immeuble.getSurfacesTotales(), "L'immeuble raidé avec l'idRF=[" + immeuble.getIdRF() + "] possède une surface totale active");
+			validateCollectionFermee(results, immeuble.getEstimations(), "L'immeuble radié avec l'idRF=[" + immeuble.getIdRF() + "] possède une estimation fiscale active");
+			validateCollectionFermee(results, immeuble.getImplantations(), "L'immeuble radié avec l'idRF=[" + immeuble.getIdRF() + "] possède un implantation active");
+			validateCollectionFermee(results, immeuble.getSituations(), "L'immeuble radié avec l'idRF=[" + immeuble.getIdRF() + "] possède une situation active");
+			validateCollectionFermee(results, immeuble.getSurfacesAuSol(), "L'immeuble radié avec l'idRF=[" + immeuble.getIdRF() + "] possède une surface au sol active");
+			validateCollectionFermee(results, immeuble.getSurfacesTotales(), "L'immeuble radié avec l'idRF=[" + immeuble.getIdRF() + "] possède une surface totale active");
 		}
 
 		return results;

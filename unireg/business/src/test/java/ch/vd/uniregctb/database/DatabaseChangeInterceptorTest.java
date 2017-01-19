@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -13,6 +14,15 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -357,5 +367,249 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		// on vérifie que le changement effectué sur la situation de famille a bien provoqué l'envoi d'une notification
 		assertEquals(1, eventService.changedTiers.size());
 		assertEquals(ids.tiers, eventService.changedTiers.iterator().next());
+	}
+
+	@Test
+	public void testDetectImmeubleChange() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			return bienFond.getId();
+		});
+
+		// on vérifie que la création de l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(id, eventService.changedImmeubles.iterator().next());
+
+		eventService.clear();
+
+		// on effectue une modification sur l'immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
+			bienFond.setEgrid("CH99999999");
+			return null;
+		});
+
+		// on vérifie que le changement sur l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(id, eventService.changedImmeubles.iterator().next());
+	}
+
+	@Test
+	public void testDetectSituationChange() throws Exception {
+
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			return bienFond.getId();
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedImmeubles);
+
+		// on modifie la situation de l'immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
+			final SituationRF situation0 = bienFond.getSituations().iterator().next();
+			situation0.setDateFin(RegDate.get(2004,12,31));
+			final SituationRF situation1 = new SituationRF();
+			situation1.setNoParcelle(1022);
+			situation1.setDateDebut(RegDate.get(2005, 1, 1));
+			situation1.setCommune(situation0.getCommune());
+			bienFond.addSituation(situation1);
+			return null;
+		});
+
+		// on vérifie que la modification de la situaiton de l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(id, eventService.changedImmeubles.iterator().next());
+	}
+
+	@Test
+	public void testDetectSurfaceTotaleChange() throws Exception {
+
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			return bienFond.getId();
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedImmeubles);
+
+		// on ajoute une surface totale à l'immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
+			final SurfaceTotaleRF sf = new SurfaceTotaleRF();
+			sf.setDateDebut(RegDate.get(2005, 1, 1));
+			sf.setSurface(200);
+			bienFond.addSurfaceTotale(sf);
+			return null;
+		});
+
+		// on vérifie que l'ajout de la surface totale sur l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(id, eventService.changedImmeubles.iterator().next());
+	}
+
+	@Test
+	public void testDetectSurfaceAuSolChange() throws Exception {
+
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			return bienFond.getId();
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedImmeubles);
+
+		// on ajoute une surface au sol à l'immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
+			final SurfaceAuSolRF s = new SurfaceAuSolRF();
+			s.setDateDebut(RegDate.get(2005, 1, 1));
+			s.setSurface(200);
+			s.setType("Porcherie");
+			s.setImmeuble(bienFond);
+			hibernateTemplate.merge(s);
+			return null;
+		});
+
+		// on vérifie que l'ajout de la surface au sol sur l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(id, eventService.changedImmeubles.iterator().next());
+	}
+
+	@Test
+	public void testDetectEstimationChange() throws Exception {
+
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			return bienFond.getId();
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedImmeubles);
+
+		// on ajoute une estimation à l'immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
+			final EstimationRF estimation = new EstimationRF();
+			estimation.setDateDebut(RegDate.get(2005,1,1));
+			estimation.setDateEstimation(RegDate.get(2005,1,1));
+			estimation.setEnRevision(false);
+			estimation.setMontant(2_003_030L);
+			estimation.setReference("voir le chef");
+			bienFond.addEstimation(estimation);
+			return null;
+		});
+
+		// on vérifie que l'ajout de l'estimation sur l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(id, eventService.changedImmeubles.iterator().next());
+	}
+
+	@Test
+	public void testDetectImplantationChange() throws Exception {
+
+		class Ids {
+			long immeuble;
+			long batiment;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			final BatimentRF batiment = addBatimentRF("8388338");
+			ids.immeuble = bienFond.getId();
+			ids.batiment = batiment.getId();
+			return null;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedImmeubles);
+		assertEmpty(eventService.changedBatiments);
+
+		// on ajoute une implantation entre un bâtiment et un immeuble
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, ids.immeuble);
+			final BatimentRF batiment = hibernateTemplate.get(BatimentRF.class, ids.batiment);
+			final ImplantationRF implantation = new ImplantationRF();
+			implantation.setDateDebut(RegDate.get(2005,1,1));
+			implantation.setSurface(2_300);
+			implantation.setBatiment(batiment);
+			implantation.setImmeuble(bienFond);
+			batiment.addImplantation(implantation);
+			return null;
+		});
+
+		// on vérifie que l'ajout de l'implantation entre le bâtiment et l'immeuble a bien provoqué l'envoi d'une notification sur chacune des entités
+		assertEquals(1, eventService.changedImmeubles.size());
+		assertEquals(Long.valueOf(ids.immeuble), eventService.changedImmeubles.iterator().next());
+		assertEquals(1, eventService.changedBatiments.size());
+		assertEquals(Long.valueOf(ids.batiment), eventService.changedBatiments.iterator().next());
+	}
+
+	@Test
+	public void testDetectBatimentChange() throws Exception {
+
+		assertEmpty(eventService.changedBatiments);
+
+		final Long id = doInNewTransaction(status -> {
+			final BatimentRF batiment = addBatimentRF("8388338");
+			return batiment.getId();
+		});
+
+		// on vérifie que la création de l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedBatiments.size());
+		assertEquals(id, eventService.changedBatiments.iterator().next());
+
+		eventService.clear();
+
+		// on effectue une modification sur le bâtiment
+		doInNewTransaction(status -> {
+			final BatimentRF batiment = hibernateTemplate.get(BatimentRF.class, id);
+			batiment.setMasterIdRF("38383838");
+			return null;
+		});
+
+		// on vérifie que le changement sur l'immeuble a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedBatiments.size());
+		assertEquals(id, eventService.changedBatiments.iterator().next());
+	}
+
+	@Test
+	public void testDetectDescriptionBatimentChange() throws Exception {
+
+		assertEmpty(eventService.changedBatiments);
+
+		final Long id = doInNewTransaction(status -> {
+			final BatimentRF batiment = addBatimentRF("8388338");
+			return batiment.getId();
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedBatiments);
+
+		// on ajoute une description sur le bâtiment
+		doInNewTransaction(status -> {
+			final BatimentRF batiment = hibernateTemplate.get(BatimentRF.class, id);
+			final DescriptionBatimentRF description = new DescriptionBatimentRF();
+			description.setDateDebut(RegDate.get(2000,1,1));
+			description.setType("Centrale électrique sur le champ de betteraves");
+			description.setSurface(23);
+			batiment.addDescription(description);
+			return null;
+		});
+
+		// on vérifie que l'ajout de la description a bien provoqué l'envoi d'une notification
+		assertEquals(1, eventService.changedBatiments.size());
+		assertEquals(id, eventService.changedBatiments.iterator().next());
 	}
 }

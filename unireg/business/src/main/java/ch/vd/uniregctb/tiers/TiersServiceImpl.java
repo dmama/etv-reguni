@@ -5220,53 +5220,54 @@ public class TiersServiceImpl implements TiersService {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<Tiers> getLinkedTiers(LinkedEntity entity, boolean includeAnnuled) {
-        final Set<Tiers> tiers = new HashSet<>();
-        final Set<Object> visited = new HashSet<>(); // contient les entités et les clés déjà visitées
-        extractLinkedTiers(entity, includeAnnuled, tiers, visited);
-        return tiers;
-    }
+	@NotNull
+	@Override
+	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, boolean includeAnnuled) {
+		final Set<T> linked = new HashSet<>();
+		final Set<Object> visited = new HashSet<>(); // contient les entités et les clés déjà visitées
+		extractLinkedTiers(entity, clazz, includeAnnuled, linked, visited);
+		return linked;
+	}
 
-    private void extractLinkedTiers(LinkedEntity entity, boolean includeAnnuled, Set<Tiers> tiers, Set<Object> visited) {
+	private <T extends HibernateEntity> void extractLinkedTiers(LinkedEntity entity, @NotNull Class<T> clazz, boolean includeAnnuled, Set<T> linked, Set<Object> visited) {
 
-        final List<?> list = entity.getLinkedEntities(includeAnnuled);
-        if (list == null) {
-            return;
-        }
+		final List<?> list = entity.getLinkedEntities(includeAnnuled);
+		if (list == null) {
+			return;
+		}
 
-        for (Object o : list) {
+		for (Object o : list) {
 
-            if (visited.contains(o)) { // test sur la clé ou l'entité elle-même
-                continue; // on a déjà visité cette entité
-            }
-            visited.add(o);
+			if (visited.contains(o)) { // test sur la clé ou l'entité elle-même
+				continue; // on a déjà visité cette entité
+			}
+			visited.add(o);
 
-            // on met la main sur l'entité hibernate
-            final HibernateEntity e;
-            if (o instanceof EntityKey) {
-                final EntityKey key = (EntityKey) o;
-                e = (HibernateEntity) hibernateTemplate.get(key.getClazz(), (Serializable) key.getId());
+			// on met la main sur l'entité hibernate
+			final HibernateEntity e;
+			if (o instanceof EntityKey) {
+				final EntityKey key = (EntityKey) o;
+				e = (HibernateEntity) hibernateTemplate.get(key.getClazz(), (Serializable) key.getId());
 
-                if (visited.contains(e)) { // on reteste sur l'entité uniquement
-                    continue; // on a déjà visité cette entité
-                }
-                visited.add(e);
-            } else {
-                e = (HibernateEntity) o; // selon le contrat de getLinkedEntities()
-            }
+				if (visited.contains(e)) { // on reteste sur l'entité uniquement
+					continue; // on a déjà visité cette entité
+				}
+				visited.add(e);
+			}
+			else {
+				e = (HibernateEntity) o; // selon le contrat de getLinkedEntities()
+			}
 
-            // on ajoute les tiers trouvés
-            if (e instanceof Tiers) {
-                tiers.add((Tiers) e);
-            } else if (e instanceof LinkedEntity) {
-                extractLinkedTiers((LinkedEntity) e, false /* l'annulation des sous-entités est traitée séparemment, si nécessaire */, tiers, visited); // récursif
-            }
-        }
-    }
+			// on ajoute les tiers trouvés
+			if (e != null && clazz.isAssignableFrom(e.getClass())) {
+				//noinspection unchecked
+				linked.add((T) e);
+			}
+			else if (e instanceof LinkedEntity) {
+				extractLinkedTiers((LinkedEntity) e, clazz, false /* l'annulation des sous-entités est traitée séparemment, si nécessaire */, linked, visited); // récursif
+			}
+		}
+	}
 
     @Override
     public boolean isDernierForFiscalPrincipalFermePourSeparation(Tiers tiers) {

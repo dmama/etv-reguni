@@ -38,6 +38,24 @@ public interface FiscalDataEventListener {
 	void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId);
 
 	/**
+	 * Cette méthode est appelée lorsqu'un immeuble RF va être ajouté/modifié dans la base de données.
+	 * <p/>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param immeubleId l'id technique Unireg de l'immeuble.
+	 */
+	void onImmeubleChange(long immeubleId);
+
+	/**
+	 * Cette méthode est appelée lorsqu'un bâtiment RF va être ajouté/modifié dans la base de données.
+	 * <p/>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param batimentId l'id technique Unireg de l'immeuble.
+	 */
+	void onBatimentChange(long batimentId);
+
+	/**
 	 * Cette méthode est appelée lorsque la base de données va être entièrement vidée (avant le chargement d'un script DBunit, par exemple).
 	 * <p/>
 	 * Note: toute exception levée durant l'exécution du callback sera ignorée.

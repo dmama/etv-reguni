@@ -3,10 +3,14 @@ package ch.vd.uniregctb.webservices.v7.cache;
 import java.util.Objects;
 
 public class GetImmovablePropertyKey extends LandRegistryCacheKey {
-	private final long immId;
+	private final long immoId;
 
-	public GetImmovablePropertyKey(long immId) {
-		this.immId = immId;
+	public GetImmovablePropertyKey(long immoId) {
+		this.immoId = immoId;
+	}
+
+	public long getImmoId() {
+		return immoId;
 	}
 
 	@Override
@@ -14,11 +18,11 @@ public class GetImmovablePropertyKey extends LandRegistryCacheKey {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		final GetImmovablePropertyKey that = (GetImmovablePropertyKey) o;
-		return immId == that.immId;
+		return immoId == that.immoId;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(immId);
+		return Objects.hash(immoId);
 	}
 }

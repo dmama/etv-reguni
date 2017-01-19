@@ -20,6 +20,16 @@ public class BusinessWebServiceCacheEventListener implements WebServiceEventInte
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		// rien à faire, les immeubles n'existent pas dans le v5
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		// rien à faire, les bâtiments n'existent pas dans le v5
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		cache.reset();
 	}

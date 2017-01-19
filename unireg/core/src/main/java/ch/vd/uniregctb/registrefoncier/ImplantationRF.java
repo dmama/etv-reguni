@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.ForeignKey;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * L'implantation d'un bâtiment sur une parcelle (immeuble)
@@ -32,7 +35,7 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
-public class ImplantationRF extends HibernateDateRangeEntity {
+public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -138,5 +141,10 @@ public class ImplantationRF extends HibernateDateRangeEntity {
 			return c;
 		}
 		return Objects.compare(surface, right.surface, Integer::compareTo);
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		return Arrays.asList(immeuble, batiment);
 	}
 }

@@ -25,6 +25,16 @@ public class PartyWebServiceCacheManager implements WebServiceEventInterface {
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		// rien à faire, les immeubles n'existent pas dans le v3
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		// rien à faire, les bâtiments n'existent pas dans le v3
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		cache.clearAll();
 	}

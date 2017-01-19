@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.Index;
@@ -23,6 +25,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * Estimation fiscale d'un immeuble inscrit au registre foncier.
@@ -33,7 +36,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
-public class EstimationRF extends HibernateDateRangeEntity {
+public class EstimationRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -161,5 +164,10 @@ public class EstimationRF extends HibernateDateRangeEntity {
 			return c;
 		}
 		return Objects.compare(montant, right.montant, Long::compareTo);
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		return Collections.singletonList(immeuble);
 	}
 }

@@ -290,6 +290,16 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		// rien à faire, il n'y a pas d'autorisation sur les immeubles
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		// rien à faire, il n'y a pas d'autorisation sur les bâtiments
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		reset();
 	}

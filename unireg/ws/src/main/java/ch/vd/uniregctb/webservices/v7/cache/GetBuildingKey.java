@@ -3,10 +3,14 @@ package ch.vd.uniregctb.webservices.v7.cache;
 import java.util.Objects;
 
 public class GetBuildingKey extends LandRegistryCacheKey {
-	private final long immId;
+	private final long buildingId;
 
-	public GetBuildingKey(long immId) {
-		this.immId = immId;
+	public GetBuildingKey(long buildingId) {
+		this.buildingId = buildingId;
+	}
+
+	public long getBuildingId() {
+		return buildingId;
 	}
 
 	@Override
@@ -14,11 +18,11 @@ public class GetBuildingKey extends LandRegistryCacheKey {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		final GetBuildingKey that = (GetBuildingKey) o;
-		return immId == that.immId;
+		return buildingId == that.buildingId;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(immId);
+		return Objects.hash(buildingId);
 	}
 }

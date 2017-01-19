@@ -397,6 +397,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	/**
 	 * Vide le cache de toute donnée concernant le tiers dont le numéro est donné
+	 *
 	 * @param partyNo numéro du tiers à oublier
 	 */
 	public void evictParty(long partyNo) {
@@ -408,11 +409,27 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		}
 	}
 
-	// TODO (msi) câbler un système de clear des données du RF après chaque import.
-	public void evictLandRegistryData() {
+	/**
+	 * Vide le cache de toutes les données concernant l'immeuble spécifié
+	 *
+	 * @param immoId l'id technique Unireg de l'immeuble
+	 */
+	public void evictImmovableProperty(long immoId) {
 		final List<?> keys = cache.getKeys();
 		keys.stream()
-				.filter(k -> k instanceof LandRegistryCacheKey)
+				.filter(k -> k instanceof GetImmovablePropertyKey && ((GetImmovablePropertyKey) k).getImmoId() == immoId)
+				.forEach(k -> cache.remove(k));
+	}
+
+	/**
+	 * Vide le cache de toutes les données concernant le bâtiment spécifié
+	 *
+	 * @param buildingId l'id technique Unireg du bâtiment
+	 */
+	public void evictBuilding(long buildingId) {
+		final List<?> keys = cache.getKeys();
+		keys.stream()
+				.filter(k -> k instanceof GetBuildingKey && ((GetBuildingKey) k).getBuildingId() == buildingId)
 				.forEach(k -> cache.remove(k));
 	}
 }

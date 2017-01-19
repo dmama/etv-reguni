@@ -20,6 +20,16 @@ public class BusinessWebServiceCacheEventListener implements WebServiceEventInte
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		cache.evictImmovableProperty(immeubleId);
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		cache.evictBuilding(batimentId);
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		cache.reset();
 	}

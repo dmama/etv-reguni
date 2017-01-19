@@ -30,6 +30,24 @@ public interface FiscalDataEventService {
 	void onDroitAccessChange(long ppId);
 
 	/**
+	 * Cette méthode est appelée lorsqu'un immeuble RF va être ajouté/modifié dans la base de données.
+	 * <p/>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param immeubleId l'id technique Unireg de l'immeuble.
+	 */
+	void onImmeubleChange(long immeubleId);
+
+	/**
+	 * Cette méthode est appelée lorsqu'un bâtiment RF va être ajouté/modifié dans la base de données.
+	 * <p/>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param batimentId l'id technique Unireg de l'immeuble.
+	 */
+	void onBatimentChange(long batimentId);
+
+	/**
 	 * Notifie à tous les listeners qu'un rapport entre tiers a été modifié entre les tiers donnés
 	 *
 	 * @param type type du rapport entre tiers concerné

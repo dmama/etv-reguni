@@ -80,6 +80,16 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		listeners.forEach(l -> l.onImmeubleChange(immeubleId));
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		listeners.forEach(l -> l.onBatimentChange(batimentId));
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		for (WebServiceEventInterface listener : listeners) {
 			try {

@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -1548,15 +1549,16 @@ public interface TiersService {
      */
     Long extractNumeroIndividuPrincipal(Tiers tiers);
 
-    /**
-     * Analyse le graphe des entités liées et retourne tous les tiers trouvés.
-     *
-     * @param entity         une entité liée à d'autres entités.
-     * @param includeAnnuled <b>vrai</b> s'il faut tenir compte des liens annulés (utile dans le cas d'une annulation de rapport-entre-tiers, par exemple); ou <b>faux</b> s'il ne faut pas en tenir
-     *                       compte.
-     * @return l'ensemble des tiers trouvés; ou un ensemble vide si aucun tiers n'est trouvé.
-     */
-    Set<Tiers> getLinkedTiers(LinkedEntity entity, boolean includeAnnuled);
+	/**
+	 * Analyse le graphe des entités liées et retourne toutes les entités trouvées.
+	 *
+	 * @param entity         une entité liée à d'autres entités.
+	 * @param clazz          le type des entités désirées
+	 * @param includeAnnuled <b>vrai</b> s'il faut tenir compte des liens annulés (utile dans le cas d'une annulation de rapport-entre-tiers, par exemple); ou <b>faux</b> s'il ne faut pas en tenir compte.
+	 * @return l'ensemble des entités trouvées; ou un ensemble vide si aucune n'est trouvée.
+	 */
+	@NotNull
+	<T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, boolean includeAnnuled);
 
     /**
      * permet d'adapter la date de début de validité de la première périodicité en fonction d'une date

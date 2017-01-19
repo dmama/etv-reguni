@@ -28,6 +28,16 @@ public class FiscalDataEventServiceImpl implements FiscalDataEventService, Fisca
 	}
 
 	@Override
+	public void onImmeubleChange(long immeubleId) {
+		DataEventServiceHelper.dispatch(listeners, listener -> listener.onImmeubleChange(immeubleId));
+	}
+
+	@Override
+	public void onBatimentChange(long batimentId) {
+		DataEventServiceHelper.dispatch(listeners, listener -> listener.onBatimentChange(batimentId));
+	}
+
+	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		DataEventServiceHelper.dispatch(listeners, listener -> listener.onRelationshipChange(type, sujetId, objetId));
 	}
