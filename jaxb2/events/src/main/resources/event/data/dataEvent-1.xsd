@@ -47,6 +47,18 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="immeubleChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="batimentChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="relationChangeEvent">
 		<xs:complexContent>
 			<xs:extension base="dataEvent">
