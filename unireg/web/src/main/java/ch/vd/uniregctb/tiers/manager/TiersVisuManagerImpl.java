@@ -82,9 +82,11 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
-	                             boolean ctbAssocieHisto, boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines,
-	                             WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
+	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint,
+	                             boolean raisonsSocialesCivileHistoParam, boolean siegesCivilHistoParam, boolean formesJuridiquesCivileHistoParam, boolean capitauxCivileHistoParam,
+	                             boolean rapportsPrestationHisto, boolean ctbAssocieHisto, boolean modeImpression,
+	                             boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
+			throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
@@ -92,6 +94,10 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
 		tiersVisuView.setCtbAssocieHisto(ctbAssocieHisto);
 		tiersVisuView.setAdressesHistoCivilesConjoint(adressesHistoCivilesConjoint);
+		tiersVisuView.setRaisonsSocialesCivileHistoParam(raisonsSocialesCivileHistoParam);
+		tiersVisuView.setSiegesCivilHistoParam(siegesCivilHistoParam);
+		tiersVisuView.setFormesJuridiquesCivileHistoParam(formesJuridiquesCivileHistoParam);
+		tiersVisuView.setCapitauxCivileHistoParam(capitauxCivileHistoParam);
 
 
 		final Tiers tiers = getTiersDAO().get(numero);

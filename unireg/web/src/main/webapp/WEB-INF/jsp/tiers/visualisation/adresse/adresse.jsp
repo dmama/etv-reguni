@@ -2,13 +2,18 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut Adresse -->
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+
+<c:set var="adressesHisto" value="${command.adressesHisto != null ? command.adressesHisto : false}" />
+<c:set var="adressesHistoCiviles" value="${command.adressesHistoCiviles != null ? command.adressesHistoCiviles : false}" />
+<c:set var="adressesHistoCivilesConjoint" value="${command.adressesHistoCivilesConjoint != null ? command.adressesHistoCivilesConjoint : false}" />
+
 <c:if test="${autorisations.adresses}">
 <table border="0">
 	<tr>
 		<td>
 		<c:if test="${empty param['message'] && empty param['retour']}">
 			<unireg:raccourciModifier link="../adresses/edit.do?id=${command.tiers.numero}" tooltip="Modifier les adresses" display="label.bouton.modifier"/>
-		</c:if>	
+		</c:if>
 		</td>
 
 		<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
@@ -24,7 +29,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.adresse.fiscales" /></span></legend>
 
-	<input class="noprint" name="adrHistoFiscales" type="checkbox" <c:if test="${command.adressesHisto}">checked</c:if> onclick="Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);" id="isAdrHisto" />
+	<input class="noprint" name="adrHistoFiscale" type="checkbox" <c:if test="${adressesHisto}">checked</c:if> onClick="window.location = App.toggleBooleanParam(window.location, 'adressesHisto', true);" id="isAdrHisto" />
 	<label class="noprint" for="isAdrHisto"><fmt:message key="label.historique" /></label>
 
 	<jsp:include page="../../common/adresse/adresseFiscale.jsp">
@@ -47,11 +52,12 @@
 		</span>
 	</legend>
 
-	<input class="noprint" name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="Histo.toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',3);" id="isAdrHistoCiviles" />
+	<input class="noprint" name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'adressesHistoCiviles', true);" id="isAdrHistoCiviles" />
 	<label class="noprint" for="isAdrHistoCiviles"><fmt:message key="label.historique" /></label>
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>
 		<jsp:param name="membre" value="principal"/>
+		<jsp:param name="adressesHisto" value="${adressesHistoCiviles}"/>
 	</jsp:include>
 </fieldset>
 
@@ -59,12 +65,13 @@
 <fieldset id="adrCivConjointFieldset" <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
 	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" /><c:out value=" ${command.nomPrenomConjoint}"/></span></legend>
 
-	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="Histo.toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',3);" id="isAdrHistoCivilesConjoint" />
+	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'adressesHistoCivilesConjoint', true);" id="isAdrHistoCivilesConjoint" />
 	<label class="noprint" for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>
 
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>
 		<jsp:param name="membre" value="conjoint"/>
+		<jsp:param name="adressesHisto" value="${adressesHistoCivilesConjoint}"/>
 	</jsp:include>
 </fieldset>
 

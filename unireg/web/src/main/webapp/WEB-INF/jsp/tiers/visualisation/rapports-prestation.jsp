@@ -14,7 +14,7 @@
 
 <fieldset>
 	<legend><span><fmt:message key="label.contribuable.associe" /></span></legend>
-	<input class="noprint" name="ctbAssocieHisto" type="checkbox" id="ctbAssocieHisto" <c:if test="${command.ctbAssocieHisto}">checked</c:if> onClick="window.location = toggleBooleanParam(window.location, 'ctbAssocieHisto', true)" />
+	<input class="noprint" name="ctbAssocieHisto" type="checkbox" id="ctbAssocieHisto" <c:if test="${command.ctbAssocieHisto}">checked</c:if> onClick="window.location = App.toggleBooleanParam(window.location, 'ctbAssocieHisto', true)" />
 	<label class="noprint" for="ctbAssocieHisto"><fmt:message key="label.historique" /></label>
 		
 	<jsp:include page="../common/contribuable-associe.jsp">
@@ -25,42 +25,10 @@
 <fieldset>
 	<legend><span><fmt:message key="label.rapports.prestation" /></span></legend>
 
-	<script type="text/javascript">
-		function toggleBooleanParam(url, name, default_value){
-			var regexp = new RegExp(name + "=([a-z]*)", "i");
-			var match = regexp.exec(url);
-			if (match == null) {
-				// le paramètre n'existe pas, on l'ajoute
-				var newUrl = new String(url);
-
-				if (newUrl.charAt(newUrl.length - 1) == '#') { // supprime le trailing # si nécessaire
-					newUrl = newUrl.substr(0, newUrl.length - 1);
-				}
-				return newUrl + '&' + name + '=' + default_value;
-			}
-			else {
-				// le paramètre existe, on toggle sa valeur
-				var oldvalue = (match[1] == 'true');
-				var newvalue = !oldvalue;
-				var param = name + "=" + newvalue;
-				var newUrl = new String(url);
-				newUrl = newUrl.replace(regexp, param);
-
-				if (!newvalue) {
-					// on recommence à la première page lorsqu'on passe de la liste complète à la liste partielle
-					newUrl = newUrl.replace(/-p=[0-9]*/, "-p=1");
-				}
-
-				return newUrl;
-			}
-		}
-	</script>
-
-
 	<table border="0">
 		<tr>
 			<td>
-				<input class="noprint" name="rapportsPrestationHisto" type="checkbox" id="rapportsPrestationHisto" <c:if test="${command.rapportsPrestationHisto}">checked</c:if> onClick="window.location = toggleBooleanParam(window.location, 'rapportsPrestationHisto', true)" />
+				<input class="noprint" name="rapportsPrestationHisto" type="checkbox" id="rapportsPrestationHisto" <c:if test="${command.rapportsPrestationHisto}">checked</c:if> onClick="window.location = App.toggleBooleanParam(window.location, 'rapportsPrestationHisto', true)" />
 				<label class="noprint" for="rapportsPrestationHisto"><fmt:message key="label.historique" /></label>
 			</td>
 

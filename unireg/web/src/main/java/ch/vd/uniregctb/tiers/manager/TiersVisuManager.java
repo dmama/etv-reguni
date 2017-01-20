@@ -37,8 +37,11 @@ public interface TiersVisuManager {
 	 *          en cas de problème de résolution des adresses
 	 */
 	@Transactional(readOnly = true)
-	TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto, boolean ctbAssocieHisto,
-	                      boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
+	TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint,
+	                      boolean raisonsSocialesCivileHistoParam, boolean siegesCivilHistoParam, boolean formesJuridiquesCivileHistoParam, boolean capitauxCivileHistoParam,
+	                      boolean rapportsPrestationHisto, boolean ctbAssocieHisto, boolean modeImpression,
+	                      boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
+			throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
 
 	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur

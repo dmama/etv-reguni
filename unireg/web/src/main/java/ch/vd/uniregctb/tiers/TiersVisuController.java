@@ -39,6 +39,10 @@ public class TiersVisuController extends AbstractTiersController {
 	private static final String ADRESSES_HISTO_PARAM = "adressesHisto";
 	private static final String ADRESSES_CIVILES_HISTO_PARAM = "adressesHistoCiviles";
 	private static final String ADRESSES_CIVILES_HISTO_CONJ_PARAM = "adressesHistoCivilesConjoint";
+	private static final String RAISONS_SOCIALES_CIVILES_HISTO_PARAM = "raisonsSocialesHistoCiviles";
+	private static final String SIEGES_CIVILS_HISTO_PARAM = "siegesHistoCiviles";
+	private static final String FORMES_JURIDIQUES_CIVILES_HISTO_PARAM = "formesJuridiquesHistoCiviles";
+	private static final String CAPITAUX_CIVILS_HISTO_PARAM = "capitauxHistoCiviles";
 	private static final String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
 	private static final String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 	private static final String CTB_ASSOCIE_HISTO_PARAM = "ctbAssocieHisto";
@@ -65,6 +69,10 @@ public class TiersVisuController extends AbstractTiersController {
 		final boolean adrHistoParam = getBooleanParam(request, ADRESSES_HISTO_PARAM);
 		final boolean adrCivileHistoParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_PARAM);
 		final boolean adrCivileHistoConjParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_CONJ_PARAM);
+		final boolean raisonsSocialesCivileHistoParam = getBooleanParam(request, RAISONS_SOCIALES_CIVILES_HISTO_PARAM);
+		final boolean siegesCivilHistoParam = getBooleanParam(request, SIEGES_CIVILS_HISTO_PARAM);
+		final boolean formesJuridiquesCivileHistoParam = getBooleanParam(request, FORMES_JURIDIQUES_CIVILES_HISTO_PARAM);
+		final boolean capitauxCivileHistoParam = getBooleanParam(request, CAPITAUX_CIVILS_HISTO_PARAM);
 		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
 		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
 		final boolean ctbAssocieHisto = getBooleanParam(request, CTB_ASSOCIE_HISTO_PARAM);
@@ -81,7 +89,9 @@ public class TiersVisuController extends AbstractTiersController {
 			checkAccesDossierEnLecture(id);
 
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, ctbAssocieHisto,
+			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam,
+			                                         raisonsSocialesCivileHistoParam, siegesCivilHistoParam, formesJuridiquesCivileHistoParam, capitauxCivileHistoParam,
+			                                         rapportsPrestationHisto, ctbAssocieHisto,
 			                                         modeImpression, forsPrincipauxPagines, forsSecondairesPagines, autresForsPrincipauxPagines, pagination);
 
 			//vérification des droits de visualisation

@@ -14,6 +14,11 @@ public class TiersVisuView extends TiersView {
 
 	private boolean adressesHistoCivilesConjoint;
 
+	private boolean raisonsSocialesCivileHistoParam;
+	private boolean siegesCivilHistoParam;
+	private boolean formesJuridiquesCivileHistoParam;
+	private boolean capitauxCivileHistoParam;
+
 	public boolean isAdressesHisto() {
 		return adressesHisto;
 	}
@@ -37,4 +42,35 @@ public class TiersVisuView extends TiersView {
 		return adressesHistoCivilesConjoint;
 	}
 
+	public boolean isRaisonsSocialesCivileHistoParam() {
+		return raisonsSocialesCivileHistoParam;
+	}
+
+	public void setRaisonsSocialesCivileHistoParam(boolean raisonsSocialesCivileHistoParam) {
+		this.raisonsSocialesCivileHistoParam = raisonsSocialesCivileHistoParam;
+	}
+
+	public boolean isSiegesCivilHistoParam() {
+		return siegesCivilHistoParam;
+	}
+
+	public void setSiegesCivilHistoParam(boolean siegesCivilHistoParam) {
+		this.siegesCivilHistoParam = siegesCivilHistoParam;
+	}
+
+	public boolean isFormesJuridiquesCivileHistoParam() {
+		return formesJuridiquesCivileHistoParam;
+	}
+
+	public void setFormesJuridiquesCivileHistoParam(boolean formesJuridiquesCivileHistoParam) {
+		this.formesJuridiquesCivileHistoParam = formesJuridiquesCivileHistoParam;
+	}
+
+	public boolean isCapitauxCivileHistoParam() {
+		return capitauxCivileHistoParam;
+	}
+
+	public void setCapitauxCivileHistoParam(boolean capitauxCivileHistoParam) {
+		this.capitauxCivileHistoParam = capitauxCivileHistoParam;
+	}
 }

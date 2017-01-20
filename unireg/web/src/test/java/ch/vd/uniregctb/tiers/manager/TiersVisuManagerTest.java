@@ -64,7 +64,7 @@ public class TiersVisuManagerTest extends WebTest {
 	public void testGetViewHabitant() throws Exception{
 
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, false, false, true, true, true, true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, true, true,true, true, false, false, true, true, true, true, webParamPagination);
 		Tiers tiers = view.getTiers();
 		PersonnePhysique hab = (PersonnePhysique) tiers;
 		assertNotNull(hab);
@@ -75,7 +75,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetViewNonHabitant() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, true, true, false,false,true, true, true, true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, true, true, true, true, true,true, false,false,true, true, true, true, webParamPagination);
 		Tiers tiers = view.getTiers();
 		PersonnePhysique nonHab = (PersonnePhysique) tiers;
 		assertNotNull(nonHab);
@@ -87,7 +87,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesHistoriques() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, false,false,true, true, true, true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, true, true, true,true, false,false,true, true, true, true, webParamPagination);
 		List<AdresseView> adresses = view.getHistoriqueAdresses();
 		/*
 		 * 2 * courrier
@@ -143,7 +143,7 @@ public class TiersVisuManagerTest extends WebTest {
 		});
 
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage, true, true, true, false,false,true, true, true, true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage, true, true, true, true,true, true, true, false,false,true, true, true, true, webParamPagination);
 		List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
 		List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
 		List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
