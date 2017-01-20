@@ -44,6 +44,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:WEB-INF/unireg-web-separation.xml",
 		"classpath:WEB-INF/unireg-web-deces.xml",
 		"classpath:WEB-INF/unireg-web-di.xml",
+		"classpath:WEB-INF/unireg-web-fourre-neutre.xml",
 		"classpath:WEB-INF/unireg-web-mouvement.xml",
 		"classpath:WEB-INF/unireg-web-tache.xml",
 		"classpath:WEB-INF/unireg-web-fiscal.xml",

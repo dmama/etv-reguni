@@ -95,6 +95,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new AnnulerCouple());
 		list.add(new AnnulerSeparation());
 		list.add(new AnnulerDeces());
+		list.add(new ImprimerFourreNeutre());
 
 		list.add(new TraiterFaillite());
 		list.add(new RevoquerFaillite());
@@ -753,6 +754,30 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "post:/admin/dbdump.do?action=dumptiers&tiers=";
+		}
+	}
+	private static class ImprimerFourreNeutre implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.GEST_FOURRE_NEUTRE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return tiers instanceof PersonnePhysique
+					|| tiers instanceof MenageCommun
+					|| tiers instanceof Entreprise
+					|| tiers instanceof Etablissement;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Imprimer une fourre neutre";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/fourre-neutre/imprimer.do?numero=";
 		}
 	}
 
