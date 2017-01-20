@@ -15,6 +15,9 @@
 </c:choose>
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
+
+<c:set var="domicilesHisto" value="${command.domicilesHisto != null ? command.domicilesHisto : false}" />
+
 <unireg:setAuth var="autorisations" tiersId="${etablissement.id}"/>
 
 <fieldset>
@@ -80,7 +83,7 @@
 	<legend><span><fmt:message key="label.etablissement.domiciles"/></span></legend>
 
 	<c:if test="${page == 'visu' }">
-		<input class="noprint" id="showDomicilesHisto" type="checkbox" onclick="refreshDomicilesTable(this);" />
+		<input class="noprint" id="showDomicilesHisto" type="checkbox" <c:if test="${domicilesHisto}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'domicilesHisto', true);" />
 		<label class="noprint" for="showDomicilesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">

@@ -13,6 +13,13 @@
 
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
+
+<c:set var="raisonsSocialesHisto" value="${command.raisonsSocialesHisto != null ? command.raisonsSocialesHisto : false}" />
+<c:set var="nomsAdditionnelsHisto" value="${command.nomsAdditionnelsHisto != null ? command.nomsAdditionnelsHisto : false}" />
+<c:set var="siegesHisto" value="${command.siegesHisto != null ? command.siegesHisto : false}" />
+<c:set var="formesJuridiquesHisto" value="${command.formesJuridiquesHisto != null ? command.formesJuridiquesHisto : false}" />
+<c:set var="capitauxHisto" value="${command.capitauxHisto != null ? command.capitauxHisto : false}" />
+
 <unireg:setAuth var="autorisations" tiersId="${entreprise.id}"/>
 
 <fieldset>
@@ -80,7 +87,7 @@
 	<legend><span><fmt:message key="label.raisons.sociales"/></span></legend>
 
 	<c:if test="${page == 'visu' }">
-		<input class="noprint" id="showRaisonSocialeHisto" type="checkbox" onclick="refreshRaisonSocialeTable(this);" />
+		<input class="noprint" id="showRaisonSocialeHisto" type="checkbox" <c:if test="${raisonsSocialesHisto}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'raisonsSocialesHisto', true);" />
 		<label class="noprint" for="showRaisonSocialeHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
@@ -130,7 +137,7 @@
 	<fieldset>
 		<legend><span><fmt:message key="label.noms.additionnels"/></span></legend>
 		<c:if test="${page == 'visu' }">
-			<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
+			<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" <c:if test="${nomsAdditionnelsHisto}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'nomsAdditionnelsHisto', true);" />
 			<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
 		</c:if>
 
@@ -154,7 +161,7 @@
 	<legend><span><fmt:message key="label.sieges"/></span></legend>
 
 	<c:if test="${page == 'visu' }">
-		<input class="noprint" id="showSiegesHisto" type="checkbox" onclick="refreshSiegesTable(this);" />
+		<input class="noprint" id="showSiegesHisto" type="checkbox" <c:if test="${siegesHisto}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'siegesHisto', true);" />
 		<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
@@ -211,7 +218,7 @@
 	<legend><span><fmt:message key="label.formes.juridiques"/></span></legend>
 
 	<c:if test="${page == 'visu' }">
-		<input class="noprint" id="showFormesJuridiquesHisto" type="checkbox" onclick="refreshFormesJuridiquesTable(this);" />
+		<input class="noprint" id="showFormesJuridiquesHisto" type="checkbox" <c:if test="${formesJuridiquesHisto}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'formesJuridiquesHisto', true);" />
 		<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
@@ -259,7 +266,7 @@
 	<legend><span><fmt:message key="label.capitaux"/></span></legend>
 
 	<c:if test="${page == 'visu'}">
-		<input class="noprint" id="showCapitauxHisto" type="checkbox" onclick="refreshCapitauxTable(this);" />
+		<input class="noprint" id="showCapitauxHisto" type="checkbox" <c:if test="${capitauxHisto}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'capitauxHisto', true);" />
 		<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 

@@ -38,7 +38,7 @@ public interface TiersVisuManager {
 	 */
 	@Transactional(readOnly = true)
 	TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint,
-	                      boolean raisonsSocialesCivileHistoParam, boolean siegesCivilHistoParam, boolean formesJuridiquesCivileHistoParam, boolean capitauxCivileHistoParam,
+	                      boolean raisonsSocialesCivileHistoParam, boolean nomsAdditionnelsHistoParam, boolean siegesCivilHistoParam, boolean formesJuridiquesCivileHistoParam, boolean capitauxCivileHistoParam, boolean domicilesHistoParam,
 	                      boolean rapportsPrestationHisto, boolean ctbAssocieHisto, boolean modeImpression,
 	                      boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
 			throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;

@@ -14,10 +14,12 @@ public class TiersVisuView extends TiersView {
 
 	private boolean adressesHistoCivilesConjoint;
 
-	private boolean raisonsSocialesCivileHistoParam;
-	private boolean siegesCivilHistoParam;
-	private boolean formesJuridiquesCivileHistoParam;
-	private boolean capitauxCivileHistoParam;
+	private boolean raisonsSocialesHisto;
+	private boolean nomsAdditionnelsHisto;
+	private boolean siegesHisto;
+	private boolean formesJuridiquesHisto;
+	private boolean capitauxHisto;
+	private boolean domicilesHisto;
 
 	public boolean isAdressesHisto() {
 		return adressesHisto;
@@ -42,35 +44,51 @@ public class TiersVisuView extends TiersView {
 		return adressesHistoCivilesConjoint;
 	}
 
-	public boolean isRaisonsSocialesCivileHistoParam() {
-		return raisonsSocialesCivileHistoParam;
+	public boolean isRaisonsSocialesHisto() {
+		return raisonsSocialesHisto;
 	}
 
-	public void setRaisonsSocialesCivileHistoParam(boolean raisonsSocialesCivileHistoParam) {
-		this.raisonsSocialesCivileHistoParam = raisonsSocialesCivileHistoParam;
+	public void setRaisonsSocialesHisto(boolean raisonsSocialesHisto) {
+		this.raisonsSocialesHisto = raisonsSocialesHisto;
 	}
 
-	public boolean isSiegesCivilHistoParam() {
-		return siegesCivilHistoParam;
+	public boolean isNomsAdditionnelsHisto() {
+		return nomsAdditionnelsHisto;
 	}
 
-	public void setSiegesCivilHistoParam(boolean siegesCivilHistoParam) {
-		this.siegesCivilHistoParam = siegesCivilHistoParam;
+	public void setNomsAdditionnelsHisto(boolean nomsAdditionnelsHisto) {
+		this.nomsAdditionnelsHisto = nomsAdditionnelsHisto;
 	}
 
-	public boolean isFormesJuridiquesCivileHistoParam() {
-		return formesJuridiquesCivileHistoParam;
+	public boolean isSiegesHisto() {
+		return siegesHisto;
 	}
 
-	public void setFormesJuridiquesCivileHistoParam(boolean formesJuridiquesCivileHistoParam) {
-		this.formesJuridiquesCivileHistoParam = formesJuridiquesCivileHistoParam;
+	public void setSiegesHisto(boolean siegesHisto) {
+		this.siegesHisto = siegesHisto;
 	}
 
-	public boolean isCapitauxCivileHistoParam() {
-		return capitauxCivileHistoParam;
+	public boolean isFormesJuridiquesHisto() {
+		return formesJuridiquesHisto;
 	}
 
-	public void setCapitauxCivileHistoParam(boolean capitauxCivileHistoParam) {
-		this.capitauxCivileHistoParam = capitauxCivileHistoParam;
+	public void setFormesJuridiquesHisto(boolean formesJuridiquesHisto) {
+		this.formesJuridiquesHisto = formesJuridiquesHisto;
+	}
+
+	public boolean isCapitauxHisto() {
+		return capitauxHisto;
+	}
+
+	public void setCapitauxHisto(boolean capitauxHisto) {
+		this.capitauxHisto = capitauxHisto;
+	}
+
+	public boolean isDomicilesHisto() {
+		return domicilesHisto;
+	}
+
+	public void setDomicilesHisto(boolean domicilesHisto) {
+		this.domicilesHisto = domicilesHisto;
 	}
 }

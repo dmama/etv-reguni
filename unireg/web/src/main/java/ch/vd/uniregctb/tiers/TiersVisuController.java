@@ -39,10 +39,12 @@ public class TiersVisuController extends AbstractTiersController {
 	private static final String ADRESSES_HISTO_PARAM = "adressesHisto";
 	private static final String ADRESSES_CIVILES_HISTO_PARAM = "adressesHistoCiviles";
 	private static final String ADRESSES_CIVILES_HISTO_CONJ_PARAM = "adressesHistoCivilesConjoint";
-	private static final String RAISONS_SOCIALES_CIVILES_HISTO_PARAM = "raisonsSocialesHistoCiviles";
-	private static final String SIEGES_CIVILS_HISTO_PARAM = "siegesHistoCiviles";
-	private static final String FORMES_JURIDIQUES_CIVILES_HISTO_PARAM = "formesJuridiquesHistoCiviles";
-	private static final String CAPITAUX_CIVILS_HISTO_PARAM = "capitauxHistoCiviles";
+	private static final String RAISONS_SOCIALES_HISTO_PARAM = "raisonsSocialesHisto";
+	private static final String NOMS_ADDITIONNELS_HISTO_PARAM = "nomsAdditionnelsHisto";
+	private static final String SIEGES_HISTO_PARAM = "siegesHisto";
+	private static final String FORMES_JURIDIQUES_HISTO_PARAM = "formesJuridiquesHisto";
+	private static final String CAPITAUX_HISTO_PARAM = "capitauxHisto";
+	private static final String DOMICILES_HISTO_PARAM = "domicilesHisto";
 	private static final String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
 	private static final String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 	private static final String CTB_ASSOCIE_HISTO_PARAM = "ctbAssocieHisto";
@@ -69,10 +71,12 @@ public class TiersVisuController extends AbstractTiersController {
 		final boolean adrHistoParam = getBooleanParam(request, ADRESSES_HISTO_PARAM);
 		final boolean adrCivileHistoParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_PARAM);
 		final boolean adrCivileHistoConjParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_CONJ_PARAM);
-		final boolean raisonsSocialesCivileHistoParam = getBooleanParam(request, RAISONS_SOCIALES_CIVILES_HISTO_PARAM);
-		final boolean siegesCivilHistoParam = getBooleanParam(request, SIEGES_CIVILS_HISTO_PARAM);
-		final boolean formesJuridiquesCivileHistoParam = getBooleanParam(request, FORMES_JURIDIQUES_CIVILES_HISTO_PARAM);
-		final boolean capitauxCivileHistoParam = getBooleanParam(request, CAPITAUX_CIVILS_HISTO_PARAM);
+		final boolean raisonsSocialesHistoParam = getBooleanParam(request, RAISONS_SOCIALES_HISTO_PARAM);
+		final boolean nomsAdditionnelsHistoParam = getBooleanParam(request, NOMS_ADDITIONNELS_HISTO_PARAM);
+		final boolean siegesHistoParam = getBooleanParam(request, SIEGES_HISTO_PARAM);
+		final boolean formesJuridiquesHistoParam = getBooleanParam(request, FORMES_JURIDIQUES_HISTO_PARAM);
+		final boolean capitauxHistoParam = getBooleanParam(request, CAPITAUX_HISTO_PARAM);
+		final boolean domicilesHistoParam = getBooleanParam(request, DOMICILES_HISTO_PARAM);
 		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
 		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
 		final boolean ctbAssocieHisto = getBooleanParam(request, CTB_ASSOCIE_HISTO_PARAM);
@@ -90,7 +94,7 @@ public class TiersVisuController extends AbstractTiersController {
 
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
 			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam,
-			                                         raisonsSocialesCivileHistoParam, siegesCivilHistoParam, formesJuridiquesCivileHistoParam, capitauxCivileHistoParam,
+			                                         raisonsSocialesHistoParam, nomsAdditionnelsHistoParam, siegesHistoParam, formesJuridiquesHistoParam, capitauxHistoParam, domicilesHistoParam,
 			                                         rapportsPrestationHisto, ctbAssocieHisto,
 			                                         modeImpression, forsPrincipauxPagines, forsSecondairesPagines, autresForsPrincipauxPagines, pagination);
 
