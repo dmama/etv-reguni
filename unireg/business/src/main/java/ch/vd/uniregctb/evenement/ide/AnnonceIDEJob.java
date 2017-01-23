@@ -125,7 +125,7 @@ public class AnnonceIDEJob extends JobDefinition {
 
 		final AnnoncesIDERapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""));
+		Audit.success(String.format("%s des annonces IDE sur les tiers sous contrôle ACI terminé%s.", simulation ? "Simulation de l'envoi" : "Envoi", simulation ? "e" : ""), rapport);
 	}
 
 	protected AnnonceIDEJobResults traiteTiers(Long tiersId, RegDate date, boolean simulation) throws ServiceIDEException {
