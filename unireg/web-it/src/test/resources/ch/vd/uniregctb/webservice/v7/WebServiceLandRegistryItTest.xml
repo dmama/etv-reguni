@@ -1,5 +1,121 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
+	<table name="TIERS">
+		<column>TIERS_TYPE</column>
+		<column>NUMERO</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ADRESSE_BIC_SWIFT</column>
+		<column>ADRESSE_EMAIL</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>INDEX_DIRTY</column>
+		<column>NUMERO_COMPTE_BANCAIRE</column>
+		<column>NUMERO_TELECOPIE</column>
+		<column>NUMERO_TEL_PORTABLE</column>
+		<column>NUMERO_TEL_PRIVE</column>
+		<column>NUMERO_TEL_PROF</column>
+		<column>OID</column>
+		<column>PERSONNE_CONTACT</column>
+		<column>REINDEX_ON</column>
+		<column>TITULAIRE_COMPTE_BANCAIRE</column>
+		<column>DATE_LIMITE_EXCLUSION</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>AC_NOM</column>
+		<column>DISTRICT_FISCAL_ID</column>
+		<column>REGION_FISCALE_ID</column>
+		<column>NUMERO_CA</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>LOGICIEL_ID</column>
+		<column>MODE_COM</column>
+		<column>DPI_NOM1</column>
+		<column>DPI_NOM2</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>SANS_LISTE_RECAP</column>
+		<column>SANS_RAPPEL</column>
+		<column>NUMERO_ETABLISSEMENT</column>
+		<column>ANCIEN_NUMERO_SOURCIER</column>
+		<column>NH_CAT_ETRANGER</column>
+		<column>NH_DATE_DEBUT_VALID_AUTORIS</column>
+		<column>DATE_DECES</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>PP_HABITANT</column>
+		<column>MAJORITE_TRAITEE</column>
+		<column>NH_NOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>NH_PRENOM</column>
+		<column>NH_SEXE</column>
+		<column>NH_TOUS_PRENOMS</column>
+		<column>DPI_ACI_HC</column>
+		<column>IDE_DIRTY</column>
+		<column>IDE_DESACTIVE</column>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>10035633</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>2008-01-01 00:00:00.0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>De Wit Tummers Elisabeth</value>
+			<value>0</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<value>Tummers-De Wit Wouter</value>
+			<null />
+			<null />
+			<null />
+			<value>Elisabeth</value>
+			<null />
+			<value>Elisabeth Astrid Mary</value>
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
 	<table name="RF_IMMEUBLE">
 		<column>TYPE</column>
 		<column>ID</column>
@@ -256,6 +372,249 @@
 			<null />
 			<value>150</value>
 			<value>266023444</value>
+		</row>
+	</table>
+	<table name="RF_AYANT_DROIT">
+		<column>TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ID_RF</column>
+		<column>NO_CTB</column>
+		<column>NO_RF</column>
+		<column>RAISON_SOCIALE</column>
+		<column>TYPE_COMMUNAUTE</column>
+		<column>NUMERO_RC</column>
+		<column>DATE_NAISSANCE</column>
+		<column>NOM_PP</column>
+		<column>PRENOM_PP</column>
+		<row>
+			<value>Communaute</value>
+			<value>264822986</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:12:02.900000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:12:02.900000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f109152381059670138105fe7fe3932</value>
+			<null />
+			<null />
+			<null />
+			<value>COMMUNAUTE_HEREDITAIRE</value>
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>264832266</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:12:14.967000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:12:14.967000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f1091523810596701381059a8684ad4</value>
+			<null />
+			<value>173043</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Moreau</value>
+			<value>Simone</value>
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>265004083</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:15:45.850000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:15:45.850000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f1091523810596701381059a8684ad7</value>
+			<null />
+			<value>173044</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Grandjean</value>
+			<value>Raymonde</value>
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>265043583</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f1091523810596701381059a8684ad1</value>
+			<null />
+			<value>173042</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Berard</value>
+			Renée
+		</row>
+	</table>
+	<table name="RF_DROIT">
+		<column>TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>DATE_DEBUT_OFFICIELLE</column>
+		<column>MASTER_ID_RF</column>
+		<column>MOTIF_DEBUT_CODE</column>
+		<column>MOTIF_FIN_CODE</column>
+		<column>NO_AFFAIRE</column>
+		<column>IDENTIFIANT_DROIT</column>
+		<column>PART_PROP_DENOM</column>
+		<column>PART_PROP_NUM</column>
+		<column>REGIME_PROPRIETE</column>
+		<column>AYANT_DROIT_ID</column>
+		<column>IMMEUBLE_ID</column>
+		<column>COMMUNAUTE_ID</column>
+		<row>
+			<value>DroitProprieteCommunaute</value>
+			<value>265125957</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:18:53.932000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:18:53.932000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<null />
+			<value>1f109152381059670138105fe7fe3932</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<value>COPROPRIETE</value>
+			<value>264822986</value>
+			<value>264310664</value>
+			<null />
+		</row>
+		<row>
+			<value>DroitProprietePP</value>
+			<value>265220445</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.148000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.148000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>19810306</value>
+			<value>1f109152381059670138105f8f4b388d</value>
+			<value>Succession</value>
+			<null />
+			<value>012</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<value>COPROPRIETE</value>
+			<value>265043583</value>
+			<value>264310664</value>
+			<value>264822986</value>
+		</row>
+		<row>
+			<value>DroitProprietePP</value>
+			<value>265220603</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.471000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.471000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>19810306</value>
+			<value>1f109152381059670138105f8f4c3890</value>
+			<value>Succession</value>
+			<null />
+			<value>012</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<value>COPROPRIETE</value>
+			<value>264832266</value>
+			<value>264310664</value>
+			<value>264822986</value>
+		</row>
+		<row>
+			<value>DroitProprietePP</value>
+			<value>265220713</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>19810306</value>
+			<value>1f109152381059670138105f8f4c388e</value>
+			<value>Succession</value>
+			<null />
+			<value>012</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<value>COPROPRIETE</value>
+			<value>265004083</value>
+			<value>264310664</value>
+			<value>264822986</value>
+		</row>
+	</table>
+	<table name="RAPPROCHEMENT_RF">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TYPE_RAPPROCHEMENT</column>
+		<column>CTB_ID</column>
+		<column>RF_TIERS_ID</column>
+		<row>
+			<value>266756691</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>RapprocherTiersRFJob</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>RapprocherTiersRFJob</value>
+			<null />
+			<null />
+			<value>AUTO</value>
+			<value>10035633</value>
+			<value>264832266</value>
 		</row>
 	</table>
 </dataset>

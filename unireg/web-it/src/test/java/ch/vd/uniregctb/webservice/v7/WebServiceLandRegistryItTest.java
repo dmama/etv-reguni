@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,12 +15,17 @@ import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.landregistry.v1.Location;
+import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.Owner;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
+import ch.vd.uniregctb.common.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -58,7 +64,8 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final RealEstate realEstate = (RealEstate) immo;
 		assertEquals(noImmo, realEstate.getId());
 		assertEquals("CH785283458046", realEstate.getEgrid());
-		assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=227&kr=0&n1=59&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug&sec=WUcNIuAaAn07zT5ky-Pi-g1sLdOQx2ccPgnp0PmINA0SComhxznkhXe6oY5P5pW2-q5y5NRgFZ7s4crPzqU-Yg%3D%3D", realEstate.getUrlIntercapi());
+		assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=227&kr=0&n1=59&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug&sec=WUcNIuAaAn07zT5ky-Pi-g1sLdOQx2ccPgnp0PmINA0SComhxznkhXe6oY5P5pW2-q5y5NRgFZ7s4crPzqU-Yg%3D%3D",
+		             realEstate.getUrlIntercapi());
 		assertFalse(realEstate.isCfa());
 
 		final List<Location> locations = realEstate.getLocations();
@@ -104,6 +111,39 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final List<BuildingSetting> settings = building.getSettings();
 		assertEquals(1, settings.size());
 		assertSetting(RegDate.get(2016, 9, 13), null, 150, 264310664, buildingId, settings.get(0));
+	}
+
+	@Test
+	public void testGetCommunityOfOwner() throws Exception {
+
+		final int communityId = 264822986;
+
+		final ResponseEntity<CommunityOfOwners> resp = get(CommunityOfOwners.class, MediaType.APPLICATION_XML, "/landRegistry/communityOfOwners/{id}?user=zaizzt/22", Collections.singletonMap("id", communityId));
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final CommunityOfOwners community = resp.getBody();
+		assertNotNull(community);
+		assertEquals(communityId, community.getId());
+		assertEquals(CommunityOfOwnersType.COMMUNITY_OF_HEIRS, community.getType());
+
+		final List<Owner> members = community.getMembers();
+		assertNotNull(members);
+		assertEquals(3, members.size());
+		assertOwnerParty(10035633, members.get(0));
+		assertOwnerNaturalPerson("Raymonde", "Grandjean", null, members.get(1));
+		assertOwnerNaturalPerson(null, "Berard", null, members.get(2));
+	}
+
+	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, Owner owner) {
+		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
+		Assert.assertEquals(firstName, identity.getFirstName());
+		Assert.assertEquals(lastName, identity.getLastName());
+		Assert.assertEquals(dateOfBirth, DataHelper.xmlToCore(identity.getDateOfBirth()));
+	}
+
+	private static void assertOwnerParty(long id, Owner owner0) {
+		Assert.assertEquals(Integer.valueOf((int) id), owner0.getTaypPayerNumber());
 	}
 
 	private static void assertDescription(RegDate dateFrom, RegDate dateTo, String type, Object area, BuildingDescription description) {
