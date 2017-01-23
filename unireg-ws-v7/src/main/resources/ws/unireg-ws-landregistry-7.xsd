@@ -12,4 +12,7 @@
 	<!-- L'élément retourné par le WS /v7/landRegistry/building -->
 	<xs:element name="building" type="land:buildingType"/>
 
+	<!-- L'élément retourné par le WS /v7/landRegistry/communityOfOwners -->
+	<xs:element name="communityOfOwners" type="land:communityOfOwnersType"/>
+
 </xs:schema>
