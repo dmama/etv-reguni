@@ -1,21 +1,14 @@
 package ch.vd.uniregctb.xml.party.v5;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
-import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFInfo;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -55,7 +48,7 @@ public class LandRightBuilderTest {
 		droit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
 		droit.setImmeuble(immeuble);
 
-		final LandRight landRight = LandRightBuilder.newLandRight(droit, id -> new CommunauteRFInfo(1, Collections.singletonList(23030292)));
+		final LandRight landRight = LandRightBuilder.newLandRight(droit);
 		assertNotNull(landRight);
 		assertTrue(landRight instanceof LandOwnershipRight);
 
@@ -69,7 +62,7 @@ public class LandRightBuilderTest {
 		assertNull(landOwnershipRight.getEndReason());
 		assertCaseIdentifier(21, 2016, 322, 3, landOwnershipRight.getCaseIdentifier());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
-		assertCommunity(8765887L, CommunityOfOwnersType.COMMUNITY_OF_HEIRS, 1, Collections.singletonList(23030292), landOwnershipRight.getCommunity());
+		assertEquals(Long.valueOf(8765887L), landOwnershipRight.getCommunityId());
 	}
 
 	@Test
@@ -89,9 +82,7 @@ public class LandRightBuilderTest {
 		droit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
 		droit.setImmeuble(immeuble);
 
-		final LandRight landRight = LandRightBuilder.newLandRight(droit, id -> {
-			throw new NotImplementedException();
-		});
+		final LandRight landRight = LandRightBuilder.newLandRight(droit);
 		assertNotNull(landRight);
 		assertTrue(landRight instanceof LandOwnershipRight);
 
@@ -105,16 +96,8 @@ public class LandRightBuilderTest {
 		assertNull(landOwnershipRight.getEndReason());
 		assertCaseIdentifier(21, 2016, 322, 3, landOwnershipRight.getCaseIdentifier());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
-		assertNull(landOwnershipRight.getCommunity());
+		assertNull(landOwnershipRight.getCommunityId());
 
-	}
-
-	private static void assertCommunity(long id, CommunityOfOwnersType type, int memberCount, List<Integer> memberIds, CommunityOfOwners community) {
-		assertNotNull(community);
-		assertEquals(id, community.getId());
-		assertEquals(type, community.getType());
-		assertEquals(memberCount, community.getMemberCount());
-		assertEquals(memberIds, community.getMemberIds());
 	}
 
 	private void assertShare(int numerator, int denominator, Share share) {

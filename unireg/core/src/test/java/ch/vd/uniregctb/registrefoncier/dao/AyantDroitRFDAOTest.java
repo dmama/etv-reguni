@@ -8,10 +8,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFInfo;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -35,7 +36,7 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 
 	@Test
 	public void testGetCommunauteInfoCommunauteInconnue() throws Exception {
-		final CommunauteRFInfo info = doInNewTransaction(status -> dao.getCommunauteInfo(666));
+		final CommunauteRFMembreInfo info = doInNewTransaction(status -> dao.getCommunauteMembreInfo(666));
 		assertNull(info);
 	}
 
@@ -89,14 +90,15 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			return null;
 		});
 
-		final CommunauteRFInfo info = doInNewTransaction(status -> dao.getCommunauteInfo(ids.communauteRf));
+		final CommunauteRFMembreInfo info = doInNewTransaction(status -> dao.getCommunauteMembreInfo(ids.communauteRf));
 		assertNotNull(info);
-		assertEquals(2, info.getMemberCount());
+		assertEquals(2, info.getCount());
 
-		final Collection<Integer> memberIds = info.getMemberIds();
+		final Collection<Long> memberIds = info.getCtbIds();
 		assertNotNull(memberIds);
-		assertTrue(memberIds.contains((int) ids.arnoldUnireg));
-		assertTrue(memberIds.contains((int) ids.evelyneUnireg));
+		assertTrue(memberIds.contains(ids.arnoldUnireg));
+		assertTrue(memberIds.contains(ids.evelyneUnireg));
+		assertEmpty(info.getTiersRF());
 	}
 
 	/**
@@ -151,14 +153,21 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			return null;
 		});
 
-		final CommunauteRFInfo info = doInNewTransaction(status -> dao.getCommunauteInfo(ids.communauteRf));
+		final CommunauteRFMembreInfo info = doInNewTransaction(status -> dao.getCommunauteMembreInfo(ids.communauteRf));
 		assertNotNull(info);
-		assertEquals(3, info.getMemberCount());
+		assertEquals(3, info.getCount());
 
-		final Collection<Integer> memberIds = info.getMemberIds();
+		final Collection<Long> memberIds = info.getCtbIds();
 		assertNotNull(memberIds);
-		assertTrue(memberIds.contains((int) ids.arnoldUnireg));
-		assertTrue(memberIds.contains((int) ids.evelyneUnireg));
+		assertTrue(memberIds.contains(ids.arnoldUnireg));
+		assertTrue(memberIds.contains(ids.evelyneUnireg));
+
+		final Collection<TiersRF> tiersRF = info.getTiersRF();
+		assertNotNull(tiersRF);
+		assertEquals(1, tiersRF.size());
+		final PersonnePhysiqueRF tiers0 = (PersonnePhysiqueRF) tiersRF.iterator().next();
+		assertEquals("Totor", tiers0.getPrenom());
+		assertEquals("Fantomas", tiers0.getNom());
 	}
 
 }

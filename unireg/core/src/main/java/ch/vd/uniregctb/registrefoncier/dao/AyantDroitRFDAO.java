@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFInfo;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
@@ -27,5 +27,5 @@ public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 	 * @return les infos trouvée; ou <b>null</b> si la communauté est inconnue.
 	 */
 	@Nullable
-	CommunauteRFInfo getCommunauteInfo(long communauteId);
+	CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId);
 }

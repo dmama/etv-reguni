@@ -64,6 +64,7 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -391,8 +392,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, BienFondRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin,
-	                                                             String motifDebut, String motifFin,
-	                                                             IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
+	                                                             String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
 		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
 		droit0.setCommunaute(communaute);
 		droit0.setRegime(regime);
@@ -404,6 +404,23 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		droit0.setMotifFin(motifFin);
 		droit0.setNumeroAffaire(numeroAffaire);
 		droit0.setAyantDroit(tiersRF);
+		droit0.setMasterIdRF(masterIdRF);
+		droit0.setImmeuble(immeuble);
+		return hibernateTemplate.merge(droit0);
+	}
+
+	protected DroitProprieteCommunauteRF addDroitPropriete(CommunauteRF communaute, BienFondRF immeuble, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin,
+	                                                       String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
+		final DroitProprieteCommunauteRF droit0 = new DroitProprieteCommunauteRF();
+		droit0.setRegime(regime);
+		droit0.setPart(part);
+		droit0.setDateDebut(dateDebut);
+		droit0.setDateDebutOfficielle(dateDebutOfficielle);
+		droit0.setDateFin(dateFin);
+		droit0.setMotifDebut(motifDebut);
+		droit0.setMotifFin(motifFin);
+		droit0.setNumeroAffaire(numeroAffaire);
+		droit0.setAyantDroit(communaute);
 		droit0.setMasterIdRF(masterIdRF);
 		droit0.setImmeuble(immeuble);
 		return hibernateTemplate.merge(droit0);

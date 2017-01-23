@@ -312,11 +312,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	private void initLandRights(NaturalPerson to, PersonnePhysique pp, Context context) {
 
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp);
-		final LandRightBuilder.CommunauteInfoProvider communauteInfoProvider = id -> context.registreFoncierService.getCommunauteInfo(id);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
-				.map(droitRF -> LandRightBuilder.newLandRight(droitRF, communauteInfoProvider))
+				.map(LandRightBuilder::newLandRight)
 				.forEach(landRights::add);
 	}
 }

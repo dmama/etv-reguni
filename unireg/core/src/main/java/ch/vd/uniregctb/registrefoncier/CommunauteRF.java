@@ -5,6 +5,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
+import java.util.Set;
 
 import ch.vd.uniregctb.common.LengthConstants;
 
@@ -16,6 +18,11 @@ import ch.vd.uniregctb.common.LengthConstants;
 public class CommunauteRF extends AyantDroitRF {
 
 	private TypeCommunaute type;
+
+	/**
+	 * Les droits de propriété des membres de la communauté.
+	 */
+	private Set<DroitProprietePersonneRF> membres;
 
 	@Column(name = "TYPE_COMMUNAUTE", length = LengthConstants.RF_TYPE_COMMUNAUTE)
 	@Enumerated(EnumType.STRING)
@@ -32,5 +39,15 @@ public class CommunauteRF extends AyantDroitRF {
 		super.copyDataTo(right);
 		final CommunauteRF commRight = (CommunauteRF) right;
 		commRight.type = this.type;
+	}
+
+	// configuration hibernate : la comunauté ne possède pas les membres
+	@OneToMany(mappedBy = "communaute")
+	public Set<DroitProprietePersonneRF> getMembres() {
+		return membres;
+	}
+
+	public void setMembres(Set<DroitProprietePersonneRF> membres) {
+		this.membres = membres;
 	}
 }

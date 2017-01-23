@@ -294,11 +294,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private void initLandRights(Corporation to, Entreprise entreprise, Context context) {
 
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise);
-		final LandRightBuilder.CommunauteInfoProvider communauteInfoProvider = id -> context.registreFoncierService.getCommunauteInfo(id);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
-				.map(droitRF -> LandRightBuilder.newLandRight(droitRF, communauteInfoProvider))
+				.map(LandRightBuilder::newLandRight)
 				.forEach(landRights::add);
 	}
 }

@@ -65,8 +65,14 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	@Nullable
 	@Override
-	public CommunauteRFInfo getCommunauteInfo(long communauteId) {
-		return ayantDroitRFDAO.getCommunauteInfo(communauteId);
+	public CommunauteRF getCommunaute(long communauteId) {
+		return (CommunauteRF) ayantDroitRFDAO.get(communauteId);
+	}
+
+	@Nullable
+	@Override
+	public CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
+		return ayantDroitRFDAO.getCommunauteMembreInfo(communauteId);
 	}
 
 	@NotNull

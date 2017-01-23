@@ -18,6 +18,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -145,5 +146,12 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_IMMEUBLES);
 		return target.getBuilding(user, buildingId);
+	}
+
+	@Nullable
+	@Override
+	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_IMMEUBLES);
+		return target.getCommunityOfOwners(user, communityId);
 	}
 }

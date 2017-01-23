@@ -31,6 +31,7 @@ import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -393,6 +394,22 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			immovable = (Building) element.getObjectValue();
 		}
 		return immovable;
+	}
+
+	@Nullable
+	@Override
+	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+		final CommunityOfOwners community;
+		final GetCommunityOfOwnersKey key = new GetCommunityOfOwnersKey(communityId);
+		final Element element = cache.get(key);
+		if (element == null) {
+			community = target.getCommunityOfOwners(user, communityId);
+			cache.put(new Element(key, community));
+		}
+		else {
+			community = (CommunityOfOwners) element.getObjectValue();
+		}
+		return community;
 	}
 
 	/**

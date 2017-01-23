@@ -114,11 +114,16 @@ public interface WebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	@Path("/landRegistry/immovableProperty/{immNo}")
-	Response getImmovableProperty(@PathParam("immNo") long immNo, @QueryParam("user") String user);
+	@Path("/landRegistry/immovableProperty/{immId}")
+	Response getImmovableProperty(@PathParam("immId") long immNo, @QueryParam("user") String user);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	@Path("/landRegistry/building/{buildingNo}")
-	Response getBuilding(@PathParam("buildingNo") long buildingNo, @QueryParam("user") String user);
+	@Path("/landRegistry/building/{buildingId}")
+	Response getBuilding(@PathParam("buildingId") long buildingNo, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/communityOfOwners/{communityId}")
+	Response getCommunityOfOwners(@PathParam("communityId") long communityId, @QueryParam("user") String user);
 }

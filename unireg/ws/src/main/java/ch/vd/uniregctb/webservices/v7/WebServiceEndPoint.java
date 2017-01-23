@@ -45,6 +45,7 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -505,10 +506,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getImmovableProperty(long immNo, String user) {
-		final Supplier<String> params = () -> String.format("getImmovableProperty{immNo=%d, user=%s}", immNo, WebServiceHelper.enquote(user));
+	public Response getImmovableProperty(long immId, String user) {
+		final Supplier<String> params = () -> String.format("getImmovableProperty{immId=%d, user=%s}", immId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final ImmovableProperty immovable = target.getImmovablePropery(userLogin, immNo);
+			final ImmovableProperty immovable = target.getImmovablePropery(userLogin, immId);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable)).build());
@@ -518,13 +519,26 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getBuilding(long buildingNo, String user) {
-		final Supplier<String> params = () -> String.format("getBuilding{buildingNo=%d, user=%s}", buildingNo, WebServiceHelper.enquote(user));
+	public Response getBuilding(long buildingId, String user) {
+		final Supplier<String> params = () -> String.format("getBuilding{buildingId=%d, user=%s}", buildingId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final Building building = target.getBuilding(userLogin, buildingNo);
+			final Building building = target.getBuilding(userLogin, buildingId);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createBuilding(building)).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		});
+	}
+
+	@Override
+	public Response getCommunityOfOwners(long communityId, String user) {
+		final Supplier<String> params = () -> String.format("getCommunityOfOwners{communityId=%d, user=%s}", communityId, WebServiceHelper.enquote(user));
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			final CommunityOfOwners community = target.getCommunityOfOwners(userLogin, communityId);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createCommunityOfOwners(community)).build());
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});

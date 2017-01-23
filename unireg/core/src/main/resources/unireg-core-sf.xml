@@ -230,6 +230,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitHabitationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteRF</value>

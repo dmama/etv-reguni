@@ -18,6 +18,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -193,4 +194,13 @@ public interface BusinessWebService {
 	 */
 	@Nullable
 	Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException;
+
+	/**
+	 * @param user        désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param communityId l'id technique Unireg de la communauté de propriétaires
+	 * @return la communauté de propriétaires; ou <b>null</b> si elle est inconnue.
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
+	 */
+	@Nullable
+	CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException;
 }

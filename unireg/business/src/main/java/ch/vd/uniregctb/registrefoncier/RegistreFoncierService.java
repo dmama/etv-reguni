@@ -37,13 +37,20 @@ public interface RegistreFoncierService {
 	BatimentRF getBatiment(long batimentId);
 
 	/**
+	 * @param communauteId l'id technique Unireg d'une communauté
+	 * @return la communauté trouvée; ou <b>null</b> si la communauté est inconnue.
+	 */
+	@Nullable
+	CommunauteRF getCommunaute(long communauteId);
+
+	/**
 	 * Construit et retourne les informations du point-de-vue Unireg sur les membres d'une communauté RF.
 	 *
 	 * @param communauteId l'id technique Unireg d'une communauté
 	 * @return les infos trouvée; ou <b>null</b> si la communauté est inconnue.
 	 */
 	@Nullable
-	CommunauteRFInfo getCommunauteInfo(long communauteId);
+	CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId);
 
 	/**
 	 * Construit l'URL de visualisation de l'immeuble spécifié dans l'interface Web de Capitastra.

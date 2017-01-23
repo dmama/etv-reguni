@@ -66,6 +66,7 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v5.Party;
@@ -140,6 +141,7 @@ import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.infra.v1.TaxOfficesBuilder;
 import ch.vd.uniregctb.xml.party.v5.BuildingBuilder;
+import ch.vd.uniregctb.xml.party.v5.CommunityOfOwnersBuilder;
 import ch.vd.uniregctb.xml.party.v5.ImmovablePropertyBuilder;
 import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
 
@@ -1044,6 +1046,15 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getBatiment(buildingId))
 						.map(BuildingBuilder::newBuilding)
+						.orElse(null));
+	}
+
+	@Nullable
+	@Override
+	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+		return doInTransaction(true, status ->
+				Optional.ofNullable(context.registreFoncierService.getCommunaute(communityId))
+						.map(c -> CommunityOfOwnersBuilder.newCommunity(c, context.registreFoncierService::getCommunauteMembreInfo))
 						.orElse(null));
 	}
 }

@@ -23,6 +23,7 @@ import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyInfo;
@@ -150,6 +151,12 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 	@Override
 	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
 		return target.getBuilding(user, buildingId);
+	}
+
+	@Nullable
+	@Override
+	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
+		return target.getCommunityOfOwners(user, communityId);
 	}
 
 	private void check(int partyNo) {

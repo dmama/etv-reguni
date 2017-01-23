@@ -88,9 +88,13 @@ import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Location;
+import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.Owner;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
@@ -165,10 +169,12 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -3233,7 +3239,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			{
 				final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
 				Assert.assertNotNull(landRight0);
-				Assert.assertNull(landRight0.getCommunity());
+				Assert.assertNull(landRight0.getCommunityId());
 				Assert.assertEquals(OwnershipType.SOLE_OWNERSHIP, landRight0.getType());
 				assertShare(1, 1, landRight0.getShare());
 				Assert.assertEquals(date(2004, 4, 12), ch.vd.uniregctb.xml.DataHelper.xmlToCore(landRight0.getDateFrom()));
@@ -4748,6 +4754,72 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(setting0.getDateFrom()));
 		Assert.assertNull(setting0.getDateTo());
 		Assert.assertEquals(Integer.valueOf(310), setting0.getArea());
+	}
+
+	/**
+	 * Ce test vérifie que la méthode 'getCommunityOfOwners' fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetCommunityOfOwners() throws Exception {
+
+		class Ids {
+			long pp;
+			long immeuble;
+			long communaute;
+		}
+		final Ids ids = new Ids();
+
+		// on crée un immeuble possédé par une communauté dans la base
+		doInNewTransaction(status -> {
+
+			// un immeuble
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			ids.immeuble = immeuble.getId();
+
+			// deux tiers RF et une communauté
+			final PersonnePhysiqueRF ericRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", RegDate.get(1966,3,30));
+			final PersonnePhysiqueRF attilaRF = addPersonnePhysiqueRF("828e8a828", "Attila", "Misère", RegDate.get(2002,12,22));
+			final CommunauteRF communauteRF = addCommunauteRF("78282828", TypeCommunaute.COMMUNAUTE_DE_BIENS);
+			ids.communaute = communauteRF.getId();
+
+			// Les deux tiers RF possèdent l'immeuble à travers une communauté de biens
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 2004, 202, 3);
+			addDroitPropriete(ericRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044");
+			addDroitPropriete(attilaRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73");
+			addDroitPropriete(communauteRF, immeuble, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "2890cc033a");
+
+			// le tiers Unireg rapproché
+			final PersonnePhysique pp = addNonHabitant("Eric", "Bolomey", RegDate.get(1966, 3, 30), Sexe.MASCULIN);
+			ids.pp = pp.getId();
+			addRapprochementRF(pp, ericRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+			return null;
+
+		});
+
+		// on fait l'appel
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final CommunityOfOwners community = service.getCommunityOfOwners(user, ids.communaute);
+		Assert.assertNotNull(community);
+		Assert.assertEquals(ids.communaute, community.getId());
+		Assert.assertEquals(CommunityOfOwnersType.COMMUNITY_OF_PROPERTY, community.getType());
+
+		final List<Owner> members = community.getMembers();
+		Assert.assertEquals(2, members.size());
+		assertOwnerParty(ids.pp, members.get(0));
+		assertOwnerNaturalPerson("Attila", "Misère", RegDate.get(2002, 12, 22), members.get(1));
+	}
+
+	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, Owner owner) {
+		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
+		Assert.assertEquals(firstName, identity.getFirstName());
+		Assert.assertEquals(lastName, identity.getLastName());
+		Assert.assertEquals(dateOfBirth, DataHelper.webToRegDate(identity.getDateOfBirth()));
+	}
+
+	private static void assertOwnerParty(long id, Owner owner0) {
+		Assert.assertEquals(Integer.valueOf((int) id), owner0.getTaypPayerNumber());
 	}
 
 	private void assertShare(int numerator, int denominator, Share share) {
