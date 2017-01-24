@@ -60,6 +60,15 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="owner" type="land:ownerType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le propriétaire du droit.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="immovablePropertyId" type="xs:long">
 				<xs:annotation>
 					<xs:appinfo>
@@ -598,6 +607,15 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>La ou les implantations de bâtiments sur la parcelle de l'immeuble (avec leurs historiques).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="landRights" type="land:landRightType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'historique des droits sur cet immeuble</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
