@@ -260,29 +260,30 @@ public class TacheServiceImpl implements TacheService {
         template.execute(new TransactionCallback<Object>() {
             @Override
             public Object doInTransaction(TransactionStatus status) {
-                hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+                return hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
                     @Override
                     public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-                        for (Long ctbId : ctbIds) {
-                            final Tiers tiers = tiersService.getTiers(ctbId);
-                            if (tiers.isDesactive(null)) {
-                                // Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
-                                // alors on annule toutes ses tâches non traitées (autre que annulation de DI).
-                                annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpotPP, TypeTache.TacheTransmissionDossier);
-                            } else {
-                                // [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
-                                // qui n'ont plus de for de gestion actifs
-                                ForGestion forGestionActif = tiersService.getForGestionActif(tiers, null);
-                                if (forGestionActif == null) {
-                                    annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier);
-                                }
-                            }
-                        }
+	                    ctbIds.stream()
+			                    .map(tiersService::getTiers)
+			                    .filter(Objects::nonNull)
+			                    .forEach(tiers -> {
+				                    if (tiers.isDesactive(null)) {
+					                    // Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
+					                    // alors on annule toutes ses tâches non traitées (autre que annulation de DI).
+					                    annuleTachesNonTraitees(tiers.getNumero(), TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpotPP, TypeTache.TacheTransmissionDossier);
+				                    }
+				                    else {
+					                    // [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
+					                    // qui n'ont plus de for de gestion actifs
+					                    ForGestion forGestionActif = tiersService.getForGestionActif(tiers, null);
+					                    if (forGestionActif == null) {
+						                    annuleTachesNonTraitees(tiers.getNumero(), TypeTache.TacheNouveauDossier);
+					                    }
+				                    }
+			                    });
                         return null;
                     }
                 });
-                return null;
             }
         });
     }
