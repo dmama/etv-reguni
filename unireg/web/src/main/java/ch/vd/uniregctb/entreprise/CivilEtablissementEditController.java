@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.DelegatingValidator;
+import ch.vd.uniregctb.common.LiteralStringHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -180,8 +181,8 @@ public class CivilEtablissementEditController {
 
 		checkEditionAutorisee((Etablissement) tiers);
 
-		etablissement.setRaisonSociale(view.getRaisonSociale());
-		etablissement.setEnseigne(view.getEnseigne());
+		etablissement.setRaisonSociale(LiteralStringHelper.stripExtraSpacesAndBlanks(view.getRaisonSociale()));
+		etablissement.setEnseigne(LiteralStringHelper.stripExtraSpacesAndBlanks(view.getEnseigne()));
 		return "redirect:/civil/etablissement/edit.do?id=" + tiers.getNumero();
 	}
 

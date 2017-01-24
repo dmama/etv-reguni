@@ -10037,5 +10037,35 @@ debut PF                                                                        
 			}
 		});
 	}
+
+	@Test
+	public void testAddRaisonSociale() throws Exception {
+
+		final String donne = " Ma  petite \n\rentreprise de \trédaction de texte ";
+		final String attendu = "Ma petite entreprise de rédaction de texte";
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			try {
+				tiersService.addRaisonSocialeFiscale(entreprise, donne, date(2017, 1, 24), null);
+			}
+			catch (TiersException e) {
+				return null;
+			}
+			return entreprise.getNumero();
+		});
+
+		// vérification de la raison sociale telle qu'enregistrée en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				Assert.assertEquals(attendu, tiersService.getDerniereRaisonSociale(entreprise));
+			}
+		});
+	}
 }
 

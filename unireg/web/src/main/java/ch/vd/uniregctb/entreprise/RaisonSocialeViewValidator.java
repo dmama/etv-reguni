@@ -3,6 +3,8 @@ package ch.vd.uniregctb.entreprise;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
+import ch.vd.uniregctb.common.LiteralStringHelper;
+
 public class RaisonSocialeViewValidator extends DateRangeViewValidator<RaisonSocialeView> {
 
 	public RaisonSocialeViewValidator() {
@@ -15,7 +17,7 @@ public class RaisonSocialeViewValidator extends DateRangeViewValidator<RaisonSoc
 
 		final RaisonSocialeView view = (RaisonSocialeView) target;
 
-		if (StringUtils.isBlank(view.getRaisonSociale())) {
+		if (StringUtils.isBlank(LiteralStringHelper.stripExtraSpacesAndBlanks(view.getRaisonSociale()))) {
 			errors.rejectValue("raisonSociale", "error.tiers.raison.sociale.vide");
 		}
 	}

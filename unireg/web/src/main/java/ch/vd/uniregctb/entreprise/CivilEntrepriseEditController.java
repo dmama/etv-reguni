@@ -22,6 +22,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.DelegatingValidator;
+import ch.vd.uniregctb.common.LiteralStringHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -192,7 +193,7 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de raison sociale.");
 		}
 
-		tiersService.addRaisonSocialeFiscale(entreprise, view.getRaisonSociale(), view.getDateDebut(), view.getDateFin());
+		tiersService.addRaisonSocialeFiscale(entreprise, LiteralStringHelper.stripExtraSpacesAndBlanks(view.getRaisonSociale()), view.getDateDebut(), view.getDateFin());
 
 		return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
 	}
@@ -759,7 +760,7 @@ public class CivilEntrepriseEditController {
 
 		checkEditionAutorisee((Entreprise) tiers);
 
-		entreprise.changeSecteurActivite(view.getSecteurActivite());
+		entreprise.changeSecteurActivite(LiteralStringHelper.stripExtraSpacesAndBlanks(view.getSecteurActivite()));
 		return "redirect:/civil/entreprise/edit.do?id=" + tiers.getNumero();
 	}
 

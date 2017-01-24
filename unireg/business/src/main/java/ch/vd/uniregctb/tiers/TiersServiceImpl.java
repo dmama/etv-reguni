@@ -91,6 +91,7 @@ import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.LiteralStringHelper;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
@@ -5732,6 +5733,11 @@ public class TiersServiceImpl implements TiersService {
 	public RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) {
 		checkEditionCivileAutorisee(e);
 
+		final String raisonSocialeNettoyee = LiteralStringHelper.stripExtraSpacesAndBlanks(raisonSociale);
+		if (StringUtils.isBlank(raisonSocialeNettoyee)) {
+			return null;
+		}
+
 		RaisonSocialeFiscaleEntreprise existing = getDerniereRaisonSocialeFiscale(e);
 
 		if (existing != null) {
@@ -5742,7 +5748,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		return (RaisonSocialeFiscaleEntreprise) tiersDAO.addAndSave(e, new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSociale));
+		return (RaisonSocialeFiscaleEntreprise) tiersDAO.addAndSave(e, new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSocialeNettoyee));
 	}
 
 	@Override
