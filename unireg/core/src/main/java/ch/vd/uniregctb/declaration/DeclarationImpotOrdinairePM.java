@@ -10,6 +10,7 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CodeControleHelper;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
@@ -44,7 +45,7 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 	 * @return un nouveau code de contrôle d'une lettre et de cinq chiffres aléatoires
 	 */
 	public static String generateCodeControle() {
-		return generateCodeControleUneLettreCinqChiffres();
+		return CodeControleHelper.generateCodeControleUneLettreCinqChiffres();
 	}
 
 	@Column(name = "DATE_DEBUT_EXERCICE")

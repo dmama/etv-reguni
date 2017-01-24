@@ -18,6 +18,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiCadevImpressionQuestionnaireSNC();
 
+	Integer getDelaiCadevImpressionDemandeDegrevementICI();
+
 	Integer getDelaiEcheanceSommationDeclarationImpotPP();
 
 	Integer getDelaiEcheanceSommationDeclarationImpotPM();
@@ -49,6 +51,10 @@ public interface ParametreAppAccessor {
 	Integer getTailleTrouAssujettissementPourNouvelleLettreBienvenue();
 
 	Integer getDelaiEnvoiRappelLettreBienvenue();
+
+	Integer getDelaiRetourDemandeDegrevementICI();
+
+	Integer getDelaiEnvoiRappelDemandeDegrevementICI();
 
 	Integer[] getFeteNationale();
 
@@ -100,6 +106,8 @@ public interface ParametreAppAccessor {
 
 	void setDelaiCadevImpressionQuestionnaireSNC(Integer val);
 
+	void setDelaiCadevImpressionDemandeDegrevementICI(Integer val);
+
 	void setDelaiEcheanceSommationDeclarationImpotPP(Integer val);
 
 	void setDelaiEcheanceSommationDeclarationImpotPM(Integer val);
@@ -131,6 +139,10 @@ public interface ParametreAppAccessor {
 	void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val);
 
 	void setDelaiEnvoiRappelLettreBienvenue(Integer val);
+
+	void setDelaiRetourDemandeDegrevementICI(Integer val);
+
+	void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val);
 
 	void setFeteNationale(Integer[] val);
 

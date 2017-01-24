@@ -26,7 +26,6 @@ import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.degrevement.migration.MigrationDDImporterResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
 import ch.vd.uniregctb.document.AnnoncesIDERapport;
 import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
@@ -48,6 +47,7 @@ import ch.vd.uniregctb.document.EchoirDIsPPRapport;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
 import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
+import ch.vd.uniregctb.document.EnvoiFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport;
 import ch.vd.uniregctb.document.EnvoiQuestionnairesSNCRapport;
@@ -101,6 +101,8 @@ import ch.vd.uniregctb.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
+import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.uniregctb.foncier.migration.MigrationDDImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
@@ -714,4 +716,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	MigrationDDCsvLoaderRapport generateRapport(MigrationDDImporterResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui envoie les formulaires de demande de dégrèvement ICI en masse
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	EnvoiFormulairesDemandeDegrevementICIRapport generateRapport(EnvoiFormulairesDemandeDegrevementICIResults results, StatusManager status);
 }

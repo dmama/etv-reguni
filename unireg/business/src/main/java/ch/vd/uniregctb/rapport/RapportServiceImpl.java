@@ -38,7 +38,6 @@ import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.degrevement.migration.MigrationDDImporterResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
 import ch.vd.uniregctb.document.AnnoncesIDERapport;
 import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
@@ -61,6 +60,7 @@ import ch.vd.uniregctb.document.EchoirDIsPPRapport;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
 import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
+import ch.vd.uniregctb.document.EnvoiFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport;
 import ch.vd.uniregctb.document.EnvoiQuestionnairesSNCRapport;
@@ -114,6 +114,8 @@ import ch.vd.uniregctb.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
+import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.uniregctb.foncier.migration.MigrationDDImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1750,6 +1752,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(MigrationDDCsvLoaderRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfMigrationDemandesDegrevementRapport document = new PdfMigrationDemandesDegrevementRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public EnvoiFormulairesDemandeDegrevementICIRapport generateRapport(EnvoiFormulairesDemandeDegrevementICIResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportEnvoiDemandesDegrevementICI";
+		final String description = "Rapport d'exécution du job d'envoi en masse des formulaires de demande de dégrèvement ICI.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(EnvoiFormulairesDemandeDegrevementICIRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfEnvoiFormulairesDemandeDegrevementICIRapport document = new PdfEnvoiFormulairesDemandeDegrevementICIRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

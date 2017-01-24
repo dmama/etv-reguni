@@ -53,6 +53,7 @@ import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.ImpressionAutorisationRadiationRCHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionDemandeBilanFinalHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionDemandeDegrevementICIHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreTypeInformationLiquidationHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionRappelHelper;
@@ -69,6 +70,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelper;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureParams;
 import ch.vd.uniregctb.evenement.docsortant.EvenementDocumentSortantService;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
@@ -109,6 +111,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private Signataires signatairesAutorisationRadiationRC;
 	private ImpressionDemandeBilanFinalHelper impressionDemandeBilanFinalHelper;
 	private ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper;
+	private ImpressionDemandeDegrevementICIHelper impressionDemandeDegrevementICIHelper;
 	private EvenementDocumentSortantService evenementDocumentSortantService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -214,6 +217,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionLettreTypeInformationLiquidationHelper(ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper) {
 		this.impressionLettreTypeInformationLiquidationHelper = impressionLettreTypeInformationLiquidationHelper;
+	}
+
+	public void setImpressionDemandeDegrevementICIHelper(ImpressionDemandeDegrevementICIHelper impressionDemandeDegrevementICIHelper) {
+		this.impressionDemandeDegrevementICIHelper = impressionDemandeDegrevementICIHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -953,5 +960,24 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final String description = String.format("Lettre type de liquidation pour l'entreprise %s", FormatNumeroHelper.numeroCTBToDisplay(lettre.getEntreprise().getNumero()));
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, infoArchivage != null, description);
+	}
+
+	@Override
+	public void imprimeDemandeDegrevementICIForBatch(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = impressionDemandeDegrevementICIHelper.getTypeDocumentEditique();
+
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionDemandeDegrevementICIHelper.buildDocument(demande, dateTraitement);
+		root.getDocument().add(original);
+
+		// sauvegarde de la clé d'archivage
+		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoArchivage, false);
+			demande.setCleArchivage(infoArchivage.getIdDocument());
+		}
+
+		final String nomDocument = impressionDemandeDegrevementICIHelper.construitIdDocument(demande);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 }

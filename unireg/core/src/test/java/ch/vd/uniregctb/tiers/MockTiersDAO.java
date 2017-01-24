@@ -20,6 +20,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.rf.Immeuble;
 
 public class MockTiersDAO implements TiersDAO {
@@ -337,6 +338,11 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
 		throw new NotImplementedException();
 	}
 

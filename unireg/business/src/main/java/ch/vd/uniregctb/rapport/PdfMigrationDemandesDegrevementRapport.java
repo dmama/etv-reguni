@@ -10,7 +10,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.degrevement.migration.MigrationDDImporterResults;
+import ch.vd.uniregctb.foncier.migration.MigrationDDImporterResults;
 
 /**
  * Rapport PDF contenant les résultats du job de migration des demandes de dégrèvement de SIMPA-PM.

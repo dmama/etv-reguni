@@ -304,6 +304,8 @@
 
 	<bean id="impressionLettreTypeInfoLiquidationHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionLettreTypeInformationLiquidationHelperImpl"/>
 
+	<bean id="impressionDemandeDegrevementICIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionDemandeDegrevementICIHelperImpl"/>
+
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>
 
@@ -370,7 +372,7 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="migrationDDCsvLoader" class="ch.vd.uniregctb.degrevement.migration.MigrationDDImporter">
+	<bean id="migrationDDCsvLoader" class="ch.vd.uniregctb.foncier.migration.MigrationDDImporter">
 		<constructor-arg ref="tiersDAO"/>
 		<constructor-arg ref="hibernateTemplate"/>
 		<constructor-arg ref="serviceInfrastructureService"/>

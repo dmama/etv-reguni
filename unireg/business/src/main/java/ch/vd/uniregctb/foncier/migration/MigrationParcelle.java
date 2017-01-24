@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.degrevement.migration;
+package ch.vd.uniregctb.foncier.migration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;

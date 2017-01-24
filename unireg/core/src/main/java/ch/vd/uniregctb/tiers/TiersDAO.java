@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.rf.Immeuble;
 
 public interface TiersDAO extends GenericDAO<Tiers, Long> {
@@ -424,6 +425,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance du document avec son ID renseigné
 	 */
 	<T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document);
+
+	/**
+	 * Ajoute un nouvel "allègement foncier" au contribuable fourni
+	 * @param contribuable le contribuable en question
+	 * @param allegementFoncier l'allègement à ajouter
+	 * @param <T> le type exact de l'allègement
+	 * @return une nouvelle instance de l'allègement avec son ID renseigné
+	 */
+	<T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

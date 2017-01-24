@@ -18,8 +18,8 @@ public enum TypeDocumentSortant {
 	LETTRE_BIENVENUE_PM_HC_ETABLISSEMENT(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_IBC, "Lettre de bienvenue PM HC avec établissement"),
 	LETTRE_BIENENUE_APM(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_IBC, "Lettre de bienvenue APM (non-inscrit RC)"),
 	RAPPEL_LETTRE_BIENVENUE(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_IBC, "Rappel de lettre de bienvenue"),
-	DEMANDE_DEGREVEMENT(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Formulaire de demande de dégrèvement"),
-	RAPPEL_DEMANDE_DEGREVEMENT(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Rappel de formulaire de demande de dégrèvement"),
+	DEMANDE_DEGREVEMENT_ICI(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Formulaire de demande de dégrèvement ICI"),
+	RAPPEL_DEMANDE_DEGREVEMENT_ICI(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Rappel de formulaire de demande de dégrèvement ICI"),
 
 	DI_PP_COMPLETE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt manuscrite"),
 	DI_PP_VAUDTAX(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt Vaudtax"),

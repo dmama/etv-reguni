@@ -53,6 +53,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionDemandeDegrevementICI() {
+		return container.getDelaiCadevImpressionDemandeDegrevementICI();
+	}
+
+	@Override
 	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
 		return container.getDelaiEcheanceSommationDeclarationImpotPP();
 	}
@@ -213,6 +218,16 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiRetourDemandeDegrevementICI() {
+		return container.getDelaiRetourDemandeDegrevementICI();
+	}
+
+	@Override
+	public Integer getDelaiEnvoiRappelDemandeDegrevementICI() {
+		return container.getDelaiEnvoiRappelDemandeDegrevementICI();
+	}
+
+	@Override
 	public void reset() {
 		container.reset();
 	}
@@ -255,6 +270,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiCadevImpressionQuestionnaireSNC(Integer val) {
 		container.setDelaiCadevImpressionQuestionnaireSNC(val);
+	}
+
+	@Override
+	public void setDelaiCadevImpressionDemandeDegrevementICI(Integer val) {
+		container.setDelaiCadevImpressionDemandeDegrevementICI(val);
 	}
 
 	@Override
@@ -415,5 +435,15 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiEnvoiRappelQuestionnaireSNC(Integer val) {
 		container.setDelaiEnvoiRappelQuestionnaireSNC(val);
+	}
+
+	@Override
+	public void setDelaiRetourDemandeDegrevementICI(Integer val) {
+		container.setDelaiRetourDemandeDegrevementICI(val);
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val) {
+		container.setDelaiEnvoiRappelDemandeDegrevementICI(val);
 	}
 }

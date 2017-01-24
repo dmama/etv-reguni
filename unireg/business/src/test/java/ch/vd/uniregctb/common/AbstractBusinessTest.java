@@ -51,6 +51,9 @@ import ch.vd.uniregctb.etiquette.Decalage;
 import ch.vd.uniregctb.etiquette.DecalageAvecCorrection;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.UniteDecalageDate;
+import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.DonneesLoiLogement;
+import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexer;
 import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
@@ -66,10 +69,12 @@ import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
@@ -382,7 +387,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
 	protected RapprochementRF addRapprochementRF(@NotNull PersonnePhysique ctb, @NotNull PersonnePhysiqueRF tiersRF, RegDate dateDebut, RegDate dateFin, TypeRapprochementRF type) {
-		RapprochementRF rapprochement = new RapprochementRF();
+		final RapprochementRF rapprochement = new RapprochementRF();
+		rapprochement.setDateDebut(dateDebut);
+		rapprochement.setDateFin(dateFin);
+		rapprochement.setContribuable(ctb);
+		rapprochement.setTiersRF(tiersRF);
+		rapprochement.setTypeRapprochement(type);
+		return hibernateTemplate.merge(rapprochement);
+	}
+
+	protected RapprochementRF addRapprochementRF(@NotNull Entreprise ctb, @NotNull PersonneMoraleRF tiersRF, RegDate dateDebut, RegDate dateFin, TypeRapprochementRF type) {
+		final RapprochementRF rapprochement = new RapprochementRF();
 		rapprochement.setDateDebut(dateDebut);
 		rapprochement.setDateFin(dateFin);
 		rapprochement.setContribuable(ctb);
@@ -443,15 +458,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	@NotNull
 	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle) {
+		return addBienFondRF(idRF, egrid, commune, noParcelle, null, null, null);
+	}
+
+	@NotNull
+	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		final SituationRF situation = new SituationRF();
 		situation.setDateDebut(RegDate.get(2000, 1, 1));
 		situation.setNoParcelle(noParcelle);
-		situation.setIndex1(null);
-		situation.setIndex2(null);
-		situation.setIndex3(null);
+		situation.setIndex1(index1);
+		situation.setIndex2(index2);
+		situation.setIndex3(index3);
 		situation.setCommune(commune);
 
-		BienFondRF im0 = new BienFondRF();
+		final BienFondRF im0 = new BienFondRF();
 		im0.setIdRF(idRF);
 		im0.setEgrid(egrid);
 		im0.addSituation(situation);
@@ -499,6 +519,18 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		implantation.setSurface(surface);
 		implantation.setImmeuble(immeuble);
 		batiment.addImplantation(implantation);
+	}
+
+	protected void addEstimationFiscale(RegDate dateEstimation, RegDate dateDebut, RegDate dateFin, boolean enRevision, Long montant, String reference, ImmeubleRF immeuble) {
+		final EstimationRF estimation = new EstimationRF();
+		estimation.setDateDebut(dateDebut);
+		estimation.setDateFin(dateFin);
+		estimation.setDateEstimation(dateEstimation);
+		estimation.setEnRevision(enRevision);
+		estimation.setImmeuble(immeuble);
+		estimation.setMontant(montant);
+		estimation.setReference(reference);
+		immeuble.addEstimation(estimation);
 	}
 
 	protected interface ExecuteCallback<T> {
@@ -1298,6 +1330,18 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected RegimeFiscal addRegimeFiscalCH(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
         final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.CH, type.getCode());
         return tiersDAO.addAndSave(entreprise, rf);
+    }
+
+    protected DegrevementICI addDegrevementICI(Entreprise entreprise, ImmeubleRF immeuble, RegDate dateDebut, @Nullable RegDate dateFin, DonneesUtilisation locatif, DonneesUtilisation usagePropre, @Nullable DonneesLoiLogement loiLogement) {
+    	final DegrevementICI deg = new DegrevementICI();
+    	deg.setImmeuble(immeuble);
+    	deg.setContribuable(entreprise);
+    	deg.setDateDebut(dateDebut);
+    	deg.setDateFin(dateFin);
+    	deg.setLocation(locatif);
+    	deg.setPropreUsage(usagePropre);
+    	deg.setLoiLogement(loiLogement);
+    	return tiersDAO.addAndSave(entreprise, deg);
     }
 
     protected AllegementFiscalConfederation addAllegementFiscalFederal(Entreprise entreprise,

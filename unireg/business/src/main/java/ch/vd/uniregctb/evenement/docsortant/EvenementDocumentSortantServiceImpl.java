@@ -25,11 +25,11 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.degrevement.DemandeDegrevement;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -312,9 +312,9 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleDemandeDegrevement(DemandeDegrevement dd, CTypeInfoArchivage infoArchivage, boolean local) {
-		signaleDocumentSortant("DD",
-		                       TypeDocumentSortant.DEMANDE_DEGREVEMENT,
+	public void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, CTypeInfoArchivage infoArchivage, boolean local) {
+		signaleDocumentSortant("DDICI",
+		                       TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI,
 		                       dd.getEntreprise(),
 		                       local,
 		                       dd.getDateEnvoi().year(),                // date de l'envoi du courrier initial
@@ -323,9 +323,9 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleRappelDemandeDegrevement(DemandeDegrevement dd, CTypeInfoArchivage infoArchivage, boolean local) {
-		signaleDocumentSortant("RDD",
-		                       TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT,
+	public void signaleRappelDemandeDegrevementICI(DemandeDegrevementICI dd, CTypeInfoArchivage infoArchivage, boolean local) {
+		signaleDocumentSortant("RDDICI",
+		                       TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT_ICI,
 		                       dd.getEntreprise(),
 		                       local,
 		                       dd.getDateEnvoi().year(),                // date de l'envoi du courrier initial

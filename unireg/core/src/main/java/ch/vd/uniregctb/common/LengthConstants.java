@@ -195,7 +195,8 @@ public abstract class LengthConstants {
 	public static final int RF_NOM_PP = 250;
 	public static final int RF_PRENOM_PP = 250;
 	public static final int RF_TYPE_SURFACE_AU_SOL = 250;
-	public static final int MOTIF_ENVOI_DD = 33;
+
+	public static final int AFONC_TYPE = 20;
 
 	public static final int MAXLEN = 2000;
 

@@ -224,8 +224,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				// un droit de propriété
 				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 				final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", dateNaissance);
-				addDroitPropriete(tiersRF, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
+				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
+				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, "48390a0e044", new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble, null);
 				addRapprochementRF(eric, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
 
 				return null;

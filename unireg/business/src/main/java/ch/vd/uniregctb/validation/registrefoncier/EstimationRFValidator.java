@@ -13,4 +13,14 @@ public class EstimationRFValidator extends DateRangeEntityValidator<EstimationRF
 	protected String getEntityCategoryName() {
 		return "L'estimation fiscale RF";
 	}
+
+	@Override
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isDateFinFutureAllowed() {
+		return true;
+	}
 }

@@ -151,6 +151,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionDemandeDegrevementICI() {
+		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionDemandeDegrevementICI));
+	}
+
+	@Override
 	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
 		return Integer.parseInt(get(ParametreEnum.delaiEcheanceSommationDeclarationImpotPP));
 	}
@@ -317,6 +322,16 @@ class ParametreAppContainer implements ParametreAppAccessor {
 		return Integer.parseInt(get(ParametreEnum.delaiEnvoiRappelLettreBienvenue));
 	}
 
+	@Override
+	public Integer getDelaiRetourDemandeDegrevementICI() {
+		return Integer.parseInt(get(ParametreEnum.delaiRetourDemandeDegrevementICI));
+	}
+
+	@Override
+	public Integer getDelaiEnvoiRappelDemandeDegrevementICI() {
+		return Integer.parseInt(get(ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI));
+	}
+
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
 		Assert.isEqual(ParametreEnum.Type.jourDansAnnee, p.getType());
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
@@ -378,6 +393,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiCadevImpressionQuestionnaireSNC(Integer val) {
 		setValeur(ParametreEnum.delaiCadevImpressionQuestionnaireSNC, val.toString());
+	}
+
+	@Override
+	public void setDelaiCadevImpressionDemandeDegrevementICI(Integer val) {
+		setValeur(ParametreEnum.delaiCadevImpressionDemandeDegrevementICI, val.toString());
 	}
 
 	@Override
@@ -553,5 +573,15 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiEnvoiRappelLettreBienvenue(Integer val) {
 		setValeur(ParametreEnum.delaiEnvoiRappelLettreBienvenue, val.toString());
+	}
+
+	@Override
+	public void setDelaiRetourDemandeDegrevementICI(Integer val) {
+		setValeur(ParametreEnum.delaiRetourDemandeDegrevementICI, val.toString());
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val) {
+		setValeur(ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI, val.toString());
 	}
 }

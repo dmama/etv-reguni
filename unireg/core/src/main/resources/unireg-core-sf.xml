@@ -52,7 +52,10 @@
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
-		<value>ch.vd.uniregctb.degrevement.DemandeDegrevement</value>
+		<value>ch.vd.uniregctb.foncier.DemandeDegrevementICI</value>
+		<value>ch.vd.uniregctb.foncier.AllegementFoncier</value>
+		<value>ch.vd.uniregctb.foncier.AllegementIFONC</value>
+		<value>ch.vd.uniregctb.foncier.DegrevementICI</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration</value>
@@ -218,6 +221,7 @@
 		<value>ch.vd.uniregctb.document.RapprochementTiersRFRapport</value>
 		<value>ch.vd.uniregctb.document.MutationsRFDetectorRapport</value>
 		<value>ch.vd.uniregctb.document.MutationsRFProcessorRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiFormulairesDemandeDegrevementICIRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.registrefoncier.RapprochementRF</value>

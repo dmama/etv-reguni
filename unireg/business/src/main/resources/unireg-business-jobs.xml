@@ -341,10 +341,17 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.degrevement.migration.MigrationDDJob">
+	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.MigrationDDJob">
 		<constructor-arg value="454"/>
 		<constructor-arg value="Importer le fichier CSV des demandes de dégrèvement de SIMPA-PM."/>
 		<property name="loader" ref="migrationDDCsvLoader"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
+	<bean id="envoiFormulairesDemandeDegrevementICIJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.EnvoiDemandesDegrevementICIJob">
+		<constructor-arg value="455"/>
+		<constructor-arg value="Envoyer les formulaires de demande de dégrèvement ICI"/>
+		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 

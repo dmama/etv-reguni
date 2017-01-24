@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.degrevement.migration;
+package ch.vd.uniregctb.foncier.migration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +35,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
-import ch.vd.uniregctb.degrevement.DemandeDegrevement;
-import ch.vd.uniregctb.degrevement.MotifEnvoiDD;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -248,41 +247,15 @@ public class MigrationDDImporter {
 		final Entreprise entreprise = determinerEntreprise(demande);
 		final ImmeubleRF immeuble = determinerImmeuble(demande);
 
-		DemandeDegrevement dd = new DemandeDegrevement();
+		final DemandeDegrevementICI dd = new DemandeDegrevementICI();
 		dd.setImmeuble(immeuble);
 		dd.setEntreprise(entreprise);
-		dd.setMotifEnvoi(getMotifEnvoi(demande.getMotifEnvoi()));
-		dd.setDateDebut(RegDate.get(demande.getAnneeFiscale(), 1, 1));
-		dd.setDateFin(null);
+		dd.setPeriodeFiscale(demande.getAnneeFiscale());
 		dd.setDateEnvoi(demande.getDateEnvoi());
 		dd.setDelaiRetour(demande.getDelaiRetour());
 		dd.setDateRappel(demande.getDateRappel());
-		dd.setDelaiRappel(demande.getDelaiRappel());
 		dd.setDateRetour(demande.getDateRetour());
 		hibernateTemplate.merge(dd);
-	}
-
-	private static MotifEnvoiDD getMotifEnvoi(String motifEnvoi) {
-		switch (motifEnvoi) {
-		case "Nouveau propriétaire":
-			return MotifEnvoiDD.NOUVEAU_PROPRIETAIRE;
-		case "Délai de 5 ans expiré":
-			return MotifEnvoiDD.DELAI_EXPIRE;
-		case "Nouvelle estimation fiscale":
-			return MotifEnvoiDD.NOUVELLE_ESTIMATION_FISCALE;
-		case "Changement revenu locatif":
-			return MotifEnvoiDD.CHANGEMENT_REVENU_LOCATIF;
-		case "Envoi initial":
-			return MotifEnvoiDD.ENVOI_INITIAL;
-		case "Nouveau membre consortium":
-			return MotifEnvoiDD.NOUVEAU_MEMBRE_CONSORTIUM;
-		case "Changement part copropriété":
-			return MotifEnvoiDD.CHANGEMENT_PART_COPROPRIETE;
-		case "Chg part membre consortium":
-			return MotifEnvoiDD.CHANGEMENT_PART_MEMBRE_CONSORTIUM;
-		default:
-			throw new IllegalArgumentException("Type de motif d'envoi inconnu = [" + motifEnvoi + "]");
-		}
 	}
 
 	@NotNull

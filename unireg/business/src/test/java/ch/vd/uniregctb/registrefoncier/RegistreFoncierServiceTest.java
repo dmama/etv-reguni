@@ -73,17 +73,15 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
 			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298);
 
-			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("38383830ae3ff", "Charles", "Widmer", date(1970, 7, 2));
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
 
-			addDroitPropriete(tiersRF, immeuble0, null,
-			                  GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null,
-			                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
+			addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null,
+			                           "48390a0e044", new IdentifiantAffaireRF(123, 2004, 202, 3),
+			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
 
-			addDroitPropriete(tiersRF, immeuble1, null,
-			                  GenrePropriete.COPROPRIETE, new Fraction(1, 3),
-			                  RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), "Achat", "Achat",
-			                  new IdentifiantAffaireRF(23, 1997, 13, 0), "47e7d7e773");
+			addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), "Achat", "Achat",
+			                           "47e7d7e773", new IdentifiantAffaireRF(23, 1997, 13, 0),
+			                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiersRF, immeuble1, null);
 
 			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
 			addRapprochementRF(ctb, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);

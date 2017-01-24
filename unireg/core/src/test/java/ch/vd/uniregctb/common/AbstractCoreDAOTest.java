@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.dbunit.DatabaseUnitException;
@@ -72,14 +73,17 @@ import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
@@ -1430,6 +1434,30 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return tiersDAO.addAndSave(e, lettre);
 	}
 
+	protected DemandeDegrevementICI addDemandeDegrevementICI(Entreprise e, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel, int periodeFiscale, ImmeubleRF immeuble) {
+		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
+		demande.setDateEnvoi(dateEnvoi);
+		demande.setDelaiRetour(delaiRetour);
+		demande.setDateRetour(dateRetour);
+		demande.setDateRappel(dateRappel);
+		demande.setPeriodeFiscale(periodeFiscale);
+		demande.setImmeuble(immeuble);
+		return addNumeroSequenceAndSave(e, demande);
+	}
+
+	private DemandeDegrevementICI addNumeroSequenceAndSave(Entreprise e, DemandeDegrevementICI demande) {
+		final int pf = demande.getPeriodeFiscale();
+		final int maxNosUtilises = Optional.ofNullable(e.getAutresDocumentsFiscaux()).orElseGet(Collections::emptySet).stream()
+				.filter(doc -> doc instanceof DemandeDegrevementICI)
+				.map(doc -> (DemandeDegrevementICI) doc)
+				.filter(dd -> dd.getPeriodeFiscale() == pf)
+				.mapToInt(DemandeDegrevementICI::getNumeroSequence)
+				.max()
+				.orElse(0);
+		demande.setNumeroSequence(maxNosUtilises + 1);
+		return tiersDAO.addAndSave(e, demande);
+	}
+
 	protected EtatEntreprise addEtatEntreprise(Entreprise e, RegDate dateObtention, TypeEtatEntreprise type, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise etat = new EtatEntreprise();
 		etat.setDateObtention(dateObtention);
@@ -1558,15 +1586,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		communauteRF.setType(type);
 		return merge(communauteRF);
 	}
+
 	@NotNull
-	protected DroitProprietePersonnePhysiqueRF addDroitPersonnePhysiqueRF(RegDate dateDebut, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	protected DroitProprietePersonnePhysiqueRF addDroitPersonnePhysiqueRF(RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
 	                                                                      PersonnePhysiqueRF ayantDroit,
 	                                                                      BienFondRF immeuble, CommunauteRF communaute) {
-		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setAyantDroit(ayantDroit);
 		droit.setCommunaute(communaute);
 		droit.setImmeuble(immeuble);
 		droit.setDateDebut(dateDebut);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
 		droit.setDateFin(dateFin);
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
@@ -1578,12 +1608,33 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	@NotNull
-	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	protected DroitProprietePersonneMoraleRF addDroitPersonneMoraleRF(RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	                                                                  PersonneMoraleRF ayantDroit,
+	                                                                  BienFondRF immeuble, CommunauteRF communaute) {
+		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
+		droit.setAyantDroit(ayantDroit);
+		droit.setCommunaute(communaute);
+		droit.setImmeuble(immeuble);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setNumeroAffaire(numeroAffaire);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		return merge(droit);
+	}
+
+	@NotNull
+	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
 	                                                          CommunauteRF communauteRF, BienFondRF immeuble) {
-		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setImmeuble(immeuble);
 		droit.setAyantDroit(communauteRF);
 		droit.setDateDebut(dateDebut);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
 		droit.setDateFin(dateFin);
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);

@@ -30,6 +30,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -47,6 +48,7 @@ public abstract class Contribuable extends Tiers {
 	private Set<DecisionAci> decisionsAci;
 	private Set<DroitAcces> droitsAccesAppliques;
 	private Set<RapprochementRF> rapprochementsRF;
+	private Set<AllegementFoncier> allegementsFonciers;
 
 	public Contribuable() {
 	}
@@ -493,6 +495,37 @@ public abstract class Contribuable extends Tiers {
 		}
 		return rapprochementsRF.stream()
 				.filter(AnnulableHelper::nonAnnule)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
+	}
+
+	@OneToMany(mappedBy = "contribuable", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	public Set<AllegementFoncier> getAllegementsFonciers() {
+		return allegementsFonciers;
+	}
+
+	public void setAllegementsFonciers(Set<AllegementFoncier> allegementsFonciers) {
+		this.allegementsFonciers = allegementsFonciers;
+	}
+
+	public void addAllegementFoncier(AllegementFoncier af) {
+		if (allegementsFonciers == null) {
+			allegementsFonciers = new HashSet<>();
+		}
+		af.setContribuable(this);
+		allegementsFonciers.add(af);
+	}
+
+	@NotNull
+	@Transient
+	public <T extends AllegementFoncier> List<T> getAllegementsFonciersNonAnnulesTries(Class<T> clazz) {
+		if (allegementsFonciers == null || allegementsFonciers.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return allegementsFonciers.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(af -> clazz.isAssignableFrom(af.getClass()))
+				.map(af -> (T) af)
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());
 	}

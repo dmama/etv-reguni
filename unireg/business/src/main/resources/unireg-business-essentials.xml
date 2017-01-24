@@ -296,6 +296,7 @@
 		<property name="editiqueService" ref="editiqueService"/>
 		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="allegementFoncierDAO" ref="allegementFoncierDAO"/>
 	</bean>
 
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">

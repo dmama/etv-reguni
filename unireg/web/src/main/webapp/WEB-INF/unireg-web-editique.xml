@@ -50,6 +50,7 @@
 		<property name="signatairesAutorisationRadiationRC" ref="signatairesAutorisationRadiation"/>
 		<property name="impressionDemandeBilanFinalHelper" ref="impressionDemandeBilanFinalHelper"/>
 		<property name="impressionLettreTypeInformationLiquidationHelper" ref="impressionLettreTypeInfoLiquidationHelper"/>
+		<property name="impressionDemandeDegrevementICIHelper" ref="impressionDemandeDegrevementICIHelper"/>
 		<property name="evenementDocumentSortantService" ref="evenementDocumentSortantService"/>
 	</bean>
 

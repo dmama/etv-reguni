@@ -6,7 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
@@ -19,10 +23,15 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.foncier.AllegementFoncierDAO;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIProcessor;
+import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -46,6 +55,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private EditiqueService editiqueService;
 	private EditiqueCompositionService editiqueCompositionService;
 	private EvenementFiscalService evenementFiscalService;
+	private AllegementFoncierDAO allegementFoncierDAO;
 
 	private final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> typesDocumentEnvoiInitial = buildTypesDocumentEnvoiInitial();
 	private final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> typesDocumentEnvoiRappel = buildTypesDocumentEnvoiRappel();
@@ -56,12 +66,14 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		map.put(AutorisationRadiationRC.class, TypeDocumentEditique.AUTORISATION_RADIATION_RC);
 		map.put(DemandeBilanFinal.class, TypeDocumentEditique.DEMANDE_BILAN_FINAL);
 		map.put(LettreTypeInformationLiquidation.class, TypeDocumentEditique.LETTRE_TYPE_INFO_LIQUIDATION);
+		map.put(DemandeDegrevementICI.class, TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI);
 		return Collections.unmodifiableMap(map);
 	}
 
 	private static Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> buildTypesDocumentEnvoiRappel() {
 		final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> map = new HashMap<>();
 		map.put(LettreBienvenue.class, TypeDocumentEditique.RAPPEL);
+		map.put(DemandeDegrevementICI.class, TypeDocumentEditique.RAPPEL_DEMANDE_DEGREVEMENT_ICI);
 		return Collections.unmodifiableMap(map);
 	}
 
@@ -101,6 +113,10 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
+	public void setAllegementFoncierDAO(AllegementFoncierDAO allegementFoncierDAO) {
+		this.allegementFoncierDAO = allegementFoncierDAO;
+	}
+
 	@Override
 	public EnvoiLettresBienvenueResults envoyerLettresBienvenueEnMasse(RegDate dateTraitement, int delaiCarence, StatusManager statusManager) {
 		final EnvoiLettresBienvenueProcessor processor = new EnvoiLettresBienvenueProcessor(parametreAppService, hibernateTemplate, transactionManager, tiersService, assujettissementService, this);
@@ -111,6 +127,12 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	public RappelLettresBienvenueResults envoyerRappelsLettresBienvenueEnMasse(RegDate dateTraitement, StatusManager statusManager) {
 		final RappelLettresBienvenueProcessor processor = new RappelLettresBienvenueProcessor(parametreAppService, hibernateTemplate, transactionManager, this, delaiService);
 		return processor.run(dateTraitement, statusManager);
+	}
+
+	@Override
+	public EnvoiFormulairesDemandeDegrevementICIResults envoyerFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, int nbThreads, @Nullable Integer nbMaxEnvois, StatusManager statusManager) {
+		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(transactionManager, this, hibernateTemplate, tiersService, allegementFoncierDAO);
+		return processor.run(nbThreads, nbMaxEnvois, dateTraitement, statusManager);
 	}
 
 	@Override
@@ -133,7 +155,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		catch (EditiqueException e) {
 			throw new AutreDocumentFiscalException(e);
 		}
-		return lettre;
+		return saved;
 	}
 
 	private TypeLettreBienvenue computeTypeLettreBienvenue(Entreprise e, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException {
@@ -209,6 +231,53 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		}
 
 		return type;
+	}
+
+	@Override
+	public DemandeDegrevementICI envoyerDemandeDegrevementICIBatch(Entreprise entreprise, ImmeubleRF immeuble, int periodeFiscale, RegDate dateTraitement) throws AutreDocumentFiscalException {
+		final RegDate dateEnvoi = delaiService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+		final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+
+		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
+		demande.setDateEnvoi(dateEnvoi);
+		demande.setDelaiRetour(delaiRetour);
+		demande.setCodeControle(buildCodeControleDemandeDegrevementICI(entreprise));
+		demande.setImmeuble(immeuble);
+		demande.setNumeroSequence(getNewSequenceNumberDemandeDegrevementICI(entreprise, periodeFiscale));
+		demande.setPeriodeFiscale(periodeFiscale);
+		demande.setEntreprise(entreprise);
+
+		final DemandeDegrevementICI saved = hibernateTemplate.merge(demande);
+		entreprise.addAutreDocumentFiscal(saved);
+		try {
+			editiqueCompositionService.imprimeDemandeDegrevementICIForBatch(saved, dateTraitement);
+			// TODO événement fiscal ?
+		}
+		catch (EditiqueException e) {
+			throw new AutreDocumentFiscalException(e);
+		}
+		return saved;
+	}
+
+	private static String buildCodeControleDemandeDegrevementICI(Entreprise e) {
+		final Set<String> existing = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
+				.map(DemandeDegrevementICI::getCodeControle)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+		String newCode;
+		while (existing.contains(newCode = DemandeDegrevementICI.generateCodeControle())) {
+		}
+		return newCode;
+	}
+
+	private static int getNewSequenceNumberDemandeDegrevementICI(Entreprise e, int periodeFiscale) {
+		final int maxUsed = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
+				.filter(dd -> dd.getPeriodeFiscale() != null && dd.getPeriodeFiscale() == periodeFiscale)
+				.filter(dd -> dd.getNumeroSequence() != null)
+				.mapToInt(DemandeDegrevementICI::getNumeroSequence)
+				.max()
+				.orElse(0);
+		return maxUsed + 1;
 	}
 
 	@Override

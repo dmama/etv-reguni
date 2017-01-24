@@ -83,9 +83,9 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			ids.immeuble = immeuble.getId();
 
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 1995, 23, 3);
-			addDroitCommunauteRF(dateAchat, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
-			addDroitPersonnePhysiqueRF(dateAchat, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
-			addDroitPersonnePhysiqueRF(dateAchat, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
+			addDroitCommunauteRF(dateAchat, dateAchat,null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat,null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
 
 			return null;
 		});
@@ -145,10 +145,10 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			ids.immeuble = immeuble.getId();
 
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 1995, 23, 3);
-			addDroitCommunauteRF(dateAchat, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
-			addDroitPersonnePhysiqueRF(dateAchat, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
-			addDroitPersonnePhysiqueRF(dateAchat, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
-			addDroitPersonnePhysiqueRF(dateAchat, null, "Achat", null, "3403892", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, totrRf, immeuble, communauteRF);
+			addDroitCommunauteRF(dateAchat, dateAchat, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "3403892", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, totrRf, immeuble, communauteRF);
 
 			return null;
 		});

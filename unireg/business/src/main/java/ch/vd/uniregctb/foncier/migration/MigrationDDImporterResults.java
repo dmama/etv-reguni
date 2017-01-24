@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.degrevement.migration;
+package ch.vd.uniregctb.foncier.migration;
 
 import java.util.LinkedList;
 import java.util.List;

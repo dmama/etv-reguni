@@ -95,7 +95,7 @@ public interface DelaisService {
 	RegDate getDateFinDelaiCadevImpressionQuestionnaireSNC(RegDate dateDebut);
 
 	/**
-	 * Determine la date d'échéance du délai technique d’impression par la CADEV lettres de bienvenue PM.<br>
+	 * Determine la date d'échéance du délai technique d’impression par la CADEV des lettres de bienvenue PM.<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>
 	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
@@ -105,6 +105,18 @@ public interface DelaisService {
 	 * @return la date d'échéance du délai
 	 */
 	RegDate getDateFinDelaiCadevImpressionLettreBienvenue(RegDate dateDebut);
+
+	/**
+	 * Determine la date d'échéance du délai technique d’impression par la CADEV des formulaires de demande de dégrèvement ICI.<br>
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 *
+	 * @param dateDebut date
+	 *
+	 * @return la date d'échéance du délai
+	 */
+	RegDate getDateFinDelaiCadevImpressionDemandeDegrevementICI(RegDate dateDebut);
 
 	/**
 	 * Determine la date d'échéance du délai d’échéance d’une sommation de déposer la déclaration d’impôt PP (art. 174 al. 4 LI).<br>

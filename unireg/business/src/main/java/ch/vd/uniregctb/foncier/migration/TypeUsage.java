@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.degrevement.migration;
+package ch.vd.uniregctb.foncier.migration;
 
 public enum TypeUsage {
 	USAGE_PROPRE,

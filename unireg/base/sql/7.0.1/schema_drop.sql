@@ -106,6 +106,8 @@ drop table REFERENCE_ANNONCE_IDE cascade constraints;
 
 drop table RAPPROCHEMENT_RF cascade constraints;
 
+drop table ALLEGEMENT_FONCIER cascade constraints;
+
 drop table RF_SURFACE_TOTALE cascade constraints;
 drop table RF_SURFACE_AU_SOL cascade constraints;
 drop table RF_SITUATION cascade constraints;

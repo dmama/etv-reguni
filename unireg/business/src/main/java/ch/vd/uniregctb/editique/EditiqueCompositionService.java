@@ -23,6 +23,7 @@ import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -349,4 +350,12 @@ public interface EditiqueCompositionService {
 	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
 	 */
 	EditiqueResultat imprimeLettreTypeInformationLiquidationOnline(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException;
+
+	/**
+	 * Envoie à l'éditique le formulaire de demande de dégrèvement ICI à imprimer en masse
+	 * @param demande le formulaire à imprimer
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @throws EditiqueException en cas de problème
+	 */
+	void imprimeDemandeDegrevementICIForBatch(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException;
 }

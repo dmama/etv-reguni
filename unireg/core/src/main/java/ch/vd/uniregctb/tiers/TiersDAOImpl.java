@@ -41,6 +41,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
@@ -1681,6 +1682,31 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@Override
 	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
 		return addAndSave(entreprise, document, new AutreDocumentFiscalAccessor<>());
+	}
+
+	private static final class AllegementFoncierAccessor<T extends AllegementFoncier> implements EntityAccessor<Contribuable, T> {
+		@Override
+		public Collection<? extends HibernateEntity> getEntities(Contribuable tiers) {
+			return tiers.getAllegementsFonciers();
+		}
+
+		@Override
+		public void addEntity(Contribuable tiers, T entity) {
+			tiers.addAllegementFoncier(entity);
+		}
+
+		@Override
+		public void assertSame(T entity1, T entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			Assert.isSame(entity1.getImmeuble(), entity2.getImmeuble());
+			Assert.isSame(entity1.getClass(), entity2.getClass());
+		}
+	}
+
+	@Override
+	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
+		return addAndSave(contribuable, allegementFoncier, new AllegementFoncierAccessor<>());
 	}
 
 	@SuppressWarnings({"unchecked"})

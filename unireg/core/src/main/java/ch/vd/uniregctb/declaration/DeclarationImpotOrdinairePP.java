@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
+import ch.vd.uniregctb.common.CodeControleHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.type.Qualification;
@@ -67,6 +68,6 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 	 * @return un nouveau code de contrôle d'une lettre et de cinq chiffres aléatoires
 	 */
 	public static String generateCodeControle() {
-		return generateCodeControleUneLettreCinqChiffres();
+		return CodeControleHelper.generateCodeControleUneLettreCinqChiffres();
 	}
 }
