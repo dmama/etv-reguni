@@ -50,9 +50,9 @@ public class PdfIdentifierContribuableFromListeRapport extends PdfRapport {
 
 			addTableSimple(new float[]{70f, 30f}, table -> {
 				table.addLigne("Nombre de personnes analysées :", String.valueOf(results.getNbPersonnesTotal()));
-				table.addLigne("Nombre de personnes identifiés :", String.valueOf(results.identifies.size()));
+				table.addLigne("Nombre de personnes identifiées :", String.valueOf(results.identifies.size()));
 				table.addLigne("Nombre de personnes avec plusieurs numéros trouvés :", String.valueOf(results.plusieursTrouves.size()));
-				table.addLigne("Nombre de personnes non identifiés :", String.valueOf(results.nonIdentifies.size()));
+				table.addLigne("Nombre de personnes non identifiées :", String.valueOf(results.nonIdentifies.size()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 				table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
