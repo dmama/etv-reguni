@@ -2628,8 +2628,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 		// pour être certain de ne rien récupérer d'autre que ce que je vais créer maintenant
 		globalTiersIndexer.overwriteIndex();
 
-		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean otfi = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
 			// mise en place des débiteurs
 			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
@@ -2685,7 +2685,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(otfi);
 		}
 	}
 
@@ -2701,8 +2701,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final RegDate dateMariage = date(2010, 5, 1);
 		final RegDate dateDeces = date(2013, 3, 12);
 
-		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean otfi = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
 
 			class Ids {
@@ -2772,7 +2772,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		}
 		finally {
-		    globalTiersIndexer.setOnTheFlyIndexation(otfi);
+		    globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(otfi);
 		}
 	}
 
@@ -2940,8 +2940,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean otfi = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
 			// mise en place fiscale
 			final class Ids {
@@ -3015,7 +3015,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			}
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(otfi);
 		}
 	}
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -95,12 +96,14 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	 */
 	private void processAllTiers(List<Long> ids, StatusManager status) {
 
-		try {
-			// désactive les intercepteurs suivants pour des raisons de performance
-			oidInterceptor.setEnabled(false); // on met-à-jour l'OID à la main
-			tiersIndexer.setOnTheFlyIndexation(false); // l'OID n'est pas une information indexée
-			validationInterceptor.setEnabled(false); // l'OID n'est pas utilisée dans la validation des tiers
+		// désactive les intercepteurs suivants pour des raisons de performance
+		final MultipleSwitch mainSwitch = new MultipleSwitch(oidInterceptor,                                // on met à jour l'OID à la main
+		                                                     tiersIndexer.onTheFlyIndexationSwitch(),       // l'OID n'est pas une information indexée
+		                                                     validationInterceptor);                        // l'OID n'est pas utilisé dans la validation des tiers
 
+		mainSwitch.pushState();
+		mainSwitch.setEnabled(false);
+		try {
 			total = ids.size();
 			current = 0;
 
@@ -115,9 +118,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 			}
 		}
 		finally {
-			tiersIndexer.setOnTheFlyIndexation(true);
-			oidInterceptor.setEnabled(true);
-			validationInterceptor.setEnabled(true);
+			mainSwitch.popState();
 		}
 	}
 

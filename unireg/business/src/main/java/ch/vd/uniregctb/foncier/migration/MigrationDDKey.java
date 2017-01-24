@@ -9,15 +9,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MigrationDDKey {
 
-	private final long numeroEntreprise;
-
-	private final long noAciCommune;
-
-	private final String noBaseParcelle;
-
-	private final String noParcelle;
-
-	private final String noLotPPE;
+	public final long numeroEntreprise;
+	public final long noAciCommune;
+	public final String noBaseParcelle;
+	public final String noParcelle;
+	public final String noLotPPE;
 
 	public MigrationDDKey(@NotNull MigrationDD dd) {
 		this.numeroEntreprise = dd.getNumeroEntreprise();

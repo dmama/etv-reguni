@@ -108,7 +108,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 		// tout d'abord quelques tiers qui se réindexent
 		final Ids ids;
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
 			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 				@Override
@@ -156,10 +156,10 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		}
 		finally {
 			globalTiersIndexer.sync();
-			globalTiersIndexer.setOnTheFlyIndexation(false);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(false);
 		}
 
-		globalTiersIndexer.setOnTheFlyIndexation(false);
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(false);
 		doInNewTransaction(new TxCallback<Object>() {
 
 			@Override
@@ -173,7 +173,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			}
 
 		});
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 
 		// Le tiers est chargé
 		{

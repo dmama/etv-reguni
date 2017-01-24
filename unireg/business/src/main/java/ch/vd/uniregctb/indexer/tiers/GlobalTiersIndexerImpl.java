@@ -34,6 +34,7 @@ import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexableData;
@@ -747,15 +748,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-    @Override
-    public boolean isOnTheFlyIndexation() {
-        return this.onTheFlyIndexation.isEnabled();
-    }
-
-    @Override
-    public void setOnTheFlyIndexation(boolean onTheFlyIndexation) {
-        this.onTheFlyIndexation.setEnabled(onTheFlyIndexation);
-    }
+	@Override
+	public Switchable onTheFlyIndexationSwitch() {
+		return this.onTheFlyIndexation;
+	}
 
 	@Override
 	public int getOnTheFlyQueueSize() {

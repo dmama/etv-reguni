@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.Collection;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerException;
 
 public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
@@ -30,16 +31,21 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 	}
 
 	@Override
-	public boolean isOnTheFlyIndexation() {
-		return false;
+	public Switchable onTheFlyIndexationSwitch() {
+		return new Switchable() {
+			@Override
+			public void setEnabled(boolean enabled) {
+			}
+
+			@Override
+			public boolean isEnabled() {
+				return false;
+			}
+		};
 	}
 
 	@Override
 	public void overwriteIndex() {
-	}
-
-	@Override
-	public void setOnTheFlyIndexation(boolean onTheFlyIndexation) {
 	}
 
 	@Override

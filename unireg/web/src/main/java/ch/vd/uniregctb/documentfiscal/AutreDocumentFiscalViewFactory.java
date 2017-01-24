@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.context.MessageSource;
 
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+
 /**
  * Factory des vues d'autres documents fiscaux
  */
@@ -24,42 +26,11 @@ public abstract class AutreDocumentFiscalViewFactory {
 
 	private static Map<Class<? extends AutreDocumentFiscal>, ViewFactory<?>> buildFactoryMap() {
 		final Map<Class<? extends AutreDocumentFiscal>, ViewFactory<?>> map = new HashMap<>();
-		addToMap(map, LettreBienvenue.class, new ViewFactory<LettreBienvenue>() {
-			@Override
-			public AutreDocumentFiscalAvecSuiviView buildView(LettreBienvenue document, MessageSource messageSource) {
-				return new AutreDocumentFiscalAvecSuiviView(document,
-				                                            messageSource,
-				                                            "label.autre.document.fiscal.lettre.bienvenue",
-				                                            "label.autre.document.fiscal.lettre.bienvenue.type." + document.getType());
-			}
-		});
-		addToMap(map, AutorisationRadiationRC.class, new ViewFactory<AutorisationRadiationRC>() {
-			@Override
-			public AutreDocumentFiscalView buildView(AutorisationRadiationRC document, MessageSource messageSource) {
-				return new AutreDocumentFiscalView(document,
-				                                   messageSource,
-				                                   "label.autre.document.fiscal.autorisation.radiation.rc",
-				                                   null);
-			}
-		});
-		addToMap(map, DemandeBilanFinal.class, new ViewFactory<DemandeBilanFinal>() {
-			@Override
-			public AutreDocumentFiscalView buildView(DemandeBilanFinal document, MessageSource messageSource) {
-				return new AutreDocumentFiscalView(document,
-				                                   messageSource,
-				                                   "label.autre.document.fiscal.demande.bilan.final",
-				                                   null);
-			}
-		});
-		addToMap(map, LettreTypeInformationLiquidation.class, new ViewFactory<LettreTypeInformationLiquidation>() {
-			@Override
-			public AutreDocumentFiscalView buildView(LettreTypeInformationLiquidation document, MessageSource messageSource) {
-				return new AutreDocumentFiscalView(document,
-				                                   messageSource,
-				                                   "label.autre.document.fiscal.lettre.liquidation",
-				                                   null);
-			}
-		});
+		addToMap(map, LettreBienvenue.class,                    (document, messageSource) -> new AutreDocumentFiscalAvecSuiviView(document, messageSource, "label.autre.document.fiscal.lettre.bienvenue", "label.autre.document.fiscal.lettre.bienvenue.type." + document.getType()));
+		addToMap(map, AutorisationRadiationRC.class,            (document, messageSource) -> new AutreDocumentFiscalView(document, messageSource, "label.autre.document.fiscal.autorisation.radiation.rc", null));
+		addToMap(map, DemandeBilanFinal.class,                  (document, messageSource) -> new AutreDocumentFiscalView(document, messageSource, "label.autre.document.fiscal.demande.bilan.final", null));
+		addToMap(map, LettreTypeInformationLiquidation.class,   (document, messageSource) -> new AutreDocumentFiscalView(document, messageSource, "label.autre.document.fiscal.lettre.liquidation", null));
+		addToMap(map, DemandeDegrevementICI.class,              (document, messageSource) -> new AutreDocumentFiscalAvecSuiviView(document, messageSource, "label.autre.document.fiscal.formulaire.demande.degrevement.ici", null));
 		return map;
 	}
 

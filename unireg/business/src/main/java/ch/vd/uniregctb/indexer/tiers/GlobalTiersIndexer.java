@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerException;
 
 /**
@@ -70,20 +71,10 @@ public interface GlobalTiersIndexer {
 	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode) throws IndexerException;
 
 	/**
-	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.
-	 * <p/>
-	 * Note: cette valeur est valable <b>pour le thread courant</b>.
-	 *
-	 * @return <b>vrai</b> si l'indexation est faite à la volée ou <b>faux</b> si elle est faite à postériori.
+	 * <b>Note :</b> le switch n'est actif que sur le thread courant
+	 * @return le switch de gestion pour savoir si l'indexation doit se faire à la volée ou si elle sera faite <i>a posteriori</i>
 	 */
-	boolean isOnTheFlyIndexation();
-
-	/**
-	 * Active ou désactive l'indexation <b>pour le thread courant</b>.
-	 *
-	 * @param onTheFlyIndexation <b>vrai</b> si l'indexation doit se faire à la volée ou <b>faux</b> si elle sera faite à postériori.
-	 */
-	void setOnTheFlyIndexation(boolean onTheFlyIndexation);
+	Switchable onTheFlyIndexationSwitch();
 
 	/**
 	 * @return le nombre de tiers actuellement en attente d'indexation dans le mode "on-the-fly"

@@ -716,8 +716,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long dpi;
 		}
 
-		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean onTheFly = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		final Ids ids;
 		try {
 			globalTiersIndexer.overwriteIndex();
@@ -740,7 +740,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			globalTiersIndexer.sync();
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(onTheFly);
 		}
 
 		// recherche avec le numéro
@@ -987,8 +987,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			int ppSans;
 		}
 
-		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean onTheFly = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		final Ids ids;
 		try {
 			globalTiersIndexer.overwriteIndex();
@@ -1020,7 +1020,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			globalTiersIndexer.sync();
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(onTheFly);
 		}
 
 		// recherche sans critère d'IDE
@@ -1141,8 +1141,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final RegDate dateNaissance = date(1979, 5, 31);
 		final RegDate dateMariage = date(2008, 5, 1);
 
-		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean onTheFly = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		final Ids ids;
 		try {
 			globalTiersIndexer.overwriteIndex();
@@ -1167,7 +1167,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			globalTiersIndexer.sync();
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(onTheFly);
 		}
 
 		// recherche par nom avec liste de types vide -> les deux viennent
@@ -1226,8 +1226,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			long entreprise2;
 		}
 
-		final boolean onTheFly = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean onTheFly = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		final Ids ids;
 		try {
 			globalTiersIndexer.overwriteIndex();
@@ -1261,7 +1261,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			globalTiersIndexer.sync();
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(onTheFly);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(onTheFly);
 		}
 
 		// recherche par nom avec liste de types vide -> les deux viennent

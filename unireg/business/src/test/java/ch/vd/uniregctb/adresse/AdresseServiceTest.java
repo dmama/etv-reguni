@@ -79,7 +79,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// Pas d'indexation parce qu'on teste des cas qui font peter l'indexation
 		// et qui pourrissent les logs!
-		globalTiersIndexer.setOnTheFlyIndexation(false);
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
 		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil, localiteInvalideMatcherService);
@@ -87,7 +87,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 	@Override
 	public void onTearDown() throws Exception {
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		super.onTearDown();
 	}
 

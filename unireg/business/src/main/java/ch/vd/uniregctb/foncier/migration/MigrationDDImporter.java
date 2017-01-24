@@ -2,19 +2,24 @@ package ch.vd.uniregctb.foncier.migration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +39,12 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.MovingWindow;
+import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
+import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -133,6 +142,8 @@ public class MigrationDDImporter {
 			}
 		}
 
+		// Clé principale : clé d'identification du couple entreprise / immeuble
+		// Valeur (map) : clé = période fiscale, valeur = données à migrée
 		final Map<MigrationDDKey, Map<Integer, MigrationDD>> map = new HashMap<>();
 
 		// on regroupe les demandes pour gérer correctement les cas où il y a plusieurs usages
@@ -182,10 +193,23 @@ public class MigrationDDImporter {
 			}
 		}
 
+		// on va devoir traiter les dossiers contribuable par contribuable
+		final Map<Long, List<Map<Integer, MigrationDD>>> mapParContribuable = map.entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey().numeroEntreprise,
+				                          entry -> Collections.singletonList(entry.getValue()),
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+		// on désactive la validation automatique des données sauvées car la validation
+		// des entreprises est très coûteuse et - surtout - les demandes de dégrèvements
+		// migrées de SIMPA-PM n'influence pas sur l'état valide ou non des entreprises.
+		final MultipleSwitch mainSwitch = new MultipleSwitch(validationInterceptor,
+		                                                     tiersIndexer.onTheFlyIndexationSwitch(),
+		                                                     tacheSynchronizerInterceptor);
+
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplate<Map<Integer, MigrationDD>> template =
-				new ParallelBatchTransactionTemplate<>(new ArrayList<>(map.values()), BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
-		template.execute(new BatchCallback<Map<Integer, MigrationDD>>() {
+		final ParallelBatchTransactionTemplate<Map.Entry<Long, List<Map<Integer, MigrationDD>>>> template =
+				new ParallelBatchTransactionTemplate<>(new ArrayList<>(mapParContribuable.entrySet()), BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		template.execute(new BatchCallback<Map.Entry<Long, List<Map<Integer, MigrationDD>>>>() {
 
 			private final ThreadLocal<MigrationDDImporterResults> subRapport = new ThreadLocal<>();
 			private final ThreadLocal<MigrationDD> last = new ThreadLocal<>();
@@ -193,22 +217,53 @@ public class MigrationDDImporter {
 			@Override
 			public void beforeTransaction() {
 				subRapport.set(new MigrationDDImporterResults(nbThreads));
-				// on désactive la validation automatique des données sauvées car la validation
-				// des entreprises est très coûteuse et - surtout - les demandes de dégrèvements
-				// migrées de SIMPA-PM n'influence pas sur l'état valide ou non des entreprises.
-				validationInterceptor.setEnabled(false);
-				tiersIndexer.setOnTheFlyIndexation(false);      // les demandes de dégrèvements ne sont pas indexées
-				tacheSynchronizerInterceptor.setEnabled(false); // aucune tâche ne dépend des demandes de dégrèvement
+				mainSwitch.pushState();
+				mainSwitch.setEnabled(false);
 			}
 
 			@Override
-			public boolean doInTransaction(List<Map<Integer, MigrationDD>> batch) throws Exception {
-				batch.forEach(map -> {
-					final List<MigrationDD> list = new ArrayList<>(map.values());
-					final MigrationDD toSave = getDDToSave(list, subRapport.get());
-					last.set(toSave);
-					traiterDemande(toSave);
-					subRapport.get().incNbDemandesTraitees();
+			public boolean doInTransaction(List<Map.Entry<Long, List<Map<Integer, MigrationDD>>>> batch) throws Exception {
+				batch.forEach(batchEntry -> {
+
+					// ensuite, on traite contribuable par contribuable
+					final Entreprise entreprise = getEntreprise(batchEntry.getKey());
+
+					// map des dégrèvements à persister pour cette entreprise par identifiant d'immeuble
+					final Map<Long, List<DegrevementICI>> degrevementsParImmeuble = batchEntry.getValue().stream()
+							.map(map -> {
+								final List<MigrationDD> list = new ArrayList<>(map.values());
+								final MigrationDD toSave = getDDToSave(list, subRapport.get());
+								last.set(toSave);
+								final List<DegrevementICI> degs = traiterDemande(toSave);
+								subRapport.get().incNbDemandesTraitees();
+								return degs;
+							})
+							.flatMap(List::stream)
+							.collect(Collectors.toMap(d -> d.getImmeuble().getId(),
+							                          Collections::singletonList,
+							                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+					// assignation des dates de fin
+					for (List<DegrevementICI> degrevements : degrevementsParImmeuble.values()) {
+						if (degrevements.size() > 1) {
+							degrevements.sort(Comparator.comparing(DegrevementICI::getDateDebut));
+							final MovingWindow<DegrevementICI> wnd = new MovingWindow<>(degrevements);
+							while (wnd.hasNext()) {
+								final MovingWindow.Snapshot<DegrevementICI> snapshot = wnd.next();
+								final DegrevementICI current = snapshot.getCurrent();
+								final DegrevementICI next = snapshot.getNext();
+								if (next != null) {
+									current.setDateFin(next.getDateDebut().getOneDayBefore());
+								}
+							}
+						}
+					}
+
+					// persistence
+					degrevementsParImmeuble.values().stream()
+							.flatMap(List::stream)
+							.map(hibernateTemplate::merge)
+							.forEach(entreprise::addAllegementFoncier);
 				});
 				status.setMessage("Migration des dégrèvements...", monitor.getProgressInPercent());
 				return true;
@@ -216,9 +271,7 @@ public class MigrationDDImporter {
 
 			@Override
 			public void afterTransactionCommit() {
-				validationInterceptor.setEnabled(true);
-				tiersIndexer.setOnTheFlyIndexation(true);
-				tacheSynchronizerInterceptor.setEnabled(true);
+				mainSwitch.popState();
 				synchronized (rapport) {
 					rapport.addAll(subRapport.get());
 				}
@@ -228,9 +281,7 @@ public class MigrationDDImporter {
 
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
-				validationInterceptor.setEnabled(true);
-				tiersIndexer.setOnTheFlyIndexation(true);
-				tacheSynchronizerInterceptor.setEnabled(true);
+				mainSwitch.popState();
 				if (!willRetry) {
 					synchronized (rapport) {
 						rapport.addDemandeEnErreur(last.get(), e.getMessage());
@@ -242,7 +293,13 @@ public class MigrationDDImporter {
 		}, monitor);
 	}
 
-	private void traiterDemande(MigrationDD demande) {
+	/**
+	 * Migre une demande et extrait les dégrèvements ICI
+	 * @param demande la demande en entrée
+	 * @return la liste des dégrèvements à persister
+	 */
+	@NotNull
+	private List<DegrevementICI> traiterDemande(MigrationDD demande) {
 
 		final Entreprise entreprise = determinerEntreprise(demande);
 		final ImmeubleRF immeuble = determinerImmeuble(demande);
@@ -256,6 +313,35 @@ public class MigrationDDImporter {
 		dd.setDateRappel(demande.getDateRappel());
 		dd.setDateRetour(demande.getDateRetour());
 		hibernateTemplate.merge(dd);
+
+		final Map<TypeUsage, MigrationDDUsage> usagesParType = demande.getUsages().stream()
+				.collect(Collectors.toMap(MigrationDDUsage::getTypeUsage,
+				                          Function.identity(),
+				                          (u1, u2) -> u2,
+				                          () -> new EnumMap<>(TypeUsage.class)));
+
+		final List<DegrevementICI> degrevements = new ArrayList<>(usagesParType.size());
+		if (!usagesParType.isEmpty()) {
+			final DegrevementICI degrevement = new DegrevementICI();
+			degrevement.setImmeuble(immeuble);
+			degrevement.setContribuable(entreprise);
+			degrevement.setPropreUsage(extractDonneesUtilisation(usagesParType.get(TypeUsage.USAGE_PROPRE)));
+			degrevement.setLocation(extractDonneesUtilisation(usagesParType.get(TypeUsage.LOUE_TIERS)));
+			degrevement.setLoiLogement(null);           // TODO comment migrer ça ?
+			if (degrevement.getPropreUsage() != null || degrevement.getLocation() != null || degrevement.getLoiLogement() != null) {
+				degrevement.setDateDebut(RegDate.get(demande.getAnneeFiscale(), 1, 1));
+				degrevements.add(degrevement);
+			}
+		}
+		return degrevements;
+	}
+
+	private static DonneesUtilisation extractDonneesUtilisation(MigrationDDUsage usage) {
+		if (usage == null) {
+			return null;
+		}
+		final BigDecimal pourcentage = BigDecimal.valueOf(usage.getPourdixmilleUsage(), 2);     // pour-dix-mille -> pour-cent
+		return new DonneesUtilisation(usage.getRevenuLocation(), usage.getVolume(), usage.getSurface(), pourcentage, pourcentage);
 	}
 
 	@NotNull
@@ -284,14 +370,18 @@ public class MigrationDDImporter {
 
 	@NotNull
 	private Entreprise determinerEntreprise(MigrationDD demande) {
-
 		final long numero = demande.getNumeroEntreprise();
-		final Tiers tiers = tiersDAO.get(numero);
+		return getEntreprise(numero);
+	}
+
+	@NotNull
+	private Entreprise getEntreprise(long noEntreprise) {
+		final Tiers tiers = tiersDAO.get(noEntreprise);
 		if (tiers == null) {
-			throw new IllegalArgumentException("Le tiers n°" + numero + " n'existe pas.");
+			throw new IllegalArgumentException("Le tiers n°" + noEntreprise + " n'existe pas.");
 		}
 		else if (!(tiers instanceof Entreprise)) {
-			throw new IllegalArgumentException("Le tiers n°" + numero + " n'est pas une entreprise (type = " + tiers.getClass().getSimpleName() + ").");
+			throw new IllegalArgumentException("Le tiers n°" + noEntreprise + " n'est pas une entreprise (type = " + tiers.getClass().getSimpleName() + ").");
 		}
 
 		return (Entreprise) tiers;

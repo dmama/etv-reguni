@@ -258,7 +258,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         tiersService = getBean(TiersService.class, "tiersService");
 	    globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 	    globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
-        globalTiersIndexer.setOnTheFlyIndexation(wantIndexationTiers);
+        globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(wantIndexationTiers);
 		globalMessageIdentificationSearcher = getBean(GlobalMessageIdentificationSearcher.class, "globalMessageIdentificationSearcher");
 		globalMessageIdentificationIndexer = getBean(GlobalMessageIdentificationIndexer.class, "globalMessageIdentificationIndexer");
 		messageIdentificationIndexerHibernateInterceptor = getBean(MessageIdentificationIndexerHibernateInterceptor.class, "messageIdentificationIndexInterceptor");
@@ -310,7 +310,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         this.wantIndexationTiers = wantIndexationTiers;
 
         if (globalTiersIndexer != null) {
-            globalTiersIndexer.setOnTheFlyIndexation(wantIndexationTiers);
+            globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(wantIndexationTiers);
         }
     }
 

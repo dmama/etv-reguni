@@ -547,9 +547,9 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		// On désactive l'indexation on the fly
+		indexer.onTheFlyIndexationSwitch().setEnabled(false);
 		try {
-			// On désactive l'indexation on the fly
-			indexer.setOnTheFlyIndexation(false);
 
 			// On change le prénom du tiers
 			doInNewTransaction(new TxCallback<Object>() {
@@ -576,7 +576,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		}
 		finally {
-			indexer.setOnTheFlyIndexation(true);
+			indexer.onTheFlyIndexationSwitch().setEnabled(true);
 		}
 	}
 

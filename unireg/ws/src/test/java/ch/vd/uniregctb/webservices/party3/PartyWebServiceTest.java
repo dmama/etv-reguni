@@ -2628,8 +2628,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 		// pour être certain de ne rien récupérer d'autre que ce que je vais créer maintenant
 		globalTiersIndexer.overwriteIndex();
 
-		final boolean otfi = globalTiersIndexer.isOnTheFlyIndexation();
-		globalTiersIndexer.setOnTheFlyIndexation(true);
+		final boolean otfi = globalTiersIndexer.onTheFlyIndexationSwitch().isEnabled();
+		globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(true);
 		try {
 			// mise en place des débiteurs
 			final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
@@ -2670,7 +2670,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(ids.reg, singleton.getNumber());
 		}
 		finally {
-			globalTiersIndexer.setOnTheFlyIndexation(otfi);
+			globalTiersIndexer.onTheFlyIndexationSwitch().setEnabled(otfi);
 		}
 	}
 

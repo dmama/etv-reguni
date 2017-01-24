@@ -88,7 +88,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 
 	@Override
 	public void postTransactionCommit() {
-		if (indexer.isOnTheFlyIndexation()) {
+		if (indexer.onTheFlyIndexationSwitch().isEnabled()) {
 			indexModifiedTiers();
 		}
 		else {
