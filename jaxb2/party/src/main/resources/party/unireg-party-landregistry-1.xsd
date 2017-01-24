@@ -60,11 +60,11 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="owner" type="land:ownerType">
+			<xs:element name="rightHolder" type="land:rightHolderType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>Le propriétaire du droit.</jxb:javadoc>
+							<jxb:javadoc>L'ayant-droit qui possède le droit.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -203,7 +203,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="members" type="land:ownerType" maxOccurs="unbounded">
+			<xs:element name="members" type="land:rightHolderType" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -225,30 +225,30 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="ownerType">
+	<xs:complexType name="rightHolderType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Propriétaire d'un immeuble.</jxb:javadoc>
+					<jxb:javadoc>Un ayant-droit (propriétaire, usufruitier ou autre).</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:choice>
-				<xs:element name="taypPayerNumber" type="common:partyNumberType">
+				<xs:element name="taxPayerNumber" type="common:partyNumberType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
-								<jxb:javadoc>Le numéro de contribuable Unireg. Renseigné si le propriétaire a été rapproché avec un tiers Unireg.</jxb:javadoc>
+								<jxb:javadoc>Le numéro de contribuable Unireg. Renseigné si l'ayant-droit du registre foncier a été rapproché avec un tiers Unireg.</jxb:javadoc>
 							</jxb:property>
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="identity" type="land:ownerIdentityType">
+				<xs:element name="identity" type="land:rightHolderIdentityType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
-								<jxb:javadoc>Les informations d'identité du propriétaire. Renseigné si le propriétaire n'a pas été rapproché avec un tiers Unireg.</jxb:javadoc>
+								<jxb:javadoc>Les informations d'identité de l'ayant-droit. Renseigné si l'ayant-droit du registre foncier n'a pas été rapproché avec un tiers Unireg.</jxb:javadoc>
 							</jxb:property>
 						</xs:appinfo>
 					</xs:annotation>
@@ -267,11 +267,11 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="ownerIdentityType" abstract="true">
+	<xs:complexType name="rightHolderIdentityType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Identité d'un propriétaire.</jxb:javadoc>
+					<jxb:javadoc>Identité d'un ayant-droit du registre foncier.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
@@ -280,7 +280,7 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'identifiant technique Unireg du propriétaire RF (attention, il ne s'agit pas du numéro de contribuable).</jxb:javadoc>
+							<jxb:javadoc>L'identifiant technique de l'ayant-droit du registre foncier (attention, il ne s'agit pas du numéro de contribuable).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -297,7 +297,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="land:ownerIdentityType">
+			<xs:extension base="land:rightHolderIdentityType">
 				<xs:sequence>
 					<xs:element name="firstName" type="xs:string">
 						<xs:annotation>
@@ -350,7 +350,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="land:ownerIdentityType">
+			<xs:extension base="land:rightHolderIdentityType">
 				<xs:sequence>
 					<xs:element name="name" type="xs:string">
 						<xs:annotation>
@@ -394,7 +394,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="land:ownerIdentityType">
+			<xs:extension base="land:rightHolderIdentityType">
 				<xs:sequence>
 					<xs:element name="name" type="xs:string">
 						<xs:annotation>
