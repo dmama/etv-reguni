@@ -94,9 +94,9 @@ import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Location;
 import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.Owner;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
@@ -4805,21 +4805,21 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(ids.communaute, community.getId());
 		Assert.assertEquals(CommunityOfOwnersType.COMMUNITY_OF_PROPERTY, community.getType());
 
-		final List<Owner> members = community.getMembers();
+		final List<RightHolder> members = community.getMembers();
 		Assert.assertEquals(2, members.size());
 		assertOwnerParty(ids.pp, members.get(0));
 		assertOwnerNaturalPerson("Attila", "Misère", RegDate.get(2002, 12, 22), members.get(1));
 	}
 
-	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, Owner owner) {
+	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		Assert.assertEquals(firstName, identity.getFirstName());
 		Assert.assertEquals(lastName, identity.getLastName());
 		Assert.assertEquals(dateOfBirth, DataHelper.webToRegDate(identity.getDateOfBirth()));
 	}
 
-	private static void assertOwnerParty(long id, Owner owner0) {
-		Assert.assertEquals(Integer.valueOf((int) id), owner0.getTaypPayerNumber());
+	private static void assertOwnerParty(long id, RightHolder rightHolder) {
+		Assert.assertEquals(Integer.valueOf((int) id), rightHolder.getTaxPayerNumber());
 	}
 
 	private void assertShare(int numerator, int denominator, Share share) {

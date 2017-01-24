@@ -48,8 +48,8 @@ import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
-import ch.vd.uniregctb.xml.party.v5.OwnerBuilder;
 import ch.vd.uniregctb.xml.party.v5.ResidencyPeriodBuilder;
+import ch.vd.uniregctb.xml.party.v5.RightHolderBuilder;
 import ch.vd.uniregctb.xml.party.v5.WithholdingTaxationPeriodBuilder;
 
 @SuppressWarnings("Duplicates")
@@ -315,7 +315,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp);
 
 		// par définition, les droits exposés sur la personne physique sont ceux de la personne physique, inutile de chercher plus loin.
-		final OwnerBuilder.ContribuableIdProvider ctbIdProvider = t -> pp.getId();
+		final RightHolderBuilder.ContribuableIdProvider ctbIdProvider = t -> pp.getId();
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()

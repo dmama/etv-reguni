@@ -52,7 +52,7 @@ public abstract class ImmovablePropertyBuilder {
 		/**
 		 * Stratégie de création d'un immeuble web à part d'un immeuble core.
 		 */
-		I apply(ImmeubleRF i, @NotNull CapitastraURLProvider capitastraURLProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider);
+		I apply(ImmeubleRF i, @NotNull CapitastraURLProvider capitastraURLProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider);
 	}
 
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
@@ -66,7 +66,7 @@ public abstract class ImmovablePropertyBuilder {
 	}
 
 	@NotNull
-	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final Strategy<?> strategy = strategies.get(immeuble.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type d'immeuble [" + immeuble.getClass() + "] est inconnu");
@@ -75,7 +75,7 @@ public abstract class ImmovablePropertyBuilder {
 	}
 
 	@NotNull
-	private static CondominiumOwnership newCondominiumOwnership(@NotNull ProprieteParEtageRF ppe, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static CondominiumOwnership newCondominiumOwnership(@NotNull ProprieteParEtageRF ppe, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final CondominiumOwnership condo = new CondominiumOwnership();
 		fillBase(condo, ppe, capitastraUrlProvider, contribuableIdProvider);
 		condo.setShare(LandRightBuilder.getShare(ppe.getQuotePart()));
@@ -83,7 +83,7 @@ public abstract class ImmovablePropertyBuilder {
 	}
 
 	@NotNull
-	private static CoOwnershipShare newCoOwnershipShare(@NotNull PartCoproprieteRF part, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static CoOwnershipShare newCoOwnershipShare(@NotNull PartCoproprieteRF part, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final CoOwnershipShare coown = new CoOwnershipShare();
 		fillBase(coown, part, capitastraUrlProvider, contribuableIdProvider);
 		coown.setShare(LandRightBuilder.getShare(part.getQuotePart()));
@@ -91,28 +91,28 @@ public abstract class ImmovablePropertyBuilder {
 	}
 
 	@NotNull
-	private static DistinctAndPermanentRight newDistinctAndPermanentRight(@NotNull DroitDistinctEtPermanentRF ddp, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static DistinctAndPermanentRight newDistinctAndPermanentRight(@NotNull DroitDistinctEtPermanentRF ddp, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final DistinctAndPermanentRight dpr = new DistinctAndPermanentRight();
 		fillBase(dpr, ddp, capitastraUrlProvider, contribuableIdProvider);
 		return dpr;
 	}
 
 	@NotNull
-	private static Mine newMine(@NotNull MineRF mine, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static Mine newMine(@NotNull MineRF mine, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final Mine m = new Mine();
 		fillBase(m, mine, capitastraUrlProvider, contribuableIdProvider);
 		return m;
 	}
 
 	@NotNull
-	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final RealEstate estate = new RealEstate();
 		fillBase(estate, bienFond, capitastraUrlProvider, contribuableIdProvider);
 		estate.setCfa(bienFond.isCfa());
 		return estate;
 	}
 
-	private static void fillBase(ImmovableProperty property, @NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static void fillBase(ImmovableProperty property, @NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
 		property.setId(immeuble.getId());
 		property.setEgrid(immeuble.getEgrid());
 		property.setUrlIntercapi(capitastraUrlProvider.apply(immeuble.getId()));

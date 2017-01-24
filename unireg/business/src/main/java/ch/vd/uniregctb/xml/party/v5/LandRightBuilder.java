@@ -32,7 +32,7 @@ public abstract class LandRightBuilder {
 	/**
 	 * Stratégie de création d'un droit web à part d'un droit core.
 	 */
-	public interface Strategy<L extends LandRight> extends BiFunction<DroitRF, OwnerBuilder.ContribuableIdProvider, L> {
+	public interface Strategy<L extends LandRight> extends BiFunction<DroitRF, RightHolderBuilder.ContribuableIdProvider, L> {
 	}
 
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
@@ -49,7 +49,7 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandRight newLandRight(@NotNull DroitRF droitRF, @NotNull OwnerBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static LandRight newLandRight(@NotNull DroitRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final Strategy<?> strategy = strategies.get(droitRF.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type de droit [" + droitRF.getClass() + "] est inconnu");
@@ -69,7 +69,7 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF, @NotNull OwnerBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
@@ -79,13 +79,13 @@ public abstract class LandRightBuilder {
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
-		right.setOwner(OwnerBuilder.getOwner(droitRF.getAyantDroit(), ctbIdProvider));
+		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		return right;
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF, @NotNull OwnerBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
@@ -95,7 +95,7 @@ public abstract class LandRightBuilder {
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
-		right.setOwner(OwnerBuilder.getOwner(droitRF.getAyantDroit(), ctbIdProvider));
+		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		return right;
 	}

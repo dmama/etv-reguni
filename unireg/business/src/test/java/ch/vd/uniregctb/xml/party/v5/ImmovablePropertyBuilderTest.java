@@ -514,7 +514,7 @@ public class ImmovablePropertyBuilderTest {
 	private static void assertLandOwnershipRight(String firstName, String lastname, Object dateOfBirth, int numerator, int denominator, OwnershipType type, LandOwnershipRight landRight) {
 		assertNotNull(landRight);
 		assertEquals(type, landRight.getType());
-		final NaturalPersonIdentity identity = (NaturalPersonIdentity) landRight.getOwner().getIdentity();
+		final NaturalPersonIdentity identity = (NaturalPersonIdentity) landRight.getRightHolder().getIdentity();
 		assertEquals(firstName, identity.getFirstName());
 		assertEquals(lastname, identity.getLastName());
 		assertEquals(dateOfBirth, DataHelper.xmlToCore(identity.getDateOfBirth()));

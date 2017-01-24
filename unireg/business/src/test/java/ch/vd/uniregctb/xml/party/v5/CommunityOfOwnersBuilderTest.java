@@ -13,7 +13,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.Owner;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
@@ -53,33 +53,33 @@ public class CommunityOfOwnersBuilderTest {
 		assertEquals(234342L, community.getId());
 		assertEquals(CommunityOfOwnersType.JOINT_OWNERSHIP, community.getType());
 
-		final List<Owner> members = community.getMembers();
+		final List<RightHolder> members = community.getMembers();
 		assertEquals(4, members.size());
-		assertOwnerParty(2727272L, members.get(0));
-		assertOwnerNaturalPerson("Arnold", "Whitenegger", RegDate.get(1922,3,23), members.get(1));
-		assertOwnerCorporation("Ma petite entreprise", "CH3823838228", members.get(2));
-		assertOwnerAdministrativeAuthority("Mon petit club de foot", members.get(3));
+		assertRightHolderParty(2727272L, members.get(0));
+		assertRightHolderNaturalPerson("Arnold", "Whitenegger", RegDate.get(1922,3,23), members.get(1));
+		assertRightHolderCorporation("Ma petite entreprise", "CH3823838228", members.get(2));
+		assertRightHolderAdministrativeAuthority("Mon petit club de foot", members.get(3));
 	}
 
-	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, Owner owner) {
-		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
+	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder rightHolder) {
+		final NaturalPersonIdentity identity = (NaturalPersonIdentity) rightHolder.getIdentity();
 		Assert.assertEquals(firstName, identity.getFirstName());
 		Assert.assertEquals(lastName, identity.getLastName());
 		Assert.assertEquals(dateOfBirth, DataHelper.xmlToCore(identity.getDateOfBirth()));
 	}
 
-	private static void assertOwnerCorporation(String name, String commercialRegisterNumber, Owner owner) {
-		final CorporationIdentity identity = (CorporationIdentity) owner.getIdentity();
+	private static void assertRightHolderCorporation(String name, String commercialRegisterNumber, RightHolder rightHolder) {
+		final CorporationIdentity identity = (CorporationIdentity) rightHolder.getIdentity();
 		Assert.assertEquals(name, identity.getName());
 		Assert.assertEquals(commercialRegisterNumber, identity.getCommercialRegisterNumber());
 	}
 
-	private static void assertOwnerAdministrativeAuthority(String name, Owner owner) {
-		final AdministrativeAuthorityIdentity identity = (AdministrativeAuthorityIdentity) owner.getIdentity();
+	private static void assertRightHolderAdministrativeAuthority(String name, RightHolder rightHolder) {
+		final AdministrativeAuthorityIdentity identity = (AdministrativeAuthorityIdentity) rightHolder.getIdentity();
 		Assert.assertEquals(name, identity.getName());
 	}
 
-	private static void assertOwnerParty(long id, Owner owner0) {
-		Assert.assertEquals(Integer.valueOf((int) id), owner0.getTaypPayerNumber());
+	private static void assertRightHolderParty(long id, RightHolder rightHolder) {
+		Assert.assertEquals(Integer.valueOf((int) id), rightHolder.getTaxPayerNumber());
 	}
 }

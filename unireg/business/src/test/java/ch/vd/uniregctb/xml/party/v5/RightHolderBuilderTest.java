@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
-import ch.vd.unireg.xml.party.landregistry.v1.Owner;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
@@ -18,12 +18,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-public class OwnerBuilderTest {
+public class RightHolderBuilderTest {
 
 	@Test
-	public void testGetOwnerOnCommunity() throws Exception {
+	public void testGetRightHolderOnCommunity() throws Exception {
 		try {
-			OwnerBuilder.getOwner(new CommunauteRF(), t -> null);
+			RightHolderBuilder.getRightHolder(new CommunauteRF(), t -> null);
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -35,27 +35,27 @@ public class OwnerBuilderTest {
 	 * Ce test vérifie que le numéro de contribuable est bien la seule information retournée sur un propriétaire rapproché avec un contribuable Unireg.
 	 */
 	@Test
-	public void testGetOwnerOnKnownParty() throws Exception {
+	public void testGetRightHolderOnKnownParty() throws Exception {
 
 		final long ctbId = 3838383L;
 
-		final Owner owner = OwnerBuilder.getOwner(new PersonnePhysiqueRF(), t -> ctbId);
+		final RightHolder owner = RightHolderBuilder.getRightHolder(new PersonnePhysiqueRF(), t -> ctbId);
 		assertNotNull(owner);
-		assertEquals(Integer.valueOf((int) ctbId), owner.getTaypPayerNumber());
+		assertEquals(Integer.valueOf((int) ctbId), owner.getTaxPayerNumber());
 		assertNull(owner.getIdentity());
 	}
 
 	@Test
-	public void testGetOwnerKnownPartyForPP() throws Exception {
+	public void testGetRightHolderKnownPartyForPP() throws Exception {
 
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 		pp.setPrenom("Camille");
 		pp.setNom("Bjoook");
 		pp.setDateNaissance(RegDate.get(1933, 7, 21));
 
-		final Owner owner = OwnerBuilder.getOwner(pp, t -> null);
+		final RightHolder owner = RightHolderBuilder.getRightHolder(pp, t -> null);
 		assertNotNull(owner);
-		assertNull(owner.getTaypPayerNumber());
+		assertNull(owner.getTaxPayerNumber());
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		assertEquals("Camille", identity.getFirstName());
 		assertEquals("Bjoook", identity.getLastName());
@@ -63,29 +63,29 @@ public class OwnerBuilderTest {
 	}
 
 	@Test
-	public void testGetOwnerKnownPartyForPM() throws Exception {
+	public void testGetRightHolderKnownPartyForPM() throws Exception {
 
 		final PersonneMoraleRF pm = new PersonneMoraleRF();
 		pm.setNumeroRC("CH3384838");
 		pm.setRaisonSociale("Papiers fins");
 
-		final Owner owner = OwnerBuilder.getOwner(pm, t -> null);
+		final RightHolder owner = RightHolderBuilder.getRightHolder(pm, t -> null);
 		assertNotNull(owner);
-		assertNull(owner.getTaypPayerNumber());
+		assertNull(owner.getTaxPayerNumber());
 		final CorporationIdentity identity = (CorporationIdentity) owner.getIdentity();
 		assertEquals("Papiers fins", identity.getName());
 		assertEquals("CH3384838", identity.getCommercialRegisterNumber());
 	}
 
 	@Test
-	public void testGetOwnerKnownPartyForColl() throws Exception {
+	public void testGetRightHolderKnownPartyForColl() throws Exception {
 
 		final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
 		coll.setRaisonSociale("Club de dés");
 
-		final Owner owner = OwnerBuilder.getOwner(coll, t -> null);
+		final RightHolder owner = RightHolderBuilder.getRightHolder(coll, t -> null);
 		assertNotNull(owner);
-		assertNull(owner.getTaypPayerNumber());
+		assertNull(owner.getTaxPayerNumber());
 		final AdministrativeAuthorityIdentity identity = (AdministrativeAuthorityIdentity) owner.getIdentity();
 		assertEquals("Club de dés", identity.getName());
 	}
