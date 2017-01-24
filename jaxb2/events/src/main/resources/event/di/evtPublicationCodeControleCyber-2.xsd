@@ -2,11 +2,10 @@
 <!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by zciedt (ETAT DE VAUD) -->
 <!-- 04.05.2015 version 1.0 (zciedt) : SIFISC-14432 -->
 <!-- 01.02.2016 version 2.0 (zciedt) : prise en compte des contraintespour DI-PM (numéro de séquence) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/cyber/codeControle/2" targetNamespace="http://www.vd.ch/fiscalite/cyber/codeControle/2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+<!-- 01.02.2016 version 2.1 (zciedt) : prise en compte des contraintes pour ePJ - Ajout de codes énumérés -->
+<!-- 13.12.2016 version 2.2 (zciedt) : prise en compte des contraintes pour eDeg - Ajout de codes énumérés -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/cyber/codeControle/2" targetNamespace="http://www.vd.ch/fiscalite/cyber/codeControle/2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2">
 	<xs:element name="evtPublicationCodeControleCyber">
-		<xs:annotation>
-			<xs:documentation>Un document à traiter par le module de réception du BPM</xs:documentation>
-		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="horodatagePublication" type="xs:dateTime">
@@ -83,22 +82,18 @@
 			<xs:enumeration value="APM"/>
 			<xs:enumeration value="HORS_CANTON"/>
 			<xs:enumeration value="HOLDING-STE_BASE"/>
+			<xs:enumeration value="DEM_DEGREV"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typeDocumentType">
 		<xs:annotation/>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="PCAP"/>
-			<xs:enumeration value="CSR-ARI"/>
 			<xs:enumeration value="PJ"/>
 			<xs:enumeration value="DI-PP"/>
 			<xs:enumeration value="DI-PM"/>
-			<xs:enumeration value="RICANT"/>
-			<xs:enumeration value="TO-DI"/>
-			<xs:enumeration value="PREST-AI"/>
-			<xs:enumeration value="REQDES"/>
 			<xs:enumeration value="ACOMPTES"/>
-			<xs:enumeration value="PJ_ECHUE"/>
+			<xs:enumeration value="PJ-PM"/>
+			<xs:enumeration value="DEM_DEGREV"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="numeroContribuableType">
@@ -117,17 +112,10 @@
 			<xs:enumeration value="TAO-BA"/>
 			<xs:enumeration value="TAO-IS"/>
 			<xs:enumeration value="COR-IT"/>
-			<xs:enumeration value="TAO-ADMIN"/>
-			<xs:enumeration value="ACI-COM"/>
 			<xs:enumeration value="SIPF"/>
-			<xs:enumeration value="ADDI"/>
 			<xs:enumeration value="UNIREG"/>
-			<xs:enumeration value="EMP-ACI"/>
-			<xs:enumeration value="FIDOR"/>
-			<xs:enumeration value="DPERM-REPELEC"/>
-			<xs:enumeration value="DPERM-TASK"/>
-			<xs:enumeration value="DPERM-ADMIN"/>
-			<xs:enumeration value="BPMS"/>
+			<xs:enumeration value="TAO-PM"/>
+			<xs:enumeration value="TAO-ICI-IFONC"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="nonEmptyTokenType">
@@ -154,7 +142,7 @@
 					<xs:sequence>
 						<xs:element name="attribut" type="nonEmptyTokenType">
 							<xs:annotation>
-								<xs:documentation>CODE_ROUTAGE, ADR_LGN1, ADR_LGN2, ...</xs:documentation>
+								<xs:documentation>CODE_ROUTAGE, DATE_ECHEANCE, CODE_DOC</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="valeur" type="xs:string"/>
