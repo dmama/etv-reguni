@@ -42,6 +42,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v5.BusinessYearBuilder;
 import ch.vd.uniregctb.xml.party.v5.CorporationFlagBuilder;
 import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
+import ch.vd.uniregctb.xml.party.v5.OwnerBuilder;
 import ch.vd.uniregctb.xml.party.v5.TaxLighteningBuilder;
 
 @SuppressWarnings("Duplicates")
@@ -295,9 +296,12 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise);
 
+		// par définition, les droits exposés sur l'entreprise sont ceux de l'entreprise, inutile de chercher plus loin.
+		final OwnerBuilder.ContribuableIdProvider contribuableIdProvider = t -> entreprise.getId();
+
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
-				.map(LandRightBuilder::newLandRight)
+				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF, contribuableIdProvider))
 				.forEach(landRights::add);
 	}
 }

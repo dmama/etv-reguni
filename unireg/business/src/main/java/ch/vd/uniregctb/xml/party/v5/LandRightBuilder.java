@@ -2,7 +2,7 @@ package ch.vd.uniregctb.xml.party.v5;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,29 +32,29 @@ public abstract class LandRightBuilder {
 	/**
 	 * Stratégie de création d'un droit web à part d'un droit core.
 	 */
-	public interface Strategy <L extends LandRight> extends Function<DroitRF, L> {
+	public interface Strategy<L extends LandRight> extends BiFunction<DroitRF, OwnerBuilder.ContribuableIdProvider, L> {
 	}
 
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(DroitHabitationRF.class, d -> newHousingRight((DroitHabitationRF) d));
-		strategies.put(DroitProprieteCommunauteRF.class, d -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
-		strategies.put(DroitProprietePersonneMoraleRF.class, d -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d));
-		strategies.put(DroitProprietePersonnePhysiqueRF.class, d -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d));
-		strategies.put(UsufruitRF.class, d -> newUsufructRight((UsufruitRF) d));
+		strategies.put(DroitHabitationRF.class, (d, p) -> newHousingRight((DroitHabitationRF) d));
+		strategies.put(DroitProprieteCommunauteRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
+		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
+		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
+		strategies.put(UsufruitRF.class, (d, p) -> newUsufructRight((UsufruitRF) d));
 	}
 
 	private LandRightBuilder() {
 	}
 
 	@NotNull
-	public static LandRight newLandRight(@NotNull DroitRF droitRF) {
+	public static LandRight newLandRight(@NotNull DroitRF droitRF, @NotNull OwnerBuilder.ContribuableIdProvider ctbIdProvider) {
 		final Strategy<?> strategy = strategies.get(droitRF.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type de droit [" + droitRF.getClass() + "] est inconnu");
 		}
-		return strategy.apply(droitRF);
+		return strategy.apply(droitRF, ctbIdProvider);
 	}
 
 	@NotNull
@@ -69,7 +69,7 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF, @NotNull OwnerBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
@@ -79,12 +79,13 @@ public abstract class LandRightBuilder {
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
+		right.setOwner(OwnerBuilder.getOwner(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		return right;
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF, @NotNull OwnerBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
@@ -94,6 +95,7 @@ public abstract class LandRightBuilder {
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
+		right.setOwner(OwnerBuilder.getOwner(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		return right;
 	}

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
@@ -28,4 +29,11 @@ public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 	 */
 	@Nullable
 	CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId);
+
+	/**
+	 * @param tiersRF un tiers RF
+	 * @return le numéro du contribuable rapproché avec le tiers RF spécifié.
+	 */
+	@Nullable
+	Long getContribuableIdFor(@NotNull TiersRF tiersRF);
 }

@@ -82,6 +82,11 @@ public abstract class ImmeubleRF extends HibernateEntity {
 	 */
 	private Set<ImplantationRF> implantations;
 
+	/**
+	 * Les droits définis sur l'immeuble.
+	 */
+	private Set<DroitRF> droits;
+
 	@Nullable
 	private RegDate dateRadiation;
 
@@ -203,6 +208,16 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	public void setImplantations(Set<ImplantationRF> implantations) {
 		this.implantations = implantations;
+	}
+
+	// configuration hibernate : l'immeuble ne possède pas les droits
+	@OneToMany(mappedBy = "immeuble")
+	public Set<DroitRF> getDroits() {
+		return droits;
+	}
+
+	public void setDroits(Set<DroitRF> droits) {
+		this.droits = droits;
 	}
 
 	@Nullable

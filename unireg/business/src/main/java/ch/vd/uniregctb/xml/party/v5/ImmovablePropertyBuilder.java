@@ -2,7 +2,6 @@ package ch.vd.uniregctb.xml.party.v5;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -21,6 +20,8 @@ import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
@@ -46,70 +47,72 @@ public abstract class ImmovablePropertyBuilder {
 	public interface CapitastraURLProvider extends Function<Long, String> {
 	}
 
-	/**
-	 * Stratégie de création d'un immeuble web à part d'un immeuble core.
-	 */
-	public interface Strategy<I extends ImmovableProperty> extends BiFunction<ImmeubleRF, CapitastraURLProvider, I> {
+	@FunctionalInterface
+	public interface Strategy<I extends ImmovableProperty>  {
+		/**
+		 * Stratégie de création d'un immeuble web à part d'un immeuble core.
+		 */
+		I apply(ImmeubleRF i, @NotNull CapitastraURLProvider capitastraURLProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider);
 	}
 
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(ProprieteParEtageRF.class, (i, p) -> newCondominiumOwnership((ProprieteParEtageRF) i, p));
-		strategies.put(PartCoproprieteRF.class, (i, p) -> newCoOwnershipShare((PartCoproprieteRF) i, p));
-		strategies.put(DroitDistinctEtPermanentRF.class, (i, p) -> newDistinctAndPermanentRight((DroitDistinctEtPermanentRF) i, p));
-		strategies.put(MineRF.class, (i, p) -> newMine((MineRF) i, p));
-		strategies.put(BienFondRF.class, (i, p) -> newRealEstate((BienFondRF) i, p));
+		strategies.put(ProprieteParEtageRF.class, (i, p, c) -> newCondominiumOwnership((ProprieteParEtageRF) i, p, c));
+		strategies.put(PartCoproprieteRF.class, (i, p, c) -> newCoOwnershipShare((PartCoproprieteRF) i, p, c));
+		strategies.put(DroitDistinctEtPermanentRF.class, (i, p, c) -> newDistinctAndPermanentRight((DroitDistinctEtPermanentRF) i, p, c));
+		strategies.put(MineRF.class, (i, p, c) -> newMine((MineRF) i, p, c));
+		strategies.put(BienFondRF.class, (i, p, c) -> newRealEstate((BienFondRF) i, p, c));
 	}
 
 	@NotNull
-	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final Strategy<?> strategy = strategies.get(immeuble.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type d'immeuble [" + immeuble.getClass() + "] est inconnu");
 		}
-		return strategy.apply(immeuble, capitastraUrlProvider);
+		return strategy.apply(immeuble, capitastraUrlProvider, contribuableIdProvider);
 	}
 
 	@NotNull
-	private static CondominiumOwnership newCondominiumOwnership(@NotNull ProprieteParEtageRF ppe, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	private static CondominiumOwnership newCondominiumOwnership(@NotNull ProprieteParEtageRF ppe, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final CondominiumOwnership condo = new CondominiumOwnership();
-		fillBase(condo, ppe, capitastraUrlProvider);
+		fillBase(condo, ppe, capitastraUrlProvider, contribuableIdProvider);
 		condo.setShare(LandRightBuilder.getShare(ppe.getQuotePart()));
 		return condo;
 	}
 
 	@NotNull
-	private static CoOwnershipShare newCoOwnershipShare(@NotNull PartCoproprieteRF part, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	private static CoOwnershipShare newCoOwnershipShare(@NotNull PartCoproprieteRF part, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final CoOwnershipShare coown = new CoOwnershipShare();
-		fillBase(coown, part, capitastraUrlProvider);
+		fillBase(coown, part, capitastraUrlProvider, contribuableIdProvider);
 		coown.setShare(LandRightBuilder.getShare(part.getQuotePart()));
 		return coown;
 	}
 
 	@NotNull
-	private static DistinctAndPermanentRight newDistinctAndPermanentRight(@NotNull DroitDistinctEtPermanentRF ddp, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	private static DistinctAndPermanentRight newDistinctAndPermanentRight(@NotNull DroitDistinctEtPermanentRF ddp, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final DistinctAndPermanentRight dpr = new DistinctAndPermanentRight();
-		fillBase(dpr, ddp, capitastraUrlProvider);
+		fillBase(dpr, ddp, capitastraUrlProvider, contribuableIdProvider);
 		return dpr;
 	}
 
 	@NotNull
-	private static Mine newMine(@NotNull MineRF mine, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	private static Mine newMine(@NotNull MineRF mine, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final Mine m = new Mine();
-		fillBase(m, mine, capitastraUrlProvider);
+		fillBase(m, mine, capitastraUrlProvider, contribuableIdProvider);
 		return m;
 	}
 
 	@NotNull
-	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		final RealEstate estate = new RealEstate();
-		fillBase(estate, bienFond, capitastraUrlProvider);
+		fillBase(estate, bienFond, capitastraUrlProvider, contribuableIdProvider);
 		estate.setCfa(bienFond.isCfa());
 		return estate;
 	}
 
-	private static void fillBase(ImmovableProperty property, @NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider) {
+	private static void fillBase(ImmovableProperty property, @NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull OwnerBuilder.ContribuableIdProvider contribuableIdProvider) {
 		property.setId(immeuble.getId());
 		property.setEgrid(immeuble.getEgrid());
 		property.setUrlIntercapi(capitastraUrlProvider.apply(immeuble.getId()));
@@ -140,6 +143,13 @@ public abstract class ImmovablePropertyBuilder {
 				                                      .sorted(ImplantationRF::compareTo)
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
+		property.getLandRights().addAll(immeuble.getDroits().stream()
+				                                .filter(Annulable::isNotAnnule)
+				                                // on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
+				                                .filter(d -> !(d instanceof DroitProprieteCommunauteRF))
+				                                .sorted(DroitRF::compareTo)
+				                                .map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider))
+				                                .collect(Collectors.toList()));
 	}
 
 	@NotNull

@@ -114,4 +114,10 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.replaceAll("\\{index2\\}", index2)
 				.replaceAll("\\{index3\\}", index3);
 	}
+
+	@Nullable
+	@Override
+	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
+		return ayantDroitRFDAO.getContribuableIdFor(tiersRF);
+	}
 }

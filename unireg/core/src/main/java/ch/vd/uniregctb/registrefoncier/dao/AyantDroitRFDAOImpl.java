@@ -46,7 +46,7 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 		final Set<Number> ids = new HashSet<>();
 
 		// on récupère les ids des tiers RF PMs
-		final Query query1 = getCurrentSession().createQuery("select d.ayantDroit.id from DroitProprietePersonneRF d where d.communaute.id = :communauteId");
+		final Query query1 = getCurrentSession().createQuery("select d.ayantDroit.id from DroitProprietePersonneRF d where d.annulationDate is null and d.communaute.id = :communauteId");
 		query1.setParameter("communauteId", communauteId);
 		//noinspection unchecked
 		ids.addAll((List<Number>) query1.list());
@@ -56,7 +56,7 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 		}
 
 		// conversion ids tiers RF -> ids de tiers Unireg
-		final Query query2 = getCurrentSession().createQuery("select r.tiersRF.id, r.contribuable.id  from RapprochementRF r where r.tiersRF.id in (:ids)");
+		final Query query2 = getCurrentSession().createQuery("select r.tiersRF.id, r.contribuable.id  from RapprochementRF r where r.annulationDate is null and r.dateFin is null and r.tiersRF.id in (:ids)");
 		query2.setParameterList("ids", ids);
 
 		final Map<Long, Long> rf2ctb = new HashMap<>(ids.size());
@@ -86,5 +86,14 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 		}
 
 		return new CommunauteRFMembreInfo(ids.size(), ctbIds, tiersRF);
+	}
+
+	@Nullable
+	@Override
+	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
+		final Query query = getCurrentSession().createQuery("select r.contribuable.id  from RapprochementRF r where r.annulationDate is null and r.dateFin is null and r.tiersRF.id = :id");
+		query.setParameter("id", tiersRF.getId());
+		final Number number = (Number) query.uniqueResult();
+		return number == null ? null : number.longValue();
 	}
 }

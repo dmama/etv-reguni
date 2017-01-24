@@ -15,8 +15,12 @@ import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
 import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Location;
 import ch.vd.unireg.xml.party.landregistry.v1.Mine;
+import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
@@ -25,15 +29,20 @@ import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -47,6 +56,10 @@ public class ImmovablePropertyBuilderTest {
 
 	private static String getCapitastraUrl(Long immeubleId) {
 		return "http://capitastra/" + immeubleId;
+	}
+
+	private static Long getCtbId(TiersRF tiers) {
+		return null;    // on considère que le tiers RF n'est pas rapproché
 	}
 
 	@Test
@@ -65,6 +78,9 @@ public class ImmovablePropertyBuilderTest {
 		final BatimentRF batiment = newBatimentRF(332L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, 220);
 
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
 		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
 		ppe.setId(48383L);
 		ppe.setIdRF("7d7e7a7f7");
@@ -80,8 +96,13 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setDateRadiation(null);
 		ppe.setQuotePart(new Fraction(1, 23));
 
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
+
+		pp.setDroits(Collections.singleton(droit));
+		ppe.setDroits(Collections.singleton(droit));
+
 		// conversion core -> ws
-		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl);
+		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
 		assertEquals(48383L, condo.getId());
 		assertEquals("rhoooo", condo.getEgrid());
 		assertEquals("http://capitastra/48383", condo.getUrlIntercapi());
@@ -109,6 +130,10 @@ public class ImmovablePropertyBuilderTest {
 		final List<BuildingSetting> settings = condo.getBuildingSettings();
 		assertEquals(1, settings.size());
 		assertSetting(dateAchat, null, 220, 332L, settings.get(0));
+
+		final List<LandRight> landRights = condo.getLandRights();
+		assertEquals(1, landRights.size());
+		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
 	}
 
 	@Test
@@ -124,6 +149,9 @@ public class ImmovablePropertyBuilderTest {
 		final BatimentRF batiment = newBatimentRF(458238L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, null);
 
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
 		final PartCoproprieteRF pcp = new PartCoproprieteRF();
 		pcp.setId(480302L);
 		pcp.setIdRF("7d7e7a7f7");
@@ -138,8 +166,13 @@ public class ImmovablePropertyBuilderTest {
 		pcp.setDateRadiation(null);
 		pcp.setQuotePart(new Fraction(1, 1));
 
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
+
+		pp.setDroits(Collections.singleton(droit));
+		pcp.setDroits(Collections.singleton(droit));
+
 		// conversion core -> ws
-		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl);
+		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
 		assertEquals(480302L, coos.getId());
 		assertEquals("raoul t'es là ?", coos.getEgrid());
 		assertEquals("http://capitastra/480302", coos.getUrlIntercapi());
@@ -165,6 +198,10 @@ public class ImmovablePropertyBuilderTest {
 		final List<BuildingSetting> settings = coos.getBuildingSettings();
 		assertEquals(1, settings.size());
 		assertSetting(dateAchat, null, null, 458238L, settings.get(0));
+
+		final List<LandRight> landRights = coos.getLandRights();
+		assertEquals(1, landRights.size());
+		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
 	}
 
 	@Test
@@ -180,6 +217,9 @@ public class ImmovablePropertyBuilderTest {
 		final BatimentRF batiment = newBatimentRF(458238L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, null);
 
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
 		final DroitDistinctEtPermanentRF ddp = new DroitDistinctEtPermanentRF();
 		ddp.setId(480302L);
 		ddp.setIdRF("7d7e7a7f7");
@@ -193,8 +233,13 @@ public class ImmovablePropertyBuilderTest {
 		implantation.setImmeuble(ddp);
 		ddp.setDateRadiation(null);
 
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ddp);
+
+		pp.setDroits(Collections.singleton(droit));
+		ddp.setDroits(Collections.singleton(droit));
+
 		// conversion core -> ws
-		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl);
+		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
 		assertEquals(480302L, dpr.getId());
 		assertEquals("raoul t'es là ?", dpr.getEgrid());
 		assertEquals("http://capitastra/480302", dpr.getUrlIntercapi());
@@ -219,6 +264,10 @@ public class ImmovablePropertyBuilderTest {
 		final List<BuildingSetting> settings = dpr.getBuildingSettings();
 		assertEquals(1, settings.size());
 		assertSetting(dateAchat, null, null, 458238L, settings.get(0));
+
+		final List<LandRight> landRights = dpr.getLandRights();
+		assertEquals(1, landRights.size());
+		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
 	}
 
 	@Test
@@ -234,21 +283,29 @@ public class ImmovablePropertyBuilderTest {
 		final BatimentRF batiment = newBatimentRF(458238L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, null);
 
-		final MineRF ddp = new MineRF();
-		ddp.setId(480302L);
-		ddp.setIdRF("7d7e7a7f7");
-		ddp.setEgrid("la fuite vibrante du câble");
-		ddp.setUrlIntercapi(null);
-		ddp.addSituation(situation);
-		ddp.addSurfaceTotale(surfaceTotale);
-		ddp.setSurfacesAuSol(Collections.singleton(surfaceAuSol0));
-		ddp.addEstimation(estimation0);
-		ddp.setImplantations(Collections.singleton(implantation));
-		implantation.setImmeuble(ddp);
-		ddp.setDateRadiation(null);
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
+		final MineRF m = new MineRF();
+		m.setId(480302L);
+		m.setIdRF("7d7e7a7f7");
+		m.setEgrid("la fuite vibrante du câble");
+		m.setUrlIntercapi(null);
+		m.addSituation(situation);
+		m.addSurfaceTotale(surfaceTotale);
+		m.setSurfacesAuSol(Collections.singleton(surfaceAuSol0));
+		m.addEstimation(estimation0);
+		m.setImplantations(Collections.singleton(implantation));
+		implantation.setImmeuble(m);
+		m.setDateRadiation(null);
+
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, m);
+
+		pp.setDroits(Collections.singleton(droit));
+		m.setDroits(Collections.singleton(droit));
 
 		// conversion core -> ws
-		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl);
+		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(m, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
 		assertEquals(480302L, mine.getId());
 		assertEquals("la fuite vibrante du câble", mine.getEgrid());
 		assertEquals("http://capitastra/480302", mine.getUrlIntercapi());
@@ -273,6 +330,10 @@ public class ImmovablePropertyBuilderTest {
 		final List<BuildingSetting> settings = mine.getBuildingSettings();
 		assertEquals(1, settings.size());
 		assertSetting(dateAchat, null, null, 458238L, settings.get(0));
+
+		final List<LandRight> landRights = mine.getLandRights();
+		assertEquals(1, landRights.size());
+		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
 	}
 
 	@Test
@@ -291,6 +352,9 @@ public class ImmovablePropertyBuilderTest {
 		final BatimentRF batiment = newBatimentRF(332L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, 220);
 
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
 		final BienFondRF bienFond = new BienFondRF();
 		bienFond.setId(48383L);
 		bienFond.setIdRF("7d7e7a7f7");
@@ -305,8 +369,13 @@ public class ImmovablePropertyBuilderTest {
 		implantation.setImmeuble(bienFond);
 		bienFond.setDateRadiation(null);
 
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFond);
+
+		pp.setDroits(Collections.singleton(droit));
+		bienFond.setDroits(Collections.singleton(droit));
+
 		// conversion core -> ws
-		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl);
+		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
 		assertEquals(48383L, realEstate.getId());
 		assertEquals("rhoooo", realEstate.getEgrid());
 		assertEquals("http://capitastra/48383", realEstate.getUrlIntercapi());
@@ -333,6 +402,10 @@ public class ImmovablePropertyBuilderTest {
 		final List<BuildingSetting> settings = realEstate.getBuildingSettings();
 		assertEquals(1, settings.size());
 		assertSetting(dateAchat, null, 220, 332L, settings.get(0));
+
+		final List<LandRight> landRights = realEstate.getLandRights();
+		assertEquals(1, landRights.size());
+		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
 	}
 
 	private static void assertShare(int numerator, int denominator, Share share) {
@@ -436,5 +509,30 @@ public class ImmovablePropertyBuilderTest {
 		situation.setNoParcelle(noParcelle);
 		situation.setIndex1(index1);
 		return situation;
+	}
+
+	private static void assertLandOwnershipRight(String firstName, String lastname, Object dateOfBirth, int numerator, int denominator, OwnershipType type, LandOwnershipRight landRight) {
+		assertNotNull(landRight);
+		assertEquals(type, landRight.getType());
+		final NaturalPersonIdentity identity = (NaturalPersonIdentity) landRight.getOwner().getIdentity();
+		assertEquals(firstName, identity.getFirstName());
+		assertEquals(lastname, identity.getLastName());
+		assertEquals(dateOfBirth, DataHelper.xmlToCore(identity.getDateOfBirth()));
+		assertShare(numerator, denominator, landRight.getShare());
+		assertEquals(RegDate.get(2000, 1, 1), DataHelper.xmlToCore(landRight.getDateFrom()));
+	}
+
+	@NotNull
+	private static DroitProprietePersonnePhysiqueRF newDroitProprietePP(String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, PersonnePhysiqueRF pp, ImmeubleRF immeuble) {
+		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setAyantDroit(pp);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		droit.setImmeuble(immeuble);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutOfficielle(dateDebut);
+		droit.setMotifDebut(motifDebut);
+		return droit;
 	}
 }

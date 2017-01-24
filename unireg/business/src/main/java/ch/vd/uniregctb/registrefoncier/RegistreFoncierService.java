@@ -61,4 +61,11 @@ public interface RegistreFoncierService {
 	 */
 	@NotNull
 	String getCapitastraURL(long immeubleId) throws ObjectNotFoundException;
+
+	/**
+	 * @param tiersRF un tiers RF
+	 * @return le numéro du contribuable rapproché avec le tiers RF spécifié.
+	 */
+	@Nullable
+	Long getContribuableIdFor(@NotNull TiersRF tiersRF);
 }

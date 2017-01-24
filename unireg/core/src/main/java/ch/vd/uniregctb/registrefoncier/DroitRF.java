@@ -16,12 +16,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Objects;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -174,5 +177,28 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 
 	public void setMotifFin(@Nullable String motifFin) {
 		this.motifFin = motifFin;
+	}
+
+	/**
+	 * Compare le droit courant avec un autre droit. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 * <li>les dates de début et de fin</li>
+	 * <li>l'id de l'ayant-droit</li>
+	 * <li>l'id de l'immeuble</li>
+	 * </ul>
+	 *
+	 * @param right un autre droit.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	public int compareTo(@NotNull DroitRF right) {
+		int c = DateRangeComparator.compareRanges(this, right);
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(ayantDroit.getId(), right.ayantDroit.getId(), Long::compareTo);
+		if (c != 0) {
+			return c;
+		}
+		return Objects.compare(immeuble.getId(), right.immeuble.getId(), Long::compareTo);
 	}
 }
