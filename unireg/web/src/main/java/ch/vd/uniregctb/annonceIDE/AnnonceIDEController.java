@@ -47,6 +47,7 @@ import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.CantonalIdEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.utils.TiersNumberEditor;
 
 /**
  * Contrôleur qui permet le suivi des annonces à l'IDE.
@@ -89,6 +90,7 @@ public class AnnonceIDEController {
 	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(Long.class, "cantonalId", new CantonalIdEditor());
+		binder.registerCustomEditor(Long.class, "tiersId", new TiersNumberEditor(true));
 	}
 
 	/**
