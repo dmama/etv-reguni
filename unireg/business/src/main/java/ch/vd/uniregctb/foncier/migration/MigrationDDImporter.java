@@ -347,7 +347,7 @@ public class MigrationDDImporter {
 	@NotNull
 	private ImmeubleRF determinerImmeuble(MigrationDD demande) {
 
-		final Commune commune = infraService.findCommuneByNomOfficiel(demande.getNomCommune(), true, false, RegDate.get());
+		final Commune commune = findCommuneByName(demande.getNomCommune());
 		if (commune == null) {
 			throw new IllegalArgumentException("La commune avec le nom [" + demande.getNomCommune() + "] n'existe pas.");
 		}
@@ -357,7 +357,7 @@ public class MigrationDDImporter {
 			parcelle = new MigrationParcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
 		}
 		catch (RuntimeException e) {
-			throw new IllegalArgumentException("Impossible de parser le numéro de pacelle : " + e.getMessage());
+			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
 		}
 
 		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3());
@@ -366,6 +366,18 @@ public class MigrationDDImporter {
 		}
 
 		return immeuble;
+	}
+
+	private Commune findCommuneByName(String nomCommune) {
+		final String canonized = canonizeName(nomCommune);
+		return infraService.getCommunes().stream()
+				.filter(commune -> canonizeName(commune.getNomOfficiel()).equals(canonized))
+				.max(Comparator.comparing(Commune::getDateDebutValidite))
+				.orElse(null);
+	}
+
+	private static String canonizeName(String name) {
+		return name.replaceAll("[-.]", " ").replaceAll("[\\s]+", " ").toLowerCase();
 	}
 
 	@NotNull
