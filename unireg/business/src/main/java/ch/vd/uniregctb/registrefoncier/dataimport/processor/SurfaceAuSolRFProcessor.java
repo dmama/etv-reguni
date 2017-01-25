@@ -95,7 +95,7 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 
 			// on traite la mutation
 			if (typeMutation == TypeMutationRF.CREATION) {
-				processCreation(dateValeur, immeuble, surfaces);
+				processCreation(importInitial ? null : dateValeur, immeuble, surfaces);
 			}
 			else {
 				processModification(dateValeur, immeuble, surfaces);
@@ -117,7 +117,7 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 	/**
 	 * Traite l'ajout des surfaces au sol sur un immeuble qui vient d'être créé.
 	 */
-	private void processCreation(@NotNull RegDate dateValeur, @NotNull ImmeubleRF immeuble, @NotNull List<SurfaceAuSolRF> surfaces) {
+	private void processCreation(@Nullable RegDate dateValeur, @NotNull ImmeubleRF immeuble, @NotNull List<SurfaceAuSolRF> surfaces) {
 		if (!immeuble.getSurfacesAuSol().isEmpty()) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + immeuble.getIdRF() + "] possède déjà des surfaces au sol alors que la mutation est de type CREATION.");
 		}

@@ -91,7 +91,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 
 			// on traite la mutation
 			if (typeMutation == TypeMutationRF.CREATION) {
-				processCreation(dateValeur, batiment);
+				processCreation(importInitial ? null : dateValeur, batiment);
 			}
 			else {
 				processModification(dateValeur, batiment);
@@ -122,7 +122,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 		return immeuble;
 	}
 
-	private void processCreation(RegDate dateValeur, @NotNull BatimentRF newBatiment) {
+	private void processCreation(@Nullable RegDate dateValeur, @NotNull BatimentRF newBatiment) {
 
 		// on renseigne les dates de début des descriptions et implantations
 		newBatiment.getDescriptions().forEach(s -> s.setDateDebut(dateValeur));

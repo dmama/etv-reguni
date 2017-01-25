@@ -105,7 +105,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on les insère en DB
 		switch (mutation.getTypeMutation()) {
 		case CREATION:
-			processCreation(dateValeur, ayantDroit, droits);
+			processCreation(importInitial ? null : dateValeur, ayantDroit, droits);
 			break;
 		case MODIFICATION:
 			processModification(dateValeur, ayantDroit, droits);
@@ -150,7 +150,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	/**
 	 * Traite l'ajout des droits sur un immeuble qui vient d'être créé.
 	 */
-	private void processCreation(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitRF> droits) {
+	private void processCreation(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitRF> droits) {
 		if (!ayantDroit.getDroits().isEmpty()) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + ayantDroit.getIdRF() + "] possède déjà des droits alors que la mutation est de type CREATION.");
 		}

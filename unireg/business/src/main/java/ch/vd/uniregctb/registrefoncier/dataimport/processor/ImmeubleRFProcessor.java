@@ -87,7 +87,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 			// on traite la mutation
 			if (typeMutation == TypeMutationRF.CREATION) {
-				processCreation(dateValeur, immeuble);
+				processCreation(importInitial ? null : dateValeur, immeuble);
 			}
 			else {
 				processModification(dateValeur, immeuble);
@@ -116,7 +116,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		return commune;
 	}
 
-	private void processCreation(@NotNull RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
+	private void processCreation(@Nullable RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
 
 		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble));
 		if (persisted != null) {
