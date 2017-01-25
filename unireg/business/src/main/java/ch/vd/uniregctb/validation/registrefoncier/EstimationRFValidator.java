@@ -15,6 +15,11 @@ public class EstimationRFValidator extends DateRangeEntityValidator<EstimationRF
 	}
 
 	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
+
+	@Override
 	protected boolean isDateDebutFutureAllowed() {
 		return true;
 	}

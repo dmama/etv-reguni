@@ -34,8 +34,8 @@ import ch.vd.uniregctb.common.LengthConstants;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 @AttributeOverrides({
-		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
-		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
 // TODO (msi) implémenter l'interface LinkedEntity pour retourner les tiers concernés par ce droit
 public abstract class DroitRF extends HibernateDateRangeEntity {

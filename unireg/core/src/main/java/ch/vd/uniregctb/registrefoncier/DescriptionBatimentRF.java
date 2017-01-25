@@ -26,8 +26,8 @@ import ch.vd.uniregctb.common.LengthConstants;
 @Entity
 @Table(name = "RF_DESCRIPTION_BATIMENT")
 @AttributeOverrides({
-		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
-		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
 public class DescriptionBatimentRF extends HibernateDateRangeEntity {
 

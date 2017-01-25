@@ -13,4 +13,9 @@ public class SituationRFValidator extends DateRangeEntityValidator<SituationRF> 
 	protected String getEntityCategoryName() {
 		return "La situation RF";
 	}
+
+	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
 }

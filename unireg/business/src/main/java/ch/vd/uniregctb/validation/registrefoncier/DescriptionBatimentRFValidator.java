@@ -25,4 +25,9 @@ public class DescriptionBatimentRFValidator extends DateRangeEntityValidator<Des
 		}
 		return vr;
 	}
+
+	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
 }

@@ -39,6 +39,7 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
@@ -75,7 +76,7 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 			final Entreprise entreprise = demande.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(demande), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, demande.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, demande.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), IMPOT_COMPLEMENTAIRE_IMMEUBLES);
 			final CTypeDegrevementImm lettre = new CTypeDegrevementImm(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale())),
 			                                                           getSiegeEntreprise(entreprise, dateTraitement),
 			                                                           buildCodeBarres(demande),
@@ -118,19 +119,20 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 	}
 
 	private static String getNatureImmeuble(ImmeubleRF immeuble, RegDate dateReference) {
-		return immeuble.getImplantations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(impl -> impl.isValidAt(dateReference))      // immeuble -> implantations valides non-annulées
-				.map(ImplantationRF::getBatiment)
-				.filter(AnnulableHelper::nonAnnule)                 // implantation -> bâtiment non-annulé
-				.map(BatimentRF::getDescriptions)
-				.flatMap(Set::stream)
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(desc -> desc.isValidAt(dateReference))      // bâtiment -> descriptions valides non-annulées
-				.map(DescriptionBatimentRF::getType)
-				.map(StringUtils::trimToNull)
-				.filter(Objects::nonNull)
-				.collect(Collectors.joining(" / "));       // descriptions -> types, séparés par des slashes
+		return StringUtils.trimToNull(immeuble.getImplantations().stream()
+				                              .filter(AnnulableHelper::nonAnnule)
+				                              .filter(impl -> impl.isValidAt(dateReference))      // immeuble -> implantations valides non-annulées
+				                              .map(ImplantationRF::getBatiment)
+				                              .filter(AnnulableHelper::nonAnnule)                 // implantation -> bâtiment non-annulé
+				                              .map(BatimentRF::getDescriptions)
+				                              .flatMap(Set::stream)
+				                              .filter(AnnulableHelper::nonAnnule)
+				                              .filter(desc -> desc.isValidAt(dateReference))      // bâtiment -> descriptions valides non-annulées
+				                              .map(DescriptionBatimentRF::getType)
+				                              .map(StringUtils::trimToNull)
+				                              .filter(Objects::nonNull)
+				                              .distinct()                                          // ça ne sert à rien de répéter plusieurs fois la même chose...
+				                              .collect(Collectors.joining(" / ")));       // descriptions -> types, séparés par des slashes
 	}
 
 	private static String getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference) {
@@ -138,6 +140,7 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(est -> est.isValidAt(dateReference))
 				.findFirst()
+				.map(EstimationRF::getMontant)
 				.map(String::valueOf)
 				.orElse(null);
 	}
@@ -150,10 +153,10 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 				.orElse(null);
 
 		if (situation != null) {
-			return Stream.of(situation.getNoParcelle(), situation.getIndex1(), situation.getIndex2(), situation.getIndex3())
-					.filter(Objects::nonNull)
-					.map(String::valueOf)
-					.collect(Collectors.joining("-"));
+			return StringUtils.trimToNull(Stream.of(situation.getNoParcelle(), situation.getIndex1(), situation.getIndex2(), situation.getIndex3())
+					                              .filter(Objects::nonNull)
+					                              .map(String::valueOf)
+					                              .collect(Collectors.joining("-")));
 		}
 		else {
 			return null;

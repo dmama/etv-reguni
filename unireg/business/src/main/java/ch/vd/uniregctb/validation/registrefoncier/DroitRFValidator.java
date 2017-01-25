@@ -13,4 +13,9 @@ public class DroitRFValidator extends DateRangeEntityValidator<DroitRF> {
 	protected String getEntityCategoryName() {
 		return "Le droit RF";
 	}
+
+	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
 }

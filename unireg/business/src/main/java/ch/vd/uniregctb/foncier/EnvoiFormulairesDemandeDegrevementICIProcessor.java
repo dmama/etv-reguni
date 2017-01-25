@@ -1,21 +1,28 @@
 package ch.vd.uniregctb.foncier;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.Spliterators;
 import java.util.TreeMap;
+import java.util.function.ToIntFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
@@ -151,51 +158,62 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				continue;
 			}
 
-			final RegDate dateDebutDroit = Optional.ofNullable(droit.getDateDebutOfficielle()).orElseGet(droit::getDateDebut);
-			final int anneeSuivantDebutDroit = dateDebutDroit.year() + 1;
-			final DateRange rangeAnneeSuivantDebutDroit = new DateRangeHelper.Range(RegDate.get(anneeSuivantDebutDroit, 1, 1), RegDate.get(anneeSuivantDebutDroit, 12, 31));
-
-			// TODO filtrage sur le type de droit ?
-
-			// recherche de dégrèvement actif sur l'année suivant le début de droit
-			final List<DegrevementICI> degrevements = allegementFoncierDAO.getAllegementsFonciers(entreprise.getNumero(), immeuble.getId(), DegrevementICI.class);
-			final boolean hasDegrevementActifAnneeSuivantDebutDroit = degrevements.stream()
-					.filter(AnnulableHelper::nonAnnule)
-					.anyMatch(deg -> DateRangeHelper.intersect(rangeAnneeSuivantDebutDroit, deg));
-			if (hasDegrevementActifAnneeSuivantDebutDroit) {
-				rapport.addDegrevementActifAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, immeuble);
-				continue;
-			}
-
 			// toutes les demandes de dégrèvement déjà envoyées pour cet immeuble
 			final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, false).stream()
 					.filter(demande -> demande.getImmeuble() == immeuble)
 					.collect(Collectors.toList());
 
-			// recherche de demande de dégrèvement dont la PF est l'année suivante le début du droit
-			final DemandeDegrevementICI demandeAnneeSuivantDebutDroit = demandes.stream()
-					.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale() == anneeSuivantDebutDroit)
-					.findFirst()
-					.orElse(null);
-			if (demandeAnneeSuivantDebutDroit != null) {
-				rapport.addDemandeDegrevementPourAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, demandeAnneeSuivantDebutDroit);
-				continue;
+			final RegDate dateDebutDroit = Optional.ofNullable(droit.getDateDebutOfficielle()).orElseGet(droit::getDateDebut);
+			final Integer anneeSuivantDebutDroit = Optional.ofNullable(dateDebutDroit).map(date -> date.year() + 1).orElse(null);
+			if (dateDebutDroit != null) {
+				final DateRange rangeAnneeSuivantDebutDroit = new DateRangeHelper.Range(RegDate.get(anneeSuivantDebutDroit, 1, 1), RegDate.get(anneeSuivantDebutDroit, 12, 31));
+
+				// TODO filtrage sur le type de droit ?
+
+				// recherche de dégrèvement actif sur l'année suivant le début de droit
+				final List<DegrevementICI> degrevements = allegementFoncierDAO.getAllegementsFonciers(entreprise.getNumero(), immeuble.getId(), DegrevementICI.class);
+				final boolean hasDegrevementActifAnneeSuivantDebutDroit = degrevements.stream()
+						.filter(AnnulableHelper::nonAnnule)
+						.anyMatch(deg -> DateRangeHelper.intersect(rangeAnneeSuivantDebutDroit, deg));
+				if (hasDegrevementActifAnneeSuivantDebutDroit) {
+					rapport.addDegrevementActifAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, immeuble);
+					continue;
+				}
+
+				// recherche de demande de dégrèvement dont la PF est l'année suivante le début du droit
+				final DemandeDegrevementICI demandeAnneeSuivantDebutDroit = demandes.stream()
+						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale().intValue() == anneeSuivantDebutDroit.intValue())
+						.findFirst()
+						.orElse(null);
+				if (demandeAnneeSuivantDebutDroit != null) {
+					rapport.addDemandeDegrevementPourAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, demandeAnneeSuivantDebutDroit);
+					continue;
+				}
 			}
 
 			// recherche d'une demande de dégrèvement dont la PF est l'année suivant le début de l'estimation fiscale en cours
 			// (la date de début est justement le début de l'année qui suit l'estimation fiscale, non ?)
-			final int anneeSuivantDerniereEstimationFiscale = estimationCourante.getDateDebut().year();
-			final DemandeDegrevementICI demandeAnneeSuivantEstimationFiscale = demandes.stream()
-					.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale() == anneeSuivantDerniereEstimationFiscale)
-					.findFirst()
-					.orElse(null);
-			if (demandeAnneeSuivantEstimationFiscale != null) {
-				rapport.addDemandeDegrevementPourAnneeSuivantEstimationFiscale(entreprise, anneeSuivantDerniereEstimationFiscale, demandeAnneeSuivantEstimationFiscale);
-				continue;
+			final Integer anneeDerniereEstimationFiscale = getAnneeEstimationFiscale(estimationCourante);
+			if (anneeDerniereEstimationFiscale != null) {
+				final DemandeDegrevementICI demandeAnneeSuivantEstimationFiscale = demandes.stream()
+						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale().intValue() == anneeDerniereEstimationFiscale.intValue())
+						.findFirst()
+						.orElse(null);
+				if (demandeAnneeSuivantEstimationFiscale != null) {
+					rapport.addDemandeDegrevementPourAnneeSuivantEstimationFiscale(entreprise, anneeDerniereEstimationFiscale, demandeAnneeSuivantEstimationFiscale);
+					continue;
+				}
 			}
 
 			// calcul de la période fiscale pour envoi du document
-			final int periodeFiscale = Math.min(anneeSuivantDebutDroit, anneeSuivantDerniereEstimationFiscale);
+			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit, anneeDerniereEstimationFiscale)
+					.filter(Objects::nonNull)
+					.min(Comparator.naturalOrder())
+					.orElse(null);
+			if (periodeFiscale == null) {
+				rapport.addErreurPeriodeFiscaleNonDeterminable(entreprise, immeuble);
+				continue;
+			}
 
 			// tout est bon, on peut envoyer le document
 			rapport.addEnvoiDemandeDegrevement(entreprise, immeuble, periodeFiscale);
@@ -208,6 +226,48 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				break;
 			}
 		}
+	}
+
+	private static final List<Pair<Pattern, ToIntFunction<Matcher>>> ANNEE_ESTIMATION_FISCALE_PATTERNS = buildPatternsAnneeEstimationFiscale();
+
+	@NotNull
+	private static List<Pair<Pattern, ToIntFunction<Matcher>>> buildPatternsAnneeEstimationFiscale() {
+		final List<Pair<Pattern, ToIntFunction<Matcher>>> list = new ArrayList<>();
+		list.add(Pair.of(Pattern.compile("(?:EF|RF|RG)\\s*(\\d{4})", Pattern.CASE_INSENSITIVE), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
+		list.add(Pair.of(Pattern.compile("(?:RF|RF|RG)\\s*(\\d{2})", Pattern.CASE_INSENSITIVE), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToIntPlusSiecle));
+		list.add(Pair.of(Pattern.compile("(\\d{4})"), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
+		list.add(Pair.of(Pattern.compile("\\d{1,2}\\.\\d{1,2}\\.(\\d{4})"), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
+		list.add(Pair.of(Pattern.compile("(\\d{4})\\s*(?:RF|RG|RP|rév\\.|T\\.|enrévision)"), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
+		return Collections.unmodifiableList(list);
+	}
+
+	private static int groupOneToInt(Matcher matcher) {
+		return Integer.valueOf(matcher.group(1));
+	}
+
+	private static int groupOneToIntPlusSiecle(Matcher matcher) {
+		final int anneeSansSiecle = groupOneToInt(matcher);
+		return anneeSansSiecle + (RegDate.get().year() % 100) * 100 - (anneeSansSiecle > 50 ? 100 : 0);
+	}
+
+	@Nullable
+	private static Integer getAnneeEstimationFiscale(EstimationRF estimation) {
+		// si la date d'estimation fiscale est remplie, allons-y !
+		if (estimation.getDateEstimation() != null) {
+			return estimation.getDateEstimation().year();
+		}
+
+		// sinon, il faut voir ce que l'on peut faire de la référence
+		if (StringUtils.isBlank(estimation.getReference())) {
+			return null;
+		}
+
+		return ANNEE_ESTIMATION_FISCALE_PATTERNS.stream()
+				.map(pair -> Pair.of(pair.getKey().matcher(estimation.getReference()), pair.getValue()))
+				.filter(pair -> pair.getKey().matches())
+				.map(pair -> pair.getValue().applyAsInt(pair.getKey()))
+				.findFirst()
+				.orElse(null);
 	}
 
 	private boolean isExonereTotalement(Entreprise entreprise, RegDate dateReference) {

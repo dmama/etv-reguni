@@ -19,4 +19,9 @@ public class SurfaceTotaleRFValidator extends DateRangeEntityValidator<SurfaceTo
 	protected String getEntityCategoryName() {
 		return "La surface totale RF";
 	}
+
+	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
 }

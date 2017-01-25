@@ -30,8 +30,8 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 @Entity
 @Table(name = "RF_SURFACE_AU_SOL")
 @AttributeOverrides({
-		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
-		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
 public class SurfaceAuSolRF extends HibernateDateRangeEntity implements LinkedEntity {
 

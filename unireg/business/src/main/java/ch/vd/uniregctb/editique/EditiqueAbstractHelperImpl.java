@@ -62,6 +62,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueAbstractHelperImpl.class);
 
 	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
+	public static final String IMPOT_COMPLEMENTAIRE_IMMEUBLES = "IMPÔT COMPLÉMENTAIRE SUR LES IMMEUBLES";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
 
 	public static final String VERSION_XSD = "16.9";

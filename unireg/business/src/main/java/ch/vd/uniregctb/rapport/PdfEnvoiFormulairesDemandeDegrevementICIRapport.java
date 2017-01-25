@@ -175,12 +175,26 @@ public class PdfEnvoiFormulairesDemandeDegrevementICIRapport extends PdfRapport 
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);
+					b.append("ID_IMMEUBLE").append(COMMA);
+					b.append("NOM_COMMUNE").append(COMMA);
+					b.append("NO_OFS_COMMUNE").append(COMMA);
+					b.append("NO_PARCELLE").append(COMMA);
+					b.append("INDEX1").append(COMMA);
+					b.append("INDEX2").append(COMMA);
+					b.append("INDEX3").append(COMMA);
 					b.append("ERREUR");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, EnvoiFormulairesDemandeDegrevementICIResults.Erreur elt) {
 					b.append(elt.noContribuable).append(COMMA);
+					b.append(elt.idImmeuble).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.nomCommune)).append(COMMA);
+					b.append(elt.noOfsCommune).append(COMMA);
+					b.append(elt.noParcelle).append(COMMA);
+					b.append(Optional.ofNullable(elt.index1).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(Optional.ofNullable(elt.index2).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(Optional.ofNullable(elt.index3).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 					b.append(CsvHelper.asCsvField(elt.msg));
 					return true;
 				}

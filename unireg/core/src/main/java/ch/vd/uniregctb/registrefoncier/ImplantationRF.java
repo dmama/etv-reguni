@@ -32,8 +32,8 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 @Entity
 @Table(name = "RF_IMPLANTATION")
 @AttributeOverrides({
-		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
-		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
 public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEntity {
 

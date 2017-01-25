@@ -13,4 +13,9 @@ public class SurfaceAuSolRFValidator extends DateRangeEntityValidator<SurfaceAuS
 	protected String getEntityCategoryName() {
 		return "La surface au sol RF";
 	}
+
+	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
 }

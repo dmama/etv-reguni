@@ -13,4 +13,9 @@ public class ImplantationRFValidator extends DateRangeEntityValidator<Implantati
 	protected String getEntityCategoryName() {
 		return "L'implantation RF";
 	}
+
+	@Override
+	protected boolean isDateDebutNullAllowed() {
+		return true;
+	}
 }

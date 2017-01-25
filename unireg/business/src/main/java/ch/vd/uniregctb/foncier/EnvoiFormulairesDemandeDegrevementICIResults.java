@@ -121,7 +121,11 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		public final Integer index3;
 
 		public OutputInfoBaseAvecImmeuble(Tiers contribuable, @Nullable ImmeubleRF immeuble, RegDate dateTraitement) {
-			super(contribuable.getNumero());
+			this(contribuable.getNumero(), immeuble, dateTraitement);
+		}
+
+		public OutputInfoBaseAvecImmeuble(long noContribuable, @Nullable ImmeubleRF immeuble, RegDate dateTraitement) {
+			super(noContribuable);
 			this.idImmeuble = Optional.ofNullable(immeuble).map(ImmeubleRF::getId).orElse(null);
 
 			final Optional<SituationRF> situation = Optional.ofNullable(immeuble).map(ImmeubleRF::getSituations).orElseGet(Collections::emptySet).stream()
@@ -185,18 +189,27 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
-	public static final class Erreur extends OutputInfoBase<Erreur> {
+	public static final class Erreur extends OutputInfoBaseAvecImmeuble<Erreur> {
 		public final String msg;
-		public Erreur(long noContribuable, Exception e) {
-			super(noContribuable);
+		public Erreur(long noContribuable, RegDate dateTraitement, Exception e) {
+			super(noContribuable, null, dateTraitement);
 			this.msg = ExceptionUtils.extractCallStack(e);
+		}
+		public Erreur(Tiers ctb, ImmeubleRF immeuble, RegDate dateTraitement, String message) {
+			super(ctb, immeuble, dateTraitement);
+			this.msg = message;
 		}
 	}
 
 	@Override
 	public void addErrorException(InformationDroitsContribuable info, Exception e) {
-		this.erreurs.add(new Erreur(info.noContribuable, e));
+		this.erreurs.add(new Erreur(info.noContribuable, null, e));
 		this.nbDroitsInspectes += info.idsDroitsImmeubles.size();
+	}
+
+	public void addErreurPeriodeFiscaleNonDeterminable(Tiers contribuable, ImmeubleRF immeuble) {
+		this.erreurs.add(new Erreur(contribuable, immeuble, dateTraitement, "La période fiscale de la demande de dégrèvement ICI n'a pas pu être déterminée."));
+		++ this.nbDroitsInspectes;
 	}
 
 	@Override
