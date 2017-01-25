@@ -34,3 +34,6 @@ WHERE T.BLOC_REMB_AUTO=1
 																										FROM ETAT_ENTREPRISE EE2
 																										WHERE EE2.ENTREPRISE_ID = EE.ENTREPRISE_ID
 																													AND EE2.ANNULATION_DATE IS NULL));
+
+-- SIFISC-20373 : performances du WS du registre foncier
+CREATE INDEX IDX_DROIT_RF_COMM_ID ON RF_DROIT (COMMUNAUTE_ID);
