@@ -123,8 +123,8 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		// on va chercher la dernière situation
 		final SituationRF situation = immeuble.getSituations().stream()
-				.filter(s -> s.isValidAt(null))
-				.findFirst()
+				.filter(Annulable::isNotAnnule)
+				.max(SituationRF::compareTo)
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble id=[" + immeubleId + "] ne possède pas de situation"));
 
 		// on prépare les paramètres de l'URL

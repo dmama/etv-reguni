@@ -330,4 +330,41 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-20373] Ce test vérifie que la résolution des URLs vers Capitastra fonctionne correctement lorsque l'immeuble n'a plus de situation active.
+	 */
+	@Test
+	public void testGetCapitastraURLDerniereSituationFermee() throws Exception {
+
+		class Ids {
+			long bienFond;
+			long ppe;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			immeuble0.getSituations().iterator().next().setDateFin(RegDate.get(2015, 12, 31));
+			final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("02faeee", "some egrid", new Fraction(1, 4), gland, 4298, 3, null, null);
+
+			ids.bienFond = immeuble0.getId();
+			ids.ppe = immeuble1.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFond));
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
+			}
+		});
+	}
 }
