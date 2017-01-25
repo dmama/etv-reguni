@@ -75,8 +75,8 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
-import ch.vd.uniregctb.evenement.di.EvenementDeclarationPMSender;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -392,7 +392,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			// envoi du NIP à qui de droit
 			if (StringUtils.isNotBlank(declaration.getCodeControle())) {
 				final String codeSegment = declaration.getCodeSegment() != null ? Integer.toString(declaration.getCodeSegment()) : null;
-				evenementDeclarationPMSender.sendEmissionEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), declaration.getCodeControle(), codeSegment);
+				evenementDeclarationPMSender.sendEmissionDIEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), declaration.getCodeControle(), codeSegment);
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
@@ -454,7 +454,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
 			if (StringUtils.isNotBlank(declaration.getCodeControle())) {
 				final String codeSegment = declaration.getCodeSegment() != null ? Integer.toString(declaration.getCodeSegment()) : null;
-				evenementDeclarationPMSender.sendEmissionEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), declaration.getCodeControle(), codeSegment);
+				evenementDeclarationPMSender.sendEmissionDIEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), declaration.getCodeControle(), codeSegment);
 			}
 		}
 		catch (EditiqueException | EvenementDeclarationException e) {
@@ -545,7 +545,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			if (di instanceof DeclarationImpotOrdinairePM && StringUtils.isNotBlank(di.getCodeControle())) {
 				final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
 				final String codeRoutage = dipm.getCodeSegment() != null ? Integer.toString(dipm.getCodeSegment()) : null;
-				evenementDeclarationPMSender.sendAnnulationEvent(contribuable.getNumero(), pf, di.getNumero(), di.getCodeControle(), codeRoutage);
+				evenementDeclarationPMSender.sendAnnulationDIEvent(contribuable.getNumero(), pf, di.getNumero(), di.getCodeControle(), codeRoutage);
 			}
 		}
 		catch (EvenementDeclarationException e) {
@@ -577,7 +577,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
 				if (StringUtils.isNotBlank(dipm.getCodeControle())) {
 					final String codeRoutage = dipm.getCodeSegment() != null ? Integer.toString(dipm.getCodeSegment()) : null;
-					evenementDeclarationPMSender.sendEmissionEvent(ctb.getNumero(), pf, dipm.getNumero(), dipm.getCodeControle(), codeRoutage);
+					evenementDeclarationPMSender.sendEmissionDIEvent(ctb.getNumero(), pf, dipm.getNumero(), dipm.getCodeControle(), codeRoutage);
 				}
 			}
 		}

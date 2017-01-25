@@ -22,6 +22,7 @@ import ch.vd.unireg.xml.event.di.liberation.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.liberation.v1.TypeDeclarationImpot;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 

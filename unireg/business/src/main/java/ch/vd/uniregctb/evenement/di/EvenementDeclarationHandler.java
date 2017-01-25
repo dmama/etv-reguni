@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.core.io.ClassPathResource;
 
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+
 /**
  * Interface de callback pour traiter les événements Declaration.
  *

@@ -41,7 +41,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
-import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSender;
 import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;

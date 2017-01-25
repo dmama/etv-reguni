@@ -11,6 +11,8 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSenderImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -20,14 +22,16 @@ import static org.junit.Assert.fail;
  */
 public class EvenementDeclarationPMSenderTest extends EvenementTest {
 
-	private String OUTPUT_QUEUE;
+	private String OUTPUT_QUEUE_DI;
+	private String OUTPUT_QUEUE_DD;
 
 	private EvenementDeclarationPMSenderImpl sender;
 
 	@Before
 	public void setUp() throws Exception {
 
-		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtDeclaration");
+		OUTPUT_QUEUE_DI = uniregProperties.getProperty("testprop.jms.queue.evtDeclaration.di");
+		OUTPUT_QUEUE_DD = uniregProperties.getProperty("testprop.jms.queue.evtDeclaration.dd");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
@@ -40,7 +44,8 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 		esbTemplate.setDomain("fiscalite");
 		esbTemplate.setSessionTransacted(true);
 
-		clearQueue(OUTPUT_QUEUE);
+		clearQueue(OUTPUT_QUEUE_DI);
+		clearQueue(OUTPUT_QUEUE_DD);
 
 		buildEsbMessageValidator(new Resource[]{
 				new ClassPathResource("event/di/evtPublicationCodeControleCyber-2.xsd")
@@ -49,7 +54,8 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 		sender = new EvenementDeclarationPMSenderImpl();
 		sender.setEsbTemplate(esbTemplate);
 		sender.setEsbValidator(esbValidator);
-		sender.setServiceDestination(OUTPUT_QUEUE);
+		sender.setServiceDestinationDI(OUTPUT_QUEUE_DI);
+		sender.setServiceDestinationDI(OUTPUT_QUEUE_DD);
 		sender.afterPropertiesSet();
 
 		AuthenticationHelper.pushPrincipal("EvenementTest");
@@ -63,7 +69,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 
 	@Test
 	public void testSendEvenementEmissionDeclaration() throws Exception {
-		sender.sendEmissionEvent(4215L, 2016, 1, "2X3ff%", "8");
+		sender.sendEmissionDIEvent(4215L, 2016, 1, "2X3ff%", "8");
 
 		// La partie "HORODATAGE" va être remplacée par une regexp...
 		final String expectedAvantHorodatage = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -81,12 +87,12 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 				"</ev-di-cyber-cc-2:evtPublicationCodeControleCyber>";
 
 		final Pattern pattern = Pattern.compile(Pattern.quote(expectedAvantHorodatage) + "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{1,3}[+-][0-9]{2}:[0-9]{2}" + Pattern.quote(expectedApresHorodatage));
-		assertTextMessage(OUTPUT_QUEUE, pattern);
+		assertTextMessage(OUTPUT_QUEUE_DI, pattern);
 	}
 
 	@Test
 	public void testSendEvenementAnnulationDeclaration() throws Exception {
-		sender.sendAnnulationEvent(12344556L, 2000, 1, "5635sS", "5");
+		sender.sendAnnulationDIEvent(12344556L, 2000, 1, "5635sS", "5");
 
 		final String expectedAvantHorodatage = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<ev-di-cyber-cc-2:evtPublicationCodeControleCyber xmlns:ev-di-cyber-cc-2=\"http://www.vd.ch/fiscalite/cyber/codeControle/2\">" +
@@ -103,13 +109,13 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 				"</ev-di-cyber-cc-2:evtPublicationCodeControleCyber>";
 
 		final Pattern pattern = Pattern.compile(Pattern.quote(expectedAvantHorodatage) + "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{1,3}[+-][0-9]{2}:[0-9]{2}" + Pattern.quote(expectedApresHorodatage));
-		assertTextMessage(OUTPUT_QUEUE, pattern);
+		assertTextMessage(OUTPUT_QUEUE_DI, pattern);
 	}
 
 	@Test
 	public void testSendEvenementEmissionDeclarationInvalide() throws Exception {
 		try {
-			sender.sendEmissionEvent(1000000000L, 2000, 1, "2X3ff%", "R13");
+			sender.sendEmissionDIEvent(1000000000L, 2000, 1, "2X3ff%", "R13");
 			fail();
 		}
 		catch (EvenementDeclarationException e) {
@@ -121,7 +127,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 	@Test
 	public void testSendEvenementAnnulationDeclarationInvalide() throws Exception {
 		try {
-			sender.sendAnnulationEvent(1000000000L, 2000, 1, "2143d2", "5");
+			sender.sendAnnulationDIEvent(1000000000L, 2000, 1, "2143d2", "5");
 			fail();
 		}
 		catch (EvenementDeclarationException e) {

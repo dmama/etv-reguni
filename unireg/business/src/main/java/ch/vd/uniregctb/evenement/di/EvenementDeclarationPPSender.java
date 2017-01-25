@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.di;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 
 /**
  * Interface pour envoyer des événements de déclarations PP à destination d'ADDI.

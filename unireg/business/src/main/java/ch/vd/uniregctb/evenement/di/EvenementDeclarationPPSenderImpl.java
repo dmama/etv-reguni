@@ -24,6 +24,7 @@ import ch.vd.unireg.xml.event.di.output.v1.EvenementDeclarationImpotOutput;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementEmissionDeclarationImpot;
 import ch.vd.unireg.xml.event.di.output.v1.ObjectFactory;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 

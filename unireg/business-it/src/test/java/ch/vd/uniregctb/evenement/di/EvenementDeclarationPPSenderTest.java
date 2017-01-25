@@ -10,6 +10,7 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

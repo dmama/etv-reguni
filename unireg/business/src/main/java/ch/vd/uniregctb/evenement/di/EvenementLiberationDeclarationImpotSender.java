@@ -2,6 +2,8 @@ package ch.vd.uniregctb.evenement.di;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+
 /**
  * Interface du service d'envoi des demandes de libération des déclarations d'impôt
  */

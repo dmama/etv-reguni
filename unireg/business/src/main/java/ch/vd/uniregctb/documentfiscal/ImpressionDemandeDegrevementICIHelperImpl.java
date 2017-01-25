@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,22 +35,22 @@ import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
-import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 
 public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDemandeDegrevementICIHelper {
 
 	private static final String CODE_DOCUMENT_DEMANDE_DEGREVEMENT_ICI = TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentEditique().substring(0, 4);
+
+	private RegistreFoncierService registreFoncierService;
 
 	private static final Map<Class<? extends ImmeubleRF>, String> TYPES_IMMEUBLE = buildTypesImmeuble();
 
@@ -63,6 +62,10 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		map.put(BienFondRF.class, "Bien-fonds");
 		map.put(PartCoproprieteRF.class, "Copropriété");
 		return map;
+	}
+
+	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	@Override
@@ -93,20 +96,13 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		final int periodeFiscale = demande.getPeriodeFiscale();
 		final RegDate dateReference = RegDate.get(periodeFiscale, 1, 1);
 		final ImmeubleRF immeuble = demande.getImmeuble();
-		final String nomCommune = immeuble.getSituations().stream()
-				.filter(situation -> situation.isValidAt(dateReference))
-				.map(SituationRF::getCommune)
-				.map(CommuneRF::getNoOfs)
-				.map(ofs -> infraService.getCommuneByNumeroOfs(ofs, dateReference))
-				.map(Commune::getNomOfficiel)
-				.findFirst()
-				.orElse(null);
+		final String nomCommune = Optional.ofNullable(registreFoncierService.getCommune(immeuble, dateReference)).map(Commune::getNomOfficiel).orElse(null);
 
 		final CTypeImmeuble type = new CTypeImmeuble();
 		type.setCommune(nomCommune);
-		type.setMontantFiscalRF(getEstimationFiscale(immeuble, dateReference));
+		type.setMontantFiscalRF(Optional.ofNullable(registreFoncierService.getEstimationFiscale(immeuble, dateReference)).map(Object::toString).orElse(null));
 		type.setNature(getNatureImmeuble(immeuble, dateReference));
-		type.setNoParcelle(getNumeroParcelle(immeuble, dateReference));
+		type.setNoParcelle(registreFoncierService.getNumeroParcelleComplet(immeuble, dateReference));
 		type.setType(getTypeImmeuble(immeuble));
 		return type;
 	}
@@ -133,34 +129,6 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 				                              .filter(Objects::nonNull)
 				                              .distinct()                                          // ça ne sert à rien de répéter plusieurs fois la même chose...
 				                              .collect(Collectors.joining(" / ")));       // descriptions -> types, séparés par des slashes
-	}
-
-	private static String getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference) {
-		return immeuble.getEstimations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(est -> est.isValidAt(dateReference))
-				.findFirst()
-				.map(EstimationRF::getMontant)
-				.map(String::valueOf)
-				.orElse(null);
-	}
-
-	private static String getNumeroParcelle(ImmeubleRF immeuble, RegDate dateReference) {
-		final SituationRF situation = immeuble.getSituations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(s -> s.isValidAt(dateReference))
-				.findFirst()
-				.orElse(null);
-
-		if (situation != null) {
-			return StringUtils.trimToNull(Stream.of(situation.getNoParcelle(), situation.getIndex1(), situation.getIndex2(), situation.getIndex3())
-					                              .filter(Objects::nonNull)
-					                              .map(String::valueOf)
-					                              .collect(Collectors.joining("-")));
-		}
-		else {
-			return null;
-		}
 	}
 
 	private String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {

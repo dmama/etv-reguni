@@ -7,7 +7,7 @@
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
 	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender"/>
-	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPMSender"/>
+	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.declaration.MockEvenementDeclarationPMSender"/>
 	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
 	<!-- Bean client interfacesService MOCK -->

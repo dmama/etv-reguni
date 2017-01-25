@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.di;
+package ch.vd.uniregctb.evenement.declaration;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -7,13 +7,21 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -25,6 +33,7 @@ import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.ObjectFactory;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.Statut;
 import ch.vd.unireg.xml.event.di.cyber.codecontrole.v2.TypeDocument;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
@@ -34,10 +43,14 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationPMSenderImpl.class);
 
 	private static final String CODE_ROUTAGE_ATTRIBUTE_NAME = "CODE_ROUTAGE";
+	private static final String COMMUNE_ATTRIBUTE_NAME = "COMMUNE";
+	private static final String PARCELLE_ATTRIBUTE_NAME = "NUM_PARCELLE";
+	private static final String DELAI_RETOUR_ATTRIBUTE_NAME = "DATE_ECHEANCE";
 
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
-	private String serviceDestination;
+	private String serviceDestinationDI;        // pour les DI
+	private String serviceDestinationDD;        // pour les demandes de dégrèvement
 
 	private JAXBContext jaxbContext;
 
@@ -54,8 +67,12 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 		this.esbValidator = esbValidator;
 	}
 
-	public void setServiceDestination(String serviceDestination) {
-		this.serviceDestination = serviceDestination;
+	public void setServiceDestinationDI(String serviceDestinationDI) {
+		this.serviceDestinationDI = serviceDestinationDI;
+	}
+
+	public void setServiceDestinationDD(String serviceDestinationDD) {
+		this.serviceDestinationDD = serviceDestinationDD;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -68,40 +85,75 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 	}
 
 	@Override
-	public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+	public void sendEmissionDIEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 		if (!enabled) {
 			LOGGER.info("Evénements de déclarations désactivés: l'événement d'émission de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
 			return;
 		}
-		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, codeRoutage, true);
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.DI_PM, true, serviceDestinationDI, Collections.singletonMap(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage));
 	}
 
 	@Override
-	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+	public void sendAnnulationDIEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 		if (!enabled) {
 			LOGGER.info("Evénements de déclarations désactivés: l'événement d'annulation de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
 			return;
 		}
-		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, codeRoutage, false);
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.DI_PM, false, serviceDestinationDI, Collections.singletonMap(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage));
 	}
 
-	private void sendPublication(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage, boolean activation) throws EvenementDeclarationException {
+	@Override
+	public void sendEmissionDemandeDegrevementICIEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String commune, String numeroParcelle, RegDate delaiRetour) throws EvenementDeclarationException {
+		if (!enabled) {
+			LOGGER.info("Evénements de déclarations désactivés: l'événement d'émission de formulaire de demande de dégrèvement sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
+			return;
+		}
+
+		final Map<String, String> infosComplementaires = new HashMap<>();
+		addToMapIfNotEmpty(infosComplementaires, COMMUNE_ATTRIBUTE_NAME, commune, StringRenderer.DEFAULT);
+		addToMapIfNotEmpty(infosComplementaires, PARCELLE_ATTRIBUTE_NAME, numeroParcelle, StringRenderer.DEFAULT);
+		addToMapIfNotEmpty(infosComplementaires, DELAI_RETOUR_ATTRIBUTE_NAME, delaiRetour, RegDateHelper.StringFormat.INDEX::toString);
+
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, TypeDocument.DEM_DEGREV, true, serviceDestinationDD, infosComplementaires);
+	}
+
+	private static <T> void addToMapIfNotEmpty(Map<String, String> map, String key, T value, StringRenderer<? super T> renderer) {
+		if (value != null) {
+			final String stringValue = renderer.toString(value);
+			if (StringUtils.isNotBlank(stringValue)) {
+				map.put(key, stringValue);
+			}
+		}
+	}
+
+	private void sendPublication(long numeroContribuable,
+	                             int periodeFiscale,
+	                             int numeroSequence,
+	                             String codeControle,
+	                             TypeDocument typeDocument,
+	                             boolean activation,
+	                             String serviceDestination,
+	                             @Nullable Map<String, String> infosComplementaires) throws EvenementDeclarationException {
+
 		final EvtPublicationCodeControleCyber evt = new EvtPublicationCodeControleCyber();
 		evt.setApplicationEmettrice(CodeApplication.UNIREG);
 		evt.setCodeControle(codeControle);
 		evt.setHorodatagePublication(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()));
-		if (codeRoutage != null) {
-			evt.setInformationsComplementaires(new InformationComplementaireType(Collections.singletonList(new InformationComplementaireType.InformationComplementaire(CODE_ROUTAGE_ATTRIBUTE_NAME, codeRoutage))));
+		if (infosComplementaires != null && !infosComplementaires.isEmpty()) {
+			final List<InformationComplementaireType.InformationComplementaire> infos = infosComplementaires.entrySet().stream()
+					.map(entry -> new InformationComplementaireType.InformationComplementaire(entry.getKey(), entry.getValue()))
+					.collect(Collectors.toList());
+			evt.setInformationsComplementaires(new InformationComplementaireType(infos));
 		}
 		evt.setNumeroContribuable((int) numeroContribuable);
 		evt.setNumeroSequence(BigInteger.valueOf(numeroSequence));
 		evt.setPeriodeFiscale(periodeFiscale);
 		evt.setStatut(activation ? Statut.ACTIF : Statut.INACTIF);
-		evt.setTypeDocument(TypeDocument.DI_PM);
-		sendEvent(evt);
+		evt.setTypeDocument(typeDocument);
+		sendEvent(evt, serviceDestination);
 	}
 
-	private void sendEvent(EvtPublicationCodeControleCyber evenement) throws EvenementDeclarationException {
+	private void sendEvent(EvtPublicationCodeControleCyber evenement, String serviceDestination) throws EvenementDeclarationException {
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
@@ -116,7 +168,8 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 			marshaller.marshal(evenement, doc);
 
 			final EsbMessage m = EsbMessageFactory.createMessage();
-			m.setBusinessId(String.format("%d-%d-%s-%s",
+			m.setBusinessId(String.format("%s-%d-%d-%s-%s",
+			                              evenement.getTypeDocument(),
 			                              evenement.getNumeroContribuable(),
 			                              evenement.getPeriodeFiscale(),
 			                              evenement.getStatut(),

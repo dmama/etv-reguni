@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,11 +18,14 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
+import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.foncier.AllegementFoncierDAO;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
@@ -32,6 +36,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -56,6 +61,8 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private EditiqueCompositionService editiqueCompositionService;
 	private EvenementFiscalService evenementFiscalService;
 	private AllegementFoncierDAO allegementFoncierDAO;
+	private EvenementDeclarationPMSender evtDeclarationPMSender;
+	private RegistreFoncierService registreFoncierService;
 
 	private final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> typesDocumentEnvoiInitial = buildTypesDocumentEnvoiInitial();
 	private final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> typesDocumentEnvoiRappel = buildTypesDocumentEnvoiRappel();
@@ -115,6 +122,14 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	public void setAllegementFoncierDAO(AllegementFoncierDAO allegementFoncierDAO) {
 		this.allegementFoncierDAO = allegementFoncierDAO;
+	}
+
+	public void setEvtDeclarationPMSender(EvenementDeclarationPMSender evtDeclarationPMSender) {
+		this.evtDeclarationPMSender = evtDeclarationPMSender;
+	}
+
+	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	@Override
@@ -250,13 +265,33 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		final DemandeDegrevementICI saved = hibernateTemplate.merge(demande);
 		entreprise.addAutreDocumentFiscal(saved);
 		try {
+			// impression éditique
 			editiqueCompositionService.imprimeDemandeDegrevementICIForBatch(saved, dateTraitement);
+
+			// envoi du NIP à qui de droit
+			envoiCodeControlePourDemandeDegrevementICI(saved);
+
 			// TODO événement fiscal ?
 		}
-		catch (EditiqueException e) {
+		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new AutreDocumentFiscalException(e);
 		}
 		return saved;
+	}
+
+	/**
+	 * Envoi du NIP à qui de droit
+	 * @param demande la demande de dégrèvement à émettre
+	 */
+	private void envoiCodeControlePourDemandeDegrevementICI(DemandeDegrevementICI demande) throws EvenementDeclarationException {
+		final Entreprise entreprise = demande.getEntreprise();
+		final RegDate dateReference = RegDate.get(demande.getPeriodeFiscale(), 1, 1);
+		final ImmeubleRF immeuble = demande.getImmeuble();
+		final String nomCommune = Optional.ofNullable(registreFoncierService.getCommune(immeuble, dateReference)).map(Commune::getNomOfficiel).orElse(null);
+		final String numeroParcelle = registreFoncierService.getNumeroParcelleComplet(immeuble, dateReference);
+
+		evtDeclarationPMSender.sendEmissionDemandeDegrevementICIEvent(entreprise.getNumero(), demande.getPeriodeFiscale(), demande.getNumeroSequence(), demande.getCodeControle(),
+		                                                              nomCommune, numeroParcelle, demande.getDelaiRetour());
 	}
 
 	private static String buildCodeControleDemandeDegrevementICI(Entreprise e) {

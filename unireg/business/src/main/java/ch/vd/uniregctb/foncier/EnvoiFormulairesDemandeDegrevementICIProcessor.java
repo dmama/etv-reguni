@@ -302,7 +302,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	}
 
 	/**
-	 * Liste des identifiants d'immeuble associés à un contribuable, par contribuable, pour lesquels
+	 * Liste des identifiants d'immeuble associés à un contribuable, par contribuable, pour lesquels il existe des immeubles pour lesquels on pourrait devoir envoyer une demande de dégrèvement
 	 * @param dateTraitement date de traitement
 	 * @return une map dont la clé est un numéro de contribuable, et les valeurs les identifiants d'immeuble correspondants
 	 */

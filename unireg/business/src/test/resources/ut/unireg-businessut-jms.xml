@@ -40,7 +40,7 @@
 	<bean id="annonceIDESender" class="ch.vd.uniregctb.evenement.ide.MockAnnonceIDESender"/>
 
 	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender"/>
-	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPMSender"/>
+	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.declaration.MockEvenementDeclarationPMSender"/>
 
 	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.MockEFactureMessageSender" />
 

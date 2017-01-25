@@ -63,10 +63,11 @@
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pp.output.enabled}" />
 	</bean>
 
-	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationPMSenderImpl">
+	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pm.output}" />
+		<property name="serviceDestinationDI" value="${extprop.jms.queue.evtDeclaration.pm.output.di}" />
+		<property name="serviceDestinationDD" value="${extprop.jms.queue.evtDeclaration.pm.output.dd}" />
 		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pm.output.enabled}" />
 	</bean>
 
