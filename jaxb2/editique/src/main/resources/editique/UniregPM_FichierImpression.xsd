@@ -353,6 +353,17 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:group>
+	<xs:group name="fourreNeutre">
+		<xs:sequence>
+			<xs:element name="fourreNeutre">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="CTypeFourreNeutre"/>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
 	<xs:complexType name="CTypeAdresse">
 		<xs:sequence>
 			<xs:element name="adresseLigne" type="xs:string" nillable="false" minOccurs="1" maxOccurs="6">
@@ -814,13 +825,23 @@ U1P8ADASROUTE
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="siege" type="xs:string"/>
-			<xs:element name="codeBarre" type="STypeCodeBarreDI"/>
+			<xs:element name="codeBarre" type="STypeCodeBarreDD"/>
 			<xs:element name="codeControleNIP" type="STypeCodeNIP" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>X12345</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="immeuble" type="CTypeImmeuble"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTypeFourreNeutre">
+		<xs:sequence>
+			<xs:element name="periodeFiscale" type="xs:gYear">
+				<xs:annotation>
+					<xs:documentation>AAAA</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codeBarre2" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="STypePrefixeTECHN">
@@ -977,6 +998,11 @@ U1P8ADASROUTE
 			<xs:pattern value="[0-9]{26}"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="STypeCodeBarreDD">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{31}"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="STypeCodeNIP">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[A-Z0-9]{6}"/>
@@ -1042,7 +1068,7 @@ U1P8ADASROUTE
 	</xs:simpleType>
 	<xs:simpleType name="STypeVersionXSD">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="16.8"/>
+			<xs:enumeration value="16.9"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
