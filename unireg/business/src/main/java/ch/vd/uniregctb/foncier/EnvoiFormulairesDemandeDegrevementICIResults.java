@@ -165,7 +165,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		CONTRIBUABLE_TOTALEMENT_EXONERE,
 		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
-		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_ESTIMATION_FISCALE,
+		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
 		ESTIMATION_FISCALE_ABSENTE_OU_ZERO
 	}
 
@@ -265,14 +265,14 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		++ this.nbDroitsIgnores;
 	}
 
-	public void addDemandeDegrevementPourAnneeSuivantEstimationFiscale(Entreprise entreprise, int anneeSuivantDerniereEstimationFiscale, DemandeDegrevementICI demandeDegrevement) {
+	public void addDemandeDegrevementPourAnneeEstimationFiscale(Entreprise entreprise, int anneeDerniereEstimationFiscale, DemandeDegrevementICI demandeDegrevement) {
 		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
 		                                                  demandeDegrevement.getImmeuble(),
 		                                                  dateTraitement,
-		                                                  RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_ESTIMATION_FISCALE,
+		                                                  RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
 		                                                  String.format("Demande émise le %s pour la PF %d",
 		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
-		                                                                anneeSuivantDerniereEstimationFiscale)));
+		                                                                anneeDerniereEstimationFiscale)));
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}

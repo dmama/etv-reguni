@@ -146,7 +146,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droitList.get(0);
 				assertNotNull(droit0);
 				assertEquals("1f109152381009be0138100c87276e68", droit0.getMasterIdRF());
-				assertEquals(dateImport, droit0.getDateDebut());
+				assertNull(droit0.getDateDebut());
 				assertNull(droit0.getDateFin());
 				// en case d'import initial, on prend la plus ancienne date
 				assertEquals("Achat", droit0.getMotifDebut());
@@ -159,7 +159,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitList.get(1);
 				assertNotNull(droit1);
 				assertEquals("8af806fa4a4dd302014b16fc17266a0b", droit1.getMasterIdRF());
-				assertEquals(dateImport, droit1.getDateDebut());
+				assertNull(droit1.getDateDebut());
 				assertNull(droit1.getDateFin());
 				assertEquals("Succession", droit1.getMotifDebut());
 				assertEquals(RegDate.get(2003, 1, 1), droit1.getDateDebutOfficielle());

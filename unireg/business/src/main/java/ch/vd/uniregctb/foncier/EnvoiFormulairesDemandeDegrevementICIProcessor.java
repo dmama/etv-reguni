@@ -200,7 +200,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 						.findFirst()
 						.orElse(null);
 				if (demandeAnneeSuivantEstimationFiscale != null) {
-					rapport.addDemandeDegrevementPourAnneeSuivantEstimationFiscale(entreprise, anneeDerniereEstimationFiscale, demandeAnneeSuivantEstimationFiscale);
+					rapport.addDemandeDegrevementPourAnneeEstimationFiscale(entreprise, anneeDerniereEstimationFiscale, demandeAnneeSuivantEstimationFiscale);
 					continue;
 				}
 			}
@@ -208,7 +208,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// calcul de la période fiscale pour envoi du document
 			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit, anneeDerniereEstimationFiscale)
 					.filter(Objects::nonNull)
-					.min(Comparator.naturalOrder())
+					.max(Comparator.naturalOrder())
 					.orElse(null);
 			if (periodeFiscale == null) {
 				rapport.addErreurPeriodeFiscaleNonDeterminable(entreprise, immeuble);
