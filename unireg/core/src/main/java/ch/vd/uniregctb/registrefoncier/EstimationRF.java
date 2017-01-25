@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -155,15 +155,15 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 		if (c != 0) {
 			return c;
 		}
-		c = Objects.compare(dateEstimation, right.dateEstimation, RegDate::compareTo);
+		c = ObjectUtils.compare(dateEstimation, right.dateEstimation, false);
 		if (c != 0) {
 			return c;
 		}
-		c = Objects.compare(reference, right.reference, String::compareTo);
+		c = ObjectUtils.compare(reference, right.reference, false);
 		if (c != 0) {
 			return c;
 		}
-		return Objects.compare(montant, right.montant, Long::compareTo);
+		return ObjectUtils.compare(montant, right.montant, false);
 	}
 
 	@Override

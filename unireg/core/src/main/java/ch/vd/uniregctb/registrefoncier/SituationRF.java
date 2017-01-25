@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
@@ -173,15 +173,15 @@ public class SituationRF extends HibernateDateRangeEntity implements LinkedEntit
 		if (c != 0) {
 			return c;
 		}
-		c = Objects.compare(index1, right.index1, Integer::compareTo);
+		c = ObjectUtils.compare(index1, right.index1, false);
 		if (c != 0) {
 			return c;
 		}
-		c = Objects.compare(index2, right.index2, Integer::compareTo);
+		c = ObjectUtils.compare(index2, right.index2, false);
 		if (c != 0) {
 			return c;
 		}
-		return Objects.compare(index3, right.index3, Integer::compareTo);
+		return ObjectUtils.compare(index3, right.index3, false);
 	}
 
 	@Override

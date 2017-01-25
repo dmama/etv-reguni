@@ -16,8 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -195,10 +195,10 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 		if (c != 0) {
 			return c;
 		}
-		c = Objects.compare(ayantDroit.getId(), right.ayantDroit.getId(), Long::compareTo);
+		c = ObjectUtils.compare(ayantDroit.getId(), right.ayantDroit.getId(), false);
 		if (c != 0) {
 			return c;
 		}
-		return Objects.compare(immeuble.getId(), right.immeuble.getId(), Long::compareTo);
+		return ObjectUtils.compare(immeuble.getId(), right.immeuble.getId(), false);
 	}
 }

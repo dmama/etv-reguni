@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
@@ -140,7 +140,7 @@ public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEn
 		if (c != 0) {
 			return c;
 		}
-		return Objects.compare(surface, right.surface, Integer::compareTo);
+		return ObjectUtils.compare(surface, right.surface, false);
 	}
 
 	@Override
