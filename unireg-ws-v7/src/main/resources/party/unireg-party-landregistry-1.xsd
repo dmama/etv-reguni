@@ -1011,11 +1011,11 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="estimationDate" type="common:dateType" minOccurs="0">
+			<xs:element name="registrationDate" type="common:dateType" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>La date de l'estimation fiscale.</jxb:javadoc>
+							<jxb:javadoc>La date d'inscription dans le registre foncier de l'estimation fiscale.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
