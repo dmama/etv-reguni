@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.foncier.migration;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -74,9 +72,8 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		});
 
 		// on lance l'importation du CSV
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/degrevement/migration/demandes_degrevement_small.csv");
 		final MigrationDDImporterResults results;
-		try (FileInputStream is = new FileInputStream(file)) {
+		try (InputStream is = getClass().getResourceAsStream("demandes_degrevement_small.csv")) {
 			results = importer.loadCSV(is, "UTF-8", 1, null);
 		}
 

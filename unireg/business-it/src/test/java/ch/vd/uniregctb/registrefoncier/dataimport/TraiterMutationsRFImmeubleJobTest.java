@@ -389,7 +389,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
+					assertNull(situation.getDateDebut());                   // date vide en import initial
 					assertNull(situation.getDateFin());
 					assertEquals(294, situation.getCommune().getNoRf());
 					assertEquals(5089, situation.getNoParcelle());
@@ -401,7 +401,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
+					assertNull(estimation.getDateDebut());                  // date vide en import initial
 					assertNull(estimation.getDateFin());
 					assertEquals(Long.valueOf(260000), estimation.getMontant());
 					assertEquals("RG93", estimation.getReference());
@@ -419,7 +419,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
+					assertNull(situation.getDateDebut());                   // date vide en import initial
 					assertNull(situation.getDateFin());
 					assertEquals(294, situation.getCommune().getNoRf());
 					assertEquals(692, situation.getNoParcelle());
@@ -431,7 +431,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
+					assertNull(estimation.getDateDebut());                  // date vide en import initial
 					assertNull(estimation.getDateFin());
 					assertEquals(Long.valueOf(2120000), estimation.getMontant());
 					assertEquals("2016", estimation.getReference());
@@ -450,7 +450,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
+					assertNull(situation.getDateDebut());                   // date vide en import initial
 					assertNull(situation.getDateFin());
 					assertEquals(190, situation.getCommune().getNoRf());
 					assertEquals(19, situation.getNoParcelle());
@@ -462,7 +462,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
+					assertNull(estimation.getDateDebut());                  // date vide en import initial
 					assertNull(estimation.getDateFin());
 					assertEquals(Long.valueOf(495000), estimation.getMontant());
 					assertEquals("2016", estimation.getReference());
@@ -481,7 +481,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), situation.getDateDebut());
+					assertNull(situation.getDateDebut());                   // date vide en import initial
 					assertNull(situation.getDateFin());
 					assertEquals(308, situation.getCommune().getNoRf());
 					assertEquals(3601, situation.getNoParcelle());
@@ -493,7 +493,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
-					assertEquals(RegDate.get(2016, 10, 1), estimation.getDateDebut());
+					assertNull(estimation.getDateDebut());                  // date vide en import initial
 					assertNull(estimation.getDateFin());
 					assertEquals(Long.valueOf(550), estimation.getMontant());
 					assertEquals("2015", estimation.getReference());

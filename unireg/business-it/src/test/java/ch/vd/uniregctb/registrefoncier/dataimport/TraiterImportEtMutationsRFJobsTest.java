@@ -380,7 +380,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
 				{
-					assertEquals(dateImportInitial, droit0.getDateDebut());
+					assertNull(droit0.getDateDebut());      // date vide en import initial
 					assertNull(droit0.getDateFin());
 					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutOfficielle());
 					assertEquals("Achat", droit0.getMotifDebut());
@@ -407,7 +407,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertEquals(dateImportInitial, situation.getDateDebut());
+					assertNull(situation.getDateDebut());           // date vide en import initial
 					assertNull(situation.getDateFin());
 					assertEquals(38, situation.getCommune().getNoRf());
 					assertEquals(1365, situation.getNoParcelle());
@@ -419,7 +419,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
-					assertEquals(dateImportInitial, estimation.getDateDebut());
+					assertNull(estimation.getDateDebut());          // date vide en import initial
 					assertNull(estimation.getDateFin());
 					assertEquals(Long.valueOf(30000), estimation.getMontant());
 					assertEquals("2002", estimation.getReference());
@@ -430,7 +430,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, surfacesTotales.size());
 
 					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
-					assertEquals(dateImportInitial, surfaceTotale.getDateDebut());
+					assertNull(surfaceTotale.getDateDebut());           // date vide en import initial
 					assertNull(surfaceTotale.getDateFin());
 					assertEquals(614, surfaceTotale.getSurface());
 				}
@@ -451,7 +451,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					final Set<ImplantationRF> implantations = batiment0.getImplantations();
 					assertEquals(1, implantations.size());
 					final ImplantationRF implantation0 = implantations.iterator().next();
-					assertEquals(dateImportInitial, implantation0.getDateDebut());
+					assertNull(implantation0.getDateDebut());           // date vide en import initial
 					assertNull(implantation0.getDateFin());
 					assertEquals(Integer.valueOf(50), implantation0.getSurface());
 					assertEquals("_1f10915238100390013810052537624b", implantation0.getImmeuble().getIdRF());
@@ -695,7 +695,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
 				{
-					assertEquals(dateImportInitial, droit0.getDateDebut());
+					assertNull(droit0.getDateDebut());      // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
 					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutOfficielle());
 					assertEquals("Achat", droit0.getMotifDebut());
@@ -722,7 +722,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertEquals(dateImportInitial, situation.getDateDebut());
+					assertNull(situation.getDateDebut());           					// date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), situation.getDateFin());
 					assertEquals(38, situation.getCommune().getNoRf());
 					assertEquals(1365, situation.getNoParcelle());
@@ -734,7 +734,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
-					assertEquals(dateImportInitial, estimation.getDateDebut());
+					assertNull(estimation.getDateDebut());                              // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFin());
 					assertEquals(Long.valueOf(30000), estimation.getMontant());
 					assertEquals("2002", estimation.getReference());
@@ -745,7 +745,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, surfacesTotales.size());
 
 					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
-					assertEquals(dateImportInitial, surfaceTotale.getDateDebut());
+					assertNull(surfaceTotale.getDateDebut());                           // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), surfaceTotale.getDateFin());
 					assertEquals(614, surfaceTotale.getSurface());
 				}
@@ -766,7 +766,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					final Set<ImplantationRF> implantations = batiment0.getImplantations();
 					assertEquals(1, implantations.size());
 					final ImplantationRF implantation0 = implantations.iterator().next();
-					assertEquals(dateImportInitial, implantation0.getDateDebut());
+					assertNull(implantation0.getDateDebut());                   // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), implantation0.getDateFin());
 					assertEquals(Integer.valueOf(50), implantation0.getSurface());
 					assertEquals("_1f10915238100390013810052537624b", implantation0.getImmeuble().getIdRF());
