@@ -55,7 +55,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 		sender.setEsbTemplate(esbTemplate);
 		sender.setEsbValidator(esbValidator);
 		sender.setServiceDestinationDI(OUTPUT_QUEUE_DI);
-		sender.setServiceDestinationDI(OUTPUT_QUEUE_DD);
+		sender.setServiceDestinationDD(OUTPUT_QUEUE_DD);
 		sender.afterPropertiesSet();
 
 		AuthenticationHelper.pushPrincipal("EvenementTest");
