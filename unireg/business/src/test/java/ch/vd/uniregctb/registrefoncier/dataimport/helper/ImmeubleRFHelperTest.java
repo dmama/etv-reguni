@@ -56,7 +56,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
@@ -113,7 +113,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
@@ -161,7 +161,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
@@ -210,7 +210,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
@@ -333,7 +333,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
-		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertFalse(estimation.isEnRevision());
 
 		final Set<SurfaceTotaleRF> surfacesTotales = mine.getSurfacesTotales();
@@ -387,7 +387,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
-		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertFalse(estimation.isEnRevision());
 	}
 
@@ -440,7 +440,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
-		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertFalse(estimation.isEnRevision());
 
 		final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
@@ -496,7 +496,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
-		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertFalse(estimation.isEnRevision());
 
 		final Set<SurfaceTotaleRF> surfacesTotales = ddp.getSurfacesTotales();
@@ -550,7 +550,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
-		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateEstimation());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertFalse(estimation.isEnRevision());
 	}
 

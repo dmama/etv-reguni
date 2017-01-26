@@ -458,7 +458,7 @@ public class ImmeubleRFDetectorTest {
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setMontant(250000L);
 			estimation.setReference("RG97");
-			estimation.setDateEstimation(RegDate.get(1997, 1, 1));
+			estimation.setDateInscription(RegDate.get(1997, 1, 1));
 			estimation.setEnRevision(false);
 			estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
@@ -739,7 +739,7 @@ public class ImmeubleRFDetectorTest {
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setMontant(450000L);
 			estimation.setReference("2015");
-			estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+			estimation.setDateInscription(RegDate.get(2015, 7, 1));
 			estimation.setEnRevision(false);
 			estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
@@ -755,7 +755,7 @@ public class ImmeubleRFDetectorTest {
 
 	@NotNull
 	private static Liegenschaft newBienFond(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
-	                                        long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
+	                                        long estimationFiscale, String referenceEstimation, RegDate dateInscription,
 	                                        boolean enRevision, String idRF, String egrid, boolean cfa) {
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(noRfCommune);
@@ -766,7 +766,7 @@ public class ImmeubleRFDetectorTest {
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
 		amtlicheBewertung.setAmtlicherWert(estimationFiscale);
 		amtlicheBewertung.setProtokollNr(referenceEstimation);
-		amtlicheBewertung.setProtokollDatum(dateEstimation);
+		amtlicheBewertung.setProtokollDatum(dateInscription);
 		amtlicheBewertung.setProtokollGueltig(!enRevision);
 
 		final Liegenschaft grundstueck = new Liegenschaft();
@@ -781,7 +781,7 @@ public class ImmeubleRFDetectorTest {
 
 	@NotNull
 	private static StockwerksEinheit newPPE(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
-	                                        long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
+	                                        long estimationFiscale, String referenceEstimation, RegDate dateInscription,
 	                                        boolean enRevision, String idRF, String egrid, Fraction quotepart) {
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(noRfCommune);
@@ -792,7 +792,7 @@ public class ImmeubleRFDetectorTest {
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
 		amtlicheBewertung.setAmtlicherWert(estimationFiscale);
 		amtlicheBewertung.setProtokollNr(referenceEstimation);
-		amtlicheBewertung.setProtokollDatum(dateEstimation);
+		amtlicheBewertung.setProtokollDatum(dateInscription);
 		amtlicheBewertung.setProtokollGueltig(!enRevision);
 
 		final StockwerksEinheit grundstueck = new StockwerksEinheit();
@@ -806,7 +806,7 @@ public class ImmeubleRFDetectorTest {
 	}
 
 	private static UnbekanntesGrundstueck newKopie(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
-	                                               long estimationFiscale, String referenceEstimation, RegDate dateEstimation,
+	                                               long estimationFiscale, String referenceEstimation, RegDate dateInscription,
 	                                               boolean enRevision, String idRF, String egrid) {
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
@@ -818,7 +818,7 @@ public class ImmeubleRFDetectorTest {
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
 		amtlicheBewertung.setAmtlicherWert(estimationFiscale);
 		amtlicheBewertung.setProtokollNr(referenceEstimation);
-		amtlicheBewertung.setProtokollDatum(dateEstimation);
+		amtlicheBewertung.setProtokollDatum(dateInscription);
 		amtlicheBewertung.setProtokollGueltig(!enRevision);
 
 		final UnbekanntesGrundstueck grundstueck = new UnbekanntesGrundstueck();

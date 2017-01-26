@@ -24,7 +24,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
@@ -55,7 +55,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
@@ -76,7 +76,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
@@ -89,15 +89,15 @@ public class EstimationRFHelperTest {
 	}
 
 	/**
-	 * Ce test vérifie que deux estimations qui diffèrent sur la date d'estimation sont bien considérées inégales.
+	 * Ce test vérifie que deux estimations qui diffèrent sur la date d'inscription sont bien considérées inégales.
 	 */
 	@Test
-	public void testDataEqualsDatesEstimationDifferentes() throws Exception {
+	public void testDataEqualsDatesInscriptionDifferentes() throws Exception {
 
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(false);
 
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
@@ -118,7 +118,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(120000L);
 		estimation.setReference("2015");
-		estimation.setDateEstimation(RegDate.get(2015, 7, 1));
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
 		estimation.setEnRevision(true);
 
 		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
@@ -142,7 +142,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF estimation = EstimationRFHelper.newEstimationRF(amtlicheBewertung);
 		assertEquals(Long.valueOf(120000L), estimation.getMontant());
 		assertEquals("2015", estimation.getReference());
-		assertEquals(RegDate.get(2015, 7, 1), estimation.getDateEstimation());
+		assertEquals(RegDate.get(2015, 7, 1), estimation.getDateInscription());
 		assertFalse(estimation.isEnRevision());
 	}
 }

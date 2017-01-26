@@ -90,7 +90,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	protected static BienFondRF newBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
-	                                          Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                          Long montantEstimation, String referenceEstimation, RegDate dateInscription,
 	                                          boolean enRevision, boolean cfa, RegDate dateValeur, int surface) {
 
 		final SituationRF situation = new SituationRF();
@@ -101,7 +101,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(montantEstimation);
 		estimation.setReference(referenceEstimation);
-		estimation.setDateEstimation(dateEstimation);
+		estimation.setDateInscription(dateInscription);
 		estimation.setEnRevision(enRevision);
 		estimation.setDateDebut(dateValeur);
 
@@ -121,7 +121,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	protected static DroitDistinctEtPermanentRF newDroitDistinctEtPermanentRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
-	                                                                          Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                                                          Long montantEstimation, String referenceEstimation, RegDate dateInscription,
 	                                                                          boolean enRevision, RegDate dateValeur, int surface) {
 
 		final SituationRF situation = new SituationRF();
@@ -132,7 +132,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(montantEstimation);
 		estimation.setReference(referenceEstimation);
-		estimation.setDateEstimation(dateEstimation);
+		estimation.setDateInscription(dateInscription);
 		estimation.setEnRevision(enRevision);
 		estimation.setDateDebut(dateValeur);
 
@@ -151,7 +151,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	protected static ProprieteParEtageRF newProprieteParEtageRF(String idRF, String egrid, CommuneRF commune, int noParcelle, Integer index1,
-	                                                            Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                                            Long montantEstimation, String referenceEstimation, RegDate dateInscription,
 	                                                            boolean enRevision, Fraction quotePart, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
@@ -163,7 +163,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(montantEstimation);
 		estimation.setReference(referenceEstimation);
-		estimation.setDateEstimation(dateEstimation);
+		estimation.setDateInscription(dateInscription);
 		estimation.setEnRevision(enRevision);
 		estimation.setDateDebut(dateValeur);
 
@@ -178,7 +178,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	protected static PartCoproprieteRF newPartCoproprieteRF(String idRF, String egrid, CommuneRF commune, int noParcelle, Integer index1, Integer index2,
-	                                                        Long montantEstimation, String referenceEstimation, RegDate dateEstimation,
+	                                                        Long montantEstimation, String referenceEstimation, RegDate dateInscription,
 	                                                        boolean enRevision, Fraction quotePart, RegDate dateValeur) {
 
 		final SituationRF situation = new SituationRF();
@@ -191,7 +191,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(montantEstimation);
 		estimation.setReference(referenceEstimation);
-		estimation.setDateEstimation(dateEstimation);
+		estimation.setDateInscription(dateInscription);
 		estimation.setEnRevision(enRevision);
 		estimation.setDateDebut(dateValeur);
 

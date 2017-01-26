@@ -28,7 +28,7 @@ public abstract class EstimationRFHelper {
 		else {
 			return Objects.equals(left.getMontant(), right.getMontant()) &&
 					Objects.equals(left.getReference(), right.getReference()) &&
-					Objects.equals(left.getDateEstimation(), right.getDateEstimation()) &&
+					Objects.equals(left.getDateInscription(), right.getDateInscription()) &&
 					left.isEnRevision() == right.isEnRevision();
 		}
 	}
@@ -38,7 +38,7 @@ public abstract class EstimationRFHelper {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(amtlicheBewertung.getAmtlicherWert());
 		estimation.setReference(amtlicheBewertung.getProtokollNr());
-		estimation.setDateEstimation(amtlicheBewertung.getProtokollDatum());
+		estimation.setDateInscription(amtlicheBewertung.getProtokollDatum());
 		final Boolean gueltig = amtlicheBewertung.isProtokollGueltig();
 		estimation.setEnRevision(gueltig == null || !gueltig);
 		return estimation;

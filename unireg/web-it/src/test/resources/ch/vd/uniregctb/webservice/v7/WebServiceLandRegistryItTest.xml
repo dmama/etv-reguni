@@ -276,7 +276,7 @@
 		<column>LOG_MUSER</column>
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
-		<column>DATE_ESTIMATION</column>
+		<column>DATE_INSCRIPTION</column>
 		<column>EN_REVISION</column>
 		<column>MONTANT</column>
 		<column>REFERENCE</column>

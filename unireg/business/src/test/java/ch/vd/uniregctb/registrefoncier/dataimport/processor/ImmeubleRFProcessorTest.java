@@ -157,7 +157,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation0.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
-				assertNull(estimation0.getDateEstimation());
+				assertNull(estimation0.getDateInscription());
 				assertFalse(estimation0.isEnRevision());
 
 				final Set<SurfaceTotaleRF> surfacesTotales = immeuble0.getSurfacesTotales();
@@ -332,7 +332,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFin());
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
-				assertNull(estimation0.getDateEstimation());
+				assertNull(estimation0.getDateInscription());
 				assertFalse(estimation0.isEnRevision());
 
 				// la seconde estimation doit commencer à la date de l'import
@@ -341,7 +341,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation1.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation1.getMontant());
 				assertEquals("RG93", estimation1.getReference());
-				assertNull(estimation1.getDateEstimation());
+				assertNull(estimation1.getDateInscription());
 				assertFalse(estimation1.isEnRevision());
 
 				// la surface totale n'a pas changé
@@ -450,7 +450,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation0.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
-				assertNull(estimation0.getDateEstimation());
+				assertNull(estimation0.getDateInscription());
 				assertFalse(estimation0.isEnRevision());
 
 				// par contre, la surface totale a bien changé
@@ -565,7 +565,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFin());
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
-				assertNull(estimation0.getDateEstimation());
+				assertNull(estimation0.getDateInscription());
 				assertFalse(estimation0.isEnRevision());
 			}
 		});

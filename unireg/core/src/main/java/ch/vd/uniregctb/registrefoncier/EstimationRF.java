@@ -56,9 +56,9 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	private String reference;
 
 	/**
-	 * La date de calcul de l'estimation fiscale.
+	 * La date d'inscription dans le registre foncier de l'estimation fiscale.
 	 */
-	private RegDate dateEstimation;
+	private RegDate dateInscription;
 
 	/**
 	 * Vrai si l'estimation fiscale est en cours de révision.
@@ -106,14 +106,14 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 		this.reference = reference;
 	}
 
-	@Column(name = "DATE_ESTIMATION")
+	@Column(name = "DATE_INSCRIPTION")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateEstimation() {
-		return dateEstimation;
+	public RegDate getDateInscription() {
+		return dateInscription;
 	}
 
-	public void setDateEstimation(RegDate dateEstimation) {
-		this.dateEstimation = dateEstimation;
+	public void setDateInscription(RegDate dateInscription) {
+		this.dateInscription = dateInscription;
 	}
 
 	@Column(name = "EN_REVISION", nullable = false)
@@ -143,7 +143,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	 * Compare l'estimation courante avec une autre estimation. Les propriétés utilisées pour la comparaison sont :
 	 * <ul>
 	 *     <li>les dates de début et de fin</li>
-	 *     <li>la date d'estimation</li>
+	 *     <li>la date d'inscription</li>
 	 *     <li>le numéro de référence</li>
 	 *     <li>le montant</li>
 	 * </ul>
@@ -155,7 +155,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 		if (c != 0) {
 			return c;
 		}
-		c = ObjectUtils.compare(dateEstimation, right.dateEstimation, false);
+		c = ObjectUtils.compare(dateInscription, right.dateInscription, false);
 		if (c != 0) {
 			return c;
 		}

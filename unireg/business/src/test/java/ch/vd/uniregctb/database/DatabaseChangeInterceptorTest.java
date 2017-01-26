@@ -501,7 +501,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(2005,1,1));
-			estimation.setDateEstimation(RegDate.get(2005,1,1));
+			estimation.setDateInscription(RegDate.get(2005, 1, 1));
 			estimation.setEnRevision(false);
 			estimation.setMontant(2_003_030L);
 			estimation.setReference("voir le chef");

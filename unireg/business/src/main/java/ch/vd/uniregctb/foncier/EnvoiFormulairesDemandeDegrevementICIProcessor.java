@@ -261,7 +261,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
 	@Nullable
 	static Integer getAnneeDebutValiditeEstimationFiscale(EstimationRF estimation) {
-		// on cherche d'abord dans la référence, et si on ne trouve rien d'interprétable, on se rabat sur la date d'estimation
+		// on cherche d'abord dans la référence, et si on ne trouve rien d'interprétable, on se rabat sur la date d'inscription
 		// (et on ajoute 1 à l'année)
 		final String reference = StringUtils.trimToNull(estimation.getReference());
 		if (reference != null) {
@@ -276,9 +276,9 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			}
 		}
 
-		// si la date d'estimation fiscale est remplie, allons-y !
-		if (estimation.getDateEstimation() != null) {
-			return estimation.getDateEstimation().year() + 1;
+		// si la date d'inscription fiscale est remplie, allons-y !
+		if (estimation.getDateInscription() != null) {
+			return estimation.getDateInscription().year() + 1;
 		}
 
 		// rien trouvé...

@@ -172,7 +172,7 @@ public abstract class ImmovablePropertyBuilder {
 		estimate.setDateTo(DataHelper.coreToXMLv2(e.getDateFin()));
 		estimate.setAmount(e.getMontant());
 		estimate.setReference(e.getReference());
-		estimate.setEstimationDate(DataHelper.coreToXMLv2(e.getDateEstimation()));
+		estimate.setRegistrationDate(DataHelper.coreToXMLv2(e.getDateInscription()));
 		estimate.setInReview(e.isEnRevision());
 		return estimate;
 	}

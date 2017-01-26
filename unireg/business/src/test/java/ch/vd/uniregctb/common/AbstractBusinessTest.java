@@ -521,11 +521,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		batiment.addImplantation(implantation);
 	}
 
-	protected void addEstimationFiscale(RegDate dateEstimation, RegDate dateDebut, RegDate dateFin, boolean enRevision, Long montant, String reference, ImmeubleRF immeuble) {
+	protected void addEstimationFiscale(RegDate dateInscription, RegDate dateDebut, RegDate dateFin, boolean enRevision, Long montant, String reference, ImmeubleRF immeuble) {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setDateDebut(dateDebut);
 		estimation.setDateFin(dateFin);
-		estimation.setDateEstimation(dateEstimation);
+		estimation.setDateInscription(dateInscription);
 		estimation.setEnRevision(enRevision);
 		estimation.setImmeuble(immeuble);
 		estimation.setMontant(montant);

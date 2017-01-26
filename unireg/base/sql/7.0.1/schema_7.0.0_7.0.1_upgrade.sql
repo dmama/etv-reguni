@@ -103,3 +103,6 @@ UPDATE RF_SURFACE_TOTALE SET DATE_DEBUT = NULL WHERE DATE_DEBUT=20160913;
 -- Le régime de propriété n'existe que sur les droits de propriété... la colonne doit donc être nullable
 --
 ALTER TABLE RF_DROIT MODIFY REGIME_PROPRIETE NVARCHAR2(12) NULL;
+
+-- Renommage de la colonne pour coller au plus près de la signification métier
+ALTER TABLE RF_ESTIMATION RENAME COLUMN DATE_ESTIMATION TO DATE_INSCRIPTION;

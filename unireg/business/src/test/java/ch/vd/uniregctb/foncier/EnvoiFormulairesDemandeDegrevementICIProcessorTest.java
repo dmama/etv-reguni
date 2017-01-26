@@ -1606,10 +1606,10 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		Assert.assertNull(EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("4.2000", null)));
 	}
 
-	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateEstimation) {
+	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription) {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setReference(reference);
-		estimation.setDateEstimation(dateEstimation);
+		estimation.setDateInscription(dateInscription);
 		return estimation;
 	}
 }
