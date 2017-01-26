@@ -28,27 +28,34 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FormeJuridiqueInvalideStrategy.class);
 
-	private static final Set<FormeLegale> FORMES_LEGALES_INVALIDES = EnumSet.of(FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
+	private static final Set<FormeLegale> FORMES_LEGALES_INVALIDES = EnumSet.of(
+																				FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
 	                                                                            FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE,
-	                                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC,
-	                                                                            FormeLegale.N_0312_FILIALE_ETRANGERE_NON_AU_RC);
+	                                                                            FormeLegale.N_0118_PROCURATIONS_NON_COMMERCIALES,
+	                                                                            FormeLegale.N_0119_CHEF_INDIVISION,
+	                                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC, // Erreur de données dans RCEnt, établissement secondaire présenté comme établissement principal.
+	                                                                            FormeLegale.N_0312_FILIALE_ETRANGERE_NON_AU_RC
+	);
+
+	/**
+	 * @param context le context d'exécution de l'événement
+	 * @param options des options de traitement
+	 */
+	public FormeJuridiqueInvalideStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		super(context, options);
+	}
+
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
-	 * @param context le context d'exécution de l'événement
-	 * @param options des options de traitement
 	 * @return
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
-	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise,
-	                                                   EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
 		final RegDate dateApres = event.getDateEvenement();
 
 		final FormeLegale formeLegale = organisation.getFormeLegale(dateApres);

@@ -36,7 +36,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -64,6 +65,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private EditiqueService editiqueService;
 	private ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper;
 	private EvenementFiscalService evenementFiscalService;
+	private ServiceRegimeFiscal serviceRegimeFiscal;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -129,6 +131,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
+	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	}
+
 	@Override
 	public DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException {
 		final DeterminationQuestionnairesSNCAEmettreProcessor processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
@@ -157,11 +163,11 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		// 2. les périodes pendant lesquelles l'entreprise a une forme juridique de type SP
 
 		// quand a-t-on du SP ?
-		final List<CategorieEntrepriseHisto> categories = tiersService.getCategoriesEntrepriseHisto(entreprise);
-		final List<DateRange> rangesSP = new ArrayList<>(categories.size());
-		for (CategorieEntrepriseHisto cat : categories) {
-			if (cat.getCategorie() == CategorieEntreprise.SP) {
-				rangesSP.add(cat);
+		final List<RegimeFiscalConsolide> regimesFiscaux = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		final List<DateRange> rangesSP = new ArrayList<>(regimesFiscaux.size());
+		for (RegimeFiscalConsolide regime : regimesFiscaux) {
+			if (regime.getCategorie() == CategorieEntreprise.SP) {
+				rangesSP.add(regime);
 			}
 		}
 

@@ -26,21 +26,23 @@ public class FailliteConcordatStrategy extends AbstractOrganisationStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FailliteConcordatStrategy.class);
 
 	/**
+	 * @param context le context d'exécution de l'événement
+	 * @param options des options de traitement
+	 */
+	public FailliteConcordatStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		super(context, options);
+	}
+
+	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
-	 * @param context le context d'exécution de l'événement
-	 * @param options des options de traitement
 	 * @return
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
-	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise,
-	                                                   EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
 
 		// On ne s'occupe que d'entités déjà connues
 		if (entreprise == null) {

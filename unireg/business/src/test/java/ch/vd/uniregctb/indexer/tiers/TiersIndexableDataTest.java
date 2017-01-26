@@ -438,7 +438,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		assertEquals((Long) ID, indexed.getNumero());
 
 		// recherche des données (KO)
-		criteria.setCategorieEntreprise(CategorieEntreprise.DPPM);
+		criteria.setCategorieEntreprise(CategorieEntreprise.PM);
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 

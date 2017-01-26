@@ -179,6 +179,7 @@
 		        <td><c:out value="${command.organisation.formeJuridique}"/></td>
 	        </c:if>
         </tr>
+<%--
         <tr class="<unireg:nextRowClass/>">
             <td><fmt:message key="label.categorie"/>&nbsp;:</td>
 	        <c:if test="${command.organisation == null}">
@@ -192,6 +193,7 @@
 		        </td>
 	        </c:if>
         </tr>
+--%>
 	    <tr class="<unireg:nextRowClass/>">
 		    <td><fmt:message key="label.siege"/>&nbsp;:</td>
 		    <c:if test="${command.organisation == null}">

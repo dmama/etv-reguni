@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -16,9 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  * Radiation du RC
@@ -30,21 +29,23 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RadiationStrategy.class);
 
 	/**
+	 * @param context le context d'exécution de l'événement
+	 * @param options des options de traitement
+	 */
+	public RadiationStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		super(context, options);
+	}
+
+	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
-	 * @param context le context d'exécution de l'événement
-	 * @param options des options de traitement
 	 * @return
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
-	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise,
-	                                                   EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
 
 		// On ne s'occupe que d'entités déjà connues
 		if (entreprise == null) {
@@ -61,13 +62,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 			final boolean enCoursDeRadiationRC = sitePrincipalAvant.isConnuInscritAuRC(dateAvant) && !sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
 
-			final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
-			if (categorieEntreprise == null) {
-				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Traitement manuel requis: Impossible de déterminer la catégorie de l'entreprise n°%s!",
-				                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()))
-				);
-			}
+			final FormeLegale formeLegale = organisation.getFormeLegale(dateApres);
 
 			if (enCoursDeRadiationRC) {
 				final InscriptionRC inscriptionRC = sitePrincipalApres.getDonneesRC().getInscription(dateApres);
@@ -79,12 +74,12 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 					);
 				}
 				else {
-					if (categorieEntreprise == CategorieEntreprise.APM) {
-						LOGGER.info(String.format("Radiation de l'association n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), CategorieEntreprise.APM.getLibelle()));
-						return new RadiationAPM(event, organisation, entreprise, context, options, dateRadiation);
+					if (formeLegale == FormeLegale.N_0109_ASSOCIATION || formeLegale == FormeLegale.N_0110_FONDATION) {
+						LOGGER.info(String.format("Radiation de l'association n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle()));
+						return new RadiationAssociationFondation(event, organisation, entreprise, context, options, dateRadiation);
 					}
 					else {
-						LOGGER.info(String.format("Radiation de l'entreprise n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), categorieEntreprise.getLibelle()));
+						LOGGER.info(String.format("Radiation de l'entreprise n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle()));
 						return new Radiation(event, organisation, entreprise, context, options, dateRadiation);
 					}
 				}

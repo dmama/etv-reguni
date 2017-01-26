@@ -24,7 +24,7 @@ import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
-import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -54,7 +54,7 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalImpl;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -677,7 +677,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 			final List<TypeRegimeFiscal> regimes = new ArrayList<>(liste.size());
 			for (RegimeFiscal regime : liste) {
-				regimes.add(TypeRegimeFiscalImpl.get(regime));
+				regimes.add(TypeRegimeFiscalFidor.get(regime));
 			}
 			return Collections.unmodifiableList(regimes);
 		}

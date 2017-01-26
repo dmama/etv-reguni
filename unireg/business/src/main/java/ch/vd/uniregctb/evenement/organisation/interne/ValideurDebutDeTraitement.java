@@ -5,7 +5,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -17,9 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -72,14 +69,8 @@ public class ValideurDebutDeTraitement extends EvenementOrganisationInterneDeTra
 
 		// On doit connaître la catégorie pour continuer en mode automatique
 		final Organisation organisation = getOrganisation();
-		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, getDateEvt());
-		if (category == null) {
-			throw new ValideurDebutDeTraitementException(
-					String.format("Impossible de déterminer la catégorie d'entreprise de l'organisation n°%d. Veuillez traiter le cas à la main.", organisation.getNumeroOrganisation())
-			);
-		}
-		final FormeLegale formeLegale = organisation.getFormeLegale(getDateEvt());
-		if (getEntreprise() == null && (category != CategorieEntreprise.PP && formeLegale != FormeLegale.N_0302_SOCIETE_SIMPLE)) {
+		final RegDate dateEvt = getDateEvt();
+		if (getEntreprise() == null && (!organisation.isSocieteIndividuelle(dateEvt) && !organisation.isSocieteSimple(dateEvt))) {
 			// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
 			verifieNonPreexistanteVD();
 		}

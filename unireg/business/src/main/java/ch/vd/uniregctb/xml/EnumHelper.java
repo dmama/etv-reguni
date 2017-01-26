@@ -4192,16 +4192,8 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.ASSOCIATION_FOUNDATION;
 		case AUTRE:
 			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.OTHER;
-		case DPAPM:
-			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.PUBLIC_ADMINISTRATION;
-		case DPPM:
-			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.STATUTORY_CORPORATION;
-		case FP:
-			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.INVESTMENT_FUND;
 		case PM:
 			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.CAPITAL_COMPANY;
-		case PP:
-			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.SINGLE_PERSON_BUSINESS;
 		case SP:
 			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.SOLE_OWNERSHIP_COMPANY;
 		default:
@@ -4219,16 +4211,8 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.ASSOCIATION_FOUNDATION;
 		case AUTRE:
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.OTHER;
-		case DPAPM:
-			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.PUBLIC_ADMINISTRATION;
-		case DPPM:
-			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.STATUTORY_CORPORATION;
-		case FP:
-			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.INVESTMENT_FUND;
 		case PM:
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.CAPITAL_COMPANY;
-		case PP:
-			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.SINGLE_PERSON_BUSINESS;
 		case SP:
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.SOLE_OWNERSHIP_COMPANY;
 		default:

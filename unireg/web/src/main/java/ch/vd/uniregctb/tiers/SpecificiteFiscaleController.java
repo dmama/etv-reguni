@@ -310,7 +310,7 @@ public class SpecificiteFiscaleController {
 		final Map<String, String> map = new HashMap<>(rfs.size());
 		for (TypeRegimeFiscal rf : rfs) {
 			if (portee == null || (portee == RegimeFiscal.Portee.CH && rf.isFederal()) || (portee == RegimeFiscal.Portee.VD && rf.isCantonal())) {
-				map.put(rf.getCode(), rf.getLibelle());
+				map.put(rf.getCode(), rf.getLibelleAvecCode());
 			}
 		}
 

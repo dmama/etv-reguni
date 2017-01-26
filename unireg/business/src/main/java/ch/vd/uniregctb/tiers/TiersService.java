@@ -287,17 +287,6 @@ public interface TiersService {
 	 */
 	void annuleEtatEntreprise(EtatEntreprise etatEntreprise);
 
-    /**
-     * Retourne le type de régime fiscal par défaut en fonction d'une catégorie d'entreprise
-     * Peut retourner null si :
-     * - la catégorie d'entreprise n'est pas prise en compte dans le mapping de la méthode (pour le moment, PP, SP et AUTRE ne sont pas gérés)
-     * - aucun régime fiscal n'est renvoyé par le service infra
-     *
-     * @param categorieEntreprise la catégorie de l'entreprise
-     * @return le type de régime fiscal pour autant que la catégorie soit prise en compte dans le mapping (sinon NULL)
-     */
-    TypeRegimeFiscal getTypeRegimeFiscalParDefault(CategorieEntreprise categorieEntreprise);
-
 	/**
 	 * Détermine l'entreprise à laquelle l'établissement appartient pour une date donnée
 	 * @param etablissement l'établissement
@@ -2258,18 +2247,16 @@ public interface TiersService {
      */
     List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise, boolean aussiAnnule);
 
-    /**
-     * @param entreprise une entreprise (fiscale)
-     * @param date une date de référence (si <code>null</code>, on prendra la date du jour)
-     * @return la catégorie d'entreprise associée, à la date donnée, à l'entreprise donnée
-     */
-    CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date);
-
-    /**
-     * @param entreprise une entreprise (fiscale)
-     * @return l'historique des catégories d'entreprise
-     */
-    List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise);
+	/**
+	 * Renvoie la catégorie de l'entreprise à la date données. Si l'entreprise ne possède pas de régime fiscal à
+	 * cette date, la méthode renvoie la catégorie "A déterminer/Indéterminé" correspondant au type de régime
+	 * fiscal du même nom.
+	 * @param entreprise L'entreprise dont on veut connaître la catégorie
+	 * @param date La date. Si <code>null</code>, la date du jour est utilisée
+	 * @return la catégorie d'entreprise associée à la date donnée, ou "A déterminer/Indéterminé" si aucun régime fiscal.
+	 */
+	@NotNull
+	CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, @Nullable RegDate date);
 
 	/**
 	 * Pour l'entreprise connue au civil, crée des surcharges en base des données civiles pour la période fournie avec les valeurs

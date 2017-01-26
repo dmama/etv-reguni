@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisa
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -26,6 +27,7 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 	protected EvenementOrganisationProcessorFacade processor;
 	protected EvenementOrganisationDAO evtOrganisationDAO;
 	protected EvenementOrganisationService evtOrganisationService;
+	protected ServiceRegimeFiscal serviceRegimeFiscal;
 	protected DataEventService dataEventService;
 	protected ModificationInterceptor mainInterceptor;
 
@@ -35,6 +37,7 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 
 		evtOrganisationDAO  = getBean(EvenementOrganisationDAO.class, "evenementOrganisationDAO");
 		evtOrganisationService  = getBean(EvenementOrganisationService.class, "evtOrganisationService");
+		serviceRegimeFiscal  = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
 		mainInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
 

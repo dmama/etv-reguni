@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0012.v1.CommuneFiscale;
-import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;

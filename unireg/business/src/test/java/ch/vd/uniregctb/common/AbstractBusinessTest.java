@@ -154,6 +154,7 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_RF,
         BusinessTestingConstants.UNIREG_BUSINESS_REGISTREFONCIER,
         BusinessTestingConstants.UNIREG_BUSINESS_REGISTREFONCIER_IMPORT,
+		BusinessTestingConstants.UNIREG_BUSINESS_REGIMESFISCAUX,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_ORGANISATION,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,

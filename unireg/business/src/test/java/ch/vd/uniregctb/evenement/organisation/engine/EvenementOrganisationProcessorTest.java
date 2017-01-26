@@ -32,7 +32,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
@@ -49,6 +48,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -91,8 +91,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		EvenementOrganisationInterne createdEvent;
 
 		@Override
-		public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
-			createdEvent = super.toInterne(event, options);
+		public EvenementOrganisationInterne toInterne(EvenementOrganisation event) throws EvenementOrganisationException {
+			createdEvent = super.toInterne(event);
 			return createdEvent;
 		}
 
@@ -131,6 +131,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -209,6 +210,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -300,6 +302,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -405,6 +408,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -681,6 +685,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -818,6 +823,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -980,6 +986,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -1091,6 +1098,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -1191,6 +1199,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -1297,6 +1306,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -1402,6 +1412,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -1477,6 +1488,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -1565,6 +1577,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));

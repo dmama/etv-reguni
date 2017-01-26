@@ -32,7 +32,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 	@Test
 	public void testNouvellePMauRC() throws Exception {
 
-		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy();
+		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy(null, null);
 
 		/*
 			Créaton entreprise PM VD inscrite au RC
@@ -40,8 +40,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 		{
 			final MockOrganisation org = createRcVd(10001L, 90001L, date(2016, 12, 4), FormeLegale.N_0106_SOCIETE_ANONYME, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, MockCommune.Lausanne.getNoOFS());
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2016, 12, 4), A_TRAITER);
-
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -55,7 +54,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final MockOrganisation org = createRcVd(10001L, 90001L, date(2016, 12, 4), FormeLegale.N_0106_SOCIETE_ANONYME, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, MockCommune.Zurich.getNoOFS());
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2016, 12, 4), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -66,7 +65,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 	@Test
 	public void testNouvelleAPMauRC() throws Exception {
 
-		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy();
+		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy(null, null);
 
 		/*
 			Créaton entreprise APM VD inscrite au RC
@@ -76,7 +75,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2016, 12, 4), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 12, 2), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -91,7 +90,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2016, 12, 4), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 12, 1), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -103,7 +102,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 	@Test
 	public void testNouvelleAPMnonRC() throws Exception {
 
-		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy();
+		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy(null, null);
 
 		/*
 			Créaton entreprise APM VD non inscrite au RC
@@ -113,7 +112,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION, date(2016, 12, 4), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -128,7 +127,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION, date(2016, 12, 4), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 12, 4), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -139,7 +138,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 	@Test
 	public void testMutationPMauRC() throws Exception {
 
-		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy();
+		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy(null, null);
 
 		/*
 			Arrivee entreprise PM VD inscrite au RC
@@ -153,7 +152,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -167,7 +166,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final MockOrganisation org = createRcVd(10001L, 90001L, date(2010, 12, 4), FormeLegale.N_0106_SOCIETE_ANONYME, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, MockCommune.Zurich.getNoOFS());
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			// Note: dans la pratique, ces dates ne sont pas utilisée lors l'ajout en base Unireg d'une tiers PM HC suite à la création d'un établissement secondaire VD. La date de l'événement est utilisée.
 			Assert.isEqual(date(2010, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
@@ -179,7 +178,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 	@Test
 	public void testMutationAPMauRC() throws Exception {
 
-		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy();
+		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy(null, null);
 
 		/*
 			Arrivee entreprise APM VD inscrite au RC
@@ -193,7 +192,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -207,7 +206,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final MockOrganisation org = createRcVd(10001L, 90001L, date(2010, 12, 4), FormeLegale.N_0109_ASSOCIATION, TypeOrganisationRegistreIDE.ASSOCIATION, MockCommune.Zurich.getNoOFS());
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			// Note: dans la pratique, ces dates ne sont pas utilisée lors l'ajout en base Unireg d'une tiers PM HC suite à la création d'un établissement secondaire VD. La date de l'événement est utilisée.
 			Assert.isEqual(date(2010, 12, 1), informationDeDateEtDeCreation.getDateDeCreation());
@@ -219,7 +218,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 	@Test
 	public void testMutationAPMnonRC() throws Exception {
 
-		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy();
+		final CreateOrganisationStrategy strategy = new CreateOrganisationStrategy(null, null);
 
 		/*
 			Arrivee entreprise APM VD non inscrite au RC
@@ -233,7 +232,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateDeCreation());
 			Assert.isEqual(date(2016, 9, 27), informationDeDateEtDeCreation.getDateOuvertureFiscale());
@@ -247,7 +246,7 @@ public class AbstractOrganisationStrategyTest extends WithoutSpringTest {
 			final MockOrganisation org = createNonRcVd(10001L, 90001L, date(2010, 12, 4), FormeLegale.N_0109_ASSOCIATION, TypeOrganisationRegistreIDE.ASSOCIATION, MockCommune.Zurich.getNoOFS());
 			final EvenementOrganisation event = createEvent(1L, 10001L, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2016, 10, 1), A_TRAITER);
 
-			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = strategy.extraireInformationDeDateEtDeCreation(event, org);
+			final AbstractOrganisationStrategy.InformationDeDateEtDeCreation informationDeDateEtDeCreation = CreateOrganisationStrategy.extraireInformationDeDateEtDeCreation(event, org);
 
 			// Note: dans la pratique, ces dates ne sont pas utilisée lors l'ajout en base Unireg d'une tiers PM HC suite à la création d'un établissement secondaire VD. La date de l'événement est utilisée.
 			Assert.isEqual(date(2016, 10, 1), informationDeDateEtDeCreation.getDateDeCreation());

@@ -38,7 +38,6 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -48,8 +47,8 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersException;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -266,6 +265,11 @@ public abstract class EvenementOrganisationInterne {
 		return regimesFiscauxVD;
 	}
 
+	/**
+	 * Détermine le motif d'ouverture de for approprié, du point de vue d'un établissement principal vaudois.
+	 * @param isCreation Si on considère l'entreprise comme étant nouvellement fondée.
+	 * @return le motif d'ouverture de for appropriée
+	 */
 	@NotNull
 	protected MotifFor determineMotifOuvertureFor(boolean isCreation) throws EvenementOrganisationException {
 		final MotifFor motifOuverture;
@@ -476,66 +480,32 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	/**
-	 * En fonction de la catégorie d'entreprise, détermination du régime fiscal par défaut
-	 * @param organisation données civiles
-	 * @param date       date de référence
-	 * @return le type de régime fiscal par défaut...
+	 * Règle les régimes fiscaux VD et CH par défaut en fonction de la forme juridique.
 	 */
-	protected final TypeRegimeFiscal getRegimeFiscalParDefaut(Organisation organisation, RegDate date) {
-		final CategorieEntreprise categorie = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, date);
-		if (categorie == null) {
-			return null;
-		}
+	protected void openRegimesFiscauxParDefautCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+		final FormeJuridiqueEntreprise formeJuridique = FormeJuridiqueEntreprise.fromCode(organisation.getFormeLegale(getDateEvt()).getCode());
+		final TypeRegimeFiscal typeRegimeFiscal = context.getServiceRegimeFiscal().getTypeRegimeFiscalParDefaut(formeJuridique);
+		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
+		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
+		suivis.addSuivi(String.format("Régimes fiscaux par défaut [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
+		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 
-		switch (categorie) {
-		case AUTRE:
-		case DPPM:
-		case PM:
-			return getRegimeFiscalParDefaultPM();
-		case DPAPM:
-		case APM:
-		case FP:
-			return getRegimeFiscalParDefaultAPM();
-		case SP:
-		case PP:
-			return null;
-		default:
-			throw new IllegalArgumentException("Catégorie entreprise inconnue : " + categorie);
-		}
+		// TODO: Envoyer tâche de détermination du régime fiscal si le régime est mis à INDET
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
-	private TypeRegimeFiscal getRegimeFiscalParDefaultPM() {
-		final List<TypeRegimeFiscal> regimes = context.getServiceInfra().getRegimesFiscaux();
-		for (TypeRegimeFiscal regime : regimes) {
-			if (regime.isDefaultPourPM()) {
-				return regime;
-			}
-		}
-		throw new IllegalArgumentException("Impossible de déterminer le régime fiscal par défaut (PM).");
-	}
+	/**
+	 * Règle les régimes fiscaux VD et CH de type indéterminé et programme une tâche de détermination du régime fiscal
+	 */
+	protected void openRegimesFiscauxIndetermineCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+		final FormeJuridiqueEntreprise formeJuridique = FormeJuridiqueEntreprise.fromCode(organisation.getFormeLegale(getDateEvt()).getCode());
+		final TypeRegimeFiscal typeRegimeFiscal = context.getServiceRegimeFiscal().getTypeRegimeFiscal("00");
+		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
+		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
+		suivis.addSuivi(String.format("Régimes fiscaux de type indéterminé [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
+		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 
-	private TypeRegimeFiscal getRegimeFiscalParDefaultAPM() {
-		final List<TypeRegimeFiscal> regimes = context.getServiceInfra().getRegimesFiscaux();
-		for (TypeRegimeFiscal regime : regimes) {
-			if (regime.isDefaultPourAPM()) {
-				return regime;
-			}
-		}
-		throw new IllegalArgumentException("Impossible de déterminer le régime fiscal par défaut (APM).");
-	}
-
-	protected void openRegimesFiscauxOrdinairesCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
-		// Le régime fiscal VD + CH
-		final TypeRegimeFiscal typeRegimeFiscal = getRegimeFiscalParDefaut(organisation, getDateEvt());
-		if (typeRegimeFiscal != null) {
-			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
-			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
-			suivis.addSuivi(
-					String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
-		}
-		else {
-			suivis.addSuivi(String.format("Aucun régime fiscal ouvert pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
-		}
+		// TODO: Envoyer tâche de détermination du régime fiscal
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -681,20 +651,22 @@ public abstract class EvenementOrganisationInterne {
 	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
 	 * @param genreImpot               le genre d'impôt du nouveau for
-	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal, peut être <code>null</code> si l'établissement principal est hors canton.
 	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Domicile autoriteFiscale,
-	                                                      MotifRattachement rattachement, MotifFor motifOuverture, GenreImpot genreImpot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
+	                                                      MotifRattachement rattachement, @Nullable MotifFor motifOuverture, GenreImpot genreImpot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
-		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+		if (autoriteFiscale.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && motifOuverture == null) {
+			throw new EvenementOrganisationException("Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+		}
 
 		final Commune commune = getCommune(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal à %s à partir du %s, motif ouverture %s, rattachement %s, pour l'entreprise n°%s (civil: %d).",
 			                              commune.getNomOfficielAvecCanton(),
-			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture.getDescription(true), rattachement,
+			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture == null ? "<aucun>" : motifOuverture.getDescription(true), rattachement,
 			                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise())
 			);
 			raiseStatusTo(HandleStatus.TRAITE);

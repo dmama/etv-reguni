@@ -47,11 +47,11 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 		}
 	};
 
-	private final FailliteConcordatStrategy strategy = new FailliteConcordatStrategy();
-
-	private final EvenementOrganisationContext context = new EvenementOrganisationContext(serviceOrganisation, null, null);
+	private final EvenementOrganisationContext context = new EvenementOrganisationContext(serviceOrganisation, null, null, null);
 
 	private final EvenementOrganisationOptions options = new EvenementOrganisationOptions();
+
+	private final FailliteConcordatStrategy strategy = new FailliteConcordatStrategy(context, options);
 
 	MockOrganisation organisation = MockOrganisationFactory
 			.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
@@ -142,14 +142,12 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 				strategy.matchAndCreate(
 						createEvent(1000000L, 1L, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER),
 						organisation,
-						null,
-						context,
-						options)
+						null)
 		);
 	}
 
 	private InformationComplementaire createEventAndMatch(TypeEvenementOrganisation typeEvt) throws EvenementOrganisationException {
-		return (InformationComplementaire) strategy.matchAndCreate(createEvent(1000000L, 1L, typeEvt, RegDate.get(2015, 6, 24), A_TRAITER), organisation, entreprise, context, options);
+		return (InformationComplementaire) strategy.matchAndCreate(createEvent(1000000L, 1L, typeEvt, RegDate.get(2015, 6, 24), A_TRAITER), organisation, entreprise);
 	}
 
 	@NotNull

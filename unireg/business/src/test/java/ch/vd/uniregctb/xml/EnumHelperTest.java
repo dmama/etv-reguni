@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -55,7 +56,9 @@ public class EnumHelperTest {
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv3", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.DECLARATION_IMPOT_APM_BATCH, TypeDocument.DECLARATION_IMPOT_APM_LOCAL, TypeDocument.DECLARATION_IMPOT_PM_BATCH, TypeDocument.DECLARATION_IMPOT_PM_LOCAL, TypeDocument.QUESTIONNAIRE_SNC));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv4", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.QUESTIONNAIRE_SNC));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv4", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.QUESTIONNAIRE_SNC));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv4", CategorieEntreprise.class), EnumSet.of(CategorieEntreprise.INDET));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv5", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.QUESTIONNAIRE_SNC));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv5", CategorieEntreprise.class), EnumSet.of(CategorieEntreprise.INDET));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv1", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv2", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv3", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));

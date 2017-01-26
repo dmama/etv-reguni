@@ -785,7 +785,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         this.serviceInfra = serviceInfra;
     }
 
-    public void setTiersService(TiersService tiersService) {
+	public void setTiersService(TiersService tiersService) {
         this.tiersService = tiersService;
     }
 

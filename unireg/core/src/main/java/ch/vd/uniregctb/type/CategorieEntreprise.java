@@ -5,14 +5,29 @@ package ch.vd.uniregctb.type;
  */
 public enum CategorieEntreprise {
 
-	PP("Société individuelle"),
-	SP("SP - SC et SNC"),
-	PM("PM - Société de capitaux"),            // TODO <-- ne faudrait-il pas changer ce nom qui porte à confusion ?
-	APM("APM - Association / Fondation"),
-	FP("FDS PLAC - Fond de placement"),
-	DPPM("DP/PM - Entreprise de droit public"),      // DP/PM
-	DPAPM("DP/APM - Administration de droit public"),               // DP/APM
-	AUTRE("Autre");
+	/**
+	 La catégorie n'est pas encore déterminée et est donc inconnue à ce stade.
+	 */
+	INDET("En attente de détermination"),
+
+	/**
+	 * Société de personnes.
+	 */
+	SP("SP - Société de personnes"),
+	/**
+	 * Personne morale.
+	 */
+	PM("PM - Personne morale"),
+
+	/**
+	 * Association au sens large.
+	 */
+	APM("APM - Autre personne morale"),
+
+	/**
+	 * Catégorie de compatibilité: la catégorie est définie mais non encore répértoriée dans le service infra utilisé par Unireg. Donne la possibilité de découpler la mise-à-jour d'Unireg de celle du service infra.
+	 */
+	AUTRE("Autre catégorie (Compatibilité)");
 
 	private final String libelle;
 

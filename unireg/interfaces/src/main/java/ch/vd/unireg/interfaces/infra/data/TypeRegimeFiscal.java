@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.infra.data;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 public interface TypeRegimeFiscal {
@@ -26,6 +28,11 @@ public interface TypeRegimeFiscal {
 	String getLibelle();
 
 	/**
+	 * @return un libellé présentable à l'utilisateur de ce règime fiscal, préfixé du code.
+	 */
+	String getLibelleAvecCode();
+
+	/**
 	 * @return <code>true</code> si le régime est applicable au niveau cantonal
 	 */
 	boolean isCantonal();
@@ -36,28 +43,48 @@ public interface TypeRegimeFiscal {
 	boolean isFederal();
 
 	/**
+	 * @return la catégorie d'entreprise déterminée par ce type de régime
+	 */
+	CategorieEntrepriseFidor getCategorie();
+
+	/**
 	 * @return <code>true</code> si le régime est applicable aux PM
 	 */
+	@Deprecated
 	boolean isPourPM();
 
 	/**
 	 * @return <code>true</code> si le régime est applicable aux APM
 	 */
+	@Deprecated
 	boolean isPourAPM();
-
-	/**
-	 * @return <code>true</code> si le régime est le régime par défaut des PM
-	 */
-	boolean isDefaultPourPM();
-
-	/**
-	 * @return <code>true</code> si le régime est le régime par défaut des APM
-	 */
-	boolean isDefaultPourAPM();
 
 	/**
 	 * @param periodeFiscale une période fiscale
 	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
 	 */
 	boolean isExoneration(int periodeFiscale);
+	/**
+	 * @param periodeFiscale une période fiscale
+	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 */
+	boolean isExonerationIBC(int periodeFiscale);
+	/**
+	 * @param periodeFiscale une période fiscale
+	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 */
+	boolean isExonerationICI(int periodeFiscale);
+	/**
+	 * @param periodeFiscale une période fiscale
+	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 */
+	boolean isExonerationIFONC(int periodeFiscale);
+
+	List<PlageExonerationFiscales> getExonerationsIBC();
+
+	List<PlageExonerationFiscales> getExonerationsICI();
+
+	List<PlageExonerationFiscales> getExonerationsIFONC();
+
+
 }

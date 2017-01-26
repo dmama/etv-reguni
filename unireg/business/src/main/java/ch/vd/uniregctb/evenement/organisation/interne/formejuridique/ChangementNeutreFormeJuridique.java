@@ -30,14 +30,13 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 
 	@Override
 	public String describe() {
-		return "Changement de forme jurique sans changement de catégorie";
+		return "Changement de forme juridique sans changement de régime fiscal.";
 	}
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		String message = String.format("Envoi d'un événement d'information: %s. Changement neutre de forme juridique. Entreprise n°%s (civil: %d.",
 		                               typeInfo.toString(), FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero()), getNoOrganisation());
-
 		emetEvtFiscalInformation(getDateEvt(), getEntreprise(), typeInfo, message, suivis);
 	}
 

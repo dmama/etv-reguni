@@ -4,12 +4,11 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DegreAssociationRegistreCivil;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 
 public class EntrepriseView {
 
@@ -92,7 +91,8 @@ public class EntrepriseView {
 	public boolean getIsOrWasSocieteDePersonnes() {
 		if (formesJuridiques != null) {
 			for (ShowFormeJuridiqueView view : formesJuridiques) {
-				if (CategorieEntrepriseHelper.map(view.getType()) == CategorieEntreprise.SP) {
+				final FormeLegale formeLegale = view.getType();
+				if (formeLegale == FormeLegale.N_0104_SOCIETE_EN_COMMANDITE || formeLegale == FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF) {
 					return true;
 				}
 			}

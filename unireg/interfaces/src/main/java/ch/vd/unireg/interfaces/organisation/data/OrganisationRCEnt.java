@@ -280,6 +280,56 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société individuelle?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société individuelle
+	 */
+	@Override
+	public boolean isSocieteIndividuelle(RegDate date) {
+		return OrganisationHelper.isSocieteIndividuelle(this, date);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société simple?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société simple
+	 */
+	@Override
+	public boolean isSocieteSimple(RegDate date) {
+		return OrganisationHelper.isSocieteSimple(this, date);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société de personnes?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société de personnes
+	 */
+	@Override
+	public boolean isSocieteDePersonnes(RegDate date) {
+		return OrganisationHelper.isSocieteDePersonnes(this, date);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique d'association ou de fondation?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une assocociation ou une fondation
+	 */
+	@Override
+	public boolean isAssociationFondation(RegDate date) {
+		return OrganisationHelper.isAssociationFondation(this, date);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique de société à inscription au RC obligatoire?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société à inscription au RC obligatoire
+	 */
+	@Override
+	public boolean isInscriptionRCObligatoire(RegDate date) {
+		return OrganisationHelper.isInscriptionRCObligatoire(this, date);
+	}
+
+	/**
 	 * @return liste des sites de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
 	 * et non radiés
 	 */

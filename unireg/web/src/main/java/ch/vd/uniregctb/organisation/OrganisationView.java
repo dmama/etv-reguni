@@ -6,8 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -21,7 +19,6 @@ public class OrganisationView implements Serializable {
 	private String numeroIDE;
 	private String nom;
 	private String formeJuridique;
-	private CategorieEntreprise categorie;
 	private Integer noOFSSiege;
 	private TypeAutoriteFiscale typeSiege;
 
@@ -39,7 +36,6 @@ public class OrganisationView implements Serializable {
 		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
 		canceled = statusRegistreIDE != null && statusRegistreIDE == StatusRegistreIDE.RADIE;
 		numeroOrganisationRemplacant = organisation.getSitePrincipal(date).getPayload().getIdeRemplacePar(date);
-		categorie = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, date);
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
@@ -113,14 +109,6 @@ public class OrganisationView implements Serializable {
 
 	public void setTypeSiege(TypeAutoriteFiscale typeSiege) {
 		this.typeSiege = typeSiege;
-	}
-
-	public CategorieEntreprise getCategorie() {
-		return categorie;
-	}
-
-	public void setCategorie(CategorieEntreprise categorie) {
-		this.categorie = categorie;
 	}
 
 	@Override

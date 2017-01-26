@@ -21,10 +21,8 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  * Classe de base implémentant la création d'une entreprise et de son établissement principal dans Unireg.
@@ -36,7 +34,6 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	final private RegDate dateDeCreation;
 	final private RegDate dateOuvertureFiscale;
 	final private boolean isCreation;
-	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
 	final private Domicile autoriteFiscalePrincipale;
 
@@ -56,7 +53,6 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		this.dateOuvertureFiscale = dateOuvertureFiscale;
 		this.isCreation = isCreation;
 
-		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
 
 		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
 
@@ -78,10 +74,6 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 	public boolean isCreation() {
 		return isCreation;
-	}
-
-	public CategorieEntreprise getCategory() {
-		return category;
 	}
 
 	@NotNull

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -13,7 +14,6 @@ import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -35,6 +36,7 @@ public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesI
 	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra,
 	                           ServiceOrganisationService serviceOrganisationService, AvatarService avatarService, Entreprise entreprise) throws IndexerException {
 		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, entreprise);
+
 		if (entreprise.isConnueAuCivil()) {
 			this.organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
 			if (this.organisation == null) {
@@ -81,7 +83,8 @@ public class EntrepriseIndexable extends ContribuableImpositionPersonnesMoralesI
 		if (!fjs.isEmpty()) {
 			final FormeLegaleHisto fj = fjs.get(fjs.size() - 1);
 			data.setFormeJuridique(fj.getFormeLegale().getCode());
-			data.setCategorieEntreprise(IndexerFormatHelper.enumToString(CategorieEntrepriseHelper.map(fj.getFormeLegale())));
+			final CategorieEntreprise currentCategorie = tiersService.getCategorieEntreprise(tiers, RegDate.get());
+			data.setCategorieEntreprise(IndexerFormatHelper.enumToString(currentCategorie));
 		}
 
 		// la date de création / d'inscription RC

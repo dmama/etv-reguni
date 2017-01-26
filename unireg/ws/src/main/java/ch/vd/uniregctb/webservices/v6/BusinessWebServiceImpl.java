@@ -100,6 +100,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -243,6 +244,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		context.evenementFiscalService = evenementFiscalService;
 	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
+		context.serviceRegimeFiscal = serviceRegimeFiscal;
+	}
+
 
 	private <T> T doInTransaction(boolean readonly, TransactionCallback<T> callback) {
 		final TransactionTemplate template = new TransactionTemplate(context.transactionManager);

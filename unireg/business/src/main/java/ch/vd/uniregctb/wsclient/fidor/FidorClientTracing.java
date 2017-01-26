@@ -14,10 +14,11 @@ import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.categorieentreprise.v1.CategorieEntreprise;
 import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
-import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
@@ -558,6 +559,48 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		}
 		finally {
 			tracing.end(time, t, "getRegimesFiscaux", items, null);
+		}
+	}
+
+	@Override
+	public CategorieEntreprise getCategorieEntrepriseParCode(String code) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final CategorieEntreprise cat = target.getCategorieEntrepriseParCode(code);
+			if (cat != null) {
+				items = 1;
+			}
+			return cat;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCategorieEntrepriseParCode", items, () -> String.format("code='%s'", code));
+		}
+	}
+
+	@Override
+	public List<CategorieEntreprise> getCategoriesEntreprise() {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<CategorieEntreprise> categories = target.getCategoriesEntreprise();
+			if (categories != null) {
+				items = categories.size();
+			}
+			return categories;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCategoriesEntreprise", items, null);
 		}
 	}
 

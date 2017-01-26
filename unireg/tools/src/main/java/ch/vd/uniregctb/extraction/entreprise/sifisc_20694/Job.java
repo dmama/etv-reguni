@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -485,18 +485,10 @@ public class Job {
 			return CategorieEntreprise.APM.name();
 		case CAPITAL_COMPANY:
 			return CategorieEntreprise.PM.name();
-		case INVESTMENT_FUND:
-			return CategorieEntreprise.FP.name();
 		case OTHER:
 			return CategorieEntreprise.AUTRE.name();
-		case PUBLIC_ADMINISTRATION:
-			return CategorieEntreprise.DPAPM.name();
-		case SINGLE_PERSON_BUSINESS:
-			return CategorieEntreprise.PP.name();
 		case SOLE_OWNERSHIP_COMPANY:
 			return CategorieEntreprise.SP.name();
-		case STATUTORY_CORPORATION:
-			return CategorieEntreprise.DPPM.name();
 		default:
 			throw new IllegalArgumentException("Type de catégorie d'entreprise non-supporté : " + category);
 		}

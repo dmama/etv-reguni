@@ -34,7 +34,7 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		super.onSetUp();
 
 		final ParametreAppService parametreService = getBean(ParametreAppService.class, "parametreAppService");
-		this.calculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreService, tiersService);
+		this.calculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreService, tiersService, serviceRegimeFiscal);
 		this.assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 	}
 

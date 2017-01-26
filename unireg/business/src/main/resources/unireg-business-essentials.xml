@@ -71,6 +71,7 @@
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="serviceIDEService" ref="serviceIDEService" />
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="tacheService" ref="tacheService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
@@ -210,6 +211,7 @@
 		<property name="editiqueService" ref="editiqueService"/>
 		<property name="impressionRappelHelper" ref="impressionRappelQSNCHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
 	</bean>
 
 	<bean id="jmsStatsService" class="ch.vd.uniregctb.stats.StatsServiceGroup">
@@ -265,6 +267,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal" />
 	</bean>
 
 	<bean id="periodeImpositionImpotSourceService" class="ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceImpl">

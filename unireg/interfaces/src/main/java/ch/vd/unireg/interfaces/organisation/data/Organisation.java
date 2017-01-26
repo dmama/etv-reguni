@@ -149,6 +149,41 @@ public interface Organisation {
 	boolean hasSiteVD(RegDate date);
 
 	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société individuelle?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société individuelle
+	 */
+	boolean isSocieteIndividuelle(RegDate date);
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société simple?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société simple
+	 */
+	boolean isSocieteSimple(RegDate date);
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société de personnes?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société de personnes
+	 */
+	boolean isSocieteDePersonnes(RegDate date);
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique d'association ou de fondation?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une assocociation ou une fondation
+	 */
+	boolean isAssociationFondation(RegDate date);
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique de société à inscription au RC obligatoire?
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société à inscription au RC obligatoire
+	 */
+	boolean isInscriptionRCObligatoire(RegDate date);
+
+	/**
 	 * @return liste des sites de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
 	 * et non radiés
 	 */

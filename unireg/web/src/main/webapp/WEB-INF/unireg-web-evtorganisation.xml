@@ -10,6 +10,7 @@
 		<property name="cappingLevelProvider" ref="evenementOrganisationTraitementCapping"/>
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="tiersService" ref="tiersService" />

@@ -105,10 +105,9 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
-	 * Retourne l'identifiant OFS de la commune de siège à la date donnée, ou à la date du jour.
-	 * si pas de date.
+	 * Retourne la forme juridique du site principal à la date donnée, ou à la date du jour si pas de date.
 	 *
-	 * @param date
+	 * @param date La date de référence
 	 * @return La forme legale, ou null si absente
 	 */
 	public static FormeLegale getFormeLegale(Organisation organisation, RegDate date) {
@@ -836,6 +835,61 @@ public abstract class OrganisationHelper {
 		}
 		return publications.stream()
 				.filter(p -> RegDateHelper.equals(p.getFoscDateDePublication(), dateEffective)).collect(Collectors.toList());
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société individuelle?
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société individuelle
+	 */
+	public static boolean isSocieteIndividuelle(Organisation organisation, RegDate date) {
+		final FormeLegale formeLegale = organisation.getFormeLegale(defaultDate(date));
+		return OrganisationConstants.SOCIETE_INDIVIDUELLE.contains(formeLegale);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société simple?
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société simple
+	 */
+	public static boolean isSocieteSimple(Organisation organisation, RegDate date) {
+		final FormeLegale formeLegale = organisation.getFormeLegale(defaultDate(date));
+		return OrganisationConstants.SOCIETE_SIMPLE.contains(formeLegale);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique constitutive d'une société de personnes?
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société de personnes
+	 */
+	public static boolean isSocieteDePersonnes(Organisation organisation, RegDate date) {
+		final FormeLegale formeLegale = organisation.getFormeLegale(defaultDate(date));
+		return OrganisationConstants.SOCIETE_DE_PERSONNES.contains(formeLegale);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique d'association ou de fondation?
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une assocociation ou une fondation
+	 */
+	public static boolean isAssociationFondation(Organisation organisation, RegDate date) {
+		final FormeLegale formeLegale = organisation.getFormeLegale(defaultDate(date));
+		return OrganisationConstants.ASSOCIATION_FONDATION.contains(formeLegale);
+	}
+
+	/**
+	 * Est-ce que l'organisation a une forme juridique de société à inscription au RC obligatoire?
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information, ou si <code>null</code>, la date courante
+	 * @return <code>true</code> si l'organisation est une société à inscription au RC obligatoire
+	 */
+	public static boolean isInscriptionRCObligatoire(Organisation organisation, RegDate date) {
+		final FormeLegale formeLegale = organisation.getFormeLegale(defaultDate(date));
+		return OrganisationConstants.INSCRIPTION_RC_OBLIGATOIRE.contains(formeLegale);
 	}
 
 	private static RegDate defaultDate(RegDate date) {

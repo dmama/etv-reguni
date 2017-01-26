@@ -36,6 +36,7 @@ import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.AjustementForsSecondairesResult;
 import ch.vd.uniregctb.metier.MetierServicePM;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -92,6 +93,7 @@ public class TiersCreateController {
 	private IbanValidator ibanValidator;
 	private ServiceInfrastructureService infraService;
 	private MetierServicePM metierServicePM;
+	private ServiceRegimeFiscal serviceRegimeFiscal;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -119,6 +121,10 @@ public class TiersCreateController {
 
 	public void setMetierServicePM(MetierServicePM metierServicePM) {
 		this.metierServicePM = metierServicePM;
+	}
+
+	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
 	}
 
 	@InitBinder
@@ -252,7 +258,8 @@ public class TiersCreateController {
 				: civilView.getDateFondation();
 
 		// Forme juridique
-		tiersService.addFormeJuridiqueFiscale(entreprise, civilView.getFormeJuridique(), dateOuverture, null);
+		final FormeJuridiqueEntreprise formeJuridique = civilView.getFormeJuridique();
+		tiersService.addFormeJuridiqueFiscale(entreprise, formeJuridique, dateOuverture, null);
 
 		// Capital
 		if (civilView.getCapitalLibere() != null) {
@@ -275,18 +282,21 @@ public class TiersCreateController {
 		tiersService.addActiviteEconomique(etablissementPrincipal, entreprise, dateFondation, true);
 
 		// Régimes fiscaux + For principal (différents en fonction de la forme juridique/catégorie entreprise)
-		final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.map(civilView.getFormeJuridique());
-		final Set<CategorieEntreprise> pmApm = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.DPPM, CategorieEntreprise.APM, CategorieEntreprise.DPAPM);
-		if (pmApm.contains(categorieEntreprise)) {
-			final boolean vd = civilView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			final boolean nonApm = categorieEntreprise != CategorieEntreprise.APM; // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les APM.
-			final RegDate dateOuvertureFiscale = vd && nonApm ? dateOuverture.getOneDayAfter() : dateOuverture;
+		final TypeRegimeFiscal typeRegimeFiscalParDefaut = serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(formeJuridique);
 
-			// Récupération du type de régime fiscal
-			final TypeRegimeFiscal trf = tiersService.getTypeRegimeFiscalParDefault(categorieEntreprise);
-			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, trf, dateOuvertureFiscale, null);
-			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, trf, dateOuvertureFiscale, null);
+		// Calcul de la date d'ouverture fiscale
+		final boolean vd = civilView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final boolean isAssociationFondation = formeJuridique == FormeJuridiqueEntreprise.ASSOCIATION || formeJuridique == FormeJuridiqueEntreprise.FONDATION;
+		final RegDate dateOuvertureFiscale = vd && isAssociationFondation ? dateOuverture : dateOuverture.getOneDayAfter(); // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les associations/fondations
 
+		// Ajout des régimes fiscaux
+		tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
+		tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
+
+		final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.convert(typeRegimeFiscalParDefaut.getCategorie());
+
+		final Set<CategorieEntreprise> isPMOrIndet = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.APM, CategorieEntreprise.INDET);
+		if (isPMOrIndet.contains(categorieEntreprise)) {
 			// Bouclement et premier exercice commercial
 			entreprise.setDateDebutPremierExerciceCommercial(dateDebutExerciceCommercial);
 			final RegDate dateBouclement = dateDebutExerciceCommercial.addYears(1).getOneDayBefore();

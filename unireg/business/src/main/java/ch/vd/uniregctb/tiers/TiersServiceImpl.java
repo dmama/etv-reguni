@@ -128,6 +128,7 @@ import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
@@ -186,6 +187,7 @@ public class TiersServiceImpl implements TiersService {
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceIDEService serviceIDEService;
+	private ServiceRegimeFiscal serviceRegimeFiscal;
 	private TacheService tacheService;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
@@ -240,6 +242,10 @@ public class TiersServiceImpl implements TiersService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceIDEService(ServiceIDEService serviceIDEService) {
 		this.serviceIDEService = serviceIDEService;
+	}
+
+	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -6425,33 +6431,23 @@ public class TiersServiceImpl implements TiersService {
 		return liste;
 	}
 
-	@Override
-	public CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date) {
+	@NotNull
+	public CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, @Nullable RegDate date) {
 		final RegDate dateEffective = date == null ? RegDate.get() : date;
-		List<CategorieEntrepriseHisto> categorieEntrepriseHistos = getCategoriesEntrepriseHisto(entreprise);
-		if (categorieEntrepriseHistos != null && ! categorieEntrepriseHistos.isEmpty()) {
-			final CategorieEntrepriseHisto categorieEntrepriseHisto = DateRangeHelper.rangeAt(categorieEntrepriseHistos, dateEffective);
-			if (categorieEntrepriseHisto != null) {
-				return categorieEntrepriseHisto.getCategorie();
-			}
-		}
-		return null;
-	}
+		final TypeRegimeFiscal currentTypeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, dateEffective);
 
-	@Override
-	public List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise) {
-		final List<CategorieEntrepriseHisto> ces;
-		final List<FormeLegaleHisto> formesLegales = getFormesLegales(entreprise, false);
-		if (formesLegales.isEmpty()) {
-			ces = Collections.emptyList();
+		/*
+			La catégorie est portée par le type de régime fiscal en vigueur.
+		 */
+		if (currentTypeRegimeFiscal != null) {
+			return CategorieEntrepriseHelper.convert(currentTypeRegimeFiscal.getCategorie());
 		}
+		/*
+			On considère l'absence de régime fiscal de manière analogue à un régime fiscal "A déterminer/Indéterminé", et on retourne la catégorie correspondante.
+		 */
 		else {
-			ces = new ArrayList<>(formesLegales.size());
-			for (FormeLegaleHisto fj : formesLegales) {
-				ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeLegale())));
-			}
+			return CategorieEntreprise.INDET;
 		}
-		return DateRangeHelper.collate(ces);
 	}
 
 	@Override
@@ -6790,22 +6786,6 @@ public class TiersServiceImpl implements TiersService {
 				throw new ValidationException(etat, "Seul le dernier état peut être annulé.");
 		}
 		etat.setAnnule(true);
-	}
-
-	@Nullable
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscalParDefault(CategorieEntreprise categorieEntreprise) {
-		final List<TypeRegimeFiscal> regimes = serviceInfra.getRegimesFiscaux();
-		for (TypeRegimeFiscal regime : regimes) {
-			if ((categorieEntreprise == CategorieEntreprise.PM || categorieEntreprise == CategorieEntreprise.DPPM)
-					&& regime.isDefaultPourPM()) {
-				return regime;
-			} else if ((categorieEntreprise == CategorieEntreprise.APM || categorieEntreprise == CategorieEntreprise.DPAPM || categorieEntreprise == CategorieEntreprise.FP)
-					&& regime.isDefaultPourAPM()) {
-				return regime;
-			}
-		}
-		return null;
 	}
 
 	@Override

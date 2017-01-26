@@ -13,9 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntreprise;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -27,23 +25,40 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
  */
 public abstract class AbstractOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
 
+
+	protected final EvenementOrganisationContext context;
+	protected final EvenementOrganisationOptions options;
+
+	/**
+	 * @param context le context d'exécution de l'événement
+	 * @param options des options de traitement
+	 */
+	public AbstractOrganisationStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		this.context = context;
+		this.options = options;
+	}
+
+	public EvenementOrganisationContext getContext() {
+		return context;
+	}
+
+	public EvenementOrganisationOptions getOptions() {
+		return options;
+	}
+
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
-	 * @param context le context d'exécution de l'événement
-	 * @param options des options de traitement
 	 * @return
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
 	public abstract EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
 	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise,
-	                                                   EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException;
+	                                                   Entreprise entreprise) throws EvenementOrganisationException;
 
 
 	/**
@@ -241,13 +256,13 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		return false;
 	}
 
-	protected InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+	protected static InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
 		final RegDate dateEvenement = event.getDateEvenement();
 
 		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
 		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
 		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		final boolean isApm = CategorieEntrepriseHelper.map(organisation.getFormeLegale(dateEvenement)) == CategorieEntreprise.APM; // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les APM.
+		final boolean isAssociationFondation = organisation.isAssociationFondation(dateEvenement);
 		final boolean inscritAuRC = organisation.isInscriteAuRC(dateEvenement);
 		final RegDate dateInscriptionRCVd;
 		final RegDate dateInscriptionRC;
@@ -279,7 +294,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		}
 		else {
 			isCreation = isCreation(event.getType(), organisation, dateEvenement);
-			if (isCreation && isVaudoise && !isApm) { // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les APM.
+			if (isCreation && isVaudoise && !isAssociationFondation) { // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les associations/fondations.
 				dateDeCreation = dateEvenement;
 				dateOuvertureFiscale = dateEvenement.getOneDayAfter();
 			}

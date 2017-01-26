@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,11 +16,13 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -34,10 +39,12 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 
 	private final ParametreAppService parametreService;
 	private final TiersService tiersService;
+	private final ServiceRegimeFiscal serviceRegimeFiscal;
 
-	public PeriodeImpositionPersonnesMoralesCalculator(ParametreAppService parametreService, TiersService tiersService) {
+	public PeriodeImpositionPersonnesMoralesCalculator(ParametreAppService parametreService, TiersService tiersService, ServiceRegimeFiscal serviceRegimeFiscal) {
 		this.parametreService = parametreService;
 		this.tiersService = tiersService;
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
 	}
 
 	/**
@@ -87,8 +94,14 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
 					final CategorieEntreprise categorieEntreprise = getLastKnownCategorieEntrepriseAtOrBefore(entreprise, intersection.getDateFin());
 
-					// [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles
-					final boolean isOptionnelle = categorieEntreprise == CategorieEntreprise.DPAPM;
+
+					// OBSOLETE (supprimé) - [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles --> pris en charge par les régimes
+
+					// Cas des 190-2 et 739 vaudois qui doivent être optionels
+					// TODO: charger les valeurs depuis la configuration Unireg.
+					Set<String> assujOptionnelsVD = new LinkedHashSet<>(Arrays.asList("190-2", "739"));
+					final TypeRegimeFiscal typeRegimeFiscalVD = serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, exercice.getDateFin());
+					final boolean isOptionnelle = typeContribuable == TypeContribuable.VAUDOIS_ORDINAIRE && assujOptionnelsVD.contains(typeRegimeFiscalVD.getCode());
 
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),
@@ -116,14 +129,14 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 	 */
 	@Nullable
 	private CategorieEntreprise getLastKnownCategorieEntrepriseAtOrBefore(Entreprise entreprise, @NotNull RegDate dateReference) {
-		final List<CategorieEntrepriseHisto> histo = tiersService.getCategoriesEntrepriseHisto(entreprise);
-		if (histo == null || histo.isEmpty()) {
+		final List<RegimeFiscalConsolide> regimesFiscaux = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		if (regimesFiscaux.isEmpty()) {
 			return null;
 		}
 
-		for (CategorieEntrepriseHisto candidate : CollectionsUtils.revertedOrder(histo)) {
-			if (RegDateHelper.isAfterOrEqual(dateReference, candidate.getDateDebut(), NullDateBehavior.EARLIEST)) {
-				return candidate.getCategorie();
+		for (RegimeFiscalConsolide regime : CollectionsUtils.revertedOrder(regimesFiscaux)) {
+			if (RegDateHelper.isAfterOrEqual(dateReference, regime.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				return regime.getCategorie();
 			}
 		}
 		return null;
@@ -167,11 +180,8 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 
 		switch (categorie) {
 		case APM:
-		case FP:
-		case DPAPM:
 			return TypeDocument.DECLARATION_IMPOT_APM_BATCH;
 		case PM:
-		case DPPM:
 		case AUTRE:
 			return TypeDocument.DECLARATION_IMPOT_PM_BATCH;
 		case SP:

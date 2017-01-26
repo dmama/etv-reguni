@@ -52,9 +52,6 @@ import ch.vd.uniregctb.evenement.organisation.interne.adresse.AdresseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.decisionaci.DecisionAciStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.dissolution.DissolutionStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.dissolution.FusionScissionStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.dissolution.LiquidationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.donneeinvalide.FormeJuridiqueInvalideStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseRemplacanteStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseRemplaceeParStrategy;
@@ -70,6 +67,9 @@ import ch.vd.uniregctb.evenement.organisation.interne.radiation.RadiationStrateg
 import ch.vd.uniregctb.evenement.organisation.interne.raisonsociale.RaisonSocialeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.reinscription.ReinscriptionStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.retour.annonce.RetourAnnonceIDE;
+import ch.vd.uniregctb.evenement.organisation.interne.transformation.DissolutionStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.transformation.FusionScissionStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.transformation.LiquidationStrategy;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -80,6 +80,7 @@ import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.RattachementOrganisationResult;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
@@ -109,6 +110,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;
+	private ServiceRegimeFiscal serviceRegimeFiscal;
 	private TiersDAO tiersDAO;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
@@ -138,9 +140,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		this.useOrganisationsOfNotice = false;
 	}
 
+	private final EvenementOrganisationOptions options = new EvenementOrganisationOptions();
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementOrganisationContext(serviceOrganisationService, evenementOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
+		context = new EvenementOrganisationContext(serviceOrganisationService, evenementOrganisationService, serviceInfrastructureService, serviceRegimeFiscal, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
 		                                           evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 
 		// Construction des stratégies
@@ -149,27 +153,27 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		/*
 			L'ordre des stratégies est important.
 		 */
-		strategies.add(new FormeJuridiqueInvalideStrategy());
-		strategies.add(new DecisionAciStrategy());
-		strategies.add(new CreateOrganisationStrategy());
-		strategies.add(new EtablissementsSecondairesStrategy());
-		strategies.add(new RaisonSocialeStrategy());
-		strategies.add(new InscriptionStrategy());
-		strategies.add(new ReinscriptionStrategy());
-		strategies.add(new ChangementFormeJuridiqueStrategy());
-		strategies.add(new FailliteConcordatStrategy());
-		strategies.add(new ModificationCapitalStrategy());
-		strategies.add(new ModificationButsStrategy());
-		strategies.add(new ModificationStatutsStrategy());
-		strategies.add(new DoublonEntrepriseRemplacanteStrategy());
-		strategies.add(new DoublonEntrepriseRemplaceeParStrategy());
-		strategies.add(new DoublonEtablissementStrategy());
-		strategies.add(new DemenagementSiegeStrategy());
-		strategies.add(new AdresseStrategy());
-		strategies.add(new RadiationStrategy());
-		strategies.add(new DissolutionStrategy());
-		strategies.add(new FusionScissionStrategy());
-		strategies.add(new LiquidationStrategy());
+		strategies.add(new FormeJuridiqueInvalideStrategy(context, options));
+		strategies.add(new DecisionAciStrategy(context, options));
+		strategies.add(new CreateOrganisationStrategy(context, options));
+		strategies.add(new EtablissementsSecondairesStrategy(context, options));
+		strategies.add(new RaisonSocialeStrategy(context, options));
+		strategies.add(new InscriptionStrategy(context, options));
+		strategies.add(new ReinscriptionStrategy(context, options));
+		strategies.add(new ChangementFormeJuridiqueStrategy(context, options));
+		strategies.add(new FailliteConcordatStrategy(context, options));
+		strategies.add(new ModificationCapitalStrategy(context, options));
+		strategies.add(new ModificationButsStrategy(context, options));
+		strategies.add(new ModificationStatutsStrategy(context, options));
+		strategies.add(new DoublonEntrepriseRemplacanteStrategy(context, options));
+		strategies.add(new DoublonEntrepriseRemplaceeParStrategy(context, options));
+		strategies.add(new DoublonEtablissementStrategy(context, options));
+		strategies.add(new DemenagementSiegeStrategy(context, options));
+		strategies.add(new AdresseStrategy(context, options));
+		strategies.add(new RadiationStrategy(context, options));
+		strategies.add(new DissolutionStrategy(context, options));
+		strategies.add(new FusionScissionStrategy(context, options));
+		strategies.add(new LiquidationStrategy(context, options));
 	}
 
 	/**
@@ -192,12 +196,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 *     Si plusieurs tiers détiennent le même numéro cantonal d'entreprise, le traitement est mis en erreur.
 	 * </p>
 	 * @param event   un événement organisation externe
-	 * @param options les options d'exécution de l'événement
 	 * @return Un événement interne correspondant à l'événement passé en paramètre
 	 * @throws EvenementOrganisationException En cas d'erreur dans la création de l'événements interne, null s'il n'y a pas lieu de créer un événement
 	 */
 	@Override
-	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne toInterne(EvenementOrganisation event) throws EvenementOrganisationException {
 		final Organisation organisation;
 		if (useOrganisationsOfNotice) {
 			final ServiceOrganisationEvent serviceOrganisationEvent = serviceOrganisationService.getOrganisationEvent(event.getNoEvenement()).get(event.getNoOrganisation());
@@ -417,7 +420,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final List<EvenementOrganisationInterne> resultatEvaluationStrategies = new ArrayList<>();
 		if (evaluateStrategies) {
 			for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-				final EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
+				final EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise);
 				if (e != null) {
 					if (e instanceof MessageSuiviPreExecution || e instanceof MessageWarningPreExectution) {
 						evenements.add(e);
@@ -635,6 +638,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

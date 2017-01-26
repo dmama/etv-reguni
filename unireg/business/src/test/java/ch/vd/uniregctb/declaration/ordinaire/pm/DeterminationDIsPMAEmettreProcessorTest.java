@@ -798,7 +798,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				// tâche pour laquelle le type de document n'est pas le bon...
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
 				                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_APM_BATCH, entreprise, CategorieEntreprise.DPAPM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_APM_BATCH, entreprise, CategorieEntreprise.APM, oipm);
 				return entreprise.getNumero();
 			}
 		});
@@ -828,7 +828,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
 					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
 					assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, tacheEnvoi.getTypeDocument());
-					assertEquals(CategorieEntreprise.DPAPM, tacheEnvoi.getCategorieEntreprise());
+					assertEquals(CategorieEntreprise.APM, tacheEnvoi.getCategorieEntreprise());
 				}
 				{
 					final Tache tache = taches.get(1);
@@ -871,7 +871,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				// tâche pour laquelle les dates et le type de document sont bons, mais pas la catégorie d'entreprise
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
 				                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.DPAPM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.APM, oipm);
 				return entreprise.getNumero();
 			}
 		});

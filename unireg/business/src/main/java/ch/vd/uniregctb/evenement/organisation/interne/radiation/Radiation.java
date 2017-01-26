@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.radiation;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -13,9 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
@@ -25,7 +24,6 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 
 	private final RegDate dateApres;
 	private final RegDate dateRadiation;
-	final CategorieEntreprise categorieEntreprise;
 
 	protected Radiation(EvenementOrganisation evenement, Organisation organisation,
 	                    Entreprise entreprise, EvenementOrganisationContext context,
@@ -36,9 +34,6 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 		this.dateRadiation = dateRadiation;
 
 		dateApres = evenement.getDateEvenement();
-
-		this.categorieEntreprise = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
-
 	}
 
 	@Override
@@ -66,6 +61,7 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 		Assert.isTrue(getOrganisation().isRadieeDuRC(dateApres), "L'organisation n'est pas radiée du RC!");
 		Assert.notNull(dateRadiation, "Date de radiation introuvable!");
 
-		Assert.isTrue(categorieEntreprise != CategorieEntreprise.APM, String.format("Mauvaise catégorie d'entreprise: %s (erreur de programmation).", categorieEntreprise.getLibelle()));
+		final FormeLegale formeLegale = getOrganisation().getFormeLegale(dateApres);
+		Assert.isTrue(formeLegale != FormeLegale.N_0109_ASSOCIATION && formeLegale != FormeLegale.N_0110_FONDATION, String.format("Mauvais type d'entreprise: %s (erreur de programmation).", formeLegale.getLibelle()));
 	}
 }

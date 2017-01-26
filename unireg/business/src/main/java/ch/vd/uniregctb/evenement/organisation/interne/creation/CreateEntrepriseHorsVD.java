@@ -2,8 +2,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -19,12 +17,9 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
@@ -34,10 +29,9 @@ import ch.vd.uniregctb.type.MotifRattachement;
  */
 public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraitement {
 
-	RegDate dateDeCreation;
-	boolean isCreation;
+	private RegDate dateDeCreation;
+	private boolean isCreation;
 
-	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
 	final private List<SiteOrganisation> succursalesRCVD;
 	final private Domicile autoriteFiscalePrincipale;
@@ -55,9 +49,6 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
 
 		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
-
-		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
-
 	}
 
 	@Override
@@ -109,8 +100,6 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		// Création de l'entreprise
 		createEntreprise(dateDeCreation, suivis);
 
-		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), dateDeCreation, suivis);
-
 		// Création de l'établissement principal
 		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
 
@@ -127,66 +116,36 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 			appliqueDonneesCivilesSurPeriode(etablissementSecondaire, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 		}
 
-		if (category != null) {
-			switch (category) {
-			case DPPM:
-				if (hasCapital(getOrganisation(), dateDeCreation)) {
-					openForFiscalPrincipal(dateDeCreation,
-					                       autoriteFiscalePrincipale,
-					                       MotifRattachement.DOMICILE,
-					                       MotifFor.DEBUT_EXPLOITATION,
-					                       GenreImpot.BENEFICE_CAPITAL,
-					                       warnings, suivis);
+		final boolean isSocieteDePersonnes = getOrganisation().isSocieteDePersonnes(getDateEvt());
 
-					// Création du bouclement
-					createAddBouclement(dateDeCreation, isCreation, suivis);
+		openRegimesFiscauxParDefautCHVD(getEntreprise(), getOrganisation(), dateDeCreation, suivis);
 
-					// Ajoute les for secondaires
-					adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
-					warnings.addWarning(String.format(messageWarning , category.getLibelle() + " (capital non nul)"));
-				}
-				break;
-			case PM:
-			case APM:
-				openForFiscalPrincipal(dateDeCreation,
-				                       autoriteFiscalePrincipale,
-				                       MotifRattachement.DOMICILE,
-				                       MotifFor.DEBUT_EXPLOITATION,
-				                       GenreImpot.BENEFICE_CAPITAL,
-				                       warnings, suivis);
+		// Rechercher le régime fiscal pour savoir si SP FIXME
+		openForFiscalPrincipal(dateDeCreation,
+		                       autoriteFiscalePrincipale,
+		                       MotifRattachement.DOMICILE,
+		                       null,
+		                       isSocieteDePersonnes ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL,
+		                       warnings, suivis);
 
-				// Création du bouclement
-				createAddBouclement(dateDeCreation, isCreation, suivis);
-
-				// Ajoute les for secondaires
-				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
-				break;
-			case SP:
-				openForFiscalPrincipal(dateDeCreation,
-				                       autoriteFiscalePrincipale,
-				                       MotifRattachement.DOMICILE,
-				                       MotifFor.DEBUT_EXPLOITATION,
-				                       GenreImpot.REVENU_FORTUNE,
-				                       warnings, suivis);
-				break;
-			case FP:
-				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
-				break;
-			default:
-				// Rien à faire
-			}
+		// Réglages exercice commercial
+		if (!isSocieteDePersonnes) {
+			createAddBouclement(dateDeCreation, isCreation, suivis);
 
 			if (!isCreation) {
 				regleDateDebutPremierExerciceCommercial(getEntreprise(), dateDeCreation, suivis);
 			}
 		}
+
+		// Ajoute les for secondaires
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 	}
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		if (category != null) {
-			Assert.state(category != CategorieEntreprise.PP, String.format("Catégorie d'entreprise non supportée! %s", category));
+		if (getOrganisation().isSocieteIndividuelle(getDateEvt()) || getOrganisation().isSocieteSimple(getDateEvt())) {
+			throw new EvenementOrganisationException(String.format("Genre d'entreprise non supportée!: %s", getOrganisation().getFormeLegale(getDateEvt()).getLibelle()));
 		}
 
 		if (succursalesRCVD.size() == 0) {

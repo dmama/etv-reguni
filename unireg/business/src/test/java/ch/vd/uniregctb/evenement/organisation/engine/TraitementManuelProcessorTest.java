@@ -39,7 +39,8 @@ public class TraitementManuelProcessorTest extends AbstractEvenementOrganisation
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null, FormeLegale.N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null,
+						                                                 FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -67,7 +68,7 @@ public class TraitementManuelProcessorTest extends AbstractEvenementOrganisation
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.", evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals("L'organisation n°101202100, nom: 'Synergy SA', possède dans RCEnt une forme juridique non-acceptée par Unireg. Elle ne peut aboutir à la création d'un contribuable.", evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

@@ -9,6 +9,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v4.Capital;
@@ -147,7 +148,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			lf.setShortType(null);
 			lf.setType(EnumHelper.coreToXMLv4Full(fl.getFormeLegale()));
 			lf.setLabel(fl.getFormeLegale().getLibelle());
-			lf.setLegalFormCategory(EnumHelper.coreToXMLv4(CategorieEntrepriseHelper.map(fl.getFormeLegale())));
+			final TypeRegimeFiscal typeRegimeFiscalVD = context.serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, fl.getDateDebut());
+			lf.setLegalFormCategory(EnumHelper.coreToXMLv4(CategorieEntrepriseHelper.convert(typeRegimeFiscalVD.getCategorie())));
 			liste.add(lf);
 		}
 		return liste;

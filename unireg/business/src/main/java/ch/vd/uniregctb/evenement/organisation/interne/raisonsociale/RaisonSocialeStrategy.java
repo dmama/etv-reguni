@@ -36,21 +36,23 @@ public class RaisonSocialeStrategy extends AbstractOrganisationStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RaisonSocialeStrategy.class);
 
 	/**
+	 * @param context le context d'exécution de l'événement
+	 * @param options des options de traitement
+	 */
+	public RaisonSocialeStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		super(context, options);
+	}
+
+	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
-	 * @param context le context d'exécution de l'événement
-	 * @param options des options de traitement
 	 * @return
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
-	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise,
-	                                                   EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
 
 		if (entreprise == null) {
 			return null;

@@ -57,7 +57,6 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -75,10 +74,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -9716,66 +9713,6 @@ debut PF                                                                        
 					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
 					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
 					Assert.assertEquals(Source.CIVILE, capital.getSource());
-				}
-			}
-		});
-	}
-
-	@Test
-	public void testGetCategoriesEntreprise() throws Exception {
-
-		final long noOrganisation = 48518745L;
-		final long noSite = 346742L;
-		final RegDate dateDebut = date(2000, 1, 1);
-		final RegDate dateDebutConnueCivil = date(2005, 3, 4);
-		final RegDate dateDebutChangementFormeLegale = date(2012, 6, 30);
-
-		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation);
-				MockSiteOrganisationFactory.addSite(noSite, org, dateDebutConnueCivil, null, "Tuturlutu SA", FormeLegale.N_0106_SOCIETE_ANONYME, true,
-				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusInscriptionRC.ACTIF, dateDebutConnueCivil.addDays(-3), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, "CHE999999996");
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
-				site.changeFormeLegale(dateDebutChangementFormeLegale, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE);
-				site.changeNom(dateDebutChangementFormeLegale, "Tuturlutu");
-			}
-		});
-
-		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addFormeJuridique(entreprise, dateDebut, dateDebutConnueCivil.getOneDayBefore(), FormeJuridiqueEntreprise.SA);
-				return entreprise.getNumero();
-			}
-		});
-
-
-		// récupération des catégories d'après le tiers service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				final List<CategorieEntrepriseHisto> categories = tiersService.getCategoriesEntrepriseHisto(entreprise);
-				Assert.assertNotNull(categories);
-				Assert.assertEquals(2, categories.size());
-				{
-					final CategorieEntrepriseHisto categorie = categories.get(0);
-					Assert.assertNotNull(categorie);
-					Assert.assertEquals(dateDebut, categorie.getDateDebut());
-					Assert.assertEquals(dateDebutChangementFormeLegale.getOneDayBefore(), categorie.getDateFin());
-					Assert.assertEquals(CategorieEntreprise.PM, categorie.getCategorie());
-				}
-				{
-					final CategorieEntrepriseHisto categorie = categories.get(1);
-					Assert.assertNotNull(categorie);
-					Assert.assertEquals(dateDebutChangementFormeLegale, categorie.getDateDebut());
-					Assert.assertEquals(null, categorie.getDateFin());
-					Assert.assertEquals(CategorieEntreprise.DPPM, categorie.getCategorie());
 				}
 			}
 		});

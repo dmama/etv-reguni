@@ -749,7 +749,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<CategorieEntreprise, String> getMapCategoriesEntreprise() {
 		if (mapCategorieEntreprise == null) {
-			mapCategorieEntreprise = initMapEnum(ApplicationConfig.masterKeyCategorieEntreprise, CategorieEntreprise.class, CategorieEntreprise.PP);
+			mapCategorieEntreprise = initMapEnum(ApplicationConfig.masterKeyCategorieEntreprise, CategorieEntreprise.class, CategorieEntreprise.PM);
 		}
 		return mapCategorieEntreprise;
 	}

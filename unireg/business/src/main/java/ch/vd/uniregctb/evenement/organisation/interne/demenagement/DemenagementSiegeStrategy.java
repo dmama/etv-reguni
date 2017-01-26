@@ -40,21 +40,23 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementSiegeStrategy.class);
 
 	/**
+	 * @param context le context d'exécution de l'événement
+	 * @param options des options de traitement
+	 */
+	public DemenagementSiegeStrategy(EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		super(context, options);
+	}
+
+	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est pertinente.
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
-	 * @param context le context d'exécution de l'événement
-	 * @param options des options de traitement
 	 * @return
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
-	                                                   final Organisation organisation,
-	                                                   Entreprise entreprise,
-	                                                   EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise) throws EvenementOrganisationException {
 
 		// On vérifie qu'on a bien retrouvé l'entreprise concernée par ce type de changement
 		if (entreprise == null) {

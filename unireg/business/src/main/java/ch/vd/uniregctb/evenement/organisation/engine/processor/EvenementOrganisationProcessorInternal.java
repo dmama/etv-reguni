@@ -28,7 +28,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreurFactory;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationMessageCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
@@ -449,7 +448,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	}
 
 	private EvenementOrganisationInterne buildInterne(EvenementOrganisation event) throws EvenementOrganisationException {
-		return translator.toInterne(event, new EvenementOrganisationOptions());
+		return translator.toInterne(event);
 	}
 
 	@Override

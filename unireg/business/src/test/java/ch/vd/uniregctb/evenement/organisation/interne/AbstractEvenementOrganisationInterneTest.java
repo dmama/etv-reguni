@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 
 public abstract class AbstractEvenementOrganisationInterneTest extends BusinessTest {
@@ -31,6 +32,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 
 	protected EvenementOrganisationContext context;
 	protected EvenementOrganisationService evenementOrganisationService;
+	protected ServiceRegimeFiscal serviceRegimeFiscal;
 	protected DataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
 	protected AssujettissementService assujettissementService;
@@ -43,6 +45,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		super.onSetUp();
 
 		evenementOrganisationService = getBean(EvenementOrganisationService.class, "evtOrganisationService");
+		serviceRegimeFiscal = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
 		eventSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierServicePM.class, "metierServicePM");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
@@ -53,7 +56,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		eventSender.reset();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementOrganisationContext(serviceOrganisation, evenementOrganisationService, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
+		context = new EvenementOrganisationContext(serviceOrganisation, evenementOrganisationService, serviceInfra, serviceRegimeFiscal, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 		options = buildOptions();
 	}
 
