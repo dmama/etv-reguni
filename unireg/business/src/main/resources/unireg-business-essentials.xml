@@ -310,6 +310,7 @@
 	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator">
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
 	<bean id="debiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.tiers.DebiteurPrestationImposableValidator" parent="tiersValidator" />
@@ -446,5 +447,11 @@
 	<bean id="adresseMandataireValidator" class="ch.vd.uniregctb.validation.adresse.AdresseMandataireValidator" abstract="true" parent="dateRangeEntityValidator"/>
 	<bean id="adresseMandataireSuisseValidator" class="ch.vd.uniregctb.validation.adresse.AdresseMandataireSuisseValidator" parent="adresseMandataireValidator"/>
 	<bean id="adresseMandataireEtrangereValidator" class="ch.vd.uniregctb.validation.adresse.AdresseMandataireEtrangereValidator" parent="adresseMandataireValidator"/>
+
+	<bean id="allegementFoncierValidator" class="ch.vd.uniregctb.foncier.AllegementFoncierValidator" abstract="true" parent="dateRangeEntityValidator">
+		<property name="registreFoncierService" ref="serviceRF"/>
+	</bean>
+	<bean id="degrevementICIValidator" class="ch.vd.uniregctb.foncier.DegrevementICIValidator" parent="allegementFoncierValidator"/>
+	<bean id="exonerationIFONCValidator" class="ch.vd.uniregctb.foncier.ExonerationIFONCValidator" parent="allegementFoncierValidator"/>
 
 </beans>

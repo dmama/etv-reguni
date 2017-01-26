@@ -54,7 +54,7 @@
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
 		<value>ch.vd.uniregctb.foncier.DemandeDegrevementICI</value>
 		<value>ch.vd.uniregctb.foncier.AllegementFoncier</value>
-		<value>ch.vd.uniregctb.foncier.AllegementIFONC</value>
+		<value>ch.vd.uniregctb.foncier.ExonerationIFONC</value>
 		<value>ch.vd.uniregctb.foncier.DegrevementICI</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal</value>

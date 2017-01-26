@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue(value = "DegrevementICI")
@@ -16,6 +17,12 @@ public class DegrevementICI extends AllegementFoncier {
 	private DonneesLoiLogement loiLogement;
 
 	public DegrevementICI() {
+	}
+
+	@Transient
+	@Override
+	public TypeImpot getTypeImpot() {
+		return TypeImpot.ICI;
 	}
 
 	@Embedded

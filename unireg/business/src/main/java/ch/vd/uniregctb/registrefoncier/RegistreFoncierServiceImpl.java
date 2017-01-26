@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,8 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
@@ -46,7 +50,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb) {
 		return ctb.getRapprochementsRF().stream()
-				.filter(Annulable::isNotAnnule)                         // on ignore les rapprochements annulés
+				.filter(AnnulableHelper::nonAnnule)                     // on ignore les rapprochements annulés
 				.flatMap(RegistreFoncierServiceImpl::getDroitsValides)  // on demande les droits valides pour le rapprochement
 				.sorted(DroitRF::compareTo)                             // on trie les droits pour garder un ordre constant entre chaque appel
 				.collect(Collectors.toList());
@@ -156,5 +160,49 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
 		return ayantDroitRFDAO.getContribuableIdFor(tiersRF);
+	}
+
+	@Nullable
+	@Override
+	public Commune getCommune(ImmeubleRF immeuble, RegDate dateReference) {
+		return immeuble.getSituations().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(situation -> situation.isValidAt(dateReference))
+				.map(SituationRF::getCommune)
+				.map(CommuneRF::getNoOfs)
+				.map(ofs -> infraService.getCommuneByNumeroOfs(ofs, dateReference))
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Nullable
+	@Override
+	public Long getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference) {
+		return immeuble.getEstimations().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(est -> est.isValidAt(dateReference))
+				.findFirst()
+				.map(EstimationRF::getMontant)
+				.orElse(null);
+	}
+
+	@Nullable
+	@Override
+	public String getNumeroParcelleComplet(ImmeubleRF immeuble, RegDate dateReference) {
+		final SituationRF situation = immeuble.getSituations().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(s -> s.isValidAt(dateReference))
+				.findFirst()
+				.orElse(null);
+
+		if (situation != null) {
+			return StringUtils.trimToNull(Stream.of(situation.getNoParcelle(), situation.getIndex1(), situation.getIndex2(), situation.getIndex3())
+					                              .filter(Objects::nonNull)
+					                              .map(String::valueOf)
+					                              .collect(Collectors.joining("-")));
+		}
+		else {
+			return null;
+		}
 	}
 }

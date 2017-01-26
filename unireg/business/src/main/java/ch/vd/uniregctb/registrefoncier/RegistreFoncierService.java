@@ -5,6 +5,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -68,4 +70,28 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	Long getContribuableIdFor(@NotNull TiersRF tiersRF);
+
+	/**
+	 * @param immeuble immeuble du RF
+	 * @param dateReference date de référence
+	 * @return la commune de localisation de l'immeuble à la date de référence (peut être différent en fonction de la date en raison des fusions de communes)
+	 */
+	@Nullable
+	Commune getCommune(ImmeubleRF immeuble, RegDate dateReference);
+
+	/**
+	 * @param immeuble immeuble du RF
+	 * @param dateReference date de référence
+	 * @return l'estimation fiscale valide à la date de référence
+	 */
+	@Nullable
+	Long getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference);
+
+	/**
+	 * @param immeuble immeuble du RF
+	 * @param dateReference date de référence
+	 * @return le numéro de parcelle (avec indexes, séparés par des tirets)
+	 */
+	@Nullable
+	String getNumeroParcelleComplet(ImmeubleRF immeuble, RegDate dateReference);
 }
