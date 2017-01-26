@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -193,6 +194,12 @@ public class MigrationDDImporter {
 			}
 		}
 
+		// pour des raisons d'optimisation, on va chercher toutes les communes et on va les classer par nom "canonique"
+		final Map<String, Commune> mapCommunes = infraService.getCommunes().stream()
+				.collect(Collectors.toMap(commune -> canonizeName(commune.getNomOfficiel()),
+				                          Function.identity(),
+				                          (c1, c2) -> Stream.of(c1, c2).max(Comparator.comparing(Commune::getDateDebutValidite, NullDateBehavior.EARLIEST::compare)).get()));
+
 		// on va devoir traiter les dossiers contribuable par contribuable
 		final Map<Long, List<Map<Integer, MigrationDD>>> mapParContribuable = map.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().numeroEntreprise,
@@ -234,7 +241,7 @@ public class MigrationDDImporter {
 								final List<MigrationDD> list = new ArrayList<>(map.values());
 								final MigrationDD toSave = getDDToSave(list, subRapport.get());
 								last.set(toSave);
-								final List<DegrevementICI> degs = traiterDemande(toSave);
+								final List<DegrevementICI> degs = traiterDemande(toSave, mapCommunes);
 								subRapport.get().incNbDemandesTraitees();
 								return degs;
 							})
@@ -299,10 +306,10 @@ public class MigrationDDImporter {
 	 * @return la liste des dégrèvements à persister
 	 */
 	@NotNull
-	private List<DegrevementICI> traiterDemande(MigrationDD demande) {
+	private List<DegrevementICI> traiterDemande(MigrationDD demande, Map<String, Commune> mapCommunes) {
 
 		final Entreprise entreprise = determinerEntreprise(demande);
-		final ImmeubleRF immeuble = determinerImmeuble(demande);
+		final ImmeubleRF immeuble = determinerImmeuble(demande, mapCommunes);
 
 		final DemandeDegrevementICI dd = new DemandeDegrevementICI();
 		dd.setImmeuble(immeuble);
@@ -345,9 +352,9 @@ public class MigrationDDImporter {
 	}
 
 	@NotNull
-	private ImmeubleRF determinerImmeuble(MigrationDD demande) {
+	private ImmeubleRF determinerImmeuble(MigrationDD demande, Map<String, Commune> mapCommunes) {
 
-		final Commune commune = findCommuneByName(demande.getNomCommune());
+		final Commune commune = mapCommunes.get(canonizeName(demande.getNomCommune()));
 		if (commune == null) {
 			throw new IllegalArgumentException("La commune avec le nom [" + demande.getNomCommune() + "] n'existe pas.");
 		}
@@ -368,16 +375,8 @@ public class MigrationDDImporter {
 		return immeuble;
 	}
 
-	private Commune findCommuneByName(String nomCommune) {
-		final String canonized = canonizeName(nomCommune);
-		return infraService.getCommunes().stream()
-				.filter(commune -> canonizeName(commune.getNomOfficiel()).equals(canonized))
-				.max(Comparator.comparing(Commune::getDateDebutValidite))
-				.orElse(null);
-	}
-
 	private static String canonizeName(String name) {
-		return name.replaceAll("[-.]", " ").replaceAll("[\\s]+", " ").toLowerCase();
+		return name.replaceAll("[-.()]", " ").replaceAll("[\\s]+", " ").trim().toLowerCase();
 	}
 
 	@NotNull
