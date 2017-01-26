@@ -3,6 +3,6 @@ short=7.4
 END_SVERSION
 
 BEGIN_LVERSION
-long=7.4-alpha0
+long=7.4-SNAPSHOT
 END_LVERSION
 
