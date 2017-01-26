@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -166,7 +167,8 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
-		ESTIMATION_FISCALE_ABSENTE_OU_ZERO
+		ESTIMATION_FISCALE_ABSENTE_OU_ZERO,
+		DROIT_USUFRUIT_OU_HABITATION
 	}
 
 	public static final class DemandeDegrevementNonEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementNonEnvoyee> {
@@ -251,6 +253,16 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		                                                  String.format("Demande émise le %s pour la PF %d",
 		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
 		                                                                anneeSuivantDebutDroit)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDroitNonPropriete(Entreprise entreprise, ImmeubleRF immeuble, Class<? extends DroitRF> classeDroit) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  immeuble,
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
+		                                                  classeDroit.getSimpleName()));
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}

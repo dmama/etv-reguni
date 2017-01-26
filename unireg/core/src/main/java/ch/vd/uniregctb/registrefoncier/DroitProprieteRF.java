@@ -29,7 +29,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 		this.part = part;
 	}
 
-	@Column(name = "REGIME_PROPRIETE", nullable = false, length = LengthConstants.RF_GENRE_PROPRIETE)
+	@Column(name = "REGIME_PROPRIETE", length = LengthConstants.RF_GENRE_PROPRIETE)
 	@Enumerated(EnumType.STRING)
 	public GenrePropriete getRegime() {
 		return regime;

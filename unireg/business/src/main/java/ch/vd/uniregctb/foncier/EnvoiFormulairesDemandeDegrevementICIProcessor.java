@@ -46,6 +46,7 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -146,6 +147,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			final DroitRF droit = hibernateTemplate.get(DroitRF.class, idDroitImmeuble.getIdDroit());
 			final ImmeubleRF immeuble = droit.getImmeuble();
 
+			// s'il s'agit d'un droit qui n'est pas un droit de propriété, on l'ignore
+			if (!(droit instanceof DroitProprieteRF)) {
+				rapport.addDroitNonPropriete(entreprise, immeuble, droit.getClass());
+				continue;
+			}
+
 			// quelle est l'estimation fiscale courante TODO à la date de traitement ?
 			final EstimationRF estimationCourante = immeuble.getEstimations().stream()
 					.filter(AnnulableHelper::nonAnnule)
@@ -167,8 +174,6 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			final Integer anneeSuivantDebutDroit = Optional.ofNullable(dateDebutDroit).map(date -> date.year() + 1).orElse(null);
 			if (dateDebutDroit != null) {
 				final DateRange rangeAnneeSuivantDebutDroit = new DateRangeHelper.Range(RegDate.get(anneeSuivantDebutDroit, 1, 1), RegDate.get(anneeSuivantDebutDroit, 12, 31));
-
-				// TODO filtrage sur le type de droit ?
 
 				// recherche de dégrèvement actif sur l'année suivant le début de droit
 				final List<DegrevementICI> degrevements = allegementFoncierDAO.getAllegementsFonciers(entreprise.getNumero(), immeuble.getId(), DegrevementICI.class);

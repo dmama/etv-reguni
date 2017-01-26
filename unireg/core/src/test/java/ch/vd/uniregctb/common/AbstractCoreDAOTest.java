@@ -78,17 +78,20 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
+import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.PartPropriete;
@@ -1642,6 +1645,40 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
+		return merge(droit);
+	}
+
+	@NotNull
+	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
+	                                   TiersRF tiersRF, BienFondRF immeuble) {
+		final UsufruitRF droit = new UsufruitRF();
+		droit.setImmeuble(immeuble);
+		droit.setAyantDroit(tiersRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setNumeroAffaire(numeroAffaire);
+		droit.setIdentifiantDroit(identifiantDroitRF);
+		return merge(droit);
+	}
+
+	@NotNull
+	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
+	                                                 TiersRF tiersRF, BienFondRF immeuble) {
+		final DroitHabitationRF droit = new DroitHabitationRF();
+		droit.setImmeuble(immeuble);
+		droit.setAyantDroit(tiersRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setNumeroAffaire(numeroAffaire);
+		droit.setIdentifiantDroit(identifiantDroitRF);
 		return merge(droit);
 	}
 }

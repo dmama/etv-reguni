@@ -22,10 +22,13 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -1471,6 +1474,102 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
 					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
+			}
+		});
+	}
+
+	@Test
+	public void testDroitUsufruitHabitation() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(2009, 4, 1);
+		final RegDate dateDebutDroit = date(2015, 7, 12);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		final class Ids {
+			long idContribuable;
+			long idImmeuble;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Acheteuse...");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Acheteuse", null, "48514s66fss", 445198L, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			addEstimationFiscale(date(2015, 12, 1), date(2015, 1, 1), null, false, 424242L, "2015", immeuble);
+
+			addUsufruitRF(dateDebutDroit, dateDebutDroit, null, "Achat", null, "74i6783", new IdentifiantAffaireRF(51, null, null, null), new IdentifiantDroitRF(41, 2001, 4), rf, immeuble);
+			addDroitHabitationRF(dateDebutDroit, dateDebutDroit, null, "Achat", null, "gfjk34z78", new IdentifiantAffaireRF(51, null, null, null), new IdentifiantDroitRF(41, 2001, 4), rf, immeuble);
+
+			final Ids identifiants = new Ids();
+			identifiants.idContribuable = entreprise.getNumero();
+			identifiants.idImmeuble = immeuble.getId();
+			return identifiants;
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(2, results.getNbDroitsInspectes());
+		Assert.assertEquals(2, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getEnvois().size());
+		Assert.assertEquals(2, results.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			Assert.assertEquals("Lausanne", ignore.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 112, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION, ignore.raison);
+			Assert.assertEquals(UsufruitRF.class.getSimpleName(), ignore.messageAdditionnel);
+		}
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(1);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			Assert.assertEquals("Lausanne", ignore.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 112, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION, ignore.raison);
+			Assert.assertEquals(DroitHabitationRF.class.getSimpleName(), ignore.messageAdditionnel);
+		}
+
+		// vérification en base...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(0, demandes.size());
 			}
 		});
 	}
