@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -61,6 +62,7 @@ public class RoleServiceTest extends BusinessTest {
 		super.runOnSetUp();
 		roleService = new RoleServiceImpl();
 		roleService.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		roleService.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		roleService.setInfraService(serviceInfra);
 		roleService.setRoleHelper(new RoleHelper(transactionManager, hibernateTemplate, tiersService));
 		roleService.setTiersService(tiersService);
@@ -254,6 +256,37 @@ public class RoleServiceTest extends BusinessTest {
 			final RolePPData data = infoLausanne.get(0);
 			assertNotNull(data);
 			assertInfo(ids.benjamin, RoleData.TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), Collections.singletonList(new NomPrenom("TientPasEnPlace", "Benjamin")), Collections.emptyList(), data);
+		}
+	}
+
+	@Test
+	public void testDepartHS() throws Exception {
+
+		final int anneeRoles = 2015;
+		final RegDate dateDepart = date(anneeRoles, 6, 2);
+
+		final long idpp = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francisco", "Delapierre", date(1964, 8, 12), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aigle);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Japon);
+			return pp.getNumero();
+		});
+
+		final RolePPCommunesResults results = roleService.produireRolePPCommunes(anneeRoles, 1, null, null);
+		assertNotNull(results);
+		assertEquals(1, results.getNbContribuablesTraites());
+		assertEquals(0, results.errors.size());
+		assertEquals(0, results.ignores.size());
+		assertEquals(1, results.extraction.size());
+
+		{
+			final List<RolePPData> infoAigle = results.extraction.get(MockCommune.Aigle.getNoOFS());
+			assertNotNull(infoAigle);
+			assertEquals(1, infoAigle.size());
+
+			final RolePPData data = infoAigle.get(0);
+			assertNotNull(data);
+			assertInfo(idpp, RoleData.TypeContribuable.ORDINAIRE, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MockPays.Japon.getNoOFS(), Collections.singletonList(new NomPrenom("Delapierre", "Francisco")), Collections.emptyList(), data);
 		}
 	}
 

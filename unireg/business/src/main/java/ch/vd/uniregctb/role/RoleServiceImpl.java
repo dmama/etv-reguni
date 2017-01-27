@@ -29,6 +29,7 @@ import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -44,6 +45,7 @@ public class RoleServiceImpl implements RoleService {
 	private TiersService tiersService;
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
+	private AssujettissementService assujettissementService;
 
 	public void setRoleHelper(RoleHelper roleHelper) {
 		this.roleHelper = roleHelper;
@@ -63,6 +65,10 @@ public class RoleServiceImpl implements RoleService {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	/**
@@ -151,7 +157,7 @@ public class RoleServiceImpl implements RoleService {
 		return produireRole(annee,
 		                    nbThreads,
 		                    ofsCommune == null ? null : Collections.singleton(ofsCommune),
-		                    new VarianteCalculRolePPCommunes(roleHelper, () -> new RolePPCommunesResults(annee, nbThreads, ofsCommune, adresseService, infraService, tiersService)),
+		                    new VarianteCalculRolePPCommunes(roleHelper, () -> new RolePPCommunesResults(annee, nbThreads, ofsCommune, adresseService, infraService, tiersService, assujettissementService)),
 		                    statusManager);
 	}
 
@@ -200,7 +206,7 @@ public class RoleServiceImpl implements RoleService {
 		return produireRole(annee,
 		                    nbThreads,
 		                    ofsCommunes,
-		                    new VarianteCalculRolePPOffices(roleHelper, officeParCommune, () -> new RolePPOfficesResults(annee, nbThreads, oid, adresseService, infraService, tiersService)),
+		                    new VarianteCalculRolePPOffices(roleHelper, officeParCommune, () -> new RolePPOfficesResults(annee, nbThreads, oid, adresseService, infraService, tiersService, assujettissementService)),
 		                    statusManager);
 	}
 
@@ -216,7 +222,7 @@ public class RoleServiceImpl implements RoleService {
 		return produireRole(annee,
 		                    nbThreads,
 		                    ofsCommune == null ? null : Collections.singleton(ofsCommune),
-		                    new VarianteCalculRolePMCommunes(roleHelper, () -> new RolePMCommunesResults(annee, nbThreads, ofsCommune, adresseService, infraService, tiersService)),
+		                    new VarianteCalculRolePMCommunes(roleHelper, () -> new RolePMCommunesResults(annee, nbThreads, ofsCommune, adresseService, infraService, tiersService, assujettissementService)),
 		                    statusManager);
 	}
 
@@ -231,7 +237,7 @@ public class RoleServiceImpl implements RoleService {
 		return produireRole(annee,
 		                    nbThreads,
 		                    null,
-	                        new VarianteCalculRolePMOffice(roleHelper, () -> new RolePMOfficeResults(annee, nbThreads, adresseService, infraService, tiersService)),
+	                        new VarianteCalculRolePMOffice(roleHelper, () -> new RolePMOfficeResults(annee, nbThreads, adresseService, infraService, tiersService, assujettissementService)),
 		                    statusManager);
 	}
 }

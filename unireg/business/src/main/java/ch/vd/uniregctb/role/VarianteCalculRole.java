@@ -46,5 +46,5 @@ public interface VarianteCalculRole<T extends Contribuable, R extends RoleResult
 	 * @param contribuable le contribuable à intégrer
 	 * @param ofsCommuneRole [optionnel] la commune de référence du contribuable pour le rôle (contribuable à ignorer si <code>null</code>)
 	 */
-	void compile(R rapport, T contribuable, @Nullable Integer ofsCommuneRole);
+	void compile(R rapport, T contribuable, @Nullable Integer ofsCommuneRole) throws CalculRoleException;
 }

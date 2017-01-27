@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -24,8 +25,8 @@ public class RolePPData extends RoleData {
 	public final List<NomPrenom> nomsPrenoms;
 	public final List<String> nosAvs;
 
-	public RolePPData(ContribuableImpositionPersonnesPhysiques contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, TiersService tiersService) {
-		super(contribuable, ofsCommune, annee, adresseService, infrastructureService);
+	public RolePPData(ContribuableImpositionPersonnesPhysiques contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, TiersService tiersService, AssujettissementService assujettissementService) throws CalculRoleException {
+		super(contribuable, ofsCommune, annee, adresseService, infrastructureService, assujettissementService);
 		if (contribuable instanceof PersonnePhysique) {
 			this.nomsPrenoms = buildNomPrenom((PersonnePhysique) contribuable, tiersService);
 			this.nosAvs = buildNoAvs((PersonnePhysique) contribuable, tiersService);

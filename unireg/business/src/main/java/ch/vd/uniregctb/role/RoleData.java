@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.role;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -17,11 +18,13 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.LocalisationFiscale;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -46,20 +49,25 @@ public abstract class RoleData {
 			this.displayLabel = displayLabel;
 		}
 
-		public static TypeContribuable fromModeImposition(ModeImposition modeImposition) {
-			switch (modeImposition) {
-			case DEPENSE:
+		public static TypeContribuable fromTypeAssujettissement(TypeAssujettissement typeAssujettissement) {
+			switch (typeAssujettissement) {
+			case VAUDOIS_DEPENSE:
 				return DEPENSE;
-			case ORDINAIRE:
+			case DIPLOMATE_SUISSE:
+			case VAUDOIS_ORDINAIRE:
 			case INDIGENT:
 				return ORDINAIRE;
 			case MIXTE_137_1:
 			case MIXTE_137_2:
 				return MIXTE;
-			case SOURCE:
+			case SOURCE_PURE:
 				return SOURCE;
+			case HORS_CANTON:
+				return HORS_CANTON;
+			case HORS_SUISSE:
+				return HORS_SUISSE;
 			default:
-				throw new IllegalArgumentException("Mode d'imposition inconnu ici : " + modeImposition);
+				throw new IllegalArgumentException("Mode d'imposition inconnu ou inattendu ici : " + typeAssujettissement);
 			}
 		}
 	}
@@ -72,13 +80,13 @@ public abstract class RoleData {
 	public final LocalisationFiscale domicileFiscal;
 	public final String nomDomicileFiscal;
 
-	public RoleData(Contribuable contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService) {
+	public RoleData(Contribuable contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, AssujettissementService assujettissementService) throws CalculRoleException {
 		final RegDate dateReference = RegDate.get(annee, 12, 31);
 		this.noContribuable = contribuable.getNumero();
 		this.noOfsCommune = ofsCommune;
 		this.nomCommune = fillNomCommune(ofsCommune, dateReference, infrastructureService);
 		this.adresseEnvoi = fillAdresseEnvoi(contribuable, dateReference, adresseService);
-		this.typeContribuable = fillTypeContribuable(contribuable, dateReference);
+		this.typeContribuable = fillTypeContribuable(contribuable, dateReference, assujettissementService);
 		this.domicileFiscal = fillDomicileFiscal(contribuable, dateReference);
 		this.nomDomicileFiscal = fillNomDomicileFiscal(this.domicileFiscal, dateReference, infrastructureService);
 	}
@@ -119,23 +127,24 @@ public abstract class RoleData {
 	}
 
 	@Nullable
-	private static TypeContribuable fillTypeContribuable(Contribuable contribuable, RegDate dateReference) {
-		final ForFiscalPrincipal ffp = contribuable.getDernierForFiscalPrincipalAvant(dateReference);
-		switch (ffp.getTypeAutoriteFiscale()) {
-		case COMMUNE_HC:
-			return TypeContribuable.HORS_CANTON;
-		case PAYS_HS:
-			return TypeContribuable.HORS_SUISSE;
-		case COMMUNE_OU_FRACTION_VD:
-			return Optional.of(ffp)
-					.filter(f -> f instanceof ForFiscalPrincipalPP)
-					.map(f -> (ForFiscalPrincipalPP) f)
-					.map(ForFiscalPrincipalPP::getModeImposition)
-					.map(TypeContribuable::fromModeImposition)
-					.orElse(TypeContribuable.ORDINAIRE);
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + ffp.getTypeAutoriteFiscale());
+	private static TypeContribuable fillTypeContribuable(Contribuable contribuable, RegDate dateReference, AssujettissementService assujettissementService) throws CalculRoleException {
+
+		// calcul d'assujettissement pour trouver le type de contribuable
+		final List<Assujettissement> assujettissements;
+		try {
+			assujettissements = assujettissementService.determine(contribuable, dateReference.year());
 		}
+		catch (AssujettissementException e) {
+			throw new CalculRoleException(e);
+		}
+
+		// aucun assujettissement sur l'année considérée ???
+		if (assujettissements == null || assujettissements.isEmpty()) {
+			throw new CalculRoleException("Contribuable non-assujetti sur l'année " + dateReference.year());
+		}
+
+		final Assujettissement dernierAssujettissement = assujettissements.get(assujettissements.size() - 1);
+		return TypeContribuable.fromTypeAssujettissement(dernierAssujettissement.getType());
 	}
 
 	@Nullable

@@ -14,7 +14,7 @@ public class VarianteCalculRolePMCommunes extends VarianteCalculRolePM<RolePMCom
 	}
 
 	@Override
-	public void compile(RolePMCommunesResults rapport, Entreprise contribuable, @Nullable Integer ofsCommuneRole) {
+	public void compile(RolePMCommunesResults rapport, Entreprise contribuable, @Nullable Integer ofsCommuneRole) throws CalculRoleException {
 		if (ofsCommuneRole == null) {
 			rapport.addIgnore(contribuable, getRaisonIgnore(contribuable, rapport.ofsCommune != null, RegDate.get(rapport.annee, 12, 31)));
 		}

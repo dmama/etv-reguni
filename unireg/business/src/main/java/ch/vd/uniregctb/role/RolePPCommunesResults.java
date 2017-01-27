@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.role;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -27,8 +27,8 @@ public class RolePPCommunesResults extends RolePPResults<RolePPCommunesResults> 
 	 */
 	public final Map<Integer, List<RolePPData>> extraction = new HashMap<>();
 
-	public RolePPCommunesResults(int annee, int nbThreads, @Nullable Integer ofsCommune, AdresseService adresseService, ServiceInfrastructureService infraService, TiersService tiersService) {
-		super(annee, nbThreads, adresseService, infraService, tiersService);
+	public RolePPCommunesResults(int annee, int nbThreads, @Nullable Integer ofsCommune, AdresseService adresseService, ServiceInfrastructureService infraService, TiersService tiersService, AssujettissementService assujettissementService) {
+		super(annee, nbThreads, adresseService, infraService, tiersService, assujettissementService);
 		this.ofsCommune = ofsCommune;
 	}
 
@@ -40,14 +40,13 @@ public class RolePPCommunesResults extends RolePPResults<RolePPCommunesResults> 
 
 	@Override
 	public void end() {
-		this.extraction.values().forEach(list -> Collections.sort(list,
-		                                                          Comparator.comparingLong(data -> data.noContribuable)));
+		this.extraction.values().forEach(list -> list.sort(Comparator.comparingLong(data -> data.noContribuable)));
 		super.end();
 	}
 
-	public void addToRole(ContribuableImpositionPersonnesPhysiques contribuable, int ofsCommune) {
+	public void addToRole(ContribuableImpositionPersonnesPhysiques contribuable, int ofsCommune) throws CalculRoleException {
 		final List<RolePPData> list = extraction.computeIfAbsent(ofsCommune, key -> new LinkedList());
-		list.add(new RolePPData(contribuable, ofsCommune, annee, adresseService, infraService, tiersService));
+		list.add(new RolePPData(contribuable, ofsCommune, annee, adresseService, infraService, tiersService, assujettissementService));
 		addContribuableAuDecompte();
 	}
 }
