@@ -103,6 +103,7 @@
 					<xs:documentation>Lettre de rappel avec formulaire de dégrèvement immeuble : CodDoc=U1PU, typDoc=CO</xs:documentation>
 				</xs:annotation>
 			</xs:group>
+			<xs:group ref="fourreNeutre"/>
 		</xs:choice>
 	</xs:group>
 	<xs:group name="DI">
@@ -615,7 +616,7 @@ U1P8ADASDOCUM
 					<xs:documentation>Localité présente sur les documents sous la forme :
 
 	Lausanne, le
-
+	
 (Seule la localité est à renseigner)</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -638,10 +639,10 @@ U1P8ADASDOCUM
 				<xs:annotation>
 					<xs:documentation>CHXX BBBB BCCC CCCC CCCC C
 
-        (avec XX : Clef de contrôle de 02 à 98,
-        B = code banque,
+        (avec XX : Clef de contrôle de 02 à 98, 
+        B = code banque, 
         C = numéro de compte)
-
+        
 
 </xs:documentation>
 				</xs:annotation>
