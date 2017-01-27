@@ -481,7 +481,7 @@
 	<distributionManagement>
 		<site>
 			<id>unireg.website</id>
-			<url>scp://tom.etat-de-vaud.ch/var/www/html/unireg/javadoc-site/uniregctb-base</url>
+			<url>scp://sirec@tom.etat-de-vaud.ch/var/www/html/unireg/javadoc-site/uniregctb-base</url>
 		</site>
 		<repository>
 			<id>nexus.releases</id>
