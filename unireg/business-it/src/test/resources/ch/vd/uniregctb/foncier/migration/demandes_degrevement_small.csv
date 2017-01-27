@@ -1,16 +1,16 @@
-;;N°;;N° parcelle;;;Début;Fin;;;Date début;Année;Date;Délai;Date;Date;Délai;Estimation;EF;EF;EF;DD établie;Mode;;;;;
-N° société;Nom court société;ACI;Nom commune immeuble;de base;N° parcelle;N° lot PPE;rattachement;rattachement;Motif envoi DD;Etat DD;valid. DD;fiscale;envoi DD;retour DD;retour DD;rappel DD;rapel DD;fiscale;soumise;exonéré;caract social;par CTB;ratt;Revenu locati;Surface;Volume;% usage;Usage
+;;N°;N°;;N° parcelle;;;Début;Fin;;;Date début;Année;Date;Délai;Date;Date;Délai;Estimation;EF;EF;EF;DD établie;Mode;;;;;
+N° société;Nom court société;ACI;OFS;Nom commune immeuble;de base;N° parcelle;N° lot PPE;rattachement;rattachement;Motif envoi DD;Etat DD;valid. DD;fiscale;envoi DD;retour DD;retour DD;rappel DD;rapel DD;fiscale;soumise;exonéré;caract social;par CTB;ratt;Revenu locati;Surface;Volume;% usage;Usage
 -----------;------------------------------;---;-------------------------;-----------;-----------;----------;------------;------------;------------------------------;-----------;----------;-------;----------;----------;----------;----------;----------;-------------;-------------;-------------;-------------;----------;----;-------------;-----------;-----------;-----------;----------
-9;FIDOC & PARTENAIRES FIDUCIAIRE;216;La Sarraz;398;579;3;16.01.1987;;Délai de 5 ans expiré;Enregistrée;06.02.2013;2013;09.01.2013;13.02.2013;06.02.2013;;;285,000;0;285,000;0;O;ENT;0;0;0;100;PR. USAGE
-16;SOTRIDEC;621;Gland;4298;;;17.06.2015;;Nouveau propriétaire;Enregistrée;24.05.2016;2016;07.03.2016;11.04.2016;24.05.2016;02.05.2016;01.06.2016;0;0;0;0;O;ENT;0;0;0;100;PR. USAGE
-42;CARROSSERIE GINGINS;619;Gingins;424;536;1;30.04.2004;;Délai de 5 ans expiré;Enregistrée;18.01.2011;2011;03.01.2011;07.02.2011;18.01.2011;;;245,000;0;245,000;0;O;ENT;0;165;0;100;PR. USAGE
-42;CARROSSERIE GINGINS;619;Gingins;424;540;5;19.05.2009;;Changement revenu locatif;Enregistrée;19.02.2014;2014;18.02.2014;25.03.2014;;;;395,000;0;395,000;0;N;ENT;0;0;0;100;PR. USAGE
-42;CARROSSERIE GINGINS;619;Gingins;508;508-2;2;17.09.2013;;Nouveau propriétaire;Enregistrée;19.02.2014;2014;03.02.2014;10.03.2014;18.02.2014;;;234,000;0;234,000;0;O;ENT;0;0;0;100;PR. USAGE
-47;FIDUCIAIRE DUFAUX & MURY;906;La Tour-de-Peilz;64;2065;5;29.02.1984;;Délai de 5 ans expiré;Enregistrée;13.02.2013;2013;09.01.2013;13.02.2013;13.02.2013;;;330,000;0;330,000;0;O;ENT;0;0;0;100;PR. USAGE
-47;FIDUCIAIRE DUFAUX & MURY;906;La Tour-de-Peilz;64;2066;6;29.02.1984;;Délai de 5 ans expiré;Enregistrée;20.01.2015;2015;05.01.2015;09.02.2015;20.01.2015;;;240,000;0;240,000;0;O;ENT;0;0;0;100;PR. USAGE
-73;CUENOD & PAYOT CHABLAIS;51;Aigle;1053;1053-6;6;06.07.2013;;Nouvelle estimation fiscale;Enregistrée;07.05.2015;2015;07.04.2015;12.05.2015;05.05.2015;;;284,000;284,000;0;0;O;ENT;0;0;0;100;LOUE TIERS
-94;FEBEX;52;Bex;1;;;21.08.1923;;Nouvelle estimation fiscale;Enregistrée;21.02.2011;2011;03.01.2011;07.02.2011;21.02.2011;;;8,125,000;162,500;7,962,500;0;O;ENT;11,375;0;0;2;LOUE TIERS
-94;FEBEX;52;Bex;1;;;21.08.1923;;Nouvelle estimation fiscale;Enregistrée;21.02.2011;2011;03.01.2011;07.02.2011;21.02.2011;;;8,125,000;162,500;7,962,500;0;O;ENT;557,375;0;0;98;PR. USAGE
-8143;EGICA;52;Bex;2245;;;01.04.2011;;Changement revenu locatif;Enregistrée;20.11.2013;2014;31.10.2013;05.12.2013;20.11.2013;;;964,000;706,419;257,580;0;O;ENT;1,384;175;0;26.72;PR. USAGE
-8143;EGICA;52;Bex;2245;;;01.04.2011;;Changement revenu locatif;Enregistrée;20.11.2013;2014;31.10.2013;05.12.2013;20.11.2013;;;964,000;706,419;257,580;0;O;ENT;3,796;480;0;73.28;LOUE TIERS
-8143;EGICA;52;Bex;2245;;;01.04.2011;;Nouvelle estimation fiscale;Enregistrée;20.11.2013;2013;30.09.2013;04.11.2013;20.11.2013;;;964,000;0;74,000;0;O;ENT;0;0;0;100;PR. USAGE
+9;FIDOC & PARTENAIRES FIDUCIAIRE;216;5498;La Sarraz;398;579;3;16.01.1987;;Délai de 5 ans expiré;Enregistrée;06.02.2013;2013;09.01.2013;13.02.2013;06.02.2013;;;285,000;0;285,000;0;O;ENT;0;0;0;100;PR. USAGE
+16;SOTRIDEC;621;5721;Gland;4298;;;17.06.2015;;Nouveau propriétaire;Enregistrée;24.05.2016;2016;07.03.2016;11.04.2016;24.05.2016;02.05.2016;01.06.2016;0;0;0;0;O;ENT;0;0;0;100;PR. USAGE
+42;CARROSSERIE GINGINS;619;5719;Gingins;424;536;1;30.04.2004;;Délai de 5 ans expiré;Enregistrée;18.01.2011;2011;03.01.2011;07.02.2011;18.01.2011;;;245,000;0;245,000;0;O;ENT;0;165;0;100;PR. USAGE
+42;CARROSSERIE GINGINS;619;5719;Gingins;424;540;5;19.05.2009;;Changement revenu locatif;Enregistrée;19.02.2014;2014;18.02.2014;25.03.2014;;;;395,000;0;395,000;0;N;ENT;0;0;0;100;PR. USAGE
+42;CARROSSERIE GINGINS;619;5719;Gingins;508;508-2;2;17.09.2013;;Nouveau propriétaire;Enregistrée;19.02.2014;2014;03.02.2014;10.03.2014;18.02.2014;;;234,000;0;234,000;0;O;ENT;0;0;0;100;PR. USAGE
+47;FIDUCIAIRE DUFAUX & MURY;906;5889;La Tour-de-Peilz;64;2065;5;29.02.1984;;Délai de 5 ans expiré;Enregistrée;13.02.2013;2013;09.01.2013;13.02.2013;13.02.2013;;;330,000;0;330,000;0;O;ENT;0;0;0;100;PR. USAGE
+47;FIDUCIAIRE DUFAUX & MURY;906;5889;La Tour-de-Peilz;64;2066;6;29.02.1984;;Délai de 5 ans expiré;Enregistrée;20.01.2015;2015;05.01.2015;09.02.2015;20.01.2015;;;240,000;0;240,000;0;O;ENT;0;0;0;100;PR. USAGE
+73;CUENOD & PAYOT CHABLAIS;51;5401;Aigle;1053;1053-6;6;06.07.2013;;Nouvelle estimation fiscale;Enregistrée;07.05.2015;2015;07.04.2015;12.05.2015;05.05.2015;;;284,000;284,000;0;0;O;ENT;0;0;0;100;LOUE TIERS
+94;FEBEX;52;5402;Bex;1;;;21.08.1923;;Nouvelle estimation fiscale;Enregistrée;21.02.2011;2011;03.01.2011;07.02.2011;21.02.2011;;;8,125,000;162,500;7,962,500;0;O;ENT;11,375;0;0;2;LOUE TIERS
+94;FEBEX;52;5402;Bex;1;;;21.08.1923;;Nouvelle estimation fiscale;Enregistrée;21.02.2011;2011;03.01.2011;07.02.2011;21.02.2011;;;8,125,000;162,500;7,962,500;0;O;ENT;557,375;0;0;98;PR. USAGE
+8143;EGICA;52;5402;Bex;2245;;;01.04.2011;;Changement revenu locatif;Enregistrée;20.11.2013;2014;31.10.2013;05.12.2013;20.11.2013;;;964,000;706,419;257,580;0;O;ENT;1,384;175;0;26.72;PR. USAGE
+8143;EGICA;52;5402;Bex;2245;;;01.04.2011;;Changement revenu locatif;Enregistrée;20.11.2013;2014;31.10.2013;05.12.2013;20.11.2013;;;964,000;706,419;257,580;0;O;ENT;3,796;480;0;73.28;LOUE TIERS
+8143;EGICA;52;5402;Bex;2245;;;01.04.2011;;Nouvelle estimation fiscale;Enregistrée;20.11.2013;2013;30.09.2013;04.11.2013;20.11.2013;;;964,000;0;74,000;0;O;ENT;0;0;0;100;PR. USAGE
