@@ -16,6 +16,8 @@ public class MigrationDD {
 
 	private long noAciCommune;
 
+	private int noOfsCommune;
+
 	private String nomCommune;
 
 	private String noBaseParcelle;
@@ -82,6 +84,14 @@ public class MigrationDD {
 
 	public void setNoAciCommune(long noAciCommune) {
 		this.noAciCommune = noAciCommune;
+	}
+
+	public int getNoOfsCommune() {
+		return noOfsCommune;
+	}
+
+	public void setNoOfsCommune(int noOfsCommune) {
+		this.noOfsCommune = noOfsCommune;
 	}
 
 	public String getNomCommune() {
@@ -265,6 +275,7 @@ public class MigrationDD {
 				", numeroEntreprise=" + numeroEntreprise +
 				", nomEntreprise='" + nomEntreprise + '\'' +
 				", noAciCommune=" + noAciCommune +
+				", noOfsCommune=" + noOfsCommune +
 				", nomCommune='" + nomCommune + '\'' +
 				", noBaseParcelle='" + noBaseParcelle + '\'' +
 				", noParcelle='" + noParcelle + '\'' +
