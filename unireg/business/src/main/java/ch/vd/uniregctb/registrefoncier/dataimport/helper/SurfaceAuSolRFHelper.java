@@ -20,17 +20,22 @@ public abstract class SurfaceAuSolRFHelper {
 	}
 
 	public static SurfaceAuSolRFKey newKey(@NotNull Bodenbedeckung surface) {
-		return new SurfaceAuSolRFKey(surface.getGrundstueckIDREF(), surface.getArt().getTextFr(), surface.getFlaeche());
+		return new SurfaceAuSolRFKey(surface.getGrundstueckIDREF(), getType(surface), surface.getFlaeche());
 	}
 
 	public static SurfaceAuSolRF newSurfaceAuSolRF(@NotNull Bodenbedeckung bodenbedeckung) {
 		final SurfaceAuSolRF surface = new SurfaceAuSolRF();
 		surface.setSurface(bodenbedeckung.getFlaeche());
-		surface.setType(Optional.of(bodenbedeckung)
+		surface.setType(getType(bodenbedeckung));
+		return surface;
+	}
+
+	@NotNull
+	private static String getType(@NotNull Bodenbedeckung bodenbedeckung) {
+		return Optional.of(bodenbedeckung)
 				                .map(Bodenbedeckung::getArt)
 				                .map(CapiCode::getTextFr)
-				                .orElse("Indéterminé"));    // SIFISC-22504
-		return surface;
+				                .orElse("Indéterminé"); // SIFISC-22504 + SIFISC-23055
 	}
 
 	public static boolean dataEquals(@Nullable Set<SurfaceAuSolRF> surfaces, @Nullable List<Bodenbedeckung> bodenbedeckung) {

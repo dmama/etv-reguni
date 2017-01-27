@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
+import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -140,6 +141,23 @@ public class SurfaceAuSolRFHelperTest {
 		assertNotNull(surfaceAuSolRF);
 		assertEquals(49, surfaceAuSolRF.getSurface());
 		assertEquals("Indéterminé", surfaceAuSolRF.getType());
+	}
+
+	/**
+	 * [SIFISC-23055] Ce test vérifie que la création d'une clé de surface au sol à partir d'une donnée RF sans type ne crashe pas et que le type utilisé est 'Indéterminé'.
+	 */
+	@Test
+	public void testNewKeySansType() throws Exception {
+
+		final Bodenbedeckung bodendeckung = new Bodenbedeckung();
+		bodendeckung.setGrundstueckIDREF("1f109152381046080138104a9c595368");
+		bodendeckung.setFlaeche(49);
+
+		final SurfaceAuSolRFKey key = SurfaceAuSolRFHelper.newKey(bodendeckung);
+		assertNotNull(key);
+		assertEquals("1f109152381046080138104a9c595368", key.getIdRF());
+		assertEquals(49, key.getSurface());
+		assertEquals("Indéterminé", key.getType());
 	}
 
 	@NotNull
