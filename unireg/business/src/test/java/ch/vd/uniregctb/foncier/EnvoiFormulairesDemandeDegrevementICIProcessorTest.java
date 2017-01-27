@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.foncier;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -1578,38 +1582,181 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 	@Test
 	public void testAnneeDebutValiditeEstimationFiscale() throws Exception {
 		// priorité à la référence
-		Assert.assertEquals((Integer) 2015, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", null)));
-		Assert.assertEquals((Integer) 2015, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", RegDate.get(1965, 2, 1))));
-		Assert.assertEquals((Integer) 2015, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", RegDate.get(2017, 1, 1))));
-		Assert.assertEquals((Integer) 2018, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2017, 1, 1))));
-		Assert.assertEquals((Integer) 2014, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2013, 1, 1))));
-		Assert.assertEquals((Integer) 2014, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2013, 1, 2))));
-		Assert.assertNull(EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, null)));
+		Assert.assertEquals(Optional.of(2015), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", null)));
+		Assert.assertEquals(Optional.of(2015), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", RegDate.get(1965, 2, 1))));
+		Assert.assertEquals(Optional.of(2015), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", RegDate.get(2017, 1, 1))));
+		Assert.assertEquals(Optional.of(2018), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2017, 1, 1))));
+		Assert.assertEquals(Optional.of(2014), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2013, 1, 1))));
+		Assert.assertEquals(Optional.of(2014), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2013, 1, 2))));
+		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, null)));
 
 		// interprétation de la référence
-		Assert.assertEquals((Integer) 1968, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG67", null)));
-		Assert.assertEquals((Integer) 1968, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG 67", null)));
-		Assert.assertEquals((Integer) 1968, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("Rg 67", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG2000", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("1.4.2000", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000enrévision", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000T.", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rg", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rf", null)));
-		Assert.assertEquals((Integer) 2001, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rP", null)));
-		Assert.assertEquals((Integer) 1998, EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(" RG   97   ", null)));
+		Assert.assertEquals(Optional.of(1968), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG67", null)));
+		Assert.assertEquals(Optional.of(1968), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG 67", null)));
+		Assert.assertEquals(Optional.of(1968), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("Rg 67", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG2000", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("1.4.2000", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000enrévision", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000T.", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rg", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rf", null)));
+		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rP", null)));
+		Assert.assertEquals(Optional.of(1998), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(" RG   97   ", null)));
 
 		// non-interprétation de la référence
-		Assert.assertNull(EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000EE", null)));
-		Assert.assertNull(EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("20011", null)));
-		Assert.assertNull(EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("64", null)));
-		Assert.assertNull(EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("4.2000", null)));
+		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000EE", null)));
+		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("20011", null)));
+		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("64", null)));
+		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("4.2000", null)));
 	}
 
 	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription) {
+		return buildDummyEstimationRF(reference, dateInscription, null);
+	}
+
+	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription, Long montant) {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setReference(reference);
 		estimation.setDateInscription(dateInscription);
+		estimation.setMontant(montant);
 		return estimation;
+	}
+
+	@Test
+	public void testGetFirstEstimationWithSameAmountAsLast() throws Exception {
+		{
+			final NavigableMap<Integer, EstimationRF> map = new TreeMap<>();
+			map.put(2005, buildDummyEstimationRF("2005", date(2005, 2, 1), 10000L));
+			map.put(2007, buildDummyEstimationRF("2007", date(2007, 2, 1), 9000L));
+			map.put(2009, buildDummyEstimationRF("2009", date(2009, 2, 1), 10000L));
+			map.put(2015, buildDummyEstimationRF("2015", date(2015, 2, 1), 10000L));
+
+			final EstimationRF actual = EnvoiFormulairesDemandeDegrevementICIProcessor.getFirstEstimationWithSameAmountAsLast(map);
+			Assert.assertNotNull(actual);
+			Assert.assertEquals("2009", actual.getReference());
+			Assert.assertEquals(date(2009, 2, 1), actual.getDateInscription());
+		}
+		{
+			final NavigableMap<Integer, EstimationRF> map = new TreeMap<>();
+			map.put(2015, buildDummyEstimationRF("2015", date(2015, 2, 1), 10000L));
+
+			final EstimationRF actual = EnvoiFormulairesDemandeDegrevementICIProcessor.getFirstEstimationWithSameAmountAsLast(map);
+			Assert.assertNotNull(actual);
+			Assert.assertEquals("2015", actual.getReference());
+			Assert.assertEquals(date(2015, 2, 1), actual.getDateInscription());
+		}
+		{
+			final NavigableMap<Integer, EstimationRF> map = Collections.emptyNavigableMap();
+			final EstimationRF actual = EnvoiFormulairesDemandeDegrevementICIProcessor.getFirstEstimationWithSameAmountAsLast(map);
+			Assert.assertNull(actual);
+		}
+		{
+			final NavigableMap<Integer, EstimationRF> map = new TreeMap<>();
+			map.put(2005, buildDummyEstimationRF("2005", date(2005, 2, 1), 10000L));
+			map.put(2007, buildDummyEstimationRF("2007", date(2007, 2, 1), 9000L));
+			map.put(2009, buildDummyEstimationRF("2009", date(2009, 2, 1), null));
+			map.put(2015, buildDummyEstimationRF("2015", date(2015, 2, 1), 10000L));
+
+			final EstimationRF actual = EnvoiFormulairesDemandeDegrevementICIProcessor.getFirstEstimationWithSameAmountAsLast(map);
+			Assert.assertNotNull(actual);
+			Assert.assertEquals("2015", actual.getReference());
+			Assert.assertEquals(date(2015, 2, 1), actual.getDateInscription());
+		}
+		{
+			final NavigableMap<Integer, EstimationRF> map = new TreeMap<>();
+			map.put(2005, buildDummyEstimationRF("2005", date(2005, 2, 1), 10000L));
+			map.put(2007, buildDummyEstimationRF("2007", date(2007, 2, 1), null));
+			map.put(2009, buildDummyEstimationRF("2009", date(2009, 2, 1), null));
+			map.put(2015, buildDummyEstimationRF("2015", date(2015, 2, 1), null));
+
+			final EstimationRF actual = EnvoiFormulairesDemandeDegrevementICIProcessor.getFirstEstimationWithSameAmountAsLast(map);
+			Assert.assertNotNull(actual);
+			Assert.assertEquals("2007", actual.getReference());
+			Assert.assertEquals(date(2007, 2, 1), actual.getDateInscription());
+		}
+	}
+
+	@Test
+	public void testNouvelleEstimationFiscaleSansChangementDuMontant() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(2009, 4, 1);
+		final RegDate dateDebutDroit = date(2010, 7, 12);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		final class Ids {
+			long idContribuable;
+			long idImmeuble;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Acheteuse...");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			final PersonneMoraleRF pmRF = addPersonneMoraleRF("Acheteuse", null, "48514s66fss", 445198L, null);
+			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			addEstimationFiscale(date(2010, 12, 1), null, null, false, 424242L, "2010", immeuble);
+			addEstimationFiscale(date(2014, 12, 1), null, null, false, 424242L, "2014", immeuble);      // même montant 4 ans plus tard
+
+			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "1555sfsgbsfhd", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
+
+			addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, 2011, immeuble);
+
+			final Ids identifiants = new Ids();
+			identifiants.idContribuable = entreprise.getNumero();
+			identifiants.idImmeuble = immeuble.getId();
+			return identifiants;
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, 1, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDroitsInspectes());
+		Assert.assertEquals(1, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getEnvois().size());
+		Assert.assertEquals(1, results.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			Assert.assertEquals("Lausanne", ignore.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 112, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT, ignore.raison);
+			Assert.assertEquals("Demande émise le 22.07.2010 pour la PF 2011", ignore.messageAdditionnel);
+		}
+
+		// vérification en base...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(1, demandes.size());        // la demande précédemment présente
+			}
+		});
 	}
 }
