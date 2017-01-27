@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
@@ -22,8 +23,8 @@ public class RolePMData extends RoleData {
 	public final String raisonSociale;
 	public final FormeLegale formeJuridique;
 
-	public RolePMData(Entreprise entreprise, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, TiersService tiersService) {
-		super(entreprise, ofsCommune, annee, adresseService, infrastructureService);
+	public RolePMData(Entreprise entreprise, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, TiersService tiersService, AssujettissementService assujettissementService) throws CalculRoleException {
+		super(entreprise, ofsCommune, annee, adresseService, infrastructureService, assujettissementService);
 		this.noIDE = tiersService.getNumeroIDE(entreprise);
 		this.raisonSociale = buildRaisonSociale(entreprise, annee, tiersService);
 		this.formeJuridique = buildFormeJuridique(entreprise, annee, tiersService);

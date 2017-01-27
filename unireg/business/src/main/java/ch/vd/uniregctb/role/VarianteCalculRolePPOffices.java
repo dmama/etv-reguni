@@ -18,7 +18,7 @@ public class VarianteCalculRolePPOffices extends VarianteCalculRolePP<RolePPOffi
 	}
 
 	@Override
-	public void compile(RolePPOfficesResults rapport, ContribuableImpositionPersonnesPhysiques contribuable, @Nullable Integer ofsCommuneRole) {
+	public void compile(RolePPOfficesResults rapport, ContribuableImpositionPersonnesPhysiques contribuable, @Nullable Integer ofsCommuneRole) throws CalculRoleException {
 		if (ofsCommuneRole == null) {
 			rapport.addIgnore(contribuable, getRaisonIgnore(contribuable, rapport.oid != null, RegDate.get(rapport.annee, 12, 31)));
 		}

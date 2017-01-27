@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.role;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +8,7 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -17,6 +17,7 @@ public abstract class RoleResults<R extends RoleResults<R>> extends AbstractJobR
 	protected final AdresseService adresseService;
 	protected final ServiceInfrastructureService infraService;
 	protected final TiersService tiersService;
+	protected final AssujettissementService assujettissementService;
 
 	public final int annee;
 	public final int nbThreads;
@@ -70,12 +71,13 @@ public abstract class RoleResults<R extends RoleResults<R>> extends AbstractJobR
 		}
 	}
 
-	public RoleResults(int annee, int nbThreads, AdresseService adresseService, ServiceInfrastructureService infraService, TiersService tiersService) {
+	public RoleResults(int annee, int nbThreads, AdresseService adresseService, ServiceInfrastructureService infraService, TiersService tiersService, AssujettissementService assujettissementService) {
 		this.annee = annee;
 		this.nbThreads = nbThreads;
 		this.adresseService = adresseService;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
+		this.assujettissementService = assujettissementService;
 	}
 
 	/**
@@ -100,8 +102,8 @@ public abstract class RoleResults<R extends RoleResults<R>> extends AbstractJobR
 
 	@Override
 	public void end() {
-		Collections.sort(errors, Comparator.comparingLong(e -> e.noContribuable));
-		Collections.sort(ignores, Comparator.comparingLong(i -> i.noContribuable));
+		errors.sort(Comparator.comparingLong(e -> e.noContribuable));
+		ignores.sort(Comparator.comparingLong(i -> i.noContribuable));
 		super.end();
 	}
 

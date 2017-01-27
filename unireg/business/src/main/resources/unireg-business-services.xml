@@ -104,6 +104,7 @@
 
 	<bean id="roleService" class="ch.vd.uniregctb.role.RoleServiceImpl">
 		<property name="adresseService" ref="adresseService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="roleHelper">
 			<bean class="ch.vd.uniregctb.role.RoleHelper">

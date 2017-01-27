@@ -13,7 +13,7 @@ public class VarianteCalculRolePMOffice extends VarianteCalculRolePM<RolePMOffic
 	}
 
 	@Override
-	public void compile(RolePMOfficeResults rapport, Entreprise contribuable, @Nullable Integer ofsCommuneRole) {
+	public void compile(RolePMOfficeResults rapport, Entreprise contribuable, @Nullable Integer ofsCommuneRole) throws CalculRoleException {
 		if (ofsCommuneRole == null) {
 			rapport.addIgnore(contribuable, RoleResults.RaisonIgnore.PAS_CONCERNE_PAR_ROLE);
 		}
