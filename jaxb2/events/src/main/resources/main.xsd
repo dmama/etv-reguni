@@ -22,6 +22,7 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/fiscal/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-2.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/fiscal/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-3.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/fiscal/4" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-4.xsd"/>
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/address-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-request-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/address-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-response-1.xsd"/>
