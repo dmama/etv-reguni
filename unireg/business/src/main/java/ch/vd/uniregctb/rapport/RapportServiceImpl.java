@@ -84,6 +84,7 @@ import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
+import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
@@ -115,7 +116,8 @@ import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
-import ch.vd.uniregctb.foncier.migration.MigrationDDImporterResults;
+import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
+import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1752,6 +1754,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(MigrationDDCsvLoaderRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfMigrationDemandesDegrevementRapport document = new PdfMigrationDemandesDegrevementRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MigrationExoIFONCRapport generateRapport(MigrationExoIFONCImporterResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportMigrationExonerationsIFONC";
+		final String description = "Rapport d'exécution du job de migration des exonérations IFONC de SIMPA-PM.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(MigrationExoIFONCRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfMigrationExonerationsIFONCRapport document = new PdfMigrationExonerationsIFONCRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

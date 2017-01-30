@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration;
+package ch.vd.uniregctb.foncier.migration.ici;
 
 public enum TypeUsage {
 	USAGE_PROPRE,

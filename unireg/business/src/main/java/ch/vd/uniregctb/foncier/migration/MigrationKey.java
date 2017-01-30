@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Clé d'identification d'un immeuble dans les données de dégrèvement exportées de SIMPA-PM.
  */
-public class MigrationDDKey {
+public class MigrationKey {
 
 	public final long numeroEntreprise;
 	public final long noAciCommune;
@@ -15,19 +15,19 @@ public class MigrationDDKey {
 	public final String noParcelle;
 	public final String noLotPPE;
 
-	public MigrationDDKey(@NotNull MigrationDD dd) {
-		this.numeroEntreprise = dd.getNumeroEntreprise();
-		this.noAciCommune = dd.getNoAciCommune();
-		this.noBaseParcelle = dd.getNoBaseParcelle();
-		this.noParcelle = dd.getNoParcelle();
-		this.noLotPPE = dd.getNoLotPPE();
+	public MigrationKey(@NotNull BaseMigrationData data) {
+		this.numeroEntreprise = data.getNumeroEntreprise();
+		this.noAciCommune = data.getNoAciCommune();
+		this.noBaseParcelle = data.getNoBaseParcelle();
+		this.noParcelle = data.getNoParcelle();
+		this.noLotPPE = data.getNoLotPPE();
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		final MigrationDDKey that = (MigrationDDKey) o;
+		final MigrationKey that = (MigrationKey) o;
 		return numeroEntreprise == that.numeroEntreprise &&
 				noAciCommune == that.noAciCommune &&
 				Objects.equals(noBaseParcelle, that.noBaseParcelle) &&

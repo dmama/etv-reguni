@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration;
+package ch.vd.uniregctb.foncier.migration.ici;
 
 /**
  * Valeurs importées de SIMPA concernant les usages retournés par le propriétaire.

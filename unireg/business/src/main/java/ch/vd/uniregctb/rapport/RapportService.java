@@ -71,6 +71,7 @@ import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
+import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
@@ -102,7 +103,8 @@ import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
-import ch.vd.uniregctb.foncier.migration.MigrationDDImporterResults;
+import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
+import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
@@ -716,6 +718,14 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	MigrationDDCsvLoaderRapport generateRapport(MigrationDDImporterResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui migre les exonérations IFONC depuis SIMPA
+	 * @param results le résultat du job
+	 * @param status le status manager
+	 * @return le rapport final
+	 */
+	MigrationExoIFONCRapport generateRapport(MigrationExoIFONCImporterResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du batch qui envoie les formulaires de demande de dégrèvement ICI en masse

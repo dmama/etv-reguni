@@ -1,14 +1,12 @@
-package ch.vd.uniregctb.foncier.migration;
+package ch.vd.uniregctb.foncier.migration.ici;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,7 +28,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -46,6 +42,9 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
+import ch.vd.uniregctb.foncier.migration.MigrationKey;
+import ch.vd.uniregctb.foncier.migration.MigrationParcelle;
+import ch.vd.uniregctb.foncier.migration.ParsingHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -62,9 +61,6 @@ public class MigrationDDImporter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationDDImporter.class);
 
 	private static final int BATCH_SIZE = 100;
-	private static final Pattern PERCENT_PATTERN = Pattern.compile("([0-9]{1,3})\\.?([0-9])?([0-9])?");
-	private static final SimpleDateFormat DATE_FORMAT_SLASH = new SimpleDateFormat("dd/MM/yyyy");
-	private static final SimpleDateFormat DATE_FORMAT_DOT = new SimpleDateFormat("dd.MM.yyyy");
 
 	private final TiersDAO tiersDAO;
 	private final HibernateTemplate hibernateTemplate;
@@ -145,7 +141,7 @@ public class MigrationDDImporter {
 
 		// Clé principale : clé d'identification du couple entreprise / immeuble
 		// Valeur (map) : clé = période fiscale, valeur = données à migrée
-		final Map<MigrationDDKey, Map<Integer, MigrationDD>> map = new HashMap<>();
+		final Map<MigrationKey, Map<Integer, MigrationDD>> map = new HashMap<>();
 
 		// on regroupe les demandes pour gérer correctement les cas où il y a plusieurs usages
 
@@ -164,7 +160,7 @@ public class MigrationDDImporter {
 				++index;
 			}
 
-			final MigrationDDKey key = new MigrationDDKey(dd);
+			final MigrationKey key = new MigrationKey(dd);
 			final Map<Integer, MigrationDD> immeubleData = map.computeIfAbsent(key, k -> new HashMap<>());
 
 			final MigrationDD val = immeubleData.get(dd.getAnneeFiscale());
@@ -411,7 +407,7 @@ public class MigrationDDImporter {
 		}
 		else {
 			// il y a plusieurs années, il s'agit d'un bug de l'export SIMPA, on corrige en prenant la dernière année fiscale
-			Collections.sort(list, Comparator.comparingInt(MigrationDD::getAnneeFiscale));
+			list.sort(Comparator.comparingInt(MigrationDD::getAnneeFiscale));
 			toSave = list.get(size - 1);
 			for (int i = 0; i < size - 1; ++i) {
 				rapport.addDemandeIgnoree(list.get(i), "Une demande de dégrèvement plus récente (" + toSave.getAnneeFiscale() + ") existe dans l'export (cette demande = " + list.get(i).getAnneeFiscale() + ").");
@@ -466,16 +462,16 @@ public class MigrationDDImporter {
 		dd.setNoBaseParcelle(tokens[5]);
 		dd.setNoParcelle(tokens[6]);
 		dd.setNoLotPPE(tokens[7]);
-		dd.setDateDebutRattachement(parseDate(tokens[8]));
-		dd.setDateFinRattachement(parseDate(tokens[9]));
+		dd.setDateDebutRattachement(ParsingHelper.parseDate(tokens[8]));
+		dd.setDateFinRattachement(ParsingHelper.parseDate(tokens[9]));
 		dd.setMotifEnvoi(tokens[10]);
-		dd.setDateDebutValidite(parseDate(tokens[12]));
+		dd.setDateDebutValidite(ParsingHelper.parseDate(tokens[12]));
 		dd.setAnneeFiscale(Integer.parseInt(tokens[13]));
-		dd.setDateEnvoi(parseDate(tokens[14]));
-		dd.setDelaiRetour(parseDate(tokens[15]));
-		dd.setDateRetour(parseDate(tokens[16]));
-		dd.setDateRappel(parseDate(tokens[17]));
-		dd.setDelaiRappel(parseDate(tokens[18]));
+		dd.setDateEnvoi(ParsingHelper.parseDate(tokens[14]));
+		dd.setDelaiRetour(ParsingHelper.parseDate(tokens[15]));
+		dd.setDateRetour(ParsingHelper.parseDate(tokens[16]));
+		dd.setDateRappel(ParsingHelper.parseDate(tokens[17]));
+		dd.setDelaiRappel(ParsingHelper.parseDate(tokens[18]));
 		dd.setEstimationFiscale(parseAmount(tokens[19]));
 		dd.setEstimationSoumise(parseAmount(tokens[20]));
 		dd.setEstimationExoneree(parseAmount(tokens[21]));
@@ -487,39 +483,11 @@ public class MigrationDDImporter {
 		usage.setRevenuLocation(parseAmount(tokens[25]));
 		usage.setSurface(parseAmount(tokens[26]));
 		usage.setVolume(parseAmount(tokens[27]));
-		usage.setPourdixmilleUsage(parsePourdixmille(tokens[28]));
+		usage.setPourdixmilleUsage(ParsingHelper.parsePourdixmille(tokens[28]));
 		usage.setTypeUsage(parseTypeUsage(tokens[29]));
 		dd.addUsage(usage);
 
 		return dd;
-	}
-
-	/**
-	 * Converti un pourcent avec deux décimales en pour-dix-millièmes ("4.03" -> 403).
-	 *
-	 * @param token un pourcent sous forme de string
-	 * @return le pour-dix-millième correspondant
-	 */
-	static int parsePourdixmille(String token) throws ParseException {
-
-		final Matcher matcher = PERCENT_PATTERN.matcher(token);
-		if (!matcher.matches()) {
-			throw new IllegalArgumentException("Le pourcent [" + token + "] est invalide");
-		}
-
-		final String units = matcher.group(1);
-		final String dec = matcher.group(2);
-		final String cent = matcher.group(3);
-
-		int val = Integer.parseInt(units) * 100;
-		if (dec != null) {
-			val += Integer.parseInt(dec) * 10;
-		}
-		if (cent != null) {
-			val += Integer.parseInt(cent);
-		}
-
-		return val;
 	}
 
 	private static boolean parseBoolean(@Nullable String token) {
@@ -545,26 +513,5 @@ public class MigrationDDImporter {
 		default:
 			throw new NotImplementedException("Le type d'usage = [" + token + "] est inconnu");
 		}
-	}
-
-	@Nullable
-	private static RegDate parseDate(@Nullable String token) throws ParseException {
-		if (StringUtils.isBlank(token)) {
-			return null;
-		}
-		Date date;
-		try {
-			// la plupart des dates sont au format dd/MM/yyyy
-			date = DATE_FORMAT_SLASH.parse(token);
-		}
-		catch (ParseException e) {
-			// mais certaines sont au format dd.MM.yyyy
-			date = DATE_FORMAT_DOT.parse(token);
-		}
-		final RegDate d = RegDateHelper.get(date);
-		if (d == null) {
-			throw new IllegalArgumentException("La date [" + token + "] n'est pas valide.");
-		}
-		return d;
 	}
 }

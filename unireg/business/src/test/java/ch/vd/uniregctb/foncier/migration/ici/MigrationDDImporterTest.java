@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration;
+package ch.vd.uniregctb.foncier.migration.ici;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,15 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 public class MigrationDDImporterTest {
-
-	@Test
-	public void testParsedixmillePercent() throws Exception {
-		assertEquals(10000, MigrationDDImporter.parsePourdixmille("100"));
-		assertEquals(9850, MigrationDDImporter.parsePourdixmille("98.5"));
-		assertEquals(150, MigrationDDImporter.parsePourdixmille("1.5"));
-		assertEquals(1220, MigrationDDImporter.parsePourdixmille("12.2"));
-		assertEquals(0, MigrationDDImporter.parsePourdixmille("0"));
-	}
 
 	/**
 	 * Ce test vérifie que la demande de dégrèvement la plus récente est bien retournée.

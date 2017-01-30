@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration;
+package ch.vd.uniregctb.foncier.migration.ici;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class MigrationDDJob extends JobDefinition {
 	}
 
 	public MigrationDDJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DD, sortOrder, description);
+		super(NAME, JobCategory.DB, sortOrder, description);
 
 		final JobParam param1 = new JobParam();
 		param1.setDescription("Fichier CSV d'import compressé (*.zip)");

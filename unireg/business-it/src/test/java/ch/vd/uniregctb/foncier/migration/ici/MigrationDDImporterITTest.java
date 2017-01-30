@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.foncier.migration;
+package ch.vd.uniregctb.foncier.migration.ici;
 
 import java.io.InputStream;
 import java.util.Arrays;

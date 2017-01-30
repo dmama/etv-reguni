@@ -341,13 +341,6 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.MigrationDDJob">
-		<constructor-arg value="454"/>
-		<constructor-arg value="Importer le fichier CSV des demandes de dégrèvement de SIMPA-PM."/>
-		<property name="loader" ref="migrationDDCsvLoader"/>
-		<property name="rapportService" ref="rapportService"/>
-	</bean>
-
 	<bean id="envoiFormulairesDemandeDegrevementICIJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.EnvoiDemandesDegrevementICIJob">
 		<constructor-arg value="455"/>
 		<constructor-arg value="Envoyer les formulaires de demande de dégrèvement ICI"/>
@@ -718,7 +711,21 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
-    <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
+	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ici.MigrationDDJob">
+		<constructor-arg value="714"/>
+		<constructor-arg value="Importer le fichier CSV des demandes de dégrèvement de SIMPA-PM"/>
+		<property name="loader" ref="migrationDDCsvLoader"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
+	<bean id="migrationExonerationsIFONCJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCJob">
+		<constructor-arg value="715"/>
+		<constructor-arg value="Importer le fichier CSV des exonérations IFONC de SIMPA-PM"/>
+		<property name="loader" ref="migrationExoIFONCCsvLoader"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
+	<bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
         <constructor-arg value="Réinitialiser les différents caches d'Unireg"/>
         <property name="manager" ref="uniregCacheManager"/>
