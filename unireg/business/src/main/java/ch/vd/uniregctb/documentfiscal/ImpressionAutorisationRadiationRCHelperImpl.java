@@ -62,7 +62,12 @@ public class ImpressionAutorisationRadiationRCHelperImpl extends EditiqueAbstrac
 			final FichierImpression.Document.AutorisationRadiation.Signatures signatures = new FichierImpression.Document.AutorisationRadiation.Signatures(listSignatures);
 
 			final FichierImpression.Document.AutorisationRadiation ar = new FichierImpression.Document.AutorisationRadiation(RegDateHelper.toIndexString(lettre.getDateDemande()), rs, signatures);
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, null, null, null, ar, null, null, null, null);
+			final FichierImpression.Document document = new FichierImpression.Document();
+			document.setInfoDocument(infoDocument);
+			document.setInfoArchivage(infoArchivage);
+			document.setInfoEnteteDocument(infoEnteteDocument);
+			document.setAutorisationRadiation(ar);
+			return document;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

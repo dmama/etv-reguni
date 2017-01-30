@@ -392,6 +392,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		                                      original.getLettreLiquidation(),
 		                                      original.getLettreDegrevementImm(),
 		                                      original.getLettreDegrevementImmRappel(),
+											  original.getFourreNeutre(),
 		                                      original.getInfoRoutage());
 	}
 

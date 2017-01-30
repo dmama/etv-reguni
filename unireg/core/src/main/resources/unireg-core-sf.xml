@@ -62,6 +62,7 @@
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationSommable</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationRappelable</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalEnvoiLettreBienvenue</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalImpressionFourreNeutre</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFlagEntreprise</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire</value>

@@ -7,6 +7,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -149,5 +150,10 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 
 	@Override
 	public void publierEvenementFiscalEmissionLettreBienvenue(LettreBienvenue lettre) {
+	}
+
+	@Override
+	public void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) {
+
 	}
 }

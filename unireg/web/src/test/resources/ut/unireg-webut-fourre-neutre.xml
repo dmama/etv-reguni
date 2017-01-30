@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+
+
+	<bean id="fourreNeutreHelper" class="ch.vd.uniregctb.fourreNeutre.FourreNeutreHelperImpl">
+		<property name="premierePeriodePP" value="2012"/>
+		<property name="premierePeriodePM" value="2012"/>
+		<property name="premierePeriodeIS" value="2012"/>
+		<property name="fourreNeutreAutoriseePourPP" value="true" />
+		<property name="fourreNeutreAutoriseePourPM" value="true" />
+		<property name="fourreNeutreAutoriseePourIS" value="false" />
+	</bean>
+</beans>

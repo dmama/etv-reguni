@@ -7,6 +7,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -238,4 +239,11 @@ public interface EvenementFiscalService {
 	 * @param lettre la lettre émise
 	 */
 	void publierEvenementFiscalEmissionLettreBienvenue(LettreBienvenue lettre);
+
+	/**
+	 * Publie un evenement fiscal de type 'Impression d'une fourre neutre'
+	 * @param fourreNeutre concernée pat l'event
+	 * @param dateTraitement la date valeur de l'impression
+	 */
+	void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement);
 }

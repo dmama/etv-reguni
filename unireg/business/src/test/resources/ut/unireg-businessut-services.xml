@@ -72,4 +72,6 @@
 		<property name="logPeriode" value="0"/>
 	</bean>
 
+	<bean id="fourreNeutreHelper" class="ch.vd.uniregctb.fourreNeutre.MockFourreNeutreHelper"/>
+
 </beans>

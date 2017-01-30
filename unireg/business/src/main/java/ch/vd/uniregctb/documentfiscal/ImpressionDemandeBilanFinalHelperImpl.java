@@ -41,8 +41,13 @@ public class ImpressionDemandeBilanFinalHelperImpl extends EditiqueAbstractHelpe
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 
 			final FichierImpression.Document.DemandeBilanFinal dbf = new FichierImpression.Document.DemandeBilanFinal(XmlUtils.regdate2xmlcal(RegDate.get(lettre.getPeriodeFiscale())),
-			                                                                                                          RegDateHelper.toIndexString(lettre.getDateRequisitionRadiation()));
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, null, null, dbf, null, null, null, null, null);
+			RegDateHelper.toIndexString(lettre.getDateRequisitionRadiation()));
+			final FichierImpression.Document document = new FichierImpression.Document();
+			document.setInfoDocument(infoDocument);
+			document.setInfoArchivage(infoArchivage);
+			document.setInfoEnteteDocument(infoEnteteDocument);
+			document.setDemandeBilanFinal(dbf);
+			return document;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

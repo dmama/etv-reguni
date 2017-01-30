@@ -70,7 +70,13 @@ public enum TypeDocumentEditique {
 	//
 
 	E_FACTURE_ATTENTE_CONTACT("RGPE1201","390","eFactureAttenteContact"),
-	E_FACTURE_ATTENTE_SIGNATURE("RGPE1202","391","eFactureAttenteSignature");
+	E_FACTURE_ATTENTE_SIGNATURE("RGPE1202","391","eFactureAttenteSignature"),
+
+	//
+	//Fourre neutre
+	//
+
+	FOURRE_NEUTRE("U1POFOUR",null,"fourreNeutre");
 
 
 	private final String codeDocumentEditique;

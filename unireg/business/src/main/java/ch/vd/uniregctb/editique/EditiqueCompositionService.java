@@ -24,6 +24,7 @@ import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -358,4 +359,13 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException en cas de problème
 	 */
 	void imprimeDemandeDegrevementICIForBatch(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException;
+
+	/**
+	 * Envoie à l'éditique une fourre neutre à imprimer localement
+	 * @param dateTraitement
+	 * @return le document imprimé
+	 * @throws EditiqueException si l'éditique n'est pas content
+	 * @throws JMSException en cas de problème avec l'esb
+	 */
+	EditiqueResultat imprimerFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) throws EditiqueException, JMSException;
 }

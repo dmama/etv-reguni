@@ -36,6 +36,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesHelper;
 import ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseHelper;
 import ch.vd.uniregctb.entreprise.complexe.TransfertPatrimoineHelper;
+import ch.vd.uniregctb.fourreNeutre.FourreNeutreService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -80,6 +81,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static PlatformTransactionManager transactionManager;
 	private static SecurityProviderInterface securityProvider;
 	private static AvatarService avatarService;
+	private static FourreNeutreService fourreNeutreService;
+
 
 	public static final List<Action> actions;
 
@@ -227,6 +230,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	public void setAvatarService(AvatarService avatarService) {
 		JspTagBandeauTiers.avatarService = avatarService;
+	}
+
+	public  void setFourreNeutreService(FourreNeutreService fourreNeutreService) {
+		JspTagBandeauTiers.fourreNeutreService = fourreNeutreService;
 	}
 
 	private String buidHtlm() {
@@ -764,10 +771,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return tiers instanceof PersonnePhysique
-					|| tiers instanceof MenageCommun
-					|| tiers instanceof Entreprise
-					|| tiers instanceof Etablissement;
+			return fourreNeutreService.isAutorisePourFourreNeutre(tiers.getId());
 		}
 
 		@Override

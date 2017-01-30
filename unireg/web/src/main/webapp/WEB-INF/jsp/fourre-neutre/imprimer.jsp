@@ -11,13 +11,11 @@
 
         <form:form name="theForm" method="post" action="imprimer.do">
 
-            <form:errors cssClass="error"/>
-
             <input type="hidden" name="tiersId" value="${command.tiersId}"/>
-            <input type="hidden" name="periodeFiscale" value="${command.periodeFiscale}"/>
+            <input type="hidden" name="periodes" value="${periodes}"/>
 
 
-                <!-- Debut di -->
+                <!-- Debut fourre -->
                 <fieldset class="information">
                     <legend><span><fmt:message key="label.caracteristiques.fourre.neutre" /></span></legend>
 
@@ -26,7 +24,11 @@
                         <tr class="<unireg:nextRowClass/>" >
                             <td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
                             <td width="25%">
-                                    ${command.periodeFiscale}</td>
+                                <form:select path="periodeFiscale">
+                                    <form:option value="null" ><fmt:message key="option.selectionner" /></form:option>
+                                    <form:options items="${periodes}" />
+                                </form:select><span style="color: red;">*</span>
+                                <form:errors path="periodeFiscale" cssClass="error"/>
                             <td width="25%"></td>
                             <td width="25%"></td>
                         </tr>
@@ -34,7 +36,7 @@
                     </table>
 
                 </fieldset>
-                <!-- Fin di -->
+                <!-- Fin fourre -->
 
             <!-- Debut Boutons -->
             <input type="button" name="retourFourreNeutre" value="<fmt:message key="label.bouton.retour" />" onclick="Page_RetourVisualisation(${command.tiersId});" />

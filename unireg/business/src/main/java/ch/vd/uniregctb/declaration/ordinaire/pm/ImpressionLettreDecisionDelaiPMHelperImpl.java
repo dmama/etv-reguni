@@ -109,7 +109,13 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);
 			final FichierImpression.Document.AccordDelaiApresSommation sursis = buildSursis(params);
 
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, refusDelai, accordDelai, null, sursis, null, null, null, null, null, null, null, null, null, null);
+			final FichierImpression.Document document = new FichierImpression.Document();
+			document.setInfoDocument(infoDocument);
+			document.setInfoArchivage(infoArchivage);
+			document.setInfoEnteteDocument(infoEnteteDocument);
+			document.setRefusDelai(refusDelai);
+
+			return document;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

@@ -53,7 +53,8 @@ import ch.vd.uniregctb.security.Role;
 		WebTestingConstants.UNIREG_WEBUT_SECURITY,
 		WebTestingConstants.UNIREG_WEBUT_JMX,
 		WebTestingConstants.UNIREG_WEBUT_ADMIN,
-		WebTestingConstants.UNIREG_WEBUT_CONTROLLER
+		WebTestingConstants.UNIREG_WEBUT_CONTROLLER,
+		WebTestingConstants.UNIREG_WEBUT_FOURRE_NEUTRE
 })
 public abstract class WebTest extends AbstractBusinessTest {
 

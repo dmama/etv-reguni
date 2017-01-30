@@ -200,7 +200,16 @@
 		<property name="docService" ref="docService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
-	
+	<!--Fourre neutre -->
+	<bean id="fourreNeutreService" class="ch.vd.uniregctb.fourreNeutre.FourreNeutreServiceImpl">
+
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="helper" ref="fourreNeutreHelper" />
+
+	</bean>
+
 	<!--  Paramètres -->
 	<bean id="joursFeriesProvider" class="ch.vd.uniregctb.parametrage.JoursFeriesProviderImpl">
 		<property name="parametreAppService" ref="parametreAppService" />
@@ -308,6 +317,8 @@
 	<bean id="impressionDemandeDegrevementICIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionDemandeDegrevementICIHelperImpl">
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
+
+	<bean id="impressionFourreNeutreHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.fourreNeutre.ImpressionFourreNeutreHelperImpl"/>
 
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>

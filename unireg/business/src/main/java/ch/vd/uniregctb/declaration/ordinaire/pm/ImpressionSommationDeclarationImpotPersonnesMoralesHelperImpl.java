@@ -51,7 +51,13 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateOfficielleEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final FichierImpression.Document.Sommation sommation = buildInfoSommation(declaration, dateSommation, batch);
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, sommation, null, null, null, null, null, null, null, null, null, null, null);
+
+			final FichierImpression.Document document = new FichierImpression.Document();
+			document.setInfoDocument(infoDocument);
+			document.setInfoArchivage(infoArchivage);
+			document.setInfoEnteteDocument(infoEnteteDocument);
+			document.setSommation(sommation);
+			return document;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
