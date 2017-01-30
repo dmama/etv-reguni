@@ -20,6 +20,7 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -129,6 +130,14 @@ public class MutationsRFDetector implements InitializingBean {
 			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
+		final RegDate previousValueDate = findValueDateOfOldestProcessedImport(importId);
+		if (previousValueDate != null && event.getDateEvenement().isBeforeOrEqual(previousValueDate)) { // SIFISC-22393
+			final IllegalArgumentException exception =
+					new IllegalArgumentException(
+							"L'import RF avec l'id = [" + importId + "] possède une date de valeur [" + event.getDateEvenement() + "] antérieure ou égale à la date de valeur du dernier import traité [" + previousValueDate + "].");
+			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
+			throw exception;
+		}
 		final EvenementRFImport nextToProcess = getNextImportToProcess();
 		if (!Objects.equals(importId, nextToProcess.getId())) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
@@ -218,6 +227,17 @@ public class MutationsRFDetector implements InitializingBean {
 				return next;
 			}
 		});
+	}
+
+	/**
+	 * @param importId l'id de l'import courant
+	 * @return la date de valeur de l'import le plus ancien ayant été traité (complétement ou partiellement) sans tenir compte de l'import spécifié.
+	 */
+	@Nullable
+	private RegDate findValueDateOfOldestProcessedImport(long importId) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(s -> evenementRFImportDAO.findValueDateOfOldestProcessedImport(importId));
 	}
 
 	/**

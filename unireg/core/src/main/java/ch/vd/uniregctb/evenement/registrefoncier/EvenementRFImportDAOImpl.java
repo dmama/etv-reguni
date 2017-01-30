@@ -6,6 +6,7 @@ import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
@@ -31,6 +32,14 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 		query.setParameter("importId", importId);
 		query.setMaxResults(1);
 		return (EvenementRFImport) query.uniqueResult();
+	}
+
+	@Nullable
+	@Override
+	public RegDate findValueDateOfOldestProcessedImport(long importId) {
+		final Query query = getCurrentSession().createQuery("select max(dateEvenement) from EvenementRFImport where id != :importId and etat in ('EN_TRAITEMENT', 'TRAITE', 'EN_ERREUR', 'FORCE')");
+		query.setParameter("importId", importId);
+		return (RegDate) query.uniqueResult();
 	}
 
 	@Override
