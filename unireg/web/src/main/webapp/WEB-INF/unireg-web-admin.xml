@@ -107,12 +107,10 @@
 
 	<!-- Dump de la base de donnee -->
 	<bean id="databaseDumpController" class="ch.vd.uniregctb.admin.DatabaseDumpController">
-		<property name="sessionForm" value="true" />
 		<property name="databaseService" ref="databaseService" />
 		<property name="docService" ref="docService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="batchScheduler" ref="batchScheduler" />
-		<property name="successView" value="tiersImport/list.do" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>

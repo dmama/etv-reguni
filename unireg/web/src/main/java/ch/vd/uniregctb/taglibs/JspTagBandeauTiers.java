@@ -760,7 +760,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "post:/admin/dbdump.do?action=dumptiers&tiers=";
+			return "post:/admin/dbdump/dumptiers.do?tiers=";
 		}
 	}
 	private static class ImprimerFourreNeutre implements Action {

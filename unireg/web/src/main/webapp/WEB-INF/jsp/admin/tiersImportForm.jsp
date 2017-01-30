@@ -68,11 +68,11 @@ function submit(url, methodType, delegateName){
 			</a>
 			<br/>
 			<br/>
-		    <input type="button" value="<fmt:message key="label.bouton.exporter"/>" onclick="javascript:submit('${contextPath}/admin/dbdump.do?action=dump');"/>
+		    <input type="button" value="<fmt:message key="label.bouton.exporter"/>" onclick="javascript:submit('${contextPath}/admin/dbdump/dump.do');"/>
 		    <span class="error"><fmt:message key="label.export.DBUnit.export.remark"/></span>
 		    <br/>
 			<br/>
-		    <input type="button" value="<fmt:message key="label.bouton.exporter.filesystem"/>" onclick="javascript:submit('${contextPath}/admin/dbdump.do?action=dump2fs');"/>
+		    <input type="button" value="<fmt:message key="label.bouton.exporter.filesystem"/>" onclick="javascript:submit('${contextPath}/admin/dbdump/dump2fs.do');"/>
 		    <span class="error"><fmt:message key="label.export.DBUnit.exportfs.remark"/></span>
 		    <br/>
 			<br/>
@@ -96,7 +96,7 @@ function submit(url, methodType, delegateName){
 					<c:out value="${file.fileSize}" />
 				</display:column>
 				<display:column>
-					<a href="#" onclick="if (App.confirm_trash_db()) {javascript:submit('${contextPath}/admin/dbdump.do?action=fs2import&file=<c:out value="${file.id}" />');}">
+					<a href="#" onclick="if (App.confirm_trash_db()) {javascript:submit('${contextPath}/admin/dbdump/fs2import.do?file=<c:out value="${file.id}" />');}">
 						<fmt:message key="label.bouton.reimport"/>
 					</a>
 				</display:column>
