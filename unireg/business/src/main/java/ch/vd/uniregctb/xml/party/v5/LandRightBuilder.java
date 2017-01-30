@@ -14,6 +14,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -64,8 +65,7 @@ public abstract class LandRightBuilder {
 
 	@NotNull
 	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteCommunauteRF droitRF) {
-		// TODO (msi) on ne devrait jamais recevoir de droit de ce type, car les communautés ne sont pas exposées par le WS -> supprimer cette méthode ?
-		throw new NotImplementedException();
+		throw new ProgrammingException("Les droits sur les communautés ne doivent pas être exposés, par design.");
 	}
 
 	@NotNull
