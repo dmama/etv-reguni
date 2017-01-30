@@ -322,7 +322,7 @@
 									noindex="false"
 									nonavbar="false"
 									notree="false"
-									source="7"
+									source="8"
 									splitindex="true"
 									use="true"
 									version="true" >
@@ -333,20 +333,6 @@
 										<exclude name="tiers2/**/impl/**"/>
 										<exclude name="tiers2/**/mock/**"/>
 								    </fileset>
-					                <!--<doclet name="gr.spinellis.umlgraph.doclet.UmlGraphDoc" path="${plugin_classpath}">-->
-					                        <!--<param name="-attributes"/>-->
-					                        <!--<param name="-enumconstants"/>-->
-					                        <!--&lt;!&ndash;<param name="-inferdep"/>-->
-					                        <!--<param name="-inferrel"/> &ndash;&gt;-->
-					                        <!--<param name="-hide" value="java.*"/>-->
-					                        <!--<param name="-collpackages" value="java.util.*"/>-->
-					                        <!--<param name="-qualify"/>-->
-					                        <!--<param name="-postfixpackage"/>-->
-					                        <!--<param name="-nodefontsize" value="9"/>-->
-					                        <!--<param name="-nodefontpackagesize" value="7"/>-->
-					                        <!--<param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>-->
-					                        <!--<param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/>-->
-					                <!--</doclet>-->
 								</javadoc>
 							</tasks>
 						</configuration>
@@ -376,7 +362,7 @@
 									noindex="false"
 									nonavbar="false"
 									notree="false"
-									source="7"
+									source="8"
 									splitindex="true"
 									use="true"
 									version="true" >
@@ -385,20 +371,6 @@
 							    		<include name="securite/**/*.java"/>
 							    		<exclude name="securite/**/impl/**"/>
 								    </fileset>
-					                <!--<doclet name="gr.spinellis.umlgraph.doclet.UmlGraphDoc" path="${plugin_classpath}">-->
-					                        <!--<param name="-attributes"/>-->
-					                        <!--<param name="-enumconstants"/>-->
-					                        <!--&lt;!&ndash;<param name="-inferdep"/>-->
-					                        <!--<param name="-inferrel"/> &ndash;&gt;-->
-					                        <!--<param name="-hide" value="java.*"/>-->
-					                        <!--<param name="-collpackages" value="java.util.*"/>-->
-					                        <!--<param name="-qualify"/>-->
-					                        <!--<param name="-postfixpackage"/>-->
-					                        <!--<param name="-nodefontsize" value="9"/>-->
-					                        <!--<param name="-nodefontpackagesize" value="7"/>-->
-					                        <!--<param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>-->
-					                        <!--<param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/>-->
-					                <!--</doclet>-->
 								</javadoc>
 							</tasks>
 						</configuration>
