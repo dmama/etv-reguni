@@ -10,4 +10,6 @@ public class WebTestingConstants {
 	public static final String UNIREG_WEBUT_CONTROLLER = "classpath:ut/unireg-webut-controller.xml";
 	public static final String UNIREG_WEBUT_ADMIN = "classpath:ut/unireg-webut-admin.xml";
 	public static final String UNIREG_WEBUT_JMX = "classpath:ut/unireg-webut-jmx.xml";
+	public static final String UNIREG_WEBUT_FOURRE_NEUTRE = "classpath:ut/unireg-webut-fourre-neutre.xml";
+
 }

@@ -51,7 +51,12 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(pm, dateEnvoiCourrier, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final CTypeQuestSNCRappel rappel = buildDocumentRappel(questionnaire);
 
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, null, rappel, null, null, null, null, null, null);
+			final FichierImpression.Document document = new FichierImpression.Document();
+			document.setInfoDocument(infoDocument);
+			document.setInfoArchivage(infoArchivage);
+			document.setInfoEnteteDocument(infoEnteteDocument);
+			document.setQuestSNCRappel(rappel);
+			return document;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

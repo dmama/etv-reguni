@@ -52,6 +52,7 @@
 		<property name="impressionLettreTypeInformationLiquidationHelper" ref="impressionLettreTypeInfoLiquidationHelper"/>
 		<property name="impressionDemandeDegrevementICIHelper" ref="impressionDemandeDegrevementICIHelper"/>
 		<property name="evenementDocumentSortantService" ref="evenementDocumentSortantService"/>
+		<property name="impressionFourreNeutreHelper" ref="impressionFourreNeutreHelper"/>
 	</bean>
 
 	<bean id="signatairesAutorisationRadiation" class="ch.vd.uniregctb.documentfiscal.Signataires">

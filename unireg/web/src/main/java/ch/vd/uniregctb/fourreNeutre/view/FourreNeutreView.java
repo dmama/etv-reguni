@@ -2,7 +2,7 @@ package ch.vd.uniregctb.fourreNeutre.view;
 
 public class FourreNeutreView {
 	private long tiersId;
-	private int periodeFiscale;
+	private Integer periodeFiscale;
 
 	public long getTiersId() {
 		return tiersId;
@@ -12,11 +12,13 @@ public class FourreNeutreView {
 		this.tiersId = tiersId;
 	}
 
-	public int getPeriodeFiscale() {
+	public Integer getPeriodeFiscale() {
 		return periodeFiscale;
 	}
 
-	public void setPeriodeFiscale(int periodeFiscale) {
+	public void setPeriodeFiscale(Integer periodeFiscale) {
 		this.periodeFiscale = periodeFiscale;
 	}
+
+
 }

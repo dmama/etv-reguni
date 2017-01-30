@@ -71,6 +71,8 @@ import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelper;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureParams;
 import ch.vd.uniregctb.evenement.docsortant.EvenementDocumentSortantService;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
+import ch.vd.uniregctb.fourreNeutre.ImpressionFourreNeutreHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
@@ -113,6 +115,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper;
 	private ImpressionDemandeDegrevementICIHelper impressionDemandeDegrevementICIHelper;
 	private EvenementDocumentSortantService evenementDocumentSortantService;
+	private ImpressionFourreNeutreHelper impressionFourreNeutreHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -221,6 +224,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	public void setImpressionDemandeDegrevementICIHelper(ImpressionDemandeDegrevementICIHelper impressionDemandeDegrevementICIHelper) {
 		this.impressionDemandeDegrevementICIHelper = impressionDemandeDegrevementICIHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionFourreNeutreHelper(ImpressionFourreNeutreHelper impressionFourreNeutreHelper) {
+		this.impressionFourreNeutreHelper = impressionFourreNeutreHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -979,5 +987,18 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final String nomDocument = impressionDemandeDegrevementICIHelper.construitIdDocument(demande);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
+	}
+
+	@Override
+	public EditiqueResultat imprimerFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionFourreNeutreHelper.buildDocument(fourreNeutre,dateTraitement);
+		root.getDocument().add(original);
+		final TypeDocumentEditique typeDocument = impressionFourreNeutreHelper.getTypeDocumentEditique();
+		final String nomDocument = impressionFourreNeutreHelper.construitIdDocument(fourreNeutre);
+		final String description = String.format("Fourre neutre pour le contribuable %s et la période %d",
+				FormatNumeroHelper.numeroCTBToDisplay(fourreNeutre.getTiers().getNumero()),fourreNeutre.getPeriodeFIscale());
+
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument,typeDocument,FormatDocumentEditique.PCL,root,false,description );
 	}
 }

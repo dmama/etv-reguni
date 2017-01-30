@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationSommable;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalEnvoiLettreBienvenue;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFlagEntreprise;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalImpressionFourreNeutre;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal;
@@ -70,7 +71,15 @@ public abstract class EvenementFiscalDescriptionHelper {
 		addToFiscalEventDescriptorMap(map, EvenementFiscalDeclarationSommable.class, new EvenementFiscalDeclarationSommableDescriptor());
 		addToFiscalEventDescriptorMap(map, EvenementFiscalDeclarationRappelable.class, new EvenementFiscalDeclarationRappelableDescriptor());
 		addToFiscalEventDescriptorMap(map, EvenementFiscalRegimeFiscal.class, new EvenementFiscalRegimeFiscalDescriptor());
+		addToFiscalEventDescriptorMap(map, EvenementFiscalImpressionFourreNeutre.class,new EvenementFiscalImpressionFourreNeutreDescriptor());
 		return map;
+	}
+
+	private static final class EvenementFiscalImpressionFourreNeutreDescriptor implements StringRenderer<EvenementFiscalImpressionFourreNeutre>{
+		@Override
+		public String toString(EvenementFiscalImpressionFourreNeutre object) {
+			return "Impression d'une fourre neutre";
+		}
 	}
 
 	private static final class EvenementFiscalEnvoiLettreBienvenueDescriptor implements StringRenderer<EvenementFiscalEnvoiLettreBienvenue> {

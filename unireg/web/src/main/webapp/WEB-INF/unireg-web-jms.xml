@@ -99,6 +99,7 @@
 				<value>classpath:event/data/dataEvent-1.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-3.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-4.xsd</value>
 				<value>classpath:eVD-0025-1-2.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-1-0.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>

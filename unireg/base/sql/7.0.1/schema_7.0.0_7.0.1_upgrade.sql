@@ -106,3 +106,7 @@ ALTER TABLE RF_DROIT MODIFY REGIME_PROPRIETE NVARCHAR2(12) NULL;
 
 -- Renommage de la colonne pour coller au plus près de la signification métier
 ALTER TABLE RF_ESTIMATION RENAME COLUMN DATE_ESTIMATION TO DATE_INSCRIPTION;
+
+--
+--SIFISC-22442 événement fiscal Impression fourre neutre ajout de la période
+ALTER TABLE EVENEMENT_FISCAL ADD (PERIODE_FISCALE NUMBER(10,0));

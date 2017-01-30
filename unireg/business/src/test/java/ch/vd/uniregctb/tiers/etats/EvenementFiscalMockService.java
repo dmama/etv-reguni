@@ -10,6 +10,7 @@ import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -203,6 +204,11 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 	@Override
 	public void publierEvenementFiscalEmissionLettreBienvenue(LettreBienvenue lettre) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) {
+
 	}
 
 	public boolean isCalledOnce() {

@@ -85,7 +85,12 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 			                                                           buildCodeBarres(demande),
 			                                                           demande.getCodeControle(),
 			                                                           buildInfoImmeuble(demande));
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, null, null, null, null, null, null, lettre, null, null);
+			final FichierImpression.Document document = new FichierImpression.Document();
+			document.setInfoDocument(infoDocument);
+			document.setInfoArchivage(infoArchivage);
+			document.setInfoEnteteDocument(infoEnteteDocument);
+			document.setLettreDegrevementImm(lettre);
+			return document;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

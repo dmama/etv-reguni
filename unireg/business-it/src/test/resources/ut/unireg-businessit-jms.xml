@@ -94,6 +94,11 @@
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${testprop.jms.queue.evtFiscal}"/>
 	</bean>
+	<bean id="evenementFiscalV4Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV4SenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${testprop.jms.queue.evtFiscal}"/>
+	</bean>
 
 	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">
 		<property name="senders">
@@ -101,6 +106,7 @@
 				<ref bean="evenementFiscalV1Sender"/>
 				<ref bean="evenementFiscalV2Sender"/>
 				<ref bean="evenementFiscalV3Sender"/>
+				<ref bean="evenementFiscalV4Sender"/>
 			</array>
 		</property>
 		<property name="enabled" value="true"/>
@@ -116,6 +122,7 @@
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-3.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-4.xsd</value>
 				<value>classpath:xsd/identification/**/*.xsd</value>
 				<value>classpath:unireg-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
