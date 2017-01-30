@@ -415,3 +415,6 @@ WHERE FF.ANNULATION_DATE IS NULL
 
 -- SIFISC-20373 : performances du WS du registre foncier
 CREATE INDEX IDX_DROIT_RF_COMM_ID ON RF_DROIT (COMMUNAUTE_ID);
+
+--SIFISC-22442 événement fiscal Impression fourre neutre ajout de la période
+ALTER TABLE EVENEMENT_FISCAL ADD (PERIODE_FISCALE NUMBER(10,0));
