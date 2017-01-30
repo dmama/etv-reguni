@@ -10,6 +10,7 @@ import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.ParamPagination;
 
@@ -101,6 +102,12 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	@Nullable
 	@Override
 	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId) {
+		throw new NotImplementedException();
+	}
+
+	@Nullable
+	@Override
+	public RegDate findValueDateOfOldestProcessedImport(long importId) {
 		throw new NotImplementedException();
 	}
 

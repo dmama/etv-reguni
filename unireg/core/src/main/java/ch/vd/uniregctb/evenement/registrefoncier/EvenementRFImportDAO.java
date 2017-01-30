@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
 
 public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long> {
@@ -22,6 +23,13 @@ public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long
 	 */
 	@Nullable
 	EvenementRFImport findOldestImportWithUnprocessedMutations(long importId);
+
+	/**
+	 * @param importId l'id de l'import courant
+	 * @return la date de valeur de l'import le plus ancien ayant été traité (complétement ou partiellement) sans tenir compte de l'import spécifié.
+	 */
+	@Nullable
+	RegDate findValueDateOfOldestProcessedImport(long importId);
 
 	/**
 	 * Recherche des événements d'import qui correspondent aux critères spécifiés.

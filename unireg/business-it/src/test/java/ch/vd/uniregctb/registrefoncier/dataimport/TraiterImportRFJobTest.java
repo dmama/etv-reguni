@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("Duplicates")
 public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 	private BatchScheduler batchScheduler;
@@ -140,6 +141,122 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "].", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "]."));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-22393] Ce test vérifie que le démarrage du job sur un import dont la date de valeur ne suit pas la logique chronologique lève bien une exception.
+	 */
+	@Test
+	public void testImportDateValeurAnterieure() throws Exception {
+
+		class Ids {
+			long precedent;
+			long suivant;
+		}
+		final Ids ids = new Ids();
+
+		// on insère les données de l'import dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				// un import précédent traité
+				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
+				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
+				importEventPrecedant.setEtat(EtatEvenementRF.TRAITE);
+				importEventPrecedant.setFileUrl("http://turlututu");
+				ids.precedent = evenementRFImportDAO.save(importEventPrecedant).getId();
+
+				// un nouvel import *mais* avec une date antérieure
+				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(RegDate.get(2015, 3, 7));
+				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+				importEvent.setFileUrl("http://turlututu");
+				ids.suivant = evenementRFImportDAO.save(importEvent).getId();
+			}
+		});
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, ids.suivant);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job ne doit pas démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-22393] Ce test vérifie que le démarrage du job sur un import dont la date de valeur ne suit pas la logique chronologique lève bien une exception.
+	 */
+	@Test
+	public void testImportDateValeurIdentique() throws Exception {
+
+		class Ids {
+			long precedent;
+			long suivant;
+		}
+		final Ids ids = new Ids();
+
+		// on insère les données de l'import dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				// un import précédent traité
+				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
+				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
+				importEventPrecedant.setEtat(EtatEvenementRF.TRAITE);
+				importEventPrecedant.setFileUrl("http://turlututu");
+				ids.precedent = evenementRFImportDAO.save(importEventPrecedant).getId();
+
+				// un nouvel import *mais* avec une date de valeur identique
+				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setDateEvenement(RegDate.get(2016, 9, 1));
+				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
+				importEvent.setFileUrl("http://turlututu");
+				ids.suivant = evenementRFImportDAO.save(importEvent).getId();
+			}
+		});
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, ids.suivant);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job ne doit pas démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
 			}
 		});
 	}
