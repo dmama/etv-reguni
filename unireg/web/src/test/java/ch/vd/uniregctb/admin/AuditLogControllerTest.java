@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
@@ -13,11 +16,11 @@ import ch.vd.uniregctb.common.WebTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test case du controlleur spring du meme nom.
- *
- * @author <a href="mailto:akram.ben-aissi@vd.ch">Akram BEN AISSI</a>
  */
 public class AuditLogControllerTest extends WebTest {
 
@@ -38,26 +41,28 @@ public class AuditLogControllerTest extends WebTest {
 		auditLineDAO = getBean(AuditLineDAO.class, "auditLineDAO");
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testShowForm() throws Exception {
 
 		loadDatabase(DB_UNIT_FILE);
 
-		List<AuditLine> listLines = auditLineDAO.getAll();
+		final List<AuditLine> listLines = auditLineDAO.getAll();
 		int nbLines = listLines.size();
 
 		AuditLogController controller = getBean(AuditLogController.class, CONTROLLER_NAME);
-		request.setMethod("GET");
 
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
+		final MockMvc m = MockMvcBuilders.standaloneSetup(controller).build();
+
+		final ResultActions res = m.perform(get("/admin/audit.do"));
+		res.andExpect(status().isOk());
+
+		final MvcResult result = res.andReturn();
+		assertNotNull(result);
+		final Map<String, Object> model = result.getModelAndView().getModel();
 		assertNotNull(model);
 
-		AuditLogBean bean = (AuditLogBean) model.get(controller.getCommandName());
+		AuditLogBean bean = (AuditLogBean) model.get("command");
 		assertNotNull(bean);
 		assertNotNull(bean.getList());
 		assertEquals(nbLines, bean.getList().size());

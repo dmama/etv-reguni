@@ -96,12 +96,7 @@
 
 	<!-- Gestion de tracing -->
 	<bean id="auditLogController" class="ch.vd.uniregctb.admin.AuditLogController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.admin.AuditLogBean" />
-		<property name="formView" value="admin/audit" />
-		<property name="successView" value="admin/audit" />
 		<property name="auditLineDAO" ref="auditLineDAO" />
-		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
