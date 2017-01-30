@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +24,8 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
+import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxresidence.v4.TaxResidence;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
@@ -670,23 +674,52 @@ public abstract class PartyStrategy<T extends Party> {
 			// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
 			// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
 			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
-				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
+
+				// si la collection des déclarations est déjà remplie dans la destination, c'est qu'on veut ajouter une information
+				// (délais et/ou états) à une collection déjà présente (sinon, on peut recopier sans crainte...)
+				if (to.getTaxDeclarations() == null || to.getTaxDeclarations().size() == 0) {
+					copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
+				}
+				else {
+					// on va prendre les nouvelles données par id pour faire la correspondance
+					final Map<Long, TaxDeclaration> fromById = from.getTaxDeclarations().stream().collect(Collectors.toMap(TaxDeclaration::getId, Function.identity()));
+					for (TaxDeclaration toDeclaration : to.getTaxDeclarations()) {
+						final TaxDeclaration fromDeclaration = fromById.get(toDeclaration.getId());
+
+						// recopie des délais si demandés
+						if (parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+							final List<TaxDeclarationDeadline> deadlines = toDeclaration.getDeadlines();
+							deadlines.clear();
+							deadlines.addAll(fromDeclaration.getDeadlines());
+						}
+
+						// recopie des états si demandés
+						if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
+							final List<TaxDeclarationStatus> statuses = toDeclaration.getStatuses();
+							statuses.clear();
+							statuses.addAll(fromDeclaration.getStatuses());
+						}
+					}
+				}
 			}
 		}
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
 
-			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
 				// on veut les déclarations et leurs états/délais => on copie tout
 				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 			}
 			else {
-				// supprime les éventuels états s'ils ne sont pas demandés
+				// supprime les éventuels états/délais s'ils ne sont pas demandés
 				if (from.getTaxDeclarations() != null && !from.getTaxDeclarations().isEmpty()) {
 					deepCopyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 					for (TaxDeclaration d : to.getTaxDeclarations()) {
-						if (d.getStatuses() != null) {
+						if (!parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
 							d.getStatuses().clear();
+						}
+						if (!parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+							d.getDeadlines().clear();
 						}
 					}
 				}

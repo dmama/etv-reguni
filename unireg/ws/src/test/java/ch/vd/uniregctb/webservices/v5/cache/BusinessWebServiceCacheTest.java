@@ -49,11 +49,13 @@ import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.party.address.v2.Address;
 import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
+import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v3.Nationality;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v3.Origin;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationDeadline;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxpayer.v3.Taxpayer;
@@ -83,6 +85,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Niveau;
@@ -185,6 +188,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2003, 1, 10));
+				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDeclaration.ACCORDE);
 
 				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", TypeImmeuble.BIEN_FOND, GenrePropriete.COMMUNE, 923000, "1994", "1", date(1988, 3, 14), TypeMutation.ACHAT);
 				ids.eric = eric.getNumero();
@@ -757,6 +761,229 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			final Pair<Integer, Set<PartyPart>> lastCall = getLastCallParametersToGetParty(calls);
 			assertEquals((Integer) ids.eric.intValue(), lastCall.getLeft());
 			assertEquals(EnumSet.of(PartyPart.EBILLING_STATUSES), lastCall.getRight());
+		}
+	}
+
+	/**
+	 * [SIFISC-23048] Quand on demande TAX_DECLARATIONS avec les TAX_DECLARATIONS_STATUSES, puis dans un autre appel les mêmes parts + TAX_DECLARATIONS_DEADLINES
+	 * alors les états disparaissent de la deuxième réponse...
+	 */
+	@Test
+	public void testRecompositionDonneesEtatsEtDelaisDeclaration() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
+
+		// 1. on demande le tiers avec les déclarations et les états
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final TaxDeclarationStatus etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, etat0.getType());
+
+			// pas demandés -> pas reçus
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEmpty(delais);
+		}
+
+		// 2. on demande maintenant les déclarations, leurs états et leurs délais
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final TaxDeclarationStatus etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, etat0.getType());
+
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEquals(1, delais.size());
+		}
+
+		// 3. et finalement on ne demande plus que les délais
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(0, etats.size());
+
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEquals(1, delais.size());
+		}
+
+		// 4. on demande à nouveau le tout
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final TaxDeclarationStatus etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, etat0.getType());
+
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEquals(1, delais.size());
+		}
+	}
+
+	/**
+	 * [SIFISC-23048] Quand on demande TAX_DECLARATIONS avec les TAX_DECLARATIONS_STATUSES, puis dans un autre appel les mêmes parts + TAX_DECLARATIONS_DEADLINES
+	 * alors les états disparaissent de la deuxième réponse... (deuxième test avec la part EBILLING_STATUSES en plus, juste pour être sûr)
+	 */
+	@Test
+	public void testRecompositionDonneesEtatsEtDelaisDeclarationAvecEFacture() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
+
+		// 1. on demande le tiers avec les déclarations et les états
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final TaxDeclarationStatus etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, etat0.getType());
+
+			// pas demandés -> pas reçus
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEmpty(delais);
+		}
+
+		// 2. on demande maintenant les déclarations, leurs états et leurs délais (+ efacture, non-cachable)
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final TaxDeclarationStatus etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, etat0.getType());
+
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEquals(1, delais.size());
+
+			final Taxpayer taxpayer = (Taxpayer) tiers;
+			final List<EbillingStatus> efacture = taxpayer.getEbillingStatuses();
+			assertNotNull(efacture);
+			assertEquals(2, efacture.size());
+		}
+
+		// 3. et finalement on ne demande plus que les délais
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_DEADLINES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			// les états ont disparu
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(0, etats.size());
+
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEquals(1, delais.size());
+		}
+
+		// 4. on demande à nouveau le tout
+		{
+			final Party tiers = cache.getParty(userLogin, ids.eric.intValue(), EnumSet.of(PartyPart.TAX_DECLARATIONS, PartyPart.TAX_DECLARATIONS_STATUSES, PartyPart.TAX_DECLARATIONS_DEADLINES, PartyPart.EBILLING_STATUSES));
+			assertNotNull(tiers);
+			assertNotNull(tiers.getTaxDeclarations());
+			assertEquals(1, tiers.getTaxDeclarations().size());
+
+			final OrdinaryTaxDeclaration di = (OrdinaryTaxDeclaration) tiers.getTaxDeclarations().get(0);
+			assertEquals(new Date(2003, 1, 1), di.getDateFrom());
+			assertEquals(new Date(2003, 12, 31), di.getDateTo());
+
+			final List<TaxDeclarationStatus> etats = di.getStatuses();
+			assertNotNull(etats);
+			assertEquals(1, etats.size());
+
+			final TaxDeclarationStatus etat0 = etats.get(0);
+			assertNotNull(etat0);
+			assertEquals(new Date(2003, 1, 10), etat0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, etat0.getType());
+
+			final List<TaxDeclarationDeadline> delais = di.getDeadlines();
+			assertNotNull(delais);
+			assertEquals(1, delais.size());
+
+			final Taxpayer taxpayer = (Taxpayer) tiers;
+			final List<EbillingStatus> efacture = taxpayer.getEbillingStatuses();
+			assertNotNull(efacture);
+			assertEquals(2, efacture.size());
 		}
 	}
 
