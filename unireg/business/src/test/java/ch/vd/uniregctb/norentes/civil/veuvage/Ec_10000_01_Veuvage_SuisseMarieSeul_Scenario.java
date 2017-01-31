@@ -77,7 +77,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 		});
 	}
 
-	@Etape(id=1, descr="Chargement de l'habitant Pierre, suisse marié seul et bientot veuf")
+	@Etape(id=1, descr="Chargement de l'habitant Pierre, Suisse marié seul et bientot veuf")
 	public void step1() {
 
 		// Pierre

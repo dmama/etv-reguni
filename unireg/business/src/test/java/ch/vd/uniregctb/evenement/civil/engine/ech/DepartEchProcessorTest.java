@@ -2516,7 +2516,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEchErreur warning = erreurs.iterator().next();
 				Assert.assertNotNull(warning);
 				Assert.assertEquals(TypeEvenementErreur.WARNING, warning.getType());
-				Assert.assertEquals("Le type de destination entre les deux conjoints n'est pas identique (hors suisse / hors canton). Veuillez contrôler la destination du for principal.", warning.getMessage());
+				Assert.assertEquals("Le type de destination entre les deux conjoints n'est pas identique (hors Suisse / hors canton). Veuillez contrôler la destination du for principal.", warning.getMessage());
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
 				Assert.assertNotNull(mc);

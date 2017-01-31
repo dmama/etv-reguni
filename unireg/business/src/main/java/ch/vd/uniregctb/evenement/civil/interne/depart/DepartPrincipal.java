@@ -193,7 +193,7 @@ public class DepartPrincipal extends Depart {
 		// [SIFISC-18224] l'événement de départ doit passer dans l'état "A VERIFIER" si les deux conjoints ne se retrouvent pas
 		// dans le même type d'autorité fiscale
 		if (!isToutLeMondeAvecLeMemeTypeAutoriteFiscaleApresDepartPrincipal(dateFermetureEffective)) {
-			warnings.addWarning("Le type de destination entre les deux conjoints n'est pas identique (hors suisse / hors canton). Veuillez contrôler la destination du for principal.");
+			warnings.addWarning("Le type de destination entre les deux conjoints n'est pas identique (hors Suisse / hors canton). Veuillez contrôler la destination du for principal.");
 		}
 
 		return dateFermetureEffective;

@@ -8,7 +8,7 @@ public enum TypeContribuable {
 	VAUDOIS_ORDINAIRE("ordinaire", true, true),
 	VAUDOIS_DEPENSE("à la dépense", true, false),
 	HORS_CANTON("hors canton", true, true),
-	HORS_SUISSE("hors suisse", true, true),
+	HORS_SUISSE("hors Suisse", true, true),
 
 	/**
 	 * Diplomate Suisse basé à l'étranger [UNIREG-1976]

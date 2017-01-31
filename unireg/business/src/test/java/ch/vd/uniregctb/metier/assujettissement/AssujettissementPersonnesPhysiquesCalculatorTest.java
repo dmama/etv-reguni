@@ -2550,7 +2550,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000052&print=true&title=${methodName}&description=${docDescription}")
-	@WebScreenshotDoc(description = "[UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse (mais il recevra une déclaration d'impôt ordinaire)")
+	@WebScreenshotDoc(description = "[UNIREG-1976] le fait de posséder un immeuble en Suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse (mais il recevra une déclaration d'impôt ordinaire)")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDiplomateSuisseAvecImmeuble() throws Exception {

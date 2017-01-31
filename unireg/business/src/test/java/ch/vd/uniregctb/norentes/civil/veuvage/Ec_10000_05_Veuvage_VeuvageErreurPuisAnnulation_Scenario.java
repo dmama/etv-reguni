@@ -82,7 +82,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 		});
 	}
 
-	@Etape(id=1, descr="Chargement de l'habitant Pierre, suisse marié seul, veuf ")
+	@Etape(id=1, descr="Chargement de l'habitant Pierre, Suisse marié seul, veuf ")
 	public void step1() {
 
 		// Pierre

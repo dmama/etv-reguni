@@ -106,7 +106,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageSuisse() throws Exception {
 		
-		LOGGER.debug("Test de traitement d'un événement de veuvage d'un suisse marié seul.");
+		LOGGER.debug("Test de traitement d'un événement de veuvage d'un Suisse marié seul.");
 		
 		Individu veufSuisse = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufSuisse);
@@ -158,7 +158,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testVeuvageNonSuisse() throws EvenementCivilException {
 		
-		LOGGER.debug("Test de traitement d'un événement de veuvage d'un non suisse marié seul.");
+		LOGGER.debug("Test de traitement d'un événement de veuvage d'un non Suisse marié seul.");
 		
 		Individu veufEtranger = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, date(2008, 12, 31));
 		Veuvage veuvage = createVeuvage(veufEtranger);

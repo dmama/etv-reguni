@@ -85,7 +85,7 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 		});
 	}
 
-	@Etape(id=1, descr="Chargement de l'habitant Pierre, suisse marié avec non-habitant")
+	@Etape(id=1, descr="Chargement de l'habitant Pierre, Suisse marié avec non-habitant")
 	public void step1() {
 
 		// Pierre

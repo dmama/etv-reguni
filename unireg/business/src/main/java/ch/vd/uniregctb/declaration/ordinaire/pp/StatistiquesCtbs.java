@@ -49,7 +49,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		VAUDOIS_ORDINAIRE("ordinaire"),
 		VAUDOIS_DEPENSE("à la dépense"),
 		HORS_CANTON("hors canton"),
-		HORS_SUISSE("hors suisse"),
+		HORS_SUISSE("hors Suisse"),
 		SOURCIER_PUR("sourcier");
 
 		private final String description;

@@ -22,7 +22,7 @@ public class Ec_18000_11_Arrivee_HS_Habitant_Scenario extends EvenementCivilScen
 
 	@Override
 	public String getDescription() {
-		return "Arrivée hors suisse d'un individu possedant un for principal vaudois";
+		return "Arrivée hors Suisse d'un individu possedant un for principal vaudois";
 	}
 
 	@Override

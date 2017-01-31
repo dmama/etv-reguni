@@ -236,7 +236,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDecesPersonneMarieeAvecSuisseOuPermisC() throws Exception {
 
-		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un suisse ou étranger avec permis C.");
+		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un Suisse ou étranger avec permis C.");
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

@@ -84,7 +84,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 		});
 	}
 
-	@Etape(id=1, descr="Chargement de l'habitant Pierre, suisse marié seul, décédé et veuf le meme jour")
+	@Etape(id=1, descr="Chargement de l'habitant Pierre, Suisse marié seul, décédé et veuf le meme jour")
 	public void step1() {
 
 		// Pierre

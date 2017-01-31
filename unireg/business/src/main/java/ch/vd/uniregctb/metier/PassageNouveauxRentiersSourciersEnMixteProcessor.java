@@ -109,7 +109,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			@Override
 			public void afterTransactionCommit() {
 				s.setMessage(String.format(
-						"%d sourciers traités sur %d (convertis = %s, erreurs = %s, conjoints ignorés = %s, hors-suisse = %s, trop jeune = %s)",
+						"%d sourciers traités sur %d (convertis = %s, erreurs = %s, conjoints ignorés = %s, hors-Suisse = %s, trop jeune = %s)",
 						rapportFinal.getNbSourciersTotal(), list.size(), rapportFinal.sourciersConvertis.size(), rapportFinal.sourciersEnErreurs.size(), rapportFinal.nbSourciersConjointsIgnores,
 						rapportFinal.nbSourciersHorsSuisse, rapportFinal.nbSourciersTropJeunes), progressMonitor.getProgressInPercent());
 			}
@@ -231,7 +231,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 		if (!data.isDomicilieSurVD()) {
 			r.nbSourciersHorsSuisse++;
-			LOGGER.info(String.format("Le contribuable [%s] n'est pas domicilié en suisse -> ignoré", contribuable.getNumero()));
+			LOGGER.info(String.format("Le contribuable [%s] n'est pas domicilié en Suisse -> ignoré", contribuable.getNumero()));
 			return;
 		}
 		final RegDate dateRentier = data.getDateRentier();

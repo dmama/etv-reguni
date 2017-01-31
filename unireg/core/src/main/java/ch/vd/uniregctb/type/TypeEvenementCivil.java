@@ -44,7 +44,7 @@ public enum TypeEvenementCivil {
 	SUP_NATIONALITE_NON_SUISSE(17001, "Suppression obtention nationalité autre que suisse"),// TRAITE
 	ARRIVEE_DANS_COMMUNE(18000, "Arrivée dans la commune"),					// TRAITE
 	SUP_ARRIVEE_DANS_COMMUNE(18001, "Suppression arrivée dans la commune"),	// classes crées (exception remontrée dans le handle)
-	ARRIVEE_PRINCIPALE_HS(18020, "Arrivée principale hors suisse"),			// TRAITE
+	ARRIVEE_PRINCIPALE_HS(18020, "Arrivée principale hors Suisse"),			// TRAITE
 	ARRIVEE_PRINCIPALE_HC(18030, "Arrivée principale hors canton"),			// TRAITE
 	ARRIVEE_PRINCIPALE_VAUDOISE(18040, "Arrivée principale vaudoise"),		// TRAITE
 	ARRIVEE_SECONDAIRE(18050, "Arrivée secondaire"),						// TRAITE

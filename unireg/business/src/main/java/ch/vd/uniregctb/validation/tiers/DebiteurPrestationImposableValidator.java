@@ -106,7 +106,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 			}
 			lastFor = fdpis;
 			if (fdpis.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-				vr.addError("Les for DPI hors suisse ne sont pas autorisés.");
+				vr.addError("Les for DPI hors Suisse ne sont pas autorisés.");
 			}
 		}
 
