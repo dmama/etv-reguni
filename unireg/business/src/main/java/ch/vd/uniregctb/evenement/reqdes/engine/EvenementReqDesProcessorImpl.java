@@ -57,6 +57,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BlockingQueuePollingThread;
 import ch.vd.uniregctb.common.Dated;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.StringRenderer;
@@ -614,6 +615,12 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				checkCommune(ofsCommuneImmeuble, dateActe, commune, errorCollector, isRoleAcquereurPropriete(role) && !pp.isSourceCivile());
 			}
 
+			// [SIFISC-20431] si l'un des acquéreurs est mineur, il faut tout arrêter
+			if (isMineure(pp, dateActe) && hasRoleAcquereurPropriete(pp)) {
+				errorCollector.addNewMessage("Acquéreur mineur à la date de l'acte.");
+			}
+
+
 			final EtatCivil etatCivil = pp.getEtatCivil();
 			if (etatsCivilsSansConjoint.contains(etatCivil)) {
 
@@ -882,14 +889,12 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		return Pair.of(noOfs, typeAutoriteFiscale);
 	}
 
+	private static boolean isMineure(PartiePrenante partiePrenante, RegDate dateReference) {
+		return partiePrenante.getDateNaissance() != null && partiePrenante.getDateNaissance().addYears(FiscalDateHelper.AGE_MAJORITE).isAfter(dateReference);
+	}
+
 	private static boolean hasRoleAcquereurPropriete(PartiePrenante partiePrenante) {
-		// parcours de tous les rôles de la partie prenante
-		for (RolePartiePrenante role : partiePrenante.getRoles()) {
-			if (isRoleAcquereurPropriete(role)) {
-				return true;
-			}
-		}
-		return false;
+		return partiePrenante.getRoles().stream().anyMatch(EvenementReqDesProcessorImpl::isRoleAcquereurPropriete);
 	}
 
 	private static boolean isRoleAcquereurPropriete(RolePartiePrenante role) {

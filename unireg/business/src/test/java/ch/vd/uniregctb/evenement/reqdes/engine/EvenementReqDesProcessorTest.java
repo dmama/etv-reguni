@@ -383,6 +383,51 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 	}
 
 	@Test(timeout = 10000)
+	public void testControlesPreliminairesSurAcquereurMineur() throws Exception {
+
+		final RegDate dateActe = RegDate.get().getOneDayBefore();
+
+		// mise en place d'un acquéreur de 15 ans
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Petit", "Bonhomme");
+				pp.setDateNaissance(dateActe.addYears(-15));
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Donation", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Cossonay.getNoOFS());
+				addRole(pp, ti, TypeRole.ACQUEREUR);
+
+				return ut.getId();
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(id);
+
+		// vérification des erreurs
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final ErreurTraitement erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
+				Assert.assertEquals("Acquéreur mineur à la date de l'acte.", erreur.getMessage());
+			}
+		});
+	}
+
+	@Test(timeout = 10000)
 	public void testControlesPreliminairesSurLiensMatrimoniauxUnidirectionel() throws Exception {
 
 		final RegDate dateActe = RegDate.get().getOneDayBefore();
