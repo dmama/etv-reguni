@@ -16,6 +16,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
@@ -28,6 +31,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 @Entity
 @Table(name = "RF_DROIT")
@@ -37,8 +41,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
-// TODO (msi) implémenter l'interface LinkedEntity pour retourner les tiers concernés par ce droit
-public abstract class DroitRF extends HibernateDateRangeEntity {
+public abstract class DroitRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -200,5 +203,22 @@ public abstract class DroitRF extends HibernateDateRangeEntity {
 			return c;
 		}
 		return ObjectUtils.compare(immeuble.getId(), right.immeuble.getId(), false);
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		if (ayantDroit instanceof TiersRF) {
+			final TiersRF tiersRF = (TiersRF) ayantDroit;
+			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
+			final List<Object> list = tiersRF.getRapprochements().stream()
+					.map(RapprochementRF::getContribuable)
+					.collect(Collectors.toList());
+			// on ajoute l'immeuble, évidemment
+			list.add(immeuble);
+			return list;
+		}
+		else {
+			return Collections.singletonList(immeuble);
+		}
 	}
 }

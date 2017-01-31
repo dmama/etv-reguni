@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * La description d'un bâtiment (valide pendant une période donnée).
@@ -26,10 +29,10 @@ import ch.vd.uniregctb.common.LengthConstants;
 @Entity
 @Table(name = "RF_DESCRIPTION_BATIMENT")
 @AttributeOverrides({
-		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
-		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT")),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN"))
 })
-public class DescriptionBatimentRF extends HibernateDateRangeEntity {
+public class DescriptionBatimentRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -117,5 +120,10 @@ public class DescriptionBatimentRF extends HibernateDateRangeEntity {
 
 	public void setBatiment(BatimentRF batiment) {
 		this.batiment = batiment;
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		return Collections.singletonList(batiment);
 	}
 }

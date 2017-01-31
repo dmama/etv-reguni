@@ -2,6 +2,8 @@ package ch.vd.uniregctb.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +24,8 @@ public abstract class TiersRF extends AyantDroitRF {
 	@Nullable
 	private Long noContribuable;
 
+	private Set<RapprochementRF> rapprochements;
+
 	@Column(name = "NO_RF")
 	public long getNoRF() {
 		return noRF;
@@ -39,6 +43,16 @@ public abstract class TiersRF extends AyantDroitRF {
 
 	public void setNoContribuable(@Nullable Long noContribuable) {
 		this.noContribuable = noContribuable;
+	}
+
+	// configuration hibernate : le tiers RF ne possède pas les rapprochement
+	@OneToMany(mappedBy = "tiersRF")
+	public Set<RapprochementRF> getRapprochements() {
+		return rapprochements;
+	}
+
+	public void setRapprochements(Set<RapprochementRF> rapprochements) {
+		this.rapprochements = rapprochements;
 	}
 
 	@Override
