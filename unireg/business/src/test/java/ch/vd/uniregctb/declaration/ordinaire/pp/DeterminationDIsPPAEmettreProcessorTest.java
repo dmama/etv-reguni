@@ -827,7 +827,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 			assertEquals(date(2007, 8, 10), partie2007.getDateFin());
 			// [UNIREG-1984] la tâche d'envoi pré-xistante devra être annulée (dans un post-processing) et une nouvelle tâche d'envoi de DI doit avoir été déterminée
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 8, 10), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.ACI, service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) partie2007, r));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) partie2007, r));
 		}
 	}
 

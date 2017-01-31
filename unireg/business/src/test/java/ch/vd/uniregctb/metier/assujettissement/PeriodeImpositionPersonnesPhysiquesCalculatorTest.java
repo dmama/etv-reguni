@@ -618,7 +618,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.VAUDOIS_DEPENSE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.VAUDOIS_DEPENSE, TypeAdresseRetour.CEDI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -662,7 +662,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.CEDI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -708,7 +708,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.CEDI, false, true, true, false, list.get(0));
 				}
 			}
 		});
@@ -743,7 +743,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse jusqu'à la date du décès
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0)); // [UNIREG-1742] décès -> déclaration pas optionnelle
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, true, false, list.get(0)); // [UNIREG-1742] décès -> déclaration pas optionnelle
 				}
 
 				// 2008
@@ -761,7 +761,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
 					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
 					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(4));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, true, false, list.get(4));
 				}
 			}
 		});
@@ -805,7 +805,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -847,7 +847,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, true, false, list.get(0));
 				}
 			}
 		});

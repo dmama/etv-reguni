@@ -154,13 +154,13 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 
 	/**
 	 * [UNIREG-1741] Détermine l'adresse de retour des déclarations d'impôt ordinaires en fonction de l'assujettissement spécifié.
-	 *
+	 * [SIFISC-23095] Depuis l'intronisation de la "nouvelle entité", les décédés doivent avoir par défaut une adresse de retour en CEDI (= nouvelle entité)
 	 * @param a un assujettissement
 	 * @return l'adresse de retour correspondante.
 	 */
 	private static TypeAdresseRetour determineAdresseRetour(Assujettissement a) {
 		if (a.getMotifFractFin() == MotifFor.VEUVAGE_DECES) {
-			return TypeAdresseRetour.ACI;
+			return TypeAdresseRetour.CEDI;
 		}
 		if (a instanceof VaudoisDepense) {
 			return TypeAdresseRetour.OID;

@@ -1590,9 +1590,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, taches);
 
 			// [UNIREG-1852] indigent décédé -> adresse de retour = ACI
+			// [SIFISC-23095] en fait, maintenant, l'adresse de retour reste au CEDI
 			taches = getTachesEnvoiDeclarationImpot(paul, 2007);
 			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 23),
-			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.ACI, taches);
+			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, taches);
 		}
 	}
 
