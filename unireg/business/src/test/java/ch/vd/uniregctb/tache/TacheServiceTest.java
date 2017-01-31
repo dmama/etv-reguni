@@ -558,7 +558,7 @@ public class TacheServiceTest extends BusinessTest {
 		// [UNIREG-1305]
 		// la tâche d'envoi de DI
 		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-		            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.ACI,aciSuccessions, tacheEnvoi);
+		            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.CEDI, aciSuccessions, tacheEnvoi);
 	}
 
 	@Test
@@ -4102,7 +4102,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final TacheEnvoiDeclarationImpotPP tache2 = (TacheEnvoiDeclarationImpotPP) taches.get(2);
 		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneePrecedente, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				TypeAdresseRetour.ACI, tache2);
+				TypeAdresseRetour.CEDI, tache2);
 	}
 
 	private static void assertAddDI(RegDate debut, RegDate fin, TypeContribuable typeContribuable, SynchronizeAction action) {
@@ -4458,7 +4458,7 @@ public class TacheServiceTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-								TypeAdresseRetour.ACI, tache);
+								TypeAdresseRetour.CEDI, tache);
 				}
 
 				return null;
@@ -4605,7 +4605,7 @@ public class TacheServiceTest extends BusinessTest {
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpotPP) tache);
 				return null;
 			}
 		});
@@ -4650,7 +4650,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertNotNull(tache);
 				assertTrue(tache.isAnnule());
 				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpotPP) tache);
 				return null;
 			}
 		});
@@ -4835,7 +4835,7 @@ public class TacheServiceTest extends BusinessTest {
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
-				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpotPP) tache);
 				return null;
 			}
 		});
@@ -4893,14 +4893,14 @@ public class TacheServiceTest extends BusinessTest {
 						trouveeAnnulee = true;
 
 						assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE,
-								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
+								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpotPP) tache);
 					}
 					else {
 						assertFalse("Deuxième tâche non-annulée trouvée", trouveeNonAnnulee);
 						trouveeNonAnnulee = true;
 
 						assertTache(TypeEtatTache.EN_INSTANCE, nouvelleDateDeces.addDays(30), date(anneeCourante, 1, 1), nouvelleDateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
+								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpotPP) tache);
 					}
 				}
 				assertTrue(trouveeAnnulee);
