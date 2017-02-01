@@ -206,7 +206,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		if (ayantDroit instanceof TiersRF) {
 			final TiersRF tiersRF = (TiersRF) ayantDroit;
 			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit

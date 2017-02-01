@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessComparable;
@@ -184,7 +185,7 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 
 		if (!includeAnnuled && isAnnule()) {
 			return null;

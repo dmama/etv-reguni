@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -263,7 +264,7 @@ public class Immeuble extends HibernateDateRangeEntity implements LinkedEntity {
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		// msi (11.01.2012) l'insertion d'un immeuble ne doit pas provoquer la validation du contribuable : return contribuable == null ? null : Arrays.asList(contribuable);
 		return null;
 	}

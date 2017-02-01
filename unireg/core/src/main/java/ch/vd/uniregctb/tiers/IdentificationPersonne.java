@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -93,7 +94,7 @@ public class IdentificationPersonne extends HibernateEntity implements LinkedEnt
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return personnePhysique == null ? null : Collections.singletonList(personnePhysique);
 	}
 }

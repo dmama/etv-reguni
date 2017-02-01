@@ -58,7 +58,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linkedEntity = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, LinkedEntity.Context.PARENTES, isAnnulation);
 			for (Tiers t : tiers) {
 				if (t instanceof PersonnePhysique) {
 					final PersonnePhysique pp = (PersonnePhysique) t;

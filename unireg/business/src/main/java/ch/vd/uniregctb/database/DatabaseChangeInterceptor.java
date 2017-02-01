@@ -82,15 +82,15 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
 			final LinkedEntity child = (LinkedEntity) entity;
 			// [SIFISC-915] En cas d'annulation, on DOIT inclure les liens nouvellement annulés pour invalider correctement les caches
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(child, Tiers.class, isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(child, Tiers.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
 			for (Tiers t : tiers) {
 				dataEventService.onTiersChange(t.getNumero());
 			}
-			final Set<ImmeubleRF> immeubles = tiersService.getLinkedEntities(child, ImmeubleRF.class, isAnnulation);
+			final Set<ImmeubleRF> immeubles = tiersService.getLinkedEntities(child, ImmeubleRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
 			for (ImmeubleRF i : immeubles) {
 				dataEventService.onImmeubleChange(i.getId());
 			}
-			final Set<BatimentRF> batiments = tiersService.getLinkedEntities(child, BatimentRF.class, isAnnulation);
+			final Set<BatimentRF> batiments = tiersService.getLinkedEntities(child, BatimentRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
 			for (BatimentRF b : batiments) {
 				dataEventService.onBatimentChange(b.getId());
 			}

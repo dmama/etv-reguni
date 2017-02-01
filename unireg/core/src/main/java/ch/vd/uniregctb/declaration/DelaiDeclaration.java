@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -134,7 +135,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return declaration == null ? null : Collections.singletonList(declaration);
 	}
 

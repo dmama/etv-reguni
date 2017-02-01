@@ -57,7 +57,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linked = (LinkedEntity) entity;
-			final List<?> linkedEntities = linked.getLinkedEntities(true);
+			final List<?> linkedEntities = linked.getLinkedEntities(LinkedEntity.Context.INDEXATION, true);
 			if (linkedEntities != null && !linkedEntities.isEmpty()) {
 				for (Object linkedEntity : linkedEntities) {
 					if (linkedEntity instanceof Tiers) {

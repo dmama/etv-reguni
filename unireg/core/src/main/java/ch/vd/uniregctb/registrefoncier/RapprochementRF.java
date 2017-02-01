@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.common.Duplicable;
@@ -121,7 +122,7 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 
 		// on expose les numéros de contribubales à travers les communautés : si le rapprochement change,
 		// toutes les communautés liées doivent être invalidées.

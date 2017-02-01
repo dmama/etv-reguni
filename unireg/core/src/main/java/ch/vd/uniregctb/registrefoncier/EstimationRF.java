@@ -167,7 +167,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return Collections.singletonList(immeuble);
 	}
 }

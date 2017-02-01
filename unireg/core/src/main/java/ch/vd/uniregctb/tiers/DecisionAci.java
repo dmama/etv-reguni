@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessComparable;
@@ -98,7 +99,7 @@ public class DecisionAci extends LocalisationDatee implements LinkedEntity, Dupl
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return contribuable == null ? null : Collections.singletonList(contribuable);
 	}
 

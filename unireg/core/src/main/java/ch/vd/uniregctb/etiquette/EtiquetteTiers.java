@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
@@ -100,7 +101,7 @@ public class EtiquetteTiers extends HibernateDateRangeEntity implements LinkedEn
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return tiers == null ? null : Collections.singletonList(tiers);
 	}
 

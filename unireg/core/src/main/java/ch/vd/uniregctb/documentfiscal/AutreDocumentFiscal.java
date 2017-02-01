@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -84,7 +85,7 @@ public abstract class AutreDocumentFiscal extends HibernateEntity implements Lin
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 

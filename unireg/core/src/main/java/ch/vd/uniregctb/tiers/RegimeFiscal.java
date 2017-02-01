@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -96,7 +98,7 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 

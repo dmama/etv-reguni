@@ -5223,16 +5223,16 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	@Override
-	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, boolean includeAnnuled) {
+	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, @NotNull LinkedEntity.Context context, boolean includeAnnuled) {
 		final Set<T> linked = new HashSet<>();
 		final Set<Object> visited = new HashSet<>(); // contient les entités et les clés déjà visitées
-		extractLinkedEntities(entity, clazz, includeAnnuled, linked, visited);
+		extractLinkedEntities(entity, clazz, context, includeAnnuled, linked, visited);
 		return linked;
 	}
 
-	private <T extends HibernateEntity> void extractLinkedEntities(LinkedEntity entity, @NotNull Class<T> clazz, boolean includeAnnuled, Set<T> linked, Set<Object> visited) {
+	private <T extends HibernateEntity> void extractLinkedEntities(LinkedEntity entity, @NotNull Class<T> clazz, @NotNull LinkedEntity.Context context, boolean includeAnnuled, Set<T> linked, Set<Object> visited) {
 
-		final List<?> list = entity.getLinkedEntities(includeAnnuled);
+		final List<?> list = entity.getLinkedEntities(context, includeAnnuled);
 		if (list == null) {
 			return;
 		}
@@ -5265,7 +5265,7 @@ public class TiersServiceImpl implements TiersService {
 				linked.add((T) e);
 			}
 			else if (e instanceof LinkedEntity) {
-				extractLinkedEntities((LinkedEntity) e, clazz, false /* l'annulation des sous-entités est traitée séparemment, si nécessaire */, linked, visited); // récursif
+				extractLinkedEntities((LinkedEntity) e, clazz, context, false /* l'annulation des sous-entités est traitée séparemment, si nécessaire */, linked, visited); // récursif
 			}
 		}
 	}
