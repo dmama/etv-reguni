@@ -226,23 +226,28 @@ public class TacheListManagerImpl implements TacheListManager {
 		if (coreCriteria.getOid() == null) { //l'utilisateur a choisit TOUS =>  Filtre sur les OID de l'utilisateur
 			if (!SecurityDebugConfig.isIfoSecDebug()) {
 
-				List<CollectiviteAdministrativeUtilisateur> collectivites;
-				try {
-					collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
-					if (collectivites == null) {
+				// [SIFISC-22880] si l'utilisateur est loggué dans la collectivité 22, "Tous" signifie "Tous", non-limité aux
+			    // collectivités dans lesquelles l'utilisateur à des droits
+				final Integer loggedInOid = AuthenticationHelper.getCurrentOID();
+				if (loggedInOid == null || loggedInOid != ServiceInfrastructureService.noACI) {
+					List<CollectiviteAdministrativeUtilisateur> collectivites;
+					try {
+						collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
+						if (collectivites == null) {
+							collectivites = Collections.emptyList();
+						}
+					}
+					catch (ServiceSecuriteException e) {
+						// si le visa n'existe pas, l'ejb lève une sécurité exception au lieu de retourner une collection vide...
 						collectivites = Collections.emptyList();
 					}
-				}
-				catch (ServiceSecuriteException e) {
-					// si le visa n'existe pas, l'ejb lève une sécurité exception au lieu de retourner une collection vide...
-					collectivites = Collections.emptyList();
-				}
 
-				final List<Integer> oids = new ArrayList<>(collectivites.size());
-				for (ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c : collectivites) {
-					oids.add(c.getNoColAdm());
+					final List<Integer> oids = new ArrayList<>(collectivites.size());
+					for (ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c : collectivites) {
+						oids.add(c.getNoColAdm());
+					}
+					coreCriteria.setOidUser(oids.toArray(new Integer[oids.size()]));
 				}
-				coreCriteria.setOidUser(oids.toArray(new Integer[oids.size()]));
 			}
 		}
 
