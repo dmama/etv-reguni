@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -123,6 +124,13 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 
 	@Override
 	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+
+		if (context == Context.VALIDATION || context == Context.INDEXATION || context == Context.PARENTES || context == Context.TACHES) {
+			// dans les contextes de validation/indexation/parentés, on ne remonte pas sur le contribuable ou
+			// le tiers RF : ces deux entités sont autoporteuses et ne sont pas influencées par le rapprochement.
+			// dans le context des tâches, on ne fait rien car seul les changements de fors fiscaux induisent des générations de tâches.
+			return Collections.emptyList();
+		}
 
 		// on expose les numéros de contribubales à travers les communautés : si le rapprochement change,
 		// toutes les communautés liées doivent être invalidées.

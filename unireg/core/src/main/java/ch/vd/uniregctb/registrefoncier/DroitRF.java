@@ -207,7 +207,8 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 
 	@Override
 	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
-		if (ayantDroit instanceof TiersRF) {
+		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
+		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
 			final TiersRF tiersRF = (TiersRF) ayantDroit;
 			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
 			final List<Object> list = tiersRF.getRapprochements().stream()
