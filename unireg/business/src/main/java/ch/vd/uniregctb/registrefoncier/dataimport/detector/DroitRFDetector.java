@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,37 +90,68 @@ public class DroitRFDetector {
 			statusManager.setMessage("Détection des mutations sur les droits... (regroupement)");
 		}
 
-		// on regroupe toutes les droits
-		cacheDroits.clear();    // on utilise un cache persistant pour limiter l'utilisation mémoire, mais on est pas
-		// du tout intéressé par le côté persistent des données, on commence donc par tout effacer.
-		while (iterator.hasNext()) {
-			final PersonEigentumAnteil eigentumAnteil = iterator.next();
-			if (eigentumAnteil == null) {
-				break;
-			}
-			if (BlacklistRFHelper.isBlacklisted(eigentumAnteil.getBelastetesGrundstueckIDREF())) {
-				// on ignore les droits sur les bâtiments blacklistés
-				continue;
-			}
-			final String idRF = DroitRFHelper.getIdRF(eigentumAnteil);
-			final IdRfCacheKey key = new IdRfCacheKey(idRF);
-			ArrayList<PersonEigentumAnteil> list = cacheDroits.get(key);
-			if (list == null) {
-				list = new ArrayList<>();
-			}
-			list.add(eigentumAnteil);
-			cacheDroits.put(key, list);
-		}
+		// Note: on utilise un cache persistant pour limiter l'utilisation mémoire, mais on est pas
+		//       du tout intéressé par le côté persistent des données, on commence donc par tout effacer.
+		cacheDroits.clear();
+
+		// on regroupe tous les droits par ayant-droit
+		groupByAyantDroit(iterator, cacheDroits, PersonEigentumAnteil::getBelastetesGrundstueckIDREF, DroitRFHelper::getIdRF);
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits...", 50);
 		}
 
 		// on détecte les mutations qui doivent être générées
-		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> template
-				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>>(cacheDroits.entrySet().iterator(), batchSize, nbThreads,
-				                                                                                              Behavior.REPRISE_AUTOMATIQUE, transactionManager, null,
-				                                                                                              AuthenticationInterface.INSTANCE) {
+		forEachAyantDroit(cacheDroits, this::detecterMutationsCreationEtModification, importId, importInitial, nbThreads, statusManager);
+
+		// détection des mutations de type SUPRESSION
+		detectMutationsDeSuppression(cacheDroits, importId);
+
+		// inutile de garder des données en mémoire ou sur le disque
+		cacheDroits.clear();
+	}
+
+	private static <T> void groupByAyantDroit(Iterator<T> iterator, PersistentCache<ArrayList<T>> cacheDroits, Function<T, String> immeubleIdRefProvider, Function<T, String> ayantDroitIdRefProvider) {
+		while (iterator.hasNext()) {
+			final T eigentumAnteil = iterator.next();
+			if (eigentumAnteil == null) {
+				break;
+			}
+			if (BlacklistRFHelper.isBlacklisted(immeubleIdRefProvider.apply(eigentumAnteil))) {
+				// on ignore les droits sur les bâtiments blacklistés
+				continue;
+			}
+			final String idRF = ayantDroitIdRefProvider.apply(eigentumAnteil);
+			final IdRfCacheKey key = new IdRfCacheKey(idRF);
+			ArrayList<T> list = cacheDroits.get(key);
+			if (list == null) {
+				list = new ArrayList<>();
+			}
+			list.add(eigentumAnteil);
+			cacheDroits.put(key, list);
+		}
+	}
+
+	@FunctionalInterface
+	private interface MutationsSurUnAyantDroitDetector<T> {
+		void apply(@NotNull String idRF, @NotNull List<T> droits, @NotNull EvenementRFImport parentImport, boolean importInitial);
+	}
+
+	private <T> void forEachAyantDroit(@NotNull final PersistentCache<ArrayList<T>> cacheDroits,
+	                                   @NotNull MutationsSurUnAyantDroitDetector<T> detector,
+	                                   final long importId,
+	                                   final boolean importInitial,
+	                                   final int nbThreads,
+	                                   @Nullable final StatusManager statusManager) {
+
+		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<T>>> template
+				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<T>>>(cacheDroits.entrySet().iterator(),
+				                                                                           batchSize,
+				                                                                           nbThreads,
+				                                                                           Behavior.REPRISE_AUTOMATIQUE,
+				                                                                           transactionManager,
+				                                                                           null,
+				                                                                           AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
@@ -130,65 +163,20 @@ public class DroitRFDetector {
 		final AtomicInteger processed = new AtomicInteger();
 
 		// détection des mutations de type CREATION et MODIFICATION
-		template.execute(new BatchCallback<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>>() {
+		template.execute(new BatchCallback<Map.Entry<ObjectKey, ArrayList<T>>>() {
 
-			private final ThreadLocal<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> first = new ThreadLocal<>();
+			private final ThreadLocal<Map.Entry<ObjectKey, ArrayList<T>>> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Map.Entry<ObjectKey, ArrayList<PersonEigentumAnteil>>> batch) throws Exception {
+			public boolean doInTransaction(List<Map.Entry<ObjectKey, ArrayList<T>>> batch) throws Exception {
 				first.set(batch.get(0));
 
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				batch.forEach(e -> {
-					final String idRF = ((IdRfCacheKey) e.getKey()).getIdRF();
-					final List<PersonEigentumAnteil> nouveauxDroits = e.getValue();
-
-					final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
-					if (ayantDroit == null) {
-						// l'ayant-droit n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
-						final EvenementRFMutation mutation = new EvenementRFMutation();
-						mutation.setParentImport(parentImport);
-						mutation.setEtat(EtatEvenementRF.A_TRAITER);
-						mutation.setTypeEntite(TypeEntiteRF.DROIT);
-						mutation.setTypeMutation(TypeMutationRF.CREATION);
-						mutation.setIdRF(idRF); // idRF de l'ayant-droit
-						mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(nouveauxDroits)));
-						evenementRFMutationDAO.save(mutation);
-					}
-					else {
-						// on récupère les droits actifs actuels
-						final Set<DroitRF> activesDroits = ayantDroit.getDroits().stream()
-								.filter(s -> s.isValidAt(null))
-								.collect(Collectors.toSet());
-
-						//noinspection StatementWithEmptyBody
-						if (!DroitRFHelper.dataEquals(activesDroits, nouveauxDroits, importInitial)) {
-							// les droits sont différents : on sauve une mutation en mode modification
-							final EvenementRFMutation mutation = new EvenementRFMutation();
-							mutation.setParentImport(parentImport);
-							mutation.setEtat(EtatEvenementRF.A_TRAITER);
-							mutation.setTypeEntite(TypeEntiteRF.DROIT);
-							mutation.setTypeMutation(TypeMutationRF.MODIFICATION);
-							mutation.setIdRF(idRF); // idRF de l'ayant-droit
-							mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(nouveauxDroits)));
-							evenementRFMutationDAO.save(mutation);
-						}
-						else {
-							// les droits sont égaux : rien à faire
-						}
-					}
-
-					// on traite aussi toutes les communautés que l'on trouve
-
-					// Note : dans l'export du registre foncier, les communautés ne sont pas fournies dans la liste des propriétaires. A la place,
-					//        elles sont fournies en tant qu'entité implicite dans la liste des droits. Dans Unireg, nous sommes partis sur le principe
-					//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
-					nouveauxDroits.stream()
-							.map(PersonEigentumAnteil::getGemeinschaft)
-							.filter(Objects::nonNull)
-							.forEach(g -> processAyantDroit(parentImport, g));
-
+					final String idRF = ((IdRfCacheKey) e.getKey()).getIdRF();  // l'idRF de l'ayant-droit
+					final List<T> nouveauxDroits = e.getValue();                // les droits de l'ayant-droit
+					detector.apply(idRF, nouveauxDroits, parentImport, importInitial);
 				});
 
 				processed.addAndGet(batch.size());
@@ -207,10 +195,62 @@ public class DroitRFDetector {
 				}
 			}
 		}, null);
+	}
 
-		// détection des mutations de type SUPRESSION
-		final TransactionTemplate t1 = new TransactionTemplate(transactionManager);
-		t1.execute(s -> {
+	/**
+	 * Cette méthode détecte les changements (création ou update) sur les droits d'un ayant-droit et crée les mutations correspondantes.
+	 */
+	private void detecterMutationsCreationEtModification(@NotNull String idRF, @NotNull List<PersonEigentumAnteil> droits, @NotNull EvenementRFImport parentImport, boolean importInitial) {
+
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
+		if (ayantDroit == null) {
+			// l'ayant-droit n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
+			final EvenementRFMutation mutation = new EvenementRFMutation();
+			mutation.setParentImport(parentImport);
+			mutation.setEtat(EtatEvenementRF.A_TRAITER);
+			mutation.setTypeEntite(TypeEntiteRF.DROIT);
+			mutation.setTypeMutation(TypeMutationRF.CREATION);
+			mutation.setIdRF(idRF); // idRF de l'ayant-droit
+			mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(droits)));
+			evenementRFMutationDAO.save(mutation);
+		}
+		else {
+			// on récupère les droits actifs actuels
+			final Set<DroitRF> activesDroits = ayantDroit.getDroits().stream()
+					.filter(d -> d.isValidAt(null))
+					.collect(Collectors.toSet());
+
+			//noinspection StatementWithEmptyBody
+			if (!DroitRFHelper.dataEquals(activesDroits, droits, importInitial)) {
+				// les droits sont différents : on sauve une mutation en mode modification
+				final EvenementRFMutation mutation = new EvenementRFMutation();
+				mutation.setParentImport(parentImport);
+				mutation.setEtat(EtatEvenementRF.A_TRAITER);
+				mutation.setTypeEntite(TypeEntiteRF.DROIT);
+				mutation.setTypeMutation(TypeMutationRF.MODIFICATION);
+				mutation.setIdRF(idRF); // idRF de l'ayant-droit
+				mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(droits)));
+				evenementRFMutationDAO.save(mutation);
+			}
+			else {
+				// les droits sont égaux : rien à faire
+			}
+		}
+
+		// on traite aussi toutes les communautés que l'on trouve
+
+		// Note : dans l'export du registre foncier, les communautés ne sont pas fournies dans la liste des propriétaires. A la place,
+		//        elles sont fournies en tant qu'entité implicite dans la liste des droits. Dans Unireg, nous sommes partis sur le principe
+		//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
+		droits.stream()
+				.map(PersonEigentumAnteil::getGemeinschaft)
+				.filter(Objects::nonNull)
+				.forEach(g -> processAyantDroit(parentImport, g));
+	}
+
+	private <T> void detectMutationsDeSuppression(PersistentCache<ArrayList<T>> cacheDroits, long importId) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(s -> {
 			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 			final Set<String> existingAyantsDroits = ayantDroitRFDAO.findAvecDroitsActifs();
@@ -235,9 +275,6 @@ public class DroitRFDetector {
 
 			return null;
 		});
-
-		// inutile de garder des données en mémoire ou sur le disque
-		cacheDroits.clear();
 	}
 
 	private void processAyantDroit(EvenementRFImport parentImport, Rechteinhaber rechteinhaber) {
