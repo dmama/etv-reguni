@@ -83,8 +83,6 @@
 
 	<bean id="rapprochementRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAOImpl" parent="hibernateDao"/>
 
-	<bean id="allegementFoncierDAO" class="ch.vd.uniregctb.foncier.AllegementFoncierDAOImpl" parent="hibernateDao"/>
-
 	<bean id="evenementRFImportDAO" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAOImpl" parent="hibernateDao"/>
 	<bean id="evenementRFMutationDAO" class="ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAOImpl" parent="hibernateDao">
 		<property name="dialect" ref="hibernateDialect"/>

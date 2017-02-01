@@ -296,7 +296,6 @@
 		<property name="editiqueService" ref="editiqueService"/>
 		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="allegementFoncierDAO" ref="allegementFoncierDAO"/>
 		<property name="evtDeclarationPMSender" ref="evenementDeclarationPMSender"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>

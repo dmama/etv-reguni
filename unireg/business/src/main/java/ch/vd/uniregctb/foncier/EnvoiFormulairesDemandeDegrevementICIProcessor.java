@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
@@ -66,15 +67,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	private final AutreDocumentFiscalService autreDocumentFiscalService;
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
-	private final AllegementFoncierDAO allegementFoncierDAO;
 
-	public EnvoiFormulairesDemandeDegrevementICIProcessor(PlatformTransactionManager transactionManager, AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate, TiersService tiersService,
-	                                                      AllegementFoncierDAO allegementFoncierDAO) {
+	public EnvoiFormulairesDemandeDegrevementICIProcessor(PlatformTransactionManager transactionManager, AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate, TiersService tiersService) {
 		this.transactionManager = transactionManager;
 		this.autreDocumentFiscalService = autreDocumentFiscalService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
-		this.allegementFoncierDAO = allegementFoncierDAO;
 	}
 
 	public EnvoiFormulairesDemandeDegrevementICIResults run(final int nbThreads, @Nullable final Integer nbMaxEnvois, final RegDate dateTraitement, StatusManager statusManager) {
@@ -135,7 +133,13 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			return;
 		}
 
-		// le contribuable n'est pas complètement exonéré... il faut donc vérifier quels sont les formulaire à émettre...
+		// dégrèvements actifs, chargés une fois pour toute, indexés par identifiant d'immeuble
+		final Map<Long, List<DegrevementICI>> degrevements = entreprise.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
+				.collect(Collectors.toMap(degrevement -> degrevement.getImmeuble().getId(),
+				                          Collections::singletonList,
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+		// le contribuable n'est pas complètement exonéré... il faut donc vérifier quels sont les formulaires à émettre...
 		// et on peut boucler sur les immeubles
 		for (EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble idDroitImmeuble : idsDroitImmeuble) {
 
@@ -189,9 +193,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				final DateRange rangeAnneeSuivantDebutDroit = new DateRangeHelper.Range(RegDate.get(anneeSuivantDebutDroit, 1, 1), RegDate.get(anneeSuivantDebutDroit, 12, 31));
 
 				// recherche de dégrèvement actif sur l'année suivant le début de droit
-				final List<DegrevementICI> degrevements = allegementFoncierDAO.getAllegementsFonciers(entreprise.getNumero(), immeuble.getId(), DegrevementICI.class);
-				final boolean hasDegrevementActifAnneeSuivantDebutDroit = degrevements.stream()
-						.filter(AnnulableHelper::nonAnnule)
+				final boolean hasDegrevementActifAnneeSuivantDebutDroit = degrevements.getOrDefault(immeuble.getId(), Collections.emptyList()).stream()
 						.anyMatch(deg -> DateRangeHelper.intersect(rangeAnneeSuivantDebutDroit, deg));
 				if (hasDegrevementActifAnneeSuivantDebutDroit) {
 					rapport.addDegrevementActifAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, immeuble);

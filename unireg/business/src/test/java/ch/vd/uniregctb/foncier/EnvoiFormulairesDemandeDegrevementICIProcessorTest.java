@@ -52,8 +52,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");
-		final AllegementFoncierDAO allegementFoncierDAO = getBean(AllegementFoncierDAO.class, "allegementFoncierDAO");
-		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(transactionManager, autreDocumentFiscalService, hibernateTemplate, tiersService, allegementFoncierDAO);
+		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(transactionManager, autreDocumentFiscalService, hibernateTemplate, tiersService);
 		delaisService = getBean(DelaisService.class, "delaisService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 	}

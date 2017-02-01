@@ -27,7 +27,6 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationPMSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.foncier.AllegementFoncierDAO;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIProcessor;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
@@ -60,7 +59,6 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private EditiqueService editiqueService;
 	private EditiqueCompositionService editiqueCompositionService;
 	private EvenementFiscalService evenementFiscalService;
-	private AllegementFoncierDAO allegementFoncierDAO;
 	private EvenementDeclarationPMSender evtDeclarationPMSender;
 	private RegistreFoncierService registreFoncierService;
 
@@ -120,10 +118,6 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
-	public void setAllegementFoncierDAO(AllegementFoncierDAO allegementFoncierDAO) {
-		this.allegementFoncierDAO = allegementFoncierDAO;
-	}
-
 	public void setEvtDeclarationPMSender(EvenementDeclarationPMSender evtDeclarationPMSender) {
 		this.evtDeclarationPMSender = evtDeclarationPMSender;
 	}
@@ -146,7 +140,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	@Override
 	public EnvoiFormulairesDemandeDegrevementICIResults envoyerFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, int nbThreads, @Nullable Integer nbMaxEnvois, StatusManager statusManager) {
-		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(transactionManager, this, hibernateTemplate, tiersService, allegementFoncierDAO);
+		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(transactionManager, this, hibernateTemplate, tiersService);
 		return processor.run(nbThreads, nbMaxEnvois, dateTraitement, statusManager);
 	}
 
