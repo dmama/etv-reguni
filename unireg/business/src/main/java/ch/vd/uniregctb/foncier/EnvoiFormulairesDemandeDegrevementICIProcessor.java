@@ -59,7 +59,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
-	private static final int BATCH_SIZE = 50;
+	private static final int BATCH_SIZE = 10;
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiFormulairesDemandeDegrevementICIProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
