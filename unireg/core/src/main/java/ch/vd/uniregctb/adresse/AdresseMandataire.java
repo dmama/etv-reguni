@@ -216,7 +216,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return mandant != null ? Collections.singletonList(mandant) : null;
 	}
 

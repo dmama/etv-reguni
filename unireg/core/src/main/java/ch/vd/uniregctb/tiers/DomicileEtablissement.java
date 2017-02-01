@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -79,7 +81,7 @@ public class DomicileEtablissement extends LocalisationDatee implements LinkedEn
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return etablissement == null ? null : Collections.singletonList(etablissement);
 	}
 

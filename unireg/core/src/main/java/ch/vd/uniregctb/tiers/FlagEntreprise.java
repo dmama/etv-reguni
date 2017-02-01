@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -84,7 +86,7 @@ public class FlagEntreprise extends HibernateDateRangeEntity implements LinkedEn
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 }

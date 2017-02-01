@@ -144,7 +144,7 @@ public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEn
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return Arrays.asList(immeuble, batiment);
 	}
 }

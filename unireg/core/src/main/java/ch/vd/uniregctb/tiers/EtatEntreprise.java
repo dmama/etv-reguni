@@ -102,7 +102,7 @@ public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Com
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 

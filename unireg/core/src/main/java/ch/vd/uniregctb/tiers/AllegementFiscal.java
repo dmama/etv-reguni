@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -78,7 +79,7 @@ public abstract class AllegementFiscal extends HibernateDateRangeEntity implemen
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 

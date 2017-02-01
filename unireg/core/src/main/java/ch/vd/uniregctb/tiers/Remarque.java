@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -68,7 +69,7 @@ public class Remarque extends HibernateEntity implements LinkedEntity {
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return tiers == null ? null : Collections.singletonList(tiers);
 	}
 }

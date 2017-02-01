@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -123,7 +124,7 @@ public class DescriptionBatimentRF extends HibernateDateRangeEntity implements L
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return Collections.singletonList(batiment);
 	}
 }

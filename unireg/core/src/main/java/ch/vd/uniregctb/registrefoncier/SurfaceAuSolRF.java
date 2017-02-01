@@ -127,7 +127,7 @@ public class SurfaceAuSolRF extends HibernateDateRangeEntity implements LinkedEn
 	}
 
 	@Override
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return Collections.singletonList(immeuble);
 	}
 }

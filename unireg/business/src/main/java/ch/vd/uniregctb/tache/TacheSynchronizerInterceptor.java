@@ -49,7 +49,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linkedEntity = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, LinkedEntity.Context.TACHES, isAnnulation);
 			for (Tiers t : tiers) {
 				if (t instanceof Contribuable) {
 					final Contribuable ctb = (Contribuable) t;

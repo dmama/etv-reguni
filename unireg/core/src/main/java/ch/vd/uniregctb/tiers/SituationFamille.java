@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -136,7 +137,7 @@ public abstract class SituationFamille extends HibernateDateRangeEntity implemen
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return contribuable == null ? null : Collections.singletonList(contribuable);
 	}
 }

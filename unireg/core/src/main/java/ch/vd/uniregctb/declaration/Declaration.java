@@ -469,7 +469,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		return tiers == null ? null : Collections.singletonList(tiers);
 	}
 

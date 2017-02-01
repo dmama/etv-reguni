@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.EntityKey;
@@ -85,13 +86,13 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 	@SuppressWarnings({"unchecked"})
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 
 		if (!includeAnnuled && isAnnule()) {
 			return null;
 		}
 
-		List list = super.getLinkedEntities(includeAnnuled);
+		List list = super.getLinkedEntities(context, includeAnnuled);
 		if (autoriteTutelaireId != null) {
 			if (list == null) {
 				list = new ArrayList<>();
