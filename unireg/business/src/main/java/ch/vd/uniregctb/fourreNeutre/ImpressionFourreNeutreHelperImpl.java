@@ -2,7 +2,6 @@ package ch.vd.uniregctb.fourreNeutre;
 
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,13 +85,12 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 		return infoDoc;
 	}
 
-	private String calculCodeBarre(FourreNeutre f) {
+	 String calculCodeBarre(FourreNeutre f) {
 		final Tiers tiers = f.getTiers();
-		final String codbarr = String.valueOf(f.getPeriodeFIscale())
-				+"0"+StringUtils.rightPad(tiers.getNumero().toString(), 12, "0");
-
-			return codbarr;
+			return String.format("%04d%09d%04d",f.getPeriodeFIscale(),tiers.getNumero(),0);
 	}
+
+
 
 	private static String getConstantesEditiqueValue(Tiers tiers){
 		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
