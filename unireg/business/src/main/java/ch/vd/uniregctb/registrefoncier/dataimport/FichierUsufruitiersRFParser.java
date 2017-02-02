@@ -18,7 +18,7 @@ import ch.vd.capitastra.rechteregister.Dienstbarkeit;
  */
 public class FichierUsufruitiersRFParser {
 
-	private static final String RECHTREGISTER_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister";
+	public static final String RECHTREGISTER_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister";
 
 	private static final String LIST_DROITS = "StandardRechtList";
 	private static final String DROIT = "Dienstbarkeit";

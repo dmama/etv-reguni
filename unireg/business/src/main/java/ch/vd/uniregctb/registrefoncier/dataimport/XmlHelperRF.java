@@ -10,6 +10,7 @@ import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
+import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
 
@@ -117,4 +118,9 @@ public interface XmlHelperRF {
 	 * Converti l'information de la commune (représenté ici par le numéro d'immeuble, parce qu'il n'y avait pas d'autre élément disponible dans le XSD) dans sa représentation XML.
 	 */
 	String toXMLString(GrundstueckNummerElement grundstueckNummer);
+
+	/**
+	 * Converti l'usufruit ou le droit d'habitation dans sa représentation XML
+	 */
+	String toXMLString(Dienstbarkeit obj);
 }

@@ -17,6 +17,7 @@ import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
+import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungListElement;
@@ -47,6 +48,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext autreDroitContext;
 	private final JAXBContext communauteContext;
 	private final JAXBContext communeContext;
+	private final JAXBContext usufruitContext;
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
@@ -61,6 +63,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		autreDroitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
 		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
+		usufruitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 	}
 
 	@Override
@@ -254,6 +257,22 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final StringWriter w = new StringWriter();
 			final QName name = buildQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<GrundstueckNummerElement>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(Dienstbarkeit obj) {
+		try {
+			final Marshaller m = usufruitContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<>(name, (Class<Dienstbarkeit>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
 		catch (JAXBException e) {
