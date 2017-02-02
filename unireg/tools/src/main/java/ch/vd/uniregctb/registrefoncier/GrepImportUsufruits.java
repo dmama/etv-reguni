@@ -10,10 +10,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
-import ch.vd.uniregctb.registrefoncier.dataimport.FichierUsufruitiersRFParser;
+import ch.vd.capitastra.rechteregister.LastRechtGruppe;
+import ch.vd.uniregctb.registrefoncier.dataimport.FichierServitudeRFParser;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
 
@@ -25,7 +27,7 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 public class GrepImportUsufruits {
 
 	private final XmlHelperRF xmlHelper;
-	private final FichierUsufruitiersRFParser parser;
+	private final FichierServitudeRFParser parser;
 
 	public static void main(String[] args) throws Exception {
 
@@ -41,7 +43,7 @@ public class GrepImportUsufruits {
 
 	public GrepImportUsufruits() throws JAXBException {
 		xmlHelper = new XmlHelperRFImpl();
-		parser = new FichierUsufruitiersRFParser();
+		parser = new FichierServitudeRFParser();
 		parser.setXmlHelperRF(xmlHelper);
 	}
 
@@ -53,17 +55,30 @@ public class GrepImportUsufruits {
 		final File file = ResourceUtils.getFile("file:" + filename);
 		assertNotNull(file);
 
-		final MutableInt droitCount = new MutableInt(0);
+		final MutableInt servitudeCount = new MutableInt(0);
+		final MutableInt beneficiaireCount = new MutableInt(0);
 
 		final long start = System.nanoTime();
 
 		// on parse le fichier
-		final FichierUsufruitiersRFParser.Callback callback = droit -> {
-			String xml = toXMLString(droit);
-			if (pattern.matcher(xml).find()) {
-				System.out.println(xml);
+		final FichierServitudeRFParser.Callback callback = new FichierServitudeRFParser.Callback() {
+			@Override
+			public void onServitude(@NotNull Dienstbarkeit servitude) {
+				String xml = toXMLString(servitude);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				servitudeCount.increment();
 			}
-			droitCount.increment();
+
+			@Override
+			public void onBeneficiaire(@NotNull LastRechtGruppe beneficiaire) {
+				String xml = toXMLString(beneficiaire);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				beneficiaireCount.increment();
+			}
 		};
 
 		try (InputStream is = new FileInputStream(file)) {
@@ -75,6 +90,10 @@ public class GrepImportUsufruits {
 	}
 
 	private String toXMLString(Dienstbarkeit obj) {
+		return xmlHelper.toXMLString(obj);
+	}
+
+	private String toXMLString(LastRechtGruppe obj) {
 		return xmlHelper.toXMLString(obj);
 	}
 }

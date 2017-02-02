@@ -11,6 +11,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
+import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
 
@@ -55,11 +56,6 @@ public interface XmlHelperRF {
 	JAXBContext getSurfaceListContext();
 
 	/**
-	 * @return le context JAXB pour les droits contenus dans le fichier qui contient les usufruitiers et les bénéficiaires de droits d'habitation.
-	 */
-	JAXBContext getAutreDroitContext();
-
-	/**
 	 * @return le context JAXB pour les droits contenus dans le fichier qui contient les communautés.
 	 */
 	JAXBContext getCommunauteContext();
@@ -68,6 +64,16 @@ public interface XmlHelperRF {
 	 * @return le context JAXB pour les liste de communes.
 	 */
 	JAXBContext getCommuneContext();
+
+	/**
+	 * @return le context JAXB pour les servitudes (fichier séparé du fichier principal).
+	 */
+	JAXBContext getServitudeContext();
+
+	/**
+	 * @return le context JAXB pour les bénéficiaires de servitudes (fichier séparé du fichier principal).
+	 */
+	JAXBContext getBeneficiaireServitudeContext();
 
 	/**
 	 * Converti l'immeuble spécifié dans sa représentation XML.
@@ -120,7 +126,12 @@ public interface XmlHelperRF {
 	String toXMLString(GrundstueckNummerElement grundstueckNummer);
 
 	/**
-	 * Converti l'usufruit ou le droit d'habitation dans sa représentation XML
+	 * Converti la servitude dans sa représentation XML
 	 */
 	String toXMLString(Dienstbarkeit obj);
+
+	/**
+	 * Converti le bénéficiaire de servitude dans sa représentation XML
+	 */
+	String toXMLString(LastRechtGruppe obj);
 }

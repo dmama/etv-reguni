@@ -18,6 +18,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
+import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungListElement;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.elements.GemeinschaftElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GewoehnlichesMiteigentumElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.JuristischePersonstammElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.LastRechtGruppeElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.LiegenschaftElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.NatuerlichePersonstammElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilElement;
@@ -45,10 +47,10 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext batimentContext;
 	private final JAXBContext surfacesAuSolContext;
 	private final JAXBContext surfaceListContext;
-	private final JAXBContext autreDroitContext;
+	private final JAXBContext servitudeContext;
 	private final JAXBContext communauteContext;
 	private final JAXBContext communeContext;
-	private final JAXBContext usufruitContext;
+	private final JAXBContext beneficiaireServitudeContext;
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
@@ -60,10 +62,10 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
 		surfacesAuSolContext = JAXBContext.newInstance(BodenbedeckungElement.class);
 		surfaceListContext = JAXBContext.newInstance(BodenbedeckungListElement.class);
-		autreDroitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
 		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
-		usufruitContext = JAXBContext.newInstance(DienstbarkeitElement.class);
+		servitudeContext = JAXBContext.newInstance(DienstbarkeitElement.class);
+		beneficiaireServitudeContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
 	}
 
 	@Override
@@ -101,11 +103,6 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
-	public JAXBContext getAutreDroitContext() {
-		return autreDroitContext;
-	}
-
-	@Override
 	public JAXBContext getCommunauteContext() {
 		return communauteContext;
 	}
@@ -113,6 +110,16 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public JAXBContext getCommuneContext() {
 		return communeContext;
+	}
+
+	@Override
+	public JAXBContext getServitudeContext() {
+		return servitudeContext;
+	}
+
+	@Override
+	public JAXBContext getBeneficiaireServitudeContext() {
+		return beneficiaireServitudeContext;
 	}
 
 	@Override
@@ -268,11 +275,27 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public String toXMLString(Dienstbarkeit obj) {
 		try {
-			final Marshaller m = usufruitContext.createMarshaller();
+			final Marshaller m = servitudeContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
 			final QName name = buildQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<Dienstbarkeit>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(LastRechtGruppe obj) {
+		try {
+			final Marshaller m = beneficiaireServitudeContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildQName(obj);
+			m.marshal(new JAXBElement<>(name, (Class<LastRechtGruppe>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
 		catch (JAXBException e) {
