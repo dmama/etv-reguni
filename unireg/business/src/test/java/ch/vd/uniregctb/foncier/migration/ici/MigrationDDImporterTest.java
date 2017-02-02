@@ -6,11 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-public class MigrationDDImporterTest {
+public class MigrationDDImporterTest extends WithoutSpringTest {
 
 	/**
 	 * Ce test vérifie que la demande de dégrèvement la plus récente est bien retournée.
@@ -44,4 +43,5 @@ public class MigrationDDImporterTest {
 		assertEquals(1, ignored.size());
 		assertEquals("Une demande de dégrèvement plus récente (2015) existe dans l'export (cette demande = 2013).", ignored.get(0).getMessage());
 	}
+
 }

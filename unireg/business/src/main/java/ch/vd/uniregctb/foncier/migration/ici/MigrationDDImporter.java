@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,6 +43,7 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
+import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
 import ch.vd.uniregctb.foncier.migration.MigrationKey;
 import ch.vd.uniregctb.foncier.migration.MigrationParcelle;
 import ch.vd.uniregctb.foncier.migration.ParsingHelper;
@@ -392,12 +392,7 @@ public class MigrationDDImporter {
 			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
 		}
 
-		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3(), FlushMode.MANUAL);
-		if (immeuble == null) {
-			throw new IllegalArgumentException("L'immeuble avec la parcelle [" + parcelle + "] n'existe pas sur la commune de " + commune.getNomOfficiel() + " (" + commune.getNoOFS() + ").");
-		}
-
-		return immeuble;
+		return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, commune, parcelle);
 	}
 
 	private static String canonizeName(String name) {
