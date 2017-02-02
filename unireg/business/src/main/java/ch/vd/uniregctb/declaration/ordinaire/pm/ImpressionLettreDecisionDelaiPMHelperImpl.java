@@ -114,8 +114,6 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			document.setInfoArchivage(infoArchivage);
 			document.setInfoEnteteDocument(infoEnteteDocument);
 			document.setRefusDelai(refusDelai);
-			document.setAccordDelai(accordDelai);
-			document.setAccordDelaiApresSommation(sursis);
 
 			return document;
 		}

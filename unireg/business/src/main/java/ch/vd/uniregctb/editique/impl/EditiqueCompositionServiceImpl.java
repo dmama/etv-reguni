@@ -695,7 +695,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return Pair.of(resultat, cleArchivage);
 	}
 
-	public void envoieNotificationLettreDecisionDelai(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
+	private void envoieNotificationLettreDecisionDelai(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
 		if (infoArchivage != null)  {
 			final EtatDelaiDeclaration etatDelai = delai.getEtat();
 			switch (etatDelai) {
