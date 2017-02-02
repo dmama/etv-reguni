@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Function;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import au.com.bytecode.opencsv.CSVParser;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -177,7 +179,7 @@ public class MigrationExoIFONCImporter {
 		template.execute(new BatchCallback<Map.Entry<Long, List<MigrationExoIFONC>>>() {
 
 			private final ThreadLocal<MigrationExoIFONCImporterResults> subRapport = new ThreadLocal<>();
-			private final ThreadLocal<MigrationExoIFONC> last = new ThreadLocal<>();
+			private final ThreadLocal<Long> contribuable = new ThreadLocal<>();
 
 			@Override
 			public void beforeTransaction() {
@@ -191,16 +193,23 @@ public class MigrationExoIFONCImporter {
 				batch.forEach(batchEntry -> {
 
 					// ensuite, on traite contribuable par contribuable
+					contribuable.set(batchEntry.getKey());
 					final Entreprise entreprise = getEntreprise(batchEntry.getKey());
 
 					// map des dégrèvements à persister pour cette entreprise par identifiant d'immeuble
 					final Map<Long, List<ExonerationIFONC>> exosParImmeuble = batchEntry.getValue().stream()
 							.map(data -> {
-								last.set(data);
-								final ExonerationIFONC exo = mapToExoneration(data, entreprise, mapCommunes);
-								subRapport.get().incExonerationsTraitees();
-								return exo;
+								try {
+									final ExonerationIFONC exo = mapToExoneration(data, entreprise, mapCommunes);
+									subRapport.get().incExonerationsTraitees();
+									return exo;
+								}
+								catch (Exception e) {
+									subRapport.get().addExonerationEnErreur(data, e.getMessage());
+									return null;
+								}
 							})
+							.filter(Objects::nonNull)
 							.collect(Collectors.toMap(d -> d.getImmeuble().getId(),
 							                          Collections::singletonList,
 							                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
@@ -222,7 +231,7 @@ public class MigrationExoIFONCImporter {
 					rapport.addAll(subRapport.get());
 				}
 				subRapport.remove();
-				last.remove();
+				contribuable.remove();
 			}
 
 			@Override
@@ -230,11 +239,11 @@ public class MigrationExoIFONCImporter {
 				mainSwitch.popState();
 				if (!willRetry) {
 					synchronized (rapport) {
-						rapport.addExonerationEnErreur(last.get(), e.getMessage());
+						rapport.addContribuableEnErreur(contribuable.get(), e.getMessage());
 					}
 				}
 				subRapport.remove();
-				last.remove();
+				contribuable.remove();
 			}
 		}, monitor);
 	}
@@ -281,7 +290,7 @@ public class MigrationExoIFONCImporter {
 			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
 		}
 
-		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3());
+		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3(), FlushMode.MANUAL);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble avec la parcelle [" + parcelle + "] n'existe pas sur la commune de " + commune.getNomOfficiel() + " (" + commune.getNoOFS() + ").");
 		}

@@ -51,6 +51,7 @@ public class PdfMigrationExonerationsIFONCRapport extends PdfRapport {
 				table.addLigne("Nombre de lignes en erreur :", String.valueOf(results.getLignesEnErreur().size()));
 				table.addLigne("Nombre d'exonérations traitées :", String.valueOf(results.getNbExonerationsTraitees()));
 				table.addLigne("Nombre d'exonérations en erreur :", String.valueOf(results.getExonerationsEnErreur().size()));
+				table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getContribuablesEnErreur().size()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results.duration()));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
@@ -71,7 +72,17 @@ public class PdfMigrationExonerationsIFONCRapport extends PdfRapport {
 			final String filename = "exonerations_erreurs.csv";
 			final String titre = " Liste des exonérations en erreur";
 			final String listeVide = "(aucune)";
-			try (TemporaryFile contenu = infosAsCsvFile(results.getExonerationsEnErreur(), filename, status)) {
+			try (TemporaryFile contenu = exoInfosAsCsvFile(results.getExonerationsEnErreur(), filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
+		}
+
+		// Contribuables en erreur
+		{
+			final String filename = "contribuables_erreurs.csv";
+			final String titre = " Liste des contribuables en erreur";
+			final String listeVide = "(aucun)";
+			try (TemporaryFile contenu = ctbInfosAsCsvFile(results.getContribuablesEnErreur(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
@@ -102,7 +113,7 @@ public class PdfMigrationExonerationsIFONCRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile infosAsCsvFile(List<MigrationExoIFONCImporterResults.ExonerationInfo> liste, String filename, StatusManager status) {
+	private TemporaryFile exoInfosAsCsvFile(List<MigrationExoIFONCImporterResults.ExonerationInfo> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationExoIFONCImporterResults.ExonerationInfo>() {
@@ -116,6 +127,27 @@ public class PdfMigrationExonerationsIFONCRapport extends PdfRapport {
 				public boolean fillLine(CsvHelper.LineFiller b, MigrationExoIFONCImporterResults.ExonerationInfo elt) {
 					b.append(CsvHelper.asCsvField(elt.message)).append(COMMA);
 					b.append(CsvHelper.escapeChars(elt.exo.toString()));
+					return true;
+				}
+			});
+		}
+		return contenu;
+	}
+
+	private TemporaryFile ctbInfosAsCsvFile(List<MigrationExoIFONCImporterResults.ContribuableInfo> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
+		if (!liste.isEmpty()) {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationExoIFONCImporterResults.ContribuableInfo>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_CTB").append(COMMA);
+					b.append("MESSAGE");
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, MigrationExoIFONCImporterResults.ContribuableInfo elt) {
+					b.append(elt.noContribuable);
+					b.append(CsvHelper.asCsvField(elt.message)).append(COMMA);
 					return true;
 				}
 			});

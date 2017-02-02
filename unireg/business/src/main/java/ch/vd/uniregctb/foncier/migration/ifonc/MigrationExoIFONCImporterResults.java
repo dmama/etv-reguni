@@ -12,8 +12,9 @@ public class MigrationExoIFONCImporterResults {
 
 	private int nbLignesLues;
 	private int nbExonerationsTraitees;
-	private final List<LigneInfo> linesEnErreur = new LinkedList<>();
+	private final List<LigneInfo> lignesEnErreur = new LinkedList<>();
 	private final List<ExonerationInfo> exonerationsEnErreur = new LinkedList<>();
+	private final List<ContribuableInfo> contribuablesEnErreur = new LinkedList<>();
 
 	public static final class LigneInfo {
 		public final int index;
@@ -50,6 +51,24 @@ public class MigrationExoIFONCImporterResults {
 					'}';
 		}
 	}
+
+	public static final class ContribuableInfo {
+		public final long noContribuable;
+		public final String message;
+
+		public ContribuableInfo(long noContribuable, String message) {
+			this.noContribuable = noContribuable;
+			this.message = message;
+		}
+
+		@Override
+		public String toString() {
+			return "ContribuableInfo{" +
+					"noContribuable=" + noContribuable +
+					", message='" + message + '\'' +
+					'}';
+		}
+	}
 	
 	public MigrationExoIFONCImporterResults(int nbThreads) {
 		this.nbThreads = nbThreads;
@@ -79,7 +98,7 @@ public class MigrationExoIFONCImporterResults {
 	}
 
 	public void addLigneEnErreur(int index, String message) {
-		this.linesEnErreur.add(new LigneInfo(index, message));
+		this.lignesEnErreur.add(new LigneInfo(index, message));
 	}
 
 	public void incExonerationsTraitees() {
@@ -90,11 +109,16 @@ public class MigrationExoIFONCImporterResults {
 		this.nbLignesLues += other.nbLignesLues;
 		this.nbExonerationsTraitees += other.nbExonerationsTraitees;
 		this.exonerationsEnErreur.addAll(other.exonerationsEnErreur);
-		this.linesEnErreur.addAll(other.linesEnErreur);
+		this.lignesEnErreur.addAll(other.lignesEnErreur);
+		this.contribuablesEnErreur.addAll(other.contribuablesEnErreur);
 	}
 
 	public void addExonerationEnErreur(MigrationExoIFONC migrationExoIFONC, String message) {
 		this.exonerationsEnErreur.add(new ExonerationInfo(migrationExoIFONC, message));
+	}
+
+	public void addContribuableEnErreur(long noContribuable, String message) {
+		this.contribuablesEnErreur.add(new ContribuableInfo(noContribuable, message));
 	}
 
 	public void addLigneLue() {
@@ -110,10 +134,14 @@ public class MigrationExoIFONCImporterResults {
 	}
 
 	public List<LigneInfo> getLignesEnErreur() {
-		return linesEnErreur;
+		return lignesEnErreur;
 	}
 
 	public List<ExonerationInfo> getExonerationsEnErreur() {
 		return exonerationsEnErreur;
+	}
+
+	public List<ContribuableInfo> getContribuablesEnErreur() {
+		return contribuablesEnErreur;
 	}
 }
