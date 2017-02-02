@@ -47,7 +47,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 	}
 
 	@Test
-	public void testFindImmeubleNonTrouveCarPlusieursAvecAutreIndex() throws Exception {
+	public void testFindImmeubleNonTrouvePasBonIndex() throws Exception {
 
 		// mise en place
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -75,7 +75,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 	}
 
 	@Test
-	public void testFindImmeubleTrouveSansIndexAlorsQueDemandeAvec() throws Exception {
+	public void testFindImmeubleTrouveSansIndex() throws Exception {
 
 		// mise en place
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -91,7 +91,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, new MigrationParcelle("4542712879", "1234-3", null));
+				final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, new MigrationParcelle("4542712879", "1234", null));
 				Assert.assertNotNull(immeuble);
 				Assert.assertEquals("4783424LJD", immeuble.getIdRF());
 			}
