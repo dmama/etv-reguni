@@ -18,6 +18,11 @@ public class MigrationParcelle {
 	private Integer index3;
 
 	public MigrationParcelle(@NotNull String baseParcelle, @Nullable String parcelle, @Nullable String lotPPE) {
+		// [SIFISC-23111] nouvelle règle de transcription
+		// - si le numéro de parcelle est vide, on prend le numéro de parcelle de base et on découpe pour extraire les indexes
+		// - si le numéro de parcelle n'est pas vide, il est pris tel quel (sans indexes)
+		// - le numéro de lot PPE n'est donc jamais utilisé !
+
 		if (StringUtils.isBlank(parcelle)) {
 			// si le numéro de parcelle est renseigné, c'est toujours lui qui prime sur le numéro de base
 			parcelle = baseParcelle;
@@ -32,7 +37,7 @@ public class MigrationParcelle {
 		}
 		else {
 			noParcelle = Integer.parseInt(parcelle);
-			index1 = StringUtils.isBlank(lotPPE) ? null : Integer.parseInt(lotPPE);
+			index1 = null;
 			index2 = null;
 			index3 = null;
 		}

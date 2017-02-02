@@ -13,7 +13,7 @@ public class MigrationParcelleTest {
 	public void testConstructeurBaseParcelle() throws Exception {
 		assertParcelle(123, null, null, null, new MigrationParcelle("123", null, null));
 		assertParcelle(123, 34, null, null, new MigrationParcelle("123-34", null, null));
-		assertParcelle(123, 34, null, null, new MigrationParcelle("123", null, "34"));
+		assertParcelle(123, null, null, null, new MigrationParcelle("123", null, "34"));
 		assertParcelle(123, 34, 4, null, new MigrationParcelle("123-34-4", null, null));
 		assertParcelle(123, 34, 4, 1, new MigrationParcelle("123-34-4-1", null, null));
 	}
@@ -25,7 +25,7 @@ public class MigrationParcelleTest {
 	public void testConstructeurBaseNoParcelleEtNoParcelle() throws Exception {
 		assertParcelle(123, null, null, null, new MigrationParcelle("100", "123", null));
 		assertParcelle(123, 34, null, null, new MigrationParcelle("100", "123-34", null));
-		assertParcelle(123, 34, null, null, new MigrationParcelle("100", "123", "34"));
+		assertParcelle(123, null, null, null, new MigrationParcelle("100", "123", "34"));
 		assertParcelle(123, 34, 4, null, new MigrationParcelle("100", "123-34-4", null));
 		assertParcelle(123, 34, 4, 1, new MigrationParcelle("100", "123-34-4-1", null));
 	}
