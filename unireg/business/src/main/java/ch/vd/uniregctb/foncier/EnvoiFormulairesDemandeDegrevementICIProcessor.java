@@ -180,33 +180,33 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			}
 
 			// toutes les demandes de dégrèvement déjà envoyées pour cet immeuble
-			final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, false).stream()
+			final List<DemandeDegrevementICI> demandesDejaEnvoyeesSurImmeuble = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, false).stream()
 					.filter(demande -> demande.getImmeuble() == immeuble)
 					.collect(Collectors.toList());
 
-			final Integer anneeSuivantDebutDroit = Stream.of(droit.getDateDebutOfficielle(), droit.getDateDebut())
+			final Optional<Integer> anneeSuivantDebutDroit = Stream.of(droit.getDateDebutOfficielle(), droit.getDateDebut())
 					.filter(Objects::nonNull)
 					.findFirst()
-					.map(date -> date.year() + 1)
-					.orElse(null);
-			if (anneeSuivantDebutDroit != null) {
-				final DateRange rangeAnneeSuivantDebutDroit = new DateRangeHelper.Range(RegDate.get(anneeSuivantDebutDroit, 1, 1), RegDate.get(anneeSuivantDebutDroit, 12, 31));
+					.map(date -> date.year() + 1);
+			if (anneeSuivantDebutDroit.isPresent()) {
+				final int annee = anneeSuivantDebutDroit.get();
+				final DateRange rangeAnneeSuivantDebutDroit = new DateRangeHelper.Range(RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31));
 
 				// recherche de dégrèvement actif sur l'année suivant le début de droit
 				final boolean hasDegrevementActifAnneeSuivantDebutDroit = degrevements.getOrDefault(immeuble.getId(), Collections.emptyList()).stream()
 						.anyMatch(deg -> DateRangeHelper.intersect(rangeAnneeSuivantDebutDroit, deg));
 				if (hasDegrevementActifAnneeSuivantDebutDroit) {
-					rapport.addDegrevementActifAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, immeuble);
+					rapport.addDegrevementActifAnneeSuivantDebutDroit(entreprise, annee, immeuble);
 					continue;
 				}
 
 				// recherche de demande de dégrèvement dont la PF est l'année suivante le début du droit
-				final DemandeDegrevementICI demandeAnneeSuivantDebutDroit = demandes.stream()
-						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale().intValue() == anneeSuivantDebutDroit.intValue())
+				final DemandeDegrevementICI demandeAnneeSuivantDebutDroit = demandesDejaEnvoyeesSurImmeuble.stream()
+						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale() == annee)
 						.findFirst()
 						.orElse(null);
 				if (demandeAnneeSuivantDebutDroit != null) {
-					rapport.addDemandeDegrevementPourAnneeSuivantDebutDroit(entreprise, anneeSuivantDebutDroit, demandeAnneeSuivantDebutDroit);
+					rapport.addDemandeDegrevementPourAnneeSuivantDebutDroit(entreprise, annee, demandeAnneeSuivantDebutDroit);
 					continue;
 				}
 			}
@@ -215,7 +215,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// (la date de début est justement le début de l'année qui suit l'estimation fiscale, non ?)
 			final Optional<Integer> anneeDebutValiditeDerniereEstimationFiscale = getAnneeDebutValiditeEstimationFiscale(estimationCourante);
 			if (anneeDebutValiditeDerniereEstimationFiscale.isPresent()) {
-				final DemandeDegrevementICI demandePourEstimationFiscale = demandes.stream()
+				final DemandeDegrevementICI demandePourEstimationFiscale = demandesDejaEnvoyeesSurImmeuble.stream()
 						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale().intValue() == anneeDebutValiditeDerniereEstimationFiscale.get())
 						.findFirst()
 						.orElse(null);
@@ -226,12 +226,27 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			}
 
 			// calcul de la période fiscale pour envoi du document
-			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit, anneeDebutValiditeDerniereEstimationFiscale.orElse(null), rapport.dateTraitement.year() + 1)
+			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit.orElse(null), anneeDebutValiditeDerniereEstimationFiscale.orElse(null), rapport.dateTraitement.year() + 1)
 					.filter(Objects::nonNull)
 					.max(Comparator.naturalOrder())
 					.orElse(null);
 			if (periodeFiscale == null) {
 				rapport.addErreurPeriodeFiscaleNonDeterminable(entreprise, immeuble);
+				continue;
+			}
+
+			// [SIFISC-23163] s'il y a un formulaire de demande qui a déjà été envoyé pour une PF entre les années suivant le début de droit et suivant la dernière estimation fiscale et l'année
+			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle, ça ne sert à rien
+			final Optional<DemandeDegrevementICI> demandePourPfDejaEnvoyeeSuffisante = demandesDejaEnvoyeesSurImmeuble.stream()
+					.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale() <= periodeFiscale)
+					.filter(demande -> demande.getPeriodeFiscale() >= Stream.of(anneeSuivantDebutDroit, anneeDebutValiditeDerniereEstimationFiscale)
+							.filter(Optional::isPresent)
+							.map(Optional::get)
+							.max(Comparator.naturalOrder())
+							.orElse(periodeFiscale))
+					.max(Comparator.comparing(DemandeDegrevementICI::getPeriodeFiscale));
+			if (demandePourPfDejaEnvoyeeSuffisante.isPresent()) {
+				rapport.addDemandeDegrevementEnvoyeeDepuisDernierChangement(entreprise, demandePourPfDejaEnvoyeeSuffisante.get());
 				continue;
 			}
 

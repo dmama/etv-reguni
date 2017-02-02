@@ -9,6 +9,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -1757,5 +1759,135 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 				Assert.assertEquals(1, demandes.size());        // la demande précédemment présente
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-23163] Une émission n'empêchait pas une autre émission si le début du droit ou de la dernière
+	 * estimation fiscale étaient suffisamment loin dans le passé
+	 */
+	@Test
+	public void testDeuxRunsSuccessifs() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(2009, 4, 1);
+		final RegDate dateDebutDroit = date(2015, 7, 12);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		final class Ids {
+			long idContribuable;
+			long idImmeuble;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Acheteuse...");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Acheteuse", null, "48514s66fss", 445198L, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble);
+
+			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "1555sfsgbsfhd", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
+
+			final Ids identifiants = new Ids();
+			identifiants.idContribuable = entreprise.getNumero();
+			identifiants.idImmeuble = immeuble.getId();
+			return identifiants;
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults resultsFirstRun = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(resultsFirstRun);
+		Assert.assertEquals(1, resultsFirstRun.getNbDroitsInspectes());
+		Assert.assertEquals(0, resultsFirstRun.getNbDroitsIgnores());
+		Assert.assertEquals(0, resultsFirstRun.getErreurs().size());
+		Assert.assertEquals(1, resultsFirstRun.getEnvois().size());
+		Assert.assertEquals(0, resultsFirstRun.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = resultsFirstRun.getEnvois().get(0);
+			Assert.assertNotNull(envoi);
+			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
+			Assert.assertEquals("Lausanne", envoi.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), envoi.noOfsCommune);
+			Assert.assertEquals((Integer) 112, envoi.noParcelle);
+			Assert.assertNull(envoi.index1);
+			Assert.assertNull(envoi.index2);
+			Assert.assertNull(envoi.index3);
+		}
+
+		// vérification en base...
+		final Mutable<RegDate> dateEmission = new MutableObject<>();
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(1, demandes.size());
+				{
+					final DemandeDegrevementICI demande = demandes.get(0);
+					Assert.assertNotNull(demande);
+					Assert.assertFalse(demande.isAnnule());
+
+					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+					Assert.assertNull(demande.getDateRetour());
+					Assert.assertNull(demande.getDateRappel());
+					Assert.assertNotNull(demande.getCodeControle());
+					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+
+					Assert.assertNotNull(demande.getDateEnvoi());
+					dateEmission.setValue(demande.getDateEnvoi());
+				}
+			}
+		});
+
+		// et rebelotte !!
+		final EnvoiFormulairesDemandeDegrevementICIResults resultSecondRun = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(resultSecondRun);
+		Assert.assertEquals(1, resultSecondRun.getNbDroitsInspectes());
+		Assert.assertEquals(1, resultSecondRun.getNbDroitsIgnores());
+		Assert.assertEquals(0, resultSecondRun.getErreurs().size());
+		Assert.assertEquals(0, resultSecondRun.getEnvois().size());
+		Assert.assertEquals(1, resultSecondRun.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = resultSecondRun.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			Assert.assertEquals("Lausanne", ignore.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 112, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT, ignore.raison);
+			Assert.assertEquals(String.format("Demande émise le %s pour la PF %d",
+			                                  RegDateHelper.dateToDisplayString(dateEmission.getValue()),
+			                                  dateTraitement.year() + 1),
+			                    ignore.messageAdditionnel);
+		}
 	}
 }

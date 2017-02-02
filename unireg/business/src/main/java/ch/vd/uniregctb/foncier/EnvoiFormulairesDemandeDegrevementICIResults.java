@@ -167,6 +167,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
+		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT,
 		ESTIMATION_FISCALE_ABSENTE_OU_ZERO,
 		DROIT_USUFRUIT_OU_HABITATION
 	}
@@ -253,6 +254,18 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		                                                  String.format("Demande émise le %s pour la PF %d",
 		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
 		                                                                anneeSuivantDebutDroit)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDemandeDegrevementEnvoyeeDepuisDernierChangement(Entreprise entreprise, DemandeDegrevementICI demandeDegrevement) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  demandeDegrevement.getImmeuble(),
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT,
+		                                                  String.format("Demande émise le %s pour la PF %d",
+		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
+		                                                                demandeDegrevement.getPeriodeFiscale())));
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}
