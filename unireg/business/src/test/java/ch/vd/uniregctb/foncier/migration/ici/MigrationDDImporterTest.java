@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ch.vd.uniregctb.common.WithoutSpringTest;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
