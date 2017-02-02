@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -123,7 +125,7 @@ public class MigrationDDImporter {
 		}
 		else {
 			status.setMessage("L'import des immeubles  est terminé."
-					                  + " Nombre de dégrèvements importés = " + rapportFinal.getNbLignes() + ". Nombre d'erreurs = " + rapportFinal.getDemandesEnErreurs().size());
+					                  + " Nombre de dégrèvements importés = " + rapportFinal.getNbLignes() + ". Nombre d'erreurs = " + rapportFinal.getDemandesEnErreur().size());
 		}
 
 		rapportFinal.end();
@@ -219,7 +221,7 @@ public class MigrationDDImporter {
 		template.execute(new BatchCallback<Map.Entry<Long, List<Map<Integer, MigrationDD>>>>() {
 
 			private final ThreadLocal<MigrationDDImporterResults> subRapport = new ThreadLocal<>();
-			private final ThreadLocal<MigrationDD> last = new ThreadLocal<>();
+			private final ThreadLocal<Long> contribuable = new ThreadLocal<>();
 
 			@Override
 			public void beforeTransaction() {
@@ -233,18 +235,27 @@ public class MigrationDDImporter {
 				batch.forEach(batchEntry -> {
 
 					// ensuite, on traite contribuable par contribuable
+					contribuable.set(batchEntry.getKey());
 					final Entreprise entreprise = getEntreprise(batchEntry.getKey());
 
 					// map des dégrèvements à persister pour cette entreprise par identifiant d'immeuble
+					final List<DemandeDegrevementICI> demandes = new LinkedList<>();
 					final Map<Long, List<DegrevementICI>> degrevementsParImmeuble = batchEntry.getValue().stream()
 							.map(map -> {
 								final List<MigrationDD> list = new ArrayList<>(map.values());
 								final MigrationDD toSave = getDDToSave(list, subRapport.get());
-								last.set(toSave);
-								final List<DegrevementICI> degs = traiterDemande(toSave, mapCommunes);
-								subRapport.get().incNbDemandesTraitees();
-								return degs;
+								try {
+									final ResultatTraitementDemande resultatTraitement = traiterDemande(toSave, mapCommunes);
+									subRapport.get().incNbDemandesTraitees();
+									demandes.add(resultatTraitement.demande);
+									return resultatTraitement.degrevements;
+								}
+								catch (Exception e) {
+									subRapport.get().addDemandeEnErreur(toSave, e.getMessage());
+									return null;
+								}
 							})
+							.filter(Objects::nonNull)
 							.flatMap(List::stream)
 							.collect(Collectors.toMap(d -> d.getImmeuble().getId(),
 							                          Collections::singletonList,
@@ -266,7 +277,12 @@ public class MigrationDDImporter {
 						}
 					}
 
-					// persistence
+					// persistence des demandes
+					demandes.stream()
+							.map(hibernateTemplate::merge)
+							.forEach(entreprise::addAutreDocumentFiscal);
+
+					// persistence des dégrèvements
 					degrevementsParImmeuble.values().stream()
 							.flatMap(List::stream)
 							.map(hibernateTemplate::merge)
@@ -283,7 +299,7 @@ public class MigrationDDImporter {
 					rapport.addAll(subRapport.get());
 				}
 				subRapport.remove();
-				last.remove();
+				contribuable.remove();
 			}
 
 			@Override
@@ -291,13 +307,26 @@ public class MigrationDDImporter {
 				mainSwitch.popState();
 				if (!willRetry) {
 					synchronized (rapport) {
-						rapport.addDemandeEnErreur(last.get(), e.getMessage());
+						rapport.addContribuableEnErreur(contribuable.get(), e.getMessage());
 					}
 				}
 				subRapport.remove();
-				last.remove();
+				contribuable.remove();
 			}
 		}, monitor);
+	}
+
+	/**
+	 * Classe qui contient les données (non-persistées) qu'il faudra persister une pour la donnée en provenance de SIMPA
+	 */
+	private static final class ResultatTraitementDemande {
+		final DemandeDegrevementICI demande;
+		final List<DegrevementICI> degrevements;
+
+		public ResultatTraitementDemande(DemandeDegrevementICI demande, List<DegrevementICI> degrevements) {
+			this.demande = demande;
+			this.degrevements = degrevements;
+		}
 	}
 
 	/**
@@ -306,7 +335,7 @@ public class MigrationDDImporter {
 	 * @return la liste des dégrèvements à persister
 	 */
 	@NotNull
-	private List<DegrevementICI> traiterDemande(MigrationDD demande, Map<String, Commune> mapCommunes) {
+	private ResultatTraitementDemande traiterDemande(MigrationDD demande, Map<String, Commune> mapCommunes) {
 
 		final Entreprise entreprise = determinerEntreprise(demande);
 		final ImmeubleRF immeuble = determinerImmeuble(demande, mapCommunes);
@@ -319,7 +348,6 @@ public class MigrationDDImporter {
 		dd.setDelaiRetour(demande.getDelaiRetour());
 		dd.setDateRappel(demande.getDateRappel());
 		dd.setDateRetour(demande.getDateRetour());
-		hibernateTemplate.merge(dd);
 
 		final Map<TypeUsage, MigrationDDUsage> usagesParType = demande.getUsages().stream()
 				.collect(Collectors.toMap(MigrationDDUsage::getTypeUsage,
@@ -340,7 +368,8 @@ public class MigrationDDImporter {
 				degrevements.add(degrevement);
 			}
 		}
-		return degrevements;
+
+		return new ResultatTraitementDemande(dd, degrevements);
 	}
 
 	private static DonneesUtilisation extractDonneesUtilisation(MigrationDDUsage usage) {
@@ -367,7 +396,7 @@ public class MigrationDDImporter {
 			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
 		}
 
-		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3());
+		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3(), FlushMode.MANUAL);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble avec la parcelle [" + parcelle + "] n'existe pas sur la commune de " + commune.getNomOfficiel() + " (" + commune.getNoOFS() + ").");
 		}

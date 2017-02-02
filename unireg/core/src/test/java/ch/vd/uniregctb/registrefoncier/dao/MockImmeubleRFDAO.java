@@ -59,7 +59,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Nullable
 	@Override
-	public ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws NonUniqueResultException {
+	public ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3, @Nullable FlushMode flushMode) throws NonUniqueResultException {
 		throw new NotImplementedException();
 	}
 

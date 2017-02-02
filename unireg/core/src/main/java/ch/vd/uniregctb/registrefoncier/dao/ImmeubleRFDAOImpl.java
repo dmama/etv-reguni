@@ -3,8 +3,10 @@ package ch.vd.uniregctb.registrefoncier.dao;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +45,7 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 
 	@Nullable
 	@Override
-	public ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws NonUniqueResultException {
+	public ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3, @Nullable FlushMode flushMode) throws NonUniqueResultException {
 
 		String queryString = "select s.immeuble from SituationRF s, CommuneRF c " +
 				"where c.noOfs = :noOfsCommune " +
@@ -67,8 +69,9 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		else {
 			queryString += 	"and s.index3 = :index3 ";
 		}
-		
-		final Query query = getCurrentSession().createQuery(queryString);
+
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(queryString);
 		query.setParameter("noOfsCommune", noOfsCommune);
 		query.setParameter("noParcelle", noParcelle);
 		if (index1 != null) {
@@ -80,6 +83,18 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		if (index3 != null) {
 			query.setParameter("index3", index3);
 		}
-		return (ImmeubleRF) query.uniqueResult();
+
+		final FlushMode oldMode = session.getFlushMode();
+		if (flushMode != null) {
+			session.setFlushMode(flushMode);
+		}
+		try {
+			return (ImmeubleRF) query.uniqueResult();
+		}
+		finally {
+			if (flushMode != null) {
+				session.setFlushMode(oldMode);
+			}
+		}
 	}
 }

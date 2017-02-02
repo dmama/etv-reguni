@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dao;
 
 import java.util.Set;
 
+import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,5 +40,5 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	 * @throws NonUniqueResultException si plusieurs immeubles actifs correspondent aux critères.
 	 */
 	@Nullable
-	ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) throws NonUniqueResultException;
+	ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3, @Nullable FlushMode flushMode) throws NonUniqueResultException;
 }

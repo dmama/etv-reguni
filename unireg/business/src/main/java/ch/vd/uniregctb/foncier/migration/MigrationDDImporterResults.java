@@ -18,11 +18,12 @@ public class MigrationDDImporterResults {
 	private boolean interrompu = false;
 
 	private int nbLignes = 0;
-	private final List<LigneInfo> lignesEnErreurs = new LinkedList<>();
+	private final List<LigneInfo> lignesEnErreur = new LinkedList<>();
 	private int nbDemandesExtraites = 0;
 	private int nbDemandesTraitees = 0;
 	private final List<DemandeInfo> demandesIgnorees = new LinkedList<>();
-	private final List<DemandeInfo> demandesEnErreurs = new LinkedList<>();
+	private final List<DemandeInfo> demandesEnErreur = new LinkedList<>();
+	private final List<ContribuableInfo> contribuablesEnErreur = new LinkedList<>();
 	private int nbThreads;
 
 	public static final class LigneInfo {
@@ -77,17 +78,44 @@ public class MigrationDDImporterResults {
 		}
 	}
 
+	public static final class ContribuableInfo {
+		public final long idContribuable;
+		public final String message;
+
+		public ContribuableInfo(long idContribuable, String message) {
+			this.idContribuable = idContribuable;
+			this.message = message;
+		}
+
+		public long getIdContribuable() {
+			return idContribuable;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		@Override
+		public String toString() {
+			return "ContribuableInfo{" +
+					"idContribuable=" + idContribuable +
+					", message='" + message + '\'' +
+					'}';
+		}
+	}
+
 	public MigrationDDImporterResults(int nbThreads) {
 		this.nbThreads = nbThreads;
 	}
 
 	public void addAll(MigrationDDImporterResults right) {
 		nbLignes += right.nbLignes;
-		lignesEnErreurs.addAll(right.lignesEnErreurs);
+		lignesEnErreur.addAll(right.lignesEnErreur);
 		nbDemandesExtraites += right.nbDemandesExtraites;
 		nbDemandesTraitees += right.nbDemandesTraitees;
 		demandesIgnorees.addAll(right.demandesIgnorees);
-		demandesEnErreurs.addAll(right.demandesEnErreurs);
+		demandesEnErreur.addAll(right.demandesEnErreur);
+		contribuablesEnErreur.addAll(right.contribuablesEnErreur);
 	}
 
 	public void end() {
@@ -107,7 +135,7 @@ public class MigrationDDImporterResults {
 	}
 
 	public void addLineEnErreur(int index, String message) {
-		lignesEnErreurs.add(new LigneInfo(index, message));
+		lignesEnErreur.add(new LigneInfo(index, message));
 	}
 
 	public void addDemandeIgnoree(MigrationDD migrationDD, String message) {
@@ -115,7 +143,11 @@ public class MigrationDDImporterResults {
 	}
 
 	public void addDemandeEnErreur(MigrationDD dd, String message) {
-		demandesEnErreurs.add(new DemandeInfo(dd, message));
+		demandesEnErreur.add(new DemandeInfo(dd, message));
+	}
+
+	public void addContribuableEnErreur(long noContribuable, String message) {
+		contribuablesEnErreur.add(new ContribuableInfo(noContribuable, message));
 	}
 
 	public void setInterrompu(boolean interrompu) {
@@ -130,8 +162,8 @@ public class MigrationDDImporterResults {
 		return nbLignes;
 	}
 
-	public List<LigneInfo> getLignesEnErreurs() {
-		return lignesEnErreurs;
+	public List<LigneInfo> getLignesEnErreur() {
+		return lignesEnErreur;
 	}
 
 	public int getNbDemandesExtraites() {
@@ -161,8 +193,12 @@ public class MigrationDDImporterResults {
 		return endTime;
 	}
 
-	public List<DemandeInfo> getDemandesEnErreurs() {
-		return demandesEnErreurs;
+	public List<DemandeInfo> getDemandesEnErreur() {
+		return demandesEnErreur;
+	}
+
+	public List<ContribuableInfo> getContribuablesEnErreur() {
+		return contribuablesEnErreur;
 	}
 }
 

@@ -48,11 +48,12 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 
 			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre de lignes lues :", String.valueOf(results.getNbLignes()));
-				table.addLigne("Nombre de lignes en erreur :", String.valueOf(results.getLignesEnErreurs().size()));
+				table.addLigne("Nombre de lignes en erreur :", String.valueOf(results.getLignesEnErreur().size()));
 				table.addLigne("Nombre de demandes extraites :", String.valueOf(results.getNbDemandesExtraites()));
 				table.addLigne("Nombre de demandes traitées :", String.valueOf(results.getNbDemandesTraitees()));
 				table.addLigne("Nombre de demandes ignorées :", String.valueOf(results.getDemandesIgnorees().size()));
-				table.addLigne("Nombre de demandes en erreurs :", String.valueOf(results.getDemandesEnErreurs().size()));
+				table.addLigne("Nombre de demandes en erreur :", String.valueOf(results.getDemandesEnErreur().size()));
+				table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getContribuablesEnErreur().size()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results.endTime - results.startTime));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
@@ -63,7 +64,7 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 			final String filename = "lignes_erreurs.csv";
 			final String titre = " Liste des lignes en erreur";
 			final String listeVide = "(aucune)";
-			try (TemporaryFile contenu = lignesAsCsvFile(results.getLignesEnErreurs(), filename, status)) {
+			try (TemporaryFile contenu = lignesAsCsvFile(results.getLignesEnErreur(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
@@ -73,17 +74,27 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 			final String filename = "demandes_ignorees.csv";
 			final String titre = " Liste des demandes ignorées";
 			final String listeVide = "(aucune)";
-			try (TemporaryFile contenu = infosAsCsvFile(results.getDemandesIgnorees(), filename, status)) {
+			try (TemporaryFile contenu = demandeInfosAsCsvFile(results.getDemandesIgnorees(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
 
-		// Demanded en erreur
+		// Demandes en erreur
 		{
 			final String filename = "demandes_erreurs.csv";
 			final String titre = " Liste des demandes en erreur";
 			final String listeVide = "(aucune)";
-			try (TemporaryFile contenu = infosAsCsvFile(results.getDemandesEnErreurs(), filename, status)) {
+			try (TemporaryFile contenu = demandeInfosAsCsvFile(results.getDemandesEnErreur(), filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
+		}
+
+		// Contribuables en erreur
+		{
+			final String filename = "contribuables_erreurs.csv";
+			final String titre = " Liste des contribuables en erreur";
+			final String listeVide = "(aucun)";
+			try (TemporaryFile contenu = ctbInfosAsCsvFile(results.getContribuablesEnErreur(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
@@ -114,7 +125,7 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile infosAsCsvFile(List<MigrationDDImporterResults.DemandeInfo> liste, String filename, StatusManager status) {
+	private TemporaryFile demandeInfosAsCsvFile(List<MigrationDDImporterResults.DemandeInfo> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.DemandeInfo>() {
@@ -128,6 +139,27 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.DemandeInfo elt) {
 					b.append(CsvHelper.asCsvField(elt.getMessage())).append(COMMA);
 					b.append(elt.getDd().toString());
+					return true;
+				}
+			});
+		}
+		return contenu;
+	}
+
+	private TemporaryFile ctbInfosAsCsvFile(List<MigrationDDImporterResults.ContribuableInfo> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
+		if (!liste.isEmpty()) {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.ContribuableInfo>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("NO_CTB").append(COMMA);
+					b.append("MESSAGE");
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.ContribuableInfo elt) {
+					b.append(elt.getIdContribuable()).append(COMMA);
+					b.append(CsvHelper.asCsvField(elt.getMessage()));
 					return true;
 				}
 			});

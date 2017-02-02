@@ -78,11 +78,11 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		}
 
 		assertNotNull(results);
-		assertEmpty(results.getLignesEnErreurs());
+		assertEmpty(results.getLignesEnErreur());
 		assertEquals(13, results.getNbLignes());
 		assertEquals(11, results.getNbDemandesExtraites()); // les demandes sur les tiers FEBEX et EGICA comptent deux lignes pour une demande.
 		assertEquals(10, results.getNbDemandesTraitees());  // la demande EGICA-2013 est ignorée car il existe une demande pour 2014
-		assertEmpty(results.getDemandesEnErreurs());
+		assertEmpty(results.getDemandesEnErreur());
 
 		final List<MigrationDDImporterResults.DemandeInfo> ignorees = results.getDemandesIgnorees();
 		assertEquals(1, ignorees.size());
