@@ -57,13 +57,13 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 			final CommuneRF bex = communeRFDAO.save(new CommuneRF(2, "Bex", 5402));
 
 			// on crée les immeubles concernés
-			immeubleRFDAO.save(newImmeuble("01faeee", laSarraz, 579, 3, null, null));
+			immeubleRFDAO.save(newImmeuble("01faeee", laSarraz, 579, null, null, null));
 			immeubleRFDAO.save(newImmeuble("02faeee", gland, 4298, null, null, null));
-			immeubleRFDAO.save(newImmeuble("03faeee", gingins, 536, 1, null, null));
-			immeubleRFDAO.save(newImmeuble("04faeee", gingins, 540, 5, null, null));
+			immeubleRFDAO.save(newImmeuble("03faeee", gingins, 536, null, null, null));
+			immeubleRFDAO.save(newImmeuble("04faeee", gingins, 540, null, null, null));
 			immeubleRFDAO.save(newImmeuble("05faeee", gingins, 508, 2, null, null));
-			immeubleRFDAO.save(newImmeuble("06faeee", laTourDePeilz, 2065, 5, null, null));
-			immeubleRFDAO.save(newImmeuble("07faeee", laTourDePeilz, 2066, 6, null, null));
+			immeubleRFDAO.save(newImmeuble("06faeee", laTourDePeilz, 2065, null, null, null));
+			immeubleRFDAO.save(newImmeuble("07faeee", laTourDePeilz, 2066, null, null, null));
 			immeubleRFDAO.save(newImmeuble("08faeee", aigle, 1053, 6, null, null));
 			immeubleRFDAO.save(newImmeuble("09faeee", bex, 1, null, null, null));
 			immeubleRFDAO.save(newImmeuble("10faeee", bex, 2245, null, null, null));

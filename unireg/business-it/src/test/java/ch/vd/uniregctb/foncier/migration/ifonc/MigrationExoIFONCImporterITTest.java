@@ -67,7 +67,7 @@ public class MigrationExoIFONCImporterITTest extends BusinessItTest {
 			immeubleRFDAO.save(newImmeuble("05faeee", lausanne, 4337, null, null, null));
 			immeubleRFDAO.save(newImmeuble("06faeee", lausanne, 4338, null, null, null));
 			immeubleRFDAO.save(newImmeuble("07faeee", lausanne, 5705, null, null, null));
-			immeubleRFDAO.save(newImmeuble("08faeee", montanaire, 1011, 2, null, null));
+			immeubleRFDAO.save(newImmeuble("08faeee", montanaire, 1011, null, null, null));
 
 			return null;
 		});
