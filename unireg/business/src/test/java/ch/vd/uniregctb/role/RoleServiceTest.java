@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -26,8 +27,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -56,13 +59,15 @@ import static org.junit.Assert.assertTrue;
 public class RoleServiceTest extends BusinessTest {
 
 	private RoleServiceImpl roleService;
+	private AssujettissementService assujettissementService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
+		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		roleService = new RoleServiceImpl();
 		roleService.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		roleService.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		roleService.setAssujettissementService(assujettissementService);
 		roleService.setInfraService(serviceInfra);
 		roleService.setRoleHelper(new RoleHelper(transactionManager, hibernateTemplate, tiersService));
 		roleService.setTiersService(tiersService);
@@ -1817,5 +1822,133 @@ public class RoleServiceTest extends BusinessTest {
 		final RoleResults.RoleIgnore ignore = res.ignores.get(0);
 		assertNotNull(ignore);
 		assertIgnore(pmId, RoleResults.RaisonIgnore.PAS_CONCERNE_PAR_ROLE, ignore);
+	}
+
+	/**
+	 * [SIFISC-23155] La DGF aimerait qu'une société dont le for principal est fermé pour motif FAILLITE, dont l'assujettissement
+	 * se poursuit jusqu'à la fin de l'année, soit présente dans le rôle de sa commune de for pour l'année...
+	 */
+	@Test
+	public void testFailliteEtBouclementFinAnneeRole() throws Exception {
+
+		final int anneeRole = 2016;
+		final RegDate dateDebut = date(2009, 1, 5);
+		final RegDate dateFaillite = date(anneeRole, 8, 12);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// rien du tout, c'est plus simple
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Tralala SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Aigle);
+			return entreprise.getNumero();
+		});
+
+		// vérification de la date de fin d'assujettissement
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				assertNotNull(entreprise);
+
+				final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
+				assertNotNull(assujettissements);
+				assertEquals(1, assujettissements.size());
+
+				final Assujettissement assujettissement = assujettissements.get(0);
+				assertNotNull(assujettissement);
+				assertEquals(date(anneeRole, 12, 31), assujettissement.getDateFin());
+			}
+		});
+
+		// rôle vaudois
+		final RolePMCommunesResults res = roleService.produireRolePMCommunes(anneeRole, 1, null, null);
+		assertNotNull(res);
+		assertEquals(0, res.errors.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(1, res.getNbContribuablesTraites());
+		assertEquals(1, res.extraction.size());
+
+		final List<RolePMData> dataAigle = res.extraction.get(MockCommune.Aigle.getNoOFS());
+		assertNotNull(dataAigle);
+		assertEquals(1, dataAigle.size());
+
+		final RolePMData data = dataAigle.get(0);
+		assertInfo(pmId, RoleData.TypeContribuable.ORDINAIRE, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aigle.getNoOFS(), null, "Tralala SA", FormeLegale.N_0106_SOCIETE_ANONYME, data);
+	}
+
+	/**
+	 * [SIFISC-23155] La DGF aimerait qu'une société dont le for principal est fermé pour motif FAILLITE, dont l'assujettissement
+	 * ne se pas poursuit jusqu'à la fin de l'année, soit présente dans le rôle de sa commune de for pour l'année...
+	 */
+	@Test
+	public void testFailliteEtBouclementAvantFinAnneeRole() throws Exception {
+
+		final int anneeRole = 2016;
+		final RegDate dateDebut = date(2009, 1, 5);
+		final RegDate dateFaillite = date(anneeRole, 8, 12);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// rien du tout, c'est plus simple
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRaisonSociale(entreprise, dateDebut, null, "Tralala SA");
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebut, DayMonth.get(11, 30), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Aigle);
+			return entreprise.getNumero();
+		});
+
+		// vérification de la date de fin d'assujettissement
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				assertNotNull(entreprise);
+
+				final List<Assujettissement> assujettissements = assujettissementService.determine(entreprise);
+				assertNotNull(assujettissements);
+				assertEquals(1, assujettissements.size());
+
+				final Assujettissement assujettissement = assujettissements.get(0);
+				assertNotNull(assujettissement);
+				assertEquals(date(anneeRole, 11, 30), assujettissement.getDateFin());
+			}
+		});
+
+		// rôle vaudois
+		final RolePMCommunesResults res = roleService.produireRolePMCommunes(anneeRole, 1, null, null);
+		assertNotNull(res);
+		assertEquals(0, res.errors.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(1, res.getNbContribuablesTraites());
+		assertEquals(1, res.extraction.size());
+
+		final List<RolePMData> dataAigle = res.extraction.get(MockCommune.Aigle.getNoOFS());
+		assertNotNull(dataAigle);
+		assertEquals(1, dataAigle.size());
+
+		final RolePMData data = dataAigle.get(0);
+		assertInfo(pmId, RoleData.TypeContribuable.ORDINAIRE, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aigle.getNoOFS(), null, "Tralala SA", FormeLegale.N_0106_SOCIETE_ANONYME, data);
 	}
 }
