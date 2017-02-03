@@ -140,7 +140,7 @@ public abstract class RoleData {
 
 		// aucun assujettissement sur l'année considérée ???
 		if (assujettissements == null || assujettissements.isEmpty()) {
-			throw new CalculRoleException("Contribuable non-assujetti sur l'année " + dateReference.year());
+			throw new ContribuableNonAssujettiException("Contribuable non-assujetti sur l'année " + dateReference.year());
 		}
 
 		final Assujettissement dernierAssujettissement = assujettissements.get(assujettissements.size() - 1);

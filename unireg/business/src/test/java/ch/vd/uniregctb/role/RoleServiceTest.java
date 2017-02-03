@@ -1393,6 +1393,74 @@ public class RoleServiceTest extends BusinessTest {
 		assertInfo(ppId, RoleData.TypeContribuable.HORS_SUISSE, MockCommune.VufflensLaVille.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS(), Collections.singletonList(new NomPrenom("Tamburini", "Alberto")), Collections.emptyList(), data);
 	}
 
+	/**
+	 * [SIFISC-23168] Cas du contribuable HS avec activité indépendante vaudoise qui se marie dans l'année des rôles
+	 */
+	@Test
+	public void testHorsSuisseActiviteIndependanteQuiSeMarie() throws Exception {
+
+		final int anneeRole = 2016;
+		final RegDate dateMariage = date(anneeRole, 2, 17);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// le contribuable est HS... rien de connu dans les contrôles des habitants vaudois
+			}
+		});
+
+		final class Ids {
+			long pp;
+			long mc;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Tanguy", "Laverdure", date(1987, 5, 2), Sexe.MASCULIN);
+			addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.France);
+			addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.France);
+			addForSecondaire(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+			final Ids result = new Ids();
+			result.pp = pp.getNumero();
+			result.mc = mc.getNumero();
+			return result;
+		});
+
+		// calcul du rôle
+		final RolePPCommunesResults res = roleService.produireRolePPCommunes(anneeRole, 1, null, null);
+		assertNotNull(res);
+		assertEquals(2, res.getNbContribuablesTraites());
+		assertEquals(0, res.errors.size());
+		assertEquals(1, res.ignores.size());        // la personne physique qui s'est mariée
+		assertEquals(1, res.extraction.size());     // le ménage commun
+		assertEquals(Collections.singleton(MockCommune.Echallens.getNoOFS()), res.extraction.keySet());
+
+		// le détail
+
+		{
+			final RoleResults.RoleIgnore ignore = res.ignores.get(0);
+			assertNotNull(ignore);
+			assertIgnore(ids.pp, RoleResults.RaisonIgnore.PAS_CONCERNE_PAR_ROLE, ignore);
+		}
+
+		{
+			// Echallens
+			final List<RolePPData> infoCommune = res.extraction.get(MockCommune.Echallens.getNoOFS());
+			assertNotNull(infoCommune);
+			assertEquals(1, infoCommune.size());
+
+			final RolePPData data = infoCommune.get(0);
+			assertNotNull(data);
+			assertInfo(ids.mc, RoleData.TypeContribuable.HORS_SUISSE, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MockPays.France.getNoOFS(), Collections.singletonList(new NomPrenom("Laverdure", "Tanguy")), Collections.singletonList(StringUtils.EMPTY), data);
+		}
+	}
+
 	@Test
 	public void testRolesPMSimple() throws Exception {
 

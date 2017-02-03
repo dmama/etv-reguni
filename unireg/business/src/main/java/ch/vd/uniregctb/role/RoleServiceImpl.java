@@ -128,7 +128,15 @@ public class RoleServiceImpl implements RoleService {
 				// traitement pour le rapport
 				entries.map(entry -> entry.getValue().stream().map(ctb -> Pair.of(entry.getKey(), ctb)))
 						.flatMap(Function.identity())
-						.forEach(pair -> variante.compile(rapport, pair.getRight(), pair.getLeft()));
+						.forEach(pair -> {
+							try {
+								variante.compile(rapport, pair.getRight(), pair.getLeft());
+							}
+							catch (ContribuableNonAssujettiException e) {
+								// non-assujetti -> ignoré !
+								variante.compile(rapport, pair.getRight(), null);
+							}
+						});
 
 				return !status.interrupted();
 			}
