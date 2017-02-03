@@ -12,6 +12,14 @@
 		<property name="syncOnCommit" value="false" />
 	</bean>
 
+	<bean id="tempRFCacheServitudes" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
+		<property name="homeDirectory" value="${extprop.rf.import.cache.homedir}/servitudes" />
+		<property name="clazz" value="java.util.ArrayList" />
+		<property name="cachePercent" value="${extprop.rf.import.cache.cachePercent}" />
+		<property name="lockTimeout" value="${extprop.rf.import.cache.lockTimeout}" />
+		<property name="syncOnCommit" value="false" />
+	</bean>
+
 	<bean id="tempRFCacheSurfaces" class="ch.vd.unireg.cache.BerkeleyPersistentCache">
 		<property name="homeDirectory" value="${extprop.rf.import.cache.homedir}/surfaces" />
 		<property name="clazz" value="java.util.ArrayList" />

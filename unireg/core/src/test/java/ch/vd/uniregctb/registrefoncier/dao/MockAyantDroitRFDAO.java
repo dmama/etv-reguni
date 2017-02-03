@@ -15,6 +15,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
@@ -96,11 +97,16 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 	}
 
 	@Override
-	public Set<String> findAvecDroitsActifs() {
+	public Set<String> findAvecDroitsActifs(@NotNull TypeDroit typeDroit) {
 		return db.stream()
-				.filter(a -> !a.getDroits().isEmpty())
+				.filter(a -> hasDroitOfType(a, typeDroit))
 				.map(AyantDroitRF::getIdRF)
 				.collect(Collectors.toSet());
+	}
+
+	private static boolean hasDroitOfType(@NotNull AyantDroitRF ayantDroit, @NotNull TypeDroit typeDroit) {
+		return ayantDroit.getDroits().stream()
+				.anyMatch(d -> d.isNotAnnule() && d.getTypeDroit() == typeDroit);
 	}
 
 	@Nullable

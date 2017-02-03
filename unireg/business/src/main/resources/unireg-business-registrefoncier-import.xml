@@ -16,9 +16,14 @@
 		<property name="xmlHelperRF" ref="xmlHelperRF"/>
 	</bean>
 
+	<bean id="fichierServitudesRFParser" class="ch.vd.uniregctb.registrefoncier.dataimport.FichierServitudeRFParser">
+		<property name="xmlHelperRF" ref="xmlHelperRF"/>
+	</bean>
+
 	<bean id="mutationsRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetector">
 		<constructor-arg ref="serviceImportRF"/>
 		<constructor-arg ref="fichierImmeublesRFParser"/>
+		<constructor-arg ref="fichierServitudesRFParser"/>
 		<constructor-arg ref="evenementRFImportDAO"/>
 		<constructor-arg ref="transactionManager"/>
 		<constructor-arg ref="zipRaftEsbStore"/>
@@ -53,6 +58,7 @@
 		<constructor-arg ref="transactionManager"/>
 		<constructor-arg ref="ayantDroitRFDetector"/>
 		<constructor-arg ref="tempRFCacheDroits"/>
+		<constructor-arg ref="tempRFCacheServitudes"/>
 	</bean>
 
 	<bean id="immeubleRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector">

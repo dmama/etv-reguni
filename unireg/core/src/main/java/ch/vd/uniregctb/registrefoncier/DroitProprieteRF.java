@@ -6,6 +6,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -37,5 +40,12 @@ public abstract class DroitProprieteRF extends DroitRF {
 
 	public void setRegime(GenrePropriete regime) {
 		this.regime = regime;
+	}
+
+	@NotNull
+	@Transient
+	@Override
+	public TypeDroit getTypeDroit() {
+		return TypeDroit.DROIT_PROPRIETE;
 	}
 }

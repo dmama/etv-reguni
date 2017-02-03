@@ -16,11 +16,6 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
  */
 public class IdentifiantAffaireRFUserType extends GenericUserType implements UserType {
 
-	private boolean allowPartial;
-
-	public IdentifiantAffaireRFUserType() {
-	}
-
 	/**
 	 * Types SQL.
 	 */

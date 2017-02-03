@@ -251,6 +251,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.PersonneMoraleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.ServitudeRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SituationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF</value>

@@ -79,6 +79,11 @@ public class GrepImportUsufruits {
 				}
 				beneficiaireCount.increment();
 			}
+
+			@Override
+			public void done() {
+
+			}
 		};
 
 		try (InputStream is = new FileInputStream(file)) {

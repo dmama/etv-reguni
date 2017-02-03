@@ -6,6 +6,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 public enum TypeEntiteRF {
 	AYANT_DROIT,
 	DROIT,
+	SERVITUDE,
 	IMMEUBLE,
 	SURFACE_AU_SOL,
 	BATIMENT,

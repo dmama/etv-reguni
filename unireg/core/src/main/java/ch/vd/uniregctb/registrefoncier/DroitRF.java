@@ -72,7 +72,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	private RegDate dateDebutMetier;
 
 	/**
-	 * La date de fin de droit telle que calculée par Unireg.
+	 * La date de fin de droit telle que calculée par Unireg (droits normaux) ou renseignée dans le RF (servitudes).
 	 */
 	@Nullable
 	private RegDate dateFinMetier;
@@ -245,4 +245,9 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 			return Collections.singletonList(immeuble);
 		}
 	}
+
+
+	@Transient
+	@NotNull
+	public abstract TypeDroit getTypeDroit();
 }

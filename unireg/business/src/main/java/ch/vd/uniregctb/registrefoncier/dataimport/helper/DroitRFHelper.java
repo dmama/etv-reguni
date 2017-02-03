@@ -148,12 +148,17 @@ public class DroitRFHelper {
 	}
 
 	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right, boolean ignoreMotifs) {
+		return partEquals(left.getPart(), right.getPart()) &&
+				left.getRegime() == right.getRegime() &&
+				equalsDroit(left, right, ignoreMotifs);
+	}
+
+	public static boolean equalsDroit(@NotNull DroitRF left, @NotNull DroitRF right, boolean ignoreMotifs) {
 		return ayantDroitEquals(left.getAyantDroit(), right.getAyantDroit()) &&
 				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
-				partEquals(left.getPart(), right.getPart()) &&
-				left.getRegime() == right.getRegime() &&
 				left.getDateDebutMetier() == right.getDateDebutMetier() &&
+				left.getDateFinMetier() == right.getDateFinMetier() &&
 				(ignoreMotifs || Objects.equals(left.getMotifDebut(), right.getMotifDebut()));
 	}
 
@@ -222,7 +227,7 @@ public class DroitRFHelper {
 		return Objects.equals(left.getIdRF(), right.getIdRF());
 	}
 
-	private static boolean communauteEquals(@Nullable CommunauteRF left, @Nullable CommunauteRF right) {
+	public static boolean communauteEquals(@Nullable CommunauteRF left, @Nullable CommunauteRF right) {
 		if (left == null || right == null) {
 			return left == null && right == null;
 		}
@@ -257,7 +262,8 @@ public class DroitRFHelper {
 
 	@NotNull
 	public static DroitProprieteRF newDroitRF(@NotNull PersonEigentumAnteil eigentumAnteil,
-	                                          boolean importInitial, @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
+	                                          boolean importInitial,
+	                                          @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                          @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 

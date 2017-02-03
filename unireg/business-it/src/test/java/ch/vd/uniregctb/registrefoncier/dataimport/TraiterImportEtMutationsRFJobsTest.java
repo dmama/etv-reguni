@@ -52,6 +52,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@SuppressWarnings("Duplicates")
 public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 	private BatchScheduler batchScheduler;

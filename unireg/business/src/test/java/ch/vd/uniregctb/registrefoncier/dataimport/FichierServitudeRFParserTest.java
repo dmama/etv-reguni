@@ -137,6 +137,10 @@ public class FichierServitudeRFParserTest {
 			beneficiaires.add(beneficiaire);
 		}
 
+		@Override
+		public void done() {
+		}
+
 		public List<Dienstbarkeit> getServitudes() {
 			return servitudes;
 		}

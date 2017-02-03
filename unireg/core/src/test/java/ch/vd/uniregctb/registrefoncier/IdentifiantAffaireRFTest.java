@@ -11,6 +11,7 @@ public class IdentifiantAffaireRFTest {
 	public void testToString() throws Exception {
 		assertEquals("006-2006/1402/0", new IdentifiantAffaireRF(6, 2006, 1402, 0).toString());
 		assertEquals("006", new IdentifiantAffaireRF(6, null, null, null).toString());
+		assertEquals("006-3783", new IdentifiantAffaireRF(6, null, 3783, null).toString());
 	}
 
 	@Test

@@ -18,6 +18,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
+import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungElement;
@@ -48,6 +49,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext surfacesAuSolContext;
 	private final JAXBContext surfaceListContext;
 	private final JAXBContext servitudeContext;
+	private final JAXBContext servitudeListContext;
 	private final JAXBContext communauteContext;
 	private final JAXBContext communeContext;
 	private final JAXBContext beneficiaireServitudeContext;
@@ -65,6 +67,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
 		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
 		servitudeContext = JAXBContext.newInstance(DienstbarkeitElement.class);
+		servitudeListContext = JAXBContext.newInstance(DienstbarkeitDiscreteList.class);
 		beneficiaireServitudeContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
 	}
 
@@ -128,7 +131,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = immeubleContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<Grundstueck>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -143,7 +146,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = droitContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<PersonEigentumAnteil>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -158,7 +161,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = proprietaireContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<Personstamm>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -173,7 +176,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = batimentContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<Gebaeude>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -188,7 +191,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = surfacesAuSolContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<Bodenbedeckung>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -203,7 +206,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = surfaceListContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<GrundstueckExport.BodenbedeckungList>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -218,7 +221,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = communauteContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(gemeinschaft);
+			final QName name = buildGrundstueckQName(gemeinschaft);
 			m.marshal(new JAXBElement<>(name, (Class<Gemeinschaft>) gemeinschaft.getClass(), null, gemeinschaft), w);
 			return w.toString();
 		}
@@ -233,7 +236,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = droitListContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<PersonEigentumAnteilListElement>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -262,7 +265,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = communeContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildGrundstueckQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<GrundstueckNummerElement>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -278,8 +281,24 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = servitudeContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildRechtQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<Dienstbarkeit>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(DienstbarkeitDiscreteList obj) {
+		try {
+			final Marshaller m = servitudeListContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildRechtQName(obj);
+			m.marshal(new JAXBElement<>(name, (Class<DienstbarkeitDiscreteList>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
 		catch (JAXBException e) {
@@ -294,7 +313,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 			final Marshaller m = beneficiaireServitudeContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
-			final QName name = buildQName(obj);
+			final QName name = buildRechtQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<LastRechtGruppe>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
@@ -305,9 +324,15 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@NotNull
-	private static QName buildQName(@NotNull Object o) {
+	private static QName buildGrundstueckQName(@NotNull Object o) {
 		final String simpleName = o.getClass().getSimpleName().replaceAll("Element$", "");
 		return new QName(FichierImmeublesRFParser.GRUNDSTUECK_NAMESPACE, simpleName);
+	}
+
+	@NotNull
+	private static QName buildRechtQName(@NotNull Object o) {
+		final String simpleName = o.getClass().getSimpleName().replaceAll("Element$", "");
+		return new QName(FichierServitudeRFParser.RECHTREGISTER_NAMESPACE, simpleName);
 	}
 
 }

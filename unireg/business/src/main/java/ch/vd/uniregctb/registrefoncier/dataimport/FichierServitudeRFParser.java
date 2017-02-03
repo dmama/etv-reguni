@@ -39,6 +39,11 @@ public class FichierServitudeRFParser {
 		void onServitude(@NotNull Dienstbarkeit servitude);
 
 		void onBeneficiaire(@NotNull LastRechtGruppe beneficiaire);
+
+		/**
+		 * Méthode appelée lorsque toutes les données ont été envoyées.
+		 */
+		void done();
 	}
 
 	/**
@@ -82,6 +87,7 @@ public class FichierServitudeRFParser {
 			}
 
 		}
+		callback.done();
 		xmlStreamReader.close();
 	}
 

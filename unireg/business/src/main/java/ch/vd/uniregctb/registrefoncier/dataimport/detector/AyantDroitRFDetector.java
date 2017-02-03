@@ -130,7 +130,7 @@ public class AyantDroitRFDetector {
 		}
 
 		// on ajoute l'événement à traiter
-		final String immeubleAsXml = xmlHelperRF.toXMLString(rechteinhaber);
+		final String ayantDroitAsXml = xmlHelperRF.toXMLString(rechteinhaber);
 
 		final EvenementRFMutation mutation = new EvenementRFMutation();
 		mutation.setParentImport(parentImport);
@@ -138,7 +138,7 @@ public class AyantDroitRFDetector {
 		mutation.setTypeEntite(TypeEntiteRF.AYANT_DROIT);
 		mutation.setIdRF(key.getIdRF());
 		mutation.setTypeMutation(typeMutation);
-		mutation.setXmlContent(immeubleAsXml);
+		mutation.setXmlContent(ayantDroitAsXml);
 
 		evenementRFMutationDAO.save(mutation);
 	}

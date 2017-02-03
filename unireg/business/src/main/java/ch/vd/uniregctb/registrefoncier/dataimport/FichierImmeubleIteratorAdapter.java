@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.util.Iterator;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,52 +18,11 @@ public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.
 	// on ne garde que 100 éléments en mémoire, ça semble suffisant
 	private static final int QUEUE_SIZE = 100;
 
-	private static class QueuedIterator<T> implements Iterator<T> {
-
-		private final BlockingQueue<T> queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
-		private boolean done = false;
-
-		public void put(T o) {
-			try {
-				queue.put(o);
-			}
-			catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		public void done() {
-			done = true;
-		}
-
-		/**
-		 * @return <b>vrai</b> s'il y a <i>peut-être</i> encore un ou des éléments à traiter; <b>faux</b> s'il est certain qu'il n'y a plus d'éléments à traiter.
-		 */
-		@Override
-		public boolean hasNext() {
-			return !queue.isEmpty() || !done;
-		}
-
-		@Override
-		public T next() {
-			try {
-				T o;
-				do {
-					o = queue.poll(100, TimeUnit.MILLISECONDS);
-				} while (o == null && !done);
-				return o;
-			}
-			catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	private final QueuedIterator<Grundstueck> immeublesIterator = new QueuedIterator<>();
-	private final QueuedIterator<PersonEigentumAnteil> droitsIterator = new QueuedIterator<>();
-	private final QueuedIterator<Personstamm> proprietairesIterator = new QueuedIterator<>();
-	private final QueuedIterator<Gebaeude> constructionsIterator = new QueuedIterator<>();
-	private final QueuedIterator<Bodenbedeckung> surfacesIterator = new QueuedIterator<>();
+	private final QueuedIterator<Grundstueck> immeublesIterator = new QueuedIterator<>(QUEUE_SIZE);
+	private final QueuedIterator<PersonEigentumAnteil> droitsIterator = new QueuedIterator<>(QUEUE_SIZE);
+	private final QueuedIterator<Personstamm> proprietairesIterator = new QueuedIterator<>(QUEUE_SIZE);
+	private final QueuedIterator<Gebaeude> constructionsIterator = new QueuedIterator<>(QUEUE_SIZE);
+	private final QueuedIterator<Bodenbedeckung> surfacesIterator = new QueuedIterator<>(QUEUE_SIZE);
 
 	public FichierImmeubleIteratorAdapter() {
 	}

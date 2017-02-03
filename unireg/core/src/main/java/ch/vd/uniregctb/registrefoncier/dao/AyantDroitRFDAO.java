@@ -9,6 +9,7 @@ import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
@@ -17,9 +18,10 @@ public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 	AyantDroitRF find(@NotNull AyantDroitRFKey key);
 
 	/**
+	 * @param typeDroit le type de droit à considérer
 	 * @return la liste des ids RF des ayants-droits ayant 1 ou plusieurs droits actifs sur des immeubles.
 	 */
-	Set<String> findAvecDroitsActifs();
+	Set<String> findAvecDroitsActifs(@NotNull TypeDroit typeDroit);
 
 	/**
 	 * Construit et retourne les informations du point-de-vue Unireg sur les membres d'une communauté RF.

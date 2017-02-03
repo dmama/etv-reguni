@@ -17,6 +17,7 @@ import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 
 public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> implements AyantDroitRFDAO {
@@ -33,10 +34,24 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 	}
 
 	@Override
-	public Set<String> findAvecDroitsActifs() {
-		final Query query = getCurrentSession().createQuery("select a.idRF from AyantDroitRF a left join a.droits d where d.dateFin is null and a.droits is not empty");
+	public Set<String> findAvecDroitsActifs(@NotNull TypeDroit typeDroit) {
+		final String typeNames = getTypeNamesFor(typeDroit);
+		final String queryString = "select a.idRF from AyantDroitRF a left join a.droits d where TYPE(d) in (" + typeNames + ") and d.dateFin is null and a.droits is not empty";
+		final Query query = getCurrentSession().createQuery(queryString);
 		//noinspection unchecked
 		return new HashSet<>(query.list());
+	}
+
+	/**
+	 * Cette méthode construit la liste des classes concrètes des droits correspondant au type spécifié.
+	 *
+	 * @param typeDroit un type de droits
+	 * @return les noms des classes correspondantes, séparés par des virgules.
+	 */
+	private String getTypeNamesFor(@NotNull TypeDroit typeDroit) {
+		return String.join(",", typeDroit.getEntityClasses().stream()
+				.map(Class::getSimpleName)
+				.collect(Collectors.toList()));
 	}
 
 	@Nullable

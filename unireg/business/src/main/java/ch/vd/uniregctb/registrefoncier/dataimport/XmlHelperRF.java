@@ -11,6 +11,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
+import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
@@ -129,6 +130,11 @@ public interface XmlHelperRF {
 	 * Converti la servitude dans sa représentation XML
 	 */
 	String toXMLString(Dienstbarkeit obj);
+
+	/**
+	 * Converti la servitude dans sa représentation XML
+	 */
+	String toXMLString(DienstbarkeitDiscreteList list);
 
 	/**
 	 * Converti le bénéficiaire de servitude dans sa représentation XML

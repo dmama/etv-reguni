@@ -144,6 +144,8 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 			return "immeubles";
 		case SURFACE_AU_SOL:
 			return "surfaces au sol";
+		case SERVITUDE:
+			return "servitudes";
 		default:
 			throw new IllegalArgumentException("Type d'entité inconnue = [" + typeEntity + "]");
 		}
