@@ -1753,7 +1753,7 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 
 		try {
 			return docService.newDoc(MigrationDDCsvLoaderRapport.class, nom, description, "pdf", (doc, os) -> {
-				final PdfMigrationDemandesDegrevementRapport document = new PdfMigrationDemandesDegrevementRapport();
+				final PdfMigrationDonneesDegrevementRapport document = new PdfMigrationDonneesDegrevementRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

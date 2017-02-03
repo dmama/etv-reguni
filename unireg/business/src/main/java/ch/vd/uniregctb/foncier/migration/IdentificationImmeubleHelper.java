@@ -19,14 +19,14 @@ public abstract class IdentificationImmeubleHelper {
 	 * @param commune commune sur laquelle réside l'immeuble recherché
 	 * @param parcelle identification de parcelle de l'immeuble
 	 * @return l'immeuble trouvé
-	 * @throws IllegalArgumentException si aucun immeuble ne correspond à la recherche
+	 * @throws ImmeubleNotFoundException si aucun immeuble ne correspond à la recherche
 	 * @throws NonUniqueResultException si plusieurs immeubles correspondent à la recherche
 	 */
 	@NotNull
-	public static ImmeubleRF findImmeuble(ImmeubleRFDAO dao, Commune commune, MigrationParcelle parcelle) {
+	public static ImmeubleRF findImmeuble(ImmeubleRFDAO dao, Commune commune, MigrationParcelle parcelle) throws ImmeubleNotFoundException, NonUniqueResultException {
 		final ImmeubleRF immeuble = dao.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3(), FlushMode.MANUAL);
 		if (immeuble == null) {
-			throw new IllegalArgumentException("L'immeuble avec la parcelle [" + parcelle + "] n'existe pas sur la commune de " + commune.getNomOfficiel() + " (" + commune.getNoOFS() + ").");
+			throw new ImmeubleNotFoundException(commune, parcelle);
 		}
 		return immeuble;
 	}

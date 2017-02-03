@@ -13,9 +13,9 @@ import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 
 /**
- * Rapport PDF contenant les résultats du job de migration des demandes de dégrèvement de SIMPA-PM.
+ * Rapport PDF contenant les résultats du job de migration des données de dégrèvement de SIMPA-PM.
  */
-public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
+public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 
 	public void write(final MigrationDDImporterResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
@@ -28,7 +28,7 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution de la migration des demandes de dégrèvement de SIMPA-PM.");
+		addTitrePrincipal("Rapport d'exécution de la migration des données de dégrèvement de SIMPA-PM.");
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -49,11 +49,9 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre de lignes lues :", String.valueOf(results.getNbLignes()));
 				table.addLigne("Nombre de lignes en erreur :", String.valueOf(results.getLignesEnErreur().size()));
-				table.addLigne("Nombre de demandes extraites :", String.valueOf(results.getNbDemandesExtraites()));
 				table.addLigne("Nombre de demandes traitées :", String.valueOf(results.getNbDemandesTraitees()));
-				table.addLigne("Nombre de demandes ignorées :", String.valueOf(results.getDemandesIgnorees().size()));
-				table.addLigne("Nombre de demandes en erreur :", String.valueOf(results.getDemandesEnErreur().size()));
-				table.addLigne("Nombre de contribuables en erreur :", String.valueOf(results.getContribuablesEnErreur().size()));
+				table.addLigne("Nombre de données ignorées :", String.valueOf(results.getDonneesIgnorees().size()));
+				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results.endTime - results.startTime));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
@@ -71,30 +69,20 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 
 		// Demandes ignorées
 		{
-			final String filename = "demandes_ignorees.csv";
-			final String titre = " Liste des demandes ignorées";
+			final String filename = "donnees_ignorees.csv";
+			final String titre = " Liste des données ignorées";
 			final String listeVide = "(aucune)";
-			try (TemporaryFile contenu = demandeInfosAsCsvFile(results.getDemandesIgnorees(), filename, status)) {
+			try (TemporaryFile contenu = ignoresAsCsvFile(results.getDonneesIgnorees(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
 
 		// Demandes en erreur
 		{
-			final String filename = "demandes_erreurs.csv";
-			final String titre = " Liste des demandes en erreur";
+			final String filename = "erreurs.csv";
+			final String titre = " Liste des erreurs";
 			final String listeVide = "(aucune)";
-			try (TemporaryFile contenu = demandeInfosAsCsvFile(results.getDemandesEnErreur(), filename, status)) {
-				addListeDetaillee(writer, titre, listeVide, filename, contenu);
-			}
-		}
-
-		// Contribuables en erreur
-		{
-			final String filename = "contribuables_erreurs.csv";
-			final String titre = " Liste des contribuables en erreur";
-			final String listeVide = "(aucun)";
-			try (TemporaryFile contenu = ctbInfosAsCsvFile(results.getContribuablesEnErreur(), filename, status)) {
+			try (TemporaryFile contenu = erreursAsCsvFile(results.getErreurs(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
@@ -125,20 +113,20 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile demandeInfosAsCsvFile(List<MigrationDDImporterResults.DemandeInfo> liste, String filename, StatusManager status) {
+	private TemporaryFile ignoresAsCsvFile(List<MigrationDDImporterResults.Ignore> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
-			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.DemandeInfo>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.Ignore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("MESSAGE").append(COMMA);
-					b.append("DEMANDE_DEGREVEMENT");
+					b.append("LIEN_CTB_IMMEUBLE");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.DemandeInfo elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.Ignore elt) {
 					b.append(CsvHelper.asCsvField(elt.getMessage())).append(COMMA);
-					b.append(elt.getDd().toString());
+					b.append(elt.getKey().toString());
 					return true;
 				}
 			});
@@ -146,19 +134,17 @@ public class PdfMigrationDemandesDegrevementRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile ctbInfosAsCsvFile(List<MigrationDDImporterResults.ContribuableInfo> liste, String filename, StatusManager status) {
+	private TemporaryFile erreursAsCsvFile(List<MigrationDDImporterResults.Erreur> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
-			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.ContribuableInfo>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("NO_CTB").append(COMMA);
 					b.append("MESSAGE");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.ContribuableInfo elt) {
-					b.append(elt.getIdContribuable()).append(COMMA);
+				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.Erreur elt) {
 					b.append(CsvHelper.asCsvField(elt.getMessage()));
 					return true;
 				}

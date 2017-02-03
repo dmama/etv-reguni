@@ -29,6 +29,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -39,9 +40,10 @@ import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.MultipleSwitch;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.foncier.DegrevementICI;
-import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
 import ch.vd.uniregctb.foncier.migration.MigrationKey;
@@ -121,7 +123,7 @@ public class MigrationDDImporter {
 		}
 		else {
 			status.setMessage("L'import des immeubles  est terminé."
-					                  + " Nombre de dégrèvements importés = " + rapportFinal.getNbLignes() + ". Nombre d'erreurs = " + rapportFinal.getDemandesEnErreur().size());
+					                  + " Nombre de dégrèvements importés = " + rapportFinal.getNbLignes() + ". Nombre d'erreurs = " + rapportFinal.getErreurs().size());
 		}
 
 		rapportFinal.end();
@@ -141,45 +143,20 @@ public class MigrationDDImporter {
 			}
 		}
 
-		// Clé principale : clé d'identification du couple entreprise / immeuble
-		// Valeur (map) : clé = période fiscale, valeur = données à migrée
-		final Map<MigrationKey, Map<Integer, MigrationDD>> map = new HashMap<>();
-
-		// on regroupe les demandes pour gérer correctement les cas où il y a plusieurs usages
-
+		// on lit d'abord tout le fichier
+		final List<MigrationDD> input = new LinkedList<>();
 		while (csvIterator.hasNext()) {
-
 			// on parse la ligne
 			final MigrationDD dd;
 			try {
 				dd = parseLine(csvIterator.next());
+				input.add(dd);
 			}
 			catch (RuntimeException e) {
 				rapport.addLineEnErreur(index, e.getMessage());
-				continue;
 			}
 			finally {
 				++index;
-			}
-
-			final MigrationKey key = new MigrationKey(dd);
-			final Map<Integer, MigrationDD> immeubleData = map.computeIfAbsent(key, k -> new HashMap<>());
-
-			final MigrationDD val = immeubleData.get(dd.getAnneeFiscale());
-			if (val == null) {
-				// il n'y a pas de demande de dégrèvement pré-existante, on l'ajoute
-				immeubleData.put(dd.getAnneeFiscale(), dd);
-				rapport.incNbDemandesExtraites();
-			}
-			else {
-				// il y a déjà une demande dégrèvement pré-existante, il s'agit simplement d'un nouvel usage : on l'ajoute sur la DD existante.
-				try {
-					assertDataEquals(val, dd);
-					val.addUsage(dd.getUsages().iterator().next());
-				}
-				catch (IllegalArgumentException e) {
-					rapport.addDemandeEnErreur(dd, "Inconsistence dans les usages : " + e.getMessage());
-				}
 			}
 
 			final int lineProcessed = rapport.incNbLignes();
@@ -192,16 +169,60 @@ public class MigrationDDImporter {
 			}
 		}
 
-		// pour des raisons d'optimisation, on va chercher toutes les communes et on va les classer par nom "canonique"
+		// maintenant, on va tout regrouper par couple {ctb / immeuble}
+		final Map<MigrationKey, List<MigrationDD>> byCtbImmeuble = input.stream()
+				.collect(Collectors.toMap(MigrationKey::new,
+				                          Collections::singletonList,
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+		// par couple {ctb / immeuble}, on ne garde qu'une seule ligne par usage (celle dont la PF est la plus élevée, et en cas d'égalité celle dont la date d'envoi est la plus récente)
+		final Map<MigrationKey, ValeurDegrevement> byCtbImmeubleFiltered = new HashMap<>(byCtbImmeuble.size());
+		for (Map.Entry<MigrationKey, List<MigrationDD>> entry : byCtbImmeuble.entrySet()) {
+
+			// quelle est la PF la plus élevée ?
+			final int pf = entry.getValue().stream()
+					.mapToInt(MigrationDD::getAnneeFiscale)
+					.max()
+					.getAsInt();
+
+			// on ne garde que pour cette PF
+			final Map<TypeUsage, MigrationDD> perUsage = entry.getValue().stream()
+					.filter(dd -> {
+						if (dd.getAnneeFiscale() != pf) {
+							rapport.addLigneIgnoree(dd, "Une donnée pour une PF plus récente (" + pf + ") est présente.");
+							return false;
+						}
+						return true;
+					})
+					.collect(Collectors.toMap(dd -> dd.getUsage().getTypeUsage(),
+					                          Function.identity(),
+					                          (dd1, dd2) -> {
+						                          final List<MigrationDD> sorted = Stream.of(dd1, dd2)
+								                          .sorted(Comparator.comparing(MigrationDD::getDateEnvoi))
+								                          .collect(Collectors.toList());
+						                          final MigrationDD elected = sorted.get(1);
+						                          rapport.addLigneIgnoree(sorted.get(0), "Une donnée plus récente (même PF mais date d'envoi plus récente (" + RegDateHelper.dateToDisplayString(elected.getDateEnvoi()) + ")) est présente.");
+						                          return elected;
+					                          },
+					                          () -> new EnumMap<>(TypeUsage.class)));
+
+			// et finalement on ne conserve que les usages
+			final Map<TypeUsage, MigrationDDUsage> usages = perUsage.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, mapEntry -> mapEntry.getValue().getUsage()));
+
+			byCtbImmeubleFiltered.put(entry.getKey(), new ValeurDegrevement(pf, usages));
+		}
+
+    	// pour des raisons d'optimisation, on va chercher toutes les communes et on va les classer par nom "canonique"
 		final Map<String, Commune> mapCommunes = infraService.getCommunes().stream()
 				.collect(Collectors.toMap(commune -> canonizeName(commune.getNomOfficiel()),
 				                          Function.identity(),
 				                          (c1, c2) -> Stream.of(c1, c2).max(Comparator.comparing(Commune::getDateDebutValidite, NullDateBehavior.EARLIEST::compare)).get()));
 
 		// on va devoir traiter les dossiers contribuable par contribuable
-		final Map<Long, List<Map<Integer, MigrationDD>>> mapParContribuable = map.entrySet().stream()
+		final Map<Long, List<Map.Entry<MigrationKey, ValeurDegrevement>>> mapParContribuable = byCtbImmeubleFiltered.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().numeroEntreprise,
-				                          entry -> Collections.singletonList(entry.getValue()),
+				                          Collections::singletonList,
 				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 
 		// on désactive la validation automatique des données sauvées car la validation
@@ -212,9 +233,9 @@ public class MigrationDDImporter {
 		                                                     tacheSynchronizerInterceptor);
 
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplate<Map.Entry<Long, List<Map<Integer, MigrationDD>>>> template =
+		final ParallelBatchTransactionTemplate<Map.Entry<Long, List<Map.Entry<MigrationKey, ValeurDegrevement>>>> template =
 				new ParallelBatchTransactionTemplate<>(new ArrayList<>(mapParContribuable.entrySet()), BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
-		template.execute(new BatchCallback<Map.Entry<Long, List<Map<Integer, MigrationDD>>>>() {
+		template.execute(new BatchCallback<Map.Entry<Long, List<Map.Entry<MigrationKey, ValeurDegrevement>>>>() {
 
 			private final ThreadLocal<MigrationDDImporterResults> subRapport = new ThreadLocal<>();
 			private final ThreadLocal<Long> contribuable = new ThreadLocal<>();
@@ -227,7 +248,7 @@ public class MigrationDDImporter {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Map.Entry<Long, List<Map<Integer, MigrationDD>>>> batch) throws Exception {
+			public boolean doInTransaction(List<Map.Entry<Long, List<Map.Entry<MigrationKey, ValeurDegrevement>>>> batch) throws Exception {
 				batch.forEach(batchEntry -> {
 
 					// ensuite, on traite contribuable par contribuable
@@ -235,24 +256,24 @@ public class MigrationDDImporter {
 					final Entreprise entreprise = getEntreprise(batchEntry.getKey());
 
 					// map des dégrèvements à persister pour cette entreprise par identifiant d'immeuble
-					final List<DemandeDegrevementICI> demandes = new LinkedList<>();
 					final Map<Long, List<DegrevementICI>> degrevementsParImmeuble = batchEntry.getValue().stream()
-							.map(map -> {
-								final List<MigrationDD> list = new ArrayList<>(map.values());
-								final MigrationDD toSave = getDDToSave(list, subRapport.get());
+							.map(dd -> {
 								try {
-									final ResultatTraitementDemande resultatTraitement = traiterDemande(toSave, mapCommunes);
-									subRapport.get().incNbDemandesTraitees();
-									demandes.add(resultatTraitement.demande);
-									return resultatTraitement.degrevements;
+									final DegrevementICI deg = traiterDegrevement(dd, mapCommunes);
+									if (deg != null) {
+										subRapport.get().incNbDemandesTraitees();
+									}
+									else {
+										subRapport.get().addDonneeDegrevementVide(dd);
+									}
+									return deg;
 								}
 								catch (Exception e) {
-									subRapport.get().addDemandeEnErreur(toSave, e.getMessage());
+									subRapport.get().addErreur(dd, e.getMessage());
 									return null;
 								}
 							})
 							.filter(Objects::nonNull)
-							.flatMap(List::stream)
 							.collect(Collectors.toMap(d -> d.getImmeuble().getId(),
 							                          Collections::singletonList,
 							                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
@@ -272,11 +293,6 @@ public class MigrationDDImporter {
 							}
 						}
 					}
-
-					// persistence des demandes
-					demandes.stream()
-							.map(hibernateTemplate::merge)
-							.forEach(entreprise::addAutreDocumentFiscal);
 
 					// persistence des dégrèvements
 					degrevementsParImmeuble.values().stream()
@@ -313,59 +329,28 @@ public class MigrationDDImporter {
 	}
 
 	/**
-	 * Classe qui contient les données (non-persistées) qu'il faudra persister une pour la donnée en provenance de SIMPA
+	 * Migre les dégrèvements ICI
+	 * @param degrevement les données du dégrèvement
+	 * @return le dégrèvement ICI à persister
 	 */
-	private static final class ResultatTraitementDemande {
-		final DemandeDegrevementICI demande;
-		final List<DegrevementICI> degrevements;
+	@Nullable
+	private DegrevementICI traiterDegrevement(Map.Entry<MigrationKey, ValeurDegrevement> degrevement, Map<String, Commune> mapCommunes) throws ObjectNotFoundException {
 
-		public ResultatTraitementDemande(DemandeDegrevementICI demande, List<DegrevementICI> degrevements) {
-			this.demande = demande;
-			this.degrevements = degrevements;
+		final Entreprise entreprise = determinerEntreprise(degrevement.getKey());
+		final ImmeubleRF immeuble = determinerImmeuble(degrevement.getKey(), mapCommunes);
+
+		final DegrevementICI data = new DegrevementICI();
+		final Map<TypeUsage, MigrationDDUsage> usages = degrevement.getValue().getUsages();
+		data.setContribuable(entreprise);
+		data.setImmeuble(immeuble);
+		data.setLocation(extractDonneesUtilisation(usages.get(TypeUsage.LOUE_TIERS)));
+		data.setPropreUsage(extractDonneesUtilisation(usages.get(TypeUsage.USAGE_PROPRE)));
+		data.setLoiLogement(null);           // TODO comment migrer ça ?
+		if (data.getPropreUsage() != null || data.getLocation() != null || data.getLoiLogement() != null) {
+			data.setDateDebut(RegDate.get(degrevement.getValue().getPeriodeFiscale(), 1, 1));
+			return data;
 		}
-	}
-
-	/**
-	 * Migre une demande et extrait les dégrèvements ICI
-	 * @param demande la demande en entrée
-	 * @return la liste des dégrèvements à persister
-	 */
-	@NotNull
-	private ResultatTraitementDemande traiterDemande(MigrationDD demande, Map<String, Commune> mapCommunes) {
-
-		final Entreprise entreprise = determinerEntreprise(demande);
-		final ImmeubleRF immeuble = determinerImmeuble(demande, mapCommunes);
-
-		final DemandeDegrevementICI dd = new DemandeDegrevementICI();
-		dd.setImmeuble(immeuble);
-		dd.setEntreprise(entreprise);
-		dd.setPeriodeFiscale(demande.getAnneeFiscale());
-		dd.setDateEnvoi(demande.getDateEnvoi());
-		dd.setDelaiRetour(demande.getDelaiRetour());
-		dd.setDateRappel(demande.getDateRappel());
-		dd.setDateRetour(demande.getDateRetour());
-
-		final Map<TypeUsage, MigrationDDUsage> usagesParType = demande.getUsages().stream()
-				.collect(Collectors.toMap(MigrationDDUsage::getTypeUsage,
-				                          Function.identity(),
-				                          (u1, u2) -> u2,
-				                          () -> new EnumMap<>(TypeUsage.class)));
-
-		final List<DegrevementICI> degrevements = new ArrayList<>(usagesParType.size());
-		if (!usagesParType.isEmpty()) {
-			final DegrevementICI degrevement = new DegrevementICI();
-			degrevement.setImmeuble(immeuble);
-			degrevement.setContribuable(entreprise);
-			degrevement.setPropreUsage(extractDonneesUtilisation(usagesParType.get(TypeUsage.USAGE_PROPRE)));
-			degrevement.setLocation(extractDonneesUtilisation(usagesParType.get(TypeUsage.LOUE_TIERS)));
-			degrevement.setLoiLogement(null);           // TODO comment migrer ça ?
-			if (degrevement.getPropreUsage() != null || degrevement.getLocation() != null || degrevement.getLoiLogement() != null) {
-				degrevement.setDateDebut(RegDate.get(demande.getAnneeFiscale(), 1, 1));
-				degrevements.add(degrevement);
-			}
-		}
-
-		return new ResultatTraitementDemande(dd, degrevements);
+		return null;
 	}
 
 	private static DonneesUtilisation extractDonneesUtilisation(MigrationDDUsage usage) {
@@ -377,16 +362,16 @@ public class MigrationDDImporter {
 	}
 
 	@NotNull
-	private ImmeubleRF determinerImmeuble(MigrationDD demande, Map<String, Commune> mapCommunes) {
+	private ImmeubleRF determinerImmeuble(MigrationKey key, Map<String, Commune> mapCommunes) throws ObjectNotFoundException {
 
-		final Commune commune = mapCommunes.get(canonizeName(demande.getNomCommune()));
+		final Commune commune = mapCommunes.get(canonizeName(key.nomCommune));
 		if (commune == null) {
-			throw new IllegalArgumentException("La commune avec le nom [" + demande.getNomCommune() + "] n'existe pas.");
+			throw new ObjectNotFoundException("La commune avec le nom [" + key.nomCommune + "] n'existe pas.");
 		}
 
 		final MigrationParcelle parcelle;
 		try {
-			parcelle = new MigrationParcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
+			parcelle = new MigrationParcelle(key.noBaseParcelle, key.noParcelle, key.noLotPPE);
 		}
 		catch (RuntimeException e) {
 			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
@@ -400,77 +385,22 @@ public class MigrationDDImporter {
 	}
 
 	@NotNull
-	private Entreprise determinerEntreprise(MigrationDD demande) {
-		final long numero = demande.getNumeroEntreprise();
+	private Entreprise determinerEntreprise(MigrationKey demande) {
+		final long numero = demande.numeroEntreprise;
 		return getEntreprise(numero);
 	}
 
 	@NotNull
-	private Entreprise getEntreprise(long noEntreprise) {
+	private Entreprise getEntreprise(long noEntreprise) throws ObjectNotFoundException {
 		final Tiers tiers = tiersDAO.get(noEntreprise);
 		if (tiers == null) {
-			throw new IllegalArgumentException("Le tiers n°" + noEntreprise + " n'existe pas.");
+			throw new TiersNotFoundException(noEntreprise);
 		}
 		else if (!(tiers instanceof Entreprise)) {
-			throw new IllegalArgumentException("Le tiers n°" + noEntreprise + " n'est pas une entreprise (type = " + tiers.getClass().getSimpleName() + ").");
+			throw new ObjectNotFoundException("Le tiers n°" + noEntreprise + " n'est pas une entreprise (type = " + tiers.getClass().getSimpleName() + ").");
 		}
 
 		return (Entreprise) tiers;
-	}
-
-	/**
-	 * @return la demande de dégrèvement à sauver dans la DB
-	 */
-	@NotNull
-	static MigrationDD getDDToSave(@NotNull List<MigrationDD> list, @NotNull MigrationDDImporterResults rapport) {
-		final int size = list.size();
-		final MigrationDD toSave;
-		if (size == 1) {
-			// il n'y a qu'une seule année de dégrèvement (= la dernière), tout va bien
-			toSave = list.get(0);
-		}
-		else {
-			// il y a plusieurs années, il s'agit d'un bug de l'export SIMPA, on corrige en prenant la dernière année fiscale
-			list.sort(Comparator.comparingInt(MigrationDD::getAnneeFiscale));
-			toSave = list.get(size - 1);
-			for (int i = 0; i < size - 1; ++i) {
-				rapport.addDemandeIgnoree(list.get(i), "Une demande de dégrèvement plus récente (" + toSave.getAnneeFiscale() + ") existe dans l'export (cette demande = " + list.get(i).getAnneeFiscale() + ").");
-			}
-		}
-		return toSave;
-	}
-
-	private void assertDataEquals(MigrationDD right, MigrationDD left) {
-		assertEquals(right.getNumeroEntreprise(), left.getNumeroEntreprise(), "numeroEntreprise");
-		assertEquals(right.getNomEntreprise(), left.getNomEntreprise(), "nomEntreprise");
-		assertEquals(right.getNoAciCommune(), left.getNoAciCommune(), "noAciCommune");
-		assertEquals(right.getNoOfsCommune(), left.getNoOfsCommune(), "noOfsCommune");
-		assertEquals(right.getNomCommune(), left.getNomCommune(), "nomCommune");
-		assertEquals(right.getNoBaseParcelle(), left.getNoBaseParcelle(), "noBaseParcelle");
-		assertEquals(right.getNoParcelle(), left.getNoParcelle(), "noParcelle");
-		assertEquals(right.getNoLotPPE(), left.getNoLotPPE(), "noLotPPE");
-		assertEquals(right.getDateDebutRattachement(), left.getDateDebutRattachement(), "dateDebutRattachement");
-		assertEquals(right.getDateFinRattachement(), left.getDateFinRattachement(), "dateFinRattachement");
-		assertEquals(right.getModeRattachement(), left.getModeRattachement(), "modeRattachement");
-		assertEquals(right.getMotifEnvoi(), left.getMotifEnvoi(), "motifEnvoi");
-		assertEquals(right.getDateDebutValidite(), left.getDateDebutValidite(), "dateDebutValidite");
-		assertEquals(right.getAnneeFiscale(), left.getAnneeFiscale(), "anneeFiscale");
-		assertEquals(right.getDateEnvoi(), left.getDateEnvoi(), "dateEnvoi");
-		assertEquals(right.getDelaiRetour(), left.getDelaiRetour(), "delaiRetour");
-		assertEquals(right.getDateRetour(), left.getDateRetour(), "dateRetour");
-		assertEquals(right.getDateRappel(), left.getDateRappel(), "dateRappel");
-		assertEquals(right.getDelaiRappel(), left.getDelaiRappel(), "delaiRappel");
-		assertEquals(right.getEstimationFiscale(), left.getEstimationFiscale(), "estimationFiscale");
-		assertEquals(right.getEstimationSoumise(), left.getEstimationSoumise(), "estimationSoumise");
-		assertEquals(right.getEstimationExoneree(), left.getEstimationExoneree(), "estimationExoneree");
-		assertEquals(right.getEstimationCaractereSocial(), left.getEstimationCaractereSocial(), "estimationCaractereSocial");
-		assertEquals(right.isEtabliParCtb(), left.isEtabliParCtb(), "etabliParCtb");
-	}
-
-	private void assertEquals(Object left, Object right, String field) {
-		if (!Objects.equals(left, right)) {
-			throw new IllegalArgumentException("les valeurs du champ '" + field + "' sont différentes : left=[" + left + "] right=[" + right + "]");
-		}
 	}
 
 	private MigrationDD parseLine(String line) throws IOException, ParseException {
@@ -509,7 +439,7 @@ public class MigrationDDImporter {
 		usage.setVolume(parseAmount(tokens[27]));
 		usage.setPourdixmilleUsage(ParsingHelper.parsePourdixmille(tokens[28]));
 		usage.setTypeUsage(parseTypeUsage(tokens[29]));
-		dd.addUsage(usage);
+		dd.setUsage(usage);
 
 		return dd;
 	}

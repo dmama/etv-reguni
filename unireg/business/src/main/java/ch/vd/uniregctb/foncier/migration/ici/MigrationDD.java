@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.foncier.migration.ici;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.foncier.migration.BaseMigrationData;
 
 /**
- * Valeurs importées de SIMPA concernant les demandes de dégrèvement actives.
+ * Une ligne du fichier d'import des demandes de dégrèvement (et des valeurs associées)
  */
 public class MigrationDD extends BaseMigrationData {
 
@@ -29,8 +26,6 @@ public class MigrationDD extends BaseMigrationData {
 
 	private RegDate delaiRappel;
 
-	// taxation (données stockées pour d'éventuele besoins ultérieurs)
-
 	private int estimationFiscale;
 
 	private int estimationSoumise;
@@ -41,7 +36,7 @@ public class MigrationDD extends BaseMigrationData {
 
 	private boolean etabliParCtb;
 
-	private Set<MigrationDDUsage> usages;
+	private MigrationDDUsage usage;
 
 	public String getModeRattachement() {
 		return modeRattachement;
@@ -155,25 +150,18 @@ public class MigrationDD extends BaseMigrationData {
 		this.etabliParCtb = etabliParCtb;
 	}
 
-	public Set<MigrationDDUsage> getUsages() {
-		return usages;
+	public MigrationDDUsage getUsage() {
+		return usage;
 	}
 
-	public void setUsages(Set<MigrationDDUsage> usages) {
-		this.usages = usages;
-	}
-
-	public void addUsage(MigrationDDUsage usage) {
-		if (usages == null) {
-			usages = new HashSet<>();
-		}
-		usages.add(usage);
+	public void setUsage(MigrationDDUsage usage) {
+		this.usage = usage;
 	}
 
 	@Override
-	protected String getAttributesToString() {
-		return super.getAttributesToString() +
-				", modeRattachement='" + modeRattachement + '\'' +
+	public String toString() {
+		return "MigrationDD{" +
+				"modeRattachement='" + modeRattachement + '\'' +
 				", motifEnvoi='" + motifEnvoi + '\'' +
 				", dateDebutValidite=" + dateDebutValidite +
 				", anneeFiscale=" + anneeFiscale +
@@ -186,6 +174,8 @@ public class MigrationDD extends BaseMigrationData {
 				", estimationSoumise=" + estimationSoumise +
 				", estimationExoneree=" + estimationExoneree +
 				", estimationCaractereSocial=" + estimationCaractereSocial +
-				", etabliParCtb=" + etabliParCtb;
+				", etabliParCtb=" + etabliParCtb +
+				", usage=" + usage +
+				'}';
 	}
 }

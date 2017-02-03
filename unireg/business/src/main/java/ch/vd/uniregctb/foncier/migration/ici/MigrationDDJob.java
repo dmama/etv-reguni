@@ -18,7 +18,7 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 
 /**
- * Job de migration des demandes de dégrèvement depuis l'export CSV de SIMPA-PM.
+ * Job de migration des données de dégrèvement depuis l'export CSV de SIMPA-PM.
  */
 public class MigrationDDJob extends JobDefinition {
 

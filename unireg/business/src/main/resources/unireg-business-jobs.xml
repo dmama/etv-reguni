@@ -713,7 +713,7 @@
 
 	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ici.MigrationDDJob">
 		<constructor-arg value="714"/>
-		<constructor-arg value="Importer le fichier CSV des demandes de dégrèvement de SIMPA-PM"/>
+		<constructor-arg value="Importer le fichier CSV des données de dégrèvement de SIMPA-PM"/>
 		<property name="loader" ref="migrationDDCsvLoader"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>

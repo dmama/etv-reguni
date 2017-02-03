@@ -50,4 +50,15 @@ public class MigrationDDUsage {
 	public void setTypeUsage(TypeUsage typeUsage) {
 		this.typeUsage = typeUsage;
 	}
+
+	@Override
+	public String toString() {
+		return "MigrationDDUsage{" +
+				"revenuLocation=" + revenuLocation +
+				", surface=" + surface +
+				", volume=" + volume +
+				", pourdixmilleUsage=" + pourdixmilleUsage +
+				", typeUsage=" + typeUsage +
+				'}';
+	}
 }

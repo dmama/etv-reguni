@@ -69,7 +69,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 				}
 			});
 		}
-		catch (IllegalArgumentException e) {
+		catch (ImmeubleNotFoundException e) {
 			Assert.assertEquals("L'immeuble avec la parcelle [1234/3/null/null] n'existe pas sur la commune de Lausanne (5586).", e.getMessage());
 		}
 	}

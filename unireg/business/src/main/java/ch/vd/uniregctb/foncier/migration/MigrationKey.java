@@ -11,6 +11,7 @@ public class MigrationKey {
 
 	public final long numeroEntreprise;
 	public final long noAciCommune;
+	public final String nomCommune;
 	public final String noBaseParcelle;
 	public final String noParcelle;
 	public final String noLotPPE;
@@ -18,6 +19,7 @@ public class MigrationKey {
 	public MigrationKey(@NotNull BaseMigrationData data) {
 		this.numeroEntreprise = data.getNumeroEntreprise();
 		this.noAciCommune = data.getNoAciCommune();
+		this.nomCommune = data.getNomCommune();
 		this.noBaseParcelle = data.getNoBaseParcelle();
 		this.noParcelle = data.getNoParcelle();
 		this.noLotPPE = data.getNoLotPPE();
@@ -30,6 +32,7 @@ public class MigrationKey {
 		final MigrationKey that = (MigrationKey) o;
 		return numeroEntreprise == that.numeroEntreprise &&
 				noAciCommune == that.noAciCommune &&
+				Objects.equals(nomCommune, that.nomCommune) &&
 				Objects.equals(noBaseParcelle, that.noBaseParcelle) &&
 				Objects.equals(noParcelle, that.noParcelle) &&
 				Objects.equals(noLotPPE, that.noLotPPE);
@@ -37,7 +40,19 @@ public class MigrationKey {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(numeroEntreprise, noAciCommune, noBaseParcelle, noParcelle, noLotPPE);
+		return Objects.hash(numeroEntreprise, noAciCommune, nomCommune, noBaseParcelle, noParcelle, noLotPPE);
+	}
+
+	@Override
+	public String toString() {
+		return "{" +
+				"numeroEntreprise=" + numeroEntreprise +
+				", noAciCommune=" + noAciCommune +
+				", nomCommune='" + nomCommune + '\'' +
+				", noBaseParcelle='" + noBaseParcelle + '\'' +
+				", noParcelle='" + noParcelle + '\'' +
+				", noLotPPE='" + noLotPPE + '\'' +
+				'}';
 	}
 }
 
