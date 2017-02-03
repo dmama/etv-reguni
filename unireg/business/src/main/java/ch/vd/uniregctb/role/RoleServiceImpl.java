@@ -113,6 +113,7 @@ public class RoleServiceImpl implements RoleService {
 						.filter(Objects::nonNull)
 						.collect(Collectors.toList());
 
+				// la clé correspond au numéro OFS de la commune, null pour "pas dans le rôle cette année"
 				final Map<Integer, List<T>> map = variante.dispatch(annee, contribuables);
 				final Stream<Map.Entry<Integer, List<T>>> entries;
 				if (ofsCommune == null || ofsCommune.isEmpty()) {

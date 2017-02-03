@@ -10,7 +10,7 @@ import ch.vd.uniregctb.type.MotifFor;
 public class RolePopulationPMExtractor extends RolePopulationExtractorImpl<Entreprise> {
 
 	public RolePopulationPMExtractor() {
-		super(EnumSet.of(MotifFor.FIN_EXPLOITATION, MotifFor.DEPART_HS, MotifFor.FUSION_ENTREPRISES));
+		super(EnumSet.of(MotifFor.FIN_EXPLOITATION, MotifFor.DEPART_HS, MotifFor.FUSION_ENTREPRISES, MotifFor.FAILLITE));
 	}
 
 	@Override
