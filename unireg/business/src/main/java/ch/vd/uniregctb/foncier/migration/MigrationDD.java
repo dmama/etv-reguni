@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.foncier.migration;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import ch.vd.registre.base.date.RegDate;
 
 /**
- * Valeurs importées de SIMPA concernant les demandes de dégrèvement actives.
+ * Une ligne du fichier d'import des demandes de dégrèvement (et des valeurs associées)
  */
 public class MigrationDD {
 
@@ -48,8 +45,6 @@ public class MigrationDD {
 
 	private RegDate delaiRappel;
 
-	// taxation (données stockées pour d'éventuele besoins ultérieurs)
-
 	private int estimationFiscale;
 
 	private int estimationSoumise;
@@ -60,7 +55,7 @@ public class MigrationDD {
 
 	private boolean etabliParCtb;
 
-	private Set<MigrationDDUsage> usages;
+	private MigrationDDUsage usage;
 
 	public long getNumeroEntreprise() {
 		return numeroEntreprise;
@@ -254,19 +249,12 @@ public class MigrationDD {
 		this.etabliParCtb = etabliParCtb;
 	}
 
-	public Set<MigrationDDUsage> getUsages() {
-		return usages;
+	public MigrationDDUsage getUsage() {
+		return usage;
 	}
 
-	public void setUsages(Set<MigrationDDUsage> usages) {
-		this.usages = usages;
-	}
-
-	public void addUsage(MigrationDDUsage usage) {
-		if (usages == null) {
-			usages = new HashSet<>();
-		}
-		usages.add(usage);
+	public void setUsage(MigrationDDUsage usage) {
+		this.usage = usage;
 	}
 
 	@Override
@@ -296,6 +284,7 @@ public class MigrationDD {
 				", estimationExoneree=" + estimationExoneree +
 				", estimationCaractereSocial=" + estimationCaractereSocial +
 				", etabliParCtb=" + etabliParCtb +
-				"}";
+				", usage=" + usage +
+				'}';
 	}
 }

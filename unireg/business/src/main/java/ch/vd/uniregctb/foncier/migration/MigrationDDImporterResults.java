@@ -2,6 +2,7 @@ package ch.vd.uniregctb.foncier.migration;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MigrationDDImporterResults {
 
@@ -19,11 +20,9 @@ public class MigrationDDImporterResults {
 
 	private int nbLignes = 0;
 	private final List<LigneInfo> lignesEnErreur = new LinkedList<>();
-	private int nbDemandesExtraites = 0;
 	private int nbDemandesTraitees = 0;
-	private final List<DemandeInfo> demandesIgnorees = new LinkedList<>();
-	private final List<DemandeInfo> demandesEnErreur = new LinkedList<>();
-	private final List<ContribuableInfo> contribuablesEnErreur = new LinkedList<>();
+	private final List<Ignore> donneesIgnorees = new LinkedList<>();
+	private final List<Erreur> erreurs = new LinkedList<>();
 	private int nbThreads;
 
 	public static final class LigneInfo {
@@ -52,55 +51,75 @@ public class MigrationDDImporterResults {
 		}
 	}
 
-	public static final class DemandeInfo {
-		public final MigrationDD dd;
-		public final String message;
+	public static class Ignore {
+		private final MigrationDDKey key;
+		private final String message;
 
-		public DemandeInfo(MigrationDD dd, String message) {
-			this.dd = dd;
+		public Ignore(MigrationDDKey key, String message) {
+			this.key = key;
 			this.message = message;
 		}
 
-		public MigrationDD getDd() {
-			return dd;
+		public MigrationDDKey getKey() {
+			return key;
 		}
 
 		public String getMessage() {
 			return message;
-		}
-
-		@Override
-		public String toString() {
-			return "Info{" +
-					"dd=" + dd +
-					", message='" + message + '\'' +
-					'}';
 		}
 	}
 
-	public static final class ContribuableInfo {
-		public final long idContribuable;
-		public final String message;
+	public static class LigneIgnoree extends Ignore {
+		public final MigrationDD dd;
 
-		public ContribuableInfo(long idContribuable, String message) {
-			this.idContribuable = idContribuable;
-			this.message = message;
+		public LigneIgnoree(MigrationDD dd, String message) {
+			super(new MigrationDDKey(dd), message);
+			this.dd = dd;
 		}
 
-		public long getIdContribuable() {
-			return idContribuable;
+		@Override
+		public String getMessage() {
+			return String.format("%s (%s)", super.getMessage(), dd);
+		}
+	}
+
+	public static class Erreur {
+		private final String message;
+
+		public Erreur(String message) {
+			this.message = message;
 		}
 
 		public String getMessage() {
 			return message;
 		}
+	}
+
+	public static final class ErreurDemande extends Erreur {
+		private final MigrationDD dd;
+
+		public ErreurDemande(MigrationDD dd, String message) {
+			super(message);
+			this.dd = dd;
+		}
 
 		@Override
-		public String toString() {
-			return "ContribuableInfo{" +
-					"idContribuable=" + idContribuable +
-					", message='" + message + '\'' +
-					'}';
+		public String getMessage() {
+			return String.format("%s (%s)", super.getMessage(), dd);
+		}
+	}
+
+	public static final class ErreurContribuable extends Erreur {
+		private final long noContribuable;
+
+		public ErreurContribuable(long noContribuable, String message) {
+			super(message);
+			this.noContribuable = noContribuable;
+		}
+
+		@Override
+		public String getMessage() {
+			return String.format("%d : %s", noContribuable, super.getMessage());
 		}
 	}
 
@@ -111,11 +130,9 @@ public class MigrationDDImporterResults {
 	public void addAll(MigrationDDImporterResults right) {
 		nbLignes += right.nbLignes;
 		lignesEnErreur.addAll(right.lignesEnErreur);
-		nbDemandesExtraites += right.nbDemandesExtraites;
 		nbDemandesTraitees += right.nbDemandesTraitees;
-		demandesIgnorees.addAll(right.demandesIgnorees);
-		demandesEnErreur.addAll(right.demandesEnErreur);
-		contribuablesEnErreur.addAll(right.contribuablesEnErreur);
+		donneesIgnorees.addAll(right.donneesIgnorees);
+		erreurs.addAll(right.erreurs);
 	}
 
 	public void end() {
@@ -126,10 +143,6 @@ public class MigrationDDImporterResults {
 		return ++nbLignes;
 	}
 
-	public int incNbDemandesExtraites() {
-		return ++nbDemandesExtraites;
-	}
-
 	public int incNbDemandesTraitees() {
 		return ++nbDemandesTraitees;
 	}
@@ -138,16 +151,24 @@ public class MigrationDDImporterResults {
 		lignesEnErreur.add(new LigneInfo(index, message));
 	}
 
-	public void addDemandeIgnoree(MigrationDD migrationDD, String message) {
-		demandesIgnorees.add(new DemandeInfo(migrationDD, message));
+	public void addLigneIgnoree(MigrationDD migrationDD, String message) {
+		donneesIgnorees.add(new LigneIgnoree(migrationDD, message));
+	}
+
+	public void addDonneeDegrevementVide(Map.Entry<MigrationDDKey, ValeurDegrevement> dd) {
+		donneesIgnorees.add(new Ignore(dd.getKey(), "Aucune valeur de dégrèvement disponible pour la PF " + dd.getValue().getPeriodeFiscale()));
+	}
+
+	public void addErreur(Map.Entry<MigrationDDKey, ValeurDegrevement> dd, String message) {
+		erreurs.add(new Erreur(String.format("%s (%s)", message, dd.getKey())));
 	}
 
 	public void addDemandeEnErreur(MigrationDD dd, String message) {
-		demandesEnErreur.add(new DemandeInfo(dd, message));
+		erreurs.add(new ErreurDemande(dd, message));
 	}
 
 	public void addContribuableEnErreur(long noContribuable, String message) {
-		contribuablesEnErreur.add(new ContribuableInfo(noContribuable, message));
+		erreurs.add(new ErreurContribuable(noContribuable, message));
 	}
 
 	public void setInterrompu(boolean interrompu) {
@@ -166,19 +187,15 @@ public class MigrationDDImporterResults {
 		return lignesEnErreur;
 	}
 
-	public int getNbDemandesExtraites() {
-		return nbDemandesExtraites;
-	}
-
 	public int getNbDemandesTraitees() {
 		return nbDemandesTraitees;
 	}
 
 	/**
-	 * @return la liste des demandes de dégrèvement ignorées
+	 * @return la liste des lignes d'input ignorées
 	 */
-	public List<DemandeInfo> getDemandesIgnorees() {
-		return demandesIgnorees;
+	public List<Ignore> getDonneesIgnorees() {
+		return donneesIgnorees;
 	}
 
 	public boolean isInterrompu() {
@@ -193,12 +210,8 @@ public class MigrationDDImporterResults {
 		return endTime;
 	}
 
-	public List<DemandeInfo> getDemandesEnErreur() {
-		return demandesEnErreur;
-	}
-
-	public List<ContribuableInfo> getContribuablesEnErreur() {
-		return contribuablesEnErreur;
+	public List<Erreur> getErreurs() {
+		return erreurs;
 	}
 }
 

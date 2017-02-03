@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MigrationDDImporterITTest extends BusinessItTest {
 
@@ -80,14 +81,13 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		assertNotNull(results);
 		assertEmpty(results.getLignesEnErreur());
 		assertEquals(13, results.getNbLignes());
-		assertEquals(11, results.getNbDemandesExtraites()); // les demandes sur les tiers FEBEX et EGICA comptent deux lignes pour une demande.
 		assertEquals(10, results.getNbDemandesTraitees());  // la demande EGICA-2013 est ignorée car il existe une demande pour 2014
-		assertEmpty(results.getDemandesEnErreur());
+		assertEmpty(results.getErreurs());
 
-		final List<MigrationDDImporterResults.DemandeInfo> ignorees = results.getDemandesIgnorees();
+		final List<MigrationDDImporterResults.Ignore> ignorees = results.getDonneesIgnorees();
 		assertEquals(1, ignorees.size());
-		final MigrationDDImporterResults.DemandeInfo ignore0 = ignorees.get(0);
-		assertEquals("Une demande de dégrèvement plus récente (2014) existe dans l'export (cette demande = 2013).", ignore0.getMessage());
+		final MigrationDDImporterResults.Ignore ignore0 = ignorees.get(0);
+		assertTrue(ignore0.getMessage(), ignore0.getMessage().startsWith("Une donnée pour une PF plus récente (2014) est présente."));
 	}
 
 	@NotNull
