@@ -88,7 +88,7 @@
 				<label class="noprint" for="etiq-histo-cjt"><fmt:message key="label.historique" /></label>
 
 				<unireg:nextRowClass reset="1"/>
-				<display:table name="command.etiquettesConjoint" id="etiquette" htmlId="etiq-cjt" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+				<display:table name="command.etiquettesConjoint" id="etiquette" requestURI="/tiers/visu.do" htmlId="etiq-cjt" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
 					<display:column sortable="true" titleKey="label.libelle" sortProperty="libelle" style="width: 20%;">
 						<c:out value="${etiquette.libelle}"/>
 					</display:column>
