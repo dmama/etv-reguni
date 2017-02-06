@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.foncier.migration;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,9 +15,21 @@ import org.jetbrains.annotations.Nullable;
 public class MigrationParcelle {
 
 	/**
+	 * Les séparateurs peuvent être des tirets ou des slashes...
+	 */
+	private static final Pattern SEPARATORS = Pattern.compile("[-/]");
+
+	/**
 	 * Pour retrouver les cas "CFA" ou "CFAx" avec x un chiffre
 	 */
 	private static final Pattern CFA_PATTERN = Pattern.compile("CFA\\d?");
+
+	/**
+	 * Pour retrouver (et éliminer) les numéros de parcelle qui ressemblent à des dates
+	 */
+	private static final List<Pattern> DATE_PATTERNS = Arrays.asList(Pattern.compile("\\d{1,2}\\.(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)"),
+	                                                                 Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}"),
+	                                                                 Pattern.compile("(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)\\.\\d{2}"));
 
 	private int noParcelle;
 	@Nullable
@@ -33,24 +47,17 @@ public class MigrationParcelle {
 
 		// [SIFISC-23187] les mentions CFA et CFA2 doivent être ignorées...
 
-		if (StringUtils.isBlank(parcelle)) {
+		if (StringUtils.isBlank(parcelle) || isPeutEtreDate(parcelle)) {
 			// si le numéro de parcelle est renseigné, c'est toujours lui qui prime sur le numéro de base
+			// [SIFISC-23189] sauf s'il ressemble à une date...
 			parcelle = baseParcelle;
 		}
-		if (parcelle.contains("-")) {
-			// le numéro de parcelle contient les indexes des lots PPE, on les parse
-			final String[] tokens = parcelle.split("-");
-			noParcelle = Integer.parseInt(tokens[0]);
-			index1 = parseIndex1(tokens[1]);
-			index2 = tokens.length > 2 ? Integer.parseInt(tokens[2]) : null;
-			index3 = tokens.length > 3 ? Integer.parseInt(tokens[3]) : null;
-		}
-		else {
-			noParcelle = Integer.parseInt(parcelle);
-			index1 = null;
-			index2 = null;
-			index3 = null;
-		}
+
+		final String[] tokens = SEPARATORS.split(parcelle);
+		noParcelle = Integer.parseInt(tokens[0]);
+		index1 = tokens.length > 1 ? parseIndex1(tokens[1]) : null;
+		index2 = tokens.length > 2 ? Integer.parseInt(tokens[2]) : null;
+		index3 = tokens.length > 3 ? Integer.parseInt(tokens[3]) : null;
 	}
 
 	@Nullable
@@ -60,6 +67,12 @@ public class MigrationParcelle {
 			return null;
 		}
 		return Integer.parseInt(value);
+	}
+
+	private static boolean isPeutEtreDate(String value) {
+		return DATE_PATTERNS.stream()
+				.map(pattern -> pattern.matcher(value))
+				.anyMatch(Matcher::matches);
 	}
 
 	public int getNoParcelle() {
