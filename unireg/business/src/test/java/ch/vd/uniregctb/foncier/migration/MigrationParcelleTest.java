@@ -38,6 +38,14 @@ public class MigrationParcelleTest {
 		assertEquals("123/34/4/1", new MigrationParcelle("123-34-4-1", null, null).toString());
 	}
 
+	@Test
+	public void testCFA() throws Exception {
+		assertParcelle(3019, null, null, null, new MigrationParcelle("3019-CFA", null, null));
+		assertParcelle(3019, null, null, null, new MigrationParcelle("4545", "3019-CFA", null));
+		assertParcelle(971, null, null, null, new MigrationParcelle("971-CFA2", null, null));
+		assertParcelle(971, null, null, null, new MigrationParcelle("8451", "971-CFA2", null));
+	}
+
 	private void assertParcelle(int noParcelle, Integer index1, Integer index2, Integer index3, MigrationParcelle parcelle) {
 		assertEquals(noParcelle, parcelle.getNoParcelle());
 		assertEquals(index1, parcelle.getIndex1());
