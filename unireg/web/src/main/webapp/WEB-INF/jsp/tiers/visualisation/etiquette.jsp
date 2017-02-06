@@ -35,7 +35,7 @@
 			<label class="noprint" for="etiq-histo-prn"><fmt:message key="label.historique" /></label>
 
 			<unireg:nextRowClass reset="1"/>
-			<display:table name="command.etiquettes" id="etiquette" htmlId="etiq-prn" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+			<display:table name="command.etiquettes" id="etiquette" requestURI="/tiers/visu.do" htmlId="etiq-prn" sort="list" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
 				<display:column sortable="true" titleKey="label.libelle" sortProperty="libelle" style="width: 20%;">
 					<c:out value="${etiquette.libelle}"/>
 				</display:column>
