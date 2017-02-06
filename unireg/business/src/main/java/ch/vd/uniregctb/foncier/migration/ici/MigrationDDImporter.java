@@ -44,6 +44,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
 import ch.vd.uniregctb.foncier.migration.MigrationKey;
@@ -345,7 +346,7 @@ public class MigrationDDImporter {
 		data.setImmeuble(immeuble);
 		data.setLocation(extractDonneesUtilisation(usages.get(TypeUsage.LOUE_TIERS)));
 		data.setPropreUsage(extractDonneesUtilisation(usages.get(TypeUsage.USAGE_PROPRE)));
-		data.setLoiLogement(null);           // TODO comment migrer ça ?
+		data.setLoiLogement(extractDonneesLoiLogement(usages.get(TypeUsage.CARACTERE_SOCIAL)));
 		if (data.getPropreUsage() != null || data.getLocation() != null || data.getLoiLogement() != null) {
 			data.setDateDebut(RegDate.get(degrevement.getValue().getPeriodeFiscale(), 1, 1));
 			return data;
@@ -359,6 +360,14 @@ public class MigrationDDImporter {
 		}
 		final BigDecimal pourcentage = BigDecimal.valueOf(usage.getPourdixmilleUsage(), 2);     // pour-dix-mille -> pour-cent
 		return new DonneesUtilisation(usage.getRevenuLocation(), usage.getVolume(), usage.getSurface(), pourcentage, pourcentage);
+	}
+
+	private static DonneesLoiLogement extractDonneesLoiLogement(MigrationDDUsage usage) {
+		if (usage == null) {
+			return null;
+		}
+		final BigDecimal pourcentage = BigDecimal.valueOf(usage.getPourdixmilleUsage(), 2);     // pour-dix-mille -> pour-cent
+		return new DonneesLoiLogement(null, null, pourcentage);
 	}
 
 	@NotNull
