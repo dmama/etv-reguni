@@ -120,13 +120,15 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("MESSAGE").append(COMMA);
-					b.append("LIEN_CTB_IMMEUBLE");
+					b.append("LIEN_CTB_IMMEUBLE").append(COMMA);
+					b.append("CONTEXTE");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.Ignore elt) {
 					b.append(CsvHelper.asCsvField(elt.getMessage())).append(COMMA);
-					b.append(elt.getKey().toString());
+					b.append(elt.getKey().toString()).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.getContexte()));
 					return true;
 				}
 			});
@@ -140,11 +142,13 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("CONTEXTE").append(COMMA);
 					b.append("MESSAGE");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.Erreur elt) {
+					b.append(CsvHelper.escapeChars(elt.getContexte())).append(COMMA);
 					b.append(CsvHelper.asCsvField(elt.getMessage()));
 					return true;
 				}
