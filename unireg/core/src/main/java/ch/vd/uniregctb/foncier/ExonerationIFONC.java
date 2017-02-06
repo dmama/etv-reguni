@@ -24,7 +24,7 @@ public class ExonerationIFONC extends AllegementFoncier {
 		return TypeImpot.IFONC;
 	}
 
-	@Column(name = "IFONC_POURCENT_ALLGT", precision = 5, scale = 2)
+	@Column(name = "IFONC_POURCENT_EXO", precision = 5, scale = 2)
 	public BigDecimal getPourcentageExoneration() {
 		return pourcentageExoneration;
 	}
