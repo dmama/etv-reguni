@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.documentfiscal;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,22 +33,25 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 
 public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDemandeDegrevementICIHelper {
 
 	private static final String CODE_DOCUMENT_DEMANDE_DEGREVEMENT_ICI = TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentEditique().substring(0, 4);
+
+	/**
+	 * Le champ "nature" doit être limité à 100 caractères en longueur
+	 */
+	private static final int NATURE_SIZE_LIMIT = 100;
 
 	private RegistreFoncierService registreFoncierService;
 
@@ -120,20 +123,16 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 	}
 
 	private static String getNatureImmeuble(ImmeubleRF immeuble, RegDate dateReference) {
-		return StringUtils.trimToNull(immeuble.getImplantations().stream()
-				                              .filter(AnnulableHelper::nonAnnule)
-				                              .filter(impl -> impl.isValidAt(dateReference))      // immeuble -> implantations valides non-annulées
-				                              .map(ImplantationRF::getBatiment)
-				                              .filter(AnnulableHelper::nonAnnule)                 // implantation -> bâtiment non-annulé
-				                              .map(BatimentRF::getDescriptions)
-				                              .flatMap(Set::stream)
-				                              .filter(AnnulableHelper::nonAnnule)
-				                              .filter(desc -> desc.isValidAt(dateReference))      // bâtiment -> descriptions valides non-annulées
-				                              .map(DescriptionBatimentRF::getType)
-				                              .map(StringUtils::trimToNull)
-				                              .filter(Objects::nonNull)
-				                              .distinct()                                          // ça ne sert à rien de répéter plusieurs fois la même chose...
-				                              .collect(Collectors.joining(" / ")));       // descriptions -> types, séparés par des slashes
+		return StringUtils.trimToNull(StringUtils.abbreviate(immeuble.getSurfacesAuSol().stream()
+				                                                     .filter(AnnulableHelper::nonAnnule)
+				                                                     .filter(ss -> ss.isValidAt(dateReference))        // immeuble -> surfaces au sol valides non-annulés
+				                                                     .sorted(Comparator.comparingInt(SurfaceAuSolRF::getSurface).reversed())
+				                                                     .map(SurfaceAuSolRF::getType)
+				                                                     .map(StringUtils::trimToNull)
+				                                                     .filter(Objects::nonNull)                         // surface au sol -> type
+				                                                     .distinct()                                       // ça ne sert à rien de répêter plusieurs fois la même chose
+				                                                     .collect(Collectors.joining(" / ")),     // types séparés par des slashes
+		                                                     NATURE_SIZE_LIMIT));
 	}
 
 	private String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {
