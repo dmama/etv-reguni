@@ -15,3 +15,8 @@ WHERE ANNULATION_DATE IS NULL
 -- SIFISC-23112 ajout d'une nouvelle colonne dans les dégrèvements à caractère social pour le pourcentage
 --
 ALTER TABLE ALLEGEMENT_FONCIER ADD DEG_LL_CARAC_SOCIAL_POURCENT NUMBER(5,2);
+
+--
+-- Correction du nom de la colonne pour coller à la dénomination de l'objet métier (il s'agit d'une exonération IFONC, pas d'un allègement IFONC)
+--
+ALTER TABLE ALLEGEMENT_FONCIER RENAME COLUMN IFONC_POURCENT_ALLGT TO IFONC_POURCENT_EXO;
