@@ -40,7 +40,14 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 	 * (l'idée est que pour un type d'impôt donnée, il ne doit pas y avoir de recouvrement sur un immeuble donné)
 	 */
 	public enum TypeImpot {
+		/**
+		 * Impôt foncier
+		 */
 		IFONC,
+
+		/**
+		 * Impôt complémentaire sur immeuble
+		 */
 		ICI
 	}
 

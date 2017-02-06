@@ -60,7 +60,8 @@ public class DegrevementICI extends AllegementFoncier {
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "dateOctroi", column = @Column(name = "DEG_LL_OCTROI")),
-			@AttributeOverride(name = "dateEcheance", column = @Column(name = "DEG_LL_ECHEANCE"))
+			@AttributeOverride(name = "dateEcheance", column = @Column(name = "DEG_LL_ECHEANCE")),
+			@AttributeOverride(name = "pourcentageCaractereSocial", column = @Column(name = "DEG_LL_CARAC_SOCIAL_POURCENT", precision = 5, scale = 2))
 	})
 	public DonneesLoiLogement getLoiLogement() {
 		return loiLogement;
