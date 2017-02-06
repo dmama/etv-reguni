@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.foncier.migration;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +11,11 @@ import org.jetbrains.annotations.Nullable;
  * Identifie le numéro de parcelle (+ les indexes en cas de PPE) d'un immeuble issu de SIMPA-PM.
  */
 public class MigrationParcelle {
+
+	/**
+	 * Pour retrouver les cas "CFA" ou "CFAx" avec x un chiffre
+	 */
+	private static final Pattern CFA_PATTERN = Pattern.compile("CFA\\d?");
 
 	private int noParcelle;
 	@Nullable
@@ -23,6 +31,8 @@ public class MigrationParcelle {
 		// - si le numéro de parcelle n'est pas vide, il est pris tel quel (sans indexes)
 		// - le numéro de lot PPE n'est donc jamais utilisé !
 
+		// [SIFISC-23187] les mentions CFA et CFA2 doivent être ignorées...
+
 		if (StringUtils.isBlank(parcelle)) {
 			// si le numéro de parcelle est renseigné, c'est toujours lui qui prime sur le numéro de base
 			parcelle = baseParcelle;
@@ -31,7 +41,7 @@ public class MigrationParcelle {
 			// le numéro de parcelle contient les indexes des lots PPE, on les parse
 			final String[] tokens = parcelle.split("-");
 			noParcelle = Integer.parseInt(tokens[0]);
-			index1 = Integer.parseInt(tokens[1]);
+			index1 = parseIndex1(tokens[1]);
 			index2 = tokens.length > 2 ? Integer.parseInt(tokens[2]) : null;
 			index3 = tokens.length > 3 ? Integer.parseInt(tokens[3]) : null;
 		}
@@ -41,6 +51,15 @@ public class MigrationParcelle {
 			index2 = null;
 			index3 = null;
 		}
+	}
+
+	@Nullable
+	private static Integer parseIndex1(String value) {
+		final Matcher matcher = CFA_PATTERN.matcher(value);
+		if (matcher.matches()) {
+			return null;
+		}
+		return Integer.parseInt(value);
 	}
 
 	public int getNoParcelle() {
