@@ -67,6 +67,10 @@ public class MigrationDDImporterResults {
 		public String getMessage() {
 			return message;
 		}
+
+		public String getContexte() {
+			return null;
+		}
 	}
 
 	public static class LigneIgnoree extends Ignore {
@@ -78,8 +82,8 @@ public class MigrationDDImporterResults {
 		}
 
 		@Override
-		public String getMessage() {
-			return String.format("%s (%s)", super.getMessage(), dd);
+		public String getContexte() {
+			return dd.toString();
 		}
 	}
 
@@ -93,19 +97,23 @@ public class MigrationDDImporterResults {
 		public String getMessage() {
 			return message;
 		}
+
+		public String getContexte() {
+			return null;
+		}
 	}
 
-	public static final class ErreurDemande extends Erreur {
-		private final MigrationDD dd;
+	public static class ErreurDonnees extends Erreur {
+		private final MigrationDDKey key;
 
-		public ErreurDemande(MigrationDD dd, String message) {
+		public ErreurDonnees(MigrationDDKey key, String message) {
 			super(message);
-			this.dd = dd;
+			this.key = key;
 		}
 
 		@Override
-		public String getMessage() {
-			return String.format("%s (%s)", super.getMessage(), dd);
+		public String getContexte() {
+			return key.toString();
 		}
 	}
 
@@ -118,8 +126,8 @@ public class MigrationDDImporterResults {
 		}
 
 		@Override
-		public String getMessage() {
-			return String.format("%d : %s", noContribuable, super.getMessage());
+		public String getContexte() {
+			return String.format("Contribuable %d", noContribuable);
 		}
 	}
 
@@ -160,11 +168,7 @@ public class MigrationDDImporterResults {
 	}
 
 	public void addErreur(Map.Entry<MigrationDDKey, ValeurDegrevement> dd, String message) {
-		erreurs.add(new Erreur(String.format("%s (%s)", message, dd.getKey())));
-	}
-
-	public void addDemandeEnErreur(MigrationDD dd, String message) {
-		erreurs.add(new ErreurDemande(dd, message));
+		erreurs.add(new ErreurDonnees(dd.getKey(), message));
 	}
 
 	public void addContribuableEnErreur(long noContribuable, String message) {
