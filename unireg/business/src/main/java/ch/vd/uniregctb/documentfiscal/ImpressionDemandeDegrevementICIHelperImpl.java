@@ -3,6 +3,7 @@ package ch.vd.uniregctb.documentfiscal;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -115,24 +116,43 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		return type;
 	}
 
-	private static String getTypeImmeuble(ImmeubleRF immeuble) {
+	static String getTypeImmeuble(ImmeubleRF immeuble) {
 		return Optional.of(immeuble)
 				.map(Object::getClass)
 				.map(TYPES_IMMEUBLE::get)
 				.orElse(null);
 	}
 
-	private static String getNatureImmeuble(ImmeubleRF immeuble, RegDate dateReference) {
-		return StringUtils.trimToNull(StringUtils.abbreviate(immeuble.getSurfacesAuSol().stream()
-				                                                     .filter(AnnulableHelper::nonAnnule)
-				                                                     .filter(ss -> ss.isValidAt(dateReference))        // immeuble -> surfaces au sol valides non-annulés
-				                                                     .sorted(Comparator.comparingInt(SurfaceAuSolRF::getSurface).reversed())
-				                                                     .map(SurfaceAuSolRF::getType)
-				                                                     .map(StringUtils::trimToNull)
-				                                                     .filter(Objects::nonNull)                         // surface au sol -> type
-				                                                     .distinct()                                       // ça ne sert à rien de répêter plusieurs fois la même chose
-				                                                     .collect(Collectors.joining(" / ")),     // types séparés par des slashes
-		                                                     NATURE_SIZE_LIMIT));
+	static String getNatureImmeuble(ImmeubleRF immeuble, RegDate dateReference) {
+		final List<String> composantesNature = immeuble.getSurfacesAuSol().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ss -> ss.isValidAt(dateReference))        // immeuble -> surfaces au sol valides non-annulés
+				.sorted(Comparator.comparingInt(SurfaceAuSolRF::getSurface).reversed())
+				.map(SurfaceAuSolRF::getType)
+				.map(StringUtils::trimToNull)
+				.filter(Objects::nonNull)                         // surface au sol -> type
+				.distinct()                                       // ça ne sert à rien de répêter plusieurs fois la même chose
+				.collect(Collectors.toList());
+
+		if (composantesNature.isEmpty()) {
+			return null;
+		}
+
+		// [SIFISC-23178] on prend des composantes entières (sauf si la première est déjà trop grande)
+		while (true) {
+			final String nature = composantesNature.stream().collect(Collectors.joining(" / "));
+			if (nature.length() <= NATURE_SIZE_LIMIT) {
+				return nature;
+			}
+
+			if (composantesNature.size() == 1) {
+				// un seul élément trop grand... abréviation
+				return StringUtils.abbreviate(nature, NATURE_SIZE_LIMIT);
+			}
+
+			// on enlève un élément et on ré-essaie
+			composantesNature.remove(composantesNature.size() - 1);
+		}
 	}
 
 	private String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {
