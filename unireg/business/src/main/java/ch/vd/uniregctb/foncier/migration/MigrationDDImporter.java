@@ -406,6 +406,11 @@ public class MigrationDDImporter {
 					}
 				}
 			}
+			else if (commune.getDateFinValidite() != null) {
+				// [SIFISC-23184] cette commune a disparu (= fusion)... pas étonnant qu'on ne trouve plus rien dans les données RF...
+				// les données que nous avons ne sont donc vraissemblablement plus valide (renumérotation des parcelles lors de la fusion...)
+				throw new ObjectNotFoundException("La commune de " + key.nomCommune + " (" + + commune.getNoOFS() + ") a fusionné (fiscalement) au " + RegDateHelper.dateToDisplayString(commune.getDateFinValidite()) + ".");
+			}
 
 			// pas mieux, on laisse passer...
 			throw new IllegalArgumentException("L'immeuble avec la parcelle [" + parcelle + "] n'existe pas sur la commune de " + commune.getNomOfficiel() + " (" + commune.getNoOFS() + ").");
