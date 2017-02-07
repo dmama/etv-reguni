@@ -17,7 +17,7 @@ public class MigrationParcelle {
 	/**
 	 * Les séparateurs peuvent être des tirets ou des slashes...
 	 */
-	private static final Pattern SEPARATORS = Pattern.compile("[-/]");
+	private static final Pattern SEPARATORS = Pattern.compile("[-]");
 
 	/**
 	 * Pour retrouver les cas "CFA" ou "CFAx" avec x un chiffre
