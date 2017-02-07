@@ -38,6 +38,7 @@ import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
+import ch.vd.uniregctb.foncier.migration.ImmeubleNotFoundException;
 import ch.vd.uniregctb.foncier.migration.MigrationParcelle;
 import ch.vd.uniregctb.foncier.migration.ParsingHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -290,7 +291,30 @@ public class MigrationExoIFONCImporter {
 			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
 		}
 
-		return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, commune, parcelle);
+		try {
+			return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, commune, parcelle);
+		}
+		catch (ImmeubleNotFoundException e) {
+			// [SIFISC-23185] peut-être que l'immeuble n'est connu que sur la commune faîtière dans le RF...
+			if (commune.isFraction()) {
+				final Commune communeFaitiere = mapCommunes.values().stream()
+						.filter(Commune::isPrincipale)
+						.filter(c -> c.getNoOFS() == commune.getOfsCommuneMere())
+						.findFirst()
+						.orElse(null);
+				if (communeFaitiere != null) {
+					try {
+						return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, communeFaitiere, parcelle);
+					}
+					catch (ImmeubleNotFoundException ex) {
+						// pas trouvé non plus... on laisse passer et on renvoie l'exception initiale
+					}
+				}
+			}
+
+			// pas mieux, on laisse passer...
+			throw e;
+		}
 	}
 
 	private static String canonizeName(String name) {
