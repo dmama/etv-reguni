@@ -49,13 +49,13 @@
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.imports.trouves"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.imports.trouves"/></span></display:setProperty>
 
-				<display:column titleKey="label.id.event.rf" sortable="true" sortProperty="id" class="import-id" >
+				<display:column titleKey="label.id.event.rf" sortable="true" sortName="id" class="import-id" >
 					<unireg:linkTo action="/registrefoncier/import/show.do" name="${importEvent.id}" params="{'importId' : ${importEvent.id}}"/>
 				</display:column>
-				<display:column titleKey="label.date.valeur.import" sortable="true" sortProperty="dateEvenement">
+				<display:column titleKey="label.date.valeur.import" sortable="true" sortName="dateEvenement">
 					<unireg:regdate regdate="${importEvent.dateEvenement}"/>
 				</display:column>
-				<display:column titleKey="label.etat.event.rf" sortable="true" sortProperty="etat" class="import-etat">
+				<display:column titleKey="label.etat.event.rf" sortable="true" sortName="etat" class="import-etat">
 					<span class="raw-value" style="display: none">${importEvent.etat}</span>
 					<fmt:message key="option.rf.etat.evenement.${importEvent.etat}" />
 				</display:column>
