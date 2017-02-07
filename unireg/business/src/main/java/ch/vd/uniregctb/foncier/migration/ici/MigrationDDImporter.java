@@ -407,6 +407,11 @@ public class MigrationDDImporter {
 					}
 				}
 			}
+			else if (commune.getDateFinValidite() != null) {
+				// cette commune a disparu (= fusion)... pas étonnant qu'on ne trouve plus rien dans les données RF...
+				// les données que nous avons ne sont donc vraissemblablement plus valide (renumérotation des parcelles lors de la fusion...)
+				throw new ObjectNotFoundException("La commune de " + key.nomCommune + " (" + commune.getNoOFS() + ") a fusionné (fiscalement) au " + RegDateHelper.dateToDisplayString(commune.getDateFinValidite()) + ".");
+			}
 
 			// pas mieux, on laisse passer...
 			throw e;

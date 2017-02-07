@@ -27,6 +27,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -35,6 +36,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
@@ -310,6 +312,11 @@ public class MigrationExoIFONCImporter {
 						// pas trouvé non plus... on laisse passer et on renvoie l'exception initiale
 					}
 				}
+			}
+			else if (commune.getDateFinValidite() != null) {
+				// cette commune a disparu (= fusion)... pas étonnant qu'on ne trouve plus rien dans les données RF...
+				// les données que nous avons ne sont donc vraissemblablement plus valide (renumérotation des parcelles lors de la fusion...)
+				throw new ObjectNotFoundException("La commune de " + demande.getNomCommune() + " (" + commune.getNoOFS() + ") a fusionné (fiscalement) au " + RegDateHelper.dateToDisplayString(commune.getDateFinValidite()) + ".");
 			}
 
 			// pas mieux, on laisse passer...
