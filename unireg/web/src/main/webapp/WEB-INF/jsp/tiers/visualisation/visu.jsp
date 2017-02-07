@@ -159,14 +159,6 @@
 					</c:if>
 				</unireg:ifEfacture>
 
-				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
-					<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
-						<li id="immeublesTab">
-							<a href="#tabContent_immeublesTab"><span><fmt:message key="label.immeubles" /></span></a>
-						</li>
-					</authz:authorize>
-				</c:if>
-
 				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 						<li id="etiquetteTab">
@@ -255,14 +247,6 @@
 							<jsp:include page="pm/etats.jsp"/>
 						</div>
 					</c:if>
-				</authz:authorize>
-			</c:if>
-
-			<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
-				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
-					<div id="tabContent_immeublesTab" class="visuTiers">
-						<jsp:include page="immeubles.jsp"/>
-					</div>
 				</authz:authorize>
 			</c:if>
 
