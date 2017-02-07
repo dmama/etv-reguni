@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.foncier.migration;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,13 +22,6 @@ public class MigrationParcelle {
 	 */
 	private static final Pattern CFA_PATTERN = Pattern.compile("CFA\\d?");
 
-	/**
-	 * Pour retrouver (et éliminer) les numéros de parcelle qui ressemblent à des dates
-	 */
-	private static final List<Pattern> DATE_PATTERNS = Arrays.asList(Pattern.compile("\\d{1,2}\\.(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)"),
-	                                                                 Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}"),
-	                                                                 Pattern.compile("(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)\\.\\d{2}"));
-
 	private int noParcelle;
 	@Nullable
 	private Integer index1;
@@ -47,9 +38,8 @@ public class MigrationParcelle {
 
 		// [SIFISC-23187] les mentions CFA et CFA2 doivent être ignorées...
 
-		if (StringUtils.isBlank(parcelle) || isPeutEtreDate(parcelle)) {
+		if (StringUtils.isBlank(parcelle)) {
 			// si le numéro de parcelle est renseigné, c'est toujours lui qui prime sur le numéro de base
-			// [SIFISC-23189] sauf s'il ressemble à une date...
 			parcelle = baseParcelle;
 		}
 
@@ -67,12 +57,6 @@ public class MigrationParcelle {
 			return null;
 		}
 		return Integer.parseInt(value);
-	}
-
-	private static boolean isPeutEtreDate(String value) {
-		return DATE_PATTERNS.stream()
-				.map(pattern -> pattern.matcher(value))
-				.anyMatch(Matcher::matches);
 	}
 
 	public int getNoParcelle() {

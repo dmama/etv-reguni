@@ -46,13 +46,6 @@ public class MigrationParcelleTest {
 	}
 
 	@Test
-	public void testNumeroParcelleRessembleADate() throws Exception {
-		assertParcelle(4871, 4, null, null, new MigrationParcelle("4871-4", "11.22.3333", null));
-		assertParcelle(4871, 3, null, null, new MigrationParcelle("4871-3", "11.mai", null));
-		assertParcelle(48743, 2, null, null, new MigrationParcelle("48743-2", "févr.15", null));
-	}
-
-	@Test
 	public void testSlashNonInterprete() throws Exception {
 		try {
 			new MigrationParcelle("513/1", null, null);
