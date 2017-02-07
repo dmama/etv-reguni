@@ -16,8 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -211,9 +213,13 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
 			final TiersRF tiersRF = (TiersRF) ayantDroit;
 			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
-			final List<Object> list = tiersRF.getRapprochements().stream()
-					.map(RapprochementRF::getContribuable)
-					.collect(Collectors.toList());
+			final List<Object> list = new ArrayList<>();
+			list.addAll(Optional.of(tiersRF)
+					            .map(TiersRF::getRapprochements) // la collection peut être nulle si l'entité vient juste d'être créée
+					            .map(r -> r.stream()
+							            .map(RapprochementRF::getContribuable)
+							            .collect(Collectors.toList()))
+					            .orElseGet(Collections::emptyList));
 			// on ajoute l'immeuble, évidemment
 			list.add(immeuble);
 			return list;
