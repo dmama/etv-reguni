@@ -391,6 +391,23 @@ public class MigrationDDImporter {
 
 		final ImmeubleRF immeuble = immeubleRFDAO.findImmeubleActif(commune.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3(), FlushMode.MANUAL);
 		if (immeuble == null) {
+			// [SIFISC-23185] peut-être que l'immeuble n'est connu que sur la commune faîtière dans le RF...
+			if (commune.isFraction()) {
+				final Commune communeFaitiere = mapCommunes.values().stream()
+						.filter(Commune::isPrincipale)
+						.filter(c -> c.getNoOFS() == commune.getOfsCommuneMere())
+						.findFirst()
+						.orElse(null);
+				if (communeFaitiere != null) {
+					final ImmeubleRF immeubleCommuneFaitiere = immeubleRFDAO.findImmeubleActif(communeFaitiere.getNoOFS(), parcelle.getNoParcelle(), parcelle.getIndex1(), parcelle.getIndex2(), parcelle.getIndex3(), FlushMode.MANUAL);
+					if (immeubleCommuneFaitiere != null) {
+						// ah, on a trouvé quelque chose... on prend ça
+						return immeubleCommuneFaitiere;
+					}
+				}
+			}
+
+			// pas mieux, on laisse passer...
 			throw new IllegalArgumentException("L'immeuble avec la parcelle [" + parcelle + "] n'existe pas sur la commune de " + commune.getNomOfficiel() + " (" + commune.getNoOFS() + ").");
 		}
 

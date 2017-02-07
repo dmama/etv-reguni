@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class MigrationParcelle {
 
 	/**
-	 * Les séparateurs peuvent être des tirets ou des slashes...
+	 * Les séparateurs peuvent être des tirets...
 	 */
 	private static final Pattern SEPARATORS = Pattern.compile("[-]");
 
