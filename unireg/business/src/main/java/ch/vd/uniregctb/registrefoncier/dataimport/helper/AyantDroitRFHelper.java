@@ -175,7 +175,7 @@ public abstract class AyantDroitRFHelper {
 				final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
 				coll.setIdRF(juri.getPersonstammID());
 				coll.setNoRF(juri.getNoRF());
-				coll.setNoContribuable(juri.getNrACI());
+				coll.setNoContribuable(getNoContribuable(juri));
 				coll.setRaisonSociale(juri.getName());
 				ayantDroitRF = coll;
 			}
@@ -183,7 +183,7 @@ public abstract class AyantDroitRFHelper {
 				final PersonneMoraleRF pm = new PersonneMoraleRF();
 				pm.setIdRF(juri.getPersonstammID());
 				pm.setNoRF(juri.getNoRF());
-				pm.setNoContribuable(juri.getNrACI());
+				pm.setNoContribuable(getNoContribuable(juri));
 				pm.setRaisonSociale(juri.getName());
 				pm.setNumeroRC(juri.getFirmenNr());
 				ayantDroitRF = pm;

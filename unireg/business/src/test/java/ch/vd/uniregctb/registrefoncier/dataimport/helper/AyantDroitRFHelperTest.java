@@ -234,6 +234,26 @@ public class AyantDroitRFHelperTest {
 		assertEquals("Raison sociale", pp.getRaisonSociale());
 	}
 
+	/**
+	 * [SIFISC-23205] Vérifie que les numéros de contribuables égals à 0 sont considérés comme nuls.
+	 */
+	@Test
+	public void testNewAyantDroitPMWithNrACIZero() throws Exception {
+
+		final JuristischePersonstamm juristische = new JuristischePersonstamm();
+		juristische.setPersonstammID("48349384890202");
+		juristische.setNoRF(3727L);
+		juristische.setNrACI(0L);
+		juristische.setName("Raison sociale");
+		juristische.setUnterart(JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
+
+		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		assertEquals("48349384890202", pp.getIdRF());
+		assertEquals(3727L, pp.getNoRF());
+		assertNull(pp.getNoContribuable());
+		assertEquals("Raison sociale", pp.getRaisonSociale());
+	}
+
 	@Test
 	public void testNewAyantDroitColl() throws Exception {
 
@@ -248,6 +268,26 @@ public class AyantDroitRFHelperTest {
 		assertEquals("574739202303482", coll.getIdRF());
 		assertEquals(3727L, coll.getNoRF());
 		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
+		assertEquals("Raison sociale", coll.getRaisonSociale());
+	}
+
+	/**
+	 * [SIFISC-23205] Vérifie que les numéros de contribuables égals à 0 sont considérés comme nuls.
+	 */
+	@Test
+	public void testNewAyantDroitCollWithNrACIZero() throws Exception {
+
+		final JuristischePersonstamm juristische = new JuristischePersonstamm();
+		juristische.setPersonstammID("574739202303482");
+		juristische.setNoRF(3727L);
+		juristische.setNrACI(0L);
+		juristische.setName("Raison sociale");
+		juristische.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
+
+		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		assertEquals("574739202303482", coll.getIdRF());
+		assertEquals(3727L, coll.getNoRF());
+		assertNull(coll.getNoContribuable());
 		assertEquals("Raison sociale", coll.getRaisonSociale());
 	}
 
