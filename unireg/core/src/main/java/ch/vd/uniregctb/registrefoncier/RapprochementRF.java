@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
@@ -134,17 +135,23 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 
 		// on expose les numéros de contribubales à travers les communautés : si le rapprochement change,
 		// toutes les communautés liées doivent être invalidées.
-		final List<CommunauteRF> communautes = tiersRF.getDroits().stream()
-				.filter(d -> d instanceof DroitProprietePersonneRF)
-				.map(d -> ((DroitProprietePersonneRF) d).getCommunaute())
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+		final List<CommunauteRF> communautes = Optional.of(tiersRF)
+				.map(AyantDroitRF::getDroits)   // la collection peut être nulle si l'entité vient juste d'être créée
+				.map(l -> l.stream()
+						.filter(d -> d instanceof DroitProprietePersonneRF)
+						.map(d -> ((DroitProprietePersonneRF) d).getCommunaute())
+						.filter(Objects::nonNull)
+						.collect(Collectors.toList()))
+				.orElseGet(Collections::emptyList);
 
 		// on expose les numéros de contribuables à travers les propriétaies des droits exposés sur les immeubles : si le rapprochement change,
 		// tous les droits exposés sur les immeubles liés doivent être invalidés.
-		final List<ImmeubleRF> immeubles = tiersRF.getDroits().stream()
-				.map(DroitRF::getImmeuble)
-				.collect(Collectors.toList());
+		final List<ImmeubleRF> immeubles = Optional.of(tiersRF)
+				.map(AyantDroitRF::getDroits) // la collection peut être nulle si l'entité vient juste d'être créée
+				.map(l -> l.stream()
+						.map(DroitRF::getImmeuble)
+						.collect(Collectors.toList()))
+				.orElseGet(Collections::emptyList);
 
 		final List<Object> entities = new ArrayList<>(communautes.size() + immeubles.size() + 1);
 		entities.addAll(communautes);
