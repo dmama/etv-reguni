@@ -63,6 +63,7 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalViewFactory;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.evenement.ide.ServiceIDEService;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -695,6 +696,12 @@ public class TiersManager implements MessageSourceAware {
 			final List<AutreDocumentFiscalView> avecSuiviViews = new ArrayList<>(autresDocuments.size());
 			final List<AutreDocumentFiscalView> sansSuiviViews = new ArrayList<>(autresDocuments.size());
 			for (AutreDocumentFiscal document : autresDocuments) {
+
+				// TODO pour le moment, on n'affiche pas les demandes de dégrèvement... on verra ça en 17R2
+				if (document instanceof DemandeDegrevementICI) {
+					continue;
+				}
+
 				final AutreDocumentFiscalView view = AutreDocumentFiscalViewFactory.buildView(document, messageSource);
 				if (document instanceof AutreDocumentFiscalAvecSuivi) {
 					avecSuiviViews.add(view);
