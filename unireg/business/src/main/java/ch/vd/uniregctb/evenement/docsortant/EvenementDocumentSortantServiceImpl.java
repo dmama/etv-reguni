@@ -317,7 +317,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI,
 		                       dd.getEntreprise(),
 		                       local,
-		                       dd.getDateEnvoi().year(),                // date de l'envoi du courrier initial
+		                       dd.getPeriodeFiscale(),
 		                       null,
 		                       infoArchivage);
 	}
@@ -328,7 +328,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT_ICI,
 		                       dd.getEntreprise(),
 		                       local,
-		                       dd.getDateEnvoi().year(),                // date de l'envoi du courrier initial
+		                       dd.getPeriodeFiscale(),
 		                       null,
 		                       infoArchivage);
 	}
