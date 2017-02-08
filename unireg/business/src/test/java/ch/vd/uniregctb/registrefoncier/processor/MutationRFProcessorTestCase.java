@@ -72,6 +72,17 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 		});
 	}
 
+	protected Long insertCommunaute(String idRF) throws Exception {
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				CommunauteRF c = new CommunauteRF();
+				c.setIdRF(idRF);
+				return ayantDroitRFDAO.save(c).getId();
+			}
+		});
+	}
+
 	protected Long insertImmeuble(@NotNull String idImmeubleRF) throws Exception {
 		return doInNewTransaction(new TxCallback<Long>() {
 			@Override

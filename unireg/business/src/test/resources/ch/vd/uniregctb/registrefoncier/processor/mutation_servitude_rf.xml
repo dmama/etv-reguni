@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DienstbarkeitDiscreteList xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister">
+	<DienstbarkeitDiscretes>
+		<Dienstbarkeit VersionID="1f1091523810375901381044fa833524" MasterID="1f1091523810375901381044fa823515">
+			<StandardRechtID>_1f1091523810375901381044fa823515</StandardRechtID>
+			<BeteiligtesGrundstueckIDREF>_1f109152381037590138103b6f6e3cfc</BeteiligtesGrundstueckIDREF>
+			<BeteiligtesGrundstueckIDREF>_1f109152381037590138103b6f6e3cfa</BeteiligtesGrundstueckIDREF>
+			<RechtEintragJahrID>2010</RechtEintragJahrID>
+			<RechtEintragNummerID>432</RechtEintragNummerID>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<AmtNummer>5</AmtNummer>
+			<Stichwort>
+				<TextDe>*Usufruit</TextDe>
+				<TextFr>Usufruit</TextFr>
+			</Stichwort>
+			<Rechtzusatz>conventionnel</Rechtzusatz>
+			<Beleg>
+				<AmtNummer>5</AmtNummer>
+				<BelegJahr>2010</BelegJahr>
+				<BelegNummer>731</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Beleg>
+			<BeginDatum>2010-03-08</BeginDatum>
+			<Entschaedigung>0</Entschaedigung>
+			<Wert>0</Wert>
+			<Meldungspflichtig>gem_code</Meldungspflichtig>
+			<Personenberechtigt>true</Personenberechtigt>
+			<Grundstueckeberechtigt>false</Grundstueckeberechtigt>
+			<EintragungAlsSdR>false</EintragungAlsSdR>
+		</Dienstbarkeit>
+		<BelastetesGrundstueck VersionID="1f1091523810375901381044fa873588">
+			<BelastetesGrundstueckIDREF>_1f109152381037590138103b6f6e3cfc</BelastetesGrundstueckIDREF>
+		</BelastetesGrundstueck>
+		<BerechtigtePerson VersionID="1f1091523810375901381044fa853567">
+			<NatuerlichePersonGb VersionID="1f109152381037590138103c13723dfd" MasterID="1f109152381037590138103c136d3dcb">
+				<Name>Porchet</Name>
+				<Status>definitiv</Status>
+				<Vorname>Jean-Jacques</Vorname>
+				<Geburtsdatum>
+					<Tag>2</Tag>
+					<Monat>10</Monat>
+					<Jahr>1921</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Julien</NameEltern>
+				<PersonstammIDREF>_1f1091523810375901381037f42e3142</PersonstammIDREF>
+			</NatuerlichePersonGb>
+		</BerechtigtePerson>
+		<Gemeinschaft VersionID="1f1091523810375901381044fa853567">
+			<NatuerlichePersonGb VersionID="1f109152381037590138103c13723dfd" MasterID="1f109152381037590138103c136d3dcb">
+				<Name>Porchet</Name>
+				<Status>definitiv</Status>
+				<Vorname>Jean-Jacques</Vorname>
+				<Geburtsdatum>
+					<Tag>2</Tag>
+					<Monat>10</Monat>
+					<Jahr>1921</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Julien</NameEltern>
+				<PersonstammIDREF>_1f1091523810375901381037f42e3142</PersonstammIDREF>
+			</NatuerlichePersonGb>
+		</Gemeinschaft>
+		<Gemeinschaft VersionID="1f1091523810375901381044fa853568">
+			<NatuerlichePersonGb VersionID="1f109152381037590138103c13723dff" MasterID="1f109152381037590138103c136d3dcd">
+				<Name>Porchet</Name>
+				<Status>definitiv</Status>
+				<Vorname>Jeanne</Vorname>
+				<Ledigname>Viret</Ledigname>
+				<Geburtsdatum>
+					<Tag>9</Tag>
+					<Monat>3</Monat>
+					<Jahr>1923</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Héli</NameEltern>
+				<NameEhegatte>Jean-Jacques</NameEhegatte>
+				<WeitereVornamen>Cécile</WeitereVornamen>
+				<PersonstammIDREF>_1f109152381037590138103835995c0d</PersonstammIDREF>
+			</NatuerlichePersonGb>
+		</Gemeinschaft>
+	</DienstbarkeitDiscretes>
+	<DienstbarkeitDiscretes>
+		<Dienstbarkeit VersionID="1f1091523810375901381044fa833524" MasterID="1f1091523810375901381044fa823515">
+			<StandardRechtID>_1f1091523810375901381044fa823515</StandardRechtID>
+			<BeteiligtesGrundstueckIDREF>_1f109152381037590138103b6f6e3cfc</BeteiligtesGrundstueckIDREF>
+			<BeteiligtesGrundstueckIDREF>_1f109152381037590138103b6f6e3cfa</BeteiligtesGrundstueckIDREF>
+			<RechtEintragJahrID>2010</RechtEintragJahrID>
+			<RechtEintragNummerID>432</RechtEintragNummerID>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<AmtNummer>5</AmtNummer>
+			<Stichwort>
+				<TextDe>*Usufruit</TextDe>
+				<TextFr>Usufruit</TextFr>
+			</Stichwort>
+			<Rechtzusatz>conventionnel</Rechtzusatz>
+			<Beleg>
+				<AmtNummer>5</AmtNummer>
+				<BelegJahr>2010</BelegJahr>
+				<BelegNummer>731</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Beleg>
+			<BeginDatum>2010-03-08</BeginDatum>
+			<Entschaedigung>0</Entschaedigung>
+			<Wert>0</Wert>
+			<Meldungspflichtig>gem_code</Meldungspflichtig>
+			<Personenberechtigt>true</Personenberechtigt>
+			<Grundstueckeberechtigt>false</Grundstueckeberechtigt>
+			<EintragungAlsSdR>false</EintragungAlsSdR>
+		</Dienstbarkeit>
+		<BelastetesGrundstueck VersionID="1f1091523810375901381044fa873589">
+			<BelastetesGrundstueckIDREF>_1f109152381037590138103b6f6e3cfa</BelastetesGrundstueckIDREF>
+		</BelastetesGrundstueck>
+		<BerechtigtePerson VersionID="1f1091523810375901381044fa853567">
+			<NatuerlichePersonGb VersionID="1f109152381037590138103c13723dfd" MasterID="1f109152381037590138103c136d3dcb">
+				<Name>Porchet</Name>
+				<Status>definitiv</Status>
+				<Vorname>Jean-Jacques</Vorname>
+				<Geburtsdatum>
+					<Tag>2</Tag>
+					<Monat>10</Monat>
+					<Jahr>1921</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Julien</NameEltern>
+				<PersonstammIDREF>_1f1091523810375901381037f42e3142</PersonstammIDREF>
+			</NatuerlichePersonGb>
+		</BerechtigtePerson>
+		<Gemeinschaft VersionID="1f1091523810375901381044fa853567">
+			<NatuerlichePersonGb VersionID="1f109152381037590138103c13723dfd" MasterID="1f109152381037590138103c136d3dcb">
+				<Name>Porchet</Name>
+				<Status>definitiv</Status>
+				<Vorname>Jean-Jacques</Vorname>
+				<Geburtsdatum>
+					<Tag>2</Tag>
+					<Monat>10</Monat>
+					<Jahr>1921</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Julien</NameEltern>
+				<PersonstammIDREF>_1f1091523810375901381037f42e3142</PersonstammIDREF>
+			</NatuerlichePersonGb>
+		</Gemeinschaft>
+		<Gemeinschaft VersionID="1f1091523810375901381044fa853568">
+			<NatuerlichePersonGb VersionID="1f109152381037590138103c13723dff" MasterID="1f109152381037590138103c136d3dcd">
+				<Name>Porchet</Name>
+				<Status>definitiv</Status>
+				<Vorname>Jeanne</Vorname>
+				<Ledigname>Viret</Ledigname>
+				<Geburtsdatum>
+					<Tag>9</Tag>
+					<Monat>3</Monat>
+					<Jahr>1923</Jahr>
+				</Geburtsdatum>
+				<Zivilstand>unbekannt</Zivilstand>
+				<NameEltern>Héli</NameEltern>
+				<NameEhegatte>Jean-Jacques</NameEhegatte>
+				<WeitereVornamen>Cécile</WeitereVornamen>
+				<PersonstammIDREF>_1f109152381037590138103835995c0d</PersonstammIDREF>
+			</NatuerlichePersonGb>
+		</Gemeinschaft>
+	</DienstbarkeitDiscretes>
+</DienstbarkeitDiscreteList>

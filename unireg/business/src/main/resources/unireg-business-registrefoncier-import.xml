@@ -86,6 +86,7 @@
 		<constructor-arg ref="immeubleRFProcessor"/>
 		<constructor-arg ref="ayantDroitRFProcessor"/>
 		<constructor-arg ref="droitRFProcessor"/>
+		<constructor-arg ref="servitudeRFProcessor"/>
 		<constructor-arg ref="surfaceAuSolRFProcessor"/>
 		<constructor-arg ref="batimentRFProcessor"/>
 		<constructor-arg ref="transactionManager"/>
@@ -109,6 +110,13 @@
 	</bean>
 
 	<bean id="droitRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor">
+		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="droitRFDAO"/>
+		<constructor-arg ref="xmlHelperRF"/>
+	</bean>
+
+	<bean id="servitudeRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor">
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="droitRFDAO"/>

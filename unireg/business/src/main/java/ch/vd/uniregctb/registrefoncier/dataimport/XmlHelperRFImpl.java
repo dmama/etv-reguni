@@ -23,6 +23,7 @@ import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.BodenbedeckungListElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.DienstbarkeitDiscreteListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.DienstbarkeitElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.FolioElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.GebaeudeElement;
@@ -67,7 +68,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
 		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
 		servitudeContext = JAXBContext.newInstance(DienstbarkeitElement.class);
-		servitudeListContext = JAXBContext.newInstance(DienstbarkeitDiscreteList.class);
+		servitudeListContext = JAXBContext.newInstance(DienstbarkeitDiscreteListElement.class);
 		beneficiaireServitudeContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
 	}
 
@@ -118,6 +119,11 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public JAXBContext getServitudeContext() {
 		return servitudeContext;
+	}
+
+	@Override
+	public JAXBContext getServitudeListContext() {
+		return servitudeListContext;
 	}
 
 	@Override

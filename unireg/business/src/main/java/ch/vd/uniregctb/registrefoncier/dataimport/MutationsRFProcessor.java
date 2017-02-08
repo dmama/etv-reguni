@@ -37,6 +37,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcesso
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.MutationRFProcessor;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ExceptionHelper;
@@ -55,6 +56,7 @@ public class MutationsRFProcessor {
 	private final MutationRFProcessor immeubleRFProcessor;
 	private final AyantDroitRFProcessor ayantDroitRFProcessor;
 	private final DroitRFProcessor droitRFProcessor;
+	private final ServitudeRFProcessor servitudeRFProcessor;
 	private final SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 	private final BatimentRFProcessor batimentRFProcessor;
 
@@ -64,6 +66,7 @@ public class MutationsRFProcessor {
 	                            @NotNull MutationRFProcessor immeubleRFProcessor,
 	                            @NotNull AyantDroitRFProcessor ayantDroitRFProcessor,
 	                            @NotNull DroitRFProcessor droitRFProcessor,
+	                            @NotNull ServitudeRFProcessor servitudeRFProcessor,
 	                            @NotNull SurfaceAuSolRFProcessor surfaceAuSolRFProcessor,
 	                            @NotNull BatimentRFProcessor batimentRFProcessor,
 	                            @NotNull PlatformTransactionManager transactionManager) {
@@ -76,6 +79,7 @@ public class MutationsRFProcessor {
 		this.batimentRFProcessor = batimentRFProcessor;
 		this.transactionManager = transactionManager;
 		this.communeRFProcessor = communeRFProcessor;
+		this.servitudeRFProcessor = servitudeRFProcessor;
 	}
 
 	/**
@@ -107,15 +111,17 @@ public class MutationsRFProcessor {
 		processMutations(importId, importInitial, TypeEntiteRF.DROIT, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(30, 40, statusManager));
 		processMutations(importId, importInitial, TypeEntiteRF.SURFACE_AU_SOL, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(40, 50, statusManager));
 		processMutations(importId, importInitial, TypeEntiteRF.BATIMENT, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(50, 60, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.SERVITUDE, creationEtModification, nbThreads, dateValeur, rapportFinal, new SubStatusManager(60, 70, statusManager));
 
 		// ... puis les suppressions (attention, l'ordre de traitement des types d'entités est important aussi)
 		final List<TypeMutationRF> suppression = Collections.singletonList(TypeMutationRF.SUPPRESSION);
-		processMutations(importId, importInitial, TypeEntiteRF.BATIMENT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(60, 66, statusManager));
-		processMutations(importId, importInitial, TypeEntiteRF.SURFACE_AU_SOL, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(66, 72, statusManager));
-		processMutations(importId, importInitial, TypeEntiteRF.DROIT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(72, 80, statusManager));
-		processMutations(importId, importInitial, TypeEntiteRF.AYANT_DROIT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(80, 86, statusManager));
-		processMutations(importId, importInitial, TypeEntiteRF.IMMEUBLE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(86, 92, statusManager));
-		processMutations(importId, importInitial, TypeEntiteRF.COMMUNE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(92, 100, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.BATIMENT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(70, 74, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.SURFACE_AU_SOL, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(74, 78, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.DROIT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(78, 83, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.AYANT_DROIT, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(83, 88, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.IMMEUBLE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(88, 92, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.COMMUNE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(92, 94, statusManager));
+		processMutations(importId, importInitial, TypeEntiteRF.SERVITUDE, suppression, nbThreads, dateValeur, rapportFinal, new SubStatusManager(94, 100, statusManager));
 
 		rapportFinal.end();
 		return rapportFinal;
@@ -178,7 +184,8 @@ public class MutationsRFProcessor {
 		final MutationRFProcessor proc = getProcessor(typeEntite);
 
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResults<Long, MutationsRFProcessorResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, MutationsRFProcessorResults> template =
+				new ParallelBatchTransactionTemplateWithResults<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, MutationsRFProcessorResults>() {
 
 			private final ThreadLocal<Long> first = new ThreadLocal<>();
@@ -245,6 +252,8 @@ public class MutationsRFProcessor {
 			return communeRFProcessor;
 		case DROIT:
 			return droitRFProcessor;
+		case SERVITUDE:
+			return servitudeRFProcessor;
 		case IMMEUBLE:
 			return immeubleRFProcessor;
 		case SURFACE_AU_SOL:

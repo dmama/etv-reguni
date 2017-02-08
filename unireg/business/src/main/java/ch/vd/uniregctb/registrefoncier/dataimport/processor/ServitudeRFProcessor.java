@@ -11,8 +11,8 @@ import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.capitastra.grundstueck.EigentumAnteil;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
+import ch.vd.capitastra.rechteregister.DienstbarkeitDiscrete;
+import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -20,23 +20,22 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 /**
- * Processeur spécialisé pour traiter les mutations des droits de propriété.
+ * Processeur spécialisé pour traiter les mutations des servitudes.
  */
-public class DroitRFProcessor implements MutationRFProcessor {
+public class ServitudeRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private final AyantDroitRFDAO ayantDroitRFDAO;
@@ -50,14 +49,14 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	public ServitudeRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.droitRFDAO = droitRFDAO;
 
 		unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
-				return xmlHelperRF.getDroitListContext().createUnmarshaller();
+				return xmlHelperRF.getServitudeListContext().createUnmarshaller();
 			}
 			catch (JAXBException e) {
 				throw new RuntimeException(e);
@@ -81,35 +80,34 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		}
 
 		// on interpète le XML
-		final List<EigentumAnteil> droitList;
+		final List<DienstbarkeitDiscrete> servitudesList;
 		try {
 			final String content = mutation.getXmlContent();
 			if (content == null) {
-				droitList = Collections.emptyList();
+				servitudesList = Collections.emptyList();
 			}
 			else {
 				final StringSource source = new StringSource(content);
-				final PersonEigentumAnteilListElement droitListImport = (PersonEigentumAnteilListElement) unmarshaller.get().unmarshal(source);
-				droitList = droitListImport.getPersonEigentumAnteilOrGrundstueckEigentumAnteilOrHerrenlosEigentum();
+				final DienstbarkeitDiscreteList servitudesListImport = (DienstbarkeitDiscreteList) unmarshaller.get().unmarshal(source);
+				servitudesList = servitudesListImport.getDienstbarkeitDiscretes();
 			}
 		}
 		catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}
 
-		// on crée les droits en mémoire
-		final List<DroitProprieteRF> droits = droitList.stream()
-				.map(e -> (PersonEigentumAnteil) e)
-				.map(e -> DroitRFHelper.newDroitRF(e, importInitial, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
+		// on crée les servitudes en mémoire
+		final List<ServitudeRF> servitudes = servitudesList.stream()
+				.map(e -> ServitudesRFHelper.newServitudeRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
 				.collect(Collectors.toList());
 
 		// on les insère en DB
 		switch (mutation.getTypeMutation()) {
 		case CREATION:
-			processCreation(importInitial ? null : dateValeur, ayantDroit, droits);
+			processCreation(importInitial ? null : dateValeur, ayantDroit, servitudes);
 			break;
 		case MODIFICATION:
-			processModification(dateValeur, ayantDroit, droits);
+			processModification(dateValeur, ayantDroit, servitudes);
 			break;
 		case SUPPRESSION:
 			processSuppression(dateValeur, ayantDroit);
@@ -149,14 +147,14 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite l'ajout des droits de propriété sur un ayant-droit qui vient d'être créé.
+	 * Traite l'ajout des servitudes sur un ayant-droit qui vient d'être créé.
 	 */
-	private void processCreation(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
+	private void processCreation(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<ServitudeRF> droits) {
 		if (!ayantDroit.getDroits().isEmpty()) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + ayantDroit.getIdRF() + "] possède déjà des droits alors que la mutation est de type CREATION.");
 		}
 
-		// on sauve les nouveaux droits
+		// on sauve les nouvelles servitudes
 		droits.forEach(d -> {
 			d.setAyantDroit(ayantDroit);
 			d.setDateDebut(dateValeur);
@@ -165,26 +163,25 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite la modification des droits de propriété sur un ayant-droit qui existe déjà et - potentiellement - possède déjà des droits.
+	 * Traite la modification des servitudes sur un ayant-droit qui existe déjà et - potentiellement - possède déjà des droits.
 	 */
-	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
+	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<ServitudeRF> droits) {
 
-		// on va chercher les droits de propriété actifs actuellement persistés
+		// on va chercher les servitudes actives actuellement persistées
 		final List<DroitRF> persisted = ayantDroit.getDroits().stream()
-				.filter(d -> d.isValidAt(null))
-				.filter(d -> d instanceof DroitProprieteRF)
+				.filter(d -> d.isValidAt(RegDate.get()))
+				.filter(d -> d instanceof ServitudeRF)
 				.collect(Collectors.toList());
 
 		// on détermine les changements
 		List<DroitRF> toAddList = new LinkedList<>(droits);
 		List<DroitRF> toCloseList = new LinkedList<>(persisted);
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, (left, right) -> DroitRFHelper.dataEquals(left, right, false));   // on supprime les droits égaux en tant compte des motifs (pour être le plus précis possible)
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, (left, right) -> DroitRFHelper.dataEquals(left, right, true));    // on supprime les droits égaux sans tenir compte des motifs (pour être le plus complet possible)
+		CollectionsUtils.removeCommonElements(toAddList, toCloseList, ServitudesRFHelper::dataEquals);
 
-		// on ferme toutes les droits à fermer
+		// on ferme toutes les servitudes à fermer
 		toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 
-		// on ajoute toutes les nouveaux droits
+		// on ajoute toutes les nouvelles servitudes
 		toAddList.forEach(d -> {
 			d.setAyantDroit(ayantDroit);
 			d.setDateDebut(dateValeur);
@@ -193,13 +190,13 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite la suppression (= fermeture) de tous les droits de propriété d'un ayant-droit.
+	 * Traite la suppression (= fermeture) de toutes les servitudes d'un ayant-droit.
 	 */
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit) {
-		// on ferme tous les droits de propriété encore ouverts
+		// on ferme toutes les servitudes encore ouvertes
 		ayantDroit.getDroits().stream()
-				.filter(d -> d.isValidAt(null))
-				.filter(d -> d instanceof DroitProprieteRF)
+				.filter(d -> d.isValidAt(RegDate.get()))
+				.filter(d -> d instanceof ServitudeRF)
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 	}
 }

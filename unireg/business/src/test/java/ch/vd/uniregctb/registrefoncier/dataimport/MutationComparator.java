@@ -24,7 +24,7 @@ public class MutationComparator implements Comparator<EvenementRFMutation> {
 		return o1.getId().compareTo(o2.getId());
 	}
 
-	private static int compareString(@Nullable String idRF1, @Nullable String idRF2) {
+	public static int compareString(@Nullable String idRF1, @Nullable String idRF2) {
 		if (idRF1 == null && idRF2 == null) {
 			return 0;
 		}

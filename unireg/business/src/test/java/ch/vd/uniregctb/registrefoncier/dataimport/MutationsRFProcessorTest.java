@@ -21,6 +21,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcesso
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.MutationRFProcessor;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
 
 import static org.junit.Assert.assertEquals;
@@ -37,6 +38,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 	private AyantDroitRFProcessor ayantDroitRFProcessor;
 	private DroitRFProcessor droitRFProcessor;
+	private ServitudeRFProcessor servitudeRFProcessor;
 	private SurfaceAuSolRFProcessor surfaceAuSolRFProcessor;
 	private BatimentRFProcessor batimentRFProcessor;
 	private MutationRFProcessor communeRFProcessor;
@@ -50,6 +52,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 		ayantDroitRFProcessor = getBean(AyantDroitRFProcessor.class, "ayantDroitRFProcessor");
 		droitRFProcessor = getBean(DroitRFProcessor.class, "droitRFProcessor");
+		servitudeRFProcessor = getBean(ServitudeRFProcessor.class, "servitudeRFProcessor");
 		surfaceAuSolRFProcessor = getBean(SurfaceAuSolRFProcessor.class, "surfaceAuSolRFProcessor");
 		batimentRFProcessor = getBean(BatimentRFProcessor.class, "batimentRFProcessor");
 		communeRFProcessor = getBean(MutationRFProcessor.class, "communeRFProcessor");
@@ -70,7 +73,8 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, servitudeRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor,
+		                                     transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état TRAITE et qu'il n'y a pas d'erreur
@@ -111,7 +115,8 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		};
 
 		// on déclenche le traitement des mutations
-		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, servitudeRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor,
+		                                     transactionManager);
 		processor.processImport(importId, 2, null);
 
 		// on s'assure que les mutations sont toutes passées dans l'état EN_ERREUR et que le message d'erreur est renseigné
@@ -172,7 +177,8 @@ public class MutationsRFProcessorTest extends BusinessTest {
 		};
 
 		// on devrait avoir une exception parce que les mutations de l'import précédent ne sont pas toutes traitées
-		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor, transactionManager);
+		processor = new MutationsRFProcessor(evenementRFImportDAO, evenementRFMutationDAO, communeRFProcessor, immeubleRFProcessor, ayantDroitRFProcessor, droitRFProcessor, servitudeRFProcessor, surfaceAuSolRFProcessor, batimentRFProcessor,
+		                                     transactionManager);
 		try {
 			processor.processImport(ids.suivant, 2, null);
 			fail();
