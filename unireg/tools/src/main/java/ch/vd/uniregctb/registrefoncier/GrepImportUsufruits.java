@@ -15,6 +15,7 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
+import ch.vd.capitastra.rechteregister.Personstamm;
 import ch.vd.uniregctb.registrefoncier.dataimport.FichierServitudeRFParser;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
@@ -56,7 +57,8 @@ public class GrepImportUsufruits {
 		assertNotNull(file);
 
 		final MutableInt servitudeCount = new MutableInt(0);
-		final MutableInt beneficiaireCount = new MutableInt(0);
+		final MutableInt groupesBeneficiairesCount = new MutableInt(0);
+		final MutableInt beneficiairesCount = new MutableInt(0);
 
 		final long start = System.nanoTime();
 
@@ -72,12 +74,21 @@ public class GrepImportUsufruits {
 			}
 
 			@Override
-			public void onBeneficiaire(@NotNull LastRechtGruppe beneficiaire) {
+			public void onGroupeBeneficiaires(@NotNull LastRechtGruppe beneficiaires) {
+				String xml = toXMLString(beneficiaires);
+				if (pattern.matcher(xml).find()) {
+					System.out.println(xml);
+				}
+				groupesBeneficiairesCount.increment();
+			}
+
+			@Override
+			public void onBeneficiaire(@NotNull Personstamm beneficiaire) {
 				String xml = toXMLString(beneficiaire);
 				if (pattern.matcher(xml).find()) {
 					System.out.println(xml);
 				}
-				beneficiaireCount.increment();
+				beneficiairesCount.increment();
 			}
 
 			@Override
@@ -99,6 +110,10 @@ public class GrepImportUsufruits {
 	}
 
 	private String toXMLString(LastRechtGruppe obj) {
+		return xmlHelper.toXMLString(obj);
+	}
+
+	private String toXMLString(Personstamm obj) {
 		return xmlHelper.toXMLString(obj);
 	}
 }

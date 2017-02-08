@@ -237,14 +237,19 @@ public class MutationsRFDetector implements InitializingBean {
 				}
 
 				@Override
-				public void onBeneficiaire(@NotNull LastRechtGruppe beneficiaire) {
-					final DienstbarkeitExtendedElement servex = data.get(beneficiaire.getStandardRechtIDREF());
+				public void onGroupeBeneficiaires(@NotNull LastRechtGruppe beneficiaires) {
+					final DienstbarkeitExtendedElement servex = data.get(beneficiaires.getStandardRechtIDREF());
 					if (servex == null) {
 						// on reçoit des bénéficiaires qui ne correspondent pas à des servitudes (certainement
 						// à cause d'un filtre dans l'export de Capitastra) -> on les ignore
 						return;
 					}
-					servex.addLastRechtGruppe(beneficiaire);
+					servex.addLastRechtGruppe(beneficiaires);
+				}
+
+				@Override
+				public void onBeneficiaire(@NotNull ch.vd.capitastra.rechteregister.Personstamm beneficiaire) {
+					// TODO (msi)
 				}
 
 				@Override

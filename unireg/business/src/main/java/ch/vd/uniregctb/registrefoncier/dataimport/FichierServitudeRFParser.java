@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
+import ch.vd.capitastra.rechteregister.Personstamm;
 
 /**
  * Classe qui parse un fichier d'import des servitudes et qui notifie au fil du parsing des éléments lus.
@@ -23,8 +24,11 @@ public class FichierServitudeRFParser {
 
 	private static final String LIST_SERVITUDES = "StandardRechtList";
 	private static final String SERVITUDE = "Dienstbarkeit";
-	private static final String LIST_BENEFICIAIRES = "LastRechtGruppeList";
-	private static final String BENEFICIAIRE = "LastRechtGruppe";
+	private static final String LIST_GROUPES_BENEFICIAIRES = "LastRechtGruppeList";
+	private static final String GROUPE_BENEFICIAIRES = "LastRechtGruppe";
+	private static final String LIST_BENEFICIAIRES = "PersonstammList";
+	private static final String BENEFICIAIRE_PP = "NatuerlichePersonstamm";
+	private static final String BENEFICIAIRE_PM = "JuristischePersonstamm";
 
 	private XmlHelperRF xmlHelperRF;
 
@@ -38,7 +42,9 @@ public class FichierServitudeRFParser {
 	public interface Callback {
 		void onServitude(@NotNull Dienstbarkeit servitude);
 
-		void onBeneficiaire(@NotNull LastRechtGruppe beneficiaire);
+		void onGroupeBeneficiaires(@NotNull LastRechtGruppe beneficiaires);
+
+		void onBeneficiaire(@NotNull Personstamm beneficiaire);
 
 		/**
 		 * Méthode appelée lorsque toutes les données ont été envoyées.
@@ -74,6 +80,9 @@ public class FichierServitudeRFParser {
 				switch (localName) {
 				case LIST_SERVITUDES:
 					processServitudes(xmlStreamReader, callback);
+					break;
+				case LIST_GROUPES_BENEFICIAIRES:
+					processGroupesBeneficiaires(xmlStreamReader, callback);
 					break;
 				case LIST_BENEFICIAIRES:
 					processBeneficiaires(xmlStreamReader, callback);
@@ -237,18 +246,118 @@ public class FichierServitudeRFParser {
 	 *    &lt;/recht:LastRechtGruppeList&gt;
 	 * </pre>
 	 */
-	private void processBeneficiaires(XMLStreamReader xmlStreamReader, Callback callback) throws JAXBException, XMLStreamException {
+	private void processGroupesBeneficiaires(XMLStreamReader xmlStreamReader, Callback callback) throws JAXBException, XMLStreamException {
 
-		final Unmarshaller unmarshaller = xmlHelperRF.getBeneficiaireServitudeContext().createUnmarshaller();
+		final Unmarshaller unmarshaller = xmlHelperRF.getGroupeBeneficiairesContext().createUnmarshaller();
 
 		while (xmlStreamReader.hasNext()) {
 			final int eventType = xmlStreamReader.getEventType();
 			if (eventType == XMLStreamConstants.START_ELEMENT) {
 				final String localName = xmlStreamReader.getLocalName();
-				if (BENEFICIAIRE.equals(localName)) {
+				if (GROUPE_BENEFICIAIRES.equals(localName)) {
 					final LastRechtGruppe beneficiaires = (LastRechtGruppe) unmarshaller.unmarshal(xmlStreamReader);
 					if (beneficiaires != null) {
-						callback.onBeneficiaire(beneficiaires);
+						callback.onGroupeBeneficiaires(beneficiaires);
+					}
+				}
+				else {
+					// on ignore les autres servitudes de type Anmerkung, Vormerkung et Grundlast
+					xmlStreamReader.next();
+				}
+			}
+			else if (eventType == XMLStreamConstants.END_ELEMENT) {
+				final String localName = xmlStreamReader.getLocalName();
+				if (LIST_GROUPES_BENEFICIAIRES.equals(localName)) {
+					return; // fin de liste, on sort
+				}
+				else {
+					xmlStreamReader.next();
+				}
+			}
+			else {
+				xmlStreamReader.next();
+			}
+		}
+	}
+
+	/**
+	 * Exemple XML:
+	 * <pre>
+	 * &lt;recht:PersonstammList&gt;
+	 *     &lt;recht:NatuerlichePersonstamm&gt;
+	 *         &lt;recht:PersonstammID&gt;_1f109152380ffd8901380ffda2d01161&lt;/recht:PersonstammID&gt;
+	 *         &lt;recht:Name&gt;Croisier&lt;/recht:Name&gt;
+	 *         &lt;recht:Gueltig&gt;true&lt;/recht:Gueltig&gt;
+	 *         &lt;recht:ClientRegulier&gt;false&lt;/recht:ClientRegulier&gt;
+	 *         &lt;recht:NoSCC&gt;0&lt;/recht:NoSCC&gt;
+	 *         &lt;recht:Status&gt;definitiv&lt;/recht:Status&gt;
+	 *         &lt;recht:Sprache&gt;
+	 *             &lt;recht:TextDe&gt;Französisch&lt;/recht:TextDe&gt;
+	 *             &lt;recht:TextFr&gt;Français&lt;/recht:TextFr&gt;
+	 *         &lt;/recht:Sprache&gt;
+	 *         &lt;recht:Anrede&gt;
+	 *             &lt;recht:TextDe&gt;*Madame&lt;/recht:TextDe&gt;
+	 *             &lt;recht:TextFr&gt;Madame&lt;/recht:TextFr&gt;
+	 *         &lt;/recht:Anrede&gt;
+	 *         &lt;recht:NrACI&gt;0&lt;/recht:NrACI&gt;
+	 *         &lt;recht:Adressen&gt;
+	 *             &lt;recht:Strasse&gt; Rue Paul Golay 13&lt;/recht:Strasse&gt;
+	 *             &lt;recht:PLZ&gt;1341&lt;/recht:PLZ&gt;
+	 *             &lt;recht:Ort&gt;Orient&lt;/recht:Ort&gt;
+	 *             &lt;recht:Rolle&gt;ACI&lt;/recht:Rolle&gt;
+	 *         &lt;/recht:Adressen&gt;
+	 *         &lt;recht:Vorname&gt;Josiane&lt;/recht:Vorname&gt;
+	 *         &lt;recht:Zivilstand&gt;unbekannt&lt;/recht:Zivilstand&gt;
+	 *         &lt;recht:Geburtsdatum&gt;
+	 *             &lt;recht:Tag&gt;4&lt;/recht:Tag&gt;
+	 *             &lt;recht:Monat&gt;12&lt;/recht:Monat&gt;
+	 *             &lt;recht:Jahr&gt;1942&lt;/recht:Jahr&gt;
+	 *         &lt;/recht:Geburtsdatum&gt;
+	 *         &lt;recht:LedigName&gt;Croisier&lt;/recht:LedigName&gt;
+	 *         &lt;recht:NameDerEltern&gt;Jean-Claude&lt;/recht:NameDerEltern&gt;
+	 *         &lt;recht:Geschlecht&gt;unbekannt&lt;/recht:Geschlecht&gt;
+	 *         &lt;recht:NameEhegatte&gt;Daniel&lt;/recht:NameEhegatte&gt;
+	 *         &lt;recht:NrIROLE&gt;10384264&lt;/recht:NrIROLE&gt;
+	 *     &lt;/recht:NatuerlichePersonstamm&gt;
+	 *     &lt;recht:JuristischePersonstamm&gt;
+	 *         &lt;recht:PersonstammID&gt;_1f109152380fff8e01380fffa2d404f7&lt;/recht:PersonstammID&gt;
+	 *         &lt;recht:Name&gt;Ski-Club de Rougemont&lt;/recht:Name&gt;
+	 *         &lt;recht:Gueltig&gt;true&lt;/recht:Gueltig&gt;
+	 *         &lt;recht:ClientRegulier&gt;false&lt;/recht:ClientRegulier&gt;
+	 *         &lt;recht:NoSCC&gt;0&lt;/recht:NoSCC&gt;
+	 *         &lt;recht:Status&gt;definitiv&lt;/recht:Status&gt;
+	 *         &lt;recht:Sprache&gt;
+	 *             &lt;recht:TextDe&gt;Französisch&lt;/recht:TextDe&gt;
+	 *             &lt;recht:TextFr&gt;Français&lt;/recht:TextFr&gt;
+	 *         &lt;/recht:Sprache&gt;
+	 *         &lt;recht:NrACI&gt;0&lt;/recht:NrACI&gt;
+	 *         &lt;recht:Adressen&gt;
+	 *             &lt;recht:PLZ&gt;1838&lt;/recht:PLZ&gt;
+	 *             &lt;recht:Ort&gt;Rougemont&lt;/recht:Ort&gt;
+	 *             &lt;recht:Rolle&gt;ACI&lt;/recht:Rolle&gt;
+	 *         &lt;/recht:Adressen&gt;
+	 *         &lt;recht:Sitz&gt;Rougemont&lt;/recht:Sitz&gt;
+	 *         &lt;recht:Gesellschaftsform&gt;
+	 *             &lt;recht:TextDe&gt;*Association&lt;/recht:TextDe&gt;
+	 *             &lt;recht:TextFr&gt;Association&lt;/recht:TextFr&gt;
+	 *         &lt;/recht:Gesellschaftsform&gt;
+	 *         &lt;recht:Unterart&gt;SchweizerischeJuristischePerson&lt;/recht:Unterart&gt;
+	 *     &lt;/recht:JuristischePersonstamm&gt;
+	 * &lt;recht:PersonstammList&gt;
+	 * </pre>
+	 */
+	private void processBeneficiaires(XMLStreamReader xmlStreamReader, Callback callback) throws JAXBException, XMLStreamException {
+
+		final Unmarshaller unmarshaller = xmlHelperRF.getBeneficiaireContext().createUnmarshaller();
+
+		while (xmlStreamReader.hasNext()) {
+			final int eventType = xmlStreamReader.getEventType();
+			if (eventType == XMLStreamConstants.START_ELEMENT) {
+				final String localName = xmlStreamReader.getLocalName();
+				if (BENEFICIAIRE_PP.equals(localName) || BENEFICIAIRE_PM.equals(localName)) {
+					final Personstamm beneficiaire = (Personstamm) unmarshaller.unmarshal(xmlStreamReader);
+					if (beneficiaire != null) {
+						callback.onBeneficiaire(beneficiaire);
 					}
 				}
 				else {

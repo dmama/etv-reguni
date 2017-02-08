@@ -53,7 +53,8 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext servitudeListContext;
 	private final JAXBContext communauteContext;
 	private final JAXBContext communeContext;
-	private final JAXBContext beneficiaireServitudeContext;
+	private final JAXBContext groupeBeneficiairesContext;
+	private final JAXBContext beneficiaireContext;
 
 	public XmlHelperRFImpl() throws JAXBException {
 		immeubleContext = JAXBContext.newInstance(BergwerkElement.class, FolioElement.class, GewoehnlichesMiteigentumElement.class,
@@ -69,7 +70,9 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
 		servitudeContext = JAXBContext.newInstance(DienstbarkeitElement.class);
 		servitudeListContext = JAXBContext.newInstance(DienstbarkeitDiscreteListElement.class);
-		beneficiaireServitudeContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
+		groupeBeneficiairesContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
+		beneficiaireContext = JAXBContext.newInstance(ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.NatuerlichePersonstammElement.class,
+		                                              ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.JuristischePersonstammElement.class);
 	}
 
 	@Override
@@ -126,9 +129,13 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		return servitudeListContext;
 	}
 
+	public JAXBContext getGroupeBeneficiairesContext() {
+		return groupeBeneficiairesContext;
+	}
+
 	@Override
-	public JAXBContext getBeneficiaireServitudeContext() {
-		return beneficiaireServitudeContext;
+	public JAXBContext getBeneficiaireContext() {
+		return beneficiaireContext;
 	}
 
 	@Override
@@ -316,11 +323,27 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public String toXMLString(LastRechtGruppe obj) {
 		try {
-			final Marshaller m = beneficiaireServitudeContext.createMarshaller();
+			final Marshaller m = groupeBeneficiairesContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
 			final QName name = buildRechtQName(obj);
 			m.marshal(new JAXBElement<>(name, (Class<LastRechtGruppe>) obj.getClass(), null, obj), w);
+			return w.toString();
+		}
+		catch (JAXBException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String toXMLString(ch.vd.capitastra.rechteregister.Personstamm obj) {
+		try {
+			final Marshaller m = beneficiaireContext.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			final StringWriter w = new StringWriter();
+			final QName name = buildRechtQName(obj);
+			m.marshal(new JAXBElement<>(name, (Class<ch.vd.capitastra.rechteregister.Personstamm>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
 		catch (JAXBException e) {

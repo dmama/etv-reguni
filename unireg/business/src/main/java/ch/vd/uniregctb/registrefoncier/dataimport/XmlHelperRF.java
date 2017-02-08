@@ -79,7 +79,9 @@ public interface XmlHelperRF {
 	/**
 	 * @return le context JAXB pour les bénéficiaires de servitudes (fichier séparé du fichier principal).
 	 */
-	JAXBContext getBeneficiaireServitudeContext();
+	JAXBContext getGroupeBeneficiairesContext();
+
+	JAXBContext getBeneficiaireContext();
 
 	/**
 	 * Converti l'immeuble spécifié dans sa représentation XML.
@@ -142,7 +144,12 @@ public interface XmlHelperRF {
 	String toXMLString(DienstbarkeitDiscreteList list);
 
 	/**
-	 * Converti le bénéficiaire de servitude dans sa représentation XML
+	 * Converti le groupe de bénéficiaires de servitude dans sa représentation XML
 	 */
 	String toXMLString(LastRechtGruppe obj);
+
+	/**
+	 * Converti le bénéficiaire de servitude dans sa représentation XML
+	 */
+	String toXMLString(ch.vd.capitastra.rechteregister.Personstamm obj);
 }

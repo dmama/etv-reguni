@@ -16,8 +16,11 @@ import ch.vd.capitastra.rechteregister.BelastetesGrundstueck;
 import ch.vd.capitastra.rechteregister.BerechtigtePerson;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.GeburtsDatum;
+import ch.vd.capitastra.rechteregister.JuristischePersonstamm;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonGb;
+import ch.vd.capitastra.rechteregister.NatuerlichePersonstamm;
+import ch.vd.capitastra.rechteregister.Personstamm;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
 
 import static org.junit.Assert.assertEquals;
@@ -78,9 +81,9 @@ public class FichierServitudeRFParserTest {
 	}
 
 	@Test
-	public void testParseBeneficiaireDeServitudes() throws Exception {
+	public void testParseGroupesBeneficiaireDeServitudes() throws Exception {
 
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_beneficiaires_servitudes_rf_hebdo.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_groupes_beneficiaires_servitudes_rf_hebdo.xml");
 		assertNotNull(file);
 
 		// on parse le fichier
@@ -90,7 +93,7 @@ public class FichierServitudeRFParserTest {
 		}
 
 		// on s'assure que les bénéficiaires de servitude ont bien été parsés
-		final List<LastRechtGruppe> beneficiaires = callback.getBeneficiaires();
+		final List<LastRechtGruppe> beneficiaires = callback.getGroupesBeneficiaires();
 		assertEquals(2, beneficiaires.size());
 
 		final LastRechtGruppe beneficiaire0 = beneficiaires.get(0);
@@ -122,18 +125,64 @@ public class FichierServitudeRFParserTest {
 		}
 	}
 
+	@Test
+	public void testParseBeneficiaireDeServitudes() throws Exception {
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_beneficiaires_servitudes_rf_hebdo.xml");
+		assertNotNull(file);
+
+		// on parse le fichier
+		final TestCallback callback = new TestCallback();
+		try (InputStream is = new FileInputStream(file)) {
+			parser.processFile(is, callback);
+		}
+
+		// on s'assure que les bénéficiaires de servitude ont bien été parsés
+		final List<Personstamm> beneficiaires = callback.getBeneficiaires();
+		assertEquals(2, beneficiaires.size());
+
+		final NatuerlichePersonstamm beneficiaire0 = (NatuerlichePersonstamm) beneficiaires.get(0);
+		{
+			assertEquals("_1f109152380ffd8901380ffda2d01161", beneficiaire0.getPersonstammID());
+			assertEquals("Croisier", beneficiaire0.getName());
+			assertEquals("Josiane", beneficiaire0.getVorname());
+			assertEquals(Long.valueOf(0), beneficiaire0.getNrACI());
+			assertEquals(Long.valueOf(10384264L), beneficiaire0.getNrIROLE());
+
+			final GeburtsDatum dateNaissance = beneficiaire0.getGeburtsdatum();
+			assertNotNull(dateNaissance);
+			assertEquals(Integer.valueOf(4), dateNaissance.getTag());
+			assertEquals(Integer.valueOf(12), dateNaissance.getMonat());
+			assertEquals(Integer.valueOf(1942), dateNaissance.getJahr());
+		}
+
+		final JuristischePersonstamm beneficiaire1 = (JuristischePersonstamm) beneficiaires.get(1);
+		{
+			assertEquals("_1f109152380fff8e01380fffa2d404f7", beneficiaire1.getPersonstammID());
+			assertEquals("Ski-Club de Rougemont", beneficiaire1.getName());
+			assertEquals("Rougemont", beneficiaire1.getSitz());
+			assertEquals(Long.valueOf(0), beneficiaire1.getNrACI());
+		}
+	}
+
 	private static class TestCallback implements FichierServitudeRFParser.Callback {
 
 		private final List<Dienstbarkeit> servitudes = new ArrayList<>();
+		private final List<LastRechtGruppe> groupesBeneficiaires = new ArrayList<>();
+		private final List<Personstamm> beneficiaires = new ArrayList<>();
 
-		private final List<LastRechtGruppe> beneficiaires = new ArrayList<>();
 		@Override
 		public void onServitude(@NotNull Dienstbarkeit servitude) {
 			servitudes.add(servitude);
 		}
 
 		@Override
-		public void onBeneficiaire(@NotNull LastRechtGruppe beneficiaire) {
+		public void onGroupeBeneficiaires(@NotNull LastRechtGruppe beneficiaires) {
+			this.groupesBeneficiaires.add(beneficiaires);
+		}
+
+		@Override
+		public void onBeneficiaire(@NotNull Personstamm beneficiaire) {
 			beneficiaires.add(beneficiaire);
 		}
 
@@ -145,10 +194,13 @@ public class FichierServitudeRFParserTest {
 			return servitudes;
 		}
 
-		public List<LastRechtGruppe> getBeneficiaires() {
-			return beneficiaires;
+		public List<LastRechtGruppe> getGroupesBeneficiaires() {
+			return groupesBeneficiaires;
 		}
 
+		public List<Personstamm> getBeneficiaires() {
+			return beneficiaires;
+		}
 	}
 
 	private static void assertPersonnePhysique(String prenom, String nom, int year, int month, int day, String idRef, BerechtigtePerson personne) {
@@ -162,8 +214,8 @@ public class FichierServitudeRFParserTest {
 
 	private static void assertDateNaissance(int year, int month, int day, GeburtsDatum dateNaissance) {
 		assertNotNull(dateNaissance);
-		assertEquals(Long.valueOf(year), dateNaissance.getJahr());
-		assertEquals(Long.valueOf(month), dateNaissance.getMonat());
-		assertEquals(Long.valueOf(day), dateNaissance.getTag());
+		assertEquals(Integer.valueOf(year), dateNaissance.getJahr());
+		assertEquals(Integer.valueOf(month), dateNaissance.getMonat());
+		assertEquals(Integer.valueOf(day), dateNaissance.getTag());
 	}
 }

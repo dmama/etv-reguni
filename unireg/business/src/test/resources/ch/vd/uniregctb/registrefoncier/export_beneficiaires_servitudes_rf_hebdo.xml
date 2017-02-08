@@ -1,52 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RechteregisterExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister export_rechteregister_20101231.xsd">
-	<LastRechtGruppeList>
-		<LastRechtGruppe VersionID="1f109152380ffd8901380fff10cc634f">
-			<StandardRechtIDREF>_1f109152380ffd8901380fff10ca631e</StandardRechtIDREF>
-			<BelastetesGrundstueck VersionID="1f109152380ffd8901380fff10d363d5">
-				<BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bd72c0</BelastetesGrundstueckIDREF>
-			</BelastetesGrundstueck>
-			<BerechtigtePerson VersionID="1f109152380ffd8901380fff10ce639e">
-				<NatuerlichePersonGb VersionID="1f109152380ffd8901380ffe267023c0" MasterID="1f109152380ffd8901380ffe266c238e">
-					<Name>Meylan</Name>
-					<Status>definitiv</Status>
-					<Vorname>Pierre</Vorname>
-					<Geburtsdatum>
-						<Tag>4</Tag>
-						<Monat>11</Monat>
-						<Jahr>1934</Jahr>
-					</Geburtsdatum>
-					<Zivilstand>unbekannt</Zivilstand>
-					<NameEltern>Constant</NameEltern>
-					<WeitereVornamen>Eugène</WeitereVornamen>
-					<PersonstammIDREF>_1f109152381091220138109237ca2768</PersonstammIDREF>
-				</NatuerlichePersonGb>
-			</BerechtigtePerson>
-		</LastRechtGruppe>
-		<LastRechtGruppe VersionID="1f109152380ffd8901380fff1f496d54">
-			<StandardRechtIDREF>_1f109152380ffd8901380fff1f476d0d</StandardRechtIDREF>
-			<BelastetesGrundstueck VersionID="1f109152380ffd8901380fff1f4e6dbc">
-				<BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe025f139d</BelastetesGrundstueckIDREF>
-			</BelastetesGrundstueck>
-			<BerechtigtePerson VersionID="1f109152380ffd8901380fff1f4c6d95">
-				<NatuerlichePersonGb VersionID="1f109152380ffd8901380ffe26e925fb" MasterID="1f109152380ffd8901380ffe26e825c9">
-					<Name>Bonard</Name>
-					<Status>definitiv</Status>
-					<Vorname>Michèle</Vorname>
-					<Ledigname>Bosson</Ledigname>
-					<Geburtsdatum>
-						<Tag>7</Tag>
-						<Monat>12</Monat>
-						<Jahr>1940</Jahr>
-					</Geburtsdatum>
-					<Zivilstand>unbekannt</Zivilstand>
-					<NameEltern>Robert</NameEltern>
-					<NameEhegatte>André</NameEhegatte>
-					<WeitereVornamen>Hélène</WeitereVornamen>
-					<PersonstammIDREF>_1f109152381059670138105a72ae5581</PersonstammIDREF>
-				</NatuerlichePersonGb>
-			</BerechtigtePerson>
-		</LastRechtGruppe>
-	</LastRechtGruppeList>
+	<PersonstammList>
+		<NatuerlichePersonstamm>
+			<PersonstammID>_1f109152380ffd8901380ffda2d01161</PersonstammID>
+			<Name>Croisier</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<Anrede>
+				<TextDe>*Madame</TextDe>
+				<TextFr>Madame</TextFr>
+			</Anrede>
+			<NrACI>0</NrACI>
+			<Adressen>
+				<Strasse>Rue Paul Golay 13</Strasse>
+				<PLZ>1341</PLZ>
+				<Ort>Orient</Ort>
+				<Rolle>ACI</Rolle>
+			</Adressen>
+			<Vorname>Josiane</Vorname>
+			<Zivilstand>unbekannt</Zivilstand>
+			<Geburtsdatum>
+				<Tag>4</Tag>
+				<Monat>12</Monat>
+				<Jahr>1942</Jahr>
+			</Geburtsdatum>
+			<LedigName>Croisier</LedigName>
+			<NameDerEltern>Jean-Claude</NameDerEltern>
+			<Geschlecht>unbekannt</Geschlecht>
+			<NameEhegatte>Daniel</NameEhegatte>
+			<NrIROLE>10384264</NrIROLE>
+		</NatuerlichePersonstamm>
+		<JuristischePersonstamm>
+			<PersonstammID>_1f109152380fff8e01380fffa2d404f7</PersonstammID>
+			<Name>Ski-Club de Rougemont</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<NrACI>0</NrACI>
+			<Adressen>
+				<PLZ>1838</PLZ>
+				<Ort>Rougemont</Ort>
+				<Rolle>ACI</Rolle>
+			</Adressen>
+			<Sitz>Rougemont</Sitz>
+			<Gesellschaftsform>
+				<TextDe>*Association</TextDe>
+				<TextFr>Association</TextFr>
+			</Gesellschaftsform>
+			<Unterart>SchweizerischeJuristischePerson</Unterart>
+		</JuristischePersonstamm>
+	</PersonstammList>
 </RechteregisterExport>

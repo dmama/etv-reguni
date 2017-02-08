@@ -59,9 +59,6 @@
 				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
 				<jxb:javaType name="java.lang.Long" />
 			</jxb:bindings>
-		</jxb:bindings>
-
-		<jxb:bindings node="//xs:complexType[@name='PersonstammType']">
 			<jxb:bindings node=".//xs:element[@name='NoRF']">
 				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
 				<jxb:javaType name="java.lang.Long" />
@@ -152,6 +149,20 @@
 			<jxb:package name="ch.vd.capitastra.rechteregister" />
 		</jxb:schemaBindings>
 
+		<jxb:bindings node="//xs:complexType[@name='PersonstammType']">
+			<jxb:bindings node=".//xs:element[@name='NrACI']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='NatuerlichePersonstammType']">
+			<jxb:bindings node=".//xs:element[@name='NrIROLE']">
+				<!-- On force le décimal en long parce qu'il s'agit bien d'une valeur entière qui ne possède jamais de décimale -->
+				<jxb:javaType name="java.lang.Long" />
+			</jxb:bindings>
+		</jxb:bindings>
+
 		<jxb:bindings node="//xs:complexType[@name='BelegType']">
 			<jxb:bindings node=".//xs:element[@name='AmtNummer']">
 				<jxb:javaType name="java.lang.Integer" />
@@ -163,6 +174,18 @@
 				<jxb:javaType name="java.lang.Integer" />
 			</jxb:bindings>
 			<jxb:bindings node=".//xs:element[@name='BelegNummerIndex']">
+				<jxb:javaType name="java.lang.Integer" />
+			</jxb:bindings>
+		</jxb:bindings>
+
+		<jxb:bindings node="//xs:complexType[@name='GeburtsDatumType']">
+			<jxb:bindings node=".//xs:element[@name='Tag']">
+				<jxb:javaType name="java.lang.Integer" />
+			</jxb:bindings>
+			<jxb:bindings node=".//xs:element[@name='Monat']">
+				<jxb:javaType name="java.lang.Integer" />
+			</jxb:bindings>
+			<jxb:bindings node=".//xs:element[@name='Jahr']">
 				<jxb:javaType name="java.lang.Integer" />
 			</jxb:bindings>
 		</jxb:bindings>
