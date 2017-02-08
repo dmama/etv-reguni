@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.foncier.migration.MigrationKey;
 
 public class MigrationDDImporterResults {
@@ -167,6 +169,10 @@ public class MigrationDDImporterResults {
 
 	public void addDonneeDegrevementVide(Map.Entry<MigrationKey, ValeurDegrevement> dd) {
 		donneesIgnorees.add(new Ignore(dd.getKey(), "Aucune valeur de dégrèvement disponible pour la PF " + dd.getValue().getPeriodeFiscale()));
+	}
+
+	public void addDegrevementIgnoreValeurPlusRecente(MigrationKey key, RegDate dateDebut, RegDate dateDebutPlusRecente) {
+		donneesIgnorees.add(new Ignore(key, "Valeur plus récente disponible (" + RegDateHelper.dateToDisplayString(dateDebutPlusRecente) + " au lieu de " + RegDateHelper.dateToDisplayString(dateDebut) + ")"));
 	}
 
 	public void addErreur(Map.Entry<MigrationKey, ValeurDegrevement> dd, String message) {

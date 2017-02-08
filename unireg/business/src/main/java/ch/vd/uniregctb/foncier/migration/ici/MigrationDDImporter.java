@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -38,7 +39,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
@@ -258,7 +258,7 @@ public class MigrationDDImporter {
 					final Entreprise entreprise = getEntreprise(batchEntry.getKey());
 
 					// map des dégrèvements à persister pour cette entreprise par identifiant d'immeuble
-					final Map<Long, List<DegrevementICI>> degrevementsParImmeuble = batchEntry.getValue().stream()
+					final Map<Long, List<Pair<DegrevementICI, MigrationKey>>> degrevementsParImmeuble = batchEntry.getValue().stream()
 							.map(dd -> {
 								try {
 									final DegrevementICI deg = traiterDegrevement(dd, mapCommunes);
@@ -268,7 +268,7 @@ public class MigrationDDImporter {
 									else {
 										subRapport.get().addDonneeDegrevementVide(dd);
 									}
-									return deg;
+									return deg == null ? null : Pair.of(deg, dd.getKey());
 								}
 								catch (Exception e) {
 									subRapport.get().addErreur(dd, e.getMessage());
@@ -276,29 +276,23 @@ public class MigrationDDImporter {
 								}
 							})
 							.filter(Objects::nonNull)
-							.collect(Collectors.toMap(d -> d.getImmeuble().getId(),
+							.collect(Collectors.toMap(d -> d.getLeft().getImmeuble().getId(),
 							                          Collections::singletonList,
 							                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 
-					// assignation des dates de fin
-					for (List<DegrevementICI> degrevements : degrevementsParImmeuble.values()) {
-						if (degrevements.size() > 1) {
-							degrevements.sort(Comparator.comparing(DegrevementICI::getDateDebut));
-							final MovingWindow<DegrevementICI> wnd = new MovingWindow<>(degrevements);
-							while (wnd.hasNext()) {
-								final MovingWindow.Snapshot<DegrevementICI> snapshot = wnd.next();
-								final DegrevementICI current = snapshot.getCurrent();
-								final DegrevementICI next = snapshot.getNext();
-								if (next != null) {
-									current.setDateFin(next.getDateDebut().getOneDayBefore());
-								}
-							}
-						}
-					}
-
-					// persistence des dégrèvements
+					// [SIFISC-23259] on ne garde que le dernier... (il peut y en avoir plusieurs quand l'immeuble n'est pas exactement désigné
+					// de la même façon à chaque fois, mais que c'est toujours le même - voir les règles dans MigrationParcelle)
 					degrevementsParImmeuble.values().stream()
-							.flatMap(List::stream)
+							.map(list -> {
+								final List<Pair<DegrevementICI, MigrationKey>> sorted = list.stream()
+										.sorted((p1, p2) -> NullDateBehavior.EARLIEST.compare(p1.getLeft().getDateDebut(), p2.getLeft().getDateDebut()))
+										.collect(Collectors.toList());
+
+								final DegrevementICI last = sorted.get(sorted.size() - 1).getLeft();
+								sorted.subList(0, sorted.size() - 1)
+										.forEach(pair -> subRapport.get().addDegrevementIgnoreValeurPlusRecente(pair.getRight(), pair.getLeft().getDateDebut(), last.getDateDebut()));
+								return last;
+							})
 							.map(hibernateTemplate::merge)
 							.forEach(entreprise::addAllegementFoncier);
 				});
