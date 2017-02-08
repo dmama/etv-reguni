@@ -13,8 +13,8 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.PersonEigentumAnteilListElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
 
 /**
  * Classe de manipulation XML des entités propres à l'import du registre foncier.

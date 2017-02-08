@@ -45,7 +45,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.detector.BatimentRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.DroitRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.SurfaceAuSolRFDetector;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.DienstbarkeitExtendedElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 

@@ -36,7 +36,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.GrundstueckNummerElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;

@@ -25,7 +25,7 @@ import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.BergwerkElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public abstract class ImmeubleRFHelper {
