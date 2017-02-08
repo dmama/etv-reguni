@@ -56,6 +56,15 @@ public class MigrationParcelleTest {
 		}
 	}
 
+	@Test
+	public void testLettresFinalesIgnorees() throws Exception {
+		assertParcelle(4545, null, null, null, new MigrationParcelle("4545A", null, null));
+		assertParcelle(3019, null, null, null, new MigrationParcelle("4545", "3019 A", null));
+		assertParcelle(8451, null, null, null, new MigrationParcelle("8451 B", null, null));
+		assertParcelle(971, null, null, null, new MigrationParcelle("8451", "971B", null));
+
+	}
+
 	private void assertParcelle(int noParcelle, Integer index1, Integer index2, Integer index3, MigrationParcelle parcelle) {
 		Assert.assertEquals(noParcelle, parcelle.getNoParcelle());
 		Assert.assertEquals(index1, parcelle.getIndex1());
