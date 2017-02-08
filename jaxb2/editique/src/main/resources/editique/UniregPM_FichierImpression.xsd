@@ -825,7 +825,7 @@ U1P8ADASROUTE
 					<xs:documentation>AAAA</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="siege" type="xs:string"/>
+			<xs:element name="siege" type="xs:string" minOccurs="0"/>
 			<xs:element name="codeBarre" type="STypeCodeBarreDD"/>
 			<xs:element name="codeControleNIP" type="STypeCodeNIP" minOccurs="0">
 				<xs:annotation>
