@@ -494,7 +494,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionSommationDIPMHelper.getTypeDocumentEditique();
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateTraitement, dateOfficielleEnvoi, true);
-		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -550,7 +550,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateTraitement, dateOfficielleEnvoi, false);
-		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -574,7 +574,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true);
-		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -597,7 +597,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionRappelHelper.buildDocument(lettre, dateTraitement, true);
-		final FichierImpression.Document copieMandataire = impressionRappelHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionRappelHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -865,7 +865,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public void imprimeRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionRappelQSNCHelper.buildDocument(questionnaire, dateTraitement, dateOfficielleEnvoi);
-		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -885,7 +885,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionRappelQSNCHelper.buildDocument(questionnaire, dateTraitement, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
@@ -928,7 +928,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeDemandeBilanFinalOnline(DemandeBilanFinal lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionDemandeBilanFinalHelper.buildDocument(lettre, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionDemandeBilanFinalHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null)  {
 			root.getDocument().add(copieMandataire);
@@ -951,7 +951,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeLettreTypeInformationLiquidationOnline(LettreTypeInformationLiquidation lettre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionLettreTypeInformationLiquidationHelper.buildDocument(lettre, dateTraitement);
-		final FichierImpression.Document copieMandataire = impressionLettreTypeInformationLiquidationHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		final FichierImpression.Document copieMandataire = impressionLettreTypeInformationLiquidationHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
 			root.getDocument().add(copieMandataire);
