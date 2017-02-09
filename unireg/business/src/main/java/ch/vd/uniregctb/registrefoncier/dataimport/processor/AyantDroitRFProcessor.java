@@ -31,6 +31,7 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> proprietaireUnmarshaller;
 	private final ThreadLocal<Unmarshaller> communauteUnmarshaller;
+	private final ThreadLocal<Unmarshaller> beneficiairesUnmarshaller;
 
 	public AyantDroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
@@ -46,6 +47,14 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 		communauteUnmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getCommunauteContext().createUnmarshaller();
+			}
+			catch (JAXBException e) {
+				throw new RuntimeException(e);
+			}
+		});
+		beneficiairesUnmarshaller = ThreadLocal.withInitial(() -> {
+			try {
+				return xmlHelperRF.getBeneficiaireContext().createUnmarshaller();
 			}
 			catch (JAXBException e) {
 				throw new RuntimeException(e);
@@ -74,7 +83,14 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 				ayantDroitImport = (Gemeinschaft) communauteUnmarshaller.get().unmarshal(source);
 			}
 			catch (JAXBException e2) {
-				throw new RuntimeException(e2);
+				try {
+					// c'est pas un propriétaire ni une communauté, c'est peut-être un bénéficiaire de servitude
+					final StringSource source = new StringSource(mutation.getXmlContent());
+					ayantDroitImport = (ch.vd.capitastra.rechteregister.Personstamm) beneficiairesUnmarshaller.get().unmarshal(source);
+				}
+				catch (JAXBException e3) {
+					throw new RuntimeException(e3);
+				}
 			}
 		}
 

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@SuppressWarnings("Duplicates")
 public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 	private BatchScheduler batchScheduler;
@@ -126,7 +126,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(6, mutations.size());    // il y a 1 commune + 1 immeuble + 3 droits + 1 ayant-droit dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
@@ -532,7 +532,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // les 3 droits dans le fichier d'import sont différents
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
@@ -732,7 +732,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // les 3 droits qui existent dans la DB devront être fermés
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());

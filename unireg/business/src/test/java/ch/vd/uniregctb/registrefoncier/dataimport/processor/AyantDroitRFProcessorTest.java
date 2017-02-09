@@ -174,4 +174,71 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 		assertOnePersonnePhysiqueInDB("3893728273382823", 3727, "Nom", "Prénom", RegDate.get(1956, 1, 23), 827288022);
 	}
 
+	/**
+	 * Ce test vérifie que le processing d'une mutation de création crée bien un nouvel ayant-droit dans la DB
+	 */
+	@Test
+	public void testProcessMutationCreationServitude() throws Exception {
+
+		// précondition : la base est vide
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				assertEquals(0, ayantDroitRFDAO.getAll().size());
+			}
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_ayantdroit_servitude_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, null);
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée et l'ayant-droit est créé en base
+		assertOnePersonnePhysiqueInDB("3893728273382823", 0, "Nom", "Prénom", RegDate.get(1956, 1, 23), 827288022);
+	}
+
+	/*
+	 * Ce test vérifie que le processing d'une mutation de modification d'un ayant-droit fonctionne bien.
+	 */
+	@Test
+	public void testProcessMutationModificationServitude() throws Exception {
+
+		// précondition : il y a déjà un ayant-droit dans la base avec un prénom différent de celui de la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				addPersonnePhysiqueRF("Autre prénom", "Nom", date(1956, 1, 23), "3893728273382823", 3727, 827288022L);
+				assertEquals(1, ayantDroitRFDAO.getAll().size());
+			}
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_ayantdroit_servitude_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.MODIFICATION, null);
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée, l'ayant-droit est mis-à-jour en base
+		assertOnePersonnePhysiqueInDB("3893728273382823", 3727, "Nom", "Prénom", RegDate.get(1956, 1, 23), 827288022);
+	}
+
 }

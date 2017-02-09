@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RechteregisterExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister export_rechteregister_20101231.xsd">
+	<StandardRechtList>
+		<Dienstbarkeit VersionID="1f109152380ffd8901380ffed66943a2" MasterID="1f109152380ffd8901380ffed6694392">
+			<StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>
+			<BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>
+			<RechtEintragJahrID>2005</RechtEintragJahrID>
+			<RechtEintragNummerID>699</RechtEintragNummerID>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<AmtNummer>8</AmtNummer>
+			<Stichwort>
+				<TextDe>*Usufruit</TextDe>
+				<TextFr>Usufruit</TextFr>
+			</Stichwort>
+			<Rechtzusatz>conventionnel</Rechtzusatz>
+			<BelegAlt>2002/392</BelegAlt>
+			<BeginDatum>2002-09-02+02:00</BeginDatum>
+			<Entschaedigung>0</Entschaedigung>
+			<Wert>0</Wert>
+			<Meldungspflichtig>gem_code</Meldungspflichtig>
+			<Personenberechtigt>true</Personenberechtigt>
+			<Grundstueckeberechtigt>false</Grundstueckeberechtigt>
+			<EintragungAlsSdR>false</EintragungAlsSdR>
+		</Dienstbarkeit>
+		<Dienstbarkeit VersionID="1f109152380ffd8901380ffefad64374" MasterID="1f109152380ffd8901380ffefad54360">
+			<StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>
+			<BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>
+			<RechtEintragJahrID>2006</RechtEintragJahrID>
+			<RechtEintragNummerID>361</RechtEintragNummerID>
+			<Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+			<AmtNummer>8</AmtNummer>
+			<Stichwort>
+				<TextDe>*Usufruit</TextDe>
+				<TextFr>Usufruit</TextFr>
+			</Stichwort>
+			<Rechtzusatz>conventionnel</Rechtzusatz>
+			<Beleg>
+				<AmtNummer>8</AmtNummer>
+				<BelegJahr>2006</BelegJahr>
+				<BelegNummer>285</BelegNummer>
+				<BelegNummerIndex>0</BelegNummerIndex>
+			</Beleg>
+			<BeginDatum>2006-06-30+02:00</BeginDatum>
+			<Entschaedigung>0</Entschaedigung>
+			<Wert>0</Wert>
+			<Meldungspflichtig>gem_code</Meldungspflichtig>
+			<Personenberechtigt>true</Personenberechtigt>
+			<Grundstueckeberechtigt>false</Grundstueckeberechtigt>
+			<EintragungAlsSdR>false</EintragungAlsSdR>
+		</Dienstbarkeit>
+	</StandardRechtList>
+	<LastRechtGruppeList>
+		<LastRechtGruppe VersionID="1f109152380ffd8901380ffed66a43c1">
+			<StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>
+			<BelastetesGrundstueck VersionID="1f109152380ffd8901380ffed672445a">
+				<BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>
+			</BelastetesGrundstueck>
+			<BerechtigtePerson VersionID="1f109152380ffd8901380ffed66d4417">
+				<NatuerlichePersonGb VersionID="1f109152380ffd8901380ffe24b81b93" MasterID="1f109152380ffd8901380ffe24b31b61">
+					<Name>Gaillard</Name>
+					<Status>definitiv</Status>
+					<Vorname>Roger</Vorname>
+					<Geburtsdatum>
+						<Tag>2</Tag>
+						<Monat>2</Monat>
+						<Jahr>1938</Jahr>
+					</Geburtsdatum>
+					<Zivilstand>unbekannt</Zivilstand>
+					<NameEltern>Albert</NameEltern>
+					<WeitereVornamen>Albert</WeitereVornamen>
+					<PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>
+				</NatuerlichePersonGb>
+			</BerechtigtePerson>
+		</LastRechtGruppe>
+		<LastRechtGruppe VersionID="1f109152380ffd8901380ffefad743bc">
+			<StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>
+			<BelastetesGrundstueck VersionID="1f109152380ffd8901380ffefadb441c">
+				<BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>
+			</BelastetesGrundstueck>
+			<BerechtigtePerson VersionID="1f109152380ffd8901380ffefada43f6">
+				<NatuerlichePersonGb VersionID="1f109152380ffd8901380ffe25b22067" MasterID="1f109152380ffd8901380ffe25ae2003">
+					<Name>Lassueur</Name>
+					<Status>definitiv</Status>
+					<Vorname>Anne-Lise</Vorname>
+					<Ledigname>Audemars</Ledigname>
+					<Geburtsdatum>
+						<Tag>9</Tag>
+						<Monat>3</Monat>
+						<Jahr>1945</Jahr>
+					</Geburtsdatum>
+					<Zivilstand>unbekannt</Zivilstand>
+					<NameEltern>Louis</NameEltern>
+					<NameEhegatte>Jean-Claude</NameEhegatte>
+					<PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>
+				</NatuerlichePersonGb>
+			</BerechtigtePerson>
+			<BerechtigtePerson VersionID="1f109152380ffd8901380ffefada43f7">
+				<NatuerlichePersonGb VersionID="1f109152380ffd8901380ffe25b22068" MasterID="1f109152380ffd8901380ffe25ae2004">
+					<Name>Lassueur</Name>
+					<Status>definitiv</Status>
+					<Vorname>Jean-Claude</Vorname>
+					<Geburtsdatum>
+						<Tag>27</Tag>
+						<Monat>6</Monat>
+						<Jahr>1941</Jahr>
+					</Geburtsdatum>
+					<Zivilstand>unbekannt</Zivilstand>
+					<NameEltern>René</NameEltern>
+					<WeitereVornamen>René</WeitereVornamen>
+					<PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>
+				</NatuerlichePersonGb>
+			</BerechtigtePerson>
+		</LastRechtGruppe>
+	</LastRechtGruppeList>
+	<PersonstammList>
+		<NatuerlichePersonstamm>
+			<PersonstammID>_1f109152380ffd8901380ffdabcc2441</PersonstammID>
+			<Name>Gaillard</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<Anrede>
+				<TextDe>*Monsieur</TextDe>
+				<TextFr>Monsieur</TextFr>
+			</Anrede>
+			<NrACI>0</NrACI>
+			<Adressen>
+				<Strasse>Le Charroux 1</Strasse>
+				<PLZ>1345</PLZ>
+				<Ort>Le Lieu</Ort>
+				<Rolle>ACI</Rolle>
+			</Adressen>
+			<Vorname>Roger</Vorname>
+			<Zivilstand>unbekannt</Zivilstand>
+			<Geburtsdatum>
+				<Tag>2</Tag>
+				<Monat>2</Monat>
+				<Jahr>1938</Jahr>
+			</Geburtsdatum>
+			<NameDerEltern>Albert</NameDerEltern>
+			<Geschlecht>unbekannt</Geschlecht>
+			<WeitereVornamen>Albert</WeitereVornamen>
+			<NrIROLE>10386724</NrIROLE>
+		</NatuerlichePersonstamm>
+		<NatuerlichePersonstamm>
+			<PersonstammID>_1f109152380ffd8901380ffda8131c65</PersonstammID>
+			<Name>Lassueur</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<Anrede>
+				<TextDe>*Madame</TextDe>
+				<TextFr>Madame</TextFr>
+			</Anrede>
+			<NrACI>0</NrACI>
+			<Adressen>
+				<Strasse>Rue des Sauges 22</Strasse>
+				<PLZ>1347</PLZ>
+				<Ort>Le Sentier</Ort>
+				<Rolle>ACI</Rolle>
+			</Adressen>
+			<Vorname>Anne-Lise</Vorname>
+			<Zivilstand>unbekannt</Zivilstand>
+			<Geburtsdatum>
+				<Tag>9</Tag>
+				<Monat>3</Monat>
+				<Jahr>1945</Jahr>
+			</Geburtsdatum>
+			<LedigName>Audemars</LedigName>
+			<NameDerEltern>Louis</NameDerEltern>
+			<Geschlecht>unbekannt</Geschlecht>
+			<NameEhegatte>Jean-Claude</NameEhegatte>
+			<NrIROLE>10385020</NrIROLE>
+		</NatuerlichePersonstamm>
+		<NatuerlichePersonstamm>
+			<PersonstammID>_1f109152380ffd8901380ffda5511644</PersonstammID>
+			<Name>Lassueur</Name>
+			<Gueltig>true</Gueltig>
+			<ClientRegulier>false</ClientRegulier>
+			<NoSCC>0</NoSCC>
+			<Status>definitiv</Status>
+			<Sprache>
+				<TextDe>Französisch</TextDe>
+				<TextFr>Français</TextFr>
+			</Sprache>
+			<Anrede>
+				<TextDe>*Monsieur</TextDe>
+				<TextFr>Monsieur</TextFr>
+			</Anrede>
+			<NrACI>0</NrACI>
+			<Adressen>
+				<Strasse>Rue des Sauges 22</Strasse>
+				<PLZ>1347</PLZ>
+				<Ort>Le Sentier</Ort>
+				<Rolle>ACI</Rolle>
+			</Adressen>
+			<Vorname>Jean-Claude</Vorname>
+			<Zivilstand>unbekannt</Zivilstand>
+			<Geburtsdatum>
+				<Tag>27</Tag>
+				<Monat>6</Monat>
+				<Jahr>1941</Jahr>
+			</Geburtsdatum>
+			<NameDerEltern>René</NameDerEltern>
+			<Geschlecht>unbekannt</Geschlecht>
+			<WeitereVornamen>René</WeitereVornamen>
+			<NrIROLE>10385019</NrIROLE>
+		</NatuerlichePersonstamm>
+	</PersonstammList>
+</RechteregisterExport>

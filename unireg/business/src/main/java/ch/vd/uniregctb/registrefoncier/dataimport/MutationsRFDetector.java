@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorCompletionService;
@@ -206,7 +208,7 @@ public class MutationsRFDetector implements InitializingBean {
 				return true;
 			});
 
-			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
+			// on détecte les changements et crée les mutations
 			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
 			processDroits(importId, nbThreads, adapter.getDroitsIterator(), importInitial, new SubStatusManager(20, 40, statusManager));
 			processProprietaires(importId, nbThreads, adapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
@@ -228,17 +230,21 @@ public class MutationsRFDetector implements InitializingBean {
 
 			statusManager.setMessage("Détection des mutations...");
 
-			// les servitudes et les bénéficiaires sont stockées dans deux listes disjointes dans le fichier, on les regroupes ici
-			final Map<String, DienstbarkeitExtendedElement> data = new HashMap<>();
+			// TODO (msi) faut-il instancier un adapteur multi-threadé (comme pour le fichier principal) ? A voir lorsqu'on recevra l'export de taille normale
+
+			final Map<String, DienstbarkeitExtendedElement> servitudes = new HashMap<>();
+			final List<ch.vd.capitastra.rechteregister.Personstamm> beneficiaires = new ArrayList<>();
+
 			fichierServitudeParser.processFile(is, new FichierServitudeRFParser.Callback() {
 				@Override
 				public void onServitude(@NotNull Dienstbarkeit servitude) {
-					data.put(servitude.getStandardRechtID(), new DienstbarkeitExtendedElement(servitude));
+					// les servitudes et les bénéficiaires de servitudes sont stockées dans deux listes disjointes dans le fichier, on les regroupes dans DienstbarkeitExtendedElement
+					servitudes.put(servitude.getStandardRechtID(), new DienstbarkeitExtendedElement(servitude));
 				}
 
 				@Override
 				public void onGroupeBeneficiaires(@NotNull LastRechtGruppe beneficiaires) {
-					final DienstbarkeitExtendedElement servex = data.get(beneficiaires.getStandardRechtIDREF());
+					final DienstbarkeitExtendedElement servex = servitudes.get(beneficiaires.getStandardRechtIDREF());
 					if (servex == null) {
 						// on reçoit des bénéficiaires qui ne correspondent pas à des servitudes (certainement
 						// à cause d'un filtre dans l'export de Capitastra) -> on les ignore
@@ -249,7 +255,7 @@ public class MutationsRFDetector implements InitializingBean {
 
 				@Override
 				public void onBeneficiaire(@NotNull ch.vd.capitastra.rechteregister.Personstamm beneficiaire) {
-					// TODO (msi)
+					beneficiaires.add(beneficiaire);
 				}
 
 				@Override
@@ -258,7 +264,8 @@ public class MutationsRFDetector implements InitializingBean {
 			});
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
-			processServitudes(importId, nbThreads, data.values().iterator(), importInitial, statusManager);
+			processServitudes(importId, nbThreads, servitudes.values().iterator(), importInitial, statusManager);
+			processBeneficiaires(importId, nbThreads, beneficiaires.iterator(), importInitial, statusManager);
 
 			statusManager.setMessage("Traitement terminé.");
 		}
@@ -371,8 +378,12 @@ public class MutationsRFDetector implements InitializingBean {
 		droitRFDetector.processServitudes(importId, nbThreads, discreteIterator, importInitial, statusManager);
 	}
 
+	private void processBeneficiaires(long importId, int nbThreads, Iterator<ch.vd.capitastra.rechteregister.Personstamm> iterator, boolean importInitial, StatusManager statusManager) {
+		ayantDroitRFDetector.processAyantDroits(importId, nbThreads, iterator, statusManager);
+	}
+
 	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator, @Nullable StatusManager statusManager) {
-		ayantDroitRFDetector.processProprietaires(importId, nbThreads, iterator, statusManager);
+		ayantDroitRFDetector.processAyantDroits(importId, nbThreads, iterator, statusManager);
 	}
 
 	public void processBatiments(long importId, int nbThreads, Iterator<Gebaeude> iterator, @Nullable StatusManager statusManager) {

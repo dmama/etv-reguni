@@ -267,6 +267,9 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		else if (rechteinhaber instanceof Gemeinschaft) {
 			return toXMLString((Gemeinschaft) rechteinhaber);
 		}
+		if (rechteinhaber instanceof ch.vd.capitastra.rechteregister.Personstamm) {
+			return toXMLString((ch.vd.capitastra.rechteregister.Personstamm) rechteinhaber);
+		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");
 		}

@@ -59,7 +59,9 @@ public abstract class TiersRF extends AyantDroitRF {
 	public void copyDataTo(AyantDroitRF right) {
 		super.copyDataTo(right);
 		final TiersRF tiersRight = (TiersRF) right;
-		tiersRight.noRF = this.noRF;
+		if (this.noRF > 0) {    // le numéro RF n'existe pas dans le rechtregister : inutile de le copier s'il n'est pas renseigné
+			tiersRight.noRF = this.noRF;
+		}
 		tiersRight.noContribuable = this.noContribuable;
 	}
 }

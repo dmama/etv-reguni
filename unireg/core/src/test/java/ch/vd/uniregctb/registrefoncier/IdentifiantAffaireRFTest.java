@@ -12,6 +12,7 @@ public class IdentifiantAffaireRFTest {
 		assertEquals("006-2006/1402/0", new IdentifiantAffaireRF(6, 2006, 1402, 0).toString());
 		assertEquals("006", new IdentifiantAffaireRF(6, null, null, null).toString());
 		assertEquals("006-3783", new IdentifiantAffaireRF(6, null, 3783, null).toString());
+		assertEquals("001-1998/3535", new IdentifiantAffaireRF(1, 1998, 3535, null).toString());
 	}
 
 	@Test
@@ -24,6 +25,7 @@ public class IdentifiantAffaireRFTest {
 		assertEquals(new IdentifiantAffaireRF(6, "03/409bis"), IdentifiantAffaireRF.parse("006-03/409bis"));
 		assertEquals(new IdentifiantAffaireRF(5, "2002/341c"), IdentifiantAffaireRF.parse("005-2002/341c"));
 		assertEquals(new IdentifiantAffaireRF(6, null, null, null), IdentifiantAffaireRF.parse("006"));
+		assertEquals(new IdentifiantAffaireRF(1, 1998, 3535, null), IdentifiantAffaireRF.parse("001-1998/3535"));
 
 		try {
 			IdentifiantAffaireRF.parse("6-2006/1402/0");
@@ -34,11 +36,11 @@ public class IdentifiantAffaireRFTest {
 		}
 
 		try {
-			IdentifiantAffaireRF.parse("01-1998/3535");
+			IdentifiantAffaireRF.parse("01-1998");
 			fail();
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals("La string [01-1998/3535] ne représente pas un identifiant d'affaire RF valide", e.getMessage());
+			assertEquals("La string [01-1998] ne représente pas un identifiant d'affaire RF valide", e.getMessage());
 		}
 	}
 }

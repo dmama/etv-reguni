@@ -77,10 +77,13 @@ public interface XmlHelperRF {
 	JAXBContext getServitudeListContext();
 
 	/**
-	 * @return le context JAXB pour les bénéficiaires de servitudes (fichier séparé du fichier principal).
+	 * @return le context JAXB pour les groupes de bénéficiaires de servitudes (fichier séparé du fichier principal).
 	 */
 	JAXBContext getGroupeBeneficiairesContext();
 
+	/**
+	 * @return le context JAXB pour les bénéficiaires de servitudes (fichier séparé du fichier principal).
+	 */
 	JAXBContext getBeneficiaireContext();
 
 	/**

@@ -39,4 +39,11 @@ public class AyantDroitRFKey {
 	public int hashCode() {
 		return Objects.hash(idRF);
 	}
+
+	@Override
+	public String toString() {
+		return "AyantDroitRFKey{" +
+				"idRF='" + idRF + '\'' +
+				'}';
+	}
 }

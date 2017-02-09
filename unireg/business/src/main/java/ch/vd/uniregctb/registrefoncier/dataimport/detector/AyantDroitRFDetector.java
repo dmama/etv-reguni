@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.common.Rechteinhaber;
-import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -62,13 +61,13 @@ public class AyantDroitRFDetector {
 		this.transactionManager = transactionManager;
 	}
 
-	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator, @Nullable StatusManager statusManager) {
+	public <T extends Rechteinhaber> void processAyantDroits(long importId, int nbThreads, Iterator<T> iterator, @Nullable StatusManager statusManager) {
 
 		if (statusManager != null) {
-			statusManager.setMessage("Détection des mutations sur les propriétaires...");
+			statusManager.setMessage("Détection des mutations sur les ayant-droits...");
 		}
 
-		final ParallelBatchTransactionTemplate<Personstamm> template = new ParallelBatchTransactionTemplate<Personstamm>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<T> template = new ParallelBatchTransactionTemplate<T>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
@@ -79,23 +78,23 @@ public class AyantDroitRFDetector {
 
 		final AtomicInteger processed = new AtomicInteger();
 
-		template.execute(new BatchCallback<Personstamm>() {
+		template.execute(new BatchCallback<T>() {
 
-			private final ThreadLocal<Personstamm> first = new ThreadLocal<>();
+			private final ThreadLocal<T> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Personstamm> batch) throws Exception {
+			public boolean doInTransaction(List<T> batch) throws Exception {
 				first.set(batch.get(0));
 
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-				for (Personstamm person : batch) {
+				for (T person : batch) {
 					processAyantDroit(parentImport, person);
 				}
 
 				processed.addAndGet(batch.size());
 				if (statusManager != null) {
-					statusManager.setMessage("Détection des mutations sur les propriétaires... (" + processed.get() + " processés)");
+					statusManager.setMessage("Détection des mutations sur les ayant-droits... (" + processed.get() + " processés)");
 				}
 
 				return true;
@@ -104,7 +103,8 @@ public class AyantDroitRFDetector {
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
-					LOGGER.error("Exception sur le traitement du propriétaire idRF=[" + first.get().getPersonstammID() + "]", e);
+					final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(first.get());
+					LOGGER.error("Exception sur le traitement de l'ayant-droits idRF=[" + key.getIdRF() + "]", e);
 					throw new RuntimeException(e);
 				}
 			}

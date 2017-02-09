@@ -36,6 +36,9 @@ public abstract class AyantDroitRFHelper {
 		else if (right instanceof Gemeinschaft) {
 			return dataEquals(left, (Gemeinschaft) right);
 		}
+		else if (right instanceof ch.vd.capitastra.rechteregister.Personstamm) {
+			return dataEquals(left, (ch.vd.capitastra.rechteregister.Personstamm) right);
+		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + right.getClass() + "]");
 		}
@@ -76,6 +79,47 @@ public abstract class AyantDroitRFHelper {
 		}
 		else if (left instanceof CollectivitePubliqueRF) {
 			return dataEquals((CollectivitePubliqueRF) left, (JuristischePersonstamm) right);
+		}
+		else {
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + left.getClass() + "]");
+		}
+	}
+
+	/**
+	 * @return <b>vrai</b> si les deux ayant-droits spécifiés possèdent les mêmes données; <b>faux</b> autrement.
+	 */
+	public static boolean dataEquals(@NotNull AyantDroitRF left, @NotNull ch.vd.capitastra.rechteregister.Personstamm right) {
+		if (!left.getIdRF().equals(right.getPersonstammID())) {
+			// erreur de programmation, on ne devrait jamais comparer deux ayant-droit avec des IDRef différents
+			throw new ProgrammingException();
+		}
+
+		// [blindage] les valeurs suivantes ne doivent jamais changer (le modèle est construit sur ce prédicat)
+		if (left instanceof PersonnePhysiqueRF && !(right instanceof ch.vd.capitastra.rechteregister.NatuerlichePersonstamm)) {
+			throw new IllegalArgumentException("Le type de l'ayant-droit idRF=[" + left.getIdRF() + "] a changé.");
+		}
+		if (left instanceof PersonneMoraleRF && (!(right instanceof ch.vd.capitastra.rechteregister.JuristischePersonstamm) ||
+				((ch.vd.capitastra.rechteregister.JuristischePersonstamm) right).getUnterart() == ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT)) {
+			throw new IllegalArgumentException("Le type de l'ayant-droit idRF=[" + left.getIdRF() + "] a changé.");
+		}
+		if (left instanceof CollectivitePubliqueRF && (!(right instanceof ch.vd.capitastra.rechteregister.JuristischePersonstamm) ||
+				((ch.vd.capitastra.rechteregister.JuristischePersonstamm) right).getUnterart() != ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT)) {
+			throw new IllegalArgumentException("Le type de l'ayant-droit idRF=[" + left.getIdRF() + "] a changé.");
+		}
+		if (left instanceof CommunauteRF) {
+			// les communautés RF sont renseignées à partir des droits, on ne devrait pas en recevoir par ce canal
+			throw new IllegalArgumentException("Le type de l'ayant-droit idRF=[" + left.getIdRF() + "] a changé.");
+		}
+		// [/blindage]
+
+		if (left instanceof PersonnePhysiqueRF) {
+			return dataEquals((PersonnePhysiqueRF) left, (ch.vd.capitastra.rechteregister.NatuerlichePersonstamm) right);
+		}
+		else if (left instanceof PersonneMoraleRF) {
+			return dataEquals((PersonneMoraleRF) left, (ch.vd.capitastra.rechteregister.JuristischePersonstamm) right);
+		}
+		else if (left instanceof CollectivitePubliqueRF) {
+			return dataEquals((CollectivitePubliqueRF) left, (ch.vd.capitastra.rechteregister.JuristischePersonstamm) right);
 		}
 		else {
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + left.getClass() + "]");
@@ -130,14 +174,34 @@ public abstract class AyantDroitRFHelper {
 				left.getDateNaissance() == getRegDate(right.getGeburtsdatum());
 	}
 
+	public static boolean dataEquals(@NotNull PersonnePhysiqueRF left, @NotNull ch.vd.capitastra.rechteregister.NatuerlichePersonstamm right) {
+		return // le numéro RF n'existe pas dans le rechtregister : left.getNoRF() == right.getNoRF() &&
+				(Objects.equals(left.getNoContribuable(), getNoContribuable(right))) &&
+				Objects.equals(left.getNom(), right.getName()) &&
+				Objects.equals(left.getPrenom(), right.getVorname()) &&
+				left.getDateNaissance() == getRegDate(right.getGeburtsdatum());
+	}
+
 	public static boolean dataEquals(@NotNull PersonneMoraleRF left, @NotNull JuristischePersonstamm right) {
 		return left.getNoRF() == right.getNoRF() &&
 				(Objects.equals(left.getNoContribuable(), getNoContribuable(right))) &&
 				Objects.equals(left.getRaisonSociale(), right.getName());
 	}
 
+	public static boolean dataEquals(@NotNull PersonneMoraleRF left, @NotNull ch.vd.capitastra.rechteregister.JuristischePersonstamm right) {
+		return // le numéro RF n'existe pas dans le rechtregister : left.getNoRF() == right.getNoRF() &&
+				(Objects.equals(left.getNoContribuable(), getNoContribuable(right))) &&
+				Objects.equals(left.getRaisonSociale(), right.getName());
+	}
+
 	public static boolean dataEquals(@NotNull CollectivitePubliqueRF left, @NotNull JuristischePersonstamm right) {
 		return left.getNoRF() == right.getNoRF() &&
+				(Objects.equals(left.getNoContribuable(), getNoContribuable(right))) &&
+				Objects.equals(left.getRaisonSociale(), right.getName());
+	}
+
+	public static boolean dataEquals(@NotNull CollectivitePubliqueRF left, @NotNull ch.vd.capitastra.rechteregister.JuristischePersonstamm right) {
+		return // le numéro RF n'existe pas dans le rechtregister : left.getNoRF() == right.getNoRF() &&
 				(Objects.equals(left.getNoContribuable(), getNoContribuable(right))) &&
 				Objects.equals(left.getRaisonSociale(), right.getName());
 	}
@@ -149,8 +213,11 @@ public abstract class AyantDroitRFHelper {
 		else if (rechteinhaber instanceof Gemeinschaft) {
 			return new AyantDroitRFKey(((Gemeinschaft) rechteinhaber).getGemeinschatID());
 		}
+		else if (rechteinhaber instanceof ch.vd.capitastra.rechteregister.Personstamm) {
+			return new AyantDroitRFKey(((ch.vd.capitastra.rechteregister.Personstamm) rechteinhaber).getPersonstammID());
+		}
 		else {
-			throw new IllegalArgumentException("Type d'ayan-droit inconnu = [" + rechteinhaber.getClass() + "]");
+			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");
 		}
 	}
 
@@ -163,6 +230,17 @@ public abstract class AyantDroitRFHelper {
 			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 			pp.setIdRF(natuerliche.getPersonstammID());
 			pp.setNoRF(natuerliche.getNoRF());
+			pp.setNoContribuable(getNoContribuable(natuerliche));
+			pp.setPrenom(natuerliche.getVorname());
+			pp.setNom(natuerliche.getName());
+			pp.setDateNaissance(getRegDate(natuerliche.getGeburtsdatum()));
+			ayantDroitRF = pp;
+		}
+		else if (rechteinhaber instanceof ch.vd.capitastra.rechteregister.NatuerlichePersonstamm) {
+			final ch.vd.capitastra.rechteregister.NatuerlichePersonstamm natuerliche = (ch.vd.capitastra.rechteregister.NatuerlichePersonstamm) rechteinhaber;
+			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+			pp.setIdRF(natuerliche.getPersonstammID());
+			// le numéro RF n'existe pas dans le rechtregister : pp.setNoRF(natuerliche.getNoRF());
 			pp.setNoContribuable(getNoContribuable(natuerliche));
 			pp.setPrenom(natuerliche.getVorname());
 			pp.setNom(natuerliche.getName());
@@ -189,6 +267,26 @@ public abstract class AyantDroitRFHelper {
 				ayantDroitRF = pm;
 			}
 		}
+		else if (rechteinhaber instanceof ch.vd.capitastra.rechteregister.JuristischePersonstamm) {
+			final ch.vd.capitastra.rechteregister.JuristischePersonstamm juri = (ch.vd.capitastra.rechteregister.JuristischePersonstamm) rechteinhaber;
+			if (juri.getUnterart() == ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT) {
+				final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
+				coll.setIdRF(juri.getPersonstammID());
+				// le numéro RF n'existe pas dans le rechtregister : coll.setNoRF(juri.getNoRF());
+				coll.setNoContribuable(getNoContribuable(juri));
+				coll.setRaisonSociale(juri.getName());
+				ayantDroitRF = coll;
+			}
+			else {
+				final PersonneMoraleRF pm = new PersonneMoraleRF();
+				pm.setIdRF(juri.getPersonstammID());
+				// le numéro RF n'existe pas dans le rechtregister : pm.setNoRF(juri.getNoRF());
+				pm.setNoContribuable(getNoContribuable(juri));
+				pm.setRaisonSociale(juri.getName());
+				pm.setNumeroRC(juri.getFirmenNr());
+				ayantDroitRF = pm;
+			}
+		}
 		else if (rechteinhaber instanceof Gemeinschaft) {
 			final Gemeinschaft gemeinschaft = (Gemeinschaft) rechteinhaber;
 			CommunauteRF communaute = new CommunauteRF();
@@ -209,11 +307,27 @@ public abstract class AyantDroitRFHelper {
 		return RegDateHelper.get(geburtsdatum.getJahr(), geburtsdatum.getMonat(), geburtsdatum.getTag());
 	}
 
+	private static RegDate getRegDate(@Nullable ch.vd.capitastra.rechteregister.GeburtsDatum geburtsdatum) {
+		if (geburtsdatum == null) {
+			return null;
+		}
+		return RegDateHelper.get(geburtsdatum.getJahr(), geburtsdatum.getMonat(), geburtsdatum.getTag());
+	}
+
 	@Nullable
 	static Long getNoContribuable(@NotNull Personstamm right) {
 		Long no = trimToNull(right.getNrACI());
 		if (no == null && right instanceof NatuerlichePersonstamm) {
 			no = trimToNull(((NatuerlichePersonstamm) right).getNrIROLE());
+		}
+		return no;
+	}
+
+	@Nullable
+	static Long getNoContribuable(@NotNull ch.vd.capitastra.rechteregister.Personstamm right) {
+		Long no = trimToNull(right.getNrACI());
+		if (no == null && right instanceof ch.vd.capitastra.rechteregister.NatuerlichePersonstamm) {
+			no = trimToNull(((ch.vd.capitastra.rechteregister.NatuerlichePersonstamm) right).getNrIROLE());
 		}
 		return no;
 	}

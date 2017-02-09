@@ -29,6 +29,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
@@ -39,6 +40,7 @@ import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
+import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
@@ -254,6 +256,24 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	@NotNull
+	public static UsufruitRF newUsufruitRF(String masterIdRF, BienFondRF immeuble, PersonnePhysiqueRF personne, CommunauteRF communaute, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier,
+	                                       IdentifiantDroitRF identifiantDroit,
+	                                       IdentifiantAffaireRF numeroAffaire) {
+		final UsufruitRF usu = new UsufruitRF();
+		usu.setAyantDroit(personne);
+		usu.setCommunaute(communaute);
+		usu.setDateDebut(dateDebut);
+		usu.setDateDebutMetier(dateDebutMetier);
+		usu.setDateFin(dateFin);
+		usu.setDateFinMetier(dateFinMetier);
+		usu.setIdentifiantDroit(identifiantDroit);
+		usu.setImmeuble(immeuble);
+		usu.setMasterIdRF(masterIdRF);
+		usu.setNumeroAffaire(numeroAffaire);
+		return usu;
+	}
+
+	@NotNull
 	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondRF immeuble, String type, int surface, RegDate dateDebut, RegDate dateFin) {
 		final SurfaceAuSolRF sur = new SurfaceAuSolRF();
 		sur.setImmeuble(immeuble);
@@ -312,7 +332,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 			if (count % 6 == 0) { // 1 minute
 				LOGGER.debug("Attente de la fin du job " + job.getName());
 			}
-			if (count > 30) { // 5 minutes
+			if (count > 60) { // 5 minutes
 				LOGGER.debug("Interruption du job " + job.getName() + "...");
 				job.interrupt();
 				fail("Le job " + job.getName() + " tournait depuis plus de cinq minutes et a été interrompu.");

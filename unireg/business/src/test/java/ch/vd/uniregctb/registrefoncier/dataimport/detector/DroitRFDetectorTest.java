@@ -57,6 +57,7 @@ import static ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelp
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@SuppressWarnings("Duplicates")
 @RunWith(UniregJUnit4Runner.class)
 public class DroitRFDetectorTest {
 
@@ -352,7 +353,7 @@ public class DroitRFDetectorTest {
 	}
 
 	/**
-	 * Ce test vérifie que des mutations sont bien créées lorsque les servitudes reçuent n'existent pas dans la base de données.
+	 * Ce test vérifie que des mutations sont bien créées lorsque les servitudes reçues n'existent pas dans la base de données.
 	 */
 	@Test
 	public void testNouvellesServitudes() throws Exception {

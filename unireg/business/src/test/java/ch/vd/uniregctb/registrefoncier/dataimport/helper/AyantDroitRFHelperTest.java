@@ -51,6 +51,31 @@ public class AyantDroitRFHelperTest {
 	}
 
 	/**
+	 * Ce test vérifie que deux personnes physiques identiques sont bien considérées comme égales.
+	 */
+	@Test
+	public void testEqualsPPServitude() throws Exception {
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF("3893728273382823");
+		pp.setNoRF(3727);
+		pp.setNoContribuable(827288022L);
+		pp.setNom("Nom");
+		pp.setPrenom("Prénom");
+		pp.setDateNaissance(RegDate.get(1956, 1, 23));
+
+		final ch.vd.capitastra.rechteregister.NatuerlichePersonstamm personStamm = new ch.vd.capitastra.rechteregister.NatuerlichePersonstamm();
+		personStamm.setPersonstammID("3893728273382823");
+		//personStamm.setNoRF(3727L);
+		personStamm.setNrIROLE(827288022L);
+		personStamm.setName("Nom");
+		personStamm.setVorname("Prénom");
+		personStamm.setGeburtsdatum(new ch.vd.capitastra.rechteregister.GeburtsDatum(23, 1, 1956));
+
+		assertTrue(AyantDroitRFHelper.dataEquals(pp, personStamm));
+	}
+
+	/**
 	 * Ce test vérifie que deux personnes physiques avec des numéros de contribuable différents sont bien considérées comme inégales.
 	 */
 	@Test
@@ -71,6 +96,30 @@ public class AyantDroitRFHelperTest {
 		personStamm.setName("Nom");
 		personStamm.setVorname("Prénom");
 		personStamm.setGeburtsdatum(new GeburtsDatum(23, 1, 1956));
+
+		assertFalse(AyantDroitRFHelper.dataEquals(pp, personStamm));
+	}
+
+	/**
+	 * Ce test vérifie que deux personnes physiques avec des numéros de contribuable différents sont bien considérées comme inégales.
+	 */
+	@Test
+	public void testNotEqualsPPServitude() throws Exception {
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF("3893728273382823");
+		pp.setNoRF(3727);
+		pp.setNoContribuable(827288022L);
+		pp.setNom("Nom");
+		pp.setPrenom("Prénom");
+		pp.setDateNaissance(RegDate.get(1956, 1, 23));
+
+		final ch.vd.capitastra.rechteregister.NatuerlichePersonstamm personStamm = new ch.vd.capitastra.rechteregister.NatuerlichePersonstamm();
+		personStamm.setPersonstammID("3893728273382823");
+		personStamm.setNrIROLE(123003045L);     // <-- changement de n° de contribuable
+		personStamm.setName("Nom");
+		personStamm.setVorname("Prénom");
+		personStamm.setGeburtsdatum(new ch.vd.capitastra.rechteregister.GeburtsDatum(23, 1, 1956));
 
 		assertFalse(AyantDroitRFHelper.dataEquals(pp, personStamm));
 	}
@@ -98,6 +147,28 @@ public class AyantDroitRFHelperTest {
 	}
 
 	/**
+	 * Ce test vérifie que deux personnes morales identiques sont bien considérées comme égales.
+	 */
+	@Test
+	public void testEqualsPMServitude() throws Exception {
+
+		final PersonneMoraleRF pm = new PersonneMoraleRF();
+		pm.setIdRF("48349384890202");
+		pm.setNoRF(3727);
+		pm.setNoContribuable(827288022L);
+		pm.setRaisonSociale("Raison sociale");
+
+		final ch.vd.capitastra.rechteregister.JuristischePersonstamm personStamm = new ch.vd.capitastra.rechteregister.JuristischePersonstamm();
+		personStamm.setPersonstammID("48349384890202");
+		//personStamm.setNoRF(3727L);
+		personStamm.setNrACI(827288022L);
+		personStamm.setName("Raison sociale");
+		personStamm.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
+
+		assertTrue(AyantDroitRFHelper.dataEquals(pm, personStamm));
+	}
+
+	/**
 	 * Ce test vérifie que deux personnes morales avec des raisons sociales différentes sont bien considérées comme inégales.
 	 */
 	@Test
@@ -115,6 +186,27 @@ public class AyantDroitRFHelperTest {
 		personStamm.setNrACI(827288022L);
 		personStamm.setName("Nouvelle raison sociale"); // <-- changement de raison sociale
 		personStamm.setUnterart(JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
+
+		assertFalse(AyantDroitRFHelper.dataEquals(pm, personStamm));
+	}
+
+	/**
+	 * Ce test vérifie que deux personnes morales avec des raisons sociales différentes sont bien considérées comme inégales.
+	 */
+	@Test
+	public void testNotEqualsPMServitude() throws Exception {
+
+		final PersonneMoraleRF pm = new PersonneMoraleRF();
+		pm.setIdRF("48349384890202");
+		pm.setNoRF(3727);
+		pm.setNoContribuable(827288022L);
+		pm.setRaisonSociale("Raison sociale");
+
+		final ch.vd.capitastra.rechteregister.JuristischePersonstamm personStamm = new ch.vd.capitastra.rechteregister.JuristischePersonstamm();
+		personStamm.setPersonstammID("48349384890202");
+		personStamm.setNrACI(827288022L);
+		personStamm.setName("Nouvelle raison sociale"); // <-- changement de raison sociale
+		personStamm.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
 
 		assertFalse(AyantDroitRFHelper.dataEquals(pm, personStamm));
 	}
@@ -142,6 +234,28 @@ public class AyantDroitRFHelperTest {
 	}
 
 	/**
+	 * Ce test vérifie que deux collectivités identiques sont bien considérées comme égales.
+	 */
+	@Test
+	public void testEqualsCollectivitePubliqueServitude() throws Exception {
+
+		final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
+		coll.setIdRF("574739202303482");
+		coll.setNoRF(3727);
+		coll.setNoContribuable(827288022L);
+		coll.setRaisonSociale("Raison sociale");
+
+		final ch.vd.capitastra.rechteregister.JuristischePersonstamm personStamm = new ch.vd.capitastra.rechteregister.JuristischePersonstamm();
+		personStamm.setPersonstammID("574739202303482");
+		//personStamm.setNoRF(3727L);
+		personStamm.setNrACI(827288022L);
+		personStamm.setName("Raison sociale");
+		personStamm.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
+
+		assertTrue(AyantDroitRFHelper.dataEquals(coll, personStamm));
+	}
+
+	/**
 	 * Ce test vérifie que deux collectivités publiques avec des raisons sociales différentes sont bien considérées comme inégales.
 	 */
 	@Test
@@ -159,6 +273,27 @@ public class AyantDroitRFHelperTest {
 		personStamm.setNrACI(827288022L);
 		personStamm.setName("Nouvelle raison sociale"); // <-- changement de raison sociale
 		personStamm.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
+
+		assertFalse(AyantDroitRFHelper.dataEquals(coll, personStamm));
+	}
+
+	/**
+	 * Ce test vérifie que deux collectivités publiques avec des raisons sociales différentes sont bien considérées comme inégales.
+	 */
+	@Test
+	public void testNotEqualsCollectivitePubliqueServitude() throws Exception {
+
+		final CollectivitePubliqueRF coll = new CollectivitePubliqueRF();
+		coll.setIdRF("574739202303482");
+		coll.setNoRF(3727);
+		coll.setNoContribuable(827288022L);
+		coll.setRaisonSociale("Raison sociale");
+
+		final ch.vd.capitastra.rechteregister.JuristischePersonstamm personStamm = new ch.vd.capitastra.rechteregister.JuristischePersonstamm();
+		personStamm.setPersonstammID("574739202303482");
+		personStamm.setNrACI(827288022L);
+		personStamm.setName("Nouvelle raison sociale"); // <-- changement de raison sociale
+		personStamm.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
 
 		assertFalse(AyantDroitRFHelper.dataEquals(coll, personStamm));
 	}
@@ -218,6 +353,26 @@ public class AyantDroitRFHelperTest {
 	}
 
 	@Test
+	public void testNewAyantDroitPPServitude() throws Exception {
+
+		final ch.vd.capitastra.rechteregister.NatuerlichePersonstamm natuerliche = new ch.vd.capitastra.rechteregister.NatuerlichePersonstamm();
+		natuerliche.setPersonstammID("3893728273382823");
+		//natuerliche.setNoRF(3727L);
+		natuerliche.setNrIROLE(827288022L);
+		natuerliche.setName("Nom");
+		natuerliche.setVorname("Prénom");
+		natuerliche.setGeburtsdatum(new ch.vd.capitastra.rechteregister.GeburtsDatum(23, 1, 1956));
+
+		final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) AyantDroitRFHelper.newAyantDroitRF(natuerliche);
+		assertEquals("3893728273382823", pp.getIdRF());
+		assertEquals(0L, pp.getNoRF());
+		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
+		assertEquals("Nom", pp.getNom());
+		assertEquals("Prénom", pp.getPrenom());
+		assertEquals(RegDate.get(1956, 1, 23), pp.getDateNaissance());
+	}
+
+	@Test
 	public void testNewAyantDroitPM() throws Exception {
 
 		final JuristischePersonstamm juristische = new JuristischePersonstamm();
@@ -230,6 +385,23 @@ public class AyantDroitRFHelperTest {
 		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
 		assertEquals("48349384890202", pp.getIdRF());
 		assertEquals(3727L, pp.getNoRF());
+		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
+		assertEquals("Raison sociale", pp.getRaisonSociale());
+	}
+
+	@Test
+	public void testNewAyantDroitPMServitude() throws Exception {
+
+		final ch.vd.capitastra.rechteregister.JuristischePersonstamm juristische = new ch.vd.capitastra.rechteregister.JuristischePersonstamm();
+		juristische.setPersonstammID("48349384890202");
+		//juristische.setNoRF(3727L);
+		juristische.setNrACI(827288022L);
+		juristische.setName("Raison sociale");
+		juristische.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
+
+		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		assertEquals("48349384890202", pp.getIdRF());
+		assertEquals(0L, pp.getNoRF());
 		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
 		assertEquals("Raison sociale", pp.getRaisonSociale());
 	}
@@ -267,6 +439,23 @@ public class AyantDroitRFHelperTest {
 		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
 		assertEquals("574739202303482", coll.getIdRF());
 		assertEquals(3727L, coll.getNoRF());
+		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
+		assertEquals("Raison sociale", coll.getRaisonSociale());
+	}
+
+	@Test
+	public void testNewAyantDroitCollServitude() throws Exception {
+
+		final ch.vd.capitastra.rechteregister.JuristischePersonstamm juristische = new ch.vd.capitastra.rechteregister.JuristischePersonstamm();
+		juristische.setPersonstammID("574739202303482");
+		//juristische.setNoRF(3727L);
+		juristische.setNrACI(827288022L);
+		juristische.setName("Raison sociale");
+		juristische.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
+
+		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		assertEquals("574739202303482", coll.getIdRF());
+		assertEquals(0L, coll.getNoRF());
 		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
 		assertEquals("Raison sociale", coll.getRaisonSociale());
 	}

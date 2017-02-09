@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RechteregisterExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister export_rechteregister_20101231.xsd">
+	<StandardRechtList>
+	</StandardRechtList>
+</RechteregisterExport>

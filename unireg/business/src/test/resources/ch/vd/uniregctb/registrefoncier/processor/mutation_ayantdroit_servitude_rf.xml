@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<NatuerlichePersonstamm xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister">
+	<PersonstammID>3893728273382823</PersonstammID>
+	<Name>Nom</Name>
+	<Gueltig>false</Gueltig>
+	<Vorname>Prénom</Vorname>
+	<Geburtsdatum>
+		<Tag>23</Tag>
+		<Monat>1</Monat>
+		<Jahr>1956</Jahr>
+	</Geburtsdatum>
+	<NrIROLE>827288022</NrIROLE>
+</NatuerlichePersonstamm>
