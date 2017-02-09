@@ -260,7 +260,7 @@ public class MigrationDD {
 	@Override
 	public String toString() {
 		return "MigrationDD{" +
-				", numeroEntreprise=" + numeroEntreprise +
+				"numeroEntreprise=" + numeroEntreprise +
 				", nomEntreprise='" + nomEntreprise + '\'' +
 				", noAciCommune=" + noAciCommune +
 				", noOfsCommune=" + noOfsCommune +
