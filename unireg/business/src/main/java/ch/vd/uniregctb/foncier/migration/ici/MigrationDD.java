@@ -159,9 +159,9 @@ public class MigrationDD extends BaseMigrationData {
 	}
 
 	@Override
-	public String toString() {
-		return "MigrationDD{" +
-				"modeRattachement='" + modeRattachement + '\'' +
+	protected String getAttributesToString() {
+		return super.getAttributesToString() +
+				", modeRattachement='" + modeRattachement + '\'' +
 				", motifEnvoi='" + motifEnvoi + '\'' +
 				", dateDebutValidite=" + dateDebutValidite +
 				", anneeFiscale=" + anneeFiscale +
@@ -175,7 +175,6 @@ public class MigrationDD extends BaseMigrationData {
 				", estimationExoneree=" + estimationExoneree +
 				", estimationCaractereSocial=" + estimationCaractereSocial +
 				", etabliParCtb=" + etabliParCtb +
-				", usage=" + usage +
-				'}';
+				", usage=" + usage;
 	}
 }
