@@ -92,7 +92,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 			return false;
 		}
 		finally {
-			serviceTracing.end(start, "waitForResponse", () -> String.format("businessId='%s', timeout=%s", businessId, timeout));
+			serviceTracing.end(start, "waitForResponse", () -> String.format("businessId='%s', timeout=%dms", businessId, timeout.toMillis()));
 		}
 	}
 

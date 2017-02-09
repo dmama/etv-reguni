@@ -58,7 +58,7 @@ public class PeriodicIndexFlusher implements InitializingBean, DisposableBean {
 			final long millis = period.toMillis();
 			this.tasks = this.scheduler.scheduleWithFixedDelay(this::flush, millis, millis, TimeUnit.MILLISECONDS);
 
-			LOGGER.info("Flush des indexeurs avec une période de " + millis + " secondes");
+			LOGGER.info("Flush des indexeurs avec une période de " + millis + " millisecondes");
 		}
 	}
 

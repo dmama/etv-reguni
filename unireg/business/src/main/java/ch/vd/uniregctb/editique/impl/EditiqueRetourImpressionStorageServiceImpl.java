@@ -135,7 +135,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 			return new EditiqueResultatTimeoutImpl(nomDocument);
 		}
 		finally {
-			serviceTracing.end(start, "getDocument", () -> String.format("idDocument='%s', timeout=%dms", nomDocument, timeout));
+			serviceTracing.end(start, "getDocument", () -> String.format("idDocument='%s', timeout=%dms", nomDocument, timeout.toMillis()));
 		}
 	}
 
