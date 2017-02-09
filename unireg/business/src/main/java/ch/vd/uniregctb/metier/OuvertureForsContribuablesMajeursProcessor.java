@@ -13,6 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -113,10 +114,21 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 			@Override
 			public void afterTransactionCommit() {
-				s.setMessage(String.format(
-						"%d habitants traités sur %d [fors ouverts=%d, mineurs=%d, décédés=%d, horsVD=%d, en erreur=%d]",
-						rapportFinal.nbHabitantsTotal, list.size(), rapportFinal.habitantTraites.size(), rapportFinal.nbHabitantsMineurs,
-						rapportFinal.nbHabitantsDecedes, rapportFinal.nbHabitantsHorsVD, rapportFinal.habitantEnErrors.size()), progressMonitor.getProgressInPercent());
+				final int[] decomptes = new int[OuvertureForsResults.IgnoreType.values().length];
+				rapportFinal.contribuablesIgnores.stream()
+						.map(OuvertureForsResults.Ignore::getRaison)
+						.map(Enum::ordinal)
+						.forEach(ordinal -> ++decomptes[ordinal]);
+
+				s.setMessage(String.format("%d habitants traités sur %d [fors ouverts=%d, mineurs=%d, décédés=%d, horsVD=%d, en erreur=%d]",
+				                           rapportFinal.nbHabitantsTotal,
+				                           list.size(),
+				                           rapportFinal.habitantTraites.size(),
+				                           decomptes[OuvertureForsResults.IgnoreType.MINEUR.ordinal()],
+				                           decomptes[OuvertureForsResults.IgnoreType.DECEDE.ordinal()],
+				                           decomptes[OuvertureForsResults.IgnoreType.HORS_VD.ordinal()],
+				                           rapportFinal.habitantEnErrors.size()),
+				             progressMonitor.getProgressInPercent());
 			}
 		}, progressMonitor);
 
@@ -163,7 +175,10 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		try {
 			traiteHabitant(habitant, dateReference, r);
 		}
-		catch (OuvertureForsException e) {
+		catch (OuvertureForsIgnoreException e) {
+			r.addContribuableIgnore(habitant, e.getRaison(), e.getDetails());
+		}
+		catch (OuvertureForsErreurException e) {
 			r.addOuvertureForsException(e);
 		}
 		catch (Exception e) {
@@ -251,7 +266,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 	}
 
-	private void traiteHabitant(PersonnePhysique habitant, RegDate dateReference, OuvertureForsResults r) throws OuvertureForsException {
+	private void traiteHabitant(PersonnePhysique habitant, RegDate dateReference, OuvertureForsResults r) throws OuvertureForsErreurException, OuvertureForsIgnoreException {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Traitement de l'habitant n° " + habitant.getNumero());
@@ -259,7 +274,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 		final ValidationResults vr = validationService.validate(habitant);
 		if (vr.hasErrors()) {
-			throw new OuvertureForsException(habitant, ErreurType.VALIDATION, vr.toString());
+			throw new OuvertureForsErreurException(habitant, ErreurType.VALIDATION, vr.toString());
 		}
 
 		final HabitantData data = new HabitantData();
@@ -267,7 +282,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		fillDatesNaissanceEtDeces(habitant, data, dateReference);
 
 		if (data.getDateNaissance() == null) {
-			throw new OuvertureForsException(habitant, ErreurType.DATE_NAISSANCE_NULLE);
+			throw new OuvertureForsErreurException(habitant, ErreurType.DATE_NAISSANCE_NULLE);
 		}
 
 		// [UNIREG-1114] On cache la date de naissance calculée dans l'habitant, de manière à restreindre le nombre d'habitants traités la
@@ -279,15 +294,13 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		// L’individu doit être majeur à la date du traitement, c’est-à-dire avoir 18 ans révolus
 		if (!FiscalDateHelper.isMajeur(dateReference, data.getDateNaissance())) {
 			// l'individu est mineur => rien à faire
-			r.nbHabitantsMineurs++;
-			return;
+			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.MINEUR, "Date de naissance : " + RegDateHelper.dateToDisplayString(data.getDateNaissance()));
 		}
 
 		if (data.getDateDeces() != null) {
 			// l'individu est décédé => rien à faire
 			habitant.setMajoriteTraitee(Boolean.TRUE); // à moins d'un résurrection, c'est fini avec celui-là.
-			r.nbHabitantsDecedes++;
-			return;
+			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.DECEDE, "Date de décès : " + RegDateHelper.dateToDisplayString(data.getDateDeces()));
 		}
 
 		final RegDate dateMajorite = FiscalDateHelper.getDateMajorite(data.getDateNaissance());
@@ -296,8 +309,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		if (!data.isDomicilieDansLeCanton()) {
 			// l'individu domicilié hors-Canton/hors-Suisse => rien à faire
 			habitant.setMajoriteTraitee(Boolean.TRUE); // on ouvrira un for à son arrivée dans le canton, si nécessaire
-			r.nbHabitantsHorsVD++;
-			return;
+			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.HORS_VD, null);
 		}
 		Assert.notNull(data.getNumeroOfsAutoriteFiscale());
 
@@ -310,16 +322,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 					+ " soit il est marié et son ménage commun manque,"
 					+ " soit il est veuf/séparé/divorcé et son for principal n'a pas été rouvert correctement."
 					+ " Traitement automatique impossible.";
-			throw new OuvertureForsException(habitant, ErreurType.INCOHERENCE_ETAT_CIVIL, message);
+			throw new OuvertureForsErreurException(habitant, ErreurType.INCOHERENCE_ETAT_CIVIL, message);
 		}
 
 		// Vérification de cohérence sur le for principal
 		final ForFiscalPrincipal dernierForFiscalPrincipal = habitant.getDernierForFiscalPrincipal();
-		if (dernierForFiscalPrincipal != null
-				&& (dernierForFiscalPrincipal.getDateFin() == null || dernierForFiscalPrincipal.getDateFin().isAfterOrEqual(dateMajorite))) {
-			String message = "L'habitant possède un for [" + dernierForFiscalPrincipal + "] actif après sa date de majorité ["
-					+ dateMajorite + "]. Traitement automatique impossible.";
-			throw new OuvertureForsException(habitant, ErreurType.INCOHERENCE_FOR_FISCAUX, message);
+		if (dernierForFiscalPrincipal != null && (dernierForFiscalPrincipal.getDateFin() == null || dernierForFiscalPrincipal.getDateFin().isAfterOrEqual(dateMajorite))) {
+			final String message = "L'habitant possède un for [" + dernierForFiscalPrincipal + "] actif après sa date de majorité [" + dateMajorite + "].";
+			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.FOR_PRINCIPAL_EXISTANT, message);
 		}
 
 		/*
@@ -351,7 +361,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		r.addHabitantTraite(habitant, oid, dateMajorite, modeImposition);
 	}
 
-	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {
+	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsErreurException {
 
 		// on fait appel à host-interface
 		Individu individu;
@@ -360,13 +370,13 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 		catch (ServiceCivilException e) {
 			LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);
-			throw new OuvertureForsException(habitant, ErreurType.CIVIL_EXCEPTION, e);
+			throw new OuvertureForsErreurException(habitant, ErreurType.CIVIL_EXCEPTION, e);
 		}
 
 		if (individu == null) {
 			LOGGER.error("Impossible de récupérer l'individu n° " + habitant.getNumeroIndividu() + " associé à l'habitant n° "
 					+ habitant.getNumero());
-			throw new OuvertureForsException(habitant, ErreurType.INDIVIDU_INCONNU, "individu associé n°" + habitant.getNumeroIndividu());
+			throw new OuvertureForsErreurException(habitant, ErreurType.INDIVIDU_INCONNU, "individu associé n°" + habitant.getNumeroIndividu());
 		}
 
 		RegDate dateNaissance = individu.getDateNaissance();
@@ -377,7 +387,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		data.setDateDeces(dateDeces);
 	}
 
-	private void fillInfoDomicile(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {
+	private void fillInfoDomicile(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsErreurException, OuvertureForsIgnoreException {
 
 		final AdresseGenerique adresseDomicile;
 		try {
@@ -385,20 +395,17 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 		catch (AdresseException e) {
 			LOGGER.error("Erreur dans les adresse de l'habitant n° " + habitant.getNumero(), e);
-			throw new OuvertureForsException(habitant, ErreurType.ADRESSE_EXCEPTION, e);
+			throw new OuvertureForsErreurException(habitant, ErreurType.ADRESSE_EXCEPTION, e);
 		}
 
 		if (adresseDomicile == null) {
-			final String message = "Impossibilité d'identifier le domicile du contribuable n° " + habitant.getNumero() + " car il ne possède pas d'adresse.";
-			throw new OuvertureForsException(habitant, ErreurType.DOMICILE_INCONNU, message);
+			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.AUCUNE_ADRESSE, null);
 		}
 
 		if (adresseDomicile.isDefault()) {
 			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
 			// déterminer si un contribuable est dans le canton
-			String message = "Impossibilité d'identifier le domicile du contribuable n° " + habitant.getNumero()
-					+ " car son adresse de domicile est une valeur par défaut.";
-			throw new OuvertureForsException(habitant, ErreurType.DOMICILE_INCONNU, message);
+			throw new OuvertureForsIgnoreException(habitant, OuvertureForsResults.IgnoreType.ADRESSE_DOMICILE_EST_DEFAUT, null);
 		}
 
 		boolean estDomicilieDansLeCanton;
@@ -414,14 +421,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 		catch (ServiceInfrastructureException e) {
 			LOGGER.error("Impossible de récupérer la commune de l'habitant n° " + habitant.getNumero(), e);
-			throw new OuvertureForsException(habitant, ErreurType.INFRA_EXCEPTION, e);
+			throw new OuvertureForsErreurException(habitant, ErreurType.INFRA_EXCEPTION, e);
 		}
 
 		if (estDomicilieDansLeCanton) {
 			if (commune == null) {
-				String message = "Impossibilité d'identifier le domicile du contribuable n° " + habitant.getNumero()
+				final String message = "Impossibilité d'identifier le domicile du contribuable n° " + habitant.getNumero()
 						+ " car la localité avec le numéro postal " + adresseDomicile.getNumeroOrdrePostal() + " est inconnue.";
-				throw new OuvertureForsException(habitant, ErreurType.DOMICILE_INCONNU, message);
+				throw new OuvertureForsErreurException(habitant, ErreurType.DOMICILE_INCONNU, message);
 			}
 		}
 
@@ -429,16 +436,13 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		data.setNumeroOfsAutoriteFiscale(commune == null ? null : commune.getNoOFS());
 	}
 
-	private void fillEtatCivilPermisEtNationalite(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {
-
-		final boolean hasPermisC;
-		final boolean hasNationaliteSuisse;
+	private void fillEtatCivilPermisEtNationalite(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsErreurException {
 
 		final Individu individu = data.getIndividu();
 		if (individu == null) {
 			LOGGER.error("Impossible de récupérer l'individu n° " + habitant.getNumeroIndividu() + " associé à l'habitant n° "
 					+ habitant.getNumero());
-			throw new OuvertureForsException(habitant, ErreurType.INDIVIDU_INCONNU, "individu associé n°" + habitant.getNumeroIndividu());
+			throw new OuvertureForsErreurException(habitant, ErreurType.INDIVIDU_INCONNU, "individu associé n°" + habitant.getNumeroIndividu());
 		}
 
 		final EtatCivil etatCivil = individu.getEtatCivil(dateReference);
@@ -446,13 +450,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			data.setEtatCivil(etatCivil.getTypeEtatCivil());
 		}
 
-		hasPermisC = tiersService.isAvecPermisC(individu, dateReference);
+		final boolean hasPermisC = tiersService.isAvecPermisC(individu, dateReference);
+		final boolean hasNationaliteSuisse;
 		try {
 			hasNationaliteSuisse = tiersService.isSuisse(individu, dateReference);
 		}
 		catch (TiersException e) {
 			LOGGER.error("Impossible de récupérer la nationalité de l'habitant n° " + habitant.getNumero(), e);
-			throw new OuvertureForsException(habitant, ErreurType.CIVIL_EXCEPTION, e);
+			throw new OuvertureForsErreurException(habitant, ErreurType.CIVIL_EXCEPTION, e);
 		}
 
 		data.setHasPermisC(hasPermisC);

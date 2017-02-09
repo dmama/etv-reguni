@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.metier;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -27,7 +28,6 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		CONSTRAINT_VIOLATION_EXCEPTION("une exception de violation de contrainte base de données a été levée"), // ----------------------------------------------------------------
 		VALIDATION("le contribuable ne valide pas"), // ----------------------------------------------------------------------------
 		VALIDATION_APRES_OUVERTURE("le contribuable ne valide plus après l'ouverture de son for de majorité"), // ------------------
-		INCOHERENCE_FOR_FISCAUX("une incohérence avec les fors fiscaux a été détectée"), // ----------------------------------------
 		INCOHERENCE_ETAT_CIVIL("une incohérence avec l'état civil a été détectée");
 
 		private final String description;
@@ -72,13 +72,48 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		}
 	}
 
+	public enum IgnoreType {
+		AUCUNE_ADRESSE("le contribuable ne possède aucune adresse"),
+		ADRESSE_DOMICILE_EST_DEFAUT("l'adresse de domicile du contribuable est une adresse par défaut"),
+		FOR_PRINCIPAL_EXISTANT("le contribuable possède déjà un for principal"),
+		MINEUR("le contribuable est mineur"),
+		DECEDE("le contribauble est décédé"),
+		HORS_VD("le contribuable n'est pas résident vaudois");
+
+		private final String description;
+
+		IgnoreType(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+	}
+
+	public static class Ignore extends Info {
+		public final IgnoreType raison;
+
+		public Ignore(long noCtb, @Nullable Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
+			this.raison = raison;
+		}
+
+		public IgnoreType getRaison() {
+			return raison;
+		}
+
+		@Override
+		public String getDescriptionRaison() {
+			return raison.description;
+		}
+	}
+
 	public final RegDate dateTraitement;
 	public int nbHabitantsTotal;
-	public int nbHabitantsMineurs;
-	public int nbHabitantsDecedes;
-	public int nbHabitantsHorsVD;
-	public final List<Traite> habitantTraites = new ArrayList<>();
-	public final List<Erreur> habitantEnErrors = new ArrayList<>();
+	public final List<Traite> habitantTraites = new LinkedList<>();
+	public final List<Erreur> habitantEnErrors = new LinkedList<>();
+	public final List<Ignore> contribuablesIgnores = new LinkedList<>();
 	public boolean interrompu;
 
 	public OuvertureForsResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
@@ -89,11 +124,9 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	@Override
 	public void addAll(OuvertureForsResults right) {
 		this.nbHabitantsTotal += right.nbHabitantsTotal;
-		this.nbHabitantsMineurs += right.nbHabitantsMineurs;
-		this.nbHabitantsDecedes += right.nbHabitantsDecedes;
-		this.nbHabitantsHorsVD += right.nbHabitantsHorsVD;
 		this.habitantTraites.addAll(right.habitantTraites);
 		this.habitantEnErrors.addAll(right.habitantEnErrors);
+		this.contribuablesIgnores.addAll(right.contribuablesIgnores);
 	}
 
 	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, RegDate dateOuverture, ModeImposition modeImposition) {
@@ -110,6 +143,10 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		else{
 			habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(h.getNumero())));
 		}
+	}
+
+	public void addContribuableIgnore(PersonnePhysique pp, IgnoreType raison, String details) {
+		contribuablesIgnores.add(new Ignore(pp.getNumero(), pp.getOfficeImpotId(), raison, details, getNom(pp)));
 	}
 
 	public void addUnknownException(Long habitantId, Exception e) {
@@ -131,7 +168,7 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		}
 	}
 
-	public void addOuvertureForsException(OuvertureForsException e) {
+	public void addOuvertureForsException(OuvertureForsErreurException e) {
 		final PersonnePhysique h = e.getHabitant();
 		habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), e.getType(), e.getMessage(), getNom(h.getNumero())));
 	}

@@ -97,6 +97,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEmpty(rapport.habitantEnErrors);
 		assertEmpty(rapport.habitantTraites);
 
+		final List<OuvertureForsResults.Ignore> ignores = rapport.contribuablesIgnores;
+		assertEquals(1, ignores.size());
+		final OuvertureForsResults.Ignore ignore = ignores.get(0);
+		assertNotNull(ignores);
+		assertEquals(OuvertureForsResults.IgnoreType.MINEUR, ignore.getRaison());
+
 		final ForsParType fors = h.getForsParType(true);
 		assertNotNull(fors);
 		assertEmpty(fors.principauxPP);
@@ -209,6 +215,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 		final List<Traite> traites = rapport.habitantTraites;
 		assertEquals(1, traites.size());
 		final Traite traite = traites.get(0);
@@ -246,6 +253,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 
 		final List<Traite> traites = rapport.habitantTraites;
 		assertEquals(1, traites.size());
@@ -277,9 +285,6 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 	/**
 	 * Vérifie que le batch n'ouvre pas de for supplémentaire sur un habitant majeur qui en possède déjà.
-	 * <p>
-	 * Note: dans le cas réel de l'exécution du batch, le contribuable ci-dessous aurait été exclu du traitement au niveau de la requête
-	 * SQL. Il est donc normal que le traitement provoque une erreur.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -309,13 +314,15 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantTraites);
-		final List<Erreur> erreurs = rapport.habitantEnErrors;
-		assertEquals(1, erreurs.size());
+		assertEmpty(rapport.habitantEnErrors);
 
-		final Erreur e = erreurs.get(0);
-		assertNotNull(e);
+		final List<OuvertureForsResults.Ignore> ignores = rapport.contribuablesIgnores;
+		assertEquals(1, ignores.size());
+
+		final OuvertureForsResults.Ignore i = ignores.get(0);
+		assertNotNull(i);
 		// le for existe déjà (voir remarque dans javadoc du test)
-		assertEquals(OuvertureForsResults.ErreurType.INCOHERENCE_FOR_FISCAUX, e.raison);
+		assertEquals(OuvertureForsResults.IgnoreType.FOR_PRINCIPAL_EXISTANT, i.raison);
 	}
 
 	/**
@@ -350,12 +357,14 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantTraites);
-		final List<Erreur> erreurs = rapport.habitantEnErrors;
-		assertEquals(1, erreurs.size());
+		assertEmpty(rapport.habitantEnErrors);
 
-		final Erreur e = erreurs.get(0);
-		assertNotNull(e);
-		assertEquals(OuvertureForsResults.ErreurType.DOMICILE_INCONNU, e.raison);
+		final List<OuvertureForsResults.Ignore> ignores = rapport.contribuablesIgnores;
+		assertEquals(1, ignores.size());
+
+		final OuvertureForsResults.Ignore i = ignores.get(0);
+		assertNotNull(i);
+		assertEquals(OuvertureForsResults.IgnoreType.ADRESSE_DOMICILE_EST_DEFAUT, i.raison);
 	}
 
 	/**
@@ -396,6 +405,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(2, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantTraites);
+		assertEmpty(rapport.contribuablesIgnores);
 		final List<Erreur> erreurs = rapport.habitantEnErrors;
 		assertEquals(2, erreurs.size());
 
@@ -442,6 +452,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantTraites);
+		assertEmpty(rapport.contribuablesIgnores);
 		final List<Erreur> erreurs = rapport.habitantEnErrors;
 		assertEquals(2, erreurs.size());
 
@@ -483,6 +494,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 
 		final List<Traite> traites = rapport.habitantTraites;
 		assertEquals(1, traites.size());
@@ -532,6 +544,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 
 		final List<Traite> traites = rapport.habitantTraites;
 		assertEquals(1, traites.size());
@@ -585,6 +598,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		// Vérification du rapport
 		assertEquals(1, rapport.nbHabitantsTotal);
 		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 
 		final List<Traite> traites = rapport.habitantTraites;
 		assertEquals(1, traites.size());
@@ -646,7 +660,8 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final OuvertureForsResults rapport = processor.run(RegDate.get(), null);
 		assertNotNull(rapport);
 		assertEquals(1, rapport.habitantTraites.size());
-		assertEquals(0, rapport.habitantEnErrors.size());
+		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 
 		final Traite traite = rapport.habitantTraites.get(0);
 		assertNotNull(traite);
@@ -707,7 +722,8 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final OuvertureForsResults rapport = processor.run(RegDate.get(), null);
 		assertNotNull(rapport);
 		assertEquals(1, rapport.habitantTraites.size());
-		assertEquals(0, rapport.habitantEnErrors.size());
+		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
 
 		final Traite traite = rapport.habitantTraites.get(0);
 		assertNotNull(traite);
