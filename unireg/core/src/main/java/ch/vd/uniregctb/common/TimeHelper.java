@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,16 @@ public abstract class TimeHelper {
 	}
 
 	/**
+	 * Formatte une durée sous la forme <i>1 jour, 0 heure, 23 minutes et 1 seconde</i>.
+	 *
+	 * @param duration durée à représenter
+	 * @return une string représentant la durée sous forme humaine.
+	 */
+	public static String formatDuree(Duration duration) {
+		return formatDuree(duration.toMillis());
+	}
+
+	/**
 	 * Formatte une durée sous la forme <i>1j 00h 23m 01s</i>.
 	 *
 	 * @param milliseconds le nombre de millisecondes
@@ -41,6 +52,16 @@ public abstract class TimeHelper {
 		final int days = (int) ((milliseconds / 1000) / (3600 * 24));
 
 		return formatDureeShort(days, hours, minutes, seconds);
+	}
+
+	/**
+	 * Formatte une durée sous la forme <i>1j 00h 23m 01s</i>.
+	 *
+	 * @param duration durée
+	 * @return une string représentant la durée sous forme presque humaine.
+	 */
+	public static String formatDureeShort(Duration duration) {
+		return formatDureeShort(duration.toMillis());
 	}
 
 	/**
@@ -70,6 +91,24 @@ public abstract class TimeHelper {
 		else {
 			return formatDuree(arrondi(milliseconds, UN_JOUR));
 		}
+	}
+
+	/**
+	 * Formatte une durée de manière approximative:<br/>
+	 * <ul>
+	 *     <li>si la durée est plus longue que 5 jours, on ne voit que les jours</li>
+	 *     <li>si la durée est entre 1 et 5 jours, on voit les jours et les heures</li>
+	 *     <li>si la durée est entre 5 et 24 heures, on ne voit que les heures</li>
+	 *     <li>si la durée est entre 1 et 5 heures, on voit les heures et les minutes</li>
+	 *     <li>si la durée est entre 5 et 60 minutes, on ne voit que les minutes</li>
+	 *     <li>si la durée est entre 1 et 5 minutes, on voit les minutes et les secondes</li>
+	 *     <li>sinon, on ne voit que les secondes</li>
+	 * </ul>
+	 * @param duration durée à exprimer
+	 * @return une version lisible approximative de la durée (pas plus précise que la seconde...)
+	 */
+	public static String formatDureeArrondie(Duration duration) {
+		return formatDureeArrondie(duration.toMillis());
 	}
 
 	protected static long arrondi(long valeur, long quanta) {

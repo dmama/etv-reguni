@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.utils.Assert;
 
 /**
@@ -100,16 +102,15 @@ public class AsyncStorage<K, V> {
 	/**
 	 * Attend le temps qu'il faut jusqu'à ce que le stockage ait effectivement un élément correspondant à la clé et le renvoie
 	 * @param key clé recherchée
-	 * @param timeout longueur du timeout (unité dans le champ unit) - un timeout de 0 signifie "on n'attend pas"
-	 * @param unit unité du timeout
+	 * @param timeout longueur du timeout - un timeout <null>null</null>, 0 ou négatif signifie "on n'attend pas"
 	 * @return <code>null</code> en cas de timeout, sinon, la valeur extraite de l'espace de stockage (duquel elle est enlevée)
 	 * @throws InterruptedException en cas d'interruption du thread pendant l'attente
 	 */
 	@NotNull
-	public final RetrievalResult<K> get(K key, long timeout, TimeUnit unit) throws InterruptedException {
+	public final RetrievalResult<K> get(K key, @Nullable Duration timeout) throws InterruptedException {
 		lock.lock();
 		try {
-			final long tsMaxAttente = System.nanoTime() + unit.toNanos(timeout);
+			final Instant maxWait = InstantHelper.get().plus(timeout != null ? timeout : Duration.ZERO);
 			while (true) {
 				final Mutable<V> value = map.remove(key);
 				if (value != null) {
@@ -117,13 +118,13 @@ public class AsyncStorage<K, V> {
 					return new RetrievalData<>(key, value.getValue());
 				}
 
-				final long tempsRestant = tsMaxAttente - System.nanoTime();
-				if (tempsRestant <= 0) {
+				final Duration remainingTime = Duration.between(InstantHelper.get(), maxWait);
+				if (remainingTime.isNegative() || remainingTime.isZero()) {
 					// fini -> le timeout a sonné !
 					return new RetrievalTimeout<>(key);
 				}
 
-				awaitNanos(tempsRestant);
+				awaitNanos(remainingTime.toNanos());
 			}
 		}
 		finally {

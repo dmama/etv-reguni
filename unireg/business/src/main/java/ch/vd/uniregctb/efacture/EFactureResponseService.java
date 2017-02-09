@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import java.time.Duration;
+
 /**
  * Interface du service de gestion des réponses (= comportement pseudo-synchrone) de l'application e-facture
  */
@@ -14,8 +16,8 @@ public interface EFactureResponseService {
 	/**
 	 * Attend la réponse correspondant au businessId donné, mais pas plus longtemps que le timeout
 	 * @param businessId businessId du message original
-	 * @param timeoutMs timeout en millisecondes maximal (strictement positif !)
+	 * @param timeout timeout maximal (strictement positif !)
 	 * @return <code>true</code> si la réponse est revenue dans les temps, <code>false</code> si le temps n'a pas suffit
 	 */
-	boolean waitForResponse(String businessId, long timeoutMs);
+	boolean waitForResponse(String businessId, Duration timeout);
 }

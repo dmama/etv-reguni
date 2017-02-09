@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,9 +108,9 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	}
 
 	@Override
-	public EditiqueResultat getDocument(final String nomDocument, final long timeout) {
+	public EditiqueResultat getDocument(final String nomDocument, final Duration timeout) {
 
-		Assert.isTrue(timeout > 0);
+		Assert.isFalse(timeout.isNegative() || timeout.isZero());
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(String.format("Demande de récupération du document '%s'", nomDocument));
@@ -118,7 +118,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 		final long start = serviceTracing.start();
 		try {
-			final AsyncStorage.RetrievalResult<String> res = impressionsRecues.get(nomDocument, timeout, TimeUnit.MILLISECONDS);
+			final AsyncStorage.RetrievalResult<String> res = impressionsRecues.get(nomDocument, timeout);
 			if (res instanceof AsyncStorage.RetrievalTimeout) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(String.format("Timeout dépassé pour la récupération du document '%s'", nomDocument));

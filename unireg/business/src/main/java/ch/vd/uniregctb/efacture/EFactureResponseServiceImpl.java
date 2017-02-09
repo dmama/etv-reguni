@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,14 +72,14 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 	}
 
 	@Override
-	public boolean waitForResponse(final String businessId, final long timeoutMs) {
-		if (timeoutMs <= 0) {
-			throw new IllegalArgumentException(String.format("timeout devrait être strictement positif (%d)", timeoutMs));
+	public boolean waitForResponse(final String businessId, final Duration timeout) {
+		if (timeout.isNegative() || timeout.isZero()) {
+			throw new IllegalArgumentException(String.format("timeout devrait être strictement positif (%s)", timeout));
 		}
 
 		final long start = serviceTracing.start();
 		try {
-			final AsyncStorage.RetrievalResult<String> result = storage.get(businessId, timeoutMs, TimeUnit.MILLISECONDS);
+			final AsyncStorage.RetrievalResult<String> result = storage.get(businessId, timeout);
 			if (result instanceof AsyncStorage.RetrievalTimeout) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info(String.format("Timeout atteint pendant l'attente de la réponse e-facture au message '%s'", businessId));
@@ -92,7 +92,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 			return false;
 		}
 		finally {
-			serviceTracing.end(start, "waitForResponse", () -> String.format("businessId='%s', timeout=%dms", businessId, timeoutMs));
+			serviceTracing.end(start, "waitForResponse", () -> String.format("businessId='%s', timeout=%s", businessId, timeout));
 		}
 	}
 

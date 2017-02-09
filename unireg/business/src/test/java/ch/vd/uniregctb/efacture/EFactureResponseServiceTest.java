@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import java.time.Duration;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,7 +35,7 @@ public class EFactureResponseServiceTest extends WithoutSpringTest {
 		// je ne reçois rien, je vérifie que je sors au bout du temps requis : 1s
 		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
 		final String nomDocument = "Mon document qui ne vient pas...";
-		final boolean received = service.waitForResponse(nomDocument, 1000);
+		final boolean received = service.waitForResponse(nomDocument, Duration.ofSeconds(1));
 		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
 		Assert.assertFalse(received);
 		final long attente = tsFin - tsDebut;
@@ -62,7 +64,7 @@ public class EFactureResponseServiceTest extends WithoutSpringTest {
 		thread.start();
 
 		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
-		final boolean resultat = service.waitForResponse(businessId, 1000);
+		final boolean resultat = service.waitForResponse(businessId, Duration.ofSeconds(1));
 		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
 		Assert.assertTrue(resultat);
 		Assert.assertTrue(tsFin - tsDebut < 1000);

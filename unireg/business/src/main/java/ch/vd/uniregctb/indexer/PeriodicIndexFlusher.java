@@ -51,14 +51,14 @@ public class PeriodicIndexFlusher implements InitializingBean, DisposableBean {
 		else {
 			final Duration period = Duration.of(this.flushPeriodValue, this.flushPeriodUnit);
 			if (period.compareTo(ABSOLUTE_MINIMAL_PERIOD) < 0) {
-				throw new IllegalArgumentException("La période minimale de flush des indexers est d'une minute (configuration : " + period.getNano() + " ns)");
+				throw new IllegalArgumentException("La période minimale de flush des indexers est d'une minute (configuration : " + period.toNanos() + " ns)");
 			}
 			this.scheduler = Executors.newScheduledThreadPool(1, new DefaultThreadFactory(new DefaultThreadNameGenerator("IndexFlusher")));
 
-			final long seconds = period.getSeconds();
-			this.tasks = this.scheduler.scheduleWithFixedDelay(this::flush, seconds, seconds, TimeUnit.SECONDS);
+			final long millis = period.toMillis();
+			this.tasks = this.scheduler.scheduleWithFixedDelay(this::flush, millis, millis, TimeUnit.MILLISECONDS);
 
-			LOGGER.info("Flush des indexeurs avec une période de " + seconds + " secondes");
+			LOGGER.info("Flush des indexeurs avec une période de " + millis + " secondes");
 		}
 	}
 

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,7 +58,7 @@ public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPerio
 		// le vieux document ne doit plus y être
 		{
 			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
-			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, 300, TimeUnit.MILLISECONDS);
+			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofMillis(300));
 			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalTimeout);
 			Assert.assertEquals(key, resultat.key);
@@ -68,7 +68,7 @@ public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPerio
 		// mais le nouveau, toujours
 		{
 			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
-			final AsyncStorage.RetrievalResult<String> resultat = service.get(keyLate, 300, TimeUnit.MILLISECONDS);
+			final AsyncStorage.RetrievalResult<String> resultat = service.get(keyLate, Duration.ofMillis(300));
 			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 			Assert.assertEquals(keyLate, resultat.key);

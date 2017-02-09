@@ -26,7 +26,7 @@ public class InboxContainerTest extends WithoutSpringTest {
 
 	@Test
 	public void testSimpleAjoutEtRecuperation() throws Exception {
-		final InboxElement elt = new InboxElement("Bidon", "Ceci est bidon", null, 0);
+		final InboxElement elt = new InboxElement("Bidon", "Ceci est bidon", null, null);
 		container.addElement("MOI", elt);
 
 		Assert.assertEquals(elt, container.get(elt.getUuid()));
@@ -35,12 +35,12 @@ public class InboxContainerTest extends WithoutSpringTest {
 
 	@Test
 	public void testDocumentOrdering() throws Exception {
-		final InboxElement un = new InboxElement("UN", null, null, 0);
+		final InboxElement un = new InboxElement("UN", null, null, null);
 		container.addElement("MOI", un);
 
 		Thread.sleep(100);
 
-		final InboxElement deux = new InboxElement("DEUX", null, null, 0);
+		final InboxElement deux = new InboxElement("DEUX", null, null, null);
 		container.addElement("MOI", deux);
 
 		// dans quel ordre sont-il rendus ?
@@ -58,9 +58,9 @@ public class InboxContainerTest extends WithoutSpringTest {
 		Assert.assertEquals(0, nbNotifications.intValue());
 		container.registerInboxManagementListener(listener, true);
 		Assert.assertEquals(0, nbNotifications.intValue());
-		container.addElement("TOTO", new InboxElement("test", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test", "Message de test", null, null));
 		Assert.assertEquals(1, nbNotifications.intValue());
-		container.addElement("TOTO", new InboxElement("test2", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test2", "Message de test", null, null));
 		Assert.assertEquals(1, nbNotifications.intValue());
 	}
 
@@ -68,13 +68,13 @@ public class InboxContainerTest extends WithoutSpringTest {
 	public void testNotificationNewInboxWithCatchup() throws Exception {
 		final MutableInt nbNotifications = new MutableInt(0);
 		final InboxManagementListener listener = visa -> nbNotifications.increment();
-		container.addElement("TOTO", new InboxElement("test", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test", "Message de test", null, null));
 		Assert.assertEquals(0, nbNotifications.intValue());
 		container.registerInboxManagementListener(listener, true);
 		Assert.assertEquals(1, nbNotifications.intValue());
-		container.addElement("TOTO", new InboxElement("test2", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test2", "Message de test", null, null));
 		Assert.assertEquals(1, nbNotifications.intValue());
-		container.addElement("TATA", new InboxElement("test3", "Message de test", null, 0));
+		container.addElement("TATA", new InboxElement("test3", "Message de test", null, null));
 		Assert.assertEquals(2, nbNotifications.intValue());
 	}
 
@@ -82,13 +82,13 @@ public class InboxContainerTest extends WithoutSpringTest {
 	public void testNotificationNewInboxWithoutCatchup() throws Exception {
 		final MutableInt nbNotifications = new MutableInt(0);
 		final InboxManagementListener listener = visa -> nbNotifications.increment();
-		container.addElement("TOTO", new InboxElement("test", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test", "Message de test", null, null));
 		Assert.assertEquals(0, nbNotifications.intValue());
 		container.registerInboxManagementListener(listener, false);
 		Assert.assertEquals(0, nbNotifications.intValue());
-		container.addElement("TOTO", new InboxElement("test2", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test2", "Message de test", null, null));
 		Assert.assertEquals(0, nbNotifications.intValue());     // normal, il ne s'agit pas d'une nouvelle inbox
-		container.addElement("TATA", new InboxElement("test3", "Message de test", null, 0));
+		container.addElement("TATA", new InboxElement("test3", "Message de test", null, null));
 		Assert.assertEquals(1, nbNotifications.intValue());
 	}
 
@@ -102,7 +102,7 @@ public class InboxContainerTest extends WithoutSpringTest {
 		container.registerInboxManagementListener(boom, false);
 		container.registerInboxManagementListener(listener, false);
 		Assert.assertEquals(0, nbNotifications.intValue());
-		container.addElement("TOTO", new InboxElement("test", "Message de test", null, 0));
+		container.addElement("TOTO", new InboxElement("test", "Message de test", null, null));
 		Assert.assertEquals(1, nbNotifications.intValue());
 	}
 }

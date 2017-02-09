@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.time.Duration;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
@@ -175,7 +177,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	private EditiqueResultat getRetourEditique(String nomDocument, TypeDocumentEditique typeDocument, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
 		EditiqueResultat resultat;
 		try {
-			resultat = retourImpressionStorage.getDocument(nomDocument, secTimeout * 1000L);
+			resultat = retourImpressionStorage.getDocument(nomDocument, Duration.ofSeconds(secTimeout));
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

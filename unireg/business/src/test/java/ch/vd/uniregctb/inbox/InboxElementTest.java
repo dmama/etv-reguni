@@ -2,6 +2,7 @@ package ch.vd.uniregctb.inbox;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,7 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testStreamContent() throws Exception {
-		final InboxElement elt = new InboxElement("Mon nom à moi", "Ma description", buildAttachment(), 100);
+		final InboxElement elt = new InboxElement("Mon nom à moi", "Ma description", buildAttachment(), Duration.ofMillis(100));
 		Assert.assertFalse(elt.isExpired());
 		Assert.assertEquals("Mon nom à moi", elt.getName());
 		Assert.assertEquals("Ma description", elt.getDescription());
@@ -49,7 +50,7 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testExpiration() throws Exception {
-		final InboxElement elt = new InboxElement("Mon nom à moi", null, buildAttachment(), 100);
+		final InboxElement elt = new InboxElement("Mon nom à moi", null, buildAttachment(), Duration. ofMillis(100));
 		Assert.assertFalse(elt.isExpired());
 		Thread.sleep(200);
 		Assert.assertTrue(elt.isExpired());
@@ -59,7 +60,7 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testNoExpiration() throws Exception {
-		final InboxElement elt = new InboxElement("Mon nom à moi", null, buildAttachment(), 0);
+		final InboxElement elt = new InboxElement("Mon nom à moi", null, buildAttachment(), null);
 		Assert.assertFalse(elt.isExpired());
 		Thread.sleep(200);
 		Assert.assertFalse(elt.isExpired());
@@ -69,9 +70,9 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testNaturalOrdering() throws Exception {
-		final InboxElement elt1 = new InboxElement("Un", null, buildAttachment(), 0);
+		final InboxElement elt1 = new InboxElement("Un", null, buildAttachment(), null);
 		Thread.sleep(50);
-		final InboxElement elt2 = new InboxElement("Deux", null, buildAttachment(), 0);
+		final InboxElement elt2 = new InboxElement("Deux", null, buildAttachment(), null);
 
 		final List<InboxElement> list = new ArrayList<>(2);
 		list.add(elt1);
@@ -86,19 +87,19 @@ public class InboxElementTest extends WithoutSpringTest {
 
 	@Test
 	public void testSansAttachement() throws Exception {
-		final InboxElement elt = new InboxElement("Rien", null, null, 0);
+		final InboxElement elt = new InboxElement("Rien", null, null, null);
 		Assert.assertNull(elt.getAttachment());
 		elt.onDiscard();
 	}
 
 	@Test
 	public void testUuidGeneration() throws Exception {
-		final InboxElement eltSans = new InboxElement("Bidon", "Elément bidon", buildAttachment(), 0);
+		final InboxElement eltSans = new InboxElement("Bidon", "Elément bidon", buildAttachment(), null);
 		Assert.assertNotNull(eltSans.getUuid());
 		eltSans.onDiscard();
 
 		final UUID uuid = UUID.randomUUID();
-		final InboxElement eltAvec = new InboxElement(uuid, "Bidon 2", "Deuxième élément bidon", buildAttachment(), 0);
+		final InboxElement eltAvec = new InboxElement(uuid, "Bidon 2", "Deuxième élément bidon", buildAttachment(), null);
 		Assert.assertEquals(uuid, eltAvec.getUuid());
 		eltAvec.onDiscard();
 	}

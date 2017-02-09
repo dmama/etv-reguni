@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture.manager;
 
 import java.math.BigInteger;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public boolean isReponseRecueDeEfacture(String businessId) {
-		return eFactureResponseService.waitForResponse(businessId, timeOutForReponse);
+		return eFactureResponseService.waitForResponse(businessId, Duration.ofMillis(timeOutForReponse));
 	}
 
 	@Override
@@ -141,7 +142,7 @@ public class EfactureManagerImpl implements EfactureManager {
 			if (resultatQuittancement.equals(ResultatQuittancement.dejaInscrit())) {
 				return ResultatQuittancement.dejaInscrit().getDescription(noCtb);
 			}
-			else if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), timeOutForReponse)) {
+			else if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), Duration.ofMillis(timeOutForReponse))) {
 				return ResultatQuittancement.ok(resultatQuittancement).getDescription(noCtb);
 			}
 		}

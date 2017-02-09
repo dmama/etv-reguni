@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.editique;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 
@@ -20,10 +21,10 @@ public interface EditiqueRetourImpressionStorageService {
 	/**
 	 * Récupère le document identifié par son nom (champ {@link ConstantesEditique#UNIREG_DOCUMENT_ID} dans l'entête)
 	 * @param nomDocument identifiant du document à récupérer
-	 * @param timeout temps maximal d'attente de l'arrivée de l'impression, en millisecondes
+	 * @param timeout temps maximal d'attente de l'arrivée de l'impression
 	 * @return la représentation du document imprimé renvoyé par l'éditique, <code>null</code> si rien n'est revenu dans le temps imparti
 	 */
-	EditiqueResultat getDocument(String nomDocument, long timeout);
+	EditiqueResultat getDocument(String nomDocument, Duration timeout);
 
 	/**
 	 * Enregistre un trigger qui sera déclenché à la réception du retour d'impression identifié par son ID

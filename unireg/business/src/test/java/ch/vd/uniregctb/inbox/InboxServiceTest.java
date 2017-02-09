@@ -2,6 +2,7 @@ package ch.vd.uniregctb.inbox;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,7 +65,7 @@ public class InboxServiceTest extends WithoutSpringTest {
 	@Test
 	public void testDocumentExpiration() throws Exception {
 		buildService(100);      // nettoyage toutes les 100 millisecondes
-		final InboxElement element = new InboxElement("Mon impression qui va expirer", null, buildAttachment(), 500);
+		final InboxElement element = new InboxElement("Mon impression qui va expirer", null, buildAttachment(), Duration.ofMillis(500));
 		service.addElement("MOI", element);
 
 		Thread.sleep(300);

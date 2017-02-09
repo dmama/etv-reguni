@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture.manager;
 
 import java.math.BigInteger;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -195,7 +196,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 			boolean firstCall = true;
 			@Override
-			public boolean waitForResponse(String businessId, long timeoutMs) {
+			public boolean waitForResponse(String businessId, Duration timeout) {
 				assertEquals("BUSINESS_ID", businessId);
 				if (firstCall) {
 					firstCall = false;
@@ -217,7 +218,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 			boolean firstCall = true;
 			@Override
-			public boolean waitForResponse(String businessId, long timeoutMs) {
+			public boolean waitForResponse(String businessId, Duration timeout) {
 				assertEquals("BUSINESS_ID", businessId);
 				if (firstCall) {
 					firstCall = false;
@@ -240,7 +241,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 		public void onNewResponse(String businessId) {}
 
 		@Override
-		public boolean waitForResponse(String businessId, long timeoutMs) {
+		public boolean waitForResponse(String businessId, Duration timeout) {
 			return false;
 		}
 	}

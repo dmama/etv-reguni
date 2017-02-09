@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.InstantHelper;
 
 /**
  * Un élément d'une inbox (= un message).<p/>
@@ -19,8 +23,8 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	private final String name;
 	private final String description;
 	private final InboxAttachment attachment;
-	private final Date incomingDate;
-	private final long expirationDate;
+	private final Instant incomingDate;
+	private final Instant expirationDate;
 	private boolean read;
 
 	/**
@@ -29,16 +33,16 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	 * @param name nom de l'élément
 	 * @param description petite description du contenu
 	 * @param attachement (optionel) attachement à l'élément de l'inbox
-	 * @param msUntilExpiration délai d'expiration de l'élément en millisecondes (0 = aucune expiration)
+	 * @param untilExpiration délai d'expiration de l'élément (null, ou &le; 0 -&gt; aucune expiration)
 	 * @throws IOException en cas de problème à la lecture de l'input stream fourni
 	 */
-	public InboxElement(UUID uuid, String name, String description, InboxAttachment attachement, long msUntilExpiration) throws IOException {
+	public InboxElement(UUID uuid, String name, String description, InboxAttachment attachement, Duration untilExpiration) throws IOException {
 		this.uuid = uuid;
 		this.name = name;
 		this.description = description;
 		this.attachment = attachement;
-		this.incomingDate = DateHelper.getCurrentDate();
-		this.expirationDate = msUntilExpiration <= 0 ? Long.MAX_VALUE : this.incomingDate.getTime() + msUntilExpiration;
+		this.incomingDate = InstantHelper.get();
+		this.expirationDate = untilExpiration == null || untilExpiration.isNegative() || untilExpiration.isZero() ? null : this.incomingDate.plus(untilExpiration);
 		this.read = false;
 	}
 
@@ -47,12 +51,12 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	 * @param name nom de l'élément
 	 * @param description petite description du contenu
 	 * @param attachement (optionel) attachement à l'élément de l'inbox
-	 * @param msUntilExpiration délai d'expiration de l'élément en millisecondes (0 = aucune expiration)
+	 * @param untilExpiration délai d'expiration de l'élément (null, ou &le; 0 -&gt; aucune expiration)
 	 * @throws IOException en cas de problème à la lecture de l'input stream fourni
 	 * @see UUID#randomUUID()
 	 */
-	public InboxElement(String name, String description, InboxAttachment attachement, long msUntilExpiration) throws IOException {
-		this(UUID.randomUUID(), name, description, attachement, msUntilExpiration);
+	public InboxElement(String name, String description, InboxAttachment attachement, @Nullable Duration untilExpiration) throws IOException {
+		this(UUID.randomUUID(), name, description, attachement, untilExpiration);
 	}
 
 	public UUID getUuid() {
@@ -71,29 +75,24 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 		return attachment;
 	}
 
-	public Date getIncomingDate() {
+	public Instant getIncomingDate() {
 		return incomingDate;
 	}
 
 	@Override
 	public boolean isExpired() {
-		final Long tte = getTimeToExpiration();
-		return tte != null && tte == 0L;
+		final Duration tte = getTimeToExpiration();
+		return tte != null && tte.isNegative();
 	}
 
-	public Long getTimeToExpiration() {
-		final Long timeToExpiration;
-		if (expirationDate == Long.MAX_VALUE) {
+	@Nullable
+	public Duration getTimeToExpiration() {
+		final Duration timeToExpiration;
+		if (expirationDate == null) {
 			timeToExpiration = null;
 		}
 		else {
-			final long computedTimeToExpiration = expirationDate - DateHelper.getCurrentDate().getTime();
-			if (computedTimeToExpiration > 0) {
-				timeToExpiration = computedTimeToExpiration;
-			}
-			else {
-				timeToExpiration = 0L;
-			}
+			timeToExpiration = Duration.between(InstantHelper.get(), expirationDate);
 		}
 		return timeToExpiration;
 	}
@@ -123,7 +122,7 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 
 	@Override
 	public String toString() {
-		return String.format("{uuid=%s, name=%s, arrival=%s}", uuid, name, DateHelper.dateTimeToDisplayString(incomingDate));
+		return String.format("{uuid=%s, name=%s, arrival=%s}", uuid, name, DateHelper.dateTimeToDisplayString(Date.from(incomingDate)));
 	}
 
 	@Override

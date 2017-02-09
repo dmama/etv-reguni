@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.inbox;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,13 +55,13 @@ public class InboxServiceImpl implements InboxService, InitializingBean, Disposa
 
 	@Override
 	public void addDocument(String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException {
-		final InboxElement element = new InboxElement(docName, description, attachment, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
+		final InboxElement element = new InboxElement(docName, description, attachment, Duration.ofHours(hoursUntilExpiration));
 		addElement(visa, element);
 	}
 
 	@Override
 	public void addDocument(UUID uuid, String visa, String docName, String description, InboxAttachment attachment, int hoursUntilExpiration) throws IOException {
-		final InboxElement element = new InboxElement(uuid, docName, description, attachment, TimeUnit.HOURS.toMillis(hoursUntilExpiration));
+		final InboxElement element = new InboxElement(uuid, docName, description, attachment, Duration.ofHours(hoursUntilExpiration));
 		addElement(visa, element);
 	}
 

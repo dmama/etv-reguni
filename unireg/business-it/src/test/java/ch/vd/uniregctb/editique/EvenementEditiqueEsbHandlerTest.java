@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -82,7 +83,7 @@ public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 			}
 
 			@Override
-			public EditiqueResultat getDocument(String nomDocument, long timeout) {
+			public EditiqueResultat getDocument(String nomDocument, Duration timeout) {
 				throw new NotImplementedException();
 			}
 
