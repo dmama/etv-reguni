@@ -262,13 +262,11 @@ public class MigrationDDImporter {
 							.map(dd -> {
 								try {
 									final DegrevementICI deg = traiterDegrevement(dd, mapCommunes);
-									if (deg != null) {
-										subRapport.get().incNbDemandesTraitees();
-									}
-									else {
+									if (deg == null) {
 										subRapport.get().addDonneeDegrevementVide(dd);
+										return null;
 									}
-									return deg == null ? null : Pair.of(deg, dd.getKey());
+									return Pair.of(deg, dd.getKey());
 								}
 								catch (Exception e) {
 									subRapport.get().addErreur(dd, e.getMessage());
@@ -288,10 +286,12 @@ public class MigrationDDImporter {
 										.sorted((p1, p2) -> NullDateBehavior.EARLIEST.compare(p1.getLeft().getDateDebut(), p2.getLeft().getDateDebut()))
 										.collect(Collectors.toList());
 
-								final DegrevementICI last = sorted.get(sorted.size() - 1).getLeft();
+								final Pair<DegrevementICI, MigrationKey> last = sorted.get(sorted.size() - 1);
 								sorted.subList(0, sorted.size() - 1)
-										.forEach(pair -> subRapport.get().addDegrevementIgnoreValeurPlusRecente(pair.getRight(), pair.getLeft().getDateDebut(), last.getDateDebut()));
-								return last;
+										.forEach(pair -> subRapport.get().addDegrevementIgnoreValeurPlusRecente(pair.getRight(), pair.getLeft().getDateDebut(), last.getLeft().getDateDebut()));
+
+								subRapport.get().addDegrevementTraite(last.getLeft(), last.getRight());
+								return last.getLeft();
 							})
 							.map(hibernateTemplate::merge)
 							.forEach(entreprise::addAllegementFoncier);

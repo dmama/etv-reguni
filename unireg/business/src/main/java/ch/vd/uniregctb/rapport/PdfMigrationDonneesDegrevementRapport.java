@@ -49,7 +49,7 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre de lignes lues :", String.valueOf(results.getNbLignes()));
 				table.addLigne("Nombre de lignes en erreur :", String.valueOf(results.getLignesEnErreur().size()));
-				table.addLigne("Nombre de demandes traitées :", String.valueOf(results.getNbDemandesTraitees()));
+				table.addLigne("Nombre de dégrèvements traités :", String.valueOf(results.getTraites().size()));
 				table.addLigne("Nombre de données ignorées :", String.valueOf(results.getDonneesIgnorees().size()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results.endTime - results.startTime));
@@ -67,7 +67,7 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 			}
 		}
 
-		// Demandes ignorées
+		// Données ignorées
 		{
 			final String filename = "donnees_ignorees.csv";
 			final String titre = " Liste des données ignorées";
@@ -77,7 +77,7 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 			}
 		}
 
-		// Demandes en erreur
+		// Données en erreur
 		{
 			final String filename = "erreurs.csv";
 			final String titre = " Liste des erreurs";
@@ -87,12 +87,22 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 			}
 		}
 
+		// Dégrèvements traités
+		{
+			final String filename = "degrevements_traites.csv";
+			final String titre = " Liste des dégrèvements traités";
+			final String listeVide = "(aucun)";
+			try (TemporaryFile contenu = traitesAsCsvFile(results.getTraites(), filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
+		}
+
 		close();
 
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private TemporaryFile lignesAsCsvFile(List<MigrationDDImporterResults.LigneInfo> liste, String filename, StatusManager status) {
+	private static TemporaryFile lignesAsCsvFile(List<MigrationDDImporterResults.LigneInfo> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.LigneInfo>() {
@@ -113,7 +123,7 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile ignoresAsCsvFile(List<MigrationDDImporterResults.Ignore> liste, String filename, StatusManager status) {
+	private static TemporaryFile ignoresAsCsvFile(List<MigrationDDImporterResults.Ignore> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.Ignore>() {
@@ -136,7 +146,7 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private TemporaryFile erreursAsCsvFile(List<MigrationDDImporterResults.Erreur> liste, String filename, StatusManager status) {
+	private static TemporaryFile erreursAsCsvFile(List<MigrationDDImporterResults.Erreur> liste, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.Erreur>() {
@@ -150,6 +160,27 @@ public class PdfMigrationDonneesDegrevementRapport extends PdfRapport {
 				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.Erreur elt) {
 					b.append(CsvHelper.escapeChars(elt.getContexte())).append(COMMA);
 					b.append(CsvHelper.asCsvField(elt.getMessage()));
+					return true;
+				}
+			});
+		}
+		return contenu;
+	}
+
+	private static TemporaryFile traitesAsCsvFile(List<MigrationDDImporterResults.Traite> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
+		if (!liste.isEmpty()) {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MigrationDDImporterResults.Traite>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("CONTEXTE").append(COMMA);
+					b.append("DEGREVEMENT");
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, MigrationDDImporterResults.Traite elt) {
+					b.append(CsvHelper.escapeChars(elt.getKey().toString())).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.getDescriptionDegrevement()));
 					return true;
 				}
 			});
