@@ -1,11 +1,18 @@
 package ch.vd.uniregctb.foncier.migration;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.DonneesLoiLogement;
+import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.foncier.migration.MigrationDDKey;
 
 public class MigrationDDImporterResults {
@@ -27,6 +34,7 @@ public class MigrationDDImporterResults {
 	private int nbDemandesTraitees = 0;
 	private final List<Ignore> donneesIgnorees = new LinkedList<>();
 	private final List<Erreur> erreurs = new LinkedList<>();
+	private final List<Traite> traites = new LinkedList<>();
 	private int nbThreads;
 
 	public static final class LigneInfo {
@@ -135,6 +143,52 @@ public class MigrationDDImporterResults {
 		}
 	}
 
+	private static final StringRenderer<BigDecimal> PERCENT_RENDERER = StringRenderer.withDefaultIfNull(StringUtils.EMPTY, bg -> String.format("%s%%", bg.toPlainString()));
+
+	private static final StringRenderer<DonneesUtilisation> DONNNEES_UTILISATION_RENDERER = StringRenderer.withDefaultIfNull("{}",
+	                                                                                                                         du -> "{" +
+			                                                                                                                         "revenu=" + du.getRevenu() +
+			                                                                                                                         ", volume=" + du.getVolume() +
+			                                                                                                                         ", surface=" + du.getSurface() +
+			                                                                                                                         ", pourcentage=" + PERCENT_RENDERER.toString(du.getPourcentage()) +
+			                                                                                                                         ", pourcentageArrete=" + PERCENT_RENDERER.toString(du.getPourcentageArrete()) +
+			                                                                                                                         '}');
+
+	private static final StringRenderer<DonneesLoiLogement> DONNEES_LL_RENDERER = StringRenderer.withDefaultIfNull("{}",
+	                                                                                                               ll -> "{" +
+			                                                                                                               "dateOctroi=" + RegDateHelper.dateToDisplayString(ll.getDateOctroi()) +
+			                                                                                                               ", dateEcheance=" + RegDateHelper.dateToDisplayString(ll.getDateEcheance()) +
+			                                                                                                               ", pourcentageCaractereSocial=" + PERCENT_RENDERER.toString(ll.getPourcentageCaractereSocial()) +
+			                                                                                                               '}');
+
+	public static class Traite {
+		private final MigrationDDKey key;
+		private final String descriptionDegrevement;
+
+		public Traite(DegrevementICI degrevement, MigrationDDKey key) {
+			this.key = key;
+			this.descriptionDegrevement = buildDescription(degrevement);
+		}
+
+		private static String buildDescription(DegrevementICI degrevement) {
+			return "{" +
+					"dateDebut=" + RegDateHelper.dateToDashString(degrevement.getDateDebut()) +
+					", immeuble=" + degrevement.getImmeuble().getId() +
+					", locatif=" + DONNNEES_UTILISATION_RENDERER.toString(degrevement.getLocation()) +
+					", propreUsage=" + DONNNEES_UTILISATION_RENDERER.toString(degrevement.getPropreUsage()) +
+					", caractSocial=" + DONNEES_LL_RENDERER.toString(degrevement.getLoiLogement()) +
+					"}";
+		}
+
+		public MigrationDDKey getKey() {
+			return key;
+		}
+
+		public String getDescriptionDegrevement() {
+			return descriptionDegrevement;
+		}
+	}
+
 	public MigrationDDImporterResults(int nbThreads) {
 		this.nbThreads = nbThreads;
 	}
@@ -142,9 +196,9 @@ public class MigrationDDImporterResults {
 	public void addAll(MigrationDDImporterResults right) {
 		nbLignes += right.nbLignes;
 		lignesEnErreur.addAll(right.lignesEnErreur);
-		nbDemandesTraitees += right.nbDemandesTraitees;
 		donneesIgnorees.addAll(right.donneesIgnorees);
 		erreurs.addAll(right.erreurs);
+		traites.addAll(right.traites);
 	}
 
 	public void end() {
@@ -155,8 +209,8 @@ public class MigrationDDImporterResults {
 		return ++nbLignes;
 	}
 
-	public int incNbDemandesTraitees() {
-		return ++nbDemandesTraitees;
+	public void addDegrevementTraite(DegrevementICI degrevement, MigrationDDKey key) {
+		traites.add(new Traite(degrevement, key));
 	}
 
 	public void addLineEnErreur(int index, String message) {
@@ -199,10 +253,6 @@ public class MigrationDDImporterResults {
 		return lignesEnErreur;
 	}
 
-	public int getNbDemandesTraitees() {
-		return nbDemandesTraitees;
-	}
-
 	/**
 	 * @return la liste des lignes d'input ignorées
 	 */
@@ -224,6 +274,10 @@ public class MigrationDDImporterResults {
 
 	public List<Erreur> getErreurs() {
 		return erreurs;
+	}
+
+	public List<Traite> getTraites() {
+		return traites;
 	}
 }
 

@@ -81,7 +81,7 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		assertNotNull(results);
 		assertEmpty(results.getLignesEnErreur());
 		assertEquals(13, results.getNbLignes());
-		assertEquals(10, results.getNbDemandesTraitees());  // la demande EGICA-2013 est ignorée car il existe une demande pour 2014
+		assertEquals(10, results.getTraites().size());  // la demande EGICA-2013 est ignorée car il existe une demande pour 2014
 		assertEmpty(results.getErreurs());
 
 		final List<MigrationDDImporterResults.Ignore> ignorees = results.getDonneesIgnorees();
