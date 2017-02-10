@@ -94,7 +94,7 @@ public class IdentificationContribuableRequestHandlerV2 implements Identificatio
 		else if (status == IdentificationResult.FOUND_SEVERAL || status == IdentificationResult.FOUND_MANY) {
 			final String detail;
 			if (found.size() > 0) {
-				detail = String.format(" (%s%s)", CollectionsUtils.toString(found, new NumeroCtbStringRenderer(), ", "), status == IdentificationResult.FOUND_MANY ? ", ..." : StringUtils.EMPTY);
+				detail = String.format(" (%s%s)", CollectionsUtils.toString(found, NumeroCtbStringRenderer.INSTANCE, ", "), status == IdentificationResult.FOUND_MANY ? ", ..." : StringUtils.EMPTY);
 			}
 			else {
 				detail = StringUtils.EMPTY;

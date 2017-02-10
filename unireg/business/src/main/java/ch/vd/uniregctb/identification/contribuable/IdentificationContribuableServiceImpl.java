@@ -55,7 +55,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StringComparator;
-import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -96,7 +95,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableServiceImpl.class);
 
 	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
-	private static final StringRenderer<Long> NO_CTB_RENDERER = new NumeroCtbStringRenderer();
 
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
@@ -1238,7 +1236,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			else {
 				b.append("Plus de ").append(NB_MAX_RESULTS_POUR_LISTE_IDENTIFICATION);
 			}
-			b.append(" contribuables trouvés : ").append(CollectionsUtils.toString(found, NO_CTB_RENDERER, ", "));
+			b.append(" contribuables trouvés : ").append(CollectionsUtils.toString(found, NumeroCtbStringRenderer.INSTANCE, ", "));
 			if (resultKind == IdentificationResultKind.FOUND_MANY) {
 				b.append(", ...");
 			}
