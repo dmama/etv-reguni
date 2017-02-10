@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.snc;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -110,7 +111,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 						}
 						final DeclarationGenerationOperation operation = new DeclarationGenerationOperation(tiers.getNumero());
 						try {
-							final TicketService.Ticket ticket = ticketService.getTicket(operation, 500);
+							final TicketService.Ticket ticket = ticketService.getTicket(operation, Duration.ofMillis(500));
 							try {
 								traiterContribuable((Entreprise) tiers, pf, dateTraitement, rapport);
 							}

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.lr;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -113,7 +114,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
 				final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(bean.getDpi().getNumero());
 				try {
-					final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+					final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 					try {
 						final TraitementRetourEditique<EditiqueResultatErreur> erreur = new TraitementRetourEditique<EditiqueResultatErreur>() {
 							@Override

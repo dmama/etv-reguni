@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire.pm;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -188,7 +189,7 @@ public class EnvoiDeclarationsPMProcessor {
 		final ContribuableImpositionPersonnesMorales pm = tache.getContribuable();
 		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(pm.getNumero());
 		try {
-			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 			try {
 				traiterTache(tache, pm, rapport, dateLimiteBouclements, dateTraitement, informationsFiscales);
 			}

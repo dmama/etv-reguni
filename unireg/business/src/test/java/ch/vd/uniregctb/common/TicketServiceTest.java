@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
@@ -20,10 +21,10 @@ public class TicketServiceTest extends WithoutSpringTest {
 		final Long keyAnswer = 42L;
 		final Long keyOther = 777L;
 
-		final TicketService.Ticket ticket1 = ticketService.getTicket(keyAnswer, 0);
+		final TicketService.Ticket ticket1 = ticketService.getTicket(keyAnswer, null);
 		Assert.assertNotNull(ticket1);
 
-		final TicketService.Ticket ticket2 = ticketService.getTicket(keyOther, 0);
+		final TicketService.Ticket ticket2 = ticketService.getTicket(keyOther, null);
 		Assert.assertNotNull(ticket2);
 
 		ticket1.release();
@@ -35,13 +36,13 @@ public class TicketServiceTest extends WithoutSpringTest {
 		final Long key = 42L;
 
 		// je prends le ticket
-		final TicketService.Ticket ticket = ticketService.getTicket(key, 0);
+		final TicketService.Ticket ticket = ticketService.getTicket(key, null);
 		Assert.assertNotNull(ticket);
 
 		// le ticket n'est pas ré-entrant...
 		final long ts1 = System.nanoTime();
 		try {
-			ticketService.getTicket(key, 300);
+			ticketService.getTicket(key, Duration.ofMillis(300));
 			Assert.fail("Aurait dû échouer...");
 		}
 		catch (TicketTimeoutException e) {
@@ -55,7 +56,7 @@ public class TicketServiceTest extends WithoutSpringTest {
 	@Test(timeout = 1000)
 	public void testNullKey() throws Exception {
 		try {
-			ticketService.getTicket(null, 2000);
+			ticketService.getTicket(null, Duration.ofMillis(2000));
 			Assert.fail("Aurait dû échouer...");
 		}
 		catch (NullPointerException e) {
@@ -69,7 +70,7 @@ public class TicketServiceTest extends WithoutSpringTest {
 		final Long key = 42L;
 
 		// je prends le ticket
-		final TicketService.Ticket ticket = ticketService.getTicket(key, 0);
+		final TicketService.Ticket ticket = ticketService.getTicket(key, null);
 		Assert.assertNotNull(ticket);
 
 		// je le relâche

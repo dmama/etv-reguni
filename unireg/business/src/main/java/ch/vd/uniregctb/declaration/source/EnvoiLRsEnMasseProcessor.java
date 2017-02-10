@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.source;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class EnvoiLRsEnMasseProcessor {
 	private void traiteDebiteur(Long id, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
 		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(id);
 		try {
-			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 			try {
 				final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);
 				traiteDebiteur(dpi, dateFinPeriode, rapport);

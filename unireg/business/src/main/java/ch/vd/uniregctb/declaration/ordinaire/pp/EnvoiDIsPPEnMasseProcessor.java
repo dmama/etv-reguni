@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -391,10 +392,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 
 	protected boolean traiterTache(TacheEnvoiDeclarationImpotPP tache, RegDate dateTraitement, AbstractEnvoiDIsPPResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		final Contribuable contribuable = tache.getContribuable();
-		if (!(contribuable instanceof ContribuableImpositionPersonnesPhysiques)) {
-			return false;
-		}
+		final ContribuableImpositionPersonnesPhysiques contribuable = tache.getContribuable();
 
 		// Voir le use-case "SCU-ExclureContribuablesEnvoiDI"
 		final RegDate dateLimiteExclusion = contribuable.getDateLimiteExclusionEnvoiDeclarationImpot();
@@ -407,7 +405,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 
 		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(contribuable.getNumero());
 		try {
-			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 			try {
 				return traiterTache(tache, (ContribuableImpositionPersonnesPhysiques) contribuable, dateTraitement, rapport, cache, dcache, simul);
 			}

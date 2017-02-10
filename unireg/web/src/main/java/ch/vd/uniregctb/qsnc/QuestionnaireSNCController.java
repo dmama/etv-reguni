@@ -3,6 +3,7 @@ package ch.vd.uniregctb.qsnc;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -306,7 +307,7 @@ public class QuestionnaireSNCController {
 
 		try {
 			final DeclarationGenerationOperation operation = new DeclarationGenerationOperation(view.getEntrepriseId());
-			final TicketService.Ticket ticket = ticketService.getTicket(operation, 500);
+			final TicketService.Ticket ticket = ticketService.getTicket(operation, Duration.ofMillis(500));
 			try {
 				return printNewQuestionnaire(response, view);
 			}

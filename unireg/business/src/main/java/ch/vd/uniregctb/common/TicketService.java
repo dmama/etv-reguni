@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Manager général de "tickets" applicatifs, qui peuvent servir par exemple à gérer des sections critiques au niveau applicatif (on ne devrait
@@ -9,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public interface TicketService {
 
 	/**
-	 * Interface des tickets renvoyés par la méthode {@link #getTicket(Object, long)}
+	 * Interface des tickets renvoyés par la méthode {@link #getTicket(Object, Duration)}
 	 */
 	interface Ticket {
 		/**
@@ -21,12 +24,12 @@ public interface TicketService {
 	/**
 	 * Asks for a ticket corresponding to the given key
 	 * @param key key identifying the action to get a ticket for
-	 * @param timeout maximal time (in milliseconds) to wait for the ticket (0 means "wait forever if necessary")
+	 * @param timeout maximal time to wait for the ticket (<code>null</code> means "wait forever if necessary", 0 or negative means "do not wait")
 	 * @return a ticket granting access to the action identified by the given key
 	 * @throws ch.vd.uniregctb.common.TicketTimeoutException if no access could be granted in the given timeframe
 	 * @throws java.lang.InterruptedException in case the thread is interrupted during wait
 	 * @throws java.lang.NullPointerException if the key is <code>null</code>
 	 */
 	@NotNull
-	Ticket getTicket(Object key, long timeout) throws TicketTimeoutException, InterruptedException;
+	Ticket getTicket(Object key, @Nullable Duration timeout) throws TicketTimeoutException, InterruptedException;
 }

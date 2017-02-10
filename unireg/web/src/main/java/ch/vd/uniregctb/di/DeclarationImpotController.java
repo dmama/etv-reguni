@@ -3,6 +3,7 @@ package ch.vd.uniregctb.di;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -757,7 +758,7 @@ public class DeclarationImpotController {
 		// On imprime la nouvelle déclaration d'impôt
 		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(tiersId);
 		try {
-			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 			try {
 
 				// ... sauf que si on n'a pas de type de document, on n'est pas capable d'imprimer quoi que ce soit...
