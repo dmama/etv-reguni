@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,31 +21,34 @@ public class IdentifiantAffaireRF {
 	private int numeroOffice;
 
 	/**
-	 * L'année de l'affaire.
+	 * Le numéro d'affaire en format texte libre.
 	 */
 	@Nullable
-	private Integer annee;
-
-	/**
-	 * Le numéro de l'affaire.
-	 */
-	@Nullable
-	private Integer numero;
-
-	/**
-	 * L'index de l'affaire.
-	 */
-	@Nullable
-	private Integer index;
+	private String numeroAffaire;
 
 	public IdentifiantAffaireRF() {
 	}
 
 	public IdentifiantAffaireRF(int numeroOffice, @Nullable Integer annee, @Nullable Integer numero, @Nullable Integer index) {
 		this.numeroOffice = numeroOffice;
-		this.annee = annee;
-		this.numero = numero;
-		this.index = index;
+		this.numeroAffaire = buildNumeroAffaire(annee, numero, index);
+	}
+
+	public IdentifiantAffaireRF(int numeroOffice, @Nullable String numeroAffaire) {
+		this.numeroOffice = numeroOffice;
+		this.numeroAffaire = numeroAffaire;
+	}
+
+	@Nullable
+	private static String buildNumeroAffaire(@Nullable Integer annee, @Nullable Integer numero, @Nullable Integer index) {
+		if (annee == null && numero == null && index == null) {
+			return null;
+		}
+		final List<String> values = new ArrayList<>(3);
+		Optional.ofNullable(annee).ifPresent(v -> values.add(String.valueOf(v)));
+		Optional.ofNullable(numero).ifPresent(v -> values.add(String.valueOf(v)));
+		Optional.ofNullable(index).ifPresent(v -> values.add(String.valueOf(v)));
+		return String.join("/", values);
 	}
 
 	public int getNumeroOffice() {
@@ -54,30 +60,12 @@ public class IdentifiantAffaireRF {
 	}
 
 	@Nullable
-	public Integer getAnnee() {
-		return annee;
+	public String getNumeroAffaire() {
+		return numeroAffaire;
 	}
 
-	public void setAnnee(@Nullable Integer annee) {
-		this.annee = annee;
-	}
-
-	@Nullable
-	public Integer getNumero() {
-		return numero;
-	}
-
-	public void setNumero(@Nullable Integer numero) {
-		this.numero = numero;
-	}
-
-	@Nullable
-	public Integer getIndex() {
-		return index;
-	}
-
-	public void setIndex(@Nullable Integer index) {
-		this.index = index;
+	public void setNumeroAffaire(@Nullable String numeroAffaire) {
+		this.numeroAffaire = numeroAffaire;
 	}
 
 	@Override
@@ -86,27 +74,25 @@ public class IdentifiantAffaireRF {
 		if (o == null || getClass() != o.getClass()) return false;
 		final IdentifiantAffaireRF that = (IdentifiantAffaireRF) o;
 		return numeroOffice == that.numeroOffice &&
-				Objects.equals(annee, that.annee) &&
-				Objects.equals(numero, that.numero) &&
-				Objects.equals(index, that.index);
+				Objects.equals(numeroAffaire, that.numeroAffaire);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(numeroOffice, annee, numero, index);
+		return Objects.hash(numeroOffice, numeroAffaire);
 	}
 
 	@Override
 	public String toString() {
-		if (annee == null || numero == null || index == null) { // une analyse des données à montré que si l'année est nulle, alors le numéro et l'index le sont aussi.
+		if (numeroAffaire == null) {
 			return String.format("%03d", numeroOffice);
 		}
 		else {
-			return String.format("%03d-%4d/%d/%d", numeroOffice, annee, numero, index);
+			return String.format("%03d-%s", numeroOffice, numeroAffaire);
 		}
 	}
 
-	private static final Pattern PATTERN = Pattern.compile("([0-9]{3})(?:-([0-9]{4})/([0-9]+)/([0-9]+))?");
+	private static final Pattern PATTERN = Pattern.compile("([0-9]{3})(?:-(.*))?");
 
 	@Nullable
 	public static IdentifiantAffaireRF parse(@Nullable String value) {
@@ -121,17 +107,8 @@ public class IdentifiantAffaireRF {
 		}
 
 		int numeroOffice = Integer.parseInt(matcher.group(1));
-		Integer annee = null;
-		Integer numero = null;
-		Integer index = null;
+		final String numeroAffaire = matcher.group(2);
 
-		final String anneeAsString = matcher.group(2);
-		if (StringUtils.isNotBlank(anneeAsString)) {
-			annee = Integer.parseInt(anneeAsString);
-			numero = Integer.parseInt(matcher.group(3));
-			index = Integer.parseInt(matcher.group(4));
-		}
-
-		return new IdentifiantAffaireRF(numeroOffice, annee, numero, index);
+		return new IdentifiantAffaireRF(numeroOffice, numeroAffaire);
 	}
 }

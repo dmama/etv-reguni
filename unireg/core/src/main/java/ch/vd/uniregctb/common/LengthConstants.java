@@ -187,7 +187,7 @@ public abstract class LengthConstants {
 	public static final int RF_NOM_COMMUNE = 50;
 	public static final int RF_IDENTIFIANT_DROIT = 15;
 	public static final int RF_GENRE_PROPRIETE = 12;
-	public static final int RF_NO_AFFAIRE = 25;
+	public static final int RF_NO_AFFAIRE = 40;
 	public static final int RF_MOTIF = 255;
 	public static final int RF_REFERENCE_ESTIMATION = 25;
 	public static final int RF_EGRID = 14;

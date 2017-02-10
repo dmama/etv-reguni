@@ -17,6 +17,11 @@ public class IdentifiantAffaireRFTest {
 	public void testParse() throws Exception {
 
 		assertEquals(new IdentifiantAffaireRF(6, 2006, 1402, 0), IdentifiantAffaireRF.parse("006-2006/1402/0"));
+		assertEquals(new IdentifiantAffaireRF(6, "191-1"), IdentifiantAffaireRF.parse("006-191-1"));
+		assertEquals(new IdentifiantAffaireRF(2, "84538"), IdentifiantAffaireRF.parse("002-84538"));
+		assertEquals(new IdentifiantAffaireRF(2, "115'038"), IdentifiantAffaireRF.parse("002-115'038"));
+		assertEquals(new IdentifiantAffaireRF(6, "03/409bis"), IdentifiantAffaireRF.parse("006-03/409bis"));
+		assertEquals(new IdentifiantAffaireRF(5, "2002/341c"), IdentifiantAffaireRF.parse("005-2002/341c"));
 		assertEquals(new IdentifiantAffaireRF(6, null, null, null), IdentifiantAffaireRF.parse("006"));
 
 		try {

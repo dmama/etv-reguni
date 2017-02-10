@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -213,9 +214,7 @@ public class DroitRFHelper {
 		}
 		else {
 			return left.getNumeroOffice() == right.getNumeroOffice() &&
-					Objects.equals(left.getAnnee(), right.getAnnee()) &&
-					Objects.equals(left.getNumero(), right.getNumero()) &&
-					Objects.equals(left.getIndex(), right.getIndex());
+					Objects.equals(left.getNumeroAffaire(), right.getNumeroAffaire());
 		}
 	}
 
@@ -338,11 +337,17 @@ public class DroitRFHelper {
 	}
 
 	@Nullable
-	private static IdentifiantAffaireRF getAffaire(@Nullable Rechtsgrund rechtsgrund) {
+	static IdentifiantAffaireRF getAffaire(@Nullable Rechtsgrund rechtsgrund) {
 		if (rechtsgrund == null) {
 			return null;
 		}
-		return new IdentifiantAffaireRF(rechtsgrund.getAmtNummer(), rechtsgrund.getBelegJahr(), rechtsgrund.getBelegNummer(), rechtsgrund.getBelegNummerIndex());
+		final String belegAlt = rechtsgrund.getBelegAlt();
+		if (StringUtils.isNotBlank(belegAlt)) {
+			return new IdentifiantAffaireRF(rechtsgrund.getAmtNummer(), belegAlt);
+		}
+		else {
+			return new IdentifiantAffaireRF(rechtsgrund.getAmtNummer(), rechtsgrund.getBelegJahr(), rechtsgrund.getBelegNummer(), rechtsgrund.getBelegNummerIndex());
+		}
 	}
 
 	@Nullable

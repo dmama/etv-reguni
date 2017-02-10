@@ -3246,7 +3246,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNull(landRight0.getDateTo());
 				Assert.assertEquals("Achat", landRight0.getStartReason());
 				Assert.assertNull(landRight0.getEndReason());
-				assertCaseIdentifier(123, 2004, 202, 3, landRight0.getCaseIdentifier());
+				assertCaseIdentifier(123, "2004/202/3", landRight0.getCaseIdentifier());
 				Assert.assertEquals(ids.immeuble, landRight0.getImmovablePropertyId());
 			}
 		}
@@ -4828,12 +4828,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(denominator, share.getDenominator());
 	}
 
-	private void assertCaseIdentifier(int officeNumber, Integer year, Integer number, Integer index, CaseIdentifier caseIdentifier) {
+	private void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
 		Assert.assertNotNull(caseIdentifier);
 		Assert.assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
-		Assert.assertEquals(year, caseIdentifier.getYear());
-		Assert.assertEquals(number, caseIdentifier.getCaseNumber());
-		Assert.assertEquals(index, caseIdentifier.getCaseIndex());
+		Assert.assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
 	}
 
 	private static void assertLocation(RegDate dateFrom, RegDate dateTo, int parcelNumber, Integer index1, Integer index2, Integer index3, int noOfsCommune, Location location) {
