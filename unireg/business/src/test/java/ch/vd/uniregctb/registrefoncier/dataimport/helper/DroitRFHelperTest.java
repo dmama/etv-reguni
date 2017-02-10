@@ -31,7 +31,9 @@ import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -375,5 +377,37 @@ public class DroitRFHelperTest {
 		// autres imports
 		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), false));
 		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), false));
+	}
+
+	/**
+	 * [SIFISC-22288] Ce test vérifie que les numéros d'affaire sont bien extraits, en fonction des divers cas possibles.
+	 */
+	@Test
+	public void testGetAffaire() throws Exception {
+
+		// cas de la nullité (je ne vise personne)
+		assertNull(DroitRFHelper.getAffaire(null));
+
+		// cas des données structurées
+		final Rechtsgrund recht1 = new Rechtsgrund();
+		recht1.setAmtNummer(5);
+		recht1.setBelegJahr(2005);
+		recht1.setBelegNummer(223);
+		recht1.setBelegNummerIndex(3);
+
+		final IdentifiantAffaireRF affaire1 = DroitRFHelper.getAffaire(recht1);
+		assertNotNull(affaire1);
+		assertEquals(5, affaire1.getNumeroOffice());
+		assertEquals("2005/223/3", affaire1.getNumeroAffaire());
+
+		// cas des données en texte libre
+		final Rechtsgrund recht2 = new Rechtsgrund();
+		recht2.setAmtNummer(5);
+		recht2.setBelegAlt("2005/223/3");
+
+		final IdentifiantAffaireRF affaire2 = DroitRFHelper.getAffaire(recht2);
+		assertNotNull(affaire2);
+		assertEquals(5, affaire2.getNumeroOffice());
+		assertEquals("2005/223/3", affaire2.getNumeroAffaire());
 	}
 }

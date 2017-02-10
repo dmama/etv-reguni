@@ -65,7 +65,7 @@ public class LandRightBuilderTest {
 		assertNull(landOwnershipRight.getDateTo());
 		assertEquals("Achat", landOwnershipRight.getStartReason());
 		assertNull(landOwnershipRight.getEndReason());
-		assertCaseIdentifier(21, 2016, 322, 3, landOwnershipRight.getCaseIdentifier());
+		assertCaseIdentifier(21, "2016/322/3", landOwnershipRight.getCaseIdentifier());
 		assertEquals(Integer.valueOf(ctbId.intValue()), landOwnershipRight.getRightHolder().getTaxPayerNumber());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
 		assertEquals(Long.valueOf(8765887L), landOwnershipRight.getCommunityId());
@@ -103,7 +103,7 @@ public class LandRightBuilderTest {
 		assertNull(landOwnershipRight.getDateTo());
 		assertEquals("Achat", landOwnershipRight.getStartReason());
 		assertNull(landOwnershipRight.getEndReason());
-		assertCaseIdentifier(21, 2016, 322, 3, landOwnershipRight.getCaseIdentifier());
+		assertCaseIdentifier(21, "2016/322/3", landOwnershipRight.getCaseIdentifier());
 		assertEquals(Integer.valueOf(ctbId.intValue()), landOwnershipRight.getRightHolder().getTaxPayerNumber());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
 		assertNull(landOwnershipRight.getCommunityId());
@@ -116,11 +116,9 @@ public class LandRightBuilderTest {
 		assertEquals(denominator, share.getDenominator());
 	}
 
-	private void assertCaseIdentifier(int officeNumber, Integer year, Integer number, Integer index, CaseIdentifier caseIdentifier) {
+	private void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
 		assertNotNull(caseIdentifier);
 		assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
-		assertEquals(year, caseIdentifier.getYear());
-		assertEquals(number, caseIdentifier.getCaseNumber());
-		assertEquals(index, caseIdentifier.getCaseIndex());
+		assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
 	}
 }

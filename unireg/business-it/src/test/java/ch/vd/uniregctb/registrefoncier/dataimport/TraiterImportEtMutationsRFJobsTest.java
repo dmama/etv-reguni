@@ -387,7 +387,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());
 					assertEquals("_1f10915238100390013810052537624b", droit0.getImmeuble().getIdRF());
-					assertEquals(new IdentifiantAffaireRF(3, null, null, null), droit0.getNumeroAffaire());
+					assertEquals(new IdentifiantAffaireRF(3, "74'677"), droit0.getNumeroAffaire());
 					assertEquals(new Fraction(1, 1), droit0.getPart());
 					assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
 				}
@@ -702,7 +702,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());
 					assertEquals("_1f10915238100390013810052537624b", droit0.getImmeuble().getIdRF());
-					assertEquals(new IdentifiantAffaireRF(3, null, null, null), droit0.getNumeroAffaire());
+					assertEquals(new IdentifiantAffaireRF(3, "74'677"), droit0.getNumeroAffaire());
 					assertEquals(new Fraction(1, 1), droit0.getPart());
 					assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
 				}

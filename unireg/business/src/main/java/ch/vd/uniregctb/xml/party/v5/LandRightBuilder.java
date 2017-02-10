@@ -124,9 +124,11 @@ public abstract class LandRightBuilder {
 			return null;
 		}
 		return new CaseIdentifier(numeroAffaire.getNumeroOffice(),
-		                          numeroAffaire.getAnnee(),
-		                          numeroAffaire.getNumero(),
-		                          numeroAffaire.getIndex(),
+		                          null,
+		                          null,
+		                          null,
+		                          0,
+		                          numeroAffaire.getNumeroAffaire(),
 		                          0,
 		                          null);
 	}

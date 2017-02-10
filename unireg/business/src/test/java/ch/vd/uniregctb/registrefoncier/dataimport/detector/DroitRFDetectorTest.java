@@ -129,9 +129,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Achat</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -150,9 +148,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Achat</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>28</BelegNummer>\n" +
-				             "                <BelegNummerIndex>4</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/28/4</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -181,9 +177,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Achat</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>37838sc9d94de</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -251,9 +245,7 @@ public class DroitRFDetectorTest {
 				             "            <TextFr>Héritage</TextFr>\n" +
 				             "        </RechtsgrundCode>\n" +
 				             "        <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "        <BelegJahr>2013</BelegJahr>\n" +
-				             "        <BelegNummer>33</BelegNummer>\n" +
-				             "        <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "        <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "    </Rechtsgruende>\n" +
 				             "    <GemeinschatID>72828ce8f830a</GemeinschatID>\n" +
 				             "    <Art>Erbengemeinschaft</Art>\n" +
@@ -281,9 +273,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Héritage</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -313,9 +303,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Héritage</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>37838sc9d94de</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -344,9 +332,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Héritage</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <GemeinschatID>72828ce8f830a</GemeinschatID>\n" +
 				             "            <Art>Erbengemeinschaft</Art>\n" +
@@ -512,9 +498,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Vol autorisé</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -533,9 +517,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Achat</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>28</BelegNummer>\n" +
-				             "                <BelegNummerIndex>4</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/28/4</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -564,9 +546,7 @@ public class DroitRFDetectorTest {
 				             "                    <TextFr>Achat</TextFr>\n" +
 				             "                </RechtsgrundCode>\n" +
 				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegJahr>2013</BelegJahr>\n" +
-				             "                <BelegNummer>33</BelegNummer>\n" +
-				             "                <BelegNummerIndex>1</BelegNummerIndex>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
 				             "            </Rechtsgruende>\n" +
 				             "            <PersonstammIDREF>37838sc9d94de</PersonstammIDREF>\n" +
 				             "        </NatuerlichePersonGb>\n" +
@@ -793,9 +773,7 @@ public class DroitRFDetectorTest {
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(dateDebutEffective);
 		recht.setAmtNummer(affaire.getNumeroOffice());
-		recht.setBelegJahr(affaire.getAnnee());
-		recht.setBelegNummer(affaire.getNumero());
-		recht.setBelegNummerIndex(affaire.getIndex());
+		recht.setBelegAlt(affaire.getNumeroAffaire());
 		recht.setRechtsgrundCode(new CapiCode(null, motifDebut));
 
 		final NatuerlichePersonGb natuerliche = new NatuerlichePersonGb();
@@ -819,9 +797,7 @@ public class DroitRFDetectorTest {
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(dateDebutEffective);
 		recht.setAmtNummer(affaire.getNumeroOffice());
-		recht.setBelegJahr(affaire.getAnnee());
-		recht.setBelegNummer(affaire.getNumero());
-		recht.setBelegNummerIndex(affaire.getIndex());
+		recht.setBelegAlt(affaire.getNumeroAffaire());
 		recht.setRechtsgrundCode(new CapiCode(null, motifDebut));
 
 		final Gemeinschaft gemeinschaft = new Gemeinschaft();
