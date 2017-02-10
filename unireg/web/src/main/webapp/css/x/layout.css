@@ -7,7 +7,7 @@
 	background-image: url(fond_header_1_120.gif);
 	background-repeat: repeat-x;
 	height: 120px;
-	margin-left: 11.5em;
+	margin-left: 14.5em;
 	margin-right: 5px;
 	min-width: 800px;
 }
@@ -51,7 +51,7 @@
 }
 
 #header div.quicksearch {
-	left: 175px;
+	left: 205px;
 	top: 8.3em !important; top: 8.2em;
 	position: absolute;
 	color: #A6C9E5
@@ -73,7 +73,7 @@
 	border-left-color: #ccccff;
 	border-right-style: none;
 	border-bottom-style: none;
-	margin-left: 11.5em;
+	margin-left: 14.5em;
 	margin-right: 5px;
 }
 
@@ -355,14 +355,14 @@ INPUT.readonly {
 #sommaire {
 	display:block;
 	margin-left: 0.5em;
-	width: 10em;
+	width: 13em;
 	float: left;
 }
 
 #sommaire .canton {
-	background: url(vd_logo_rvb_120px.png) no-repeat 6em center;
+	background: url(vd_logo_rvb_120px.png) no-repeat 9em center;
 	height: 130px;
-	width: 10em;
+	width: 13em;
 	display: block;
 }
 
@@ -390,6 +390,13 @@ INPUT.readonly {
 
 #sommaire li li {
 	background: transparent url(iconlili.jpg) no-repeat 0 5px;
+	margin: 0;
+	border-bottom: none;
+	padding: 3px 0 3px 15px;
+}
+
+#sommaire li li li {
+	background: transparent url(iconlilili.jpg) no-repeat 0 5px;
 	margin: 0;
 	border-bottom: none;
 	padding: 3px 0 3px 15px;

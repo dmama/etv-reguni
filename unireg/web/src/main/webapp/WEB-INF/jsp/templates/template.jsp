@@ -63,42 +63,44 @@
 
 					</authz:authorize>
 
-					<authz:authorize var="creation" access="hasAnyRole('ROLE_CREATE_NONHAB', 'ROLE_CREATE_AC', 'ROLE_CREATE_ENTREPRISE')"/>
+					<authz:authorize var="creationpp" access="hasAnyRole('ROLE_CREATE_NONHAB', 'ROLE_CREATE_AC')"/>
 					<authz:authorize var="modifpp" access="hasAnyRole('ROLE_MODIF_VD_ORD', 'ROLE_MODIF_VD_SOURC', 'ROLE_MODIF_HC_HS', 'ROLE_MODIF_HAB_DEBPUR', 'ROLE_MODIF_NONHAB_DEBPUR')"/>
-					<authz:authorize var="annultiers" access="hasRole('ROLE_ANNUL_TIERS') and (${modifpp} or hasRole('ROLE_MODIF_PM'))"/>
-					<c:if test="${creation || modifpp || annultiers}">
-						<li><fmt:message key="label.action.creation" />
+					<authz:authorize var="annulpp" access="hasRole('ROLE_ANNUL_TIERS') and ${modifpp}"/>
+
+					<c:if test="${creationpp || modifpp || annulpp}">
+						<li><fmt:message key="title.personnes.physiques"/>
 							<ul>
-								<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
-									<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
-								</authz:authorize>
-								<authz:authorize ifAnyGranted="ROLE_CREATE_ENTREPRISE">
-									<li><a href="<c:url value='/tiers/entreprise/create.do'/>"><fmt:message key="title.entreprise" /></a></li>
-								</authz:authorize>
-								<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
-									<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.inconnu.pm" /></a></li>
-								</authz:authorize>
-								<c:if test="${modifpp}">
-									<li><a href="<c:url value='/couple/create.do'/>"><fmt:message key="title.couple" /></a></li>
-									<li><a href="<c:url value='/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
-									<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-								</c:if>
-								<c:if test="${annultiers}">
-									<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
-								</c:if>
-							</ul>
-						</li>
-					</c:if>
-					<c:if test="${modifpp || annultiers}">
-						<li><fmt:message key="label.action.annulation" />
-							<ul>
-								<c:if test="${modifpp}">
-									<li><a href="<c:url value='/annulation/couple/list.do'/>"><fmt:message key="title.couple" /></a></li>
-									<li><a href="<c:url value='/annulation/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
-									<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-								</c:if>
-								<c:if test="${annultiers}">
-									<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="title.tiers" /></a></li>
+								<li><fmt:message key="label.action.creation" />
+									<ul>
+										<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
+											<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
+										</authz:authorize>
+										<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
+											<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.inconnu.pm" /></a></li>
+										</authz:authorize>
+										<c:if test="${modifpp}">
+											<li><a href="<c:url value='/couple/create.do'/>"><fmt:message key="title.couple" /></a></li>
+											<li><a href="<c:url value='/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
+											<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
+										</c:if>
+										<c:if test="${annulpp}">
+											<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+										</c:if>
+									</ul>
+								</li>
+								<c:if test="${modifpp || annulpp}">
+									<li><fmt:message key="label.action.annulation" />
+										<ul>
+											<c:if test="${modifpp}">
+												<li><a href="<c:url value='/annulation/couple/list.do'/>"><fmt:message key="title.couple" /></a></li>
+												<li><a href="<c:url value='/annulation/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
+												<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
+											</c:if>
+											<c:if test="${annulpp}">
+												<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="title.tiers" /></a></li>
+											</c:if>
+										</ul>
+									</li>
 								</c:if>
 							</ul>
 						</li>
@@ -108,63 +110,81 @@
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE, ROLE_REINSCRIPTION_RC_ENTREPRISE, ROLE_REQUISITION_RADIATION_RC">
-					<li><fmt:message key="label.action.processus.complexes.entreprises"/>
-						<ul>
-							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
-								<li><a href="<c:url value="/processuscomplexe/revocation/faillite/list.do"/>"><fmt:message key="title.revocation.faillite"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
-								<li><a href="<c:url value="/processuscomplexe/repriseactivite/list.do"/>"><fmt:message key="title.reprise.partielle.activite"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
-								<li><a href="<c:url value="/processuscomplexe/fusion/absorbante/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/scission/scindee/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/transfertpatrimoine/emettrice/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_REQUISITION_RADIATION_RC">
-								<li><a href="<c:url value="/processuscomplexe/requisitionradiationrc/list.do"/>"><fmt:message key="title.requisition.radiation.rc"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_REINSCRIPTION_RC_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/reinscriptionrc/list.do"/>"><fmt:message key="title.reinscription.rc"/></a></li>
-							</authz:authorize>
-						</ul>
-					</li>
-					</authz:authorize>
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
-					<li><fmt:message key="label.action.annulation.processus.complexes.entreprises"/>
-						<ul>
-							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/annulation/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/annulation/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/annulation/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
-								<li><a href="<c:url value="/processuscomplexe/annulation/fusion/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/annulation/scission/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
-							</authz:authorize>
-							<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
-								<li><a href="<c:url value="/processuscomplexe/annulation/transfertpatrimoine/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
-							</authz:authorize>
-						</ul>
-					</li>
-					</authz:authorize>
+					<authz:authorize var="creationent" access="hasRole('ROLE_CREATE_ENTREPRISE')"/>
+					<authz:authorize var="proccomplexeent" access="hasAnyRole('ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE, ROLE_REINSCRIPTION_RC_ENTREPRISE, ROLE_REQUISITION_RADIATION_RC')"/>
+					<authz:authorize var="annulproccomplexeent" access="hasAnyRole('ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE')"/>
+					<authz:authorize var="annulent" access="hasRole('ROLE_ANNUL_TIERS') and hasRole('ROLE_MODIF_PM')"/>
 
+					<c:if test="${creationent || proccomplexeent || annulproccomplexeent || annulent}">
+						<li><fmt:message key="title.entreprises"/>
+							<ul>
+								<c:if test="${creationent}">
+									<li><a href="<c:url value='/tiers/entreprise/create.do'/>"><fmt:message key="label.action.creation" /></a></li>
+								</c:if>
+								<c:if test="${annulent}">
+									<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="label.action.annulation" /></a></li>
+									<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+								</c:if>
+								<c:if test="${proccomplexeent}">
+									<li><fmt:message key="label.action.processus.complexes"/>
+										<ul>
+											<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
+												<li><a href="<c:url value="/processuscomplexe/revocation/faillite/list.do"/>"><fmt:message key="title.revocation.faillite"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
+												<li><a href="<c:url value="/processuscomplexe/repriseactivite/list.do"/>"><fmt:message key="title.reprise.partielle.activite"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
+												<li><a href="<c:url value="/processuscomplexe/fusion/absorbante/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/scission/scindee/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/transfertpatrimoine/emettrice/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_REQUISITION_RADIATION_RC">
+												<li><a href="<c:url value="/processuscomplexe/requisitionradiationrc/list.do"/>"><fmt:message key="title.requisition.radiation.rc"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_REINSCRIPTION_RC_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/reinscriptionrc/list.do"/>"><fmt:message key="title.reinscription.rc"/></a></li>
+											</authz:authorize>
+										</ul>
+									</li>
+								</c:if>
+								<c:if test="${annulproccomplexeent}">
+									<li><fmt:message key="label.action.annulation.processus.complexes"/>
+										<ul>
+											<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/annulation/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/annulation/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/annulation/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
+												<li><a href="<c:url value="/processuscomplexe/annulation/fusion/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/annulation/scission/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
+											</authz:authorize>
+											<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
+												<li><a href="<c:url value="/processuscomplexe/annulation/transfertpatrimoine/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
+											</authz:authorize>
+										</ul>
+									</li>
+								</c:if>
+							</ul>
+						</li>
+					</c:if>
+					
 					<authz:authorize ifAnyGranted="ROLE_EVEN, ROLE_EVEN_PM, ROLE_SUIVI_IMPORT_RF, ROLE_SUIVI_ANNONCES_IDE">
 					<li><fmt:message key="title.evenements" />
 						<ul>
@@ -326,7 +346,7 @@
 			<div id="header" >
 				<span class="departement"><a href="http://www.aci.vd.ch" target="_blank"><fmt:message key="label.aci" /></a></span>
 				<unireg:testMode>
-					<div style="color:LawnGreen; left:360px; top:20px; position:absolute; font-size:21pt; font-weight:bold; z-index:100">
+					<div style="color:LawnGreen; left:390px; top:20px; position:absolute; font-size:21pt; font-weight:bold; z-index:100">
 						<span style="color:white;font-size:21pt;font-weight: bold">(</span>
 							<unireg:environnement/>
 						<span style="color:white;font-size:21pt;font-weight: bold">)</span>
