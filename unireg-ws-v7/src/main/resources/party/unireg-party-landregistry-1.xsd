@@ -435,7 +435,7 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'année de l'affaire.</jxb:javadoc>
+							<jxb:javadoc>L'année de l'affaire (déprécié : jamais renseigné).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -444,7 +444,7 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>Le numéro de l'affaire.</jxb:javadoc>
+							<jxb:javadoc>Le numéro de l'affaire (déprécié : jamais renseigné).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -453,12 +453,30 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'index de l'affaire.</jxb:javadoc>
+							<jxb:javadoc>L'index de l'affaire (déprécié : jamais renseigné).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour des raisons historiques. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="caseNumberText" type="xs:int" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de l'affaire sous forme de texte libre.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding2" type="xs:int">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
