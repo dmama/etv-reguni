@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.metier;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -24,7 +26,9 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -40,6 +44,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.OuvertureForsResults.ErreurType;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersException;
@@ -48,6 +53,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -345,8 +351,21 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			modeImposition = ModeImposition.SOURCE;
 		}
 
-		tiersService.openForFiscalPrincipal(habitant, dateMajorite, MotifRattachement.DOMICILE, data.getNumeroOfsAutoriteFiscale(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, MotifFor.MAJORITE);
+		// [SIFISC-19003] si l'individu est en fait arrivé de HS dans l'année de sa majorité c'est la date d'arrivée qui doit être utilisée
+		// pour l'ouverture du for, et pas la date d'obtention de la majorité
+		final MotifFor motifOuverture;
+		final RegDate dateOuverture;
+		final RegDate dateArriveeHorsSuisseAnneeMajorite = getPremiereDateArriveeHorsSuisseDansAnnee(habitant, dateMajorite.year());
+		if (dateArriveeHorsSuisseAnneeMajorite != null) {
+			dateOuverture = dateArriveeHorsSuisseAnneeMajorite;
+			motifOuverture = MotifFor.ARRIVEE_HS;
+		}
+		else {
+			dateOuverture = dateMajorite;
+			motifOuverture = MotifFor.MAJORITE;
+		}
+
+		tiersService.openForFiscalPrincipal(habitant, dateOuverture, MotifRattachement.DOMICILE, data.getNumeroOfsAutoriteFiscale(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, motifOuverture);
 		habitant.setMajoriteTraitee(Boolean.TRUE);
 
 		if (LOGGER.isDebugEnabled()) {
@@ -358,7 +377,32 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		//On n'assert pas car les sourcier n'ont pour le moment pas de for de gestion
 		//Assert.notNull(oid);
 				
-		r.addHabitantTraite(habitant, oid, dateMajorite, modeImposition);
+		r.addHabitantTraite(habitant, oid, dateOuverture, motifOuverture, modeImposition);
+	}
+
+	/**
+	 * @param habitant habitant concerné
+	 * @param annee année intéressante
+	 * @return si elle existe (<code>null</code> sinon), la première date de début d'une adresse principale civile avec provenance hors-Suisse de l'année donnée
+	 */
+	@Nullable
+	private RegDate getPremiereDateArriveeHorsSuisseDansAnnee(PersonnePhysique habitant, int annee) {
+		final Individu individu = tiersService.getIndividu(habitant, RegDate.get(annee, 12, 31), AttributeIndividu.ADRESSES);
+		if (individu == null) {
+			if (habitant.isConnuAuCivil()) {
+				throw new IndividuNotFoundException(habitant);
+			}
+			// même pas habitant civil, je n'ai aucune idée de quand (ni si) cette personne a pu arriver de HS
+			return null;
+		}
+
+		return individu.getAdresses().stream()
+				.filter(adresse -> adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE)
+				.filter(adresse -> adresse.getDateDebut() != null && adresse.getDateDebut().year() == annee)
+				.filter(adresse -> adresse.getLocalisationPrecedente() != null && adresse.getLocalisationPrecedente().getType() == LocalisationType.HORS_SUISSE)
+				.map(Adresse::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.orElse(null);
 	}
 
 	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsErreurException {

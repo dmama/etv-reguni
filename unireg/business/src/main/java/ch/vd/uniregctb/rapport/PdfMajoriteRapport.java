@@ -104,6 +104,7 @@ public class PdfMajoriteRapport extends PdfRapport {
 				b.append("NO_CTB").append(COMMA);
 				b.append("NOM").append(COMMA);
 				b.append("DATE_OUVERTURE").append(COMMA);
+				b.append("MOTIF_OUVERTURE").append(COMMA);
 				b.append("RAISON").append(COMMA);
 				b.append("COMMENTAIRE");
 			}
@@ -114,6 +115,7 @@ public class PdfMajoriteRapport extends PdfRapport {
 				b.append(elt.noCtb).append(COMMA);
 				b.append(escapeChars(elt.nomCtb)).append(COMMA);
 				b.append(elt.dateOuverture).append(COMMA);
+				b.append(elt.motifOuverture).append(COMMA);
 				b.append(escapeChars(elt.getDescriptionRaison()));
 				if (elt.details != null) {
 					b.append(COMMA).append(asCsvField(elt.details));

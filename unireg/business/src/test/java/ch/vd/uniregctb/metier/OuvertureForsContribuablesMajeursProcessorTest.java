@@ -7,11 +7,15 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -37,6 +41,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -745,6 +750,136 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());    // <-- il était à Echallens pour son anniversaire, même s'il est parti juste après
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-19003 : cas de l'arrivée HS dans l'année de majorité (avant la majorité)
+	 */
+	@Test
+	public void testArriveeHorsSuisseAvantMajoriteMemeAnnee() throws Exception {
+
+		final long noIndividu = 48161815L;
+		final int anneeMajorite = 2016;
+		final RegDate dateMajorite = date(anneeMajorite, 7, 12);
+		final RegDate dateArriveeHorsSuisse = date(anneeMajorite, 6, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = dateMajorite.addYears(-18);
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "de Valombreuse", "Christine", Sexe.FEMININ);
+				final MockAdresse adresse = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateArriveeHorsSuisse, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				addNationalite(individu, MockPays.France, dateNaissance, null);
+				addPermis(individu, TypePermis.SEJOUR, dateArriveeHorsSuisse, null, false);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
+		});
+
+		// lancement du job de majorisation
+		final OuvertureForsResults rapport = processor.run(RegDate.get(), null);
+		assertNotNull(rapport);
+		assertEquals(1, rapport.habitantTraites.size());
+		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
+
+		final Traite traite = rapport.habitantTraites.get(0);
+		assertNotNull(traite);
+		assertEquals(ppId, traite.noCtb);
+		assertEquals(ModeImposition.SOURCE, traite.modeImposition);
+		assertEquals(dateArriveeHorsSuisse, traite.dateOuverture);
+		assertEquals(MotifFor.ARRIVEE_HS, traite.motifOuverture);
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertFalse(ffp.isAnnule());
+				assertEquals(dateArriveeHorsSuisse, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-19003 : cas de l'arrivée HS l'année d'avant l'année de majorité
+	 */
+	@Test
+	public void testArriveeHorsSuisseAnneeAvantMajorite() throws Exception {
+
+		final long noIndividu = 48161815L;
+		final int anneeMajorite = 2016;
+		final RegDate dateMajorite = date(anneeMajorite, 7, 12);
+		final RegDate dateArriveeHorsSuisse = date(anneeMajorite - 1, 8, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = dateMajorite.addYears(-18);
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "de Valombreuse", "Christine", Sexe.FEMININ);
+				final MockAdresse adresse = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateArriveeHorsSuisse, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				addNationalite(individu, MockPays.France, dateNaissance, null);
+				addPermis(individu, TypePermis.SEJOUR, dateArriveeHorsSuisse, null, false);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			return pp.getNumero();
+		});
+
+		// lancement du job de majorisation
+		final OuvertureForsResults rapport = processor.run(RegDate.get(), null);
+		assertNotNull(rapport);
+		assertEquals(1, rapport.habitantTraites.size());
+		assertEmpty(rapport.habitantEnErrors);
+		assertEmpty(rapport.contribuablesIgnores);
+
+		final Traite traite = rapport.habitantTraites.get(0);
+		assertNotNull(traite);
+		assertEquals(ppId, traite.noCtb);
+		assertEquals(ModeImposition.SOURCE, traite.modeImposition);
+		assertEquals(dateMajorite, traite.dateOuverture);
+		assertEquals(MotifFor.MAJORITE, traite.motifOuverture);
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertFalse(ffp.isAnnule());
+				assertEquals(dateMajorite, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+				assertNull(ffp.getMotifFermeture());
+				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 			}
 		});
 	}

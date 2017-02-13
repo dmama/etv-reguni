@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 
 public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults> {
 
@@ -44,11 +45,13 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	public static class Traite extends Info {
 
 		public final RegDate dateOuverture;
+		public final MotifFor motifOuverture;
 		public final ModeImposition modeImposition;
 
-		public Traite(long noCtb, Integer officeImpotID, RegDate dateOuverture, ModeImposition modeImposition, String nomCtb) {
+		public Traite(long noCtb, Integer officeImpotID, RegDate dateOuverture, MotifFor motifOuverture, ModeImposition modeImposition, String nomCtb) {
 			super(noCtb, officeImpotID, null, nomCtb);
 			this.dateOuverture = dateOuverture;
+			this.motifOuverture = motifOuverture;
 			this.modeImposition = modeImposition;
 		}
 
@@ -129,8 +132,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		this.contribuablesIgnores.addAll(right.contribuablesIgnores);
 	}
 
-	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, RegDate dateOuverture, ModeImposition modeImposition) {
-		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, dateOuverture, modeImposition, getNom(h.getNumero())));
+	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, RegDate dateOuverture, MotifFor motifOuverture, ModeImposition modeImposition) {
+		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, dateOuverture, motifOuverture, modeImposition, getNom(h.getNumero())));
 	}
 
 	public void addUnknownException(PersonnePhysique h, Exception e) {
