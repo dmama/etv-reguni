@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.common;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import ch.vd.registre.base.date.InstantHelper;
 
 public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends WithoutSpringTest {
 
@@ -23,14 +26,15 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 	@Test(timeout = 1500)
 	public void testTimeout() throws Exception {
 		// je ne reçois rien, je vérifie que je sors au bout du temps requis : 1s
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final String key = "Mon document qui ne vient pas...";
 		final AsyncStorage.RetrievalResult<String> received = service.get(key, Duration.ofSeconds(1));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(received instanceof AsyncStorage.RetrievalTimeout);
 		Assert.assertEquals(key, received.key);
-		final long attente = tsFin - tsDebut;
-		Assert.assertTrue("Attente = " + attente + "ms", attente >= 1000);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue("Attente = " + attente.toMillis() + "ms", attente.toMillis() >= 1000);
 	}
 
 	@Test(timeout = 1200)
@@ -55,14 +59,16 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 		});
 		thread.start();
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofSeconds(1));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 		Assert.assertEquals(key, resultat.key);
 		Assert.assertEquals(value, ((AsyncStorage.RetrievalData) resultat).data);
-		Assert.assertTrue(tsFin - tsDebut < 1000);
-		Assert.assertTrue(tsFin - tsDebut >= 200);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() < 1000);
+		Assert.assertTrue(attente.toString(), attente.toMillis() >= 200);
 
 		thread.join();
 	}
@@ -91,12 +97,14 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 
 		// premier essai
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofMillis(150));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalTimeout);
 			Assert.assertEquals(key, resultat.key);
-			Assert.assertTrue(tsFin - tsDebut >= 150);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() >= 150);
 		}
 
 		// deuxième essai : cette fois il doit venir
@@ -122,12 +130,14 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 
 		Thread.sleep(200);
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofMillis(1000));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 		Assert.assertEquals(key, resultat.key);
-		Assert.assertTrue(tsFin - tsDebut < 50);
+
+		final Duration processDuration = Duration.between(debut, fin);
+		Assert.assertTrue(processDuration.toString(), processDuration.toMillis() < 50);
 	}
 
 	@Test(timeout = 1000)
@@ -146,22 +156,26 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 
 		// première réception
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofMillis(1000));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 			Assert.assertEquals(key, resultat.key);
-			Assert.assertTrue(tsFin - tsDebut < 50);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() < 50);
 		}
 
 		// seconde réception : on doit taper dans le timeout sans résultat
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofMillis(500));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalTimeout);
 			Assert.assertEquals(key, resultat.key);
-			Assert.assertTrue(tsFin - tsDebut >= 500);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() >= 500);
 		}
 	}
 
@@ -188,12 +202,14 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 		});
 		thread.start();
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final AsyncStorage.RetrievalResult<String> resultat = service.get(keyAttendue, Duration.ofMillis(500));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalTimeout);
 		Assert.assertEquals(keyAttendue, resultat.key);
-		Assert.assertTrue(tsFin - tsDebut >= 500);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() >= 500);
 
 		thread.join();
 	}
@@ -224,12 +240,14 @@ public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends Wi
 		});
 		thread.start();
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final AsyncStorage.RetrievalResult<String> resultat = service.get(keyAttendue, Duration.ofMillis(500));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 		Assert.assertEquals(keyAttendue, resultat.key);
-		Assert.assertTrue(tsFin - tsDebut < 350);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() < 350);
 
 		thread.join();
 	}

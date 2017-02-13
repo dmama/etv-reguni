@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.common;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import ch.vd.registre.base.date.InstantHelper;
 
 public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPeriodicCleanup<String, String>> extends AsyncStorageTest<S> {
 
@@ -57,22 +60,26 @@ public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPerio
 
 		// le vieux document ne doit plus y être
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, Duration.ofMillis(300));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalTimeout);
 			Assert.assertEquals(key, resultat.key);
-			Assert.assertTrue(tsFin - tsDebut >= 300);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() >= 300);
 		}
 
 		// mais le nouveau, toujours
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final AsyncStorage.RetrievalResult<String> resultat = service.get(keyLate, Duration.ofMillis(300));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 			Assert.assertEquals(keyLate, resultat.key);
-			Assert.assertTrue(tsFin - tsDebut < 50);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() < 50);
 		}
 
 		Assert.assertEquals(1, service.getNbPurgedElements());

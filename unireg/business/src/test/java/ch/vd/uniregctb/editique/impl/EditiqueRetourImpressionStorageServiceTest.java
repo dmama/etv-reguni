@@ -1,12 +1,13 @@
 package ch.vd.uniregctb.editique.impl;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.TimeHelper;
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
@@ -41,14 +42,15 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 	public void testTimeout() throws Exception {
 
 		// je ne reçois rien, je vérifie que je sors au bout du temps requis : 1s
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final String nomDocument = "Mon document qui ne vient pas...";
 		final EditiqueResultat res = service.getDocument(nomDocument, Duration.ofMillis(1000));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(res instanceof EditiqueResultatTimeout);
 		Assert.assertEquals(nomDocument, res.getIdDocument());
-		final long attente = tsFin - tsDebut;
-		Assert.assertTrue("Attente = " + attente + "ms", attente >= 1000);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue("Attente = " + attente.toMillis() + "ms", attente.toMillis() >= 1000);
 	}
 
 	private static EditiqueResultatRecu buildResultat(String idDocument) {
@@ -77,13 +79,15 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		});
 		thread.start();
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final EditiqueResultat resultat = service.getDocument(nomDocument, Duration.ofMillis(1000));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		Assert.assertEquals(nomDocument, resultat.getIdDocument());
-		Assert.assertTrue(tsFin - tsDebut < 1000);
-		Assert.assertTrue(tsFin - tsDebut >= 200);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() < 1000);
+		Assert.assertTrue(attente.toString(), attente.toMillis() >= 200);
 
 		thread.join();
 	}
@@ -112,12 +116,14 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		// premier essai
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, Duration.ofMillis(150));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
 			Assert.assertEquals(nomDocument, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut >= 150);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() >= 150);
 		}
 
 		// deuxième essai : cette fois il doit venir
@@ -143,12 +149,14 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		Thread.sleep(200);
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final EditiqueResultat resultat = service.getDocument(nomDocument, Duration.ofMillis(1000));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		Assert.assertEquals(nomDocument, resultat.getIdDocument());
-		Assert.assertTrue(tsFin - tsDebut < 50);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() < 50);
 	}
 
 	@Test(timeout = 1000)
@@ -167,22 +175,26 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		// première réception
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, Duration.ofMillis(1000));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 			Assert.assertEquals(nomDocument, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut < 50);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() < 50);
 		}
 
 		// seconde réception : on doit taper dans le timeout sans résultat
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, Duration.ofMillis(500));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
 			Assert.assertEquals(nomDocument, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut >= 500);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() >= 500);
 		}
 	}
 
@@ -210,12 +222,14 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		});
 		thread.start();
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final EditiqueResultat resultat = service.getDocument(nomDocumentAttendu, Duration.ofMillis(500));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
 		Assert.assertEquals(nomDocumentAttendu, resultat.getIdDocument());
-		Assert.assertTrue(tsFin - tsDebut >= 500);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() >= 500);
 
 		thread.join();
 	}
@@ -248,12 +262,14 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		});
 		thread.start();
 
-		final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant debut = InstantHelper.get();
 		final EditiqueResultat resultat = service.getDocument(nomDocumentAttendu, Duration.ofMillis(500));
-		final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+		final Instant fin = InstantHelper.get();
 		Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 		Assert.assertEquals(nomDocumentAttendu, resultat.getIdDocument());
-		Assert.assertTrue(tsFin - tsDebut < 350);
+
+		final Duration attente = Duration.between(debut, fin);
+		Assert.assertTrue(attente.toString(), attente.toMillis() < 350);
 
 		thread.join();
 	}
@@ -295,22 +311,26 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		// le vieux document ne doit plus y être
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final EditiqueResultat resultat = service.getDocument(nomDocument, Duration.ofMillis(300));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof EditiqueResultatTimeout);
 			Assert.assertEquals(nomDocument, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut >= 300);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() >= 300);
 		}
 
 		// mais le nouveau, toujours
 		{
-			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant debut = InstantHelper.get();
 			final EditiqueResultat resultat = service.getDocument(nomDocumentVoyageurTemporel, Duration.ofMillis(300));
-			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
+			final Instant fin = InstantHelper.get();
 			Assert.assertTrue(resultat instanceof EditiqueResultatDocument);
 			Assert.assertEquals(nomDocumentVoyageurTemporel, resultat.getIdDocument());
-			Assert.assertTrue(tsFin - tsDebut < 50);
+
+			final Duration attente = Duration.between(debut, fin);
+			Assert.assertTrue(attente.toString(), attente.toMillis() < 50);
 		}
 
 		thread.join();
