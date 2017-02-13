@@ -168,8 +168,8 @@ public abstract class ImmovablePropertyBuilder {
 	@NotNull
 	private static TaxEstimate newTaxEstimate(@NotNull EstimationRF e) {
 		final TaxEstimate estimate = new TaxEstimate();
-		estimate.setDateFrom(DataHelper.coreToXMLv2(e.getDateDebut()));
-		estimate.setDateTo(DataHelper.coreToXMLv2(e.getDateFin()));
+		estimate.setDateFrom(DataHelper.coreToXMLv2(e.getDateDebutMetier()));   // SIFISC-22995 : on expose les dates métier
+		estimate.setDateTo(DataHelper.coreToXMLv2(e.getDateFinMetier()));
 		estimate.setAmount(e.getMontant());
 		estimate.setReference(e.getReference());
 		estimate.setRegistrationDate(DataHelper.coreToXMLv2(e.getDateInscription()));
