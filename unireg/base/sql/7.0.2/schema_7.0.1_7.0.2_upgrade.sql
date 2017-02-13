@@ -20,3 +20,8 @@ ALTER TABLE ALLEGEMENT_FONCIER ADD DEG_LL_CARAC_SOCIAL_POURCENT NUMBER(5,2);
 -- Correction du nom de la colonne pour coller à la dénomination de l'objet métier (il s'agit d'une exonération IFONC, pas d'un allègement IFONC)
 --
 ALTER TABLE ALLEGEMENT_FONCIER RENAME COLUMN IFONC_POURCENT_ALLGT TO IFONC_POURCENT_EXO;
+
+--
+-- [SIFISC-22288] Prise en compte des numéros d'affaire en text libre
+--
+ALTER TABLE RF_DROIT MODIFY NO_AFFAIRE NVARCHAR2(40) DEFAULT NULL;
