@@ -72,7 +72,7 @@
     <!-- Job qui fait le rapprochement entre les contribuables et les propriétaires donnés par le registre foncier    -->
      <bean id="rapprocherCtbRegistreFoncierJob" parent="schedulerJob" class="ch.vd.uniregctb.rf.RapprocherCtbRegistreFoncierJob">
         <constructor-arg value="106"/>
-        <constructor-arg value="Rapprocher les contribuables et les propriétaires du registre foncier"/>
+        <constructor-arg value="Rapprocher les contribuables et les propriétaires du registre foncier (implémentation d'avant 17R1)"/>
         <property name="registreFoncierService" ref="registreFoncierService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
@@ -80,7 +80,7 @@
     <!-- [SIFISC-2337] Job qui importe en vrac les immeubles du registre foncier    -->
      <bean id="importerImmeublesJob" parent="schedulerJob" class="ch.vd.uniregctb.rf.ImportImmeublesJob">
         <constructor-arg value="107"/>
-        <constructor-arg value="Importer les immeubles du registre foncier"/>
+        <constructor-arg value="Importer les immeubles du registre foncier (implémentation d'avant 17R1)"/>
         <property name="registreFoncierService" ref="registreFoncierService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
