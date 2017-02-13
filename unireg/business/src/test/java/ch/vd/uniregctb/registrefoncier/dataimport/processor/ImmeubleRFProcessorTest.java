@@ -158,6 +158,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(Long.valueOf(260000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
 				assertNull(estimation0.getDateInscription());
+				assertEquals(RegDate.get(1993, 1, 1), estimation0.getDateDebutMetier());
+				assertNull(estimation0.getDateFinMetier());
 				assertFalse(estimation0.isEnRevision());
 
 				final Set<SurfaceTotaleRF> surfacesTotales = immeuble0.getSurfacesTotales();
@@ -266,6 +268,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(240000L);
 				estimation.setReference("RG88");
+				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
 
@@ -333,6 +336,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
 				assertNull(estimation0.getDateInscription());
+				assertEquals(RegDate.get(1988, 1, 1), estimation0.getDateDebutMetier());
+				assertEquals(RegDate.get(1992, 12, 31), estimation0.getDateFinMetier());
 				assertFalse(estimation0.isEnRevision());
 
 				// la seconde estimation doit commencer à la date de l'import
@@ -342,6 +347,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(Long.valueOf(260000), estimation1.getMontant());
 				assertEquals("RG93", estimation1.getReference());
 				assertNull(estimation1.getDateInscription());
+				assertEquals(RegDate.get(1993, 1, 1), estimation1.getDateDebutMetier());
+				assertNull(estimation1.getDateFinMetier());
 				assertFalse(estimation1.isEnRevision());
 
 				// la surface totale n'a pas changé
@@ -388,6 +395,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(260000L);
 				estimation.setReference("RG93");
+				estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
 
@@ -451,6 +459,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(Long.valueOf(260000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
 				assertNull(estimation0.getDateInscription());
+				assertEquals(RegDate.get(1993, 1, 1), estimation0.getDateDebutMetier());
+				assertNull(estimation0.getDateFinMetier());
 				assertFalse(estimation0.isEnRevision());
 
 				// par contre, la surface totale a bien changé
@@ -507,6 +517,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(240000L);
 				estimation.setReference("RG88");
+				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
 
@@ -566,6 +577,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
 				assertNull(estimation0.getDateInscription());
+				assertEquals(RegDate.get(1988, 1, 1), estimation0.getDateDebutMetier());
+				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFinMetier());
 				assertFalse(estimation0.isEnRevision());
 			}
 		});

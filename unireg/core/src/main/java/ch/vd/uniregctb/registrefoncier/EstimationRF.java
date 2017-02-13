@@ -61,6 +61,22 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	private RegDate dateInscription;
 
 	/**
+	 * Le date de début de validité <i>métier</i>. Cette date est déduite du numéro de référence ou de la date d'inscription, en fonction des données renseignées.
+	 * <b>Cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.</b>
+	 * Elle peut être nulle s'il n'a pas été possible de déduire une valeur.
+	 */
+	@Nullable
+	private RegDate dateDebutMetier;
+
+	/**
+	 * Le date de fin de validité <i>métier</i>. Cette date est déduite de la date de début de validité de l'estimation suivante.
+	 * <b>Cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.</b>
+	 * Elle peut être nulle s'il la date de début suivante est nulle ou n'existe pas.
+	 */
+	@Nullable
+	private RegDate dateFinMetier;
+
+	/**
 	 * Vrai si l'estimation fiscale est en cours de révision.
 	 */
 	private boolean enRevision;
@@ -116,6 +132,28 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 		this.dateInscription = dateInscription;
 	}
 
+	@Nullable
+	@Column(name = "DATE_DEBUT_METIER")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDebutMetier() {
+		return dateDebutMetier;
+	}
+
+	public void setDateDebutMetier(@Nullable RegDate dateDebutMetier) {
+		this.dateDebutMetier = dateDebutMetier;
+	}
+
+	@Nullable
+	@Column(name = "DATE_FIN_METIER")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateFinMetier() {
+		return dateFinMetier;
+	}
+
+	public void setDateFinMetier(@Nullable RegDate dateFinMetier) {
+		this.dateFinMetier = dateFinMetier;
+	}
+
 	@Column(name = "EN_REVISION", nullable = false)
 	public boolean isEnRevision() {
 		return enRevision;
@@ -147,6 +185,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	 *     <li>le numéro de référence</li>
 	 *     <li>le montant</li>
 	 * </ul>
+	 *
 	 * @param right une autre estimation.
 	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
 	 */

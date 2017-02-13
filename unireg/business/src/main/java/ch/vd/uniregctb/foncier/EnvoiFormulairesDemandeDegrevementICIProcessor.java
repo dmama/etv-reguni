@@ -17,14 +17,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Spliterators;
 import java.util.TreeMap;
-import java.util.function.ToIntFunction;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +48,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.EstimationRFHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -163,7 +160,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// est celle qui correspond à l'année la plus grande inférieure ou égale à l'année de la date de traitement
 			final NavigableMap<Integer, EstimationRF> sortedEstimations = immeuble.getEstimations().stream()
 					.filter(AnnulableHelper::nonAnnule)
-					.map(estim -> Pair.of(getAnneeReferenceEstimationFiscale(estim), estim))
+					.map(estim -> Pair.of(EstimationRFHelper.getAnneeReference(estim.getReference(), estim.getDateInscription()), estim))
 					.filter(pair -> pair.getKey().isPresent())
 					.collect(Collectors.toMap(pair -> pair.getKey().get(),
 					                          Pair::getValue,
@@ -291,53 +288,11 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 		return estimationCandidate;
 	}
 
-	private static final List<Pair<Pattern, ToIntFunction<Matcher>>> ANNEE_ESTIMATION_FISCALE_PATTERNS = buildPatternsAnneeEstimationFiscale();
-
-	@NotNull
-	private static List<Pair<Pattern, ToIntFunction<Matcher>>> buildPatternsAnneeEstimationFiscale() {
-		final List<Pair<Pattern, ToIntFunction<Matcher>>> list = new ArrayList<>();
-		list.add(Pair.of(Pattern.compile("(?:EF|RF|RG)\\s*(\\d{4})", Pattern.CASE_INSENSITIVE), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
-		list.add(Pair.of(Pattern.compile("(?:RF|RF|RG)\\s*(\\d{2})", Pattern.CASE_INSENSITIVE), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToIntPlusSiecle));
-		list.add(Pair.of(Pattern.compile("(\\d{4})"), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
-		list.add(Pair.of(Pattern.compile("\\d{1,2}\\.\\d{1,2}\\.(\\d{4})"), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
-		list.add(Pair.of(Pattern.compile("(\\d{4})\\s*(?:RF|RG|RP|rév\\.|T\\.|enrévision)", Pattern.CASE_INSENSITIVE), EnvoiFormulairesDemandeDegrevementICIProcessor::groupOneToInt));
-		return Collections.unmodifiableList(list);
-	}
-
-	private static int groupOneToInt(Matcher matcher) {
-		return Integer.valueOf(matcher.group(1));
-	}
-
-	private static int groupOneToIntPlusSiecle(Matcher matcher) {
-		final int anneeSansSiecle = groupOneToInt(matcher);
-		return anneeSansSiecle + (RegDate.get().year() / 100) * 100 - (anneeSansSiecle > 50 ? 100 : 0);
-	}
-
-	@NotNull
-	private static Optional<Integer> getAnneeReferenceEstimationFiscale(EstimationRF estimation) {
-		// on cherche d'abord dans la référence, et si on ne trouve rien d'interprétable, on se rabat sur la date d'estimation
-		// (et on ajoute 1 à l'année)
-		final String reference = StringUtils.trimToNull(estimation.getReference());
-		if (reference != null) {
-			final Optional<Integer> fromReference = ANNEE_ESTIMATION_FISCALE_PATTERNS.stream()
-					.map(pair -> Pair.of(pair.getKey().matcher(reference), pair.getValue()))
-					.filter(pair -> pair.getKey().matches())
-					.map(pair -> pair.getValue().applyAsInt(pair.getKey()))
-					.findFirst();
-			if (fromReference.isPresent()) {
-				return fromReference;
-			}
-		}
-
-		// si la date d'estimation fiscale est remplie, allons-y, sinon, tant pis
-		return Optional.ofNullable(estimation.getDateInscription()).map(RegDate::year);
-	}
-
 	@NotNull
 	static Optional<Integer> getAnneeDebutValiditeEstimationFiscale(EstimationRF estimation) {
 		// on cherche d'abord dans la référence, et si on ne trouve rien d'interprétable, on se rabat sur la date d'estimation
 		// (et on ajoute 1 à l'année)
-		return getAnneeReferenceEstimationFiscale(estimation).map(annee -> annee + 1);
+		return EstimationRFHelper.getAnneeReference(estimation.getReference(), estimation.getDateInscription()).map(annee -> annee + 1);
 	}
 
 	private boolean isExonereTotalement(Entreprise entreprise, RegDate dateReference) {
