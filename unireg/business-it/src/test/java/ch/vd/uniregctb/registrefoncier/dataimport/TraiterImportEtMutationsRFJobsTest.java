@@ -424,6 +424,8 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(Long.valueOf(30000), estimation.getMontant());
 					assertEquals("2002", estimation.getReference());
 					assertNull(estimation.getDateInscription());
+					assertEquals(RegDate.get(2002, 1, 1), estimation.getDateDebutMetier());
+					assertNull(estimation.getDateFinMetier());
 					assertFalse(estimation.isEnRevision());
 
 					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
@@ -722,7 +724,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
-					assertNull(situation.getDateDebut());           					// date vide en import initial
+					assertNull(situation.getDateDebut());                            // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), situation.getDateFin());
 					assertEquals(38, situation.getCommune().getNoRf());
 					assertEquals(1365, situation.getNoParcelle());
@@ -739,6 +741,8 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(Long.valueOf(30000), estimation.getMontant());
 					assertEquals("2002", estimation.getReference());
 					assertNull(estimation.getDateInscription());
+					assertEquals(RegDate.get(2002, 1, 1), estimation.getDateDebutMetier());
+					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFinMetier());
 					assertFalse(estimation.isEnRevision());
 
 					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();

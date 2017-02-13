@@ -270,7 +270,7 @@ public class TraiterImportRFBatimentsJobTest extends ImportRFTestClass {
 				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
 
 				// données équivalentes au fichier export_batiments_rf_hebdo.xml
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.save(newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, false, false, RegDate.get(2010, 1, 1), 707));
+				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.save(newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707));
 
 				final BatimentRF batiment1 = newBatimentRF("1f109152381026b50138102aa28557e0");
 				batiment1.addDescription(newDescriptionBatiment("Habitation", null, dateImportInitial, null));
@@ -358,7 +358,8 @@ public class TraiterImportRFBatimentsJobTest extends ImportRFTestClass {
 				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
 
 				// données équivalentes au fichier export_batiments_rf_hebdo.xml
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.save(newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, false, false, RegDate.get(2010, 1, 1), 707));
+				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.save(newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null,
+				                                                                          RegDate.get(1993,1,1), false, false, RegDate.get(2010, 1, 1), 707));
 
 				final BatimentRF batiment1 = newBatimentRF("1f109152381026b50138102aa28557e0");
 				batiment1.addDescription(newDescriptionBatiment("Habitation", null, dateImportInitial, null));

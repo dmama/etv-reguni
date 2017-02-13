@@ -197,6 +197,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				newEstimation.setDateDebut(dateValeur);
 				persisted.getEstimations().add(newEstimation);
 			}
+			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
 		}
 
 		// est-ce que la surface totale changé ?
@@ -228,7 +229,10 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
 		persisted.getEstimations().stream()
 				.filter(e -> e.getDateFin() == null)
-				.forEach(e -> e.setDateFin(dateValeur.getOneDayBefore()));
+				.forEach(e -> {
+					e.setDateFin(dateValeur.getOneDayBefore());
+					e.setDateFinMetier(dateValeur.getOneDayBefore());
+				});
 		persisted.getSurfacesTotales().stream()
 				.filter(s -> s.getDateFin() == null)
 				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));

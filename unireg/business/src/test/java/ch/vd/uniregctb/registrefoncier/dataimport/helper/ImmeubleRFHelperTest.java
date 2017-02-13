@@ -334,6 +334,8 @@ public class ImmeubleRFHelperTest {
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
+		assertNull(estimation.getDateFinMetier());
 		assertFalse(estimation.isEnRevision());
 
 		final Set<SurfaceTotaleRF> surfacesTotales = mine.getSurfacesTotales();
@@ -388,6 +390,8 @@ public class ImmeubleRFHelperTest {
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
+		assertNull(estimation.getDateFinMetier());
 		assertFalse(estimation.isEnRevision());
 	}
 
@@ -441,6 +445,8 @@ public class ImmeubleRFHelperTest {
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
+		assertNull(estimation.getDateFinMetier());
 		assertFalse(estimation.isEnRevision());
 
 		final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
@@ -497,6 +503,8 @@ public class ImmeubleRFHelperTest {
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
+		assertNull(estimation.getDateFinMetier());
 		assertFalse(estimation.isEnRevision());
 
 		final Set<SurfaceTotaleRF> surfacesTotales = ddp.getSurfacesTotales();
@@ -551,6 +559,8 @@ public class ImmeubleRFHelperTest {
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
+		assertNull(estimation.getDateFinMetier());
 		assertFalse(estimation.isEnRevision());
 	}
 
