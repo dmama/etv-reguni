@@ -65,10 +65,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsCtbsProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsDIsProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -301,28 +297,30 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return processor.run(anneePeriode, listeCtb, nbMax, dateTraitement, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-
+	public StatistiquesDIs produireStatsDIsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO, assujettissementService, tiersService, adresseService);
-		return processor.run(anneePeriode, dateTraitement, status);
+		return processor.runPP(anneePeriode, dateTraitement, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
-		return processor.run(anneePeriode, dateTraitement, status);
+	public StatistiquesDIs produireStatsDIsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
+		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO, assujettissementService, tiersService, adresseService);
+		return processor.runPM(anneePeriode, dateTraitement, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
+	public StatistiquesCtbs produireStatsCtbsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
+		return processor.runPP(anneePeriode, dateTraitement, status);
+	}
+
+	@Override
+	public StatistiquesCtbs produireStatsCtbsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
+		return processor.runPM(anneePeriode, dateTraitement, status);
+	}
+
 	@Override
 	public ListeDIsPPNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
@@ -332,10 +330,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EchoirDIsPPResults echoirDIsPPHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final EchoirDIsPPProcessor processor = new EchoirDIsPPProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
@@ -348,9 +342,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return processor.run(dateTraitement, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException {
 

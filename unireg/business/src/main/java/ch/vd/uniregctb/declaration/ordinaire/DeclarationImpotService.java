@@ -29,8 +29,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
@@ -81,25 +79,43 @@ public interface DeclarationImpotService {
 	                                                        int nbAnnexesMax, StatusManager status) throws DeclarationException;
 
 	/**
-	 * Produit des statistiques sur les déclarations d'impôts ordinaires existantes.
+	 * Produit des statistiques sur les déclarations d'impôts ordinaires PP existantes.
 	 *
 	 * @param anneePeriode   l'année de la période fiscale considérée.
 	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return les statistiques demandées
 	 */
-	StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
+	StatistiquesDIs produireStatsDIsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
 
 	/**
-	 * Produit des statistiques sur les contribuables assujettis pour la période fiscale spécifiée.
+	 * Produit des statistiques sur les déclarations d'impôts ordinaires PP existantes.
 	 *
 	 * @param anneePeriode   l'année de la période fiscale considérée.
 	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return les statistiques demandées
 	 */
-	StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
+	StatistiquesDIs produireStatsDIsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
 
 	/**
-	 * Produit la liste des DIs non émises pour la période fiscale spécifiée.
+	 * Produit des statistiques sur les contribuables PP assujettis pour la période fiscale spécifiée.
+	 *
+	 * @param anneePeriode   l'année de la période fiscale considérée.
+	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
+	 * @return les statistiques demandées
+	 */
+	StatistiquesCtbs produireStatsCtbsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
+
+	/**
+	 * Produit des statistiques sur les contribuables PM assujettis pour la période fiscale spécifiée.
+	 *
+	 * @param anneePeriode   l'année de la période fiscale considérée.
+	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
+	 * @return les statistiques demandées
+	 */
+	StatistiquesCtbs produireStatsCtbsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException;
+
+	/**
+	 * Produit la liste des DIs PP non émises pour la période fiscale spécifiée.
 	 *
 	 * @param annee          l'année de la période fiscale considérée.
 	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)

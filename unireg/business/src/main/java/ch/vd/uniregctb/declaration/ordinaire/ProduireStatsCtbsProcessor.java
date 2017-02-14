@@ -1,18 +1,14 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.IntFunction;
 
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -26,7 +22,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -40,6 +35,7 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -73,31 +69,40 @@ public class ProduireStatsCtbsProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public StatistiquesCtbs run(final int anneePeriode, final RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
+	public StatistiquesCtbs runPP(int annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
+		return run(annee, dateTraitement, "PP", statusManager, this::chargerIdentifiantsContribuablesPP);
+	}
+
+	public StatistiquesCtbs runPM(int annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
+		return run(annee, dateTraitement, "PM", statusManager, this::chargerIdentifiantsContribuablesPM);
+	}
+
+	private StatistiquesCtbs run(int annee, RegDate dateTraitement, String population, StatusManager statusManager, IntFunction<List<Long>> idsContribuablesForPF) throws DeclarationException {
 
 		final StatusManager status = statusManager != null ? statusManager : new LoggingStatusManager(LOGGER);
 
-		final StatistiquesCtbs rapportFinal = new StatistiquesCtbs(anneePeriode, dateTraitement, tiersService, adresseService);
+		final StatistiquesCtbs rapportFinal = new StatistiquesCtbs(annee, dateTraitement, population, tiersService, adresseService);
 
-		status.setMessage(String.format("Début de la production des statistiques des contribuables assujettis : période fiscale = %d.", anneePeriode));
+		status.setMessage(String.format("Production des statistiques des contribuables assujettis : période fiscale = %d.", annee));
 
-		final List<Long> listeComplete = chargerIdentifiantsContribuables(anneePeriode);
-		final BatchTransactionTemplateWithResults<Long, StatistiquesCtbs>
-				template = new BatchTransactionTemplateWithResults<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status);
+		final List<Long> idsContribuables = idsContribuablesForPF.apply(annee);
+		final BatchTransactionTemplateWithResults<Long, StatistiquesCtbs> template = new BatchTransactionTemplateWithResults<>(idsContribuables, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, StatistiquesCtbs>() {
 
 			@Override
 			public StatistiquesCtbs createSubRapport() {
-				return new StatistiquesCtbs(anneePeriode, dateTraitement, tiersService, adresseService);
+				return new StatistiquesCtbs(annee, dateTraitement, population, tiersService, adresseService);
 			}
 
 			@Override
 			public boolean doInTransaction(List<Long> batch, StatistiquesCtbs rapport) throws Exception {
-				traiteBatch(batch, rapport, status, listeComplete.size(), rapportFinal.nbCtbsTotal);
+				traiteBatch(batch, rapport, status, idsContribuables.size(), rapportFinal.nbCtbsTotal);
 				return true;
 			}
 		}, null);
+
+		status.setMessage("Extraction terminée.");
 
 		rapportFinal.end();
 		return rapportFinal;
@@ -109,22 +114,19 @@ public class ProduireStatsCtbsProcessor {
 	private void traiteBatch(final List<Long> batch, final StatistiquesCtbs rapport, final StatusManager status, final int nbTotalContribuables, final int nbCtbTraites) {
 
 		// on ne va rien changer
-		hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				boolean first = true;
-				final Iterator<Long> iterator = batch.iterator();
-				while (iterator.hasNext() && !status.interrupted()) {
-					final Long id = iterator.next();
-					if (first) {
-						status.setMessage(String.format("Traitement du contribuable n°%d (%d/%d)", id, nbCtbTraites, nbTotalContribuables), (nbCtbTraites * 100) / nbTotalContribuables);
-						first = false;
-					}
-
-					traiterCtb(id, rapport);
+		hibernateTemplate.execute(FlushMode.MANUAL, session -> {
+			boolean first = true;
+			final Iterator<Long> iterator = batch.iterator();
+			while (iterator.hasNext() && !status.interrupted()) {
+				final Long id = iterator.next();
+				if (first) {
+					status.setMessage(String.format("Traitement du contribuable n°%d (%d/%d)", id, nbCtbTraites, nbTotalContribuables), (nbCtbTraites * 100) / nbTotalContribuables);
+					first = false;
 				}
-				return null;
+
+				traiterCtb(id, rapport);
 			}
+			return null;
 		});
 	}
 
@@ -146,8 +148,16 @@ public class ProduireStatsCtbsProcessor {
 			// Dans tous les cas, on prend l'assujettissement le plus récent
 			final Assujettissement assujet = assujettissements.get(assujettissements.size() - 1);
 			final StatistiquesCtbs.TypeContribuable typeCtb = determineType(assujet);
-			final Commune commune = typeCtb == StatistiquesCtbs.TypeContribuable.SOURCIER_PUR ? getCommuneDepuisFor(ctb, rapport.annee) : getCommuneGestion(ctb, rapport.annee);
-			final Integer oid = getOID(commune);
+			final Commune commune;
+			final Integer oid;
+			if (typeCtb == StatistiquesCtbs.TypeContribuable.SOURCIER_PUR || ctb instanceof Entreprise) {
+				commune = getCommuneDepuisFor(ctb, rapport.annee);
+				oid = ctb instanceof Entreprise ? ServiceInfrastructureService.noOIPM : getOID(commune);
+			}
+			else {
+				commune = getCommuneGestion(ctb, rapport.annee);
+				oid = getOID(commune);
+			}
 
 			rapport.addStats(oid, commune, typeCtb);
 			rapport.nbCtbsTotal++;
@@ -172,13 +182,12 @@ public class ProduireStatsCtbsProcessor {
 			return null;
 		}
 
-		int oid = office.getNoColAdm();
-		return oid;
+		return office.getNoColAdm();
 	}
 
 	/**
 	 * @return la commune du for de gestion du contribuable spécifié, ou <b>null</b> si le contribuable ne possède pas de for de gestion.
-	 * @throws ServiceInfrastructureException
+	 * @throws ServiceInfrastructureException en cas de souci retourné par le service infrastructure
 	 */
 	private Commune getCommuneGestion(Contribuable ctb, int annee) throws ServiceInfrastructureException {
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, RegDate.get(annee, 12, 31));
@@ -259,11 +268,11 @@ public class ProduireStatsCtbsProcessor {
 		return type;
 	}
 
-	private static final String queryCtbs = // --------------------------------------------------
+	private static final String queryCtbsPP = // --------------------------------------------------
 	"SELECT DISTINCT                                                                         "
 			+ "    cont.id                                                                   "
 			+ "FROM                                                                          "
-			+ "    Contribuable AS cont                                                      "
+			+ "    ContribuableImpositionPersonnesPhysiques AS cont                          "
 			+ "INNER JOIN                                                                    "
 			+ "    cont.forsFiscaux AS fors                                                  "
 			+ "WHERE                                                                         "
@@ -273,14 +282,34 @@ public class ProduireStatsCtbsProcessor {
 			+ "    AND (fors.dateFin IS null OR fors.dateFin >= :debutAnnee)                 "
 			+ "ORDER BY cont.id ASC                                                          ";
 
+	private static final String queryCtbsPM = // --------------------------------------------------
+	"SELECT DISTINCT                                                                         "
+			+ "    cont.id                                                                   "
+			+ "FROM                                                                          "
+			+ "    Entreprise AS cont                                                        "
+			+ "INNER JOIN                                                                    "
+			+ "    cont.forsFiscaux AS fors                                                  "
+			+ "WHERE                                                                         "
+			+ "    cont.annulationDate IS null                                               "
+			+ "    AND fors.annulationDate IS null                                           "
+			+ "    AND (fors.dateDebut IS null OR fors.dateDebut <= :finAnnee)               " // = au moins 1 for actif dans l'année
+			+ "    AND (fors.dateFin IS null OR fors.dateFin >= :debutAnnee)                 "
+			+ "ORDER BY cont.id ASC                                                          ";
+
+	private List<Long> chargerIdentifiantsContribuablesPP(int annee) {
+		return chargerIdentifiantsContribuables(annee, queryCtbsPP);
+	}
+
+	private List<Long> chargerIdentifiantsContribuablesPM(int annee) {
+		return chargerIdentifiantsContribuables(annee, queryCtbsPM);
+	}
+
 	/**
 	 * Crée un iterateur sur les ids des contribuables ayant au moins un for fiscal ouvert sur la période fiscale spécifiée.
-	 *
-	 * @param annee
-	 *            la période fiscale considérée
+	 * @param annee la période fiscale considérée
 	 * @return itérateur sur les ids des contribuables trouvés
 	 */
-	protected List<Long> chargerIdentifiantsContribuables(final int annee) {
+	private List<Long> chargerIdentifiantsContribuables(int annee, String query) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
@@ -288,22 +317,12 @@ public class ProduireStatsCtbsProcessor {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> i = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryCtbs);
-						queryObject.setParameter("debutAnnee", debutAnnee);
-						queryObject.setParameter("finAnnee", finAnnee);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
-
-				return i;
-			}
-		});
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query queryObject = session.createQuery(query);
+			queryObject.setParameter("debutAnnee", debutAnnee);
+			queryObject.setParameter("finAnnee", finAnnee);
+			//noinspection unchecked
+			return queryObject.list();
+		}));
 	}
 }

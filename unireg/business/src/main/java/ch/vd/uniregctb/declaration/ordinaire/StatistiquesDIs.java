@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,6 +124,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	// Paramètres d'entrée
 	public final int annee;
 	public final RegDate dateTraitement;
+	public final String population;
 	public boolean interrompu;
 
 	// Données de processing
@@ -131,10 +132,11 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	public final List<Erreur> disEnErrors = new ArrayList<>();
 	public final Map<Key, Value> stats = new HashMap<>();
 
-	public StatistiquesDIs(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public StatistiquesDIs(int annee, RegDate dateTraitement, String population, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
+		this.population = population;
 	}
 
 	public void addStats(int oid, TypeContribuable typeCtb, TypeEtatDeclaration etat) {

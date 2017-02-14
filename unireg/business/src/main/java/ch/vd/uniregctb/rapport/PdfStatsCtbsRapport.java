@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -18,7 +17,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
 
 /**
  * Rapport PDF contenant les statistiques des contribuables assujettis.
@@ -44,6 +43,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		{
 			addTableSimple(2, table -> {
 				table.addLigne("Année fiscale:", String.valueOf(results.annee));
+				table.addLigne("Population :", results.population);
 				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}

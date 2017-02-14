@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
@@ -16,7 +15,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 
 /**
  * Rapport PDF contenant les statistiques des déclarations d'impôt ordinaires
@@ -41,8 +40,9 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		addEntete1("Paramètres");
 		{
 			addTableSimple(2, table -> {
-				table.addLigne("Année fiscale:", String.valueOf(results.annee));
-				table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+				table.addLigne("Année fiscale :", String.valueOf(results.annee));
+				table.addLigne("Population :", results.population);
+				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
 

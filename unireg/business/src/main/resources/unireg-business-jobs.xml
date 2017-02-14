@@ -466,7 +466,7 @@
         <constructor-arg value="Produire les rôles PM (implémentation d'avant 17R1) pour l'OIPM"/>
     </bean>
 
-    <bean id="produireStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsJob">
+    <bean id="produireStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.ProduireStatsJob">
         <constructor-arg value="610"/>
         <constructor-arg value="Produire les statistiques sur les DIs ou les contribuables"/>
         <property name="service" ref="diService"/>
@@ -477,7 +477,7 @@
 
     <bean id="listeDINonEmisesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmisesJob">
         <constructor-arg value="611"/>
-        <constructor-arg value="Produire la liste des DIs non émises"/>
+        <constructor-arg value="Produire la liste des DIs PP non émises"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="transactionManager" ref="transactionManager"/>

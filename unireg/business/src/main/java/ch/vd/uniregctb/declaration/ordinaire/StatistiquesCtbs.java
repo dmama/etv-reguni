@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,6 +144,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	// Paramètres d'entrée
 	public final int annee;
 	public final RegDate dateTraitement;
+	public final String population;
 	public boolean interrompu;
 
 	// Données de processing
@@ -151,10 +152,11 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
 	public final Map<Key, Value> stats = new HashMap<>();
 
-	public StatistiquesCtbs(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public StatistiquesCtbs(int annee, RegDate dateTraitement, String population, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
+		this.population = population;
 	}
 
 	public void addStats(Integer oid, Commune commune, TypeContribuable typeCtb) {

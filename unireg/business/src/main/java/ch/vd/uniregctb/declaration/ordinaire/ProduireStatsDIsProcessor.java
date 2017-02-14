@@ -1,16 +1,15 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.IntFunction;
+import java.util.function.LongFunction;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -25,9 +24,10 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -73,22 +73,35 @@ public class ProduireStatsDIsProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public StatistiquesDIs run(final int anneePeriode, final RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
+	public StatistiquesDIs runPP(int annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
+		return run(annee, dateTraitement, statusManager, "PP", this::chargerIdentifiantsDeclarationsPP, id -> (DeclarationImpotOrdinairePP) diDAO.get(id), this::traiterDIPP);
+	}
+
+	public StatistiquesDIs runPM(int annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
+		return run(annee, dateTraitement, statusManager, "PM", this::chargerIdentifiantsDeclarationsPM, id -> (DeclarationImpotOrdinairePM) diDAO.get(id), this::traiterDIPM);
+	}
+
+	private <T extends DeclarationImpotOrdinaire> StatistiquesDIs run(final int annee,
+	                                                                  final RegDate dateTraitement,
+	                                                                  StatusManager statusManager,
+	                                                                  String population,
+	                                                                  IntFunction<List<Long>> idsDeclarationsPourPF,
+	                                                                  LongFunction<T> diAccessor,
+	                                                                  BiConsumer<? super T, StatistiquesDIs> traitement) throws DeclarationException {
 
 		final StatusManager status = statusManager != null ? statusManager : new LoggingStatusManager(LOGGER);
-		final StatistiquesDIs rapportFinal = new StatistiquesDIs(anneePeriode, dateTraitement, tiersService, adresseService);
+		final StatistiquesDIs rapportFinal = new StatistiquesDIs(annee, dateTraitement, population, tiersService, adresseService);
 
-		status.setMessage(String.format("Début de la production des statistiques des déclaration d'impôts ordinaires : période fiscale = %d.", anneePeriode));
+		status.setMessage(String.format("Production des statistiques des déclaration d'impôts ordinaires : période fiscale = %d.", annee));
 
-		final List<Long> listeComplete = chargerIdentifiantsDeclarations(anneePeriode);
+		final List<Long> listeComplete = idsDeclarationsPourPF.apply(annee);
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<Long, StatistiquesDIs>
-				template = new BatchTransactionTemplateWithResults<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status);
+		final BatchTransactionTemplateWithResults<Long, StatistiquesDIs> template = new BatchTransactionTemplateWithResults<>(listeComplete, BATCH_SIZE, Behavior.SANS_REPRISE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, StatistiquesDIs>() {
 
 			@Override
 			public StatistiquesDIs createSubRapport() {
-				return new StatistiquesDIs(anneePeriode, dateTraitement, tiersService, adresseService);
+				return new StatistiquesDIs(annee, dateTraitement, population, tiersService, adresseService);
 			}
 
 			@Override
@@ -104,10 +117,10 @@ public class ProduireStatsDIsProcessor {
 						status.setMessage(String.format("Traitement de la DI n°%d (%d/%d)", id, rapportFinal.nbDIsTotal, listeComplete.size()), progressMonitor.getProgressInPercent());
 					}
 
-					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(id);
+					final T di = diAccessor.apply(id);
 					try {
 						if (di != null) {
-							traiterDI(di, rapport);
+							traitement.accept(di, rapport);
 						}
 					}
 					catch (Exception e) {
@@ -122,19 +135,31 @@ public class ProduireStatsDIsProcessor {
 			}
 		}, progressMonitor);
 
+		status.setMessage("Extraction terminée.");
+		
 		rapportFinal.end();
 		return rapportFinal;
 	}
 
 	/**
-	 * Ajoute les statistiques de la DI et des détails spécifiés au rapport.
+	 * Ajoute les statistiques de la DI PP et des détails spécifiés au rapport.
 	 */
-	private void traiterDI(DeclarationImpotOrdinairePP di, StatistiquesDIs rapport) throws Exception {
+	private void traiterDIPP(DeclarationImpotOrdinairePP di, StatistiquesDIs rapport) {
 		final int oid = getOID(di);
 		final TypeContribuable type = getType(di);
 		final TypeEtatDeclaration etat = getEtat(di);
 
 		rapport.addStats(oid, type, etat);
+	}
+
+	/**
+	 * Ajoute les statistiques de la DI PM et des détails spécifiés au rapport.
+	 */
+	private void traiterDIPM(DeclarationImpotOrdinairePM di, StatistiquesDIs rapport) {
+		final TypeContribuable type = getType(di);
+		final TypeEtatDeclaration etat = getEtat(di);
+
+		rapport.addStats(ServiceInfrastructureService.noOIPM, type, etat);
 	}
 
 	/**
@@ -155,7 +180,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return le type de contribuable stocké sur la DI ou déterminé à partir de son assujettissement
 	 */
-	private TypeContribuable getType(DeclarationImpotOrdinairePP di) {
+	private TypeContribuable getType(DeclarationImpotOrdinaire di) {
 
 		TypeContribuable type = di.getTypeContribuable();
 		if (type == null) {
@@ -180,7 +205,7 @@ public class ProduireStatsDIsProcessor {
 	 *            le déclaration dont on cherche le type de contribuable associé
 	 * @return le type de contribuable ou <b>null</b> s'il n'est pas possible de retrouver cette information pour une raison ou une autre.
 	 */
-	private TypeContribuable determineType(DeclarationImpotOrdinairePP di) {
+	private TypeContribuable determineType(DeclarationImpotOrdinaire di) {
 
 		final Contribuable contribuable = di.getTiers();
 		if (contribuable == null) {
@@ -242,12 +267,11 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return l'état courant de la DI spécifiée
 	 */
-	private TypeEtatDeclaration getEtat(DeclarationImpotOrdinairePP di) {
-		TypeEtatDeclaration etat = di.getDernierEtat().getEtat();
-		return etat;
+	private TypeEtatDeclaration getEtat(DeclarationImpotOrdinaire di) {
+		return di.getDernierEtat().getEtat();
 	}
 
-	private static final String queryDIs = // --------------------------------------------------
+	private static final String queryDIsPP = // ------------------------------------------------
 	"SELECT DISTINCT                                       " // --------------------------------
 			+ "    di.id                                   " // --------------------------------
 			+ "FROM                                        " // --------------------------------
@@ -258,33 +282,42 @@ public class ProduireStatsDIsProcessor {
 			+ "    AND di.periode.annee = :annee           " // --------------------------------
 			+ "ORDER BY di.id ASC                          ";
 
+	private static final String queryDIsPM = // ------------------------------------------------
+	"SELECT DISTINCT                                       " // --------------------------------
+			+ "    di.id                                   " // --------------------------------
+			+ "FROM                                        " // --------------------------------
+			+ "    DeclarationImpotOrdinairePM AS di       " // --------------------------------
+			+ "WHERE                                       " // --------------------------------
+			+ "    di.annulationDate IS null               " // --------------------------------
+			+ "    AND di.periode.annulationDate IS null   " // --------------------------------
+			+ "    AND di.periode.annee = :annee           " // --------------------------------
+			+ "ORDER BY di.id ASC                          ";
+
+	private List<Long> chargerIdentifiantsDeclarationsPP(int annee) {
+		return chargerIdentifiantsDeclarations(annee, queryDIsPP);
+	}
+
+	private List<Long> chargerIdentifiantsDeclarationsPM(int annee) {
+		return chargerIdentifiantsDeclarations(annee, queryDIsPM);
+	}
+
 	/**
 	 * Crée un iterateur sur les ID des déclarations ordinaires envoyées pour une période fiscale donnée.
 	 *
-	 * @param annee
-	 *            la période fiscale considérée
+	 * @param annee la période fiscale considérée
+	 * @param queryDIs la query HQL qui récupère les DI qui vont bien
 	 * @return itérateur sur les ID des DIs
 	 */
-	protected List<Long> chargerIdentifiantsDeclarations(final int annee) {
+	private List<Long> chargerIdentifiantsDeclarations(int annee, String queryDIs) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> i = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryDIs);
-						queryObject.setParameter("annee", annee);
-						//noinspection unchecked
-						return queryObject.list();
-					}
-				});
-
-				return i;
-			}
-		});
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query queryObject = session.createQuery(queryDIs);
+			queryObject.setParameter("annee", annee);
+			//noinspection unchecked
+			return queryObject.list();
+		}));
 	}
 }
