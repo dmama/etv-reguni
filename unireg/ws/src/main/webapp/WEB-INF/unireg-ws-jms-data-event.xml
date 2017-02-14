@@ -9,6 +9,8 @@
 
 	<bean id="dataEventJmsHandler" class="ch.vd.uniregctb.data.DataEventJmsHandler">
 		<property name="dataEventService" ref="dataEventService" />
+		<property name="evenementFiscalSender" ref="evenementFiscalSender"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<bean id="dataEventJmsEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

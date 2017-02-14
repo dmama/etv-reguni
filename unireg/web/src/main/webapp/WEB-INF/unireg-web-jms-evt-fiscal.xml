@@ -2,42 +2,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementFiscalV1Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV1SenderImpl">
-		<property name="esbTemplate" ref="esbJmsTemplate" />
-		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="parametres" ref="parametreAppService"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
+	<bean id="delegatingEvenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.DelegatingEvenementFiscalSender">
+		<property name="dataEventSender" ref="dataEventJmsSender"/>
+		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}"/>
+		<property name="parent" ref="modificationInterceptor"/>
 	</bean>
 
-	<bean id="evenementFiscalV2Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV2SenderImpl">
-		<property name="esbTemplate" ref="esbJmsTemplate" />
-		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
-	</bean>
-
-	<bean id="evenementFiscalV3Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV3SenderImpl">
-		<property name="esbTemplate" ref="esbJmsTemplate" />
-		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
-	</bean>
-	<bean id="evenementFiscalV4Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV4SenderImpl">
-		<property name="esbTemplate" ref="esbJmsTemplate" />
-		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
-	</bean>
-
-	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">
-		<property name="senders">
-			<array>
-				<ref bean="evenementFiscalV1Sender"/>
-				<ref bean="evenementFiscalV2Sender"/>
-				<ref bean="evenementFiscalV3Sender"/>
-				<ref bean="evenementFiscalV4Sender"/>
-			</array>
-		</property>
-		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}" />
-	</bean>
-
-	<alias alias="evenementFiscalSender" name="evenementFiscalSendingPod"/>
+	<alias alias="evenementFiscalSender" name="delegatingEvenementFiscalSender"/>
 
 </beans>

@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
 import ch.vd.unireg.xml.event.data.v1.ImmeubleChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
@@ -39,7 +41,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class DataEventJmsSender implements DataEventListener, InitializingBean {
+public class DataEventJmsSender implements DataEventListener, InitializingBean, DataEventSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventJmsSender.class);
 
@@ -504,6 +506,22 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		}
 	}
 
+	@Override
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
+	public void sendEvenementsFiscaux(List<Long> idsEvenementsFiscaux) {
+		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement de demande d'envoi d'événements fiscaux (" + idsEvenementsFiscaux.size() + " événement(s))");
+			}
+
+			final FiscalEventSendRequestEvent event = new FiscalEventSendRequestEvent(idsEvenementsFiscaux);
+			sendDataEvent(String.format("FiscEvtReq-%d", event.hashCode()), event);
+		}
+		catch (Exception e) {
+			LOGGER.error("Impossible d'envoyer une demande d'envoi d'événements fiscaux", e);
+		}
+	}
+
 	private void sendDataEvent(String businessId, DataEvent event) throws Exception {
 		final Marshaller marshaller = jaxbContext.createMarshaller();
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -516,7 +534,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		m.setBusinessId(businessId);
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
-		m.setContext("databaseEvent");
+		m.setContext("dataEvent");
 		m.setBody(doc);
 
 		if (outputQueue != null) {

@@ -23,6 +23,7 @@ import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
 import ch.vd.unireg.xml.event.data.v1.ImmeubleChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
@@ -30,6 +31,10 @@ import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -43,6 +48,8 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataEventJmsHandler.class);
 
 	private DataEventService dataEventService;
+	private EvenementFiscalSender evenementFiscalSender;
+	private HibernateTemplate hibernateTemplate;
 
 	private Schema schemaCache;
 
@@ -65,11 +72,12 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		addToMap(map, RelationChangeEvent.class, new RelationChangeEventHandler());
 		addToMap(map, ImmeubleChangeEvent.class, new ImmeubleChangeEventHandler());
 		addToMap(map, BatimentChangeEvent.class, new BatimentChangeEventHandler());
+		addToMap(map, FiscalEventSendRequestEvent.class, new EvenementFiscalSendRequestHandler());
 		return map;
 	}
 
 	private interface Handler<T extends DataEvent> {
-		void onEvent(T event);
+		void onEvent(T event) throws Exception;
 	}
 
 	private final class DatabaseLoadEventHandler implements Handler<DatabaseLoadEvent> {
@@ -208,9 +216,34 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		}
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
+	private final class EvenementFiscalSendRequestHandler implements Handler<FiscalEventSendRequestEvent> {
+		@Override
+		public void onEvent(FiscalEventSendRequestEvent event) throws EvenementFiscalException {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Réception d'un événement de demande d'émission d'événements fiscaux.");
+			}
+
+			for (Long id : event.getId()) {
+				final EvenementFiscal evtFiscal = hibernateTemplate.get(EvenementFiscal.class, id);
+				if (evtFiscal == null) {
+					LOGGER.warn("Bizarre, demande d'envoi d'un événement fiscal inexistant : " + id);
+					continue;
+				}
+				evenementFiscalSender.sendEvent(evtFiscal);
+			}
+		}
+	}
+
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setEvenementFiscalSender(EvenementFiscalSender evenementFiscalSender) {
+		this.evenementFiscalSender = evenementFiscalSender;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -229,7 +262,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		final DataEvent evenement = element == null ? null : (DataEvent) element.getValue();
 		if (evenement != null) {
 			// traitement du message
-			AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ')');
+			AuthenticationHelper.pushPrincipal("JMS-DataEvent(" + msg.getMessageId() + ')');
 			try {
 				final Handler handler = handlers.get(evenement.getClass());
 				if (handler == null) {
@@ -241,7 +274,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				}
 			}
 			catch (Exception e) {
-				LOGGER.error("Erreur lors de la réception du message n°" + msg.getMessageId(), e);
+				LOGGER.error("Erreur lors de la réception/du traitement du message n°" + msg.getMessageId(), e);
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
