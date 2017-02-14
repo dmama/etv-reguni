@@ -76,7 +76,7 @@
 											<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
 										</authz:authorize>
 										<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
-											<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.inconnu.pm" /></a></li>
+											<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.autre.communaute" /></a></li>
 										</authz:authorize>
 										<c:if test="${modifpp}">
 											<li><a href="<c:url value='/couple/create.do'/>"><fmt:message key="title.couple" /></a></li>
@@ -84,7 +84,7 @@
 											<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
 										</c:if>
 										<c:if test="${annulpp}">
-											<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+											<li><a href="<c:url value='/activation/list.do?mode=REACTIVATION&population=PP'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
 										</c:if>
 									</ul>
 								</li>
@@ -97,7 +97,7 @@
 												<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
 											</c:if>
 											<c:if test="${annulpp}">
-												<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="title.tiers" /></a></li>
+												<li><a href="<c:url value='/activation/list.do?mode=DESACTIVATION&population=PP'/>"><fmt:message key="title.tiers" /></a></li>
 											</c:if>
 										</ul>
 									</li>
@@ -122,8 +122,8 @@
 									<li><a href="<c:url value='/tiers/entreprise/create.do'/>"><fmt:message key="label.action.creation" /></a></li>
 								</c:if>
 								<c:if test="${annulent}">
-									<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="label.action.annulation" /></a></li>
-									<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+									<li><a href="<c:url value='/activation/list.do?mode=DESACTIVATION&population=PM'/>"><fmt:message key="label.action.annulation" /></a></li>
+									<li><a href="<c:url value='/activation/list.do?mode=REACTIVATION&population=PM'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
 								</c:if>
 								<c:if test="${proccomplexeent}">
 									<li><fmt:message key="label.action.processus.complexes"/>

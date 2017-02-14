@@ -6,15 +6,16 @@
   		<fmt:message key="title.recapitulatif.reactivation" />
   	</tiles:put>
   	<tiles:put name="body">
-
-	  	<form:form method="post" id="formRecapReactivation"  name="formRecapReactivation">
+	  	<form:form method="post" id="formRecapReactivation"  name="formRecapReactivation" commandName="reactivationCommand" action="reactivate.do?population=${population}">
+		    <form:hidden path="tiers.numero"/>
 			<jsp:include page="../../general/tiers.jsp">
+				<jsp:param name="commandName" value="reactivationCommand"/>
 				<jsp:param name="page" value="activation" />
 				<jsp:param name="path" value="tiers" />
 			</jsp:include>
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
-			<unireg:RetourButton link="../list.do?activation=reactivation" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
+			<unireg:RetourButton link="list.do?mode=REACTIVATION&population=${population}" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_SauverReactivation(event || window.event);" />	
 			<!-- Fin Boutons -->
 		</form:form>

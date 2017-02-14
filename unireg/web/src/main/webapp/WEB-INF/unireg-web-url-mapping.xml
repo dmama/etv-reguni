@@ -130,10 +130,6 @@
 				-->
 				<!-- Documents -->
 				<entry key="/common/docs.do" value-ref="documentController" />
-				<!-- Annulation / Réactivation -->
-				<entry key="/activation/list.do" value-ref="tiersActivationListController" />
-				<entry key="/activation/annulation/recap.do" value-ref="tiersAnnulationRecapController" />
-				<entry key="/activation/reactivation/recap.do" value-ref="tiersReactivationRecapController" />
 
 				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !! Veuillez utiliser le 'mainUrlMapper' (sans le openSessionInViewInterceptor) -->
 			</map>

@@ -13,7 +13,7 @@ public interface TiersAnnulationRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersAnnulationRecapView get(Long numeroTiers);
+	TiersAnnulationRecapView get(Long numeroTiers);
 
 	/**
 	 * Alimente la vue TiersAnnulationRecapView
@@ -23,7 +23,7 @@ public interface TiersAnnulationRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersAnnulationRecapView get(Long numeroTiers, Long numeroTiersRemplacant)  ;
+	TiersAnnulationRecapView get(Long numeroTiers, Long numeroTiersRemplacant)  ;
 
 	/**
 	 * Persiste le tiers
@@ -31,5 +31,5 @@ public interface TiersAnnulationRecapManager {
 	 * @param tiersAnnulationRecapView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(TiersAnnulationRecapView tiersAnnulationRecapView) ;
+	void save(TiersAnnulationRecapView tiersAnnulationRecapView) ;
 }

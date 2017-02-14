@@ -13,10 +13,10 @@
 	</c:choose>
 </c:set>
 <c:choose>
-	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation' || typeRecherche == 'acces' || typeRecherche == 'mandataire'}">
+	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'acces' || typeRecherche == 'mandataire'}">
 		<c:set var="typeContribuableRecherche" value="ppoupm"/>       <%-- pm ou pp --%>
 	</c:when>
-	<c:when test="${typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise' || typeRecherche == 'transfertPatrimoine' || typeRecherche == 'reinscriptionRC' || typeRecherche == 'reqRadiationRC' || typeRecherche == 'identification-pm'}">
+	<c:when test="${typeRecherche == 'activation-PM' || typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise' || typeRecherche == 'transfertPatrimoine' || typeRecherche == 'reinscriptionRC' || typeRecherche == 'reqRadiationRC' || typeRecherche == 'identification-pm'}">
 		<c:set var="typeContribuableRecherche" value="pmonly"/>      <%-- pm seulement --%>
 	</c:when>
 	<c:otherwise>

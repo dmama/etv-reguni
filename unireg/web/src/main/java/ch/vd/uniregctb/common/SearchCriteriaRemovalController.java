@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.activation.TiersActivationListController;
 import ch.vd.uniregctb.annulation.couple.AnnulationCoupleListController;
 import ch.vd.uniregctb.annulation.separation.AnnulationSeparationListController;
 import ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieListController;
@@ -29,14 +28,6 @@ public class SearchCriteriaRemovalController {
 	public String effacerCriteresRechercheSeparation(HttpSession session) {
 		session.removeAttribute(SeparationListController.SEPARATION_CRITERIA_NAME);
 		return "redirect:/separation/list.do";
-	}
-
-	@RequestMapping(value = "/activation/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheActivation(HttpSession session, @RequestParam("activation") String mode) {
-		session.removeAttribute(TiersActivationListController.getCriteriaSessionAttributeName(mode));
-		return "redirect:/activation/list.do?activation=" + (TiersActivationListController.ACTIVATION_REACTIVATION_VALUE.equalsIgnoreCase(mode)
-				? TiersActivationListController.ACTIVATION_REACTIVATION_VALUE
-				: TiersActivationListController.ACTIVATION_ANNULATION_VALUE);
 	}
 
 	@RequestMapping(value = "/annulation/couple/reset-search.do", method = RequestMethod.GET)

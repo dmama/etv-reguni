@@ -884,7 +884,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "goto:/activation/reactivation/recap.do?numero=";
+			return "goto:/activation/reactivate.do?numero=";
 		}
 	}
 
@@ -987,7 +987,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "goto:/activation/annulation/recap.do?numero=";
+			return "goto:/activation/deactivate.do?numero=";
 		}
 	}
 
