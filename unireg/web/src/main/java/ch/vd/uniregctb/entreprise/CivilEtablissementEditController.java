@@ -226,7 +226,7 @@ public class CivilEtablissementEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
 		}
 
-		etablissement.setEnseigne(view.getEnseigne());
+		etablissement.setEnseigne(LiteralStringHelper.stripExtraSpacesAndBlanks(view.getEnseigne()));
 		return "redirect:/tiers/visu.do?id=" + tiers.getNumero();
 	}
 

@@ -26,6 +26,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.LiteralStringHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.complements.ComplementsEditCommunicationsView;
 import ch.vd.uniregctb.complements.ComplementsEditCoordonneesFinancieresView;
@@ -259,13 +260,13 @@ public class TiersCreateController {
 		}
 
 		// Raison sociale
-		tiersService.addRaisonSocialeFiscale(entreprise, civilView.getRaisonSociale(), dateOuverture, null);
+		tiersService.addRaisonSocialeFiscale(entreprise, LiteralStringHelper.stripExtraSpacesAndBlanks(civilView.getRaisonSociale()), dateOuverture, null);
 
 		// Siège (établissement)
 		final Etablissement etablissementPrincipal;
 		{
 			final Etablissement etablissement = new Etablissement();
-			etablissement.setRaisonSociale(civilView.getRaisonSociale());
+			etablissement.setRaisonSociale(LiteralStringHelper.stripExtraSpacesAndBlanks(civilView.getRaisonSociale()));
 			etablissementPrincipal = (Etablissement) tiersDAO.save(etablissement);
 		}
 		tiersService.addDomicileEtablissement(etablissementPrincipal, civilView.getTypeAutoriteFiscale(), civilView.getNumeroOfsSiege(), dateOuverture, null);
@@ -483,8 +484,8 @@ public class TiersCreateController {
 		final Etablissement etablissement = new Etablissement();
 
 		final EtablissementCivilView civilView = view.getCivil();
-		etablissement.setRaisonSociale(civilView.getRaisonSociale());
-		etablissement.setEnseigne(civilView.getNomEnseigne());
+		etablissement.setRaisonSociale(LiteralStringHelper.stripExtraSpacesAndBlanks(civilView.getRaisonSociale()));
+		etablissement.setEnseigne(LiteralStringHelper.stripExtraSpacesAndBlanks(civilView.getNomEnseigne()));
 		etablissement.addDomicile(new DomicileEtablissement(civilView.getDateDebut(), civilView.getDateFin(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, civilView.getNoOfsCommune(), etablissement));
 
 		final String normalizedIde = NumeroIDEHelper.normalize(civilView.getNumeroIDE());
