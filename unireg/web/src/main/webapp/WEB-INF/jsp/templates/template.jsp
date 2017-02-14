@@ -70,34 +70,30 @@
 					<c:if test="${creationpp || modifpp || annulpp}">
 						<li><fmt:message key="title.personnes.physiques"/>
 							<ul>
-								<li><fmt:message key="label.action.creation" />
-									<ul>
-										<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
-											<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
-										</authz:authorize>
-										<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
-											<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.autre.communaute" /></a></li>
-										</authz:authorize>
-										<c:if test="${modifpp}">
+								<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
+									<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.creation.inconnu.controle.habitants" /></a></li>
+								</authz:authorize>
+								<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
+									<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.creation.autre.communaute" /></a></li>
+								</authz:authorize>
+								<c:if test="${annulpp}">
+									<li><a href="<c:url value='/activation/list.do?mode=DESACTIVATION&population=PP'/>"><fmt:message key="label.action.annulation" /></a></li>
+									<li><a href="<c:url value='/activation/list.do?mode=REACTIVATION&population=PP'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+								</c:if>
+								<c:if test="${modifpp}">
+									<li><fmt:message key="label.action.processus.complexes" />
+										<ul>
 											<li><a href="<c:url value='/couple/create.do'/>"><fmt:message key="title.couple" /></a></li>
 											<li><a href="<c:url value='/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
 											<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-										</c:if>
-										<c:if test="${annulpp}">
-											<li><a href="<c:url value='/activation/list.do?mode=REACTIVATION&population=PP'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
-										</c:if>
-									</ul>
-								</li>
-								<c:if test="${modifpp || annulpp}">
-									<li><fmt:message key="label.action.annulation" />
+										</ul>
+									</li>
+									<li><fmt:message key="label.action.annulation.processus.complexes" />
 										<ul>
 											<c:if test="${modifpp}">
 												<li><a href="<c:url value='/annulation/couple/list.do'/>"><fmt:message key="title.couple" /></a></li>
 												<li><a href="<c:url value='/annulation/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
 												<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-											</c:if>
-											<c:if test="${annulpp}">
-												<li><a href="<c:url value='/activation/list.do?mode=DESACTIVATION&population=PP'/>"><fmt:message key="title.tiers" /></a></li>
 											</c:if>
 										</ul>
 									</li>
