@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -190,8 +191,16 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		// est-ce que l'estimation changé ?
 		if (!EstimationRFHelper.dataEquals(persistedEstimation, newEstimation, false)) {
 			if (EstimationRFHelper.dataEquals(persistedEstimation, newEstimation, true)) {
-				// le seul changement est le flag 'en révision' => on considère qu'il s'agit d'une correction et on met-à-jour l'estimation actuellement persistée
+				// [SIFISC-22995] le seul changement est le flag 'en révision' => on considère qu'il s'agit
+				// d'une correction et on met-à-jour l'estimation actuellement persistée
 				persistedEstimation.setEnRevision(newEstimation.isEnRevision());
+			}
+			else if (persistedEstimation != null && newEstimation != null && persistedEstimation.getDateDebutMetier() == newEstimation.getDateDebutMetier()) {
+				// [SIFISC-22995] la nouvelle estimation est valable à partir de la même période que l'ancienne, il s'agit
+				// vraisemblablement d'une correction => on annule l'estimation actuellement persistée
+				persistedEstimation.setAnnule(true);
+				newEstimation.setDateDebut(dateValeur);
+				persisted.addEstimation(newEstimation);
 			}
 			else {
 				// on ferme l'ancienne estimation et on ajoute la nouvelle
@@ -200,10 +209,10 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				}
 				if (newEstimation != null) {
 					newEstimation.setDateDebut(dateValeur);
-					persisted.getEstimations().add(newEstimation);
+					persisted.addEstimation(newEstimation);
 				}
-				EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
 			}
+			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
 		}
 
 		// est-ce que la surface totale changé ?
@@ -234,6 +243,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.filter(s -> s.getDateFin() == null)
 				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
 		persisted.getEstimations().stream()
+				.filter(Annulable::isNotAnnule)
 				.filter(e -> e.getDateFin() == null)
 				.forEach(e -> {
 					e.setDateFin(dateValeur.getOneDayBefore());

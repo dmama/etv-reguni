@@ -61,14 +61,14 @@ public class EstimationRFHelperTest {
 
 		// une estimation normale
 		final EstimationRF left = new EstimationRF();
-		left.setDateInscription(RegDate.get(2000,3,11));
+		left.setDateInscription(RegDate.get(2000, 3, 11));
 		left.setReference("2000");
 		left.setMontant(470000L);
 		left.setEnRevision(false);
 
 		// une estimation en révision
 		final EstimationRF right = new EstimationRF();
-		right.setDateInscription(RegDate.get(2000,3,11));
+		right.setDateInscription(RegDate.get(2000, 3, 11));
 		right.setReference("2000");
 		right.setMontant(470000L);
 		right.setEnRevision(true);
@@ -238,6 +238,20 @@ public class EstimationRFHelperTest {
 			assertEquals(RegDate.get(1980, 1, 1), e2.getDateFinMetier());
 			assertNull(e3.getDateFinMetier());
 		}
+	}
+
+	@Test
+	public void testDetermineDatesFinMetierAvecEstimationAnnulee() throws Exception {
+
+		final EstimationRF e1 = newEstimationRF(RegDate.get(1970, 1, 1));
+		final EstimationRF e2 = newEstimationRF(RegDate.get(1980, 1, 1));
+		e2.setAnnule(true);
+		final EstimationRF e3 = newEstimationRF(RegDate.get(1980, 1, 2));
+		final List<EstimationRF> estimations = Arrays.asList(e1, e2, e3);
+		EstimationRFHelper.determineDatesFinMetier(estimations);
+		assertEquals(RegDate.get(1980, 1, 1), e1.getDateFinMetier());
+		assertNull(e2.getDateFinMetier());
+		assertNull(e3.getDateFinMetier());
 	}
 
 	@NotNull
