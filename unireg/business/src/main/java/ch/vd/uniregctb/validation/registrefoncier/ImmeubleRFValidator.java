@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
@@ -41,6 +42,7 @@ public class ImmeubleRFValidator extends EntityValidatorImpl<ImmeubleRF> {
 	private static <T extends DateRange> void validateCollectionFermee(@NotNull ValidationResults results, @Nullable Set<T> set, String message) {
 		if (set != null) {
 			set.stream()
+					.filter(e -> !(e instanceof Annulable) || ((Annulable) e).isNotAnnule())
 					.filter(e -> e.getDateFin() == null)
 					.findAny()
 					.ifPresent(e -> results.addError(message));

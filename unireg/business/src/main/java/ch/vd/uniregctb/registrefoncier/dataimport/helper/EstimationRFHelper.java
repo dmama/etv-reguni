@@ -96,6 +96,9 @@ public abstract class EstimationRFHelper {
 		// algorithme naïf : la date de début métier de l'estimation fiscale suivante est utilisée pour déduire la date de fin métier précédante.
 		EstimationRF previous = null;
 		for (EstimationRF current : list) {
+			if (current.isAnnule()) {
+				continue;
+			}
 			final RegDate dateDebutMetier = current.getDateDebutMetier();
 			if (previous != null && dateDebutMetier != null) {
 				previous.setDateFinMetier(dateDebutMetier.getOneDayBefore());
