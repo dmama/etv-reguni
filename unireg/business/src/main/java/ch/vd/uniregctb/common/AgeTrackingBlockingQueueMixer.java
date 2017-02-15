@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * en fonction de la queue d'entrée
  * @param <T> la classe des éléments en transit dans les queues
  */
-public class AgeTrackingBlockingQueueMixer<T extends Dated> extends BlockingQueueMixer<T> {
+public class AgeTrackingBlockingQueueMixer<T extends Aged> extends BlockingQueueMixer<T> {
 
 	/**
 	 * Les données collectées par queue d'entrée
@@ -117,7 +118,7 @@ public class AgeTrackingBlockingQueueMixer<T extends Dated> extends BlockingQueu
 	protected void onElementOffered(T element, BlockingQueue<T> fromQueue) {
 		super.onElementOffered(element, fromQueue);
 
-		final long age = element.getAge(TimeUnit.MICROSECONDS);
+		final Duration age = element.getAge();
 		final QueueData data = getQueueData(fromQueue);
 		data.incomingElement(age);
 	}
@@ -257,17 +258,19 @@ public class AgeTrackingBlockingQueueMixer<T extends Dated> extends BlockingQueu
 			}
 		};
 
-		public void incomingElement(final long age) {
+		public void incomingElement(final Duration age) {
 			doInLock(new WriteLockAction<Object>() {
 				@Override
 				public Object run() {
+					final long micros = TimeUnit.NANOSECONDS.toMicros(age.toNanos());
+
 					// moyenne glissante
 					++nbSlidingElements[currentSlot];
-					sumOfSlidingAges[currentSlot] += age;
+					sumOfSlidingAges[currentSlot] += micros;
 
 					// moyenne générale
 					++totalNbElements;
-					totalSumOfAges += age;
+					totalSumOfAges += micros;
 
 					return null;
 				}

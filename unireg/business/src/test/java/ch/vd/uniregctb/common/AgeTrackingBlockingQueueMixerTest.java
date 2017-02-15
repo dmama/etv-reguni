@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,39 +14,37 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 	/**
 	 * Classe de test pour fixer a priori l'âge des éléments vus par le mixer
 	 */
-	private static class DatedElement implements Dated {
+	private static class AgedElement implements Aged {
 
-		final long age;
-		final TimeUnit unit;
+		final Duration age;
 
-		private DatedElement(long age, TimeUnit unit) {
+		private AgedElement(Duration age) {
 			this.age = age;
-			this.unit = unit;
 		}
 
 		@Override
-		public long getAge(@NotNull TimeUnit unit) {
-			return unit.convert(this.age, this.unit);
+		public Duration getAge() {
+			return age;
 		}
 	}
 
 	@Test
 	public void testSimpleAverageComputation() throws Exception {
-		final BlockingQueue<DatedElement> input = new LinkedBlockingQueue<>();
-		final BlockingQueue<DatedElement> output = new LinkedBlockingQueue<>();
-		final List<BlockingQueue<DatedElement>> inputQueues = new ArrayList<>();
+		final BlockingQueue<AgedElement> input = new LinkedBlockingQueue<>();
+		final BlockingQueue<AgedElement> output = new LinkedBlockingQueue<>();
+		final List<BlockingQueue<AgedElement>> inputQueues = new ArrayList<>();
 		inputQueues.add(input);
 
-		final AgeTrackingBlockingQueueMixer<DatedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
+		final AgeTrackingBlockingQueueMixer<AgedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
 
 		Assert.assertNull(mixer.getSlidingAverageAge(input));
 		Assert.assertNull(mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(3, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(3)), input);
 		Assert.assertEquals((Long) 3L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 3L, mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(1, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(1)), input);
 		Assert.assertEquals((Long) 2L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 2L, mixer.getGlobalAverageAge(input));
 
@@ -55,7 +52,7 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 		Assert.assertEquals((Long) 2L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 2L, mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(5, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(5)), input);
 		Assert.assertEquals((Long) 3L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 3L, mixer.getGlobalAverageAge(input));
 
@@ -82,18 +79,18 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 
 	@Test
 	public void testTimeUnitManipulation() throws Exception {
-		final BlockingQueue<DatedElement> input = new LinkedBlockingQueue<>();
-		final BlockingQueue<DatedElement> output = new LinkedBlockingQueue<>();
-		final List<BlockingQueue<DatedElement>> inputQueues = new ArrayList<>();
+		final BlockingQueue<AgedElement> input = new LinkedBlockingQueue<>();
+		final BlockingQueue<AgedElement> output = new LinkedBlockingQueue<>();
+		final List<BlockingQueue<AgedElement>> inputQueues = new ArrayList<>();
 		inputQueues.add(input);
 
-		final AgeTrackingBlockingQueueMixer<DatedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
+		final AgeTrackingBlockingQueueMixer<AgedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
 
-		mixer.onElementOffered(new DatedElement(3000, TimeUnit.MICROSECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(3)), input);
 		Assert.assertEquals((Long) 3L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 3L, mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(1000000, TimeUnit.NANOSECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofNanos(1000000)), input);
 		Assert.assertEquals((Long) 2L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 2L, mixer.getGlobalAverageAge(input));
 
@@ -101,7 +98,7 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 		Assert.assertEquals((Long) 2L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 2L, mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(5, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(5)), input);
 		Assert.assertEquals((Long) 3L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 3L, mixer.getGlobalAverageAge(input));
 
@@ -128,21 +125,21 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 
 	@Test
 	public void testReset() throws Exception {
-		final BlockingQueue<DatedElement> input = new LinkedBlockingQueue<>();
-		final BlockingQueue<DatedElement> output = new LinkedBlockingQueue<>();
-		final List<BlockingQueue<DatedElement>> inputQueues = new ArrayList<>();
+		final BlockingQueue<AgedElement> input = new LinkedBlockingQueue<>();
+		final BlockingQueue<AgedElement> output = new LinkedBlockingQueue<>();
+		final List<BlockingQueue<AgedElement>> inputQueues = new ArrayList<>();
 		inputQueues.add(input);
 
-		final AgeTrackingBlockingQueueMixer<DatedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
+		final AgeTrackingBlockingQueueMixer<AgedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
 
 		Assert.assertNull(mixer.getSlidingAverageAge(input));
 		Assert.assertNull(mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(3, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(3)), input);
 		Assert.assertEquals((Long) 3L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 3L, mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(1, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(1)), input);
 		Assert.assertEquals((Long) 2L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 2L, mixer.getGlobalAverageAge(input));
 
@@ -154,25 +151,25 @@ public class AgeTrackingBlockingQueueMixerTest extends WithoutSpringTest {
 		Assert.assertNull(mixer.getSlidingAverageAge(input));
 		Assert.assertNull(mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(3, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(3)), input);
 		Assert.assertEquals((Long) 3L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 3L, mixer.getGlobalAverageAge(input));
 
-		mixer.onElementOffered(new DatedElement(1, TimeUnit.MILLISECONDS), input);
+		mixer.onElementOffered(new AgedElement(Duration.ofMillis(1)), input);
 		Assert.assertEquals((Long) 2L, mixer.getSlidingAverageAge(input));
 		Assert.assertEquals((Long) 2L, mixer.getGlobalAverageAge(input));
 	}
 
 	@Test
 	public void testInvalidInputQueue() throws Exception {
-		final BlockingQueue<DatedElement> input = new LinkedBlockingQueue<>();
-		final BlockingQueue<DatedElement> output = new LinkedBlockingQueue<>();
-		final List<BlockingQueue<DatedElement>> inputQueues = new ArrayList<>();
+		final BlockingQueue<AgedElement> input = new LinkedBlockingQueue<>();
+		final BlockingQueue<AgedElement> output = new LinkedBlockingQueue<>();
+		final List<BlockingQueue<AgedElement>> inputQueues = new ArrayList<>();
 		inputQueues.add(input);
 
-		final AgeTrackingBlockingQueueMixer<DatedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
+		final AgeTrackingBlockingQueueMixer<AgedElement> mixer = new AgeTrackingBlockingQueueMixer<>(inputQueues, output, 1, 5);
 		try {
-			mixer.onElementOffered(new DatedElement(3, TimeUnit.SECONDS), output);
+			mixer.onElementOffered(new AgedElement(Duration.ofSeconds(3)), output);
 			Assert.fail("Ce n'est pas une queue d'entrée !");
 		}
 		catch (IllegalArgumentException e) {

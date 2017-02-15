@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -20,12 +22,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AgeTrackingBlockingQueueMixer;
-import ch.vd.uniregctb.common.Dated;
+import ch.vd.uniregctb.common.Aged;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
@@ -87,14 +88,14 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 	private PlatformTransactionManager transactionManager;
 	private EvenementOrganisationService evtOrganisationService;
-	private final long delayNs;
+	private final Duration delay;
 
 	public EvenementOrganisationNotificationQueueImpl(int delayInSeconds) {
 		if (delayInSeconds < 0) {
 			throw new IllegalArgumentException("delay should not be negative!");
 		}
 		LOGGER.info(String.format("Traitement des événements organisation artificiellement décalé de %d seconde%s.", delayInSeconds, delayInSeconds > 1 ? "s" : ""));
-		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
+		delay = Duration.ofSeconds(delayInSeconds);
 
 		final List<BlockingQueue<DelayedOrganisation>> input = new ArrayList<>(2);
 		input.add(immediateQueue);
@@ -113,10 +114,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		this.transactionManager = transactionManager;
 	}
 
-	private static long getTimestamp() {
-		return System.nanoTime();
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		mixer.start("EvtOrganisationMixer");
@@ -127,28 +124,28 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		mixer.stop();
 	}
 
-	private class DelayedOrganisation implements Delayed, Dated {
+	private class DelayedOrganisation implements Delayed, Aged {
 
 		private final long noOrganisation;
-		private final long startTimestamp;
+		private final Instant creation = InstantHelper.get();
+		private final Instant expiration = creation.plus(delay);
 
 		public DelayedOrganisation(long noOrganisation) {
 			this.noOrganisation = noOrganisation;
-			this.startTimestamp = getTimestamp();
 		}
 
-		private long getDelay(TimeUnit unit, long nowNanos) {
-			return unit.convert(startTimestamp + delayNs - nowNanos, TimeUnit.NANOSECONDS);
+		private long getDelay(TimeUnit unit, Instant now) {
+			return unit.convert(Duration.between(now, expiration).toNanos(), TimeUnit.NANOSECONDS);
 		}
 
 		@Override
 		public long getDelay(@NotNull TimeUnit unit) {
-			return getDelay(unit, getTimestamp());
+			return getDelay(unit, InstantHelper.get());
 		}
 
 		@Override
 		public int compareTo(@NotNull Delayed o) {
-			final long now = getTimestamp();
+			final Instant now = InstantHelper.get();
 			final long myDelay = getDelay(TimeUnit.NANOSECONDS, now);
 			final long yourDelay = ((DelayedOrganisation) o).getDelay(TimeUnit.NANOSECONDS, now);
 			return myDelay < yourDelay ? -1 : (myDelay > yourDelay ? 1 : 0);
@@ -174,9 +171,8 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		}
 
 		@Override
-		public long getAge(@NotNull TimeUnit unit) {
-			final long now = getTimestamp();
-			return unit.convert(now - startTimestamp, TimeUnit.NANOSECONDS);
+		public Duration getAge() {
+			return Duration.between(creation, InstantHelper.get());
 		}
 	}
 
@@ -273,12 +269,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<EvenementOrganisationBasicInfo>>() {
-			@Override
-			public List<EvenementOrganisationBasicInfo> doInTransaction(TransactionStatus status) {
-				return evtOrganisationService.buildLotEvenementsOrganisationNonTraites(noOrganisation);
-			}
-		});
+		return template.execute(status -> evtOrganisationService.buildLotEvenementsOrganisationNonTraites(noOrganisation));
 	}
 
 	@Override

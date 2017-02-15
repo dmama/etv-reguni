@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -20,12 +22,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AgeTrackingBlockingQueueMixer;
-import ch.vd.uniregctb.common.Dated;
+import ch.vd.uniregctb.common.Aged;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
@@ -86,14 +87,14 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchService evtCivilService;
-	private final long delayNs;
+	private final Duration delay;
 
 	public EvenementCivilNotificationQueueImpl(int delayInSeconds) {
 		if (delayInSeconds < 0) {
 			throw new IllegalArgumentException("delay should not be negative!");
 		}
 		LOGGER.info(String.format("Traitement des événements civils e-CH artificiellement décalé de %d seconde%s.", delayInSeconds, delayInSeconds > 1 ? "s" : ""));
-		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
+		delay = Duration.ofSeconds(delayInSeconds);
 
 		final List<BlockingQueue<DelayedIndividu>> input = new ArrayList<>(3);
 		input.add(immediateQueue);
@@ -112,10 +113,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		this.transactionManager = transactionManager;
 	}
 
-	private static long getTimestamp() {
-		return System.nanoTime();
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		mixer.start("EvtCivilEchMixer");
@@ -126,28 +123,28 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		mixer.stop();
 	}
 
-	private class DelayedIndividu implements Delayed, Dated {
+	private class DelayedIndividu implements Delayed, Aged {
 
 		private final long noIndividu;
-		private final long startTimestamp;
+		private final Instant creation = InstantHelper.get();
+		private final Instant expiration = creation.plus(delay);
 
 		public DelayedIndividu(long noIndividu) {
 			this.noIndividu = noIndividu;
-			this.startTimestamp = getTimestamp();
 		}
 
-		private long getDelay(TimeUnit unit, long nowNanos) {
-			return unit.convert(startTimestamp + delayNs - nowNanos, TimeUnit.NANOSECONDS);
+		private long getDelay(TimeUnit unit, Instant now) {
+			return unit.convert(Duration.between(now, expiration).toNanos(), TimeUnit.NANOSECONDS);
 		}
 
 		@Override
 		public long getDelay(@NotNull TimeUnit unit) {
-			return getDelay(unit, getTimestamp());
+			return getDelay(unit, InstantHelper.get());
 		}
 
 		@Override
-		public int compareTo(Delayed o) {
-			final long now = getTimestamp();
+		public int compareTo(@NotNull Delayed o) {
+			final Instant now = InstantHelper.get();
 			final long myDelay = getDelay(TimeUnit.NANOSECONDS, now);
 			final long yourDelay = ((DelayedIndividu) o).getDelay(TimeUnit.NANOSECONDS, now);
 			return myDelay < yourDelay ? -1 : (myDelay > yourDelay ? 1 : 0);
@@ -173,9 +170,8 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		}
 
 		@Override
-		public long getAge(@NotNull TimeUnit unit) {
-			final long now = getTimestamp();
-			return unit.convert(now - startTimestamp, TimeUnit.NANOSECONDS);
+		public Duration getAge() {
+			return Duration.between(creation, InstantHelper.get());
 		}
 	}
 
@@ -272,12 +268,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-			@Override
-			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-				return evtCivilService.buildLotEvenementsCivilsNonTraites(noIndividu);
-			}
-		});
+		return template.execute(status -> evtCivilService.buildLotEvenementsCivilsNonTraites(noIndividu));
 	}
 
 	@Override

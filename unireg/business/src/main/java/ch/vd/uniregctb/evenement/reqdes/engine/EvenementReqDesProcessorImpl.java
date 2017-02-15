@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.reqdes.engine;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
@@ -35,6 +36,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -54,9 +56,9 @@ import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.Aged;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BlockingQueuePollingThread;
-import ch.vd.uniregctb.common.Dated;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -157,20 +159,18 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 * Classe des éléments dans la queue de synchronisation (on conserve leur timestamp
 	 * de création pour éventuellement pouvoir faire des statistiques de monitoring)
 	 */
-	private static final class QueueElement implements Dated {
+	private static final class QueueElement implements Aged {
 
-		private final long startTimestamp;
+		private final Instant creation = InstantHelper.get();
 		private final long idUniteTraitement;
 
 		public QueueElement(long idUniteTraitement) {
-			this.startTimestamp = getTimestamp();
 			this.idUniteTraitement = idUniteTraitement;
 		}
 
 		@Override
-		public long getAge(@NotNull TimeUnit unit) {
-			final long now = getTimestamp();
-			return unit.convert(now - startTimestamp, TimeUnit.NANOSECONDS);
+		public Duration getAge() {
+			return Duration.between(creation, InstantHelper.get());
 		}
 	}
 
@@ -231,13 +231,6 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
-	}
-
-	/**
-	 * @return un timestamp en nano-secondes
-	 */
-	private static long getTimestamp() {
-		return System.nanoTime();
 	}
 
 	@NotNull
