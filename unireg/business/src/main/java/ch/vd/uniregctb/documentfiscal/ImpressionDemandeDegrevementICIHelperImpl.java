@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,9 +37,12 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
@@ -124,34 +130,67 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 	}
 
 	static String getNatureImmeuble(ImmeubleRF immeuble, RegDate dateReference) {
-		final List<String> composantesNature = immeuble.getSurfacesAuSol().stream()
+
+		// comment trouver la description d'une implantation ?
+		final Function<ImplantationRF, DescriptionBatimentRF> descriptionFromImplantation =
+				implantation -> Stream.of(implantation.getBatiment())
+						.filter(AnnulableHelper::nonAnnule)                 // implantation -> bâtiment non-annulé
+						.map(BatimentRF::getDescriptions)
+						.flatMap(Set::stream)
+						.filter(AnnulableHelper::nonAnnule)
+						.filter(desc -> desc.isValidAt(dateReference))      // bâtiment -> descriptions valides non-annulées
+						.findFirst()
+						.orElse(null);
+
+		// composantes qui viennent des bâtiments
+		final Stream<String> streamNaturesBatiments = immeuble.getImplantations().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(impl -> impl.isValidAt(dateReference))      // immeuble -> implantations valides non-annulées
+				.map(implantation -> {
+					final DescriptionBatimentRF description = descriptionFromImplantation.apply(implantation);
+					if (description != null) {
+						final Integer surface = Optional.ofNullable(implantation.getSurface()).orElse(description.getSurface());
+						return Pair.of(description, surface);
+					}
+					return null;
+				})
+				.filter(Objects::nonNull)
+				.sorted(Comparator.comparing(Pair::getRight, Comparator.nullsLast(Comparator.reverseOrder())))      // tris par surface décroissante
+				.map(Pair::getLeft)
+				.map(DescriptionBatimentRF::getType);
+
+		// composantes qui viennent des surfaces au sol
+		final Stream<String> streamNaturesSurfaces = immeuble.getSurfacesAuSol().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(ss -> ss.isValidAt(dateReference))        // immeuble -> surfaces au sol valides non-annulés
-				.sorted(Comparator.comparingInt(SurfaceAuSolRF::getSurface).reversed())
-				.map(SurfaceAuSolRF::getType)
+				.sorted(Comparator.comparingInt(SurfaceAuSolRF::getSurface).reversed())     // tri par surface décroissante
+				.map(SurfaceAuSolRF::getType);
+
+		// d'abord les bâtiments, puis les surfaces au sol
+		final List<String> composantes = Stream.concat(streamNaturesBatiments, streamNaturesSurfaces)
 				.map(StringUtils::trimToNull)
-				.filter(Objects::nonNull)                         // surface au sol -> type
-				.distinct()                                       // ça ne sert à rien de répêter plusieurs fois la même chose
+				.filter(Objects::nonNull)
+				.distinct()                     // il ne sert à rien de présenter plusieurs fois la même nature
 				.collect(Collectors.toList());
 
-		if (composantesNature.isEmpty()) {
+		if (composantes.isEmpty()) {
 			return null;
 		}
 
 		// [SIFISC-23178] on prend des composantes entières (sauf si la première est déjà trop grande)
 		while (true) {
-			final String nature = composantesNature.stream().collect(Collectors.joining(" / "));
+			final String nature = composantes.stream().collect(Collectors.joining(" / "));
 			if (nature.length() <= NATURE_SIZE_LIMIT) {
 				return nature;
 			}
 
-			if (composantesNature.size() == 1) {
+			if (composantes.size() == 1) {
 				// un seul élément trop grand... abréviation
 				return StringUtils.abbreviate(nature, NATURE_SIZE_LIMIT);
 			}
 
 			// on enlève un élément et on ré-essaie
-			composantesNature.remove(composantesNature.size() - 1);
+			composantes.remove(composantes.size() - 1);
 		}
 	}
 
