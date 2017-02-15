@@ -1,20 +1,22 @@
 package ch.vd.uniregctb.load;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.Instant;
 
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.stats.LoadDetail;
 
 public class LoadDetailImpl<T> implements LoadDetail {
 	
 	private final T descriptor;
-	private final long nanoStart;
+	private final Instant start;
 	private final String threadName;
 	private final StringRenderer<? super T> renderer;
 	
-	public LoadDetailImpl(T descriptor, long nanoStart, String threadName, StringRenderer<? super T> renderer) {
+	public LoadDetailImpl(T descriptor, Instant start, String threadName, StringRenderer<? super T> renderer) {
 		this.descriptor = descriptor;
-		this.nanoStart = nanoStart;
+		this.start = start;
 		this.threadName = threadName;
 		this.renderer = renderer;
 	}
@@ -25,8 +27,8 @@ public class LoadDetailImpl<T> implements LoadDetail {
 	}
 
 	@Override
-	public long getDurationMs() {
-		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStart);
+	public Duration getDuration() {
+		return Duration.between(start, InstantHelper.get());
 	}
 
 	@Override

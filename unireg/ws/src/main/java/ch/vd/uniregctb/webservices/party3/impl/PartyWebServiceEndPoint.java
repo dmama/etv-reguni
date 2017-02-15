@@ -7,9 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.interceptor.InInterceptors;
@@ -105,7 +106,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -131,8 +132,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
@@ -143,7 +144,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -170,8 +171,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
@@ -182,7 +183,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -210,8 +211,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
@@ -219,7 +220,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	public BatchParty getBatchParty(GetBatchPartyRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -283,8 +284,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
@@ -293,7 +294,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3") GetTaxOfficesRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -319,15 +320,15 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
 	@Override
 	public void setAutomaticReimbursementBlocking(SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
 		Throwable t = null;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -350,8 +351,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logWriteAccess(params, end - start, t);
+			final Instant end = loadMeter.end();
+			logWriteAccess(params, Duration.between(start, end), t);
 		}
 	}
 
@@ -362,7 +363,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -389,8 +390,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
@@ -398,7 +399,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -426,15 +427,15 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
 		Throwable t = null;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -464,15 +465,15 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logWriteAccess(params, end - start, t);
+			final Instant end = loadMeter.end();
+			logWriteAccess(params, Duration.between(start, end), t);
 		}
 	}
 
 	@Override
 	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest params) throws WebServiceException {
 		Throwable t = null;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -500,8 +501,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logWriteAccess(params, end - start, t);
+			final Instant end = loadMeter.end();
+			logWriteAccess(params, Duration.between(start, end), t);
 		}
 	}
 
@@ -519,14 +520,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	@Override
 	public void ping() {
 		// rien à faire
-		logReadAccess(PING_REQUEST, 0L, 0, null);
+		logReadAccess(PING_REQUEST, Duration.ZERO, 0, null);
 	}
 
 	@Override
 	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
 		Throwable t = null;
 		int items = 0;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
 			try {
@@ -552,8 +553,8 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			final long end = loadMeter.end();
-			logReadAccess(params, end - start, items, t);
+			final Instant end = loadMeter.end();
+			logReadAccess(params, Duration.between(start, end), items, t);
 		}
 	}
 
@@ -778,17 +779,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Log les paramètres et la durée d'un appel en read-only
 	 *
 	 * @param params   les paramètres de l'appel
-	 * @param duration la durée de l'appel en nano-secondes
+	 * @param duration la durée de l'appel
 	 * @param items    le nombre d'éléments retournés
 	 * @param t        l'éventuelle exception lancée par l'appel
 	 */
-	private void logReadAccess(Object params, long duration, int items, Throwable t) {
+	private void logReadAccess(Object params, Duration duration, int items, Throwable t) {
 		if (READ_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
 			final String returnInfo = (t == null ? String.format(" => %d item(s)", items) : String.format(", %s thrown", t.getClass().getName()));
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, returnInfo));
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, duration.toMillis(), params.toString(), loadMeter.getLoad() + 1, returnInfo));
 		}
 	}
 
@@ -796,16 +797,16 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Log les paramètres et la durée d'un appel en read-write
 	 *
 	 * @param params   les paramètres de l'appel
-	 * @param duration la durée de l'appel en nano-secondes
+	 * @param duration la durée de l'appel
 	 * @param t l'éventuelle exception lancée par l'appel
 	 */
-	private void logWriteAccess(Object params, long duration, Throwable t) {
+	private void logWriteAccess(Object params, Duration duration, Throwable t) {
 		if (WRITE_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, exceptionString));
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, duration.toMillis(), params.toString(), loadMeter.getLoad() + 1, exceptionString));
 		}
 	}
 

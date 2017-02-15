@@ -6,8 +6,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,17 +63,17 @@ public class AccessLogProcessingFilter extends GenericFilterBean implements Deta
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 
 		// c'est une nouvelle requête qui arrive
-		final long start = loadMeter.start(servletRequest);
+		final Instant start = loadMeter.start(servletRequest);
 
 		try {
 			filterChain.doFilter(servletRequest, servletResponse);
 		}
 		finally {
-			final long end = loadMeter.end();
+			final Instant end = loadMeter.end();
 			final String requestURL = getUrl(servletRequest);
 			final String method = getMethod(servletRequest);
 			final Logger logger = getLogger(method);
-			final long duration = TimeUnit.NANOSECONDS.toMillis(end - start);
+			final long duration = Duration.between(start, end).toMillis();
 			final int load = loadMeter.getLoad() + 1;       // +1 car le decrement vient d'être fait dans l'appel à loadMeter.end()
 			logger.info(String.format("[%s] [load=%d] (%d ms) %s", visa, load, duration, requestURL));
 		}

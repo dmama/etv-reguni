@@ -7,6 +7,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -134,7 +136,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		Throwable t = null;
 		Response r = null;
 		Integer nbItems = null;
-		final long start = loadMeter.start(callDescription);
+		final Instant start = loadMeter.start(callDescription);
 		try {
 			final ExecutionResult er = callback.execute();
 			r = er.response;
@@ -161,10 +163,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			r = WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e);
 		}
 		finally {
-			final long end = loadMeter.end();
+			final Instant end = loadMeter.end();
 			final Response.Status status = (r == null ? null : Response.Status.fromStatusCode(r.getStatus()));
 			final String type = extractContentType(r);
-			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, end - start, getLoad() + 1, type, status, nbItems, t);
+			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, Duration.between(start, end), getLoad() + 1, type, status, nbItems, t);
 		}
 		return r;
 	}

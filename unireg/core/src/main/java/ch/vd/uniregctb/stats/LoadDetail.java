@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.stats;
 
+import java.time.Duration;
+
 /**
  * Interface d'interrogation des détails sur une activité en cours
  */
@@ -11,9 +13,9 @@ public interface LoadDetail {
 	String getDescription();
 
 	/**
-	 * @return la durée actuelle d'exécution de l'activité en cours, en millisecondes
+	 * @return la durée actuelle d'exécution de l'activité en cours
 	 */
-	long getDurationMs();
+	Duration getDuration();
 
 	/**
 	 * @return le nom du thread sur lequel tourne l'activité en cours

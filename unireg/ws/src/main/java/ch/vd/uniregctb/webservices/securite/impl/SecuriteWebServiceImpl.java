@@ -10,9 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
@@ -71,7 +72,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			throws WebServiceException {
 
 		Throwable t = null;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			login(params.login);
 			try {
@@ -93,8 +94,8 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			throw new WebServiceException(e);
 		}
 		finally {
-			final long end = loadMeter.end();
-			logAccess(params, end - start, t);
+			final Instant end = loadMeter.end();
+			logAccess(params, Duration.between(start, end), t);
 		}
 	}
 
@@ -109,7 +110,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			throws WebServiceException {
 
 		Throwable t = null;
-		final long start = loadMeter.start(params);
+		final Instant start = loadMeter.start(params);
 		try {
 			if (!params.authenticationToken.equals("I swear I am Host-Interface")) {
 				// C'est pas host-interface, méchant méchant !
@@ -122,8 +123,8 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 			throw e;
 		}
 		finally {
-			final long end = loadMeter.end();
-			logAccess(params, end - start, t);
+			final Instant end = loadMeter.end();
+			logAccess(params, Duration.between(start, end), t);
 		}
 	}
 
@@ -148,16 +149,16 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 	 * Log les paramètres et la durée d'un appel en read-only
 	 *
 	 * @param params   les paramètres de l'appel
-	 * @param duration la durée de l'appel en nano-secondes
+	 * @param duration la durée de l'appel
 	 * @param t l'éventuelle exception lancée dans l'appel
 	 */
-	private void logAccess(Object params, long duration, Throwable t) {
+	private void logAccess(Object params, Duration duration, Throwable t) {
 		if (ACCESS_LOG.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 
 			// getLoad()+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			ACCESS_LOG.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, exceptionString));
+			ACCESS_LOG.info(String.format("[%s] (%d ms) %s load=%d%s", user, duration.toMillis(), params.toString(), loadMeter.getLoad() + 1, exceptionString));
 		}
 	}
 

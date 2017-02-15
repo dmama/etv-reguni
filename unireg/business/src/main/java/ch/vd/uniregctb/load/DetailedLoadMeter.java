@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.load;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
 import ch.vd.uniregctb.stats.LoadDetail;
@@ -95,23 +97,23 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	/**
 	 * Doit être appelé au moment du démarrage d'un nouvel appel
 	 * @param desc descripteur de l'appel (la méthode {@link #toString} sera appelée pour obtenir une description de l'appel)
-	 * @return {@link System#nanoTime() timestamp} du démarrage de l'appel 
+	 * @return {@link Instant} courant au moment de l'appel
 	 */
-	public long start(T desc) {
+	public Instant start(T desc) {
 		currentLoad.incrementAndGet();
-		final long ts = timestamp();
-		details.get().setValue(new LoadDetailImpl<>(desc, ts, Thread.currentThread().getName(), renderer));
-		return ts;
+		final Instant start = InstantHelper.get();
+		details.get().setValue(new LoadDetailImpl<>(desc, start, Thread.currentThread().getName(), renderer));
+		return start;
 }
 
 	/**
 	 * Doit être appelé lorsque le traitement relatif à l'appel précédemment enregistré par un appel à {@link #start} est terminé
-	 * @return {@link System#nanoTime() timestamp} à la fin de l'appel
+	 * @return {@link Instant} à la fin de l'appel
 	 */
-	public long end() {
+	public Instant end() {
 		details.get().setValue(null);
 		currentLoad.decrementAndGet();
-		return timestamp();
+		return InstantHelper.get();
 	}
 	
 	private static long timestamp() {

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.stats;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -439,22 +438,17 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 		// on va vouloir trier les processus en cours depuis le plus ancien vers le plus récent
 		// i.e. dans l'ordre décroissant de leur durée
-		final Comparator<LoadDetail> comparator = new Comparator<LoadDetail>() {
-			@Override
-			public int compare(LoadDetail o1, LoadDetail o2) {
-				return -Long.compare(o1.getDurationMs(), o2.getDurationMs());
-			}
-		};
+		final Comparator<LoadDetail> comparator = Comparator.comparing(LoadDetail::getDuration, Comparator.reverseOrder());
 
 		// log les appels en cours sur les services monitorés qui le supportent
 		for (Map.Entry<String, List<LoadDetail>> entry : allDetails.entrySet()) {
 			final List<LoadDetail> details = entry.getValue();
-			Collections.sort(details, comparator);
+			details.sort(comparator);
 			for (LoadDetail detail : details) {
 				final Row row = new Row();
 				row.addCell(new Cell(entry.getKey()));
 				row.addCell(new Cell(detail.getThreadName()));
-				row.addCell(new Cell(TimeHelper.formatDureeShort(detail.getDurationMs()), AlignMode.RIGHT));
+				row.addCell(new Cell(TimeHelper.formatDureeShort(detail.getDuration()), AlignMode.RIGHT));
 				row.addCell(new Cell(detail.getDescription()));
 				table.addRow(row);
 			}

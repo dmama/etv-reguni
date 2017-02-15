@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.jms;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +96,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	@Override
 	public void onEsbMessage(EsbMessage msg) {
 		final EsbMessage message = esbMessageTracingFactory != null ? esbMessageTracingFactory.wrap(msg) : msg;
-		final long start = loadMeter.start(message);
+		final Instant start = loadMeter.start(message);
 		Throwable t = null;
 		String businessError = null;
 		final String displayedValue = RENDERER.toString(message);       // on est obligé de le faire tout de suite car l'envoi en queue d'erreur, par exemple, modifie le message en place...
@@ -121,13 +122,13 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 			throw new RuntimeException(e);      // wrapping
 		}
 		finally {
-			final long end = loadMeter.end();
+			final Instant end = loadMeter.end();
 			if (JMS_LOGGER.isInfoEnabled()) {
 				final String exceptMsg = t != null ? String.format(", %s thrown", t.getClass().getName()) : StringUtils.EMPTY;
 				final String businessErrorMsg = StringUtils.isNotBlank(businessError) ? String.format(", error='%s'", StringUtils.abbreviate(businessError, 100)) : StringUtils.EMPTY;
 				final String logString = String.format("[load=%d] (%d ms) %s%s%s",
 				                                       loadMeter.getLoad() + 1,
-				                                       TimeUnit.NANOSECONDS.toMillis(end - start),
+				                                       Duration.between(start, end).toMillis(),
 				                                       displayedValue,
 				                                       businessErrorMsg,
 				                                       exceptMsg);
