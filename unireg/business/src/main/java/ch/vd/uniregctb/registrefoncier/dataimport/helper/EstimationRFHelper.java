@@ -28,10 +28,10 @@ public abstract class EstimationRFHelper {
 	}
 
 	public static boolean dataEquals(@Nullable EstimationRF estimation, @Nullable AmtlicheBewertung amtlicheBewertung) {
-		return dataEquals(estimation, get(amtlicheBewertung));
+		return dataEquals(estimation, get(amtlicheBewertung), false);
 	}
 
-	public static boolean dataEquals(@Nullable EstimationRF left, @Nullable EstimationRF right) {
+	public static boolean dataEquals(@Nullable EstimationRF left, @Nullable EstimationRF right, boolean ignoreRevisionFlag) {
 		if (left == null && right == null) {
 			return true;
 		}
@@ -43,7 +43,7 @@ public abstract class EstimationRFHelper {
 				return Objects.equals(left.getMontant(), right.getMontant()) &&
 						Objects.equals(left.getReference(), right.getReference()) &&
 						Objects.equals(left.getDateInscription(), right.getDateInscription()) &&
-						left.isEnRevision() == right.isEnRevision();
+						(left.isEnRevision() == right.isEnRevision() || ignoreRevisionFlag);
 			}
 	}
 
