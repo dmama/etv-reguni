@@ -4,7 +4,7 @@
 
 	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.MockUniregProperties"/>
 
-	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender" />
 
 	<bean id="evenementLiberationDeclarationImpotSender" class="ch.vd.uniregctb.evenement.di.MockEvenementLiberationDeclarationImpotSender"/>
 

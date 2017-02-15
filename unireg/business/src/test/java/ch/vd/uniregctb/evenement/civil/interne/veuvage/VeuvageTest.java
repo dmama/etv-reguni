@@ -149,7 +149,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le veuf
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
@@ -201,7 +201,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le veuf
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}

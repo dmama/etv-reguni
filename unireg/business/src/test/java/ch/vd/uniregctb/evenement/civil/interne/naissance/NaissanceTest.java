@@ -95,7 +95,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * une événement doit être créé et un événement doit être publié
 		 */
-		assertEquals(1, eventSender.count);
+		assertEquals(1, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tierss.get(0)).size());
 	}
 
@@ -124,7 +124,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * une événement doit être créé et un événement doit être publié
 		 */
-		assertEquals(1, eventSender.count);
+		assertEquals(1, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tierss.get(0)).size());
 
 		// l'événement fiscal ne doit pas avoir eu sa date décalé à l'année suivante!

@@ -120,7 +120,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		 *  - annulation du for fermé
 		 *  - réouverture for fiscal principal de Pierre
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 	}
 	
@@ -176,7 +176,7 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		 *  - réouverture for fiscal principal de Maurice
 		 *  - réouverture for fiscal principal de Béatrice
 		 */
-		assertEquals(4, eventSender.count);
+		assertEquals(4, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 	}

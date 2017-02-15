@@ -1,32 +1,10 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MockEvenementFiscalSender implements EvenementFiscalSender {
-
-	public int count;
-
-	private final List<String> trace = new ArrayList<>();
-
-	public MockEvenementFiscalSender() {
-		this.count = 0;
-	}
 
 	@Override
 	public void sendEvent(EvenementFiscal evenement) throws EvenementFiscalException {
-		count++;
-		trace.add(evenement.toString());
+		// ne fait rien, c'est un mock...
 	}
 
-	public void reset() {
-		count = 0;
-	}
-
-	/**
-	 * Permet, en debug, de visualiser les événements qui sont passés
-	 */
-	public List<String> getTrace() {
-		return trace;
-	}
 }

@@ -334,7 +334,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				}
 				assertNotNull("Aucun for princpal trouvé", forFiscalPrincipal);
 
-				assertEquals(1, eventSender.count);
+				assertEquals(1, eventSender.getCount());
 				assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(tiers).size());
 			}
 		});

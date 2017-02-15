@@ -216,7 +216,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur pierre
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
-		Assert.assertEquals(2, eventSender.count);
+		Assert.assertEquals(2, eventSender.getCount());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
@@ -312,7 +312,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur bea
 		 *  - ouverture for fiscal principal et du for secondaire sur le ménage commun
 		 */
-		Assert.assertEquals(5, eventSender.count);
+		Assert.assertEquals(5, eventSender.getCount());
 		Assert.assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 		Assert.assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
@@ -407,7 +407,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur julien
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
-		Assert.assertEquals(3, eventSender.count);
+		Assert.assertEquals(3, eventSender.getCount());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(david).size());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(julien).size());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());

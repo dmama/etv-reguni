@@ -8,8 +8,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.common.EvenementErreur;
+import ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
@@ -26,7 +26,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEvenementOrganisationInterneTest.class);
 
-	protected MockEvenementFiscalSender eventSender;
+	protected CollectingEvenementFiscalSender eventSender;
 	protected MetierServicePM metierService;
 
 	protected EvenementOrganisationContext context;
@@ -43,14 +43,14 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		super.onSetUp();
 
 		evenementOrganisationService = getBean(EvenementOrganisationService.class, "evtOrganisationService");
-		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
+		eventSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		metierService = getBean(MetierServicePM.class, "metierServicePM");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		appariementService = getBean(AppariementService.class, "appariementService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
-		eventSender.count = 0;
+		eventSender.reset();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		context = new EvenementOrganisationContext(serviceOrganisation, evenementOrganisationService, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);

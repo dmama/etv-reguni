@@ -35,7 +35,7 @@
 
 	<bean id="identCtbMessageV1Handler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>
 
-	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender"/>
 
 	<bean id="annonceIDESender" class="ch.vd.uniregctb.evenement.ide.MockAnnonceIDESender"/>
 

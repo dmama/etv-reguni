@@ -155,7 +155,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le tiers
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
@@ -217,7 +217,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur chacun des conjoints
 		 */
-		assertEquals(3, eventSender.count);
+		assertEquals(3, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(conjointDivorce).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
@@ -268,7 +268,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Aucun événement doit être généré car les individus sont déja séparés au moment du divorce
 		 */
-		assertEquals(0, eventSender.count);
+		assertEquals(0, eventSender.getCount());
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(habitantDivorce).size());
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(conjointDivorce).size());
 	}

@@ -118,7 +118,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				 *  - annulation du for fermé
 				 *  - réouverture for fiscal principal sur l'ex-défunte
 				 */
-				assertEquals(2, eventSender.count);
+				assertEquals(2, eventSender.getCount());
 				assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(pp).size());
 				return null;
 			}
@@ -267,7 +267,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				 *  - annulation du for fermé
 				 *  - réouverture for fiscal principal sur le ménage de l'ex-défunt
 				 */
-				assertEquals(2, eventSender.count);
+				assertEquals(2, eventSender.getCount());
 				assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 				return null;
 			}
@@ -393,7 +393,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				 *  - annulation du for fermé
 				 *  - réouverture for fiscal principal sur le ménage de l'ex-défunt
 				 */
-				assertEquals(2, eventSender.count);
+				assertEquals(2, eventSender.getCount());
 				assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 				return null;
 			}

@@ -128,7 +128,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le tiers
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantSepare).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 
@@ -193,7 +193,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur chacun des conjoints
 		 */
-		assertEquals(3, eventSender.count);
+		assertEquals(3, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantSepare).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(conjointSepare).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());

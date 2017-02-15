@@ -112,7 +112,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le tiers
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantReconcilie).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
@@ -168,7 +168,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture fors fiscaux sur les tiers
 		 */
-		assertEquals(3, eventSender.count);
+		assertEquals(3, eventSender.getCount());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(habitantReconcilie).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(conjointReconcilie).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menage).size());

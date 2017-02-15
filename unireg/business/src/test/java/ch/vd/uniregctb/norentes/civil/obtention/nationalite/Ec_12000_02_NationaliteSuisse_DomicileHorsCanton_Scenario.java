@@ -14,7 +14,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
+import ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -33,7 +33,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 
 	public static final String NAME = "12000_02_NationaliteSuisse";
 
-	private MockEvenementFiscalSender evenementFiscalSender;
+	private CollectingEvenementFiscalSender evenementFiscalSender;
 	private AdresseService adresseService;
 
 	@Override
@@ -51,7 +51,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 		return TypeEvenementCivil.NATIONALITE_SUISSE;
 	}
 
-	public void setEvenementFiscalSender(MockEvenementFiscalSender evenementFiscalSender) {
+	public void setEvenementFiscalSender(CollectingEvenementFiscalSender evenementFiscalSender) {
 		this.evenementFiscalSender = evenementFiscalSender;
 	}
 
@@ -116,7 +116,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 	public void check2() {
 		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
 
-		assertEquals(0, evenementFiscalSender.count, "Aucun événement fiscal ne doit avoir été envoyé");
+		assertEquals(0, evenementFiscalSender.getCount(), "Aucun événement fiscal ne doit avoir été envoyé");
 
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 		assertEquals(0, evt.getErreurs().size(), "Il ne devrait y avoir aucune erreur");

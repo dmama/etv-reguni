@@ -226,7 +226,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			 * Evénements fiscaux devant être générés :
 			 *  - fermeture for fiscal principal sur le défunt
 			 */
-			assertEquals(1, eventSender.count);
+			assertEquals(1, eventSender.getCount());
 			assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(defunt).size());
 		}
 
@@ -320,7 +320,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		 *  - ouverture for fiscal principal sur le veuf
 		 *  - création d'une nouvelle situation de famille sur le veuf
 		 */
-		assertEquals(3, eventSender.count);
+		assertEquals(3, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(veuf).size());
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(defunt).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
@@ -410,7 +410,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 		 *  - ouverture for fiscal principal sur le veuf
 		 *  - création d'une nouvelle situation de famille sur le veuf
 		 */
-		assertEquals(3, eventSender.count);
+		assertEquals(3, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(veuf).size());
 		assertEquals(0, getEvenementFiscalService().getEvenementsFiscaux(defunt).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());

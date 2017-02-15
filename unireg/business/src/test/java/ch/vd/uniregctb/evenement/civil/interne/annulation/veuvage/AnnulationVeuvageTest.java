@@ -121,7 +121,7 @@ public class AnnulationVeuvageTest extends AbstractEvenementCivilInterneTest {
 		 *  - annulation du for fermé du ménage
 		 *  - ré-ouverture for fiscal principal du ménage André
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 

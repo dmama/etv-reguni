@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 public class EvenementFiscalServiceTest extends BusinessTest {
 
 	private EvenementFiscalService evenementFiscalService;
-	private MockEvenementFiscalSender evenementFiscalSender;
+	private CollectingEvenementFiscalSender evenementFiscalSender;
 	private EvenementFiscalDAO evenementFiscalDAO;
 
 
@@ -43,7 +43,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		super.onSetUp();
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
-	    evenementFiscalSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
+	    evenementFiscalSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
 		tiersDAO = getBean( TiersDAO.class, "tiersDAO");
 	}
 
@@ -54,7 +54,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.count = 0;
+				evenementFiscalSender.reset();
 				assertEquals(0, evenementFiscalDAO.getAll().size());
 
 				final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 5, 27), Sexe.MASCULIN);
@@ -74,7 +74,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que l'événement a été envoyé
-		assertEquals(1, evenementFiscalSender.count);
+		assertEquals(1, evenementFiscalSender.getCount());
 
 		// Vérifie que l'événement est dans la base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -94,7 +94,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.count = 0;
+				evenementFiscalSender.reset();;
 				assertEquals(0, evenementFiscalDAO.getAll().size());
 
 				// le DPI
@@ -118,7 +118,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que l'événement a été envoyé
-		assertEquals(1, evenementFiscalSender.count);
+		assertEquals(1, evenementFiscalSender.getCount());
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -138,7 +138,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.count = 0;
+				evenementFiscalSender.reset();
 				assertEquals(0, evenementFiscalDAO.getAll().size());
 
 				final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 4, 2), Sexe.MASCULIN);
@@ -148,7 +148,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		});
 
 		// Vérifie que l'événement a été envoyé
-		assertEquals(1, evenementFiscalSender.count);
+		assertEquals(1, evenementFiscalSender.getCount());
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override

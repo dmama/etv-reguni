@@ -70,7 +70,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		 *  - annulation du for fermé
 		 *  - réouverture for fiscal principal du ménage Pierre
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
 
@@ -106,7 +106,7 @@ public class AnnulationSeparationTest extends AbstractEvenementCivilInterneTest 
 		 *  - annulation du for fermé
 		 *  - réouverture for fiscal principal du ménage Pierre
 		 */
-		assertEquals(2, eventSender.count);
+		assertEquals(2, eventSender.getCount());
 		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menage).size());
 	}
 
