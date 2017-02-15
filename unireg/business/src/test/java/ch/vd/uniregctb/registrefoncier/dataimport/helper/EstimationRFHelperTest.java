@@ -48,9 +48,33 @@ public class EstimationRFHelperTest {
 	 */
 	@Test
 	public void testDataEqualsNullNotNull() throws Exception {
-		assertTrue(EstimationRFHelper.dataEquals(null, (EstimationRF) null));
-		assertFalse(EstimationRFHelper.dataEquals(null, new EstimationRF()));
-		assertFalse(EstimationRFHelper.dataEquals(new EstimationRF(), (EstimationRF) null));
+		assertTrue(EstimationRFHelper.dataEquals(null, null, false));
+		assertFalse(EstimationRFHelper.dataEquals(null, new EstimationRF(), false));
+		assertFalse(EstimationRFHelper.dataEquals(new EstimationRF(), null, false));
+	}
+
+	/**
+	 * Ce test vérifie que les flags 'en révision' sont bien ignorés quand on le demande.
+	 */
+	@Test
+	public void testDataEqualsIgnoreEnRevisionFlag() throws Exception {
+
+		// une estimation normale
+		final EstimationRF left = new EstimationRF();
+		left.setDateInscription(RegDate.get(2000,3,11));
+		left.setReference("2000");
+		left.setMontant(470000L);
+		left.setEnRevision(false);
+
+		// une estimation en révision
+		final EstimationRF right = new EstimationRF();
+		right.setDateInscription(RegDate.get(2000,3,11));
+		right.setReference("2000");
+		right.setMontant(470000L);
+		right.setEnRevision(true);
+
+		assertFalse(EstimationRFHelper.dataEquals(left, right, false));
+		assertTrue(EstimationRFHelper.dataEquals(left, right, true));
 	}
 
 	/**

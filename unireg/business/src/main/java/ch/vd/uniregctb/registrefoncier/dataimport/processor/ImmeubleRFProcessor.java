@@ -188,16 +188,22 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		}
 
 		// est-ce que l'estimation changé ?
-		if (!EstimationRFHelper.dataEquals(persistedEstimation, newEstimation)) {
-			// on ferme l'ancienne estimation et on ajoute la nouvelle
-			if (persistedEstimation != null) {
-				persistedEstimation.setDateFin(dateValeur.getOneDayBefore());
+		if (!EstimationRFHelper.dataEquals(persistedEstimation, newEstimation, false)) {
+			if (EstimationRFHelper.dataEquals(persistedEstimation, newEstimation, true)) {
+				// le seul changement est le flag 'en révision' => on considère qu'il s'agit d'une correction et on met-à-jour l'estimation actuellement persistée
+				persistedEstimation.setEnRevision(newEstimation.isEnRevision());
 			}
-			if (newEstimation != null) {
-				newEstimation.setDateDebut(dateValeur);
-				persisted.getEstimations().add(newEstimation);
+			else {
+				// on ferme l'ancienne estimation et on ajoute la nouvelle
+				if (persistedEstimation != null) {
+					persistedEstimation.setDateFin(dateValeur.getOneDayBefore());
+				}
+				if (newEstimation != null) {
+					newEstimation.setDateDebut(dateValeur);
+					persisted.getEstimations().add(newEstimation);
+				}
+				EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
 			}
-			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
 		}
 
 		// est-ce que la surface totale changé ?
