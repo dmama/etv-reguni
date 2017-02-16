@@ -133,6 +133,11 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 		finally {
 			handle.unregister();
 		}
+
+		// après l'exécution d'un ou plusieurs événements organisation en test, il est préférable d'attendre que
+		// toutes les indexations on-the-fly soient terminées (car le traitement a lieu sur un thread séparé
+		// dans lequel ce type d'indexation est activé par défaut)
+		globalTiersIndexer.sync();
 	}
 
 	@NotNull
