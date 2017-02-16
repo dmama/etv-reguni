@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -76,7 +75,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		impressionSommationDIHelper = new ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
 		etiquetteService = getBean(EtiquetteService.class, "etiquetteService");
 
-		final Object[] res = doInTransaction(new TransactionCallback<Object[]>() {
+		final Object[] res = doInNewTransaction(new TransactionCallback<Object[]>() {
 			@Override
 			public Object[] doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -89,7 +88,6 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitIdArchivageDocument() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitIdArchivageDocument");
 		String idArchivageAttendu = "200902 Sommation DI        0101123020000";
@@ -104,7 +102,6 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitAncienIdArchivageDocument() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitAncienIdArchivageDocument");
 		String idArchivageAttendu = "200902 Sommation DI         200701011230";
@@ -121,7 +118,6 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitAncienIdArchivageDocumentPourOnLine() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitAncienIdArchivageDocumentPourOnLine");
 		String idArchivageAttendu = "200902 Sommation DI         20070101123020000";
@@ -192,7 +188,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// préparation fiscale
-		final DeclarationImpotOrdinairePP di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
+		final DeclarationImpotOrdinairePP di = doInNewTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
 			@Override
 			public DeclarationImpotOrdinairePP doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addHabitant(noIndividu);
@@ -219,7 +215,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 		});
 
 		// Test Sommation
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
@@ -243,7 +239,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	public void testGetLocaliteExpeditionWithLaValleeException() throws Exception {
 
 		// préparation fiscale
-		final DeclarationImpotOrdinairePP di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
+		final DeclarationImpotOrdinairePP di = doInNewTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
 			@Override
 			public DeclarationImpotOrdinairePP doInTransaction(TransactionStatus status) {
 
@@ -262,7 +258,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
@@ -285,7 +281,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 	public void testGetLocaliteExpeditionCasStandard() throws Exception {
 
 		// préparation fiscale
-		final DeclarationImpotOrdinairePP di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
+		final DeclarationImpotOrdinairePP di = doInNewTransaction(new TransactionCallback<DeclarationImpotOrdinairePP>() {
 			@Override
 			public DeclarationImpotOrdinairePP doInTransaction(TransactionStatus status) {
 
@@ -304,7 +300,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);

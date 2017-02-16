@@ -142,7 +142,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		assertNotNull(view);
 		assertEquals("redirect:/admin/dbpreview.do", view);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
@@ -181,7 +181,7 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 		assertNotNull(view);
 		assertEquals("redirect:/admin/dbpreview.do", view);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 

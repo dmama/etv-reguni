@@ -116,7 +116,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un contribuable parti hors-canton en 2004 et qui a débuté une activité indépendante en 2005
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
@@ -130,7 +130,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Marie le contribuable (en mode marié-seul) le 23.11.2008
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
@@ -177,7 +177,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-canton
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
@@ -199,7 +199,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare le contribuable le 23.11.2008
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
@@ -253,7 +253,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-Suisse
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
@@ -275,7 +275,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare le contribuable le 23.11.2008
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
@@ -330,7 +330,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-Suisse
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// Alfredo
@@ -394,7 +394,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-canton
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -418,7 +418,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Décède le contribuable le 23.11.2008
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
@@ -599,7 +599,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-Suisse
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -623,7 +623,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Décède le contribuable le 23.11.2008
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
@@ -662,7 +662,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable hors-canton
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addNonHabitant("Fabrice", "Dunant", date(1970, 1, 1), Sexe.MASCULIN);
@@ -684,7 +684,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Décède le contribuable le 23.11.2008
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
@@ -749,7 +749,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -767,7 +767,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -903,7 +903,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -921,7 +921,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1015,7 +1015,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1033,7 +1033,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1145,7 +1145,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1163,7 +1163,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1297,7 +1297,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1314,7 +1314,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare fiscalement les époux après avoir changé les adresses
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1431,7 +1431,7 @@ public class MetiersServiceTest extends BusinessTest {
 		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
 		try {
 			// Crée un couple avec un for principal à Grandvaux
-			doInTransaction(new TxCallback<Object>() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1449,7 +1449,7 @@ public class MetiersServiceTest extends BusinessTest {
 			});
 
 			// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
-			doInTransaction(new TxCallback<Object>() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
@@ -1538,7 +1538,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un for principal à Grandvaux
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1558,7 +1558,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
@@ -1643,7 +1643,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1665,7 +1665,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Fabrice passe l'arme à gauche
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1776,7 +1776,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = new Ids();
 
 		// Crée un couple avec un contribuable à Lausanne
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
@@ -1798,7 +1798,7 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 
 		// Fabrice passe l'arme à gauche
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 

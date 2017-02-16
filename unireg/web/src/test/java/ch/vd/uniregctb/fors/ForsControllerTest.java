@@ -492,7 +492,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			}
 		});
 
-		final Long numeroMenage = doInTransaction(new TxCallback<Long>() {
+		final Long numeroMenage = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
@@ -553,7 +553,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
 
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, numeroMenage);
@@ -606,7 +606,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			}
 		});
 
-		final Long numeroChristine = doInTransaction(new TxCallback<Long>() {
+		final Long numeroChristine = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
@@ -671,7 +671,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertEquals(0, bindingResult.getErrorCount());
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique christine = hibernateTemplate.get(PersonnePhysique.class, numeroChristine);

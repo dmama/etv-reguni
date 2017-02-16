@@ -358,21 +358,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		globalMessageIdentificationIndexer.overwriteIndex();
 	}
 
-    protected <T> T doInTransactionAndSession(final TransactionCallback<T> action) throws Exception {
-        return doInTransaction(new TransactionCallback<T>() {
-            @Override
-            public T doInTransaction(final TransactionStatus status) {
-                return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
-                    @Override
-                    public T doInHibernate(Session session) throws HibernateException, SQLException {
-                        return action.doInTransaction(status);
-                    }
-                });
-            }
-        });
-    }
-
-    protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
+	protected <T> T doInNewTransactionAndSession(final TransactionCallback<T> action) throws Exception {
         return doInNewTransaction(new TransactionCallback<T>() {
             @Override
             public T doInTransaction(final TransactionStatus status) {

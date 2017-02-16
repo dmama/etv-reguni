@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -21,7 +21,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -143,13 +142,11 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 	 * @param saute vrai si la transaction doit sauter
 	 * @return le numéro du tiers créé
 	 */
-	private void sendEvent(final boolean saute, final MutableLong ppId) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+	private void sendEvent(final boolean saute, final MutableLong ppId) throws Exception {
 
-		template.execute(new TransactionCallback<Object>() {
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 
 				// Création du message
 				final PersonnePhysique pp = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
@@ -167,8 +164,6 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 				if (saute) {
 					throw new RuntimeException("Exception de test");
 				}
-
-				return null;
 			}
 		});
 	}
@@ -179,11 +174,8 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 	@Test(timeout = 10000L)
 	public void testSendEvenementInRollbackOnlyTransaction() throws Exception {
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-
 		// Premier essai avec une transaction normale
-		template.setReadOnly(false);
-		template.execute(new SendEventCallback(false));
+		doInNewTransactionAndSession(new SendEventCallback(false));
 
 		// On vérifie que le message a été envoyé et bien reçu
 		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
@@ -193,8 +185,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 		clearQueue(OUTPUT_QUEUE);
 
 		// Second essai avec une transaction rollback-only
-		template.setReadOnly(true);
-		template.execute(new SendEventCallback(true));
+		doInNewTransactionAndSession(new SendEventCallback(true));
 
 		// On vérifie que le message n'a *pas* été envoyé
 		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes

@@ -41,7 +41,7 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		Audit.info("bli");
 		resetAuthentication();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				List<AuditLine> list = auditLineDAO.findLastCountFromID(0, 2);

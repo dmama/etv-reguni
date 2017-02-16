@@ -126,7 +126,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -190,7 +190,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				
@@ -247,7 +247,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -319,7 +319,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -409,7 +409,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			}
 		}, null);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				/*
@@ -428,7 +428,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 	}
 
 	private void assertTiersCountHorsTransaction(final int count) throws Exception {
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<Tiers> all = allTiersOfType(PersonnePhysique.class, MenageCommun.class, DebiteurPrestationImposable.class);

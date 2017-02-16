@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -583,7 +582,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 	protected <T> T doInNewTransactionWithoutOidInterceptor(TransactionCallback<T> action) throws Exception {
 		oidInterceptor.setEnabled(false);
 		try {
-			return doExecuteInTransaction(Propagation.REQUIRES_NEW, action, false);
+			return doInNewTransactionAndSession(action);
 		}
 		finally {
 			oidInterceptor.setEnabled(true);

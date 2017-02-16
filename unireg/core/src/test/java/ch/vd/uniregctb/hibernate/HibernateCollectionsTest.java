@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -133,10 +133,9 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 	}
 
 	@Test
-	public void testSaveReload() {
+	public void testSaveReload() throws Exception {
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final long personneId = template.execute(new TransactionCallback<Long>() {
+		final long personneId = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				// CTB 1
@@ -159,9 +158,9 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 			}
 		});
 
-		template.execute(new TransactionCallback<Object>() {
+		doInNewReadOnlyTransaction(new TransactionCallbackWithoutResult() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final Session session = sessionFactory.getCurrentSession();
 				final Personne personne = (Personne) session.get(Personne.class, personneId);
 				assertNotNull(personne);
@@ -172,7 +171,6 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 
 				/* Cet assert saute avec le fetch mode = LAZY sur les collections ! */
 				assertTrue(rapport.objet instanceof Menage);
-				return null;
 			}
 		});
 	}

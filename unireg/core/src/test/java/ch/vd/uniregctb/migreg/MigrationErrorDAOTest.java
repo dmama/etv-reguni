@@ -19,7 +19,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 		dao = getBean(MigrationErrorDAO.class, "migrationErrorDAO");
 		super.onSetUp();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				{
@@ -44,7 +44,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		saveError(id);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				MigrationError error = dao.getErrorForContribuable(id);
@@ -59,7 +59,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		final long id = 12345678;
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(2, dao.getAll().size());
@@ -70,7 +70,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		saveError(id);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(3, dao.getAll().size());
@@ -85,7 +85,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		final long id = 12345678;
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(2, dao.getAll().size());
@@ -95,7 +95,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 
 		saveError(id);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				Assert.assertEquals(3, dao.getAll().size());
@@ -110,7 +110,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 		catch (Exception ignored) {
 		}
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly();

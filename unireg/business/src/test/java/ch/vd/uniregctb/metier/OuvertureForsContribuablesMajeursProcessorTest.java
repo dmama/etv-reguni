@@ -203,7 +203,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			}
 		});
 
-		final OuvertureForsResults rapport = doInTransaction(new TxCallback<OuvertureForsResults>() {
+		final OuvertureForsResults rapport = doInNewTransaction(new TxCallback<OuvertureForsResults>() {
 			@Override
 			public OuvertureForsResults execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique h = addHabitant(noIndividu);

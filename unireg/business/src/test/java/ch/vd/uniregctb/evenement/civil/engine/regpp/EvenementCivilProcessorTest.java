@@ -39,7 +39,6 @@ import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -92,7 +91,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -114,7 +113,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -136,7 +135,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -158,7 +157,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -185,7 +184,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// Lancement du traitement des événements
 		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -208,7 +207,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -235,7 +234,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				PersonnePhysique rufus = addHabitant(NO_INDIVIDU);
@@ -248,7 +247,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -287,7 +286,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -311,7 +310,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -346,7 +345,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -467,7 +466,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
@@ -493,8 +492,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 		traiteEvenements();
 
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback<Object>() {
+		doInNewReadOnlyTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -532,7 +530,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// indexation en cours...
 		globalTiersIndexer.sync();
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -572,7 +570,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9000L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 24), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 		saveEvenement(9001L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 23), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
@@ -590,7 +588,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final List<EvenementCivilRegPP> list = evenementCivilRegPPDAO.getAll();
@@ -621,7 +619,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, @Nullable final Long indSec, final int ofs, final EtatEvenementCivil etat) throws Exception {
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				EvenementCivilRegPP evt = new EvenementCivilRegPP();

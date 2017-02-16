@@ -459,7 +459,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -542,7 +542,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -618,7 +618,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -683,7 +683,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -764,7 +764,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -845,7 +845,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -913,7 +913,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -982,7 +982,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1049,7 +1049,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1112,7 +1112,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1181,7 +1181,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1245,7 +1245,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1319,7 +1319,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1393,7 +1393,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1457,7 +1457,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1521,7 +1521,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1584,7 +1584,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1658,7 +1658,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1732,7 +1732,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1806,7 +1806,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1886,7 +1886,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -1965,7 +1965,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable messageJerome1 = createDemandeWithEmetteurId(criteresJerome1, "EMPTY");
 		messageJerome1.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(messageJerome1);
@@ -1992,7 +1992,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable messageJerome2 = createDemandeWithEmetteurId(criteresJerome2, "EPSA1003");
 		messageJerome2.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(messageJerome2);
@@ -2072,7 +2072,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2147,7 +2147,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
 		message.setLogCreationDate(RegDate.get().asJavaDate());
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2627,7 +2627,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Arnold", "Duchoux");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2635,7 +2635,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -2676,7 +2676,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2684,7 +2684,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -2733,7 +2733,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.SANS_MANUEL);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2741,7 +2741,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -2790,7 +2790,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2798,7 +2798,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -2863,7 +2863,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2871,7 +2871,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -2921,7 +2921,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeNCS("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2929,7 +2929,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -2978,7 +2978,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeEMPACI("Zouzou", "Leroux", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -2986,7 +2986,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3036,7 +3036,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeE_Facture("7569613127861");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3044,7 +3044,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3094,7 +3094,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_SANS_ACK);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3102,7 +3102,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3147,7 +3147,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Larousse", "Larousse");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3155,7 +3155,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3200,7 +3200,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 			// création et traitement du message d'identification
 			final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
-			doInTransaction(new TxCallback<Object>() {
+			doInNewTransaction(new TxCallback<Object>() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					service.handleDemande(message);
@@ -3212,7 +3212,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			messageHandler.setThrowExceptionOnSend(false);
 		}
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3268,7 +3268,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Edouard", "Bonhote", "7569613127861");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3276,7 +3276,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3328,7 +3328,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("George", "Pompidou", "7569613127861");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3336,7 +3336,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3394,7 +3394,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemandeMeldewesen("Zora", "Larousse");
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3402,7 +3402,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -3476,7 +3476,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 		//on set un eperiode fiscale dans le passé
 		final IdentificationContribuable message = createDemandeMeldewesen(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK, 1011);
-		doInTransaction(new TxCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				service.handleDemande(message);
@@ -3484,7 +3484,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
@@ -4200,7 +4200,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 
 	private void assertCountDemandes(final int count) throws Exception {
-		doInTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				assertEquals(count, identCtbDAO.getCount(IdentificationContribuable.class));
