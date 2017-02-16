@@ -85,7 +85,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		suivis.addSuivi(
 				String.format(
-						"Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant être aligné sur celui d'Unireg.",
+						"Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant aligné sur celui d'Unireg.",
 						annonceIDE.getNumero(),
 						DateHelper.dateTimeToDisplayString(annonceIDE.getDateAnnonce()),
 						FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero())
