@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.role;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -81,12 +84,16 @@ public abstract class RoleData {
 	public final String nomDomicileFiscal;
 
 	public RoleData(Contribuable contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, AssujettissementService assujettissementService) throws CalculRoleException {
+		this(contribuable, ofsCommune, annee, adresseService, infrastructureService, assujettissementService, null);
+	}
+
+	public RoleData(Contribuable contribuable, int ofsCommune, int annee, AdresseService adresseService, ServiceInfrastructureService infrastructureService, AssujettissementService assujettissementService, @Nullable Predicate<Assujettissement> assujettissementFilter) throws CalculRoleException {
 		final RegDate dateReference = RegDate.get(annee, 12, 31);
 		this.noContribuable = contribuable.getNumero();
 		this.noOfsCommune = ofsCommune;
 		this.nomCommune = fillNomCommune(ofsCommune, dateReference, infrastructureService);
 		this.adresseEnvoi = fillAdresseEnvoi(contribuable, dateReference, adresseService);
-		this.typeContribuable = fillTypeContribuable(contribuable, dateReference, assujettissementService);
+		this.typeContribuable = fillTypeContribuable(contribuable, dateReference, assujettissementService, assujettissementFilter);
 		this.domicileFiscal = fillDomicileFiscal(contribuable, dateReference);
 		this.nomDomicileFiscal = fillNomDomicileFiscal(this.domicileFiscal, dateReference, infrastructureService);
 	}
@@ -127,23 +134,28 @@ public abstract class RoleData {
 	}
 
 	@Nullable
-	private static TypeContribuable fillTypeContribuable(Contribuable contribuable, RegDate dateReference, AssujettissementService assujettissementService) throws CalculRoleException {
+	private static TypeContribuable fillTypeContribuable(Contribuable contribuable, RegDate dateReference, AssujettissementService assujettissementService, @Nullable Predicate<Assujettissement> assujettissementFilter) throws CalculRoleException {
 
 		// calcul d'assujettissement pour trouver le type de contribuable
 		final List<Assujettissement> assujettissements;
 		try {
-			assujettissements = assujettissementService.determine(contribuable, dateReference.year());
+			assujettissements = Optional.ofNullable(assujettissementService.determine(contribuable, dateReference.year())).orElseGet(Collections::emptyList);
 		}
 		catch (AssujettissementException e) {
 			throw new CalculRoleException(e);
 		}
 
+		// on prend le dernier assujettissement accepté sur l'année
+		final Assujettissement dernierAssujettissement = assujettissements.stream()
+				.filter(Optional.ofNullable(assujettissementFilter).orElse(x -> true))
+				.max(Comparator.comparing(Assujettissement::getDateDebut))
+				.orElse(null);
+
 		// aucun assujettissement sur l'année considérée ???
-		if (assujettissements == null || assujettissements.isEmpty()) {
+		if (dernierAssujettissement == null) {
 			throw new ContribuableNonAssujettiException("Contribuable non-assujetti sur l'année " + dateReference.year());
 		}
 
-		final Assujettissement dernierAssujettissement = assujettissements.get(assujettissements.size() - 1);
 		return TypeContribuable.fromTypeAssujettissement(dernierAssujettissement.getType());
 	}
 

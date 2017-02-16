@@ -1951,4 +1951,50 @@ public class RoleServiceTest extends BusinessTest {
 		final RolePMData data = dataAigle.get(0);
 		assertInfo(pmId, RoleData.TypeContribuable.ORDINAIRE, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aigle.getNoOFS(), null, "Tralala SA", FormeLegale.N_0106_SOCIETE_ANONYME, data);
 	}
+
+	/**
+	 * [SIFISC-23383] Départ HS d'un sourcier mixte dans l'année du rôle PP
+	 */
+	@Test
+	public void testDepartHSPourSourcierMixteDansAnneeRole() throws Exception {
+
+		final int anneeRole = 2016;
+		final RegDate dateDebut = date(2000, 5, 1);
+		final RegDate dateDepartHS = date(anneeRole, 5, 12);
+		final long noIndividu = 34284226L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1954, 6, 21);
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Blum", "Katharina", Sexe.FEMININ);
+				addNationalite(individu, MockPays.Allemagne, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebut, dateDepartHS);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+			addForPrincipal(pp, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne, ModeImposition.SOURCE);
+			return pp.getNumero();
+		});
+
+		// rôle vaudois
+		final RolePPCommunesResults res = roleService.produireRolePPCommunes(anneeRole, 1, null, null);
+		assertNotNull(res);
+		assertEquals(0, res.errors.size());
+		assertEquals(0, res.ignores.size());
+		assertEquals(1, res.getNbContribuablesTraites());
+		assertEquals(1, res.extraction.size());
+
+		final List<RolePPData> dataCossonay = res.extraction.get(MockCommune.Cossonay.getNoOFS());
+		assertNotNull(dataCossonay);
+		assertEquals(1, dataCossonay.size());
+
+		final RolePPData data = dataCossonay.get(0);
+		assertInfo(ppId, RoleData.TypeContribuable.MIXTE, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS(), Collections.singletonList(new NomPrenom("Blum", "Katharina")), Collections.emptyList(), data);
+	}
 }
