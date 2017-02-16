@@ -1006,7 +1006,7 @@ public class TacheServiceImpl implements TacheService {
 
 			@Override
 			public UpdateTacheEnvoiDI newUpdateTacheEnvoi(TacheEnvoiDeclarationImpot tache, AddDI<?> addAction) {
-				return new UpdateTacheEnvoiDIPM((TacheEnvoiDeclarationImpotPM) tache, (AddDIPM) addAction);
+				return UpdateTacheEnvoiDIPM.createIfNecessary((TacheEnvoiDeclarationImpotPM) tache, (AddDIPM) addAction);
 			}
 
 			@Override

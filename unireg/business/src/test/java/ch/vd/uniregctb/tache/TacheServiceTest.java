@@ -6376,4 +6376,118 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-20682] On vient juste de générer les tâches d'envoi des DI PM, mais pourtant le job de recalcul des tâches
+	 * nous indique des actions de mise-à-jour systématique des tâches d'envoi...
+	 */
+	@Test
+	public void testNonCreationActionMiseAJourTacheEnvoiDIPMSiIdentiques() throws Exception {
+
+		final int lastYear = RegDate.get().year() - 1;
+		final RegDate dateDebut = date(lastYear - 1, 6, 30);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		// mise en place fiscale (sans synchronisation des taches...)
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRaisonSociale(entreprise, dateDebut, null, "Truculenterie SA");
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(lastYear, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne);
+
+			// création des modèles de document et DI pour toutes les années précédentes
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			for (int annee = dateDebut.year() ; annee < lastYear ; ++ annee) {
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final RegDate debut = annee == dateDebut.year() ? dateDebut : date(annee, 1, 1);
+				addDeclarationImpot(entreprise, pf, debut, date(annee, 12, 31), oipm, null, md);        // type contribuable est "null"
+			}
+
+			// création du modèle de document pour la dernière année
+			addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pfDAO.getPeriodeFiscaleByYear(lastYear));
+
+			return entreprise.getNumero();
+		});
+
+		// lancement de la synchronisation des tâches : on doit maintenant avoir une tâche d'envoi sur la dernière année, qui n'a pas encore de DI
+		{
+			final TacheSyncResults results = doInNewTransactionAndSession(status -> tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId)));
+
+			// et vérification
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.getActions().size());
+			Assert.assertEquals(0, results.getExceptions().size());
+
+			final TacheSyncResults.ActionInfo action = results.getActions().get(0);
+			Assert.assertNotNull(action);
+			Assert.assertEquals("création d'une tâche d'émission de déclaration d'impôt PM ordinaire couvrant la période du 01.01." + lastYear + " au 31.12." + lastYear, action.actionMsg);
+
+			// vérification en base
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+					final List<Tache> taches = tacheDAO.find(pmId);
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFin());
+					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebutExercice());
+					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFinExercice());
+				}
+			});
+		}
+
+		// et lancement d'un nouveau recalcul : il ne doit plus rien se passer...
+		{
+			final TacheSyncResults results = doInNewTransactionAndSession(status -> tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId)));
+
+			// et vérification
+			Assert.assertNotNull(results);
+			Assert.assertEquals(0, results.getActions().size());        // avant la correction du SIFISC-20682, il y avait ici une action de mise-à-jour de tâche
+			Assert.assertEquals(0, results.getExceptions().size());
+
+			// vérification en base (que la tâche précédemment générée est toujours là dans le même état)
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+					final List<Tache> taches = tacheDAO.find(pmId);
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebut());
+					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFin());
+					Assert.assertEquals(date(lastYear, 1, 1), tacheEnvoi.getDateDebutExercice());
+					Assert.assertEquals(date(lastYear, 12, 31), tacheEnvoi.getDateFinExercice());
+				}
+			});
+		}
+	}
 }
