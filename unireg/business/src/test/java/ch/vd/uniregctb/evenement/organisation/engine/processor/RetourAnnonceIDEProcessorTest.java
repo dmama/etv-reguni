@@ -184,7 +184,7 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 				                             Assert.assertEquals(3, evt.getErreurs().size());
 				                             Assert.assertEquals(
 						                             String.format(
-								                             "Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant être aligné sur celui d'Unireg.",
+								                             "Retour de l'annonce à l'IDE n°%s du %s concernant l'entreprise n°%s suite à création ou modification dans Unireg. L'état à l'IDE est maintenant aligné sur celui d'Unireg.",
 								                             idReferenceAnnonce,
 								                             DateHelper.dateTimeToDisplayString(DateHelper.getDateTime(2016, 9, 1, 11, 0, 0)),
 								                             FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()
