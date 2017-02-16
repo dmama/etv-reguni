@@ -2,10 +2,9 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.utils.Assert;
 
 /**
  * @author Raphaël Marmier, 2016-08-19, <raphael.marmier@vd.ch>
@@ -21,18 +20,28 @@ public class AnnonceIDE extends AnnonceIDEData implements AnnonceIDEEnvoyee, Ser
 
 	public AnnonceIDE(Long numero, TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut, InfoServiceIDEObligEtendues infos) {
 		super(type, dateAnnonce, utilisateur, typeDeSite, statut, infos);
-		Assert.notNull(numero, "Un numero doit être fourni pour créer une annonce. Alternativement, créez un modèle d'annonce, qui ne nécessite pas de numéro.");
+		sanityCheck(numero, utilisateur);
 		this.numero = numero;
 	}
 
 	public AnnonceIDE(Long numero, BaseAnnonceIDE modele, @Nullable Statut statut) {
 		super(modele, statut);
+		sanityCheck(numero, modele.getUtilisateur());
 		this.numero = numero;
+	}
+
+	protected void sanityCheck(Long numero, Utilisateur utilisateur) {
+		Objects.requireNonNull(numero, "Un numero doit être fourni pour créer une annonce. Alternativement, créez un modèle d'annonce, qui ne nécessite pas de numéro.");
+		Objects.requireNonNull(utilisateur.getUserId(), "Un utilisateur avec son userId doit être présent pour créer une annonce. Alternativement, créez un modèle d'annonce, qui ne nécessite pas de userId.");
 	}
 
 	@Override
 	public Long getNumero() {
 		return numero;
+	}
+
+	public String getUniqueKey() {
+		return numero + getUtilisateur().getUserId();
 	}
 
 	@Override

@@ -243,7 +243,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testGetAnnonceIDE() throws Exception {
-		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
 
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(1L, annonceIDE.getNumero().longValue());
@@ -252,7 +252,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testValidateAnnonceIDE() throws ParseException {
-		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE);
+		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
 //		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
 //		final Date fixedTime = df.parse("2016-09-13T10:05:48");
 //		final AnnonceIDEModele.Statut statut = service.validerAnnonceIDE(new AnnonceIDERCEnt(null, TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL));

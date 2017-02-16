@@ -138,27 +138,6 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 		}
 	}
 
-	@Override
-	public AnnonceIDE getAnnonceIDE(final long numero) {
-		Throwable t = null;
-		int items = 0;
-		final long time = tracing.start();
-		try {
-			final AnnonceIDE annonceIDE = target.getAnnonceIDE(numero);
-			if (annonceIDE != null) {
-				items = 1;
-			}
-			return annonceIDE;
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getAnnonceIDE", items, () -> String.format("noAnnonceIDE=%d", numero));
-		}
-	}
-
 	@NotNull
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull final AnnonceIDEQuery query, @Nullable final Sort.Order order, final int pageNumber, final int resultsPerPage) throws ServiceOrganisationException {

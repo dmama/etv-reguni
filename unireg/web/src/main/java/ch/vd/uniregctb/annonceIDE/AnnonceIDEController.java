@@ -3,8 +3,11 @@ package ch.vd.uniregctb.annonceIDE;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +32,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
+import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
@@ -126,26 +130,46 @@ public class AnnonceIDEController {
 			if (tiersId != null) {
 				final Tiers tiers = tiersService.getTiers(tiersId);
 				if (tiers != null) {
-					Long idToUse;
+					Long tiersIdToUse;
+					Long noCantonalToUse;
 					if (tiers instanceof Entreprise) {
 						final Etablissement etablissementPrincipalActuel = tiersService.getEtablissementPrincipal((Entreprise) tiers, RegDate.get());
-						idToUse = etablissementPrincipalActuel.getNumero();
+						tiersIdToUse = etablissementPrincipalActuel.getNumero();
+						noCantonalToUse = etablissementPrincipalActuel.getNumeroEtablissement();
 					}
 					else {
-						idToUse = tiersId;
+						tiersIdToUse = tiersId;
+						if (tiers instanceof Etablissement) {
+							noCantonalToUse = ((Etablissement)tiers).getNumeroEtablissement();
+						} else {
+							noCantonalToUse = null;
+						}
 					}
-					final List<ReferenceAnnonceIDE> referencesAnnonceIDE = referenceAnnonceIDEDAO.getReferencesAnnonceIDE(idToUse);
+					final List<ReferenceAnnonceIDE> referencesAnnonceIDE = referenceAnnonceIDEDAO.getReferencesAnnonceIDE(tiersIdToUse);
 
+					Map<String, AnnonceIDE> map = new HashMap<>();
 					if (referencesAnnonceIDE != null && !referencesAnnonceIDE.isEmpty()) {
 						for (ReferenceAnnonceIDE ref : referencesAnnonceIDE) {
-							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId());
-							listeAnnonces.add(annonceIDE);
+							final AnnonceIDE annonceIDE = organisationService.getAnnonceIDE(ref.getId(), null);
+							if (annonceIDE != null) {
+								map.put(annonceIDE.getUniqueKey(), annonceIDE);
+							}
 						}
 					}
 
+					if (noCantonalToUse != null) {
+						final AnnonceIDEQuery query = new AnnonceIDEQuery();
+						query.setCantonalId(noCantonalToUse);
+						final List<AnnonceIDE> annoncesPourSite = organisationService.findAnnoncesIDE(query, null, 1, 1000).getContent();
+						for (AnnonceIDE annonceIDE : annoncesPourSite) {
+							map.put(annonceIDE.getUniqueKey(), annonceIDE);
+						}
+					}
+
+					listeAnnonces.addAll(map.values());
+					listeAnnonces.sort(Comparator.comparingLong(AnnonceIDE::getNumero));
 				}
-				final Sort sort = (order == null ? null : new Sort(order));
-				final PageRequest pageable = new PageRequest(pageNumber, pageSize, sort);
+				final PageRequest pageable = new PageRequest(pageNumber, pageSize, null);
 				annonces = new PageImpl<>(listeAnnonces, pageable, listeAnnonces.size());
 			}
 			else {
@@ -197,10 +221,10 @@ public class AnnonceIDEController {
 	 */
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_ANNONCES_IDE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
-	public String visu(@RequestParam Long id, Model model) {
+	public String visu(@RequestParam Long id, String userId, Model model) {
 
 		// on effectue la recherche
-		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id);
+		final AnnonceIDEEnvoyee annonce = organisationService.getAnnonceIDE(id, userId);
 		if (annonce == null) {
 			throw new ObjectNotFoundException("Aucune demande ne correspond à l'identifiant " + id);
 		}

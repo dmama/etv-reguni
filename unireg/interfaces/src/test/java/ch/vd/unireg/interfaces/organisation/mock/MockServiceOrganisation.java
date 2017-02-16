@@ -3,9 +3,11 @@ package ch.vd.unireg.interfaces.organisation.mock;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import ch.vd.registre.base.date.RegDate;
@@ -37,7 +39,7 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	 * Map des organisations par numéro
 	 */
 	private final Map<Long, MockOrganisation> organisationMap = new HashMap<>();
-	private Map<Long, AnnonceIDE> annoncesIDE = new HashMap<>();
+	private Map<String, AnnonceIDE> annoncesIDE = new HashMap<>();
 	private Map<BaseAnnonceIDE.Contenu, BaseAnnonceIDE.Statut> annoncesIDEValidations = new HashMap<>();
 
 	/**
@@ -91,19 +93,30 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		organisationMap.put(organisation.getNumeroOrganisation(), organisation);
 	}
 
-	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) {
-		return annoncesIDE.get(numero);
-	}
-
 	@NotNull
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {
-		throw new NotImplementedException();
+
+		final Long noticeId = query.getNoticeId();
+		if (noticeId == null){
+			throw new NotImplementedException("Seule la recherche par identifiant est supportée dans cette version de MockServiceOrganisation");
+		}
+
+		/*
+			Implémentation partielle qui ne se préoccupe que de la recherche par identifiant.
+		 */
+		String userId = query.getUserId();
+		if (userId == null) {
+			userId = "unireg";
+		}
+		return new PageImpl<AnnonceIDE>(Collections.singletonList(annoncesIDE.get(noticeId + userId)));
 	}
 
-	protected void addAnnonceIDE(AnnonceIDE annonce) {
-		annoncesIDE.put(annonce.getNumero(), annonce);
+	protected void addAnnonceIDE(AnnonceIDE annonce, String userId) {
+		if (userId == null) {
+			userId = "unireg";
+		}
+		annoncesIDE.put(annonce.getNumero() + userId, annonce);
 	}
 
 	@Override

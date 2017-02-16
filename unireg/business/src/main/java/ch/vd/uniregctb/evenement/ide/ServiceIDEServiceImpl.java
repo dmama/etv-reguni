@@ -260,12 +260,12 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
 
 		/*
-			Récupération de la dernière annonce envoyée, s'il y en a une.
+			Récupération de la dernière annonce envoyée par Unireg, s'il y en a une.
 		 */
 		final AnnonceIDEEnvoyee derniereAnnonceEmise;
 		final ReferenceAnnonceIDE derniereReferenceAnnonceIDE = referenceAnnonceIDEDAO.getLastReferenceAnnonceIDE(etablissement.getNumero());
 		if (derniereReferenceAnnonceIDE != null) {
-			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId());
+			derniereAnnonceEmise = serviceOrganisation.getAnnonceIDE(derniereReferenceAnnonceIDE.getId(), null);
 		}
 		else {
 			derniereAnnonceEmise = null;

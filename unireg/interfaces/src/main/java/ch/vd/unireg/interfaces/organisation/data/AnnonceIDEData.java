@@ -245,6 +245,9 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 		public UtilisateurImpl(String userId, @Nullable String telephone) {
 			this.userId = userId;
+			if (userId == null || "".equals(userId)) {
+				throw new NullPointerException("Un userId est nécessaire pour constituer un utilisateur d'annonce à l'IDE.");
+			}
 			this.telephone = telephone;
 		}
 

@@ -112,8 +112,19 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
-	public AnnonceIDE getAnnonceIDE(Long numero) {
-		return target.getAnnonceIDE(numero);
+	public AnnonceIDE getAnnonceIDE(Long numero, String userId) throws ServiceOrganisationException {
+		final AnnonceIDEQuery annonceIDEQuery = new AnnonceIDEQuery();
+		annonceIDEQuery.setNoticeId(numero);
+		annonceIDEQuery.setUserId(StringUtils.isBlank(userId) ? "unireg" : userId);
+		final Page<AnnonceIDE> annoncesIDE = target.findAnnoncesIDE(annonceIDEQuery, null, 0, 10);
+		final List<AnnonceIDE> content = annoncesIDE.getContent();
+		if (content.size() == 0) {
+			return null;
+		}
+		if (content.size() > 1) {
+			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
+		}
+		return content.get(0);
 	}
 
 	@NotNull

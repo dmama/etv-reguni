@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestReport;
-import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
@@ -132,18 +131,6 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		catch (RcEntClientException e) {
 			throw new ServiceOrganisationException(e);
 		}
-	}
-
-	@Nullable
-	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
-		final ListOfNoticeRequest noticeRequests = client.getNoticeRequest(String.valueOf(numero));
-		if (noticeRequests == null || noticeRequests.getNumberOfResults() == 0) {
-			return null;
-		} else if (noticeRequests.getNumberOfResults() > 1 || noticeRequests.getResults().size() > 1) {
-			throw new ServiceOrganisationException("La recherche de l'annonce par son id (" + String.valueOf(numero) + ") a renvoyé plusieurs résultats!");
-		}
-		return RCEntAnnonceIDEHelper.buildAnnonceIDE(noticeRequests.getResults().get(0));
 	}
 
 	@NotNull
