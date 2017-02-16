@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.Grundstueck;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
@@ -163,8 +164,8 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation dans la DB."));
 
 		final EstimationRF persistedEstimation = persisted.getEstimations().stream()
-				.filter(s -> s.isValidAt(null))
-				.findFirst()
+				.filter(Annulable::isNotAnnule)
+				.max(new DateRangeComparator<>())   // les estimations fiscales se suivent sans discontinuer dans le temps, on va donc chercher la dernière valide.
 				.orElse(null);
 
 		final SurfaceTotaleRF persistedSurfaceTotale = persisted.getSurfacesTotales().stream()
@@ -213,6 +214,21 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				}
 			}
 			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
+
+			// [SIFISC-22995] on annule automatiquement toutes les estimations fiscales en révision avec des intervalles métier négatifs
+			persisted.getEstimations().stream()
+					.filter(Annulable::isNotAnnule)
+					.filter(EstimationRF::isEnRevision)
+					.forEach(e -> {
+						final RegDate dateDebutMetier = e.getDateDebutMetier();
+						final RegDate dateFinMetier = e.getDateFinMetier();
+						if (dateDebutMetier != null && dateFinMetier != null && dateDebutMetier.isAfter(dateFinMetier)) {
+							// l'estimation fiscale possède un intervalle négatif, il va tomber en erreur et cela va bloquer
+							// l'import alors qu'il s'agit d'une estimation en révision : inutile de bloquer tout ça pour rien,
+							// on annule immédiatement l'estimation fiscale.
+							e.setAnnule(true);
+						}
+					});
 		}
 
 		// est-ce que la surface totale changé ?
