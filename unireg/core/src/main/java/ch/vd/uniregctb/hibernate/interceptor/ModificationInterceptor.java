@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.hibernate.CallbackException;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.type.Type;
@@ -37,33 +41,44 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
 
 	private TransactionManager transactionManager;
-	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = ThreadLocal.withInitial(HashSet::new);
+	private final ThreadLocal<Set<Transaction>> registeredTransactions = ThreadLocal.withInitial(HashSet::new);
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<>();
 
 	public void setTransactionManager(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	public void register(ModificationSubInterceptor sub) {
-		final Lock lock = rwlock.writeLock();
+	private static <T> T doInLock(Lock lock, Supplier<T> callback) {
 		lock.lock();
 		try {
-			subInterceptors.add(sub);
+			return callback.get();
 		}
 		finally {
 			lock.unlock();
 		}
 	}
 
+	private <T> T doInReadLock(Supplier<T> callback) {
+		return doInLock(rwlock.readLock(), callback);
+	}
+
+	private void doInReadLock(Runnable action) {
+		doInReadLock(() -> {
+			action.run();
+			return null;
+		});
+	}
+
+	private <T> T doInWriteLock(Supplier<T> callback) {
+		return doInLock(rwlock.writeLock(), callback);
+	}
+
+	public void register(ModificationSubInterceptor sub) {
+		doInWriteLock(() -> subInterceptors.add(sub));
+	}
+
 	public void unregister(ModificationSubInterceptor sub) {
-		final Lock lock = rwlock.writeLock();
-		lock.lock();
-		try {
-			subInterceptors.remove(sub);
-		}
-		finally {
-			lock.unlock();
-		}
+		doInWriteLock(() -> subInterceptors.remove(sub));
 	}
 
 	/**
@@ -149,39 +164,22 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
-
 		registerTxInterceptor();
-
-		final Lock lock = rwlock.readLock();
-		lock.lock();
-		try {
-			for (ModificationSubInterceptor s : subInterceptors) {
-				s.postFlush();
-			}
-		}
-		finally {
-			lock.unlock();
-		}
+		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postFlush));
 	}
 
-	private boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState,
-			String[] propertyNames, Type[] types) {
+	private boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
 
-		boolean modified = false;
-		boolean isAnnulation = detectAnnulation(currentState, previousState, propertyNames);
+		final Mutable<Boolean> modified = new MutableBoolean(false);
+		final boolean isAnnulation = detectAnnulation(currentState, previousState, propertyNames);
 
-		final Lock lock = rwlock.readLock();
-		lock.lock();
-		try {
+		doInReadLock(() -> {
 			for (ModificationSubInterceptor s : subInterceptors) {
-				modified = s.onChange(entity, id, currentState, previousState, propertyNames, types, isAnnulation) || modified;
+				modified.setValue(s.onChange(entity, id, currentState, previousState, propertyNames, types, isAnnulation) || modified.getValue());
 			}
-		}
-		finally {
-			lock.unlock();
-		}
+		});
 
-		return modified;
+		return modified.getValue();
 	}
 
 	/**
@@ -210,50 +208,23 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private void preTransactionCommit() {
-		final Lock lock = rwlock.readLock();
-		lock.lock();
-		try {
-			for (ModificationSubInterceptor s : subInterceptors) {
-				s.preTransactionCommit();
-			}
-		}
-		finally {
-			lock.unlock();
-		}
+		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::preTransactionCommit));
 	}
 
 	private void postTransactionCommit() {
-		final Lock lock = rwlock.readLock();
-		lock.lock();
-		try {
-			for (ModificationSubInterceptor s : subInterceptors) {
-				s.postTransactionCommit();
-			}
-		}
-		finally {
-			lock.unlock();
-		}
+		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionCommit));
 	}
 
 	private void postTransactionRollback() {
-		final Lock lock = rwlock.readLock();
-		lock.lock();
-		try {
-			for (ModificationSubInterceptor s : subInterceptors) {
-				s.postTransactionRollback();
-			}
-		}
-		finally {
-			lock.unlock();
-		}
+		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionRollback));
 	}
 
-	private HashSet<Transaction> getRegisteredTransactionsSet() {
+	private Set<Transaction> getRegisteredTransactionsSet() {
 		return registeredTransactions.get();
 	}
 
 	/**
-	 * Enregistre un callback sur la transaction de manière à être notifier du commit ou du rollback
+	 * Enregistre un callback sur la transaction de manière à être notifié du commit ou du rollback
 	 */
 	private void registerTxInterceptor() {
 		if (!isEnabledForThread()) {
@@ -264,7 +235,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 			if (transaction == null) {
 				throw new IllegalArgumentException("Il n'y a pas de transaction ouverte sur le transaction manager = " + transactionManager);
 			}
-			final HashSet<Transaction> set = getRegisteredTransactionsSet();
+			final Set<Transaction> set = getRegisteredTransactionsSet();
 			if (!set.contains(transaction)) {
 				transaction.registerSynchronization(new TxInterceptor(transaction));
 				set.add(transaction);

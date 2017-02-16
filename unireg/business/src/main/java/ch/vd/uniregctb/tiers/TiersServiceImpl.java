@@ -2421,15 +2421,18 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
+	@Nullable
 	private static RegDate findCompleteDate(@Nullable RegDate date) {
 		return date != null ? FiscalDateHelper.getDateComplete(date) : null;
 	}
 
+	@Nullable
 	private static RegDate minimum(NullDateBehavior nullDateBehavior, RegDate date1, RegDate date2, RegDate date3) {
 		final RegDate min = RegDateHelper.minimum(date1, date2, nullDateBehavior);
 		return RegDateHelper.minimum(min, date3, nullDateBehavior);
 	}
 
+	@Nullable
 	private static RegDate maximum(NullDateBehavior nullDateBehavior, RegDate date1, RegDate date2, RegDate date3) {
 		final RegDate max = RegDateHelper.maximum(date1, date2, nullDateBehavior);
 		return RegDateHelper.maximum(max, date3, nullDateBehavior);
@@ -2446,19 +2449,7 @@ public class TiersServiceImpl implements TiersService {
 			return false;
 		}
 		else {
-			return DateRangeHelper.equals(p1, p2) && areLongEqual(p1.getObjetId(), p2.getObjetId()) && areLongEqual(p1.getSujetId(), p2.getSujetId());
-		}
-	}
-
-	private static boolean areLongEqual(Long l1, Long l2) {
-		if (l1 == l2) {
-			return true;
-		}
-		else if (l1 == null || l2 == null) {
-			return false;
-		}
-		else {
-			return l1.longValue() == l2.longValue();
+			return DateRangeHelper.equals(p1, p2) && Objects.equals(p1.getObjetId(), p2.getObjetId()) && Objects.equals(p1.getSujetId(), p2.getSujetId());
 		}
 	}
 
