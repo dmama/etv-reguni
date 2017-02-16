@@ -300,11 +300,6 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 		return target.getOrganisationEvent(noEvenement);
 	}
 
-	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) {
-		return target.getAnnonceIDE(numero);
-	}
-
 	@NotNull
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {

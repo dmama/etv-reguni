@@ -210,12 +210,6 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 		return target.getOrganisationEvent(noEvenement);
 	}
 
-	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) {
-		// Surtout pas de cache.
-		return target.getAnnonceIDE(numero);
-	}
-
 	@NotNull
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {

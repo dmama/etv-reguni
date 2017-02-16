@@ -73,17 +73,22 @@ public interface ServiceOrganisationService {
 	AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
 
 	/**
-	 * Obtenir le contenu et le statut d'une annonce à l'IDE.
-	 *
-	 * Attention: RCEnt ne connait pas nécessairement une annonce qu'on lui a envoyé, du fait du caractère asynchrone de la
-	 * transmition par l'esb.
+	 * <p>
+	 *     Obtenir le contenu et le statut d'une annonce à l'IDE. findAnnoncesIDE() est utilisé en arrière plan avec le paramètre userId=<userId>.
+	 *     En effet, dans RCEnt il peut y avoir plusieurs annonces pour un même numéro émises par des utilisateur différents.
+	 * </p>
+	 * <p>
+	 *     Attention: RCEnt ne connait pas nécessairement une annonce qu'on lui a envoyé, du fait du caractère asynchrone de la
+	 *     transmition par l'esb.
+	 * </p>
 	 *
 	 * @param numero le numéro de l'annonce recherchée
+	 * @param userId l'identifiant IAM de l'utilisateur, ou <code>null</code> pour une annonce émise par Unireg.
 	 * @return l'annonce à l'IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
 	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
 	 */
 	@Nullable
-	AnnonceIDE getAnnonceIDE(Long numero);
+	AnnonceIDE getAnnonceIDE(Long numero, String userId) throws ServiceOrganisationException;
 
 	/**
 	 * Recherche des demandes d'annonces à l'IDE.

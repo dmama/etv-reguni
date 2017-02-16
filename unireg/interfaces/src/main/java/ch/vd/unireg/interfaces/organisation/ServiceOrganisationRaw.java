@@ -84,19 +84,6 @@ public interface ServiceOrganisationRaw {
 	BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceOrganisationException;
 
 	/**
-	 * Obtenir le contenu et le statut d'une annonce à l'IDE.
-	 *
-	 * Il faut garder à l'esprit que RCEnt peut ne pas connaître une annonce qui lui a été adressé via l'esb, de par
-	 * le caractère asynchrone de ce genre d'envoi.
-	 *
-	 * @param numero le numéro de l'annonce recherchée
-	 * @return l'annonce à l'IDE, ou null si RCEnt ne connait pas d'annonce pour ce numéro.
-	 * @throws ServiceOrganisationException en cas de problème d'accès ou de cohérence des données retournées.
-	 */
-	@Nullable
-	AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException;
-
-	/**
 	 * Recherche des demandes d'annonces à l'IDE.
 	 *
 	 * @param query          les critères de recherche des annonces

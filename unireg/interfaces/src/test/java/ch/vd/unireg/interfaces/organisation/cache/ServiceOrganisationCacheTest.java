@@ -86,11 +86,6 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		}
 
 		@Override
-		public AnnonceIDE getAnnonceIDE(long numero) {
-			return target.getAnnonceIDE(numero);
-		}
-
-		@Override
 		public BaseAnnonceIDE.Statut validerAnnonceIDE(BaseAnnonceIDE modele) throws ServiceOrganisationException {
 			return target.validerAnnonceIDE(modele);
 		}

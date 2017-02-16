@@ -167,7 +167,7 @@ public class AnnonceIDEControllerTest {
 		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
 			@Nullable
 			@Override
-			public AnnonceIDE getAnnonceIDE(Long numero) {
+			public AnnonceIDE getAnnonceIDE(Long numero, String userId) {
 				return null;
 			}
 		};
@@ -201,7 +201,7 @@ public class AnnonceIDEControllerTest {
 		final MockServiceOrganisationService organisationService = new MockServiceOrganisationService() {
 			@Nullable
 			@Override
-			public AnnonceIDE getAnnonceIDE(Long numero) {
+			public AnnonceIDE getAnnonceIDE(Long numero, String userId) {
 				final AnnonceIDEData.UtilisateurImpl testuser = new AnnonceIDEData.UtilisateurImpl("testuser", null);
 				final AnnonceIDE annonce = new AnnonceIDE(1L, TypeAnnonce.CREATION, dateAnnonce, testuser, TypeDeSite.ETABLISSEMENT_PRINCIPAL,
 				                                          new AnnonceIDEData.StatutImpl(StatutAnnonce.ACCEPTE_IDE, DateHelper.getDate(2000, 1, 3), null), SERVICE_UNIREG);

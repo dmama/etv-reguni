@@ -84,17 +84,6 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 		}
 	}
 
-	@Override
-	public AnnonceIDE getAnnonceIDE(long numero) throws ServiceOrganisationException {
-		loadMeter.start(new MethodCallDescriptor("getAnnonceIDE", "numero", numero));
-		try {
-			return target.getAnnonceIDE(numero);
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
 	@NotNull
 	@Override
 	public Page<AnnonceIDE> findAnnoncesIDE(@NotNull AnnonceIDEQuery query, @Nullable Sort.Order order, int pageNumber, int resultsPerPage) throws ServiceOrganisationException {

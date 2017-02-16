@@ -2549,17 +2549,18 @@ var Annonce = {
 
 	/**
 	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de l'annonce dont l'id est passé en paramètre.
-	 * @param idDemande l'id de l'annonce
+	 * @param id l'id de l'annonce
+	 * @param userId l'identifiant IAM de l'utilisateur ou l'identifiant de Unireg dans RCEnt
 	 */
-	open_details: function(idDemande) {
+	open_details: function(id, userId) {
 
 		var dialog = Dialog.create_dialog_div('visu-annonce-dialog');
 
 		// charge le contenu de la boîte de dialogue
-		dialog.load(App.curl('/annonceIDE/visu.do?id='+ idDemande + '&' + new Date().getTime()));
+		dialog.load(App.curl('/annonceIDE/visu.do?id='+ id + '&userId=' + userId + '&' + new Date().getTime()));
 
 		dialog.dialog({
-			title: "Détails de l'annonce n°" + idDemande,
+			title: "Détails de l'annonce n°" + id,
 			height: 600,
 			width: 800,
 			modal: true,

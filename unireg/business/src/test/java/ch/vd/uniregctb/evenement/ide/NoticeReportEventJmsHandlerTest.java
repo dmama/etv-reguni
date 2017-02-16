@@ -56,6 +56,7 @@ public class NoticeReportEventJmsHandlerTest extends WithoutSpringTest {
 				"\t\t\t\t\t<eCH-0097-2:organisationId xmlns:eCH-0097-2=\"http://www.ech.ch/xmlns/eCH-0097/2\">CHE999999996</eCH-0097-2:organisationId>\n" +
 				"\t\t\t\t</eVD-0022-3:IDESource>\n" +
 				"\t\t\t</eVD-0022-3:noticeRequestIdentification>\n" +
+				"\t\t\t<eVD-0022-3:userId>unireg</eVD-0022-3:userId>\n" +
 				"\t\t</eVD-0022-3:noticeRequestHeader>\n" +
 				"\t\t<eVD-0022-3:noticeRequestBody xmlns:eVD-0022-3=\"http://evd.vd.ch/xmlns/eVD-0022/3\">\n" +
 				"\t\t\t<eVD-0022-3:uid>\n" +
