@@ -22,7 +22,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
@@ -90,7 +89,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-bomaco-history.xml";
 
 	// annonce à l'IDE sur RCEnt
-	private static final long ID_ANNONCE = 1L;
+	private static final long ID_ANNONCE = 180007882L;
 
 	private String baseUrl;
 
@@ -218,7 +217,6 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
-	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testDirectGetAnnonceIDE() throws Exception {
 		String url = baseUrl + BASE_PATH_ANNONCE_IDE + "?noticeRequestId=" + ID_ANNONCE;
@@ -230,7 +228,6 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	}
 
-	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testRCEntClientGetAnnonceIDE() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
@@ -240,22 +237,17 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(1, listOfNoticeRequest.getNumberOfResults());
 	}
 
-	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testGetAnnonceIDE() throws Exception {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
 
 		Assert.assertNotNull(annonceIDE);
-		Assert.assertEquals(1L, annonceIDE.getNumero().longValue());
+		Assert.assertEquals(ID_ANNONCE, annonceIDE.getNumero().longValue());
 	}
 
-	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testValidateAnnonceIDE() throws ParseException {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
-//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
-//		final Date fixedTime = df.parse("2016-09-13T10:05:48");
-//		final AnnonceIDEModele.Statut statut = service.validerAnnonceIDE(new AnnonceIDERCEnt(null, TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL));
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(StatutAnnonce.TRANSMIS, annonceIDE.getStatut().getStatut());
 		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(annonceIDE.getType(), annonceIDE.getDateAnnonce(), annonceIDE.getUtilisateur(), annonceIDE.getTypeDeSite(), annonceIDE.getStatut(),
@@ -271,29 +263,28 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
-		Assert.assertEquals(3, statut.getErreurs().size());
+		Assert.assertNull(statut.getErreurs());
 	}
 
-	@Ignore(value = "FIXME (rmr) test à réactiver quand il y aura des annonces stables en production")
 	@Test
 	public void testValidateProtoAnnonceIDE() throws ParseException {
 
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
 				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, MockLocalite.Geneve.getNPA(), MockLocalite.Geneve.getNoOrdre(), "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
-		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    null, null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objet synthétiques",
 		                                                                    adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
-		Assert.assertEquals(0, statut.getErreurs().size());
+		Assert.assertNull(statut.getErreurs());
 	}
 
 	@Test
 	public void testValidateAnnonceIDEPourrie() throws ParseException {
-		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), new AnnonceIDEData.UtilisateurImpl(RCEntAnnonceIDEHelper.UNIREG_USER, null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
 		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
 
 		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
@@ -302,7 +293,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
-		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    new NumeroIDE("CHE999999998"), null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                    "Fabrication d'objet synthétiques", null, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
