@@ -171,6 +171,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.map(SituationRF::getCommune)
 				.map(CommuneRF::getNoOfs)
 				.map(ofs -> infraService.getCommuneByNumeroOfs(ofs, dateReference))
+				.filter(Objects::nonNull)           // au cas où le numéro de commune est inconnu de l'infrastructure (c'est possible), pour ne pas finir sur une NPE...
 				.findFirst()
 				.orElse(null);
 	}

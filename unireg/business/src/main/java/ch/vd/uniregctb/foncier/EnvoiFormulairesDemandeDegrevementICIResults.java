@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,6 +166,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 	public enum RaisonIgnorance {
 		CONTRIBUABLE_TOTALEMENT_EXONERE,
 		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT,
+		DEGREVEMENT_ENCORE_ACTIF_POUR_PERIODE,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT,
@@ -266,6 +268,20 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		                                                  String.format("Demande émise le %s pour la PF %d",
 		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
 		                                                                demandeDegrevement.getPeriodeFiscale())));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDegrevementActif(Entreprise entreprise, DegrevementICI degrevement, int periodeFiscaleDemande) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  degrevement.getImmeuble(),
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DEGREVEMENT_ENCORE_ACTIF_POUR_PERIODE,
+		                                                  String.format("Dégrèvement encore actif (%s - %s) pour la PF %s",
+		                                                                StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(degrevement.getDateDebut()), "?"),
+		                                                                StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(degrevement.getDateFin()), "?"),
+		                                                                periodeFiscaleDemande)));
+
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}
