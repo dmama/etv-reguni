@@ -98,7 +98,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), "unireg", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            new NumeroIDE("CHE999999996"), null, null, noSite, noOrganisation, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, null,
 						                                            RCEntAnnonceIDEHelper
@@ -171,7 +171,7 @@ public class ServiceIDEModificationEntrepriseTest extends AbstractServiceIDEServ
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
-				assertEquals("unireg", utilisateur.getUserId());
+				assertEquals(RCEntAnnonceIDEHelper.UNIREG_USER, utilisateur.getUserId());
 				assertNull(utilisateur.getTelephone());
 
 				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();

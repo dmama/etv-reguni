@@ -23,6 +23,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.DonneesOrganisationException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -115,7 +116,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	public AnnonceIDE getAnnonceIDE(Long numero, String userId) throws ServiceOrganisationException {
 		final AnnonceIDEQuery annonceIDEQuery = new AnnonceIDEQuery();
 		annonceIDEQuery.setNoticeId(numero);
-		annonceIDEQuery.setUserId(StringUtils.isBlank(userId) ? "unireg" : userId);
+		annonceIDEQuery.setUserId(StringUtils.isBlank(userId) ? RCEntAnnonceIDEHelper.UNIREG_USER : userId);
 		final Page<AnnonceIDE> annoncesIDE = target.findAnnoncesIDE(annonceIDEQuery, null, 0, 10);
 		final List<AnnonceIDE> content = annoncesIDE.getContent();
 		if (content.size() == 0) {

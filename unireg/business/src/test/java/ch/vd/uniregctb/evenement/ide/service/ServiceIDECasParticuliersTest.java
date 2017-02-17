@@ -112,7 +112,7 @@ public class ServiceIDECasParticuliersTest extends AbstractServiceIDEServiceTest
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), "unireg", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            null, null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            RCEntAnnonceIDEHelper

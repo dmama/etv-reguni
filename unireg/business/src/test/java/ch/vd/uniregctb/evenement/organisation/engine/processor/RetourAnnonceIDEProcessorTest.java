@@ -130,11 +130,11 @@ public class RetourAnnonceIDEProcessorTest extends AbstractEvenementOrganisation
 				// Annonce existante
 				AnnonceIDE annonce =
 						RCEntAnnonceIDEHelper
-								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), "unireg", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+								.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 1, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 								                  new NumeroIDE("CHE999999996"), null, null, null, null, null,
 								                  "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 								                  adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
-				this.addAnnonceIDE(annonce, "unireg");
+				this.addAnnonceIDE(annonce, RCEntAnnonceIDEHelper.UNIREG_USER);
 
 				// L'organisation
 				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Syntruc Asso", date(2016, 9, 5), null, FormeLegale.N_0109_ASSOCIATION,

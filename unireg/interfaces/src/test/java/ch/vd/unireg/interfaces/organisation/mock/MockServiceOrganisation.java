@@ -31,6 +31,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesREE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public abstract class MockServiceOrganisation implements ServiceOrganisationRaw {
@@ -107,14 +108,14 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		 */
 		String userId = query.getUserId();
 		if (userId == null) {
-			userId = "unireg";
+			userId = RCEntAnnonceIDEHelper.UNIREG_USER;
 		}
 		return new PageImpl<AnnonceIDE>(Collections.singletonList(annoncesIDE.get(noticeId + userId)));
 	}
 
 	protected void addAnnonceIDE(AnnonceIDE annonce, String userId) {
 		if (userId == null) {
-			userId = "unireg";
+			userId = RCEntAnnonceIDEHelper.UNIREG_USER;
 		}
 		annoncesIDE.put(annonce.getNumero() + userId, annonce);
 	}

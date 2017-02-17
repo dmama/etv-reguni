@@ -89,7 +89,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), "unireg", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            null, null, null, null, null, null,
 						                                            "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            RCEntAnnonceIDEHelper
@@ -159,7 +159,7 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				final BaseAnnonceIDE.Utilisateur utilisateur = annonceIDE.getUtilisateur();
 				assertNotNull(utilisateur);
-				assertEquals("unireg", utilisateur.getUserId());
+				assertEquals(RCEntAnnonceIDEHelper.UNIREG_USER, utilisateur.getUserId());
 				assertNull(utilisateur.getTelephone());
 
 				final BaseAnnonceIDE.Contenu contenu = annonceIDE.getContenu();
@@ -257,15 +257,15 @@ public class ServiceIDECreationEntrepriseTest extends AbstractServiceIDEServiceT
 
 				// Annonce existante
 				AnnonceIDE annonce =
-						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), "unireg", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createAnnonceIDE(idReferenceAnnonce, TypeAnnonce.CREATION, DateHelper.getDateTime(2016, 9, 5, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                       new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                       "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                       adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
-				this.addAnnonceIDE(annonce, "unireg");
+				this.addAnnonceIDE(annonce, RCEntAnnonceIDEHelper.UNIREG_USER);
 
 				// Validation
 				ProtoAnnonceIDE proto =
-						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), "unireg", null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+						RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getDateTime(2016, 9, 6, 11, 0, 0), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 						                                            new NumeroIDE("CHE999999996"), null, null, null, null, null,
 						                                            "Rienavoir Asso", null, FormeLegale.N_0109_ASSOCIATION, "Fabrication d'objets synthétiques",
 						                                            adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
