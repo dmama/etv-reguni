@@ -31,7 +31,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -244,6 +246,23 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 					.max(Comparator.comparing(DemandeDegrevementICI::getPeriodeFiscale));
 			if (demandePourPfDejaEnvoyeeSuffisante.isPresent()) {
 				rapport.addDemandeDegrevementEnvoyeeDepuisDernierChangement(entreprise, demandePourPfDejaEnvoyeeSuffisante.get());
+				continue;
+			}
+
+			// [SIFISC-23397] pareil pour les dégrèvements... s'il en existe un avec une PF entre les années suivant le début de droit et suivant la dernière estimation fiscale et l'année
+			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle demande, ça ne sert à rien
+			// sauf si ce dégrèvement a une fin de validité AVANT le début de la période fiscale de début de la nouvelle demande prévue...
+			final Optional<DegrevementICI> degrevementPourPfSuffisant = degrevements.getOrDefault(immeuble.getId(), Collections.emptyList()).stream()
+					.filter(deg -> RegDateHelper.isAfterOrEqual(deg.getDateFin(), RegDate.get(periodeFiscale, 1, 1), NullDateBehavior.LATEST))
+					.filter(deg -> deg.getDateDebut().year() <= periodeFiscale)
+					.filter(deg -> deg.getDateDebut().year() >= Stream.of(anneeSuivantDebutDroit, anneeDebutValiditeDerniereEstimationFiscale)
+							.filter(Optional::isPresent)
+							.map(Optional::get)
+							.max(Comparator.naturalOrder())
+							.orElse(periodeFiscale))
+					.max(Comparator.comparingInt(deg -> deg.getDateDebut().year()));
+			if (degrevementPourPfSuffisant.isPresent()) {
+				rapport.addDegrevementActif(entreprise, degrevementPourPfSuffisant.get(), periodeFiscale);
 				continue;
 			}
 

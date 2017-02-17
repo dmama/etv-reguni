@@ -1890,4 +1890,189 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			                    ignore.messageAdditionnel);
 		}
 	}
+
+	/**
+	 * [SIFISC-23397] un dégrèvement migré pour 2013 et toujours actif devrait être suffisant pour empêcher tout nouvel envoi
+	 * de formulaire de demande de dégrèvement tant que rien ne change...
+	 */
+	@Test
+	public void testNonEmissionSiDegrevementEncoreActif() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(1956, 3, 1);
+		final RegDate dateDebutDroit = date(1985, 11, 29);
+		final RegDate dateDebutDegrevement = date(2013, 1, 1);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile -> rien
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// rien...
+			}
+		});
+
+		final class Ids {
+			final long pm;
+			final long immeuble;
+
+			public Ids(long pm, long immeuble) {
+				this.pm = pm;
+				this.immeuble = immeuble;
+			}
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Propriétaire terrien");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Propriétaire terrien", null, "23672526423ljbhv", 42, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble = addBienFondRF("46782362387i", null, commune, 579);
+			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "b,deb4z754", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
+			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
+
+			addDegrevementICI(entreprise, immeuble, dateDebutDegrevement, null, null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
+
+			return new Ids(entreprise.getNumero(), immeuble.getId());
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDroitsInspectes());
+		Assert.assertEquals(1, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getEnvois().size());
+		Assert.assertEquals(1, results.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.immeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.pm, ignore.noContribuable);
+			Assert.assertEquals("La Sarraz", ignore.nomCommune);
+			Assert.assertEquals((Integer) 5498, ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 579, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_ENCORE_ACTIF_POUR_PERIODE, ignore.raison);
+			Assert.assertEquals(String.format("Dégrèvement encore actif (01.01.2013 - ?) pour la PF %s", dateTraitement.year() + 1), ignore.messageAdditionnel);
+		}
+	}
+
+	/**
+	 * [SIFISC-23397] un dégrèvement migré pour 2013 mais plus actif ne doit pas empêcher un nouvel envoi
+	 * de formulaire de demande de dégrèvement même si rien n'a changé...
+	 */
+	@Test
+	public void testEmissionSiDernierDegrevementCloture() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(1956, 3, 1);
+		final RegDate dateDebutDroit = date(1985, 11, 29);
+		final RegDate dateDebutDegrevement = date(2013, 1, 1);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile -> rien
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// rien...
+			}
+		});
+
+		final class Ids {
+			final long pm;
+			final long immeuble;
+
+			public Ids(long pm, long immeuble) {
+				this.pm = pm;
+				this.immeuble = immeuble;
+			}
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Propriétaire terrien");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Propriétaire terrien", null, "23672526423ljbhv", 42, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("46782362387i", null, commune, 579);
+			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "b,deb4z754", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
+			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
+
+			addDegrevementICI(entreprise, immeuble, dateDebutDegrevement, date(dateTraitement.year(), 12, 31), null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
+
+			return new Ids(entreprise.getNumero(), immeuble.getId());
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDroitsInspectes());
+		Assert.assertEquals(0, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(1, results.getEnvois().size());
+		Assert.assertEquals(0, results.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
+			Assert.assertNotNull(envoi);
+			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals((Long) ids.immeuble, envoi.idImmeuble);
+			Assert.assertEquals(ids.pm, envoi.noContribuable);
+			Assert.assertEquals(MockCommune.Lausanne.getNomOfficiel(), envoi.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), envoi.noOfsCommune);
+			Assert.assertEquals((Integer) 579, envoi.noParcelle);
+			Assert.assertNull(envoi.index1);
+			Assert.assertNull(envoi.index2);
+			Assert.assertNull(envoi.index3);
+		}
+
+		// vérification en base...
+		final Mutable<RegDate> dateEmission = new MutableObject<>();
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.pm);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(1, demandes.size());
+				{
+					final DemandeDegrevementICI demande = demandes.get(0);
+					Assert.assertNotNull(demande);
+					Assert.assertFalse(demande.isAnnule());
+
+					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+					Assert.assertNull(demande.getDateRetour());
+					Assert.assertNull(demande.getDateRappel());
+					Assert.assertNotNull(demande.getCodeControle());
+					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+
+					Assert.assertNotNull(demande.getDateEnvoi());
+					dateEmission.setValue(demande.getDateEnvoi());
+				}
+			}
+		});
+	}
 }
