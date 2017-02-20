@@ -489,10 +489,10 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final DroitProprietePersonnePhysiqueRF droit2_2 =
 						newDroitPP("45729cd9e20", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
-				// - motif différent
+				// - numéro d'affaire différent
 				final DroitProprieteCommunauteRF droit3_2 =
 						newDroitColl("38458fa0ac3", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
-						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Vol à main armée", null);
+						             new IdentifiantAffaireRF(6, 2013, 1, 14), dateImportInitial, "Vol à main armée", null);
 				droitRFDAO.save(droit1_2);
 				droitRFDAO.save(droit2_2);
 				droitRFDAO.save(droit3_2);

@@ -38,6 +38,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("Duplicates")
 @RunWith(UniregJUnit4Runner.class)
 public class DroitRFHelperTest {
 
@@ -195,7 +196,55 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.MITEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false));
+		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false, false));
+	}
+
+	/**
+	 * [SIFISC-22997] Ce test vérifie que deux droits dont seuls les motifs sont différents sont considérés égaux.
+	 */
+	@Test
+	public void testDataEqualsDroitAvecMotifsDifferents() throws Exception {
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF("34838282030");
+
+		final ImmeubleRF immeuble = new BienFondRF();
+		immeuble.setIdRF("ae93920bc34");
+
+		final DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
+		droitPP.setMasterIdRF("9a9c9e94923");
+		droitPP.setAyantDroit(pp);
+		droitPP.setImmeuble(immeuble);
+		droitPP.setCommunaute(null);
+		droitPP.setDateDebut(RegDate.get(2010, 6, 1));
+		droitPP.setMotifDebut("Achat");
+		droitPP.setDateFin(null);
+		droitPP.setMotifFin(null);
+		droitPP.setDateDebutOfficielle(RegDate.get(2010, 4, 23));
+		droitPP.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
+		droitPP.setPart(new Fraction(1, 2));
+		droitPP.setRegime(GenrePropriete.COPROPRIETE);
+
+		final Rechtsgrund recht = new Rechtsgrund();
+		recht.setBelegDatum(RegDate.get(2010, 4, 23));
+		recht.setAmtNummer(6);
+		recht.setBelegJahr(2010);
+		recht.setBelegNummer(120);
+		recht.setBelegNummerIndex(3);
+		recht.setRechtsgrundCode(new CapiCode(null, "Modification intitulé"));
+
+		final NatuerlichePersonGb natuerliche = new NatuerlichePersonGb();
+		natuerliche.setPersonstammIDREF("34838282030");
+		natuerliche.getRechtsgruende().add(recht);
+
+		final PersonEigentumAnteil eigentumAnteil = new PersonEigentumAnteil();
+		eigentumAnteil.setMasterID("9a9c9e94923");
+		eigentumAnteil.setNatuerlichePersonGb(natuerliche);
+		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
+		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
+		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.MITEIGENTUM);
+
+		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false, true));
 	}
 
 	@Test
@@ -240,7 +289,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.ALLEINEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false));
+		assertTrue(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false, false));
 	}
 
 	@Test
@@ -284,7 +333,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.GESAMTEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false));
+		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false, false));
 	}
 
 	/**
@@ -300,7 +349,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setJuristischePersonGb(new JuristischePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false));
+		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false, false));
 	}
 
 	/**
@@ -316,7 +365,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false));
+		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false, false));
 	}
 
 	/**
@@ -332,7 +381,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false));
+		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false, false));
 	}
 
 	/**

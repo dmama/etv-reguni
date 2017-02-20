@@ -176,7 +176,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on détermine les changements
 		List<DroitRF> toAddList = new LinkedList<>(droits);
 		List<DroitRF> toCloseList = new LinkedList<>(persisted);
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, DroitRFHelper::dataEquals);
+		CollectionsUtils.removeCommonElements(toAddList, toCloseList, (left, right) -> DroitRFHelper.dataEquals(left, right, false));   // on supprime les droits égaux en tant compte des motifs (pour être le plus précis possible)
+		CollectionsUtils.removeCommonElements(toAddList, toCloseList, (left, right) -> DroitRFHelper.dataEquals(left, right, true));    // on supprime les droits égaux sans tenir compte des motifs (pour être le plus complet possible)
 
 		// on ferme toutes les droits à fermer
 		toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
