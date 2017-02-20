@@ -59,7 +59,7 @@ public class DroitRFHelper {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
 				DroitRF droitRF = remaining.get(i);
-				if (dataEquals(droitRF, e, importInitial)) {
+				if (dataEquals(droitRF, e, importInitial, false)) {
 					remaining.remove(i);
 					found = true;
 					break;
@@ -74,8 +74,8 @@ public class DroitRFHelper {
 		return true;
 	}
 
-	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil, boolean importInitial) {
-		return dataEquals(droitRF, get(personEigentumAnteil, importInitial, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
+	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil, boolean importInitial, boolean ignoreMotifs) {
+		return dataEquals(droitRF, get(personEigentumAnteil, importInitial, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider), ignoreMotifs);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class DroitRFHelper {
 		return c;
 	}
 
-	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
+	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right, boolean ignoreMotifs) {
 
 		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
 			return false;
@@ -124,37 +124,37 @@ public class DroitRFHelper {
 		}
 
 		if (left instanceof DroitProprietePersonnePhysiqueRF) {
-			return equalsDroitPropPP((DroitProprietePersonnePhysiqueRF) left, (DroitProprietePersonnePhysiqueRF) right);
+			return equalsDroitPropPP((DroitProprietePersonnePhysiqueRF) left, (DroitProprietePersonnePhysiqueRF) right, ignoreMotifs);
 		}
 		else if (left instanceof DroitProprietePersonneMoraleRF) {
-			return equalsDroitPropPM((DroitProprietePersonneMoraleRF) left, (DroitProprietePersonneMoraleRF) right);
+			return equalsDroitPropPM((DroitProprietePersonneMoraleRF) left, (DroitProprietePersonneMoraleRF) right, ignoreMotifs);
 		}
 		else if (left instanceof DroitProprieteCommunauteRF) {
-			return equalsDroitProp((DroitProprieteCommunauteRF) left, (DroitProprieteCommunauteRF) right);
+			return equalsDroitProp((DroitProprieteCommunauteRF) left, (DroitProprieteCommunauteRF) right, ignoreMotifs);
 		}
 		else {
 			throw new IllegalArgumentException("Type de tiers RF inconnu=[" + left.getClass() + "]");
 		}
 	}
 
-	private static boolean equalsDroitPropPP(@NotNull DroitProprietePersonnePhysiqueRF left, @NotNull DroitProprietePersonnePhysiqueRF right) {
+	private static boolean equalsDroitPropPP(@NotNull DroitProprietePersonnePhysiqueRF left, @NotNull DroitProprietePersonnePhysiqueRF right, boolean ignoreMotifs) {
 		return communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
-				equalsDroitProp(left, right);
+				equalsDroitProp(left, right, ignoreMotifs);
 	}
 
-	private static boolean equalsDroitPropPM(@NotNull DroitProprietePersonneMoraleRF left, @NotNull DroitProprietePersonneMoraleRF right) {
+	private static boolean equalsDroitPropPM(@NotNull DroitProprietePersonneMoraleRF left, @NotNull DroitProprietePersonneMoraleRF right, boolean ignoreMotifs) {
 		return communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
-				equalsDroitProp(left, right);
+				equalsDroitProp(left, right, ignoreMotifs);
 	}
 
-	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right) {
+	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right, boolean ignoreMotifs) {
 		return ayantDroitEquals(left.getAyantDroit(), right.getAyantDroit()) &&
 				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
 				partEquals(left.getPart(), right.getPart()) &&
 				left.getRegime() == right.getRegime() &&
 				left.getDateDebutOfficielle() == right.getDateDebutOfficielle() &&
-				Objects.equals(left.getMotifDebut(), right.getMotifDebut());
+				(ignoreMotifs || Objects.equals(left.getMotifDebut(), right.getMotifDebut()));
 	}
 
 	public static GenrePropriete getRegime(@Nullable PersonEigentumsform form) {
