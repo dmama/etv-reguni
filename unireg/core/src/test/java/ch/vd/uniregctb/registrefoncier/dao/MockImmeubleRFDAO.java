@@ -63,6 +63,12 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 		throw new NotImplementedException();
 	}
 
+	@NotNull
+	@Override
+	public List<Long> findImmeubleIdsAvecDatesDeFinDroitsACalculer() {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public List<ImmeubleRF> getAll() {
 		throw new NotImplementedException();
