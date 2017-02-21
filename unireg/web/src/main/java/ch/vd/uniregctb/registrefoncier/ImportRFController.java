@@ -29,6 +29,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
@@ -54,6 +55,7 @@ public class ImportRFController {
 	private RegistreFoncierImportService serviceImportRF;
 	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
+	private ImmeubleRFDAO immeubleRFDAO;
 
 	public void setServiceImportRF(RegistreFoncierImportService serviceImportRF) {
 		this.serviceImportRF = serviceImportRF;
@@ -65,6 +67,10 @@ public class ImportRFController {
 
 	public void setEvenementRFMutationDAO(EvenementRFMutationDAO evenementRFMutationDAO) {
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
+	}
+
+	public void setImmeubleRFDAO(ImmeubleRFDAO immeubleRFDAO) {
+		this.immeubleRFDAO = immeubleRFDAO;
 	}
 
 	/**
@@ -116,7 +122,7 @@ public class ImportRFController {
 
 		// on interpète la requête
 		final List<EvenementRFMutationView> viewList = list.stream()
-				.map(EvenementRFMutationView::new)
+				.map((right) -> new EvenementRFMutationView(right, immeubleRFDAO))
 				.collect(toList());
 		model.addAttribute("importEvent", new EvenementRFImportView(importEvent));
 		model.addAttribute("mutations", viewList);
@@ -176,7 +182,7 @@ public class ImportRFController {
 		if (mutation == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(new EvenementRFMutationView(mutation), HttpStatus.OK);
+		return new ResponseEntity<>(new EvenementRFMutationView(mutation, immeubleRFDAO), HttpStatus.OK);
 	}
 
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
