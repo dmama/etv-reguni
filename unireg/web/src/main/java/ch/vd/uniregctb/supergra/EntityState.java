@@ -3,14 +3,14 @@ package ch.vd.uniregctb.supergra;
 import ch.vd.registre.base.validation.ValidationResults;
 
 /**
- * Etat d'un tiers modifié lors d'une session SuperGra.
+ * Etat d'une entité modifiée lors d'une session SuperGra.
  */
-public class TiersState {
+public class EntityState {
 
 	private final EntityKey key;
 	private final ValidationResults validationResults;
 
-	public TiersState(EntityKey key, ValidationResults validationResults) {
+	public EntityState(EntityKey key, ValidationResults validationResults) {
 		this.key = key;
 		this.validationResults = validationResults;
 	}
