@@ -70,6 +70,7 @@ import ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
+import ch.vd.uniregctb.document.FinsDeDroitRFRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
@@ -134,6 +135,7 @@ import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
+import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -1771,6 +1773,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(EnvoiFormulairesDemandeDegrevementICIRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfEnvoiFormulairesDemandeDegrevementICIRapport document = new PdfEnvoiFormulairesDemandeDegrevementICIRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public FinsDeDroitRFRapport generateRapport(TraitementFinsDeDroitRFResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportFinsDeDroitsRF";
+		final String description = "Rapport d'exécution du batch de calcul des dates de fin métier sur les droits RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(FinsDeDroitRFRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfFinsDeDroitRFRapport document = new PdfFinsDeDroitRFRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

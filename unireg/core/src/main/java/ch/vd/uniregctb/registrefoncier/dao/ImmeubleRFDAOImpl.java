@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
@@ -52,22 +54,22 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 				"and s.commune.id = c.id " +
 				"and s.noParcelle = :noParcelle ";
 		if (index1 == null) {
-			queryString += 	"and s.index1 is null ";
+			queryString += "and s.index1 is null ";
 		}
 		else {
-			queryString += 	"and s.index1 = :index1 ";
+			queryString += "and s.index1 = :index1 ";
 		}
 		if (index2 == null) {
-			queryString += 	"and s.index2 is null ";
+			queryString += "and s.index2 is null ";
 		}
 		else {
-			queryString += 	"and s.index2 = :index2 ";
+			queryString += "and s.index2 = :index2 ";
 		}
 		if (index3 == null) {
-			queryString += 	"and s.index3 is null ";
+			queryString += "and s.index3 is null ";
 		}
 		else {
-			queryString += 	"and s.index3 = :index3 ";
+			queryString += "and s.index3 = :index3 ";
 		}
 
 		final Session session = getCurrentSession();
@@ -96,5 +98,15 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 				session.setFlushMode(oldMode);
 			}
 		}
+	}
+
+	@NotNull
+	@Override
+	public List<Long> findImmeubleIdsAvecDatesDeFinDroitsACalculer() {
+		final Query query = getCurrentSession().createQuery("select distinct immeuble.id from DroitRF where dateFinMetier is null and dateFin is not null");
+		final List<?> list = query.list();
+		return list.stream()
+				.map(n -> ((Number) n).longValue())
+				.collect(Collectors.toList());
 	}
 }

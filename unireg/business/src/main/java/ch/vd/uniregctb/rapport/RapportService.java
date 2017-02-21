@@ -57,6 +57,7 @@ import ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
+import ch.vd.uniregctb.document.FinsDeDroitRFRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
@@ -120,6 +121,7 @@ import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
+import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -724,4 +726,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	EnvoiFormulairesDemandeDegrevementICIRapport generateRapport(EnvoiFormulairesDemandeDegrevementICIResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui calcule les dates de fin métier sur les droits du RF.
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	FinsDeDroitRFRapport generateRapport(TraitementFinsDeDroitRFResults results, StatusManager status);
 }

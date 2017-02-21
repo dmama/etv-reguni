@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
@@ -41,4 +42,10 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	 */
 	@Nullable
 	ImmeubleRF findImmeubleActif(int noOfsCommune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3, @Nullable FlushMode flushMode) throws NonUniqueResultException;
+
+	/**
+	 * @return la liste des ids des immeubles avec au moins un droit dont la date de fin <i>métier</i> doit être calculée.
+	 */
+	@NotNull
+	List<Long> findImmeubleIdsAvecDatesDeFinDroitsACalculer();
 }

@@ -108,6 +108,13 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="traiterFinsDeDroitsRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.dataimport.TraiterFinsDeDroitsRFJob">
+		<constructor-arg value="111"/>
+		<constructor-arg value="Calculer les dates de fin métier sur les droits RF"/>
+		<property name="processor" ref="dateFinDroitsRFProcessor"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <!-- Job qui détermine les mouvements de dossiers en masse des contribuables-->
      <bean id="determinerMouvementsDossiersEnMasseJob" parent="schedulerJob" class="ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseJob">
         <constructor-arg value="120"/>

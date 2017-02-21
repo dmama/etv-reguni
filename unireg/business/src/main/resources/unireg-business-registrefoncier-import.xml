@@ -131,4 +131,9 @@
 		<constructor-arg ref="rapprochementManuelTiersRFService"/>
 	</bean>
 
+	<bean id="dateFinDroitsRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.DateFinDroitsRFProcessor">
+		<constructor-arg ref="immeubleRFDAO" />
+		<constructor-arg ref="transactionManager" />
+	</bean>
+
 </beans>
