@@ -1,3 +1,4 @@
+<%@ taglib prefix="util" uri="http://www.unireg.com/uniregTagLib" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
@@ -107,7 +108,17 @@
 					<fmt:message key="option.rf.type.mutation.${mutation.typeMutation}" />
 				</display:column>
 				<display:column titleKey="label.id.rf" sortable="true" sortProperty="etat">
-					${mutation.idRF}
+					<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+						<c:if test="${mutation.entityId != null}">
+							<unireg:linkTo name="${mutation.idRF}" action="/supergra/entity/show.do" params="{id:${mutation.entityId},class:'ImmeubleRF'}"/>
+						</c:if>
+						<c:if test="${mutation.entityId == null}">
+							${mutation.idRF}
+						</c:if>
+					</authz:authorize>
+					<authz:authorize ifNotGranted="ROLE_SUPERGRA">
+						${mutation.idRF}
+					</authz:authorize>
 				</display:column>
 				<display:column titleKey="label.contenu.event.rf" >
 					<unireg:limitedOut limit="200" value="${mutation.xmlContent}"/> <c:if test="${mutation.xmlContent != null}"><a href="#" onclick="showContenuXml(${mutation.id})">contenu complet</a></c:if>

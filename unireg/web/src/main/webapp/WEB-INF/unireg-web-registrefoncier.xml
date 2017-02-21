@@ -24,6 +24,7 @@
 		<property name="serviceImportRF" ref="serviceImportRF" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
+		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 	</bean>
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
