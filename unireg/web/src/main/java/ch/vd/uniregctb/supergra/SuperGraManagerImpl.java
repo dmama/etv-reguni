@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.type.StandardBasicTypes;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,6 +145,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Les builders custom d'attributs qui permettent de spécialiser l'affichage de certains attributs.
 	 * (construit en lazy-init pour éviter le ralentissement applicatif au démarrage)
+	 *
 	 * @see #getCustomAttributeBuilder(ch.vd.uniregctb.supergra.SuperGraManagerImpl.AttributeKey)
 	 */
 	private Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = null;
@@ -328,43 +331,65 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	/**
-	 * Met-à-jour l'état des tiers modifiés dans une session SuperGra.
+	 * Les types principaux d'entités sur lesquelles on va déclencher une validation
+	 */
+	private static List<EntityType> TOP_ENTITY_TYPES = Arrays.asList(EntityType.Tiers, EntityType.AyantDroitRF, EntityType.DroitRF, EntityType.ImmeubleRF, EntityType.BatimentRF);
+
+	/**
+	 * Met-à-jour l'état des entités modifiées dans une session SuperGra.
 	 *
 	 * @param session une session SuperGra.
 	 * @param context le context DAO spécifique au mode SuperGra.
 	 */
 	private void refreshTiersState(SuperGraSession session, SuperGraContext context) {
 
-		// Récupère tous les tiers impactés par les deltas
-		final Map<Long, Tiers> tiers = new HashMap<>();
+		// Récupère tous les entités principales impactés par les deltas
+		final Map<EntityKey, HibernateEntity> mainEntities = new HashMap<>();
 		final List<Delta> deltas = session.getDeltas();
 		for (Delta d : deltas) {
 			final HibernateEntity entity = context.getEntity(d.getKey());
-			if (entity instanceof Tiers) {
-				final Tiers t = (Tiers) entity;
-				if (!tiers.containsKey(t.getId())) {
-					tiers.put(t.getId(), t);
+			if (isAnyInstanceOf(entity, TOP_ENTITY_TYPES)) {
+				if (!mainEntities.containsKey(d.getKey())) {
+					mainEntities.put(d.getKey(), entity);
 				}
 			}
 			else if (entity instanceof LinkedEntity) {
-				final Set<Tiers> linked = tiersService.getLinkedEntities((LinkedEntity) entity, Tiers.class, LinkedEntity.Context.VALIDATION, isAnnulation(d));
-				for (Tiers t : linked) {
-					if (t != null && !tiers.containsKey(t.getId())) {
-						tiers.put(t.getId(), t);
-					}
+				for (EntityType entityType : TOP_ENTITY_TYPES) {
+					addLinkedEntities(mainEntities, (LinkedEntity) entity, entityType.getHibernateClass(), entityType, isAnnulation(d));
 				}
 			}
 		}
 
-		// Détermine la validité de tous les tiers
-		final List<TiersState> tiersStates = new ArrayList<>(tiers.size());
-		for (Tiers t : tiers.values()) {
-			final ValidationResults res = validationService.validate(t);
-			tiersStates.add(new TiersState(new EntityKey(EntityType.Tiers, t.getId()), res));
+		// Détermine la validité de toutes les entités
+		final List<EntityState> entityStates = new ArrayList<>(mainEntities.size());
+		for (HibernateEntity e : mainEntities.values()) {
+			final ValidationResults res = validationService.validate(e);
+			entityStates.add(new EntityState(new EntityKey(EntityType.fromHibernateClass(e.getClass()), (Long) e.getKey()), res));
 		}
 
 		// Met-à-jour la session
-		session.setTiersStates(tiersStates);
+		session.setEntityStates(entityStates);
+	}
+
+	private <T extends HibernateEntity> void addLinkedEntities(@NotNull Map<EntityKey, HibernateEntity> mainEntities, @NotNull LinkedEntity entity, @NotNull Class<T> clazz, @NotNull EntityType entityType, boolean includeAnnuled) {
+		final Set<T> linked = tiersService.getLinkedEntities(entity, clazz, LinkedEntity.Context.VALIDATION, includeAnnuled);
+		for (T t : linked) {
+			if (t != null) {
+				final EntityKey key = new EntityKey(entityType, (Long) t.getKey());
+				if (!mainEntities.containsKey(key)) {
+					mainEntities.put(key, t);
+				}
+			}
+		}
+	}
+
+	private boolean isAnyInstanceOf(HibernateEntity entity, List<EntityType> topEntityTypes) {
+		for (EntityType entityType : topEntityTypes) {
+			if (entityType.getHibernateClass().isAssignableFrom(entity.getClass())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean isAnnulation(Delta delta) {
@@ -705,7 +730,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 						                                               "NUMERO_INDIVIDU=NULL, " +
 						                                               "ANCIEN_NUMERO_SOURCIER = null," +
 						                                               "NH_NUMERO_ASSURE_SOCIAL = null," +
-																	   "NH_NOM_NAISSANCE = null," +
+						                                               "NH_NOM_NAISSANCE = null," +
 						                                               "NH_NOM = null," +
 						                                               "NH_PRENOM = null," +
 						                                               "NH_DATE_NAISSANCE = null," +

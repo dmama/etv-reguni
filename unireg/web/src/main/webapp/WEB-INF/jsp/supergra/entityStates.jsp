@@ -8,18 +8,18 @@
 	<table class="sync_states" cellspacing="0" border="0"><tbody>
 
 		<tr class="header">
-			<c:if test="${empty superGraSession.tiersStates}" >
+			<c:if test="${empty superGraSession.entityStates}" >
 				<td>Aucune modification n'est en cours</td>
 			</c:if>
-			<c:if test="${!empty superGraSession.tiersStates}" >
-				<td colspan="2">Les tiers suivants ont été modifiés ou sont impactés par les modifications :</td>
+			<c:if test="${!empty superGraSession.entityStates}" >
+				<td colspan="2">Les entités suivantes ont été modifiées ou sont impactées par les modifications :</td>
 			</c:if>
 		</tr>
 
-		<c:if test="${!empty superGraSession.tiersStates}" >
+		<c:if test="${!empty superGraSession.entityStates}" >
 			<c:set var="hasError" value="false"/>
 
-			<c:forEach items="${superGraSession.tiersStates}" var="s">
+			<c:forEach items="${superGraSession.entityStates}" var="s">
 				<tr class="state">
 					<td class="state">
 

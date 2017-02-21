@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.supergra;
 
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 
 /**
@@ -34,21 +35,32 @@ public enum EntityType {
 	EtatEntreprise(ch.vd.uniregctb.tiers.EtatEntreprise.class, "état", "l'état", "de l'état"),
 	FlagEntreprise(ch.vd.uniregctb.tiers.FlagEntreprise.class, "flag entreprise", "le flag entreprise", "du flag entreprise"),
 	AdresseMandataire(ch.vd.uniregctb.adresse.AdresseMandataire.class, "adresse mandataire", "l'adresse mandataire", "de l'adresse mandataire"),
-	AutreDocumentFiscal(ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal");
+	AutreDocumentFiscal(ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal"),
+	AyantDroitRF(ch.vd.uniregctb.registrefoncier.AyantDroitRF.class, "ayant-droit", "l'ayant-droit", "de l'ayant-droit"),
+	DroitRF(ch.vd.uniregctb.registrefoncier.DroitRF.class, "droit", "le droit", "du droit"),
+	ImmeubleRF(ch.vd.uniregctb.registrefoncier.ImmeubleRF.class, "immeuble", "l'immeuble", "de l'immeuble"),
+	CommuneRF(ch.vd.uniregctb.registrefoncier.CommuneRF.class, "commune", "la commune", "de la commune"),
+	SituationRF(ch.vd.uniregctb.registrefoncier.SituationRF.class, "situation", "la situation", "de la situation"),
+	SurfaceTotaleRF(ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF.class, "surface totale", "la surface totale", "de la surface totale"),
+	EstimationRF(ch.vd.uniregctb.registrefoncier.EstimationRF.class, "estimation fiscale", "l'estimation fiscale", "de l'estimation fiscale"),
+	SurfaceAuSolRF(ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF.class, "surface au sol", "la surface au sol", "de la surface au sol"),
+	BatimentRF(ch.vd.uniregctb.registrefoncier.BatimentRF.class, "bâtiment", "le bâtiment", "du bâtiment"),
+	ImplantationRF(ch.vd.uniregctb.registrefoncier.ImplantationRF.class, "implantation", "l'implantation", "de l'implantation"),
+	DescriptionBatimentRF(ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF.class, "description du bâtiment", "la description du bâtiment", "de la description du bâtiment");
 
-	private final Class<?> hibernateClass;
+	private final Class<? extends HibernateEntity> hibernateClass;
 	private final String displayName;   // "chat"
 	private final String displayArticleName; // "le chat"
 	private final String displayPrepositionName; // "du chat"
 
-	EntityType(Class<?> hibernateClass, String displayName, String displayArticleName, String displayPrepositionName) {
+	EntityType(Class<? extends HibernateEntity> hibernateClass, String displayName, String displayArticleName, String displayPrepositionName) {
 		this.hibernateClass = hibernateClass;
 		this.displayName = displayName;
 		this.displayArticleName = displayArticleName;
 		this.displayPrepositionName = displayPrepositionName;
 	}
 
-	public Class<?> getHibernateClass() {
+	public Class<? extends HibernateEntity> getHibernateClass() {
 		return hibernateClass;
 	}
 

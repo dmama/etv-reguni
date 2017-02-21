@@ -84,7 +84,7 @@
 
 		</td>
 		<td id="actions_column">
-			<jsp:include page="/WEB-INF/jsp/supergra/tiersStates.jsp"/>
+			<jsp:include page="/WEB-INF/jsp/supergra/entityStates.jsp"/>
 			<jsp:include page="/WEB-INF/jsp/supergra/actions.jsp"/>
 		</td>
 		</tr></table>

@@ -17,9 +17,9 @@ public class SuperGraSession {
 	private List<Delta> deltas = new ArrayList<>();
 
 	/**
-	 * Les états des tiers modifiées dans la session courante.
+	 * Les états des entités principales (tiers, immeubles, bâtiments, ...) modifiées dans la session courante.
 	 */
-	private List<TiersState> tiersStates = new ArrayList<>();
+	private List<EntityState> entityStates = new ArrayList<>();
 
 	private final Options options = new Options();
 
@@ -58,12 +58,12 @@ public class SuperGraSession {
 		deltas.clear();
 	}
 
-	public List<TiersState> getTiersStates() {
-		return tiersStates;
+	public List<EntityState> getEntityStates() {
+		return entityStates;
 	}
 
-	public void setTiersStates(List<TiersState> tiersStates) {
-		this.tiersStates = tiersStates;
+	public void setEntityStates(List<EntityState> entityStates) {
+		this.entityStates = entityStates;
 	}
 
 	public Options getOptions() {
