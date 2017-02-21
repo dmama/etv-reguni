@@ -234,7 +234,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImport, droit11.getDateDebut());
 				assertNull(droit11.getDateFin());
 				assertEquals("Achat", droit11.getMotifDebut());
-				assertEquals(RegDate.get(2014, 12, 23), droit11.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2014, 12, 23), droit11.getDateDebutMetier());
 				Assert.assertEquals(new IdentifiantAffaireRF(6, 2014, 9593, 0), droit11.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit11.getImmeuble().getIdRF());
 				Assert.assertEquals(new Fraction(1, 2), droit11.getPart());
@@ -252,7 +252,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImport, droit21.getDateDebut());
 				assertNull(droit21.getDateFin());
 				assertEquals("Donation", droit21.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit21.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit21.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit21.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit21.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit21.getPart());
@@ -306,7 +306,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
 				droit1.setDateDebut(dateImportInitial);
 				droit1.setMotifDebut("Appropriation illégitime");   // <--- motif erronné
-				droit1.setDateDebutOfficielle(RegDate.get(2007, 2, 7));
+				droit1.setDateDebutMetier(RegDate.get(2007, 2, 7));
 				droit1.setNumeroAffaire(new IdentifiantAffaireRF(13, 2007, 173, 0));
 				droit1.setAyantDroit(pp1);
 				droit1.setImmeuble(immeuble1);
@@ -323,7 +323,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
 				droit2.setDateDebut(dateImportInitial);
 				droit2.setMotifDebut("Achat");
-				droit2.setDateDebutOfficielle(RegDate.get(2014, 12, 23));
+				droit2.setDateDebutMetier(RegDate.get(2014, 12, 23));
 				droit2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2014, 9593, 0));
 				droit2.setAyantDroit(pp2);
 				droit2.setImmeuble(immeuble2);
@@ -474,7 +474,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, droit11.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit11.getDateFin());
 				assertEquals("Appropriation illégitime", droit11.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit11.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit11.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit11.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit11.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit11.getPart());
@@ -487,7 +487,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateSecondImport, droit12.getDateDebut());
 				assertNull(droit12.getDateFin());
 				assertEquals("Donation", droit12.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit12.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit12.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit12.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit12.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit12.getPart());
@@ -506,7 +506,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, droit21.getDateDebut());
 				assertNull(droit21.getDateFin());
 				assertEquals("Achat", droit21.getMotifDebut());
-				assertEquals(RegDate.get(2014, 12, 23), droit21.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2014, 12, 23), droit21.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(6, 2014, 9593, 0), droit21.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit21.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 2), droit21.getPart());
@@ -559,7 +559,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
 				droit1.setDateDebut(dateImportInitial);
 				droit1.setMotifDebut("Donation");
-				droit1.setDateDebutOfficielle(RegDate.get(2007, 2, 7));
+				droit1.setDateDebutMetier(RegDate.get(2007, 2, 7));
 				droit1.setNumeroAffaire(new IdentifiantAffaireRF(13, 2007, 173, 0));
 				droit1.setAyantDroit(pp1);
 				droit1.setImmeuble(immeuble1);
@@ -575,7 +575,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
 				droit2.setDateDebut(dateImportInitial);
 				droit2.setMotifDebut("Achat");
-				droit2.setDateDebutOfficielle(RegDate.get(2014, 12, 23));
+				droit2.setDateDebutMetier(RegDate.get(2014, 12, 23));
 				droit2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2014, 9593, 0));
 				droit2.setAyantDroit(pp2);
 				droit2.setImmeuble(immeuble2);
@@ -653,7 +653,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, droit11.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit11.getDateFin());
 				assertEquals("Donation", droit11.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit11.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit11.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit11.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit11.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit11.getPart());
@@ -672,7 +672,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, droit21.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit21.getDateFin());
 				assertEquals("Achat", droit21.getMotifDebut());
-				assertEquals(RegDate.get(2014, 12, 23), droit21.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2014, 12, 23), droit21.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(6, 2014, 9593, 0), droit21.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit21.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 2), droit21.getPart());

@@ -153,7 +153,7 @@ public class DroitRFHelper {
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
 				partEquals(left.getPart(), right.getPart()) &&
 				left.getRegime() == right.getRegime() &&
-				left.getDateDebutOfficielle() == right.getDateDebutOfficielle() &&
+				left.getDateDebutMetier() == right.getDateDebutMetier() &&
 				(ignoreMotifs || Objects.equals(left.getMotifDebut(), right.getMotifDebut()));
 	}
 
@@ -279,7 +279,7 @@ public class DroitRFHelper {
 			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
 			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
 			if (rechtsgrund != null) {
-				d.setDateDebutOfficielle(rechtsgrund.getBelegDatum());
+				d.setDateDebutMetier(rechtsgrund.getBelegDatum());
 				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
 			}
 
@@ -298,7 +298,7 @@ public class DroitRFHelper {
 			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
 			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
 			if (rechtsgrund != null) {
-				d.setDateDebutOfficielle(rechtsgrund.getBelegDatum());
+				d.setDateDebutMetier(rechtsgrund.getBelegDatum());
 				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
 			}
 
@@ -316,7 +316,7 @@ public class DroitRFHelper {
 			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
 			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
 			if (rechtsgrund != null) {
-				d.setDateDebutOfficielle(rechtsgrund.getBelegDatum());
+				d.setDateDebutMetier(rechtsgrund.getBelegDatum());
 				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
 			}
 			droit = d;

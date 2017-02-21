@@ -484,7 +484,7 @@
 		<column>LOG_MUSER</column>
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
-		<column>DATE_DEBUT_OFFICIELLE</column>
+		<column>DATE_DEBUT_METIER</column>
 		<column>MASTER_ID_RF</column>
 		<column>MOTIF_DEBUT_CODE</column>
 		<column>MOTIF_FIN_CODE</column>

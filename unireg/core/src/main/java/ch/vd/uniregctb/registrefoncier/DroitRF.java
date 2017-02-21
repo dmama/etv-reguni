@@ -66,10 +66,16 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	private ImmeubleRF immeuble;
 
 	/**
-	 * Le motif de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
+	 * La date de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
 	 */
 	@Nullable
-	private RegDate dateDebutOfficielle;
+	private RegDate dateDebutMetier;
+
+	/**
+	 * La date de fin de droit telle que calculée par Unireg.
+	 */
+	@Nullable
+	private RegDate dateFinMetier;
 
 	/**
 	 * Le motif de début du droit.
@@ -154,14 +160,25 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	}
 
 	@Nullable
-	@Column(name = "DATE_DEBUT_OFFICIELLE")
+	@Column(name = "DATE_DEBUT_METIER")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebutOfficielle() {
-		return dateDebutOfficielle;
+	public RegDate getDateDebutMetier() {
+		return dateDebutMetier;
 	}
 
-	public void setDateDebutOfficielle(@Nullable RegDate dateDebutOfficielle) {
-		this.dateDebutOfficielle = dateDebutOfficielle;
+	public void setDateDebutMetier(@Nullable RegDate dateDebutMetier) {
+		this.dateDebutMetier = dateDebutMetier;
+	}
+
+	@Nullable
+	@Column(name = "DATE_FIN_METIER")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateFinMetier() {
+		return dateFinMetier;
+	}
+
+	public void setDateFinMetier(@Nullable RegDate dateFinMetier) {
+		this.dateFinMetier = dateFinMetier;
 	}
 
 	@Nullable

@@ -262,7 +262,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 
 	@NotNull
 	protected static DroitProprietePersonnePhysiqueRF newDroitPP(@NotNull String idRfDroit, @NotNull PersonnePhysiqueRF personnePhysique, @NotNull ImmeubleRF immeuble, @Nullable CommunauteRF communaute, @NotNull Fraction part,
-	                                                             @NotNull GenrePropriete regime, @NotNull RegDate dateDebutOfficielle, @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut,
+	                                                             @NotNull GenrePropriete regime, @NotNull RegDate dateDebutMetier, @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut,
 	                                                             @Nullable RegDate dateFin) {
 
 		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
@@ -273,7 +273,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		droit.setAyantDroit(personnePhysique);
 		droit.setCommunaute(communaute);
 		droit.setMasterIdRF(idRfDroit);
-		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setDateDebutMetier(dateDebutMetier);
 		droit.setNumeroAffaire(affaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
@@ -282,7 +282,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	@NotNull
-	protected static DroitProprieteCommunauteRF newDroitColl(@NotNull String idRfDroit, @NotNull CommunauteRF communaute, @NotNull ImmeubleRF immeuble, @NotNull Fraction part, @NotNull GenrePropriete regime, @NotNull RegDate dateDebutOfficielle,
+	protected static DroitProprieteCommunauteRF newDroitColl(@NotNull String idRfDroit, @NotNull CommunauteRF communaute, @NotNull ImmeubleRF immeuble, @NotNull Fraction part, @NotNull GenrePropriete regime, @NotNull RegDate dateDebutMetier,
 	                                                         @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut, @Nullable RegDate dateFin) {
 
 		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
@@ -292,7 +292,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		droit.setImmeuble(immeuble);
 		droit.setAyantDroit(communaute);
 		droit.setMasterIdRF(idRfDroit);
-		droit.setDateDebutOfficielle(dateDebutOfficielle);
+		droit.setDateDebutMetier(dateDebutMetier);
 		droit.setNumeroAffaire(affaire);
 		droit.setPart(part);
 		droit.setRegime(regime);

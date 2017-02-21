@@ -533,7 +533,7 @@ public class ImmovablePropertyBuilderTest {
 		droit.setImmeuble(immeuble);
 		droit.setMasterIdRF(masterIdRF);
 		droit.setDateDebut(dateDebut);
-		droit.setDateDebutOfficielle(dateDebut);
+		droit.setDateDebutMetier(dateDebut);
 		droit.setMotifDebut(motifDebut);
 		return droit;
 	}

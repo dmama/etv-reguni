@@ -406,15 +406,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return hibernateTemplate.merge(rapprochement);
 	}
 
-	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, BienFondRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin,
-	                                                             String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
+	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, BienFondRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier,
+	                                                             RegDate dateFinMetier, String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
 		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
 		droit0.setCommunaute(communaute);
 		droit0.setRegime(regime);
 		droit0.setPart(part);
 		droit0.setDateDebut(dateDebut);
-		droit0.setDateDebutOfficielle(dateDebutOfficielle);
 		droit0.setDateFin(dateFin);
+		droit0.setDateDebutMetier(dateDebutMetier);
+		droit0.setDateFinMetier(dateFinMetier);
 		droit0.setMotifDebut(motifDebut);
 		droit0.setMotifFin(motifFin);
 		droit0.setNumeroAffaire(numeroAffaire);
@@ -424,13 +425,13 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return hibernateTemplate.merge(droit0);
 	}
 
-	protected DroitProprieteCommunauteRF addDroitPropriete(CommunauteRF communaute, BienFondRF immeuble, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutOfficielle, RegDate dateFin,
+	protected DroitProprieteCommunauteRF addDroitPropriete(CommunauteRF communaute, BienFondRF immeuble, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin,
 	                                                       String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF) {
 		final DroitProprieteCommunauteRF droit0 = new DroitProprieteCommunauteRF();
 		droit0.setRegime(regime);
 		droit0.setPart(part);
 		droit0.setDateDebut(dateDebut);
-		droit0.setDateDebutOfficielle(dateDebutOfficielle);
+		droit0.setDateDebutMetier(dateDebutMetier);
 		droit0.setDateFin(dateFin);
 		droit0.setMotifDebut(motifDebut);
 		droit0.setMotifFin(motifFin);

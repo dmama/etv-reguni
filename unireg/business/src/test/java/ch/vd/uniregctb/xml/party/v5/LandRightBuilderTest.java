@@ -43,7 +43,7 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
-		droit.setDateDebutOfficielle(RegDate.get(2016, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setMotifDebut("Achat");
 		droit.setRegime(GenrePropriete.COMMUNE);
@@ -81,7 +81,7 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
-		droit.setDateDebutOfficielle(RegDate.get(2016, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setMotifDebut("Achat");
 		droit.setRegime(GenrePropriete.INDIVIDUELLE);

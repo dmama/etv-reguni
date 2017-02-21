@@ -71,7 +71,7 @@ public abstract class LandRightBuilder {
 	@NotNull
 	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
-		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
+		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutMetier()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
 		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
 		right.setStartReason(droitRF.getMotifDebut());
@@ -87,7 +87,7 @@ public abstract class LandRightBuilder {
 	@NotNull
 	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
-		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutOfficielle()));
+		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutMetier()));
 		right.setDateTo(null);  // on ne connaît pas la date de fin officielle
 		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
 		right.setStartReason(droitRF.getMotifDebut());

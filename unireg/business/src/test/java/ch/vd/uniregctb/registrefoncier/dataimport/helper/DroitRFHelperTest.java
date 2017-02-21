@@ -79,7 +79,7 @@ public class DroitRFHelperTest {
 			droitPP1.setMotifDebut("Achat");
 			droitPP1.setDateFin(null);
 			droitPP1.setMotifFin(null);
-			droitPP1.setDateDebutOfficielle(RegDate.get(2010, 4, 23));
+			droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
 			droitPP1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 			droitPP1.setPart(new Fraction(1, 2));
 			droitPP1.setRegime(GenrePropriete.COPROPRIETE);
@@ -101,7 +101,7 @@ public class DroitRFHelperTest {
 			droitPP2.setMotifDebut("Héritage");
 			droitPP2.setDateFin(null);
 			droitPP2.setMotifFin(null);
-			droitPP2.setDateDebutOfficielle(RegDate.get(2013, 8, 22));
+			droitPP2.setDateDebutMetier(RegDate.get(2013, 8, 22));
 			droitPP2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 			droitPP2.setPart(new Fraction(1, 1));
 			droitPP2.setRegime(GenrePropriete.INDIVIDUELLE);
@@ -172,7 +172,7 @@ public class DroitRFHelperTest {
 		droitPP.setMotifDebut("Achat");
 		droitPP.setDateFin(null);
 		droitPP.setMotifFin(null);
-		droitPP.setDateDebutOfficielle(RegDate.get(2010, 4, 23));
+		droitPP.setDateDebutMetier(RegDate.get(2010, 4, 23));
 		droitPP.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitPP.setPart(new Fraction(1, 2));
 		droitPP.setRegime(GenrePropriete.COPROPRIETE);
@@ -220,7 +220,7 @@ public class DroitRFHelperTest {
 		droitPP.setMotifDebut("Achat");
 		droitPP.setDateFin(null);
 		droitPP.setMotifFin(null);
-		droitPP.setDateDebutOfficielle(RegDate.get(2010, 4, 23));
+		droitPP.setDateDebutMetier(RegDate.get(2010, 4, 23));
 		droitPP.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitPP.setPart(new Fraction(1, 2));
 		droitPP.setRegime(GenrePropriete.COPROPRIETE);
@@ -265,7 +265,7 @@ public class DroitRFHelperTest {
 		droitPM.setMotifDebut("Achat");
 		droitPM.setDateFin(null);
 		droitPM.setMotifFin(null);
-		droitPM.setDateDebutOfficielle(RegDate.get(2010, 4, 23));
+		droitPM.setDateDebutMetier(RegDate.get(2010, 4, 23));
 		droitPM.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitPM.setPart(new Fraction(1, 2));
 		droitPM.setRegime(GenrePropriete.INDIVIDUELLE);
@@ -309,7 +309,7 @@ public class DroitRFHelperTest {
 		droitComm.setMotifDebut("Achat");
 		droitComm.setDateFin(null);
 		droitComm.setMotifFin(null);
-		droitComm.setDateDebutOfficielle(RegDate.get(2010, 4, 23));
+		droitComm.setDateDebutMetier(RegDate.get(2010, 4, 23));
 		droitComm.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitComm.setPart(new Fraction(1, 2));
 		droitComm.setRegime(GenrePropriete.COMMUNE);
