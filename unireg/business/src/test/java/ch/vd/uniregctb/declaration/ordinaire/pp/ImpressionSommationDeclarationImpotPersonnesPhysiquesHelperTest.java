@@ -598,8 +598,8 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 				final FichierImpressionDocument doc = impressionSommationDIHelper.remplitSommationDI(params);
-				assertEquals(MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				assertEquals(MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+				assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+				assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
 				return null;
 			}
 		});

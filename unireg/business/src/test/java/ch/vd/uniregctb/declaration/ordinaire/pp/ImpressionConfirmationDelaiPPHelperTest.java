@@ -147,8 +147,8 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
 				Assert.assertNotNull(doc);
 
-				Assert.assertEquals(MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
-				Assert.assertEquals(MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
+				Assert.assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet1(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne1());
+				Assert.assertEquals(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomComplet2(), doc.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getAdresse().getAdresseCourrierLigne2());
 			}
 		});
 	}
