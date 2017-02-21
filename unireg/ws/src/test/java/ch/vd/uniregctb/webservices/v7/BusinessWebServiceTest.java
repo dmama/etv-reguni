@@ -4785,8 +4785,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// Les deux tiers RF possèdent l'immeuble à travers une communauté de biens
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 2004, 202, 3);
-			addDroitPropriete(ericRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044");
-			addDroitPropriete(attilaRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73");
+			addDroitPropriete(ericRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044");
+			addDroitPropriete(attilaRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73");
 			addDroitPropriete(communauteRF, immeuble, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "2890cc033a");
 
 			// le tiers Unireg rapproché

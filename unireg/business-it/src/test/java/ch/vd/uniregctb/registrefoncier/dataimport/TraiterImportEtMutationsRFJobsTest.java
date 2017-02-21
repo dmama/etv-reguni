@@ -382,7 +382,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 				{
 					assertNull(droit0.getDateDebut());      // date vide en import initial
 					assertNull(droit0.getDateFin());
-					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutOfficielle());
+					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutMetier());
 					assertEquals("Achat", droit0.getMotifDebut());
 					assertNull(droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());
@@ -699,7 +699,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 				{
 					assertNull(droit0.getDateDebut());      // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
-					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutOfficielle());
+					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutMetier());
 					assertEquals("Achat", droit0.getMotifDebut());
 					assertNull(droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());

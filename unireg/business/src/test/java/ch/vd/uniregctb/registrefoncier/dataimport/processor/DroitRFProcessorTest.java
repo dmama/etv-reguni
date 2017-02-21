@@ -36,6 +36,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+@SuppressWarnings("Duplicates")
 public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 
 	private AyantDroitRFDAO ayantDroitRFDAO;
@@ -150,7 +151,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(droit0.getDateFin());
 				// en case d'import initial, on prend la plus ancienne date
 				assertEquals("Achat", droit0.getMotifDebut());
-				assertEquals(RegDate.get(2005, 1, 1), droit0.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2005, 1, 1), droit0.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2005, 173, 0), droit0.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit0.getPart());
@@ -162,7 +163,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(droit1.getDateDebut());
 				assertNull(droit1.getDateFin());
 				assertEquals("Succession", droit1.getMotifDebut());
-				assertEquals(RegDate.get(2003, 1, 1), droit1.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2003, 1, 1), droit1.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(6, 2003, 9593, 0), droit1.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit1.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 2), droit1.getPart());
@@ -228,7 +229,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateImport, droit0.getDateDebut());
 				assertNull(droit0.getDateFin());
 				assertEquals("Donation", droit0.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit0.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit0.getPart());
@@ -240,7 +241,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateImport, droit1.getDateDebut());
 				assertNull(droit1.getDateFin());
 				assertEquals("Achat", droit1.getMotifDebut());
-				assertEquals(RegDate.get(2014, 12, 23), droit1.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2014, 12, 23), droit1.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(6, 2014, 9593, 0), droit1.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit1.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 2), droit1.getPart());
@@ -286,7 +287,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				droit0.setMasterIdRF("1f109152381009be0138100c87000000");
 				droit0.setDateDebut(dateImportInitial);
 				droit0.setMotifDebut("Appropriation illégitime");   // <--- motif erronné
-				droit0.setDateDebutOfficielle(RegDate.get(2007, 2, 7));
+				droit0.setDateDebutMetier(RegDate.get(2007, 2, 7));
 				droit0.setNumeroAffaire(new IdentifiantAffaireRF(13, 2007, 173, 0));
 				droit0.setAyantDroit(pp);
 				droit0.setImmeuble(immeuble1);
@@ -299,7 +300,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				droit1.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
 				droit1.setDateDebut(dateImportInitial);
 				droit1.setMotifDebut("Achat");
-				droit1.setDateDebutOfficielle(RegDate.get(2014, 12, 23));
+				droit1.setDateDebutMetier(RegDate.get(2014, 12, 23));
 				droit1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2014, 9593, 0));
 				droit1.setAyantDroit(pp);
 				droit1.setImmeuble(immeuble2);
@@ -351,7 +352,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateImportInitial, droit0.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
 				assertEquals("Appropriation illégitime", droit0.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit0.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit0.getPart());
@@ -364,7 +365,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateSecondImport, droit1.getDateDebut());
 				assertNull(droit1.getDateFin());
 				assertEquals("Donation", droit1.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit1.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit1.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit1.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit1.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit1.getPart());
@@ -377,7 +378,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateImportInitial, droit2.getDateDebut());
 				assertNull(droit2.getDateFin());
 				assertEquals("Achat", droit2.getMotifDebut());
-				assertEquals(RegDate.get(2014, 12, 23), droit2.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2014, 12, 23), droit2.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(6, 2014, 9593, 0), droit2.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit2.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 2), droit2.getPart());
@@ -422,7 +423,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				droit0.setMasterIdRF("1f109152381009be0138100c87276e68");
 				droit0.setDateDebut(dateImportInitial);
 				droit0.setMotifDebut("Donation");
-				droit0.setDateDebutOfficielle(RegDate.get(2007, 2, 7));
+				droit0.setDateDebutMetier(RegDate.get(2007, 2, 7));
 				droit0.setNumeroAffaire(new IdentifiantAffaireRF(13, 2007, 173, 0));
 				droit0.setAyantDroit(pp);
 				droit0.setImmeuble(immeuble1);
@@ -434,7 +435,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				droit1.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
 				droit1.setDateDebut(dateImportInitial);
 				droit1.setMotifDebut("Achat");
-				droit1.setDateDebutOfficielle(RegDate.get(2014, 12, 23));
+				droit1.setDateDebutMetier(RegDate.get(2014, 12, 23));
 				droit1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2014, 9593, 0));
 				droit1.setAyantDroit(pp);
 				droit1.setImmeuble(immeuble2);
@@ -484,7 +485,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateImportInitial, droit0.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
 				assertEquals("Donation", droit0.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(13, 2007, 173, 0), droit0.getNumeroAffaire());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit0.getPart());
@@ -497,7 +498,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateImportInitial, droit1.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit1.getDateFin());
 				assertEquals("Achat", droit1.getMotifDebut());
-				assertEquals(RegDate.get(2014, 12, 23), droit1.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2014, 12, 23), droit1.getDateDebutMetier());
 				assertEquals(new IdentifiantAffaireRF(6, 2014, 9593, 0), droit1.getNumeroAffaire());
 				assertEquals("_8af806fc4a35927c014ae2a6e76041b8", droit1.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 2), droit1.getPart());

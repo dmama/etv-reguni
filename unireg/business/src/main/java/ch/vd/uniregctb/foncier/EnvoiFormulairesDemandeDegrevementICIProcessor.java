@@ -183,7 +183,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 					.filter(demande -> demande.getImmeuble() == immeuble)
 					.collect(Collectors.toList());
 
-			final Optional<Integer> anneeSuivantDebutDroit = Stream.of(droit.getDateDebutOfficielle(), droit.getDateDebut())
+			final Optional<Integer> anneeSuivantDebutDroit = Stream.of(droit.getDateDebutMetier(), droit.getDateDebut())
 					.filter(Objects::nonNull)
 					.findFirst()
 					.map(date -> date.year() + 1);
@@ -346,7 +346,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				+ " AND (RAPP.dateFin IS NULL OR RAPP.dateFin >= :dateTraitement)"
 				+ " AND RAPP.annulationDate IS NULL"
 				+ " AND DT.annulationDate IS NULL"
-				+ " AND DT.dateDebutOfficielle <= :debutAnnee"
+				+ " AND DT.dateDebutMetier <= :debutAnnee"
 				+ " AND (DT.dateFin IS NULL OR DT.dateFin >= :debutAnnee)"
 				+ " ORDER BY DT.immeuble.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
 

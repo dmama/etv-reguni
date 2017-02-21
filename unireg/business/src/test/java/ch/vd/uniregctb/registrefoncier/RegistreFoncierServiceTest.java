@@ -103,7 +103,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
 				assertEquals(new Fraction(1, 3), droit0.getPart());
 				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutOfficielle());
+				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
 				assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
 				assertEquals("Achat", droit0.getMotifDebut());
 				assertEquals("Achat", droit0.getMotifFin());
@@ -116,7 +116,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
 				assertEquals(new Fraction(1, 1), droit1.getPart());
 				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
-				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
 				assertNull(droit1.getDateFin());
 				assertEquals("Achat", droit1.getMotifDebut());
 				assertNull(droit1.getMotifFin());
@@ -172,17 +172,17 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			addDroitPropriete(tiersRF1, immeuble0, null,
 			                  GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  RegDate.get(2004, 5, 21), RegDate.get(2004, 5, 21), null, "Achat", null,
+			                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
 			                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044");
 
 			addDroitPropriete(tiersRF1, immeuble1, null,
 			                  GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  RegDate.get(2008, 3, 1), RegDate.get(2008, 3, 1), null, "Achat", null,
+			                  RegDate.get(2008, 3, 1), null, RegDate.get(2008, 3, 1), null, "Achat", null,
 			                  new IdentifiantAffaireRF(123, 2008, 2, 23), "4782389c8e");
 
 			addDroitPropriete(tiersRF1, immeuble2, null,
 			                  GenrePropriete.COPROPRIETE, new Fraction(1, 3),
-			                  RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2002, 2, 23), "Achat", "Vente",
+			                  RegDate.get(1997, 10, 7), RegDate.get(2002, 2, 23), RegDate.get(1997, 7, 2), null, "Achat", "Vente",
 			                  new IdentifiantAffaireRF(23, 1997, 13, 0), "47e7d7e773");
 
 			final PersonnePhysiqueRF tiersRF2 = addPersonnePhysiqueRF("38383830ae3ff", "Charles", "Widmer", date(1970, 7, 2));
@@ -190,17 +190,17 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			addDroitPropriete(tiersRF2, immeuble3, null,
 			                  GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  RegDate.get(1960, 2, 7), RegDate.get(1960, 2, 7), RegDate.get(1994, 4, 5), "Achat", "Expropriation",
+			                  RegDate.get(1960, 2, 7), RegDate.get(1994, 4, 5), RegDate.get(1960, 2, 7), null, "Achat", "Expropriation",
 			                  new IdentifiantAffaireRF(123, 1960, 4, 3), "48392345234234");
 
 			addDroitPropriete(tiersRF2, immeuble4, null,
 			                  GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  RegDate.get(2003, 5, 1), RegDate.get(2003, 5, 1), null, "Achat", "Vente",
+			                  RegDate.get(2003, 5, 1), null, RegDate.get(2003, 5, 1), null, "Achat", "Vente",
 			                  new IdentifiantAffaireRF(123, 2003, 22, 7), "834838c");
 
 			addDroitPropriete(tiersRF2, immeuble5, null,
 			                  GenrePropriete.COPROPRIETE, new Fraction(1, 3),
-			                  RegDate.get(2010, 6, 6), RegDate.get(2010, 6, 6), null, "Achat", null,
+			                  RegDate.get(2010, 6, 6), null, RegDate.get(2010, 6, 6), null, "Achat", null,
 			                  new IdentifiantAffaireRF(23, 2010, 33, 30), "c83839e");
 
 			return null;
@@ -243,7 +243,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
 				assertEquals(new Fraction(1, 3), droit0.getPart());
 				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
-				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutOfficielle());
+				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
 				assertEquals(RegDate.get(2002, 2, 23), droit0.getDateFin());
 				assertEquals("Achat", droit0.getMotifDebut());
 				assertEquals("Vente", droit0.getMotifFin());
@@ -256,7 +256,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
 				assertEquals(new Fraction(1, 1), droit1.getPart());
 				assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebut());
-				assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2003, 5, 1), droit1.getDateDebutMetier());
 				assertNull(droit1.getDateFin());
 				assertEquals("Achat", droit1.getMotifDebut());
 				assertEquals("Vente", droit1.getMotifFin());
@@ -269,7 +269,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(GenrePropriete.INDIVIDUELLE, droit2.getRegime());
 				assertEquals(new Fraction(1, 1), droit2.getPart());
 				assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebut());
-				assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2004, 5, 21), droit2.getDateDebutMetier());
 				assertNull(droit2.getDateFin());
 				assertEquals("Achat", droit2.getMotifDebut());
 				assertNull(droit2.getMotifFin());
@@ -282,7 +282,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(GenrePropriete.COPROPRIETE, droit3.getRegime());
 				assertEquals(new Fraction(1, 3), droit3.getPart());
 				assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebut());
-				assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebutOfficielle());
+				assertEquals(RegDate.get(2010, 6, 6), droit3.getDateDebutMetier());
 				assertNull(droit3.getDateFin());
 				assertEquals("Achat", droit3.getMotifDebut());
 				assertNull(droit3.getMotifFin());
