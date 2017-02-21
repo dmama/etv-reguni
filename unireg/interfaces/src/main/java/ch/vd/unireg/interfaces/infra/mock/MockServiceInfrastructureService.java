@@ -317,7 +317,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	public CollectiviteAdministrative getACINouvelleEntite() throws ServiceInfrastructureException {
-		return MockCollectiviteAdministrative.ACI_NOUVELLE_ENTITE;
+		return MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION;
 	}
 
 	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
