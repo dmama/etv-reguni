@@ -58,5 +58,9 @@ public class EntityKey {
 	public String toString() {
 		return (type == null ? "(unknown)" : type.getDisplayArticleName()) + " n°" + id;
 	}
+
+	public String toStringWithPreposition() {
+		return (type == null ? "(unknown)" : type.getDisplayPrepositionName()) + " n°" + id;
+	}
 }
 

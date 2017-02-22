@@ -27,6 +27,6 @@ public class EnableEntity extends Delta {
 
 	@Override
 	public String getHtml() {
-		return "Désannulation de " + key;
+		return "Désannulation " + key.toStringWithPreposition();
 	}
 }
