@@ -184,6 +184,7 @@
 				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
 				<entry key="ch.vd.unireg.interfaces.civil.ServiceCivilException" value="errors/errorServiceCivil" />
 				<entry key="ch.vd.unireg.interfaces.organisation.ServiceOrganisationException" value="errors/errorServiceOrganisation" />
+				<entry key="ch.vd.unireg.interfaces.organisation.SiteOrganisationNotFoundException" value="errors/errorServiceOrganisation" />
 				<entry key="ch.vd.uniregctb.type.TypePermisInvalideException" value="errors/permisInvalide" />
 				<entry key="ch.vd.unireg.interfaces.infra.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
 				<entry key="ch.vd.uniregctb.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />

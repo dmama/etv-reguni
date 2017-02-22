@@ -24,7 +24,6 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
-import ch.vd.uniregctb.common.DonneesOrganisationException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -55,7 +54,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
-	public Organisation getOrganisationHistory(long noOrganisation) throws DonneesOrganisationException {
+	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 		return target.getOrganisationHistory(noOrganisation);
 	}
 
