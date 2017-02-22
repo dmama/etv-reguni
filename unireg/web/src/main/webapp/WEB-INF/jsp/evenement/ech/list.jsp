@@ -242,9 +242,8 @@
 			       url: "recyclerVersListe.do",
 			       data: {"id": id},
 			       success: function(data) {
-				       var response = JSON.parse(data);
-				       if (response.message) {
-					       alert(response.message);
+				       if (data.message) {
+					       alert(data.message);
 				       }
 				       open_details(id);
 			       },
