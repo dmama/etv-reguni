@@ -302,7 +302,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
-		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), null, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
+		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    new NumeroIDE("CHE999999998"), null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                    "Fabrication d'objet synthétiques", null, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
