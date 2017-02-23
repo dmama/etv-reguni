@@ -1,0 +1,3 @@
+-- Version
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('7.0.3', '7.0.2_7.0.3_upgrade');
+
