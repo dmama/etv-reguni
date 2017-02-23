@@ -243,27 +243,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 		Assert.assertNotNull(annonceIDE);
 		Assert.assertEquals(ID_ANNONCE, annonceIDE.getNumero().longValue());
-	}
-
-	@Test
-	public void testValidateAnnonceIDE() throws ParseException {
-		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
-		Assert.assertNotNull(annonceIDE);
-		Assert.assertEquals(StatutAnnonce.TRANSMIS, annonceIDE.getStatut().getStatut());
-		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(annonceIDE.getType(), annonceIDE.getDateAnnonce(), annonceIDE.getUtilisateur(), annonceIDE.getTypeDeSite(), annonceIDE.getStatut(),
-		                                                            annonceIDE.getInfoServiceIDEObligEtendues());
-		protoAnnonceIDE.setCommentaire(annonceIDE.getCommentaire());
-		protoAnnonceIDE.setRaisonDeRadiation(annonceIDE.getRaisonDeRadiation());
-		protoAnnonceIDE.setNoIde(annonceIDE.getNoIde());
-		protoAnnonceIDE.setNoIdeRemplacant(annonceIDE.getNoIdeRemplacant());
-		protoAnnonceIDE.setNoIdeEtablissementPrincipal(annonceIDE.getNoIdeEtablissementPrincipal());
-		protoAnnonceIDE.setContenu(annonceIDE.getContenu());
-
-		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(protoAnnonceIDE);
-
-		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
-		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
-		Assert.assertNull(statut.getErreurs());
+		Assert.assertEquals(StatutAnnonce.ACCEPTE_IDE, annonceIDE.getStatut().getStatut());
 	}
 
 	@Test
