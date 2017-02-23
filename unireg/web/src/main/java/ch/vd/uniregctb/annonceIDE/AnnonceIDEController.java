@@ -33,6 +33,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamSorting;
@@ -198,10 +199,17 @@ public class AnnonceIDEController {
 				if (entreprise != null) {
 					annonceView.setNumeroTiersEntreprise(entreprise.getNumero());
 				}
-				final EvenementOrganisation evenementOrganisation = evtOrganisationDAO.getEvenementForNoAnnonceIDE(annonce.getNumero());
-				if (evenementOrganisation != null) {
-					annonceView.setNoEvtOrganisation(evenementOrganisation.getNoEvenement());
-					annonceView.setIdEvtOrganisation(evenementOrganisation.getId());
+				try {
+					final EvenementOrganisation evenementOrganisation = evtOrganisationDAO.getEvenementForNoAnnonceIDE(annonce.getNumero());
+					if (evenementOrganisation != null) {
+						annonceView.setNoEvtOrganisation(evenementOrganisation.getNoEvenement());
+						annonceView.setIdEvtOrganisation(evenementOrganisation.getId());
+					}
+				}
+				catch (Exception e) {
+					final String message = String.format("La récupération de l'événement RCEnt correspondant à l'annonce IDE n°%d a rencontré un problème: %s", annonce.getNumero(), e.getMessage());
+					Audit.warn(message);
+					Flash.warning(message);
 				}
 			}
 			content.add(annonceView);
