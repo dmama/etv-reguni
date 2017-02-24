@@ -485,6 +485,7 @@
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
 		<column>DATE_DEBUT_METIER</column>
+		<column>DATE_FIN_METIER</column>
 		<column>MASTER_ID_RF</column>
 		<column>MOTIF_DEBUT_CODE</column>
 		<column>MOTIF_FIN_CODE</column>
@@ -506,6 +507,7 @@
 			<value>2016-12-14 11:18:53.932000</value>
 			<value>TraiterMutationsRFJob</value>
 			<value>20160913</value>
+			<null />
 			<null />
 			<null />
 			<value>1f109152381059670138105fe7fe3932</value>
@@ -532,6 +534,7 @@
 			<value>20160913</value>
 			<null />
 			<value>19810306</value>
+			<null />
 			<value>1f109152381059670138105f8f4b388d</value>
 			<value>Succession</value>
 			<null />
@@ -556,6 +559,7 @@
 			<value>20160913</value>
 			<null />
 			<value>19810306</value>
+			<null />
 			<value>1f109152381059670138105f8f4c3890</value>
 			<value>Succession</value>
 			<null />
@@ -578,8 +582,9 @@
 			<value>2016-12-14 11:21:47.655000</value>
 			<value>TraiterMutationsRFJob</value>
 			<value>20160913</value>
-			<null />
+			<value>20171109</value>
 			<value>19810306</value>
+			<value>20171017</value>
 			<value>1f109152381059670138105f8f4c388e</value>
 			<value>Succession</value>
 			<null />
