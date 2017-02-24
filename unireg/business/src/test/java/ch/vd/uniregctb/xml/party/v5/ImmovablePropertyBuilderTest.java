@@ -73,8 +73,8 @@ public class ImmovablePropertyBuilderTest {
 		final SurfaceTotaleRF surfaceTotale = newSurfaceTotaleRF(dateAchat, 813);
 		final SurfaceAuSolRF surfaceAuSol0 = newSurfaceAuSolRF(dateAchat, 220, "Villa");
 		final SurfaceAuSolRF surfaceAuSol1 = newSurfaceAuSolRF(dateAchat, 593, "Surface bétonnée");
-		final EstimationRF estimation0 = newEstimationRF(dateAchat, dateConstruction.getOneDayBefore(), RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "bonne");
-		final EstimationRF estimation1 = newEstimationRF(dateConstruction, null, RegDate.get(2004, 1, 1), null, false, 1_200_000L, "très bonne");
+		final EstimationRF estimation0 = newEstimationRF(dateAchat, dateConstruction.getOneDayBefore(), RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "bonne", null);
+		final EstimationRF estimation1 = newEstimationRF(dateConstruction, null, RegDate.get(2004, 1, 1), null, false, 1_200_000L, "04RG", 2004);
 		final BatimentRF batiment = newBatimentRF(332L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, 220);
 
@@ -124,8 +124,8 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = condo.getTaxEstimates();
 		assertEquals(2, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "bonne", taxEstimates.get(0));
-		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "très bonne", taxEstimates.get(1));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, null, taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "2004", taxEstimates.get(1));
 
 		final List<BuildingSetting> settings = condo.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -145,7 +145,7 @@ public class ImmovablePropertyBuilderTest {
 		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
 		final SurfaceTotaleRF surfaceTotale = newSurfaceTotaleRF(dateAchat, 813);
 		final SurfaceAuSolRF surfaceAuSol0 = newSurfaceAuSolRF(dateAchat, 800, "Immeuble");
-		final EstimationRF estimation0 = newEstimationRF(dateAchat, null, RegDate.get(2003, 1, 1), null, false, 2_500_000L, "et chez vous, ça va ?");
+		final EstimationRF estimation0 = newEstimationRF(dateAchat, null, RegDate.get(2003, 1, 1), null, false, 2_500_000L, "2003", 2003);
 		final BatimentRF batiment = newBatimentRF(458238L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, null);
 
@@ -193,7 +193,7 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = coos.getTaxEstimates();
 		assertEquals(1, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, "et chez vous, ça va ?", taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, "2003", taxEstimates.get(0));
 
 		final List<BuildingSetting> settings = coos.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -213,7 +213,7 @@ public class ImmovablePropertyBuilderTest {
 		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
 		final SurfaceTotaleRF surfaceTotale = newSurfaceTotaleRF(dateAchat, 813);
 		final SurfaceAuSolRF surfaceAuSol0 = newSurfaceAuSolRF(dateAchat, 800, "Immeuble");
-		final EstimationRF estimation0 = newEstimationRF(dateAchat, null, RegDate.get(2003, 1, 1), null, false, 2_500_000L, "et chez vous, ça va ?");
+		final EstimationRF estimation0 = newEstimationRF(dateAchat, null, RegDate.get(2003, 1, 1), null, false, 2_500_000L, "2003", 2003);
 		final BatimentRF batiment = newBatimentRF(458238L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, null);
 
@@ -259,7 +259,7 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = dpr.getTaxEstimates();
 		assertEquals(1, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, "et chez vous, ça va ?", taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, "2003", taxEstimates.get(0));
 
 		final List<BuildingSetting> settings = dpr.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -279,7 +279,7 @@ public class ImmovablePropertyBuilderTest {
 		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
 		final SurfaceTotaleRF surfaceTotale = newSurfaceTotaleRF(dateAchat, 813);
 		final SurfaceAuSolRF surfaceAuSol0 = newSurfaceAuSolRF(dateAchat, 800, "Immeuble");
-		final EstimationRF estimation0 = newEstimationRF(dateAchat, null, RegDate.get(2003, 1, 1), null, false, 2_500_000L, "tatatiiiin !");
+		final EstimationRF estimation0 = newEstimationRF(dateAchat, null, RegDate.get(2003, 1, 1), null, false, 2_500_000L, "tatatiiiin !", null);
 		final BatimentRF batiment = newBatimentRF(458238L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, null);
 
@@ -325,7 +325,7 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = mine.getTaxEstimates();
 		assertEquals(1, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, "tatatiiiin !", taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, null, taxEstimates.get(0));
 
 		final List<BuildingSetting> settings = mine.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -347,8 +347,8 @@ public class ImmovablePropertyBuilderTest {
 		final SurfaceTotaleRF surfaceTotale = newSurfaceTotaleRF(dateAchat, 813);
 		final SurfaceAuSolRF surfaceAuSol0 = newSurfaceAuSolRF(dateAchat, 220, "Villa");
 		final SurfaceAuSolRF surfaceAuSol1 = newSurfaceAuSolRF(dateAchat, 593, "Surface bétonnée");
-		final EstimationRF estimation0 = newEstimationRF(dateAchat, dateConstruction.getOneDayBefore(), RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "bonne");
-		final EstimationRF estimation1 = newEstimationRF(dateConstruction, null, RegDate.get(2004, 1, 1), null, false, 1_200_000L, "très bonne");
+		final EstimationRF estimation0 = newEstimationRF(dateAchat, dateConstruction.getOneDayBefore(), RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "RG03", 2003);
+		final EstimationRF estimation1 = newEstimationRF(dateConstruction, null, RegDate.get(2004, 1, 1), null, false, 1_200_000L, "2004", 2004);
 		final BatimentRF batiment = newBatimentRF(332L);
 		final ImplantationRF implantation = newImplantationRF(dateAchat, batiment, 220);
 
@@ -396,8 +396,8 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = realEstate.getTaxEstimates();
 		assertEquals(2, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "bonne", taxEstimates.get(0));
-		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "très bonne", taxEstimates.get(1));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "2003", taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "2004", taxEstimates.get(1));
 
 		final List<BuildingSetting> settings = realEstate.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -474,16 +474,17 @@ public class ImmovablePropertyBuilderTest {
 	}
 
 	@NotNull
-	private static EstimationRF newEstimationRF(RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, boolean enRevision, long montant, String reference) {
-		final EstimationRF estimation0 = new EstimationRF();
-		estimation0.setDateDebut(dateDebut);
-		estimation0.setDateFin(dateFin);
-		estimation0.setDateDebutMetier(dateDebutMetier);
-		estimation0.setDateFinMetier(dateFinMetier);
-		estimation0.setEnRevision(enRevision);
-		estimation0.setMontant(montant);
-		estimation0.setReference(reference);
-		return estimation0;
+	private static EstimationRF newEstimationRF(RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, boolean enRevision, long montant, String reference, Integer anneeReference) {
+		final EstimationRF estimation = new EstimationRF();
+		estimation.setDateDebut(dateDebut);
+		estimation.setDateFin(dateFin);
+		estimation.setDateDebutMetier(dateDebutMetier);
+		estimation.setDateFinMetier(dateFinMetier);
+		estimation.setEnRevision(enRevision);
+		estimation.setMontant(montant);
+		estimation.setReference(reference);
+		estimation.setAnneeReference(anneeReference);
+		return estimation;
 	}
 
 	@NotNull

@@ -52,6 +52,7 @@ public abstract class EstimationRFHelper {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setMontant(amtlicheBewertung.getAmtlicherWert());
 		estimation.setReference(amtlicheBewertung.getProtokollNr());
+		estimation.setAnneeReference(determineAnneeReference(amtlicheBewertung.getProtokollNr()));
 		estimation.setDateInscription(amtlicheBewertung.getProtokollDatum());
 		estimation.setDateDebutMetier(determineDateDebutMetier(amtlicheBewertung.getProtokollNr(), amtlicheBewertung.getProtokollDatum()));
 		estimation.setDateFinMetier(null);  // à calculer plus tard
@@ -66,6 +67,17 @@ public abstract class EstimationRFHelper {
 			return null;
 		}
 		return newEstimationRF(amtlicheBewertung);
+	}
+
+	/**
+	 * [SIFISC-23478] Détermine l'année de référence.
+	 *
+	 * @param reference le code de référence de l'estimation fiscale
+	 * @return l'année déduite; ou <b>null</b> si la référence est nulle ou inutilisable.
+	 */
+	public static Integer determineAnneeReference(@Nullable String reference) {
+		// note : on ne tient pas compte de la date d'inscription volontairement
+		return getAnneeReference(reference, null).orElse(null);
 	}
 
 	/**

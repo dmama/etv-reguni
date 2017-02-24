@@ -424,6 +424,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(estimation.getDateFin());
 					assertEquals(Long.valueOf(30000), estimation.getMontant());
 					assertEquals("2002", estimation.getReference());
+					assertEquals(Integer.valueOf(2002), estimation.getAnneeReference());
 					assertNull(estimation.getDateInscription());
 					assertEquals(RegDate.get(2002, 1, 1), estimation.getDateDebutMetier());
 					assertNull(estimation.getDateFinMetier());
@@ -743,6 +744,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFin());
 					assertEquals(Long.valueOf(30000), estimation.getMontant());
 					assertEquals("2002", estimation.getReference());
+					assertEquals(Integer.valueOf(2002), estimation.getAnneeReference());
 					assertNull(estimation.getDateInscription());
 					assertEquals(RegDate.get(2002, 1, 1), estimation.getDateDebutMetier());
 					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFinMetier());

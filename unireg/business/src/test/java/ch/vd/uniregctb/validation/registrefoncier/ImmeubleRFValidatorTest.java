@@ -64,6 +64,7 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(260000L);
 				estimation.setReference("RG93");
+				estimation.setAnneeReference(1993);
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
 
@@ -113,6 +114,7 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 				estimation.setDateFin(dateRadiation);
 				estimation.setMontant(260000L);
 				estimation.setReference("RG93");
+				estimation.setAnneeReference(1993);
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
 
@@ -163,6 +165,7 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 					estimation.setDateFin(dateRadiation);
 					estimation.setMontant(260000L);
 					estimation.setReference("RG93");
+					estimation.setAnneeReference(1993);
 					estimation.setEnRevision(false);
 					bienFond.addEstimation(estimation);
 
