@@ -205,6 +205,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
@@ -443,6 +444,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
@@ -623,6 +625,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 		final HashMap<String, Object> params = new HashMap<>();
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
+		params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_IDENTIFICATION_JOB, Boolean.FALSE);
 
 		final JobDefinition job = batchScheduler.startJob(TraiterMutationsRFJob.NAME, params);
