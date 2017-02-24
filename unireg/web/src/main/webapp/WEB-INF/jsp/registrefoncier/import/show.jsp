@@ -95,19 +95,19 @@
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.mutations.trouves"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.mutations.trouves"/></span></display:setProperty>
 
-				<display:column titleKey="label.id.event.rf" sortable="true" sortProperty="id" class="import-id" >
+				<display:column titleKey="label.id.event.rf" sortable="true" sortName="id" class="import-id" >
 					${mutation.id}
 				</display:column>
-				<display:column titleKey="label.etat.event.rf" sortable="true" sortProperty="etat">
+				<display:column titleKey="label.etat.event.rf" sortable="true" sortName="etat">
 					<fmt:message key="option.rf.etat.evenement.${mutation.etat}" />
 				</display:column>
-				<display:column titleKey="label.type.entite.rf" sortable="true" sortProperty="etat">
+				<display:column titleKey="label.type.entite.rf" sortable="true" sortName="typeEntite">
 					<fmt:message key="option.rf.type.entite.${mutation.typeEntite}" />
 				</display:column>
-				<display:column titleKey="label.type.mutation.rf" sortable="true" sortProperty="etat">
+				<display:column titleKey="label.type.mutation.rf" sortable="true" sortName="typeMutation">
 					<fmt:message key="option.rf.type.mutation.${mutation.typeMutation}" />
 				</display:column>
-				<display:column titleKey="label.id.rf" sortable="true" sortProperty="etat">
+				<display:column titleKey="label.id.rf" sortable="true" sortName="idRF">
 					<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
 						<c:if test="${mutation.entityId != null}">
 							<unireg:linkTo name="${mutation.idRF}" action="/supergra/entity/show.do" params="{id:${mutation.entityId},class:'ImmeubleRF'}"/>
