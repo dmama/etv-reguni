@@ -458,6 +458,7 @@ public class ImmeubleRFDetectorTest {
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setMontant(250000L);
 			estimation.setReference("RG97");
+			estimation.setAnneeReference(1997);
 			estimation.setDateInscription(RegDate.get(1997, 1, 1));
 			estimation.setEnRevision(false);
 			estimation.setDateDebut(RegDate.get(2000, 1, 1));
@@ -739,6 +740,7 @@ public class ImmeubleRFDetectorTest {
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setMontant(450000L);
 			estimation.setReference("2015");
+			estimation.setAnneeReference(2015);
 			estimation.setDateInscription(RegDate.get(2015, 7, 1));
 			estimation.setEnRevision(false);
 			estimation.setDateDebut(RegDate.get(2000, 1, 1));

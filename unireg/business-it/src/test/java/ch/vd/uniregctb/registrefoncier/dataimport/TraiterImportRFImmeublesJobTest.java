@@ -422,11 +422,11 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				final CommuneRF corcelles = communeRFDAO.save(newCommuneRF(308, "Corcelles-près-Payerne", 5557));
 
 				// données équivalentes au fichier export_immeubles_rf_hebdo.xml
-				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707);
-				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2120000L, "2016", RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, RegDate.get(2010, 1, 1),
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2120000L, "2016", 2016, RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, RegDate.get(2010, 1, 1),
 				                                                                                          4896);
-				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
-				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 3601, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), RegDate.get(2015, 1, 1), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", 2016, RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 3601, 7, 13, 550L, "2015", 2015, RegDate.get(2015, 10, 22), RegDate.get(2015, 1, 1), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
 
 				immeubleRFDAO.save(bienFond);
 				immeubleRFDAO.save(droitDistinctEtPermanent);
@@ -512,13 +512,13 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 
 				// données partiellement différentes de celles du fichier export_immeubles_rf_hebdo.xml
 				// - données identiques
-				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, RegDate.get(1993, 1, 1), false, false, dateImportInitial, 707);
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null, RegDate.get(1993, 1, 1), false, false, dateImportInitial, 707);
 				// - estimation fiscale différente
-				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2000000L, "2015", RegDate.get(2015, 1, 1), RegDate.get(2015, 1, 1), false, dateImportInitial, 4896);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2000000L, "2015", 2015, RegDate.get(2015, 1, 1), RegDate.get(2015, 1, 1), false, dateImportInitial, 4896);
 				// - données identiques
-				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, new Fraction(293, 1000), dateImportInitial);
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", 2016, RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, new Fraction(293, 1000), dateImportInitial);
 				// - numéro de parcelle différente
-				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 777, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), RegDate.get(2015, 1, 1), false, new Fraction(1, 18), dateImportInitial);
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 777, 7, 13, 550L, "2015", 2015, RegDate.get(2015, 10, 22), RegDate.get(2015, 1, 1), false, new Fraction(1, 18), dateImportInitial);
 
 				immeubleRFDAO.save(bienFond);
 				immeubleRFDAO.save(droitDistinctEtPermanent);
@@ -722,11 +722,11 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 				final CommuneRF corcelles = communeRFDAO.save(newCommuneRF(308, "Corcelles-près-Payerne", 5557));
 
 				// données équivalentes au fichier export_immeubles_rf_hebdo.xml
-				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707);
-				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2120000L, "2016", RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, RegDate.get(2010, 1, 1),
+				final BienFondRF bienFond = newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707);
+				final DroitDistinctEtPermanentRF droitDistinctEtPermanent = newDroitDistinctEtPermanentRF("_8af806cc3971feb60139e36d062130f3", "CH729253834531", oron, 692, 2120000L, "2016", 2016, RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, RegDate.get(2010, 1, 1),
 				                                                                                          4896);
-				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
-				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 3601, 7, 13, 550L, "2015", RegDate.get(2015, 10, 22), RegDate.get(2015, 1, 1), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
+				final ProprieteParEtageRF ppe = newProprieteParEtageRF("_8af806fc45d223e60149c23f475365d5", "CH336583651349", boulens, 19, 4, 495000L, "2016", 2016, RegDate.get(2016, 9, 13), RegDate.get(2016, 1, 1), false, new Fraction(293, 1000), RegDate.get(2010, 1, 1));
+				final PartCoproprieteRF copropriete = newPartCoproprieteRF("_8af806cc5043853201508e1e8a3a1a71", "CH516579658411", corcelles, 3601, 7, 13, 550L, "2015", 2015, RegDate.get(2015, 10, 22), RegDate.get(2015, 1, 1), false, new Fraction(1, 18), RegDate.get(2010, 1, 1));
 
 				immeubleRFDAO.save(bienFond);
 				immeubleRFDAO.save(droitDistinctEtPermanent);

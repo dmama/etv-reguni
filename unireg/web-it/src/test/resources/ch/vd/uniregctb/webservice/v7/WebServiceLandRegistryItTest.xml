@@ -280,6 +280,7 @@
 		<column>EN_REVISION</column>
 		<column>MONTANT</column>
 		<column>REFERENCE</column>
+		<column>ANNEE_REFERENCE</column>
 		<column>DATE_DEBUT_METIER</column>
 		<column>DATE_FIN_METIER</column>
 		<column>IMMEUBLE_ID</column>
@@ -297,6 +298,7 @@
 			<value>0</value>
 			<value>570000</value>
 			<value>RG94</value>
+			<value>1994</value>
 			<value>19940101</value>
 			<null />
 			<value>264310664</value>

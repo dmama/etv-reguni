@@ -333,6 +333,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
+		assertEquals(Integer.valueOf(2016), estimation.getAnneeReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
 		assertNull(estimation.getDateFinMetier());
@@ -389,6 +390,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
+		assertEquals(Integer.valueOf(2016), estimation.getAnneeReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
 		assertNull(estimation.getDateFinMetier());
@@ -444,6 +446,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
+		assertEquals(Integer.valueOf(2016), estimation.getAnneeReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
 		assertNull(estimation.getDateFinMetier());
@@ -502,6 +505,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
+		assertEquals(Integer.valueOf(2016), estimation.getAnneeReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
 		assertNull(estimation.getDateFinMetier());
@@ -558,6 +562,7 @@ public class ImmeubleRFHelperTest {
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
 		assertEquals("2016", estimation.getReference());
+		assertEquals(Integer.valueOf(2016), estimation.getAnneeReference());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
 		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
 		assertNull(estimation.getDateFinMetier());
@@ -600,6 +605,56 @@ public class ImmeubleRFHelperTest {
 
 		final Set<EstimationRF> estimations = ppe.getEstimations();
 		assertEmpty(estimations);
+	}
+
+	/**
+	 * [SIFISC-23478] Vérifie que l'année de référence est bien calculée à nulle si la référence n'est pas exploitable.
+	 */
+	@Test
+	public void testNewImmeubleAvecEstimationRevisionInutilisable() throws Exception {
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+		grundstueckNummer.setIndexNr2(37823);
+		grundstueckNummer.setIndexNr3(82);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(500000L);
+		amtlicheBewertung.setProtokollNr("70000");  // <-- référence non-exploitable
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2016, 1, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(322);
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setLigUnterartEnum("cfa");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
+
+		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
+		assertEquals(BienFondRF.class, immeuble.getClass());
+
+		final BienFondRF bienFond = (BienFondRF) immeuble;
+		assertEquals("382929efa218", bienFond.getIdRF());
+		assertTrue(bienFond.isCfa());
+		assertEquals("CH282891891", bienFond.getEgrid());
+
+		final Set<EstimationRF> estimations = bienFond.getEstimations();
+		assertEquals(1, estimations.size());
+		final EstimationRF estimation = estimations.iterator().next();
+		assertEquals(Long.valueOf(500000L), estimation.getMontant());
+		assertEquals("70000", estimation.getReference());
+		assertNull(estimation.getAnneeReference()); // <--- l'année de référence est nulle
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateInscription());
+		assertEquals(RegDate.get(2016, 1, 1), estimation.getDateDebutMetier());
+		assertNull(estimation.getDateFinMetier());
+		assertFalse(estimation.isEnRevision());
 	}
 
 	/**

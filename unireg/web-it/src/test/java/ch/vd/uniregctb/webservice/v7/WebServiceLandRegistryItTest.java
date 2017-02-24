@@ -86,7 +86,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 		final List<TaxEstimate> taxEstimates = realEstate.getTaxEstimates();
 		assertEquals(1, taxEstimates.size());
-		assertTaxEstimation(RegDate.get(1994, 1, 1), null, 570_000L, "RG94", false, taxEstimates.get(0));
+		assertTaxEstimation(RegDate.get(1994, 1, 1), null, 570_000L, "1994", false, taxEstimates.get(0));
 
 		final List<BuildingSetting> settings = realEstate.getBuildingSettings();
 		assertEquals(1, settings.size());

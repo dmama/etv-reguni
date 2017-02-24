@@ -353,7 +353,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données équivalentes au fichier export_droits_rf_hebdo.xml
-				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
 				bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("029191d4fec44", 123344L, 238282L, "Peuplu", "Jean", RegDate.get(1955, 5, 15));
@@ -469,7 +469,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données partiellement différentes de celles du fichier export_droits_rf_hebdo.xml
-				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
 				bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("029191d4fec44", 123344L, 238282L, "Peuplu", "Jean", RegDate.get(1955, 5, 15));
@@ -670,7 +670,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données équivalentes au fichier export_droits_rf_hebdo.xml
-				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
 				bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("029191d4fec44", 123344L, 238282L, "Peuplu", "Jean", RegDate.get(1955, 5, 15));

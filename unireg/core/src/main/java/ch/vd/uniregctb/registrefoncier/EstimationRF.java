@@ -56,13 +56,23 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	private String reference;
 
 	/**
+	 * L'année de référence déduite du numéro de référence.
+	 * <p/>
+	 * <b>Note:</b> cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.
+	 * Elle peut être nulle s'il n'a pas été possible de déduire une valeur.
+	 */
+	@Nullable
+	private Integer anneeReference;
+
+	/**
 	 * La date d'inscription dans le registre foncier de l'estimation fiscale.
 	 */
 	private RegDate dateInscription;
 
 	/**
 	 * Le date de début de validité <i>métier</i>. Cette date est déduite du numéro de référence ou de la date d'inscription, en fonction des données renseignées.
-	 * <b>Cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.</b>
+	 * <p/>
+	 * <b>Note:</b> cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.
 	 * Elle peut être nulle s'il n'a pas été possible de déduire une valeur.
 	 */
 	@Nullable
@@ -70,8 +80,9 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 
 	/**
 	 * Le date de fin de validité <i>métier</i>. Cette date est déduite de la date de début de validité de l'estimation suivante.
-	 * <b>Cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.</b>
-	 * Elle peut être nulle s'il la date de début suivante est nulle ou n'existe pas.
+	 * <p/>
+	 * <b>Note:</b> cette date ne fait pas partie des données reçues du registre foncier, elle est calculée par Unireg.
+	 * Elle peut être nulle s'il n'a pas été possible de déduire une valeur.
 	 */
 	@Nullable
 	private RegDate dateFinMetier;
@@ -120,6 +131,16 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 
 	public void setReference(@Nullable String reference) {
 		this.reference = reference;
+	}
+
+	@Nullable
+	@Column(name = "ANNEE_REFERENCE")
+	public Integer getAnneeReference() {
+		return anneeReference;
+	}
+
+	public void setAnneeReference(@Nullable Integer anneeReference) {
+		this.anneeReference = anneeReference;
 	}
 
 	@Column(name = "DATE_INSCRIPTION")

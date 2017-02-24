@@ -158,6 +158,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation0.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
+				assertEquals(Integer.valueOf(1993), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(1993, 1, 1), estimation0.getDateDebutMetier());
 				assertNull(estimation0.getDateFinMetier());
@@ -269,6 +270,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(240000L);
 				estimation.setReference("RG88");
+				estimation.setAnneeReference(1988);
 				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
@@ -336,6 +338,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFin());
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
+				assertEquals(Integer.valueOf(1988), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(1988, 1, 1), estimation0.getDateDebutMetier());
 				assertEquals(RegDate.get(1992, 12, 31), estimation0.getDateFinMetier());
@@ -347,6 +350,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation1.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation1.getMontant());
 				assertEquals("RG93", estimation1.getReference());
+				assertEquals(Integer.valueOf(1993), estimation1.getAnneeReference());
 				assertNull(estimation1.getDateInscription());
 				assertEquals(RegDate.get(1993, 1, 1), estimation1.getDateDebutMetier());
 				assertNull(estimation1.getDateFinMetier());
@@ -396,6 +400,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(240000L);
 				estimation.setReference("RG88");
+				estimation.setAnneeReference(1988);
 				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
@@ -447,6 +452,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation0.getDateFin());
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
+				assertEquals(Integer.valueOf(1988), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(1988, 1, 1), estimation0.getDateDebutMetier());
 				assertNull(estimation0.getDateFinMetier());
@@ -487,6 +493,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(240000L);
 				estimation.setReference("RG93");
+				estimation.setAnneeReference(1993);
 				estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
@@ -541,6 +548,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation0.getDateFin());
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
+				assertEquals(Integer.valueOf(1993), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(1993, 1, 1), estimation0.getDateDebutMetier());
 				assertNull(estimation0.getDateFinMetier());
@@ -553,6 +561,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation1.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation1.getMontant());
 				assertEquals("RG93", estimation1.getReference());
+				assertEquals(Integer.valueOf(1993), estimation1.getAnneeReference());
 				assertNull(estimation1.getDateInscription());
 				assertEquals(RegDate.get(1993, 1, 1), estimation1.getDateDebutMetier());
 				assertNull(estimation1.getDateFinMetier());
@@ -594,6 +603,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(0L);
 				estimation.setReference("2015");
+				estimation.setAnneeReference(2015);
 				estimation.setDateDebutMetier(RegDate.get(2015, 1, 1));
 				estimation.setEnRevision(true);
 				bienFond.addEstimation(estimation);
@@ -648,6 +658,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFin());
 				assertEquals(Long.valueOf(0), estimation0.getMontant());
 				assertEquals("2015", estimation0.getReference());
+				assertEquals(Integer.valueOf(2015), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(2015, 1, 1), estimation0.getDateDebutMetier());
 				assertEquals(RegDate.get(1992, 12, 31), estimation0.getDateFinMetier());
@@ -660,6 +671,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation1.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation1.getMontant());
 				assertEquals("RG93", estimation1.getReference());
+				assertEquals(Integer.valueOf(1993), estimation1.getAnneeReference());
 				assertNull(estimation1.getDateInscription());
 				assertEquals(RegDate.get(1993, 1, 1), estimation1.getDateDebutMetier());
 				assertNull(estimation1.getDateFinMetier());
@@ -701,6 +713,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(260000L);
 				estimation.setReference("RG93");
+				estimation.setAnneeReference(1993);
 				estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
@@ -764,6 +777,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertNull(estimation0.getDateFin());
 				assertEquals(Long.valueOf(260000), estimation0.getMontant());
 				assertEquals("RG93", estimation0.getReference());
+				assertEquals(Integer.valueOf(1993), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(1993, 1, 1), estimation0.getDateDebutMetier());
 				assertNull(estimation0.getDateFinMetier());
@@ -823,6 +837,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
 				estimation.setMontant(240000L);
 				estimation.setReference("RG88");
+				estimation.setAnneeReference(1988);
 				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
@@ -882,6 +897,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFin());
 				assertEquals(Long.valueOf(240000), estimation0.getMontant());
 				assertEquals("RG88", estimation0.getReference());
+				assertEquals(Integer.valueOf(1988), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(1988, 1, 1), estimation0.getDateDebutMetier());
 				assertEquals(RegDate.get(2016, 9, 30), estimation0.getDateFinMetier());
@@ -927,6 +943,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setDateFin(veilleImport);
 				estimation.setMontant(260000L);
 				estimation.setReference("RG93");
+				estimation.setAnneeReference(1993);
 				estimation.setEnRevision(false);
 				bienFond.addEstimation(estimation);
 
