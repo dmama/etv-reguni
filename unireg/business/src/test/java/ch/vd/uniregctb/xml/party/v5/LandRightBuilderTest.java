@@ -43,9 +43,11 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
-		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
+		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setMotifDebut("Achat");
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit.setRegime(GenrePropriete.COMMUNE);
 		droit.setCommunaute(communaute);
 		droit.setPart(new Fraction(2, 5));
@@ -62,7 +64,7 @@ public class LandRightBuilderTest {
 		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(2, 5, landOwnershipRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
-		assertNull(landOwnershipRight.getDateTo());
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(landOwnershipRight.getDateTo()));
 		assertEquals("Achat", landOwnershipRight.getStartReason());
 		assertNull(landOwnershipRight.getEndReason());
 		assertCaseIdentifier(21, "2016/322/3", landOwnershipRight.getCaseIdentifier());
@@ -81,9 +83,11 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
-		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
+		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setMotifDebut("Achat");
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit.setCommunaute(null);
 		droit.setPart(new Fraction(3, 5));
@@ -100,7 +104,7 @@ public class LandRightBuilderTest {
 		assertEquals(OwnershipType.SOLE_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(3, 5, landOwnershipRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
-		assertNull(landOwnershipRight.getDateTo());
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(landOwnershipRight.getDateTo()));
 		assertEquals("Achat", landOwnershipRight.getStartReason());
 		assertNull(landOwnershipRight.getEndReason());
 		assertCaseIdentifier(21, "2016/322/3", landOwnershipRight.getCaseIdentifier());
