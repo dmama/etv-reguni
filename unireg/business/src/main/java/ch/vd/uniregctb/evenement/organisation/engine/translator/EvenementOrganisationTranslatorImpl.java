@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.NonUniqueResultException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -264,6 +265,28 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 						)
 				);
 			}
+			try {
+				final EvenementOrganisation evenementOrganisation = evenementOrganisationService.getEvenementForNoAnnonceIDE(noAnnonceIDE);
+				if (event.getId() != evenementOrganisation.getId()) {
+					final String message =
+							String.format("Un événement RCEnt est déjà associé à l'annonce à l'IDE n°%d. Le présent événement n°%d ne peut lui aussi " +
+									              "provenir de cette annonce à l'IDE. C'est un bug du registre civil. Traitement manuel.",
+							              event.getNoEvenement(), noAnnonceIDE
+							);
+					Audit.error(event.getNoEvenement(), message);
+					throw new EvenementOrganisationException(message);
+				}
+			}
+			catch (NonUniqueResultException e) {
+				final String message =
+						String.format("Un ou plusieurs précédant événements RCEnt sont déjà associés à l'annonce à l'IDE n°%d. Le présent événement n°%d ne peut lui aussi " +
+								              "provenir de cette annonce à l'IDE. C'est un bug du registre civil. Traitement manuel.",
+						              event.getNoEvenement(), noAnnonceIDE
+						);
+				Audit.error(event.getNoEvenement(), message);
+				throw new EvenementOrganisationException(message);
+			}
+
 			evenements.add(new RetourAnnonceIDE(event, organisation, entreprise, context, options, annonceIDE));
 			// Pas question de traiter normallement, on connait déjà les changements.
 			evaluateStrategies = false;

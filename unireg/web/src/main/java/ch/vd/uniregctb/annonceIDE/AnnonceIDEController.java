@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.NonUniqueResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -187,6 +188,7 @@ public class AnnonceIDEController {
 
 		// on adapte les annonces
 		final List<AnnonceIDEView> content = new ArrayList<>(annonces.getNumberOfElements());
+		final List<String> messages = new ArrayList<>();
 		for (AnnonceIDE annonce : annonces) {
 			// On récupère les informations de tiers entreprise et de d'événement RCEnt en retour, si disponible pour le dernier.
 			final Date dateAnnonce = annonce.getDateAnnonce();
@@ -206,13 +208,16 @@ public class AnnonceIDEController {
 						annonceView.setIdEvtOrganisation(evenementOrganisation.getId());
 					}
 				}
-				catch (Exception e) {
-					final String message = String.format("La récupération de l'événement RCEnt correspondant à l'annonce IDE n°%d a rencontré un problème: %s", annonce.getNumero(), e.getMessage());
-					Audit.warn(message);
-					Flash.warning(message);
+				catch (NonUniqueResultException e) {
+					final String message = String.format("Plusieurs événements RCEnt sont associés à l'annonce à l'IDE n°%d. Impossible d'afficher le numéro d'événement.", annonce.getNumero());
+					Audit.error(message);
+					messages.add(message);
 				}
 			}
 			content.add(annonceView);
+		}
+		if (!messages.isEmpty()) {
+			Flash.warning(String.join("\n", messages));
 		}
 
 		// on renseigne le modèle

@@ -88,4 +88,12 @@ public interface EvenementOrganisationService {
 	 */
 	@NotNull
 	List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation);
+
+	/**
+	 * Renvoie l'événement organisation en base Unireg correspondant au numéro d'annonce IDE.
+	 *
+	 * @param noAnnonce Le numéro de l'annonce à l'IDE
+	 * @return L'événement correspondant, ou <code>null</code> si aucune ne correspond
+	 */
+	EvenementOrganisation getEvenementForNoAnnonceIDE(long noAnnonce);
 }
