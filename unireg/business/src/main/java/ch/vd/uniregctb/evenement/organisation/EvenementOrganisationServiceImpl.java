@@ -94,4 +94,11 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 	public List<EvenementOrganisation> evenementsPourDateValeurEtOrganisation(RegDate date, Long noOrganisation) {
 		return arrangeAndSort(evenementOrganisationDAO.evenementsPourDateValeurEtOrganisation(date, noOrganisation));
 	}
+
+	@Override
+	public EvenementOrganisation getEvenementForNoAnnonceIDE(long noAnnonce) {
+		return evenementOrganisationDAO.getEvenementForNoAnnonceIDE(noAnnonce);
+	}
+
+
 }
