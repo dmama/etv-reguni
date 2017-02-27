@@ -31,9 +31,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -50,7 +48,6 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.EstimationRFHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -119,6 +116,10 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 		return rapportFinal;
 	}
 
+	private static Optional<Integer> getAnneeDebutValidite(EstimationRF estimationRF) {
+		return Optional.ofNullable(estimationRF.getDateDebutMetier()).map(RegDate::year);
+	}
+
 	private void traiterContribuable(long noContribuable,
 	                                 List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble> idsDroitImmeuble,
 	                                 EnvoiFormulairesDemandeDegrevementICIResults rapport,
@@ -162,9 +163,10 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// est celle qui correspond à l'année la plus grande inférieure ou égale à l'année de la date de traitement
 			final NavigableMap<Integer, EstimationRF> sortedEstimations = immeuble.getEstimations().stream()
 					.filter(AnnulableHelper::nonAnnule)
-					.map(estim -> Pair.of(EstimationRFHelper.getAnneeReference(estim.getReference(), estim.getDateInscription()), estim))
+					.map(estim -> Pair.of(getAnneeDebutValidite(estim), estim))
 					.filter(pair -> pair.getKey().isPresent())
-					.collect(Collectors.toMap(pair -> pair.getKey().get(),
+					.map(pair -> Pair.of(pair.getKey().get(), pair.getValue()))
+					.collect(Collectors.toMap(Pair::getKey,
 					                          Pair::getValue,
 					                          (e1, e2) -> Stream.of(e1, e2).max(Comparator.comparing(EstimationRF::getId)).get(),
 					                          TreeMap::new));
@@ -212,21 +214,23 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
 			// recherche d'une demande de dégrèvement dont la PF est l'année suivant le début de l'estimation fiscale en cours
 			// (la date de début est justement le début de l'année qui suit l'estimation fiscale, non ?)
-			final Optional<Integer> anneeDebutValiditeDerniereEstimationFiscale = getAnneeDebutValiditeEstimationFiscale(estimationCourante);
-			if (anneeDebutValiditeDerniereEstimationFiscale.isPresent()) {
+			final Optional<Integer> anneeDebutPriseEnCompteDerniereEstimationFiscale = getAnneeDebutValidite(estimationCourante)
+					.map(annee -> annee + 1);
+			if (anneeDebutPriseEnCompteDerniereEstimationFiscale.isPresent()) {
 				final DemandeDegrevementICI demandePourEstimationFiscale = demandesDejaEnvoyeesSurImmeuble.stream()
-						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale().intValue() == anneeDebutValiditeDerniereEstimationFiscale.get())
+						.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale().intValue() == anneeDebutPriseEnCompteDerniereEstimationFiscale.get())
 						.findFirst()
 						.orElse(null);
 				if (demandePourEstimationFiscale != null) {
-					rapport.addDemandeDegrevementPourAnneeEstimationFiscale(entreprise, anneeDebutValiditeDerniereEstimationFiscale.get(), demandePourEstimationFiscale);
+					rapport.addDemandeDegrevementPourAnneeEstimationFiscale(entreprise, anneeDebutPriseEnCompteDerniereEstimationFiscale.get(), demandePourEstimationFiscale);
 					continue;
 				}
 			}
 
 			// calcul de la période fiscale pour envoi du document
-			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit.orElse(null), anneeDebutValiditeDerniereEstimationFiscale.orElse(null), rapport.dateTraitement.year() + 1)
-					.filter(Objects::nonNull)
+			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit, anneeDebutPriseEnCompteDerniereEstimationFiscale)
+					.filter(Optional::isPresent)
+					.map(Optional::get)
 					.max(Comparator.naturalOrder())
 					.orElse(null);
 			if (periodeFiscale == null) {
@@ -238,7 +242,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle, ça ne sert à rien
 			final Optional<DemandeDegrevementICI> demandePourPfDejaEnvoyeeSuffisante = demandesDejaEnvoyeesSurImmeuble.stream()
 					.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale() <= periodeFiscale)
-					.filter(demande -> demande.getPeriodeFiscale() >= Stream.of(anneeSuivantDebutDroit, anneeDebutValiditeDerniereEstimationFiscale)
+					.filter(demande -> demande.getPeriodeFiscale() >= Stream.of(anneeSuivantDebutDroit, anneeDebutPriseEnCompteDerniereEstimationFiscale)
 							.filter(Optional::isPresent)
 							.map(Optional::get)
 							.max(Comparator.naturalOrder())
@@ -249,20 +253,21 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				continue;
 			}
 
-			// [SIFISC-23397] pareil pour les dégrèvements... s'il en existe un avec une PF entre les années suivant le début de droit et suivant la dernière estimation fiscale et l'année
-			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle demande, ça ne sert à rien
-			// sauf si ce dégrèvement a une fin de validité AVANT le début de la période fiscale de début de la nouvelle demande prévue...
-			final Optional<DegrevementICI> degrevementPourPfSuffisant = degrevements.getOrDefault(immeuble.getId(), Collections.emptyList()).stream()
-					.filter(deg -> RegDateHelper.isAfterOrEqual(deg.getDateFin(), RegDate.get(periodeFiscale, 1, 1), NullDateBehavior.LATEST))
-					.filter(deg -> deg.getDateDebut().year() <= periodeFiscale)
-					.filter(deg -> deg.getDateDebut().year() >= Stream.of(anneeSuivantDebutDroit, anneeDebutValiditeDerniereEstimationFiscale)
-							.filter(Optional::isPresent)
-							.map(Optional::get)
-							.max(Comparator.naturalOrder())
-							.orElse(periodeFiscale))
+			// [SIFISC-23412] il ne faut pas envoyer de formulaire s'il existe un formulaire pour une PF ultérieure
+			final Optional<DemandeDegrevementICI> demandeUlterieure = demandesDejaEnvoyeesSurImmeuble.stream()
+					.filter(demande -> demande.getPeriodeFiscale() != null && demande.getPeriodeFiscale() >= periodeFiscale)
+					.max(Comparator.comparing(DemandeDegrevementICI::getPeriodeFiscale));
+			if (demandeUlterieure.isPresent()) {
+				rapport.addDemandeDegrevementEnvoyeePourPeriodeUlterieureAPeriodeVisee(entreprise, demandeUlterieure.get(), periodeFiscale);
+				continue;
+			}
+
+			// [SIFISC-23412] il ne faut pas envoyer de formulaire s'il existe un dégrèvement pour une PF ultérieure
+			final Optional<DegrevementICI> degrevementUlterieur = degrevements.getOrDefault(immeuble.getId(), Collections.emptyList()).stream()
+					.filter(deg -> deg.getDateDebut().year() >= periodeFiscale)
 					.max(Comparator.comparingInt(deg -> deg.getDateDebut().year()));
-			if (degrevementPourPfSuffisant.isPresent()) {
-				rapport.addDegrevementActif(entreprise, degrevementPourPfSuffisant.get(), periodeFiscale);
+			if (degrevementUlterieur.isPresent()) {
+				rapport.addDegrevementUlterieurAPeriodeVisee(entreprise, degrevementUlterieur.get(), periodeFiscale);
 				continue;
 			}
 
@@ -281,7 +286,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
 	/**
 	 * @param estimations une map triée (par année de référence) d'estimations fiscales
-	 * @return la plus petite estimation fiscale de la map qui a le même montant que la plus grande (dans une série continue depuis la plus grande)
+	 * @return la plus petite estimation fiscale de la map qui a le même montant que la plus récente (dans une série continue depuis la plus récente)
 	 */
 	static EstimationRF getFirstEstimationWithSameAmountAsLast(NavigableMap<Integer, EstimationRF> estimations) {
 		if (estimations.isEmpty()) {
@@ -305,13 +310,6 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			estimationCandidate = estimationCursor;
 		}
 		return estimationCandidate;
-	}
-
-	@NotNull
-	static Optional<Integer> getAnneeDebutValiditeEstimationFiscale(EstimationRF estimation) {
-		// on cherche d'abord dans la référence, et si on ne trouve rien d'interprétable, on se rabat sur la date d'estimation
-		// (et on ajoute 1 à l'année)
-		return EstimationRFHelper.getAnneeReference(estimation.getReference(), estimation.getDateInscription()).map(annee -> annee + 1);
 	}
 
 	private boolean isExonereTotalement(Entreprise entreprise, RegDate dateReference) {

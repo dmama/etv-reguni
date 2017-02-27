@@ -164,14 +164,21 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 	}
 
 	public enum RaisonIgnorance {
-		CONTRIBUABLE_TOTALEMENT_EXONERE,
-		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT,
-		DEGREVEMENT_ENCORE_ACTIF_POUR_PERIODE,
-		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
-		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
-		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT,
-		ESTIMATION_FISCALE_ABSENTE_OU_ZERO,
-		DROIT_USUFRUIT_OU_HABITATION
+		CONTRIBUABLE_TOTALEMENT_EXONERE("Contribuable totalement exonéré"),
+		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT("Dégrèvement déjà présent pour l'année suivant la date de début du droit"),
+		DEGREVEMENT_ULTERIEUR_DEJA_PRESENT("Dégrèvement déjà présent pour une période postérieure à la période visée"),
+		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT("Demande de dégrèvement déjà présente pour l'année suivant la date de début de droit"),
+		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE("Demande de dégrèvement déjà présente pour l'année suivant l'année de la dernière estimation fiscale"),
+		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT("Demande de dégrèvement déjà présente depuis le dernier changement"),
+		DEMANDE_DEGREVEMENT_ULTERIEURE_DEJA_PRESENTE("Demande de dégrèvement déjà présente pour une période postérieure à la période visée"),
+		ESTIMATION_FISCALE_ABSENTE_OU_ZERO("Estimation fiscale absente ou égale à zéro"),
+		DROIT_USUFRUIT_OU_HABITATION("Droit d'usufruit ou d'habitation");
+
+		public final String description;
+
+		RaisonIgnorance(String description) {
+			this.description = description;
+		}
 	}
 
 	public static final class DemandeDegrevementNonEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementNonEnvoyee> {
@@ -272,15 +279,28 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		++ this.nbDroitsIgnores;
 	}
 
-	public void addDegrevementActif(Entreprise entreprise, DegrevementICI degrevement, int periodeFiscaleDemande) {
+	public void addDemandeDegrevementEnvoyeePourPeriodeUlterieureAPeriodeVisee(Entreprise entreprise, DemandeDegrevementICI demandeDegrevement, int periodeVisee) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  demandeDegrevement.getImmeuble(),
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DEMANDE_DEGREVEMENT_ULTERIEURE_DEJA_PRESENTE,
+		                                                  String.format("Demande émise le %s pour la PF %d (période visée : %d)",
+		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
+		                                                                demandeDegrevement.getPeriodeFiscale(),
+		                                                                periodeVisee)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDegrevementUlterieurAPeriodeVisee(Entreprise entreprise, DegrevementICI degrevement, int periodeVisee) {
 		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
 		                                                  degrevement.getImmeuble(),
 		                                                  dateTraitement,
-		                                                  RaisonIgnorance.DEGREVEMENT_ENCORE_ACTIF_POUR_PERIODE,
-		                                                  String.format("Dégrèvement encore actif (%s - %s) pour la PF %s",
+		                                                  RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT,
+		                                                  String.format("Dégrèvement (%s - %s) (période visée : %d)",
 		                                                                StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(degrevement.getDateDebut()), "?"),
 		                                                                StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(degrevement.getDateFin()), "?"),
-		                                                                periodeFiscaleDemande)));
+		                                                                periodeVisee)));
 
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
