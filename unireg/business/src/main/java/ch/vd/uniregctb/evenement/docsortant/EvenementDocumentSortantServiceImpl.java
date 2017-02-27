@@ -235,9 +235,9 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 
 	@Override
 	public void signaleAnnexeImmeuble(InformationsDocumentAdapter infoDocument, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local) {
-		final TypeDocument typeDocument = infoDocument.getTypeDocument();
 		signaleDocumentSortant("ANNIMM",
-		                       TYPE_DI_PP_SORTANTE.get(typeDocument),
+		                       TYPE_DI_PP_SORTANTE.get(infoDocument.getTypeDocument()),
+		                       "Lettre annexe immeuble",
 		                       infoDocument.getTiers(),
 		                       local,
 		                       infoDocument.getAnnee(),
