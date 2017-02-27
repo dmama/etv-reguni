@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.NavigableMap;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -270,7 +269,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -304,7 +303,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -347,7 +346,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "1555sfsgbsfhd", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
-			final DemandeDegrevementICI demandeExistante = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateTraitement.year() + 1, immeuble);
+			final DemandeDegrevementICI demandeExistante = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year() + 1, immeuble);
 			demandeExistante.setAnnule(true);
 			demandeExistante.setNumeroSequence(2);
 
@@ -369,7 +368,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -403,7 +402,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 3, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -714,7 +713,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -761,7 +760,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -1186,7 +1185,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble1, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -1199,7 +1198,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(1);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble2, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Yverdon", envoi.nomCommune);
@@ -1233,7 +1232,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 				{
 					final DemandeDegrevementICI demande = demandes.get(1);
@@ -1248,7 +1247,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 2, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -1315,7 +1314,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble1, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -1328,7 +1327,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(1);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble2, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Yverdon", envoi.nomCommune);
@@ -1362,7 +1361,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 				{
 					final DemandeDegrevementICI demande = demandes.get(1);
@@ -1377,7 +1376,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 2, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -1444,7 +1443,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble1, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -1478,7 +1477,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -1578,37 +1577,6 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 				Assert.assertEquals(0, demandes.size());
 			}
 		});
-	}
-
-	@Test
-	public void testAnneeDebutValiditeEstimationFiscale() throws Exception {
-		// priorité à la référence
-		Assert.assertEquals(Optional.of(2015), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", null)));
-		Assert.assertEquals(Optional.of(2015), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", RegDate.get(1965, 2, 1))));
-		Assert.assertEquals(Optional.of(2015), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2014", RegDate.get(2017, 1, 1))));
-		Assert.assertEquals(Optional.of(2018), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2017, 1, 1))));
-		Assert.assertEquals(Optional.of(2014), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2013, 1, 1))));
-		Assert.assertEquals(Optional.of(2014), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, RegDate.get(2013, 1, 2))));
-		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(null, null)));
-
-		// interprétation de la référence
-		Assert.assertEquals(Optional.of(1968), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG67", null)));
-		Assert.assertEquals(Optional.of(1968), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG 67", null)));
-		Assert.assertEquals(Optional.of(1968), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("Rg 67", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("RG2000", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("1.4.2000", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000enrévision", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000T.", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rg", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rf", null)));
-		Assert.assertEquals(Optional.of(2001), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000rP", null)));
-		Assert.assertEquals(Optional.of(1998), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF(" RG   97   ", null)));
-
-		// non-interprétation de la référence
-		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("2000EE", null)));
-		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("20011", null)));
-		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("64", null)));
-		Assert.assertEquals(Optional.empty(), EnvoiFormulairesDemandeDegrevementICIProcessor.getAnneeDebutValiditeEstimationFiscale(buildDummyEstimationRF("4.2000", null)));
 	}
 
 	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription) {
@@ -1820,7 +1788,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = resultsFirstRun.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -1855,7 +1823,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 
 					Assert.assertNotNull(demande.getDateEnvoi());
 					dateEmission.setValue(demande.getDateEnvoi());
@@ -1883,20 +1851,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			Assert.assertNull(ignore.index1);
 			Assert.assertNull(ignore.index2);
 			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT, ignore.raison);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT, ignore.raison);
 			Assert.assertEquals(String.format("Demande émise le %s pour la PF %d",
 			                                  RegDateHelper.dateToDisplayString(dateEmission.getValue()),
-			                                  dateTraitement.year() + 1),
+			                                  dateDebutDroit.year() + 1),
 			                    ignore.messageAdditionnel);
 		}
 	}
 
 	/**
-	 * [SIFISC-23397] un dégrèvement migré pour 2013 et toujours actif devrait être suffisant pour empêcher tout nouvel envoi
+	 * [SIFISC-23412] un dégrèvement migré pour 2013 pour un achat en 1985 devrait être suffisant
 	 * de formulaire de demande de dégrèvement tant que rien ne change...
 	 */
 	@Test
-	public void testNonEmissionSiDegrevementEncoreActif() throws Exception {
+	public void testNonEmissionSiDegrevementUlterieur() throws Exception {
 
 		final RegDate dateDebutEntreprise = date(1956, 3, 1);
 		final RegDate dateDebutDroit = date(1985, 11, 29);
@@ -1963,14 +1931,15 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			Assert.assertNull(ignore.index1);
 			Assert.assertNull(ignore.index2);
 			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_ENCORE_ACTIF_POUR_PERIODE, ignore.raison);
-			Assert.assertEquals(String.format("Dégrèvement encore actif (01.01.2013 - ?) pour la PF %s", dateTraitement.year() + 1), ignore.messageAdditionnel);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT, ignore.raison);
+			Assert.assertEquals("Dégrèvement (01.01.2013 - ?) (période visée : 1995)", ignore.messageAdditionnel);      // 1995 à cause de l'estimation fiscale RG94
 		}
 	}
 
 	/**
 	 * [SIFISC-23397] un dégrèvement migré pour 2013 mais plus actif ne doit pas empêcher un nouvel envoi
 	 * de formulaire de demande de dégrèvement même si rien n'a changé...
+	 * [SIFISC-23412] en fait, si, il doit l'empêcher aussi (le cas d'un dégrèvement cloturé sans successeur ne devrait pas exister)
 	 */
 	@Test
 	public void testEmissionSiDernierDegrevementCloture() throws Exception {
@@ -2015,7 +1984,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "b,deb4z754", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
 
-			addDegrevementICI(entreprise, immeuble, dateDebutDegrevement, date(dateTraitement.year(), 12, 31), null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
+			addDegrevementICI(entreprise, immeuble, dateDebutDegrevement, date(dateTraitement.year() - 1, 12, 31), null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
 
 			return new Ids(entreprise.getNumero(), immeuble.getId());
 		});
@@ -2024,23 +1993,24 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbDroitsInspectes());
-		Assert.assertEquals(0, results.getNbDroitsIgnores());
+		Assert.assertEquals(1, results.getNbDroitsIgnores());
 		Assert.assertEquals(0, results.getErreurs().size());
-		Assert.assertEquals(1, results.getEnvois().size());
-		Assert.assertEquals(0, results.getIgnores().size());
+		Assert.assertEquals(0, results.getEnvois().size());
+		Assert.assertEquals(1, results.getIgnores().size());
 
 		{
-			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
-			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
-			Assert.assertEquals((Long) ids.immeuble, envoi.idImmeuble);
-			Assert.assertEquals(ids.pm, envoi.noContribuable);
-			Assert.assertEquals(MockCommune.Lausanne.getNomOfficiel(), envoi.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), envoi.noOfsCommune);
-			Assert.assertEquals((Integer) 579, envoi.noParcelle);
-			Assert.assertNull(envoi.index1);
-			Assert.assertNull(envoi.index2);
-			Assert.assertNull(envoi.index3);
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.immeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.pm, ignore.noContribuable);
+			Assert.assertEquals(MockCommune.Lausanne.getNomOfficiel(), ignore.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 579, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT, ignore.raison);
+			Assert.assertEquals(String.format("Dégrèvement (01.01.2013 - 31.12.%d) (période visée : 1995)", dateTraitement.year() - 1), ignore.messageAdditionnel);      // 1995 à cause de l'estimation fiscale RG94
 		}
 
 		// vérification en base...
@@ -2053,25 +2023,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
 				Assert.assertNotNull(demandes);
-				Assert.assertEquals(1, demandes.size());
-				{
-					final DemandeDegrevementICI demande = demandes.get(0);
-					Assert.assertNotNull(demande);
-					Assert.assertFalse(demande.isAnnule());
-
-					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
-					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
-					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
-					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
-					Assert.assertNull(demande.getDateRetour());
-					Assert.assertNull(demande.getDateRappel());
-					Assert.assertNotNull(demande.getCodeControle());
-					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
-
-					Assert.assertNotNull(demande.getDateEnvoi());
-					dateEmission.setValue(demande.getDateEnvoi());
-				}
+				Assert.assertEquals(0, demandes.size());
 			}
 		});
 	}

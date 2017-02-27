@@ -79,6 +79,7 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.EstimationRFHelper;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
@@ -531,6 +532,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		estimation.setImmeuble(immeuble);
 		estimation.setMontant(montant);
 		estimation.setReference(reference);
+		estimation.setAnneeReference(EstimationRFHelper.determineAnneeReference(reference));
+		estimation.setDateDebutMetier(EstimationRFHelper.determineDateDebutMetier(reference, dateInscription));
 		immeuble.addEstimation(estimation);
 	}
 
