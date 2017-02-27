@@ -25,6 +25,7 @@ public enum TypeDocumentSortant {
 	DI_PP_VAUDTAX(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt Vaudtax"),
 	DI_PP_DEPENSE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt dépense"),
 	DI_PP_HC_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt Hors-canton immeuble"),
+	DI_PP_ANNEXE_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Lettre annexe immeuble"),
 	SOMMATION_DI_PP(true, CodeTypeDocumentSortant.DECLARATION, "Sommation de DI"),
 	CONFIRMATION_DELAI(false, CodeTypeDocumentSortant.DECLARATION, "Confirmation de délai"),
 
