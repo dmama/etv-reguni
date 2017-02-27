@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
@@ -70,6 +71,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
 				importEvent.setEtat(EtatEvenementRF.TRAITE);
 				importEvent.setFileUrl("http://turlututu");
@@ -532,6 +534,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(dateSecondImport);
 				importEvent.setEtat(EtatEvenementRF.TRAITE);
 				importEvent.setFileUrl("http://turlututu");
@@ -1008,6 +1011,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(dateSecondImport);
 				importEvent.setEtat(EtatEvenementRF.TRAITE);
 				importEvent.setFileUrl("http://turlututu");

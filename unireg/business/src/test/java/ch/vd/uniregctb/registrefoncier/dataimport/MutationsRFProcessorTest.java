@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -222,6 +223,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 
 	private EvenementRFImport addParentImport(EtatEvenementRF etat, RegDate dateEvenement) {
 		final EvenementRFImport parentImport = new EvenementRFImport();
+		parentImport.setType(TypeImportRF.PRINCIPAL);
 		parentImport.setEtat(etat);
 		parentImport.setDateEvenement(dateEvenement);
 		return evenementRFImportDAO.save(parentImport);

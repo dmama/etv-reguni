@@ -80,7 +80,7 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 	public void forceImport(long importId) {
 
 		final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
-		if (importEvent== null) {
+		if (importEvent == null) {
 			throw new ObjectNotFoundException("L'import RF avec l'identifiant " + importId + " est inconnu");
 		}
 

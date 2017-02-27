@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
@@ -88,6 +89,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				EvenementRFImport parentImport = new EvenementRFImport();
+				parentImport.setType(TypeImportRF.PRINCIPAL);
 				parentImport.setEtat(EtatEvenementRF.A_TRAITER);
 				parentImport.setDateEvenement(dateEvenement);
 				parentImport = evenementRFImportDAO.save(parentImport);

@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
@@ -77,6 +78,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl(raftUrl);
@@ -315,6 +317,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(dateTroisiemeImport);
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl(raftUrl);
@@ -412,6 +415,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(dateSecondImport);
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl(raftUrl);
@@ -549,6 +553,7 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(dateSecondImport);
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl(raftUrl);

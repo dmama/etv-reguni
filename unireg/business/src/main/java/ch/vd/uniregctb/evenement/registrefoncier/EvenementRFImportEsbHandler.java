@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import javax.transaction.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -51,14 +52,18 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 		try {
 			final String dataUrl = message.getAttachmentRef("data");
 			final String dateAsString = message.getHeader("dateValeur");
+			final String typeAsString = message.getHeader("typeImport");
 
 			final RegDate dateValeur = RegDateHelper.indexStringToDate(dateAsString);
 			if (dateValeur == null) {
 				throw new IllegalArgumentException("La date de valeur de l'import n'est pas renseignée ou invalide (" + dateAsString + ")");
 			}
 
+			final TypeImportRF type = parseTypeImport(typeAsString);
+
 			// on crée et insère l'événement en base
 			final EvenementRFImport event = new EvenementRFImport();
+			event.setType(type);
 			event.setDateEvenement(dateValeur);
 			event.setEtat(EtatEvenementRF.A_TRAITER);
 			event.setFileUrl(dataUrl);
@@ -78,6 +83,19 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
+		}
+	}
+
+	@NotNull
+	private static TypeImportRF parseTypeImport(String typeAsString) {
+		if (StringUtils.isBlank(typeAsString) || typeAsString.equals("PRINCIPAL")) {
+			return TypeImportRF.PRINCIPAL;
+		}
+		else if (typeAsString.equals("SERVITUDES")) {
+			return TypeImportRF.SERVITUDES;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'import inconnu = [" + typeAsString + "]");
 		}
 	}
 

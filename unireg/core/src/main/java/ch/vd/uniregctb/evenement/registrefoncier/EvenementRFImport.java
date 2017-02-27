@@ -28,6 +28,11 @@ public class EvenementRFImport extends HibernateEntity {
 	private Long id;
 
 	/**
+	 * Le type d'import concerné.
+	 */
+	private TypeImportRF type;
+
+	/**
 	 * L'état courant de l'événement.
 	 */
 	private EtatEvenementRF etat;
@@ -76,7 +81,18 @@ public class EvenementRFImport extends HibernateEntity {
 		this.id = id;
 	}
 
-	@Column(name = "ETAT", length = LengthConstants.RF_ETAT_EVENEMENT)
+	@Column(name = "TYPE", length = LengthConstants.RF_TYPE_IMPORT, nullable = false)
+	@Enumerated(EnumType.STRING)
+	@Index(name="IDX_EV_RF_IMP_TYPE")
+	public TypeImportRF getType() {
+		return type;
+	}
+
+	public void setType(TypeImportRF type) {
+		this.type = type;
+	}
+
+	@Column(name = "ETAT", length = LengthConstants.RF_ETAT_EVENEMENT, nullable = false)
 	@Enumerated(EnumType.STRING)
 	@Index(name="IDX_EV_RF_IMP_ETAT")
 	public EtatEvenementRF getEtat() {

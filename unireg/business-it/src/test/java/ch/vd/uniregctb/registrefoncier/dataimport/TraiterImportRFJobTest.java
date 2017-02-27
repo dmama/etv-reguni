@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -55,6 +56,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
 				importEvent.setEtat(EtatEvenementRF.TRAITE);
 				importEvent.setFileUrl("http://turlututu");
@@ -107,12 +109,14 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 				// un import précédent en erreur
 				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
+				importEventPrecedant.setType(TypeImportRF.PRINCIPAL);
 				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
 				importEventPrecedant.setEtat(EtatEvenementRF.EN_ERREUR);
 				importEventPrecedant.setFileUrl("http://turlututu");
 				ids.precedent = evenementRFImportDAO.save(importEventPrecedant).getId();
 
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl("http://turlututu");
@@ -164,6 +168,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 				// un import précédent traité
 				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
+				importEventPrecedant.setType(TypeImportRF.PRINCIPAL);
 				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
 				importEventPrecedant.setEtat(EtatEvenementRF.TRAITE);
 				importEventPrecedant.setFileUrl("http://turlututu");
@@ -171,6 +176,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 				// un nouvel import *mais* avec une date antérieure
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2015, 3, 7));
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl("http://turlututu");
@@ -222,6 +228,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 				// un import précédent traité
 				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
+				importEventPrecedant.setType(TypeImportRF.PRINCIPAL);
 				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
 				importEventPrecedant.setEtat(EtatEvenementRF.TRAITE);
 				importEventPrecedant.setFileUrl("http://turlututu");
@@ -229,6 +236,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 
 				// un nouvel import *mais* avec une date de valeur identique
 				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 9, 1));
 				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
 				importEvent.setFileUrl("http://turlututu");
@@ -283,6 +291,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
 				importEvent.setEtat(EtatEvenementRF.EN_ERREUR);
 				importEvent.setFileUrl(raftUrl);
@@ -436,6 +445,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 9, 1));
 				importEvent.setEtat(EtatEvenementRF.TRAITE);
 				importEvent.setFileUrl("http://radada");
@@ -498,6 +508,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(TypeImportRF.PRINCIPAL);
 				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
 				importEvent.setEtat(EtatEvenementRF.EN_ERREUR);
 				importEvent.setFileUrl(raftUrl);

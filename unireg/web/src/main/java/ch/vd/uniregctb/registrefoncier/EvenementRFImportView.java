@@ -6,10 +6,16 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 
 public class EvenementRFImportView {
 
 	private final Long id;
+
+	/**
+	 * Le type d'import concerné.
+	 */
+	private final TypeImportRF type;
 
 	/**
 	 * L'état courant de l'événement.
@@ -40,6 +46,7 @@ public class EvenementRFImportView {
 
 	public EvenementRFImportView(@NotNull EvenementRFImport right) {
 		this.id = right.getId();
+		this.type = right.getType();
 		this.etat = right.getEtat();
 		this.dateEvenement = right.getDateEvenement();
 		this.fileUrl = right.getFileUrl();
@@ -49,6 +56,10 @@ public class EvenementRFImportView {
 
 	public Long getId() {
 		return id;
+	}
+
+	public TypeImportRF getType() {
+		return type;
 	}
 
 	public EtatEvenementRF getEtat() {

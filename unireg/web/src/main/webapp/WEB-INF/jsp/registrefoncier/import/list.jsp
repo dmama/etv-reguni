@@ -55,6 +55,9 @@
 				<display:column titleKey="label.date.valeur.import" sortable="true" sortName="dateEvenement">
 					<unireg:regdate regdate="${importEvent.dateEvenement}"/>
 				</display:column>
+				<display:column titleKey="label.type.import.rf" sortable="true" sortName="type">
+					<fmt:message key="option.rf.type.import.${importEvent.type}" />
+				</display:column>
 				<display:column titleKey="label.etat.event.rf" sortable="true" sortName="etat" class="import-etat">
 					<span class="raw-value" style="display: none">${importEvent.etat}</span>
 					<fmt:message key="option.rf.etat.evenement.${importEvent.etat}" />

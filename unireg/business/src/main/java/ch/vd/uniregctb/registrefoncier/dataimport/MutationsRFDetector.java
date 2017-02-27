@@ -23,6 +23,7 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.technical.esb.store.EsbStore;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.AyantDroitRFDetector;
@@ -102,14 +104,19 @@ public class MutationsRFDetector implements InitializingBean {
 			// détection de l'import initial
 			final boolean importInitial = isImportInitial();
 
-			final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, importInitial, event.getDateEvenement(), nbThreads);
+			final MutationsRFDetectorResults rapport = new MutationsRFDetectorResults(importId, importInitial, event.getType(), event.getDateEvenement(), nbThreads);
 
 			// le job de traitement des imports ne supporte pas la reprise sur erreur (ou crash), on doit
 			// donc effacer toutes les (éventuelles) mutations déjà générées lors d'un run précédent.
 			deleteExistingMutations(importId, statusManager);
 
 			// on peut maintenant processer l'import
-			processImport(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
+			if (event.getType() == TypeImportRF.PRINCIPAL) {
+				processImportPrincipal(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
+			}
+			else {
+				throw new NotImplementedException("La détection des mutations sur les servitudes n'est pas encore implémentée.");
+			}
 
 			// terminé
 			updateEvent(importId, EtatEvenementRF.TRAITE, null);
@@ -166,7 +173,7 @@ public class MutationsRFDetector implements InitializingBean {
 		});
 	}
 
-	private void processImport(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull StatusManager statusManager) {
+	private void processImportPrincipal(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull StatusManager statusManager) {
 		try (InputStream is = zipRaftStore.get(fileUrl)) {
 
 			statusManager.setMessage("Détection des mutations...");

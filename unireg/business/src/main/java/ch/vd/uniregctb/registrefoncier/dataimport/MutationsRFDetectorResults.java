@@ -5,11 +5,13 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 
 public class MutationsRFDetectorResults {
 
 	private final long importId;
 	private final boolean importInitial;
+	private final TypeImportRF type;
 	private final RegDate dateValeur;
 	private final int nbThreads;
 
@@ -49,9 +51,10 @@ public class MutationsRFDetectorResults {
 		}
 	}
 
-	public MutationsRFDetectorResults(long importId, boolean importInitial, RegDate dateValeur, int nbThreads) {
+	public MutationsRFDetectorResults(long importId, boolean importInitial, TypeImportRF type, RegDate dateValeur, int nbThreads) {
 		this.importId = importId;
 		this.importInitial = importInitial;
+		this.type = type;
 		this.dateValeur = dateValeur;
 		this.nbThreads = nbThreads;
 	}
@@ -62,6 +65,10 @@ public class MutationsRFDetectorResults {
 
 	public boolean isImportInitial() {
 		return importInitial;
+	}
+
+	public TypeImportRF getType() {
+		return type;
 	}
 
 	public RegDate getDateValeur() {

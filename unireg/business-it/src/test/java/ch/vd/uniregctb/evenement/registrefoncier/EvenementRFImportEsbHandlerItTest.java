@@ -4,6 +4,7 @@ import javax.activation.DataHandler;
 import java.util.List;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jms.connection.JmsTransactionManager;
@@ -82,7 +83,7 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
-	private void sendRfMessage(String queueName, final String raftUrl, String dateValeur) throws Exception {
+	private void sendRfMessage(String queueName, String raftUrl, String dateValeur, @Nullable String typeImport) throws Exception {
 		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
@@ -100,20 +101,21 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 			}
 		});
 		m.addHeader("dateValeur", dateValeur);
+		m.addHeader("typeImport", typeImport);
 		esbTemplate.send(m);
 	}
 
 	/**
-	 * Ce test vérifie que la réception d'un événement JMS fonctionne bien, que les données correspondantes sont insérées dans la DB (cas passant) et que le batch de traitement est bien déclenché.
+	 * Ce test vérifie que la réception d'un événement JMS fonctionne bien, que le type est bien détecté que les données correspondantes sont insérées dans la DB (cas passant) et que le batch de traitement est bien déclenché.
 	 */
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
-	public void testReceptionEvenement() throws Exception {
+	public void testReceptionEvenementImportPrincipal() throws Exception {
 
 		// précondition : il n'y a pas d'événement en base
 		assertEquals(0, evenementRFImportDAO.getCount(EvenementRFImport.class));
 
 		// on envoie l'événement
-		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu", "20161001");
+		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu", "20161001", "PRINCIPAL");
 
 		// on attend que le traitement du message soit terminé
 		synchronized (receivedCount) {
@@ -128,6 +130,79 @@ public class EvenementRFImportEsbHandlerItTest extends EvenementTest {
 
 		final EvenementRFImport event = list.get(0);
 		assertNotNull(event);
+		assertEquals(TypeImportRF.PRINCIPAL, event.getType());
+		assertEquals(EtatEvenementRF.A_TRAITER, event.getEtat());
+		assertEquals(RegDate.get(2016, 10, 1), event.getDateEvenement());
+		assertEquals("http://example.com/turlututu", event.getFileUrl());
+
+		// le batch doit être démarré
+		final List<Long> started = serviceImportRF.getStartedImports();
+		assertEquals(1, started.size());
+		assertEquals(event.getId(), started.get(0));
+	}
+
+	/**
+	 * Ce test vérifie que la réception d'un événement JMS fonctionne bien, que le type est bien détecté, que les données correspondantes sont insérées dans la DB (cas passant) et que le batch de traitement est bien déclenché.
+	 */
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceptionEvenementImportServitudes() throws Exception {
+
+		// précondition : il n'y a pas d'événement en base
+		assertEquals(0, evenementRFImportDAO.getCount(EvenementRFImport.class));
+
+		// on envoie l'événement
+		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu", "20161001", "SERVITUDES");
+
+		// on attend que le traitement du message soit terminé
+		synchronized (receivedCount) {
+			while (receivedCount.intValue() == 0) {
+				receivedCount.wait();
+			}
+		}
+
+		// postcondition : l'événemnt correspondant doit exister dans la base
+		final List<EvenementRFImport> list = evenementRFImportDAO.getAll();
+		assertEquals(1, list.size());
+
+		final EvenementRFImport event = list.get(0);
+		assertNotNull(event);
+		assertEquals(TypeImportRF.SERVITUDES, event.getType());
+		assertEquals(EtatEvenementRF.A_TRAITER, event.getEtat());
+		assertEquals(RegDate.get(2016, 10, 1), event.getDateEvenement());
+		assertEquals("http://example.com/turlututu", event.getFileUrl());
+
+		// le batch doit être démarré
+		final List<Long> started = serviceImportRF.getStartedImports();
+		assertEquals(1, started.size());
+		assertEquals(event.getId(), started.get(0));
+	}
+
+	/**
+	 * Ce test vérifie que la réception d'un événement JMS fonctionne bien et que le type d'import est bien détecté (défaut=PRINCIPAL) s'il n'est pas explicitement spécifié.
+	 */
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceptionEvenementTypeImportParDefaut() throws Exception {
+
+		// précondition : il n'y a pas d'événement en base
+		assertEquals(0, evenementRFImportDAO.getCount(EvenementRFImport.class));
+
+		// on envoie l'événement
+		sendRfMessage(INPUT_QUEUE, "http://example.com/turlututu", "20161001", null);
+
+		// on attend que le traitement du message soit terminé
+		synchronized (receivedCount) {
+			while (receivedCount.intValue() == 0) {
+				receivedCount.wait();
+			}
+		}
+
+		// postcondition : l'événemnt correspondant doit exister dans la base
+		final List<EvenementRFImport> list = evenementRFImportDAO.getAll();
+		assertEquals(1, list.size());
+
+		final EvenementRFImport event = list.get(0);
+		assertNotNull(event);
+		assertEquals(TypeImportRF.PRINCIPAL, event.getType());
 		assertEquals(EtatEvenementRF.A_TRAITER, event.getEtat());
 		assertEquals(RegDate.get(2016, 10, 1), event.getDateEvenement());
 		assertEquals("http://example.com/turlututu", event.getFileUrl());
