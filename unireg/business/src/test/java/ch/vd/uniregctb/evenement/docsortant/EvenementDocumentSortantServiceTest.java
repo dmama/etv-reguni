@@ -210,7 +210,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				infoArchivage.setTypDocument(TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
 				infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 
-				service.signaleDemandeDegrevementICI(demande, infoArchivage, true);
+				service.signaleDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, true);
 			}
 		});
 
@@ -247,7 +247,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		Assert.assertNull(doc.getDonneesMetier().isPeriodeFiscalePerenne());
 
 		Assert.assertEquals("UNIREG", doc.getCaracteristiques().getEmetteur());
-		Assert.assertEquals("Formulaire de demande de dégrèvement ICI", doc.getCaracteristiques().getNomDocument());
+		Assert.assertEquals("Formulaire de demande de dégrèvement ICI Ma super commune 42-12-4", doc.getCaracteristiques().getNomDocument());
 		Assert.assertNull(doc.getCaracteristiques().getSousTypeDocument());
 		Assert.assertEquals(TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI.getCodeTypeDocumentSortant().getCode(), doc.getCaracteristiques().getTypeDocument());
 		Assert.assertEquals(CodeSupport.LOCAL, doc.getCaracteristiques().getSupport());

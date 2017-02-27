@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.docsortant;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ import ch.vd.unireg.xml.event.docsortant.v1.Document;
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.DonneesMetier;
 import ch.vd.unireg.xml.event.docsortant.v1.Population;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -312,9 +314,10 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, CTypeInfoArchivage infoArchivage, boolean local) {
+	public void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local) {
 		signaleDocumentSortant("DDICI",
 		                       TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI,
+		                       CollectionsUtils.concat(Arrays.asList(TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI.getNomDocument(), nomCommune, noParcelle), " "),
 		                       dd.getEntreprise(),
 		                       local,
 		                       dd.getPeriodeFiscale(),
@@ -323,9 +326,10 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleRappelDemandeDegrevementICI(DemandeDegrevementICI dd, CTypeInfoArchivage infoArchivage, boolean local) {
+	public void signaleRappelDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local) {
 		signaleDocumentSortant("RDDICI",
 		                       TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT_ICI,
+		                       CollectionsUtils.concat(Arrays.asList(TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT_ICI.getNomDocument(), nomCommune, noParcelle), " "),
 		                       dd.getEntreprise(),
 		                       local,
 		                       dd.getPeriodeFiscale(),
@@ -344,12 +348,26 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param infoArchivage informations d'archivage du document
 	 */
 	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, InfoArchivageDocument.InfoArchivage infoArchivage) {
-		signaleDocumentSortant(prefixeBusinessId, typeDocument, tiers, local, pf, noSequence, new Archives(infoArchivage.getIdDocument(),
-		                                                                                                   infoArchivage.getTypDocument(),
-		                                                                                                   infoArchivage.getNomDossier(),
-		                                                                                                   infoArchivage.getTypDossier()));
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, infoArchivage);
 	}
 
+	/**
+	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode légacy (vieux documents...)
+	 * @param prefixeBusinessId le prefixe à utiliser pour le calcul du business ID du message
+	 * @param typeDocument le type de document sortant
+	 * @param nomDocument le nom (lisible pour un utilisateur humain dans le contexte du contribuable) à associer au document dans l'annonce
+	 * @param tiers le tiers associé au document
+	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
+	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
+	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param infoArchivage informations d'archivage du document
+	 */
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, InfoArchivageDocument.InfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, new Archives(infoArchivage.getIdDocument(),
+		                                                                                                                infoArchivage.getTypDocument(),
+		                                                                                                                infoArchivage.getNomDossier(),
+		                                                                                                                infoArchivage.getTypDossier()));
+	}
 
 	/**
 	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode utilisable pour les nouveaux types de document (PM)
@@ -362,23 +380,39 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param infoArchivage informations d'archivage du document
 	 */
 	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, CTypeInfoArchivage infoArchivage) {
-		signaleDocumentSortant(prefixeBusinessId, typeDocument, tiers, local, pf, noSequence, new Archives(infoArchivage.getIdDocument(),
-		                                                                                                   infoArchivage.getTypDocument(),
-		                                                                                                   infoArchivage.getNomDossier(),
-		                                                                                                   infoArchivage.getTypDossier()));
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, infoArchivage);
 	}
 
 	/**
-	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode centrale
+	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode utilisable pour les nouveaux types de document (PM)
 	 * @param prefixeBusinessId le prefixe à utiliser pour le calcul du business ID du message
 	 * @param typeDocument le type de document sortant
+	 * @param nomDocument le nom (lisible pour un utilisateur humain dans le contexte du contribuable) à associer au document dans l'annonce
 	 * @param tiers le tiers associé au document
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
 	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
 	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
 	 * @param infoArchivage informations d'archivage du document
 	 */
-	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, Archives infoArchivage) {
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, CTypeInfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, new Archives(infoArchivage.getIdDocument(),
+		                                                                                                                infoArchivage.getTypDocument(),
+		                                                                                                                infoArchivage.getNomDossier(),
+		                                                                                                                infoArchivage.getTypDossier()));
+	}
+
+	/**
+	 * Envoi d'un événement de notification de l'envoi d'un nouveau document sortant - méthode centrale
+	 * @param prefixeBusinessId le prefixe à utiliser pour le calcul du business ID du message
+	 * @param typeDocument le type de document sortant
+	 * @param nomDocument le nom (lisible pour un utilisateur humain dans le contexte du contribuable) à associer au document dans l'annonce
+	 * @param tiers le tiers associé au document
+	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
+	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
+	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param infoArchivage informations d'archivage du document
+	 */
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, Archives infoArchivage) {
 
 		final String pfInfo = pf == null ? StringUtils.EMPTY : String.format(" %d", pf);
 		final String noSequenceInfo = noSequence == null ? StringUtils.EMPTY : String.format(" %d", noSequence);
@@ -389,7 +423,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		document.setCaracteristiques(new Caracteristiques(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()),
 		                                                  typeDocument.getCodeTypeDocumentSortant().getCode(),
 		                                                  null,
-		                                                  typeDocument.getNomDocument(),
+		                                                  nomDocument,
 		                                                  EMETTEUR,
 		                                                  local ? CodeSupport.LOCAL : CodeSupport.CED,
 		                                                  new Archivage(typeDocument.isArchivageValeurProbante(), null)));

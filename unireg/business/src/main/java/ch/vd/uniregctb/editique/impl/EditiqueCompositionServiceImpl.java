@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import ch.vd.editique.unireg.CTypeImmeuble;
 import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
@@ -981,7 +982,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		// sauvegarde de la clé d'archivage
 		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoArchivage, false);
+			final CTypeImmeuble infoImmeuble = original.getLettreDegrevementImm().getImmeuble();
+			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, false);
 			demande.setCleArchivage(infoArchivage.getIdDocument());
 		}
 
