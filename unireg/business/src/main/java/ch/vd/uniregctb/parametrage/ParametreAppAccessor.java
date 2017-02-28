@@ -52,6 +52,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiEnvoiRappelLettreBienvenue();
 
+	Integer[] getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI();
+
 	Integer getDelaiRetourDemandeDegrevementICI();
 
 	Integer getDelaiEnvoiRappelDemandeDegrevementICI();
@@ -139,6 +141,8 @@ public interface ParametreAppAccessor {
 	void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val);
 
 	void setDelaiEnvoiRappelLettreBienvenue(Integer val);
+
+	void setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(Integer[] val);
 
 	void setDelaiRetourDemandeDegrevementICI(Integer val);
 

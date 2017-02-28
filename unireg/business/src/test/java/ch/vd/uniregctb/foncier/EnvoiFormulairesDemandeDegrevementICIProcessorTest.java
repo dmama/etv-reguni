@@ -49,13 +49,26 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 	private DelaisService delaisService;
 	private ParametreAppService parametreAppService;
 
+	private Integer[] oldValueDateDebutPriseEnCompteMutationRF = null;
+
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");
-		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(transactionManager, autreDocumentFiscalService, hibernateTemplate, tiersService);
-		delaisService = getBean(DelaisService.class, "delaisService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
+		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, autreDocumentFiscalService, hibernateTemplate, tiersService);
+		delaisService = getBean(DelaisService.class, "delaisService");
+
+		oldValueDateDebutPriseEnCompteMutationRF = parametreAppService.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI();
+		parametreAppService.setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(new Integer[] {1, 1, 1994});
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		if (oldValueDateDebutPriseEnCompteMutationRF != null) {
+			parametreAppService.setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(oldValueDateDebutPriseEnCompteMutationRF);
+		}
+		super.onTearDown();
 	}
 
 	/**
@@ -305,6 +318,89 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
 					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
 				}
+			}
+		});
+	}
+
+	@Test
+	public void testNonEnvoiSimpleCarAvantSeuil() throws Exception {
+
+		// le seuil est fixé au 1.1.1994 dans ce test (voir runOnSetup())
+
+		final RegDate dateDebutEntreprise = date(1990, 4, 1);
+		final RegDate dateDebutDroit = date(1993, 7, 12);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		final class Ids {
+			long idContribuable;
+			long idImmeuble;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Acheteuse...");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Acheteuse", null, "48514s66fss", 445198L, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			addEstimationFiscale(date(1993, 12, 1), null, null, false, 424242L, "1993", immeuble);
+
+			addDroitPersonneMoraleRF(null, dateDebutDroit, null, "Achat", null, "1555sfsgbsfhd", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
+
+			final Ids identifiants = new Ids();
+			identifiants.idContribuable = entreprise.getNumero();
+			identifiants.idImmeuble = immeuble.getId();
+			return identifiants;
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDroitsInspectes());
+		Assert.assertEquals(1, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getEnvois().size());
+		Assert.assertEquals(1, results.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			Assert.assertEquals("Lausanne", ignore.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
+			Assert.assertEquals((Integer) 112, ignore.noParcelle);
+			Assert.assertNull(ignore.index1);
+			Assert.assertNull(ignore.index2);
+			Assert.assertNull(ignore.index3);
+			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DATE_MUTATION_AVANT_SEUIL, ignore.raison);
+			Assert.assertEquals("Estimation fiscale (01.12.1993)", ignore.messageAdditionnel);
+		}
+
+		// vérification en base...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(0, demandes.size());
 			}
 		});
 	}

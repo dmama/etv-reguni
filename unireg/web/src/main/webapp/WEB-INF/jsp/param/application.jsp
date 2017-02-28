@@ -380,6 +380,44 @@
 		        </tr>
 
 			    <tr class="separator"><th colspan="4" ></th></tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI"/></td>
+					    <%--@elvariable id="dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICIParDefaut" type="java.lang.String"--%>
+				    <td class="date">${dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICIParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI" cssClass="valeur-longue date" cssErrorClass="valeur-longue input-with-errors date" maxlength="10"/>
+				    </td>
+				    <td><sf:errors path="dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI" cssClass="erreur"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiRetourDemandeDegrevementICI"/></td>
+					    <%--@elvariable id="delaiRetourDemandeDegrevementICIParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiRetourDemandeDegrevementICIParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiRetourDemandeDegrevementICI" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+				    </td>
+				    <td><sf:errors path="delaiRetourDemandeDegrevementICI" cssClass="erreur"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiEnvoiRappelDemandeDegrevementICI"/></td>
+					    <%--@elvariable id="delaiEnvoiRappelDemandeDegrevementICIParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiEnvoiRappelDemandeDegrevementICIParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiEnvoiRappelDemandeDegrevementICI" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+				    </td>
+				    <td><sf:errors path="delaiEnvoiRappelDemandeDegrevementICI" cssClass="erreur"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiCadevImpressionDemandeDegrevementICI"/></td>
+					    <%--@elvariable id="delaiCadevImpressionDemandeDegrevementICIParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiCadevImpressionDemandeDegrevementICIParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiCadevImpressionDemandeDegrevementICI" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
+				    </td>
+				    <td><sf:errors path="delaiCadevImpressionDemandeDegrevementICI" cssClass="erreur"/></td>
+			    </tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.dateExclusionDecedeEnvoiDI"/></td>
 		            <%--@elvariable id="dateExclusionDecedeEnvoiDIParDefaut" type="java.lang.String"--%>

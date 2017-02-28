@@ -228,6 +228,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer[] getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI() {
+		return container.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI();
+	}
+
+	@Override
 	public void reset() {
 		container.reset();
 	}
@@ -445,5 +450,10 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val) {
 		container.setDelaiEnvoiRappelDemandeDegrevementICI(val);
+	}
+
+	@Override
+	public void setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(Integer[] val) {
+		container.setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(val);
 	}
 }

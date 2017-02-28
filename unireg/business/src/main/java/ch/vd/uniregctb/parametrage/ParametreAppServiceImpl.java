@@ -317,6 +317,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer[] getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI() {
+		return container.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI();
+	}
+
+	@Override
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val) {
 		container.setDelaiAttenteDeclarationImpotPersonneDecedee(val);
 	}
@@ -524,5 +529,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val) {
 		container.setDelaiEnvoiRappelDemandeDegrevementICI(val);
+	}
+
+	@Override
+	public void setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(Integer[] val) {
+		container.setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(val);
 	}
 }
