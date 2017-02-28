@@ -19,26 +19,29 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 
 	@Nullable
 	@Override
-	public EvenementRFImport findNextImportToProcess() {
-		final Query query = getCurrentSession().createQuery("from EvenementRFImport where etat in ('A_TRAITER', 'EN_ERREUR') order by dateEvenement asc");
+	public EvenementRFImport findNextImportToProcess(TypeImportRF type) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFImport where type = :type and etat in ('A_TRAITER', 'EN_ERREUR') order by dateEvenement asc");
+		query.setParameter("type", type);
 		query.setMaxResults(1);
 		return (EvenementRFImport) query.uniqueResult();
 	}
 
 	@Nullable
 	@Override
-	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId) {
-		final Query query = getCurrentSession().createQuery("from EvenementRFImport where id in (select parentImport.id from EvenementRFMutation where parentImport.id != :importId and etat in ('A_TRAITER', 'EN_ERREUR')) order by dateEvenement asc");
+	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId, TypeImportRF type) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFImport where type = :type and id in (select parentImport.id from EvenementRFMutation where parentImport.id != :importId and etat in ('A_TRAITER', 'EN_ERREUR')) order by dateEvenement asc");
 		query.setParameter("importId", importId);
+		query.setParameter("type", type);
 		query.setMaxResults(1);
 		return (EvenementRFImport) query.uniqueResult();
 	}
 
 	@Nullable
 	@Override
-	public RegDate findValueDateOfOldestProcessedImport(long importId) {
-		final Query query = getCurrentSession().createQuery("select max(dateEvenement) from EvenementRFImport where id != :importId and etat in ('EN_TRAITEMENT', 'TRAITE', 'EN_ERREUR', 'FORCE')");
+	public RegDate findValueDateOfOldestProcessedImport(long importId, TypeImportRF type) {
+		final Query query = getCurrentSession().createQuery("select max(dateEvenement) from EvenementRFImport where id != :importId and type = :type and etat in ('EN_TRAITEMENT', 'TRAITE', 'EN_ERREUR', 'FORCE')");
 		query.setParameter("importId", importId);
+		query.setParameter("type", type);
 		return (RegDate) query.uniqueResult();
 	}
 

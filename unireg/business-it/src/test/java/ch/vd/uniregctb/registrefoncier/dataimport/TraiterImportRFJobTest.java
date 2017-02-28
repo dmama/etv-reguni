@@ -2,7 +2,6 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,18 +50,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	@Test
 	public void testImportDejaProcesse() throws Exception {
 
-		// on insère les données de l'import dans la base
-		final Long importId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
-				importEvent.setEtat(EtatEvenementRF.TRAITE);
-				importEvent.setFileUrl("http://turlututu");
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
-		});
+		final Long importId = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 10, 1), EtatEvenementRF.TRAITE, "http://turlututu");
 		assertNotNull(importId);
 
 		// on déclenche le démarrage du job
@@ -96,37 +84,13 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	@Test
 	public void testImportAutreImportPasEncoreProcesse() throws Exception {
 
-		class Ids {
-			long precedent;
-			long suivant;
-		}
-		final Ids ids = new Ids();
-
 		// on insère les données de l'import dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-
-				// un import précédent en erreur
-				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
-				importEventPrecedant.setType(TypeImportRF.PRINCIPAL);
-				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
-				importEventPrecedant.setEtat(EtatEvenementRF.EN_ERREUR);
-				importEventPrecedant.setFileUrl("http://turlututu");
-				ids.precedent = evenementRFImportDAO.save(importEventPrecedant).getId();
-
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(RegDate.get(2016, 10, 1));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl("http://turlututu");
-				ids.suivant = evenementRFImportDAO.save(importEvent).getId();
-			}
-		});
+		final long precedent = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.EN_ERREUR, "http://turlututu");
+		final long suivant = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 10, 1), EtatEvenementRF.A_TRAITER, "http://turlututu");
 
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();
-		params.put(TraiterImportRFJob.ID, ids.suivant);
+		params.put(TraiterImportRFJob.ID, suivant);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
 
@@ -140,11 +104,11 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
-				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "].", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] doit être traité après l'import RF avec l'id = [" + ids.precedent + "]."));
+				assertEquals("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "].", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "]."));
 			}
 		});
 	}
@@ -155,38 +119,13 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	@Test
 	public void testImportDateValeurAnterieure() throws Exception {
 
-		class Ids {
-			long precedent;
-			long suivant;
-		}
-		final Ids ids = new Ids();
-
 		// on insère les données de l'import dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-
-				// un import précédent traité
-				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
-				importEventPrecedant.setType(TypeImportRF.PRINCIPAL);
-				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
-				importEventPrecedant.setEtat(EtatEvenementRF.TRAITE);
-				importEventPrecedant.setFileUrl("http://turlututu");
-				ids.precedent = evenementRFImportDAO.save(importEventPrecedant).getId();
-
-				// un nouvel import *mais* avec une date antérieure
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(RegDate.get(2015, 3, 7));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl("http://turlututu");
-				ids.suivant = evenementRFImportDAO.save(importEvent).getId();
-			}
-		});
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+		final long suivant = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2015, 3, 7), EtatEvenementRF.A_TRAITER, "http://turlututu");
 
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();
-		params.put(TraiterImportRFJob.ID, ids.suivant);
+		params.put(TraiterImportRFJob.ID, suivant);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
 
@@ -200,11 +139,11 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
-				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
+				assertEquals("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2015.03.07] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
 			}
 		});
 	}
@@ -215,38 +154,13 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 	@Test
 	public void testImportDateValeurIdentique() throws Exception {
 
-		class Ids {
-			long precedent;
-			long suivant;
-		}
-		final Ids ids = new Ids();
-
 		// on insère les données de l'import dans la base
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-
-				// un import précédent traité
-				final EvenementRFImport importEventPrecedant = new EvenementRFImport();
-				importEventPrecedant.setType(TypeImportRF.PRINCIPAL);
-				importEventPrecedant.setDateEvenement(RegDate.get(2016, 9, 1));
-				importEventPrecedant.setEtat(EtatEvenementRF.TRAITE);
-				importEventPrecedant.setFileUrl("http://turlututu");
-				ids.precedent = evenementRFImportDAO.save(importEventPrecedant).getId();
-
-				// un nouvel import *mais* avec une date de valeur identique
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(TypeImportRF.PRINCIPAL);
-				importEvent.setDateEvenement(RegDate.get(2016, 9, 1));
-				importEvent.setEtat(EtatEvenementRF.A_TRAITER);
-				importEvent.setFileUrl("http://turlututu");
-				ids.suivant = evenementRFImportDAO.save(importEvent).getId();
-			}
-		});
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+		final long suivant = insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.A_TRAITER, "http://turlututu");
 
 		// on déclenche le démarrage du job
 		final HashMap<String, Object> params = new HashMap<>();
-		params.put(TraiterImportRFJob.ID, ids.suivant);
+		params.put(TraiterImportRFJob.ID, suivant);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
 
@@ -260,14 +174,85 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = evenementRFImportDAO.get(ids.suivant);
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
-				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
-				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
+				assertEquals("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01].", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] possède une date de valeur [2016.09.01] antérieure ou égale à la date de valeur du dernier import traité [2016.09.01]."));
 			}
 		});
 	}
+
+	/**
+	 * Ce test vérifie que le démarrage du job sur un import de type B alors que l'import de A à une date de valeur plus récente est bien autorisé à démarrer.
+	 */
+	@Test
+	public void testImportAutreTypeDateValeurAnterieure() throws Exception {
+
+		// on va chercher un fichier d'import (vide, mais ça n'a pas d'importance)
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_servitudes_vide_rf.xml");
+		assertNotNull(importFile);
+
+		// on l'upload dans Raft
+		final String raftUrl;
+		try (FileInputStream is = new FileInputStream(importFile)) {
+			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
+		}
+		assertNotNull(raftUrl);
+
+		// un import principal déjà processé + un import des servitudes à processer
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+		final long suivant = insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 3, 1), EtatEvenementRF.A_TRAITER, raftUrl);
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, suivant);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit bien démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+	}
+
+	/**
+	 * Ce test vérifie que le démarrage du job sur un import de type B alors que l'import de A à la même date de valeur est bien autorisé à démarrer.
+	 */
+	@Test
+	public void testImportAutreTypeDateValeurIdentique() throws Exception {
+
+		// on va chercher un fichier d'import (vide, mais ça n'a pas d'importance)
+		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_servitudes_vide_rf.xml");
+		assertNotNull(importFile);
+
+		// on l'upload dans Raft
+		final String raftUrl;
+		try (FileInputStream is = new FileInputStream(importFile)) {
+			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
+		}
+		assertNotNull(raftUrl);
+
+		// un import principal déjà processé + un import des servitudes à processer
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.TRAITE, "http://turlututu");
+		final long suivant = insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 9, 1), EtatEvenementRF.A_TRAITER, raftUrl);
+
+		// on déclenche le démarrage du job
+		final HashMap<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, suivant);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job doit bien démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_OK, job.getStatut());
+	}
+
 
 	/**
 	 * Ce vérifie que l'exécution d'un import en erreur et avec des mutations prééexistantes commence bien par effacer ces mutations pour repartir de zéro.
@@ -369,7 +354,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(3, mutations.size());    // il y a 3 ayants-droits dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
@@ -540,6 +525,21 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées.", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + ids.suivant + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + ids.precedent + "] n'ont pas été traitées."));
+			}
+		});
+	}
+
+	private Long insertImport(final TypeImportRF type, final RegDate dateEvenement, final EtatEvenementRF etat, final String fileUrl) throws Exception {
+		// on insère les données de l'import dans la base
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(type);
+				importEvent.setDateEvenement(dateEvenement);
+				importEvent.setEtat(etat);
+				importEvent.setFileUrl(fileUrl);
+				return evenementRFImportDAO.save(importEvent).getId();
 			}
 		});
 	}

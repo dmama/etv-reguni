@@ -95,19 +95,19 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Nullable
 	@Override
-	public EvenementRFImport findNextImportToProcess() {
+	public EvenementRFImport findNextImportToProcess(TypeImportRF type) {
 		throw new NotImplementedException();
 	}
 
 	@Nullable
 	@Override
-	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId) {
+	public EvenementRFImport findOldestImportWithUnprocessedMutations(long importId, TypeImportRF type) {
 		throw new NotImplementedException();
 	}
 
 	@Nullable
 	@Override
-	public RegDate findValueDateOfOldestProcessedImport(long importId) {
+	public RegDate findValueDateOfOldestProcessedImport(long importId, TypeImportRF type) {
 		throw new NotImplementedException();
 	}
 
