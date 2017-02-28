@@ -67,7 +67,7 @@
 						<unireg:buttonTo name="Relancer l'import" confirm="Voulez-vous vraiment relancer le traitement de l'import n°${importEvent.id} ?"
 						                 action="/registrefoncier/import/restart.do" params="{importId:${importEvent.id}}"/>
 						<unireg:buttonTo name="Forcer l'import" confirm="Voulez-vous vraiment forcer le traitement de l'import n°${importEvent.id} (y compris les mutations) ? \n\nEn forçant cet import, il sera marqué comme 'forcé' et les mutations non-traitées ne seront jamais intégrées dans Unireg."
-						                 action="/registrefoncier/import/forcer.do" params="{importId:${importEvent.id}}"/>
+						                 action="/registrefoncier/import/force.do" params="{importId:${importEvent.id}}"/>
 					</c:if>
 					<unireg:consulterLog entityNature="EvenementRFImport" entityId="${importEvent.id}"/>
 				</display:column>
