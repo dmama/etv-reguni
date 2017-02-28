@@ -9,21 +9,23 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
+import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
+import ch.vd.uniregctb.foncier.migration.MigrationDonneesFoncieresJob;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 
-public class MigrationExoIFONCJob extends JobDefinition {
+public class MigrationExoIFONCJob extends MigrationDonneesFoncieresJob {
 
 	private static final String NAME = "MigrationExoIFONCJob";
 	public static final String CSV_FILE = "csvFile";
 	private static final String ENCODING = "Encoding";
 	private static final String DEFAULT_ENCODING = "ISO-8859-15";
 	public static final String NB_THREADS = "NB_THREADS";
+	private static final String CSV_FUSIONS = "csvFusions";
 
 	private MigrationExoIFONCImporter loader;
 	private RapportService rapportService;
@@ -57,6 +59,14 @@ public class MigrationExoIFONCJob extends JobDefinition {
 		}
 		{
 			final JobParam param = new JobParam();
+			param.setDescription("Fichier CSV des fusions de communes");
+			param.setName(CSV_FUSIONS);
+			param.setMandatory(false);
+			param.setType(new JobParamFile());
+			addParameterDefinition(param, null);
+		}
+		{
+			final JobParam param = new JobParam();
 			param.setDescription("Nombre de threads");
 			param.setName(NB_THREADS);
 			param.setMandatory(true);
@@ -72,10 +82,13 @@ public class MigrationExoIFONCJob extends JobDefinition {
 		final String encoding = StringUtils.defaultIfBlank(getStringValue(params, ENCODING), DEFAULT_ENCODING);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
+		final byte[] fusionCommunesContent = getFileContent(params, CSV_FUSIONS);
+		final DonneesFusionsCommunes fusionData = getDonneesFusionsCommunes(fusionCommunesContent);
+
 		final MigrationExoIFONCImporterResults results;
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(zippedContent); ZipInputStream zipstream = new ZipInputStream(bais)) {
 			zipstream.getNextEntry();
-			results = loader.loadCSV(zipstream, encoding, nbThreads, status);
+			results = loader.loadCSV(zipstream, encoding, fusionData, nbThreads, status);
 		}
 		final MigrationExoIFONCRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);

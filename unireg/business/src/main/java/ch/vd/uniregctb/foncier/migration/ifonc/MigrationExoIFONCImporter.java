@@ -27,7 +27,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
@@ -36,12 +35,11 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
-import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
-import ch.vd.uniregctb.foncier.migration.ImmeubleNotFoundException;
-import ch.vd.uniregctb.foncier.migration.MigrationParcelle;
+import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
+import ch.vd.uniregctb.foncier.migration.MigrationImporter;
+import ch.vd.uniregctb.foncier.migration.MigrationKey;
 import ch.vd.uniregctb.foncier.migration.ParsingHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -52,7 +50,7 @@ import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
-public class MigrationExoIFONCImporter {
+public class MigrationExoIFONCImporter extends MigrationImporter {
 
 	private static final int BATCH_SIZE = 100;
 
@@ -60,7 +58,6 @@ public class MigrationExoIFONCImporter {
 
 	private final ServiceInfrastructureService infraService;
 	private final PlatformTransactionManager transactionManager;
-	private final ImmeubleRFDAO immeubleRFDAO;
 	private final ValidationInterceptor validationInterceptor;
 	private final GlobalTiersIndexer tiersIndexer;
 	private final TacheSynchronizerInterceptor tacheSynchronizerInterceptor;
@@ -68,16 +65,16 @@ public class MigrationExoIFONCImporter {
 
 	public MigrationExoIFONCImporter(ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager, ImmeubleRFDAO immeubleRFDAO, ValidationInterceptor validationInterceptor, GlobalTiersIndexer tiersIndexer,
 	                                 TacheSynchronizerInterceptor tacheSynchronizerInterceptor, HibernateTemplate hibernateTemplate) {
+		super(immeubleRFDAO);
 		this.infraService = infraService;
 		this.transactionManager = transactionManager;
-		this.immeubleRFDAO = immeubleRFDAO;
 		this.validationInterceptor = validationInterceptor;
 		this.tiersIndexer = tiersIndexer;
 		this.tacheSynchronizerInterceptor = tacheSynchronizerInterceptor;
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	public MigrationExoIFONCImporterResults loadCSV(@NotNull InputStream csvStream, @NotNull String encoding, int nbThreads, @Nullable StatusManager s) {
+	public MigrationExoIFONCImporterResults loadCSV(@NotNull InputStream csvStream, @NotNull String encoding, @NotNull DonneesFusionsCommunes fusionData, int nbThreads, @Nullable StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final MigrationExoIFONCImporterResults rapportFinal = new MigrationExoIFONCImporterResults(nbThreads);
@@ -93,7 +90,7 @@ public class MigrationExoIFONCImporter {
 
 		// Import de toutes les lignes du flux CSV
 		try {
-			processAllLines(csvIterator, nbThreads, rapportFinal, status);
+			processAllLines(csvIterator, fusionData, nbThreads, rapportFinal, status);
 		}
 		catch (IOException | ParseException e) {
 			throw new RuntimeException(e);
@@ -114,7 +111,7 @@ public class MigrationExoIFONCImporter {
 		return rapportFinal;
 	}
 
-	private void processAllLines(Scanner csv, int nbThreads, MigrationExoIFONCImporterResults rapport, StatusManager status) throws IOException, ParseException {
+	private void processAllLines(Scanner csv, DonneesFusionsCommunes fusionData, int nbThreads, MigrationExoIFONCImporterResults rapport, StatusManager status) throws IOException, ParseException {
 
 		// index pour pouvoir suivre, dans les rapports d'erreurs, la ligne incriminée
 		int index = 1;
@@ -203,7 +200,7 @@ public class MigrationExoIFONCImporter {
 					final Map<Long, List<ExonerationIFONC>> exosParImmeuble = batchEntry.getValue().stream()
 							.map(data -> {
 								try {
-									final ExonerationIFONC exo = mapToExoneration(data, entreprise, mapCommunes);
+									final ExonerationIFONC exo = mapToExoneration(data, entreprise, mapCommunes, fusionData);
 									subRapport.get().incExonerationsTraitees();
 									return exo;
 								}
@@ -277,59 +274,8 @@ public class MigrationExoIFONCImporter {
 		return hibernateTemplate.get(Entreprise.class, id);
 	}
 
-	@NotNull
-	private ImmeubleRF determinerImmeuble(MigrationExoIFONC demande, Map<String, Commune> mapCommunes) {
-
-		final Commune commune = mapCommunes.get(canonizeName(demande.getNomCommune()));
-		if (commune == null) {
-			throw new IllegalArgumentException("La commune avec le nom [" + demande.getNomCommune() + "] n'existe pas.");
-		}
-
-		final MigrationParcelle parcelle;
-		try {
-			parcelle = new MigrationParcelle(demande.getNoBaseParcelle(), demande.getNoParcelle(), demande.getNoLotPPE());
-		}
-		catch (RuntimeException e) {
-			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
-		}
-
-		try {
-			return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, commune, parcelle);
-		}
-		catch (ImmeubleNotFoundException e) {
-			// [SIFISC-23185] peut-être que l'immeuble n'est connu que sur la commune faîtière dans le RF...
-			if (commune.isFraction()) {
-				final Commune communeFaitiere = mapCommunes.values().stream()
-						.filter(Commune::isPrincipale)
-						.filter(c -> c.getNoOFS() == commune.getOfsCommuneMere())
-						.findFirst()
-						.orElse(null);
-				if (communeFaitiere != null) {
-					try {
-						return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, communeFaitiere, parcelle);
-					}
-					catch (ImmeubleNotFoundException ex) {
-						// pas trouvé non plus... on laisse passer et on renvoie l'exception initiale
-					}
-				}
-			}
-			else if (commune.getDateFinValidite() != null) {
-				// cette commune a disparu (= fusion)... pas étonnant qu'on ne trouve plus rien dans les données RF...
-				// les données que nous avons ne sont donc vraissemblablement plus valide (renumérotation des parcelles lors de la fusion...)
-				throw new ObjectNotFoundException("La commune de " + demande.getNomCommune() + " (" + commune.getNoOFS() + ") a fusionné (fiscalement) au " + RegDateHelper.dateToDisplayString(commune.getDateFinValidite()) + ".");
-			}
-
-			// pas mieux, on laisse passer...
-			throw e;
-		}
-	}
-
-	private static String canonizeName(String name) {
-		return name.replaceAll("[-.()]", " ").replaceAll("[\\s]+", " ").trim().toLowerCase();
-	}
-
-	ExonerationIFONC mapToExoneration(MigrationExoIFONC data, Entreprise entreprise, Map<String, Commune> mapCommunes) {
-		final ImmeubleRF immeuble = determinerImmeuble(data, mapCommunes);
+	ExonerationIFONC mapToExoneration(MigrationExoIFONC data, Entreprise entreprise, Map<String, Commune> mapCommunes, DonneesFusionsCommunes fusionData) {
+		final ImmeubleRF immeuble = determinerImmeuble(new MigrationKey(data), mapCommunes, fusionData);
 		final ExonerationIFONC exo = new ExonerationIFONC();
 		exo.setContribuable(entreprise);
 		exo.setImmeuble(immeuble);

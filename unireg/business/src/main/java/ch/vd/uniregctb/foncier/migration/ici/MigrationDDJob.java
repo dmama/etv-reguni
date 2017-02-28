@@ -9,9 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
+import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
+import ch.vd.uniregctb.foncier.migration.MigrationDonneesFoncieresJob;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
-import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -20,13 +21,14 @@ import ch.vd.uniregctb.scheduler.JobParamString;
 /**
  * Job de migration des données de dégrèvement depuis l'export CSV de SIMPA-PM.
  */
-public class MigrationDDJob extends JobDefinition {
+public class MigrationDDJob extends MigrationDonneesFoncieresJob {
 
-	public static final String NAME = "MigrationDDJob";
-	public static final String CSV_FILE = "csvFile";
+	private static final String NAME = "MigrationDDJob";
+	private static final String CSV_FILE = "csvFile";
 	private static final String ENCODING = "Encoding";
 	private static final String DEFAULT_ENCODING = "ISO-8859-15";
-	public static final String NB_THREADS = "NB_THREADS";
+	private static final String NB_THREADS = "NB_THREADS";
+	private static final String CSV_FUSIONS = "csvFusions";
 
 	private MigrationDDImporter loader;
 	private RapportService rapportService;
@@ -42,27 +44,38 @@ public class MigrationDDJob extends JobDefinition {
 	public MigrationDDJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DB, sortOrder, description);
 
-		final JobParam param1 = new JobParam();
-		param1.setDescription("Fichier CSV d'import compressé (*.zip)");
-		param1.setName(CSV_FILE);
-		param1.setMandatory(true);
-		param1.setType(new JobParamFile());
-		addParameterDefinition(param1, null);
-
-		final JobParam param2 = new JobParam();
-		param2.setDescription("Encoding du fichier");
-		param2.setName(ENCODING);
-		param2.setMandatory(false);
-		param2.setType(new JobParamString());
-		addParameterDefinition(param2, DEFAULT_ENCODING);
-
-		final JobParam param3 = new JobParam();
-		param3.setDescription("Nombre de threads");
-		param3.setName(NB_THREADS);
-		param3.setMandatory(true);
-		param3.setType(new JobParamInteger());
-		addParameterDefinition(param3, 8);
-
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Fichier CSV d'import compressé (*.zip)");
+			param.setName(CSV_FILE);
+			param.setMandatory(true);
+			param.setType(new JobParamFile());
+			addParameterDefinition(param, null);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Encoding du fichier");
+			param.setName(ENCODING);
+			param.setMandatory(false);
+			param.setType(new JobParamString());
+			addParameterDefinition(param, DEFAULT_ENCODING);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Fichier CSV des fusions de communes");
+			param.setName(CSV_FUSIONS);
+			param.setMandatory(false);
+			param.setType(new JobParamFile());
+			addParameterDefinition(param, null);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Nombre de threads");
+			param.setName(NB_THREADS);
+			param.setMandatory(true);
+			param.setType(new JobParamInteger());
+			addParameterDefinition(param, 8);
+		}
 	}
 
 	@Override
@@ -73,12 +86,15 @@ public class MigrationDDJob extends JobDefinition {
 		final String encoding = getEncoding(params);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
+		final byte[] fusionCommunesContent = getFileContent(params, CSV_FUSIONS);
+		final DonneesFusionsCommunes fusionData = getDonneesFusionsCommunes(fusionCommunesContent);
+
 		final MigrationDDImporterResults results;
 
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(zippedContent);
 		     ZipInputStream zipstream = new ZipInputStream(bais)) {
 			zipstream.getNextEntry();
-			results = loader.loadCSV(zipstream, encoding, nbThreads, status);
+			results = loader.loadCSV(zipstream, encoding, fusionData, nbThreads, status);
 		}
 		final MigrationDDCsvLoaderRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
@@ -92,4 +108,5 @@ public class MigrationDDJob extends JobDefinition {
 		}
 		return encoding;
 	}
+
 }

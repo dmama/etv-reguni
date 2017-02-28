@@ -62,7 +62,14 @@ public class MigrationParcelle {
 		return list;
 	}
 
-	public MigrationParcelle(@NotNull String baseParcelle, @Nullable String parcelle, @Nullable String lotPPE) {
+	private MigrationParcelle(int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+		this.noParcelle = noParcelle;
+		this.index1 = index1;
+		this.index2 = index2;
+		this.index3 = index3;
+	}
+
+	public static MigrationParcelle valueOf(@NotNull String baseParcelle, @Nullable String parcelle, @Nullable String lotPPE) {
 		// [SIFISC-23111] nouvelle règle de transcription
 		// - si le numéro de parcelle est vide, on prend le numéro de parcelle de base et on découpe pour extraire les indexes
 		// - si le numéro de parcelle n'est pas vide, il est pris tel quel (sans indexes)
@@ -76,10 +83,14 @@ public class MigrationParcelle {
 		}
 
 		final String[] tokens = SEPARATORS.split(parcelle);
-		noParcelle = parseToken(0, tokens[0]);
-		index1 = tokens.length > 1 ? parseToken(1, tokens[1]) : null;
-		index2 = tokens.length > 2 ? parseToken(2, tokens[2]) : null;
-		index3 = tokens.length > 3 ? parseToken(3, tokens[3]) : null;
+		return new MigrationParcelle(parseToken(0, tokens[0]),
+		                             tokens.length > 1 ? parseToken(1, tokens[1]) : null,
+		                             tokens.length > 2 ? parseToken(2, tokens[2]) : null,
+		                             tokens.length > 3 ? parseToken(3, tokens[3]) : null);
+	}
+
+	public MigrationParcelle withNoParcelle(int noParcelle) {
+		return new MigrationParcelle(noParcelle, index1, index2, index3);
 	}
 
 	@Nullable

@@ -13,6 +13,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
+import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
+import ch.vd.uniregctb.foncier.migration.MigrationDonneesFoncieresJob;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
@@ -72,10 +74,13 @@ public class MigrationExoIFONCImporterITTest extends BusinessItTest {
 			return null;
 		});
 
+		// chargement des données des fusions de communes
+		final DonneesFusionsCommunes fusionData = MigrationDonneesFoncieresJob.getDonneesFusionsCommunes(null);
+
 		// on lance l'importation du CSV
 		final MigrationExoIFONCImporterResults results;
 		try (InputStream is = getClass().getResourceAsStream("exonerations_ifonc_small.csv")) {
-			results = importer.loadCSV(is, "UTF-8", 1, null);
+			results = importer.loadCSV(is, "UTF-8", fusionData, 1, null);
 		}
 
 		assertNotNull(results);

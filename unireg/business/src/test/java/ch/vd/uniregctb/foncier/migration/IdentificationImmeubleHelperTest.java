@@ -39,7 +39,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, new MigrationParcelle("4542712879", "1234-1", null));
+				final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, MigrationParcelle.valueOf("4542712879", "1234-1", null));
 				Assert.assertNotNull(immeuble);
 				Assert.assertEquals("58658dkf", immeuble.getIdRF());
 			}
@@ -64,7 +64,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus transactionStatus) throws Exception {
-					final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, new MigrationParcelle("4542712879", "1234-3", null));
+					final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, MigrationParcelle.valueOf("4542712879", "1234-3", null));
 					Assert.fail("L'appel aurait-dû échouer");
 				}
 			});
@@ -91,7 +91,7 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, new MigrationParcelle("4542712879", "1234", null));
+				final ImmeubleRF immeuble = IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, MockCommune.Lausanne, MigrationParcelle.valueOf("4542712879", "1234", null));
 				Assert.assertNotNull(immeuble);
 				Assert.assertEquals("4783424LJD", immeuble.getIdRF());
 			}

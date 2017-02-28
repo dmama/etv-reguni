@@ -46,10 +46,9 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
-import ch.vd.uniregctb.foncier.migration.IdentificationImmeubleHelper;
-import ch.vd.uniregctb.foncier.migration.ImmeubleNotFoundException;
+import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
+import ch.vd.uniregctb.foncier.migration.MigrationImporter;
 import ch.vd.uniregctb.foncier.migration.MigrationKey;
-import ch.vd.uniregctb.foncier.migration.MigrationParcelle;
 import ch.vd.uniregctb.foncier.migration.ParsingHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -62,7 +61,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
-public class MigrationDDImporter {
+public class MigrationDDImporter extends MigrationImporter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationDDImporter.class);
 
@@ -71,7 +70,6 @@ public class MigrationDDImporter {
 	private final TiersDAO tiersDAO;
 	private final HibernateTemplate hibernateTemplate;
 	private final ServiceInfrastructureService infraService;
-	private final ImmeubleRFDAO immeubleRFDAO;
 	private final GlobalTiersIndexer tiersIndexer;
 	private final ValidationInterceptor validationInterceptor;
 	private final TacheSynchronizerInterceptor tacheSynchronizerInterceptor;
@@ -85,17 +83,17 @@ public class MigrationDDImporter {
 	                           ValidationInterceptor validationInterceptor,
 	                           TacheSynchronizerInterceptor tacheSynchronizerInterceptor,
 	                           PlatformTransactionManager transactionManager) {
+		super(immeubleRFDAO);
 		this.tiersDAO = tiersDAO;
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
-		this.immeubleRFDAO = immeubleRFDAO;
 		this.tiersIndexer = tiersIndexer;
 		this.validationInterceptor = validationInterceptor;
 		this.tacheSynchronizerInterceptor = tacheSynchronizerInterceptor;
 		this.transactionManager = transactionManager;
 	}
 
-	public MigrationDDImporterResults loadCSV(@NotNull InputStream csvStream, @NotNull String encoding, int nbThreads, @Nullable StatusManager s) {
+	public MigrationDDImporterResults loadCSV(@NotNull InputStream csvStream, @NotNull String encoding, DonneesFusionsCommunes fusionData, int nbThreads, @Nullable StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final MigrationDDImporterResults rapportFinal = new MigrationDDImporterResults(nbThreads);
@@ -111,7 +109,7 @@ public class MigrationDDImporter {
 
 		// Import de toutes les lignes du flux CSV
 		try {
-			processAllLines(csvIterator, nbThreads, rapportFinal, status);
+			processAllLines(csvIterator, fusionData, nbThreads, rapportFinal, status);
 		}
 		catch (IOException | ParseException e) {
 			throw new RuntimeException(e);
@@ -132,7 +130,7 @@ public class MigrationDDImporter {
 		return rapportFinal;
 	}
 
-	private void processAllLines(@NotNull Scanner csvIterator, int nbThreads, @NotNull MigrationDDImporterResults rapport, @NotNull StatusManager status) throws IOException, ParseException {
+	private void processAllLines(@NotNull Scanner csvIterator, DonneesFusionsCommunes fusionData, int nbThreads, @NotNull MigrationDDImporterResults rapport, @NotNull StatusManager status) throws IOException, ParseException {
 
 		int index = 1;
 
@@ -261,7 +259,7 @@ public class MigrationDDImporter {
 					final Map<Long, List<Pair<DegrevementICI, MigrationKey>>> degrevementsParImmeuble = batchEntry.getValue().stream()
 							.map(dd -> {
 								try {
-									final DegrevementICI deg = traiterDegrevement(dd, mapCommunes);
+									final DegrevementICI deg = traiterDegrevement(dd, mapCommunes, fusionData);
 									if (deg == null) {
 										subRapport.get().addDonneeDegrevementVide(dd);
 										return null;
@@ -330,10 +328,10 @@ public class MigrationDDImporter {
 	 * @return le dégrèvement ICI à persister
 	 */
 	@Nullable
-	private DegrevementICI traiterDegrevement(Map.Entry<MigrationKey, ValeurDegrevement> degrevement, Map<String, Commune> mapCommunes) throws ObjectNotFoundException {
+	private DegrevementICI traiterDegrevement(Map.Entry<MigrationKey, ValeurDegrevement> degrevement, Map<String, Commune> mapCommunes, DonneesFusionsCommunes fusionData) throws ObjectNotFoundException {
 
 		final Entreprise entreprise = determinerEntreprise(degrevement.getKey());
-		final ImmeubleRF immeuble = determinerImmeuble(degrevement.getKey(), mapCommunes);
+		final ImmeubleRF immeuble = determinerImmeuble(degrevement.getKey(), mapCommunes, fusionData);
 
 		final DegrevementICI data = new DegrevementICI();
 		final Map<TypeUsage, MigrationDDUsage> usages = degrevement.getValue().getUsages();
@@ -363,57 +361,6 @@ public class MigrationDDImporter {
 		}
 		final BigDecimal pourcentage = BigDecimal.valueOf(usage.getPourdixmilleUsage(), 2);     // pour-dix-mille -> pour-cent
 		return new DonneesLoiLogement(null, null, pourcentage);
-	}
-
-	@NotNull
-	private ImmeubleRF determinerImmeuble(MigrationKey key, Map<String, Commune> mapCommunes) throws ObjectNotFoundException {
-
-		final Commune commune = mapCommunes.get(canonizeName(key.nomCommune));
-		if (commune == null) {
-			throw new ObjectNotFoundException("La commune avec le nom [" + key.nomCommune + "] n'existe pas.");
-		}
-
-		final MigrationParcelle parcelle;
-		try {
-			parcelle = new MigrationParcelle(key.noBaseParcelle, key.noParcelle, key.noLotPPE);
-		}
-		catch (RuntimeException e) {
-			throw new IllegalArgumentException("Impossible de parser le numéro de parcelle : " + e.getMessage());
-		}
-
-		try {
-			return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, commune, parcelle);
-		}
-		catch (ImmeubleNotFoundException e) {
-			// [SIFISC-23185] peut-être que l'immeuble n'est connu que sur la commune faîtière dans le RF...
-			if (commune.isFraction()) {
-				final Commune communeFaitiere = mapCommunes.values().stream()
-						.filter(Commune::isPrincipale)
-						.filter(c -> c.getNoOFS() == commune.getOfsCommuneMere())
-						.findFirst()
-						.orElse(null);
-				if (communeFaitiere != null) {
-					try {
-						return IdentificationImmeubleHelper.findImmeuble(immeubleRFDAO, communeFaitiere, parcelle);
-					}
-					catch (ImmeubleNotFoundException ex) {
-						// pas trouvé non plus... on laisse passer et on renvoie l'exception initiale
-					}
-				}
-			}
-			else if (commune.getDateFinValidite() != null) {
-				// cette commune a disparu (= fusion)... pas étonnant qu'on ne trouve plus rien dans les données RF...
-				// les données que nous avons ne sont donc vraissemblablement plus valide (renumérotation des parcelles lors de la fusion...)
-				throw new ObjectNotFoundException("La commune de " + key.nomCommune + " (" + commune.getNoOFS() + ") a fusionné (fiscalement) au " + RegDateHelper.dateToDisplayString(commune.getDateFinValidite()) + ".");
-			}
-
-			// pas mieux, on laisse passer...
-			throw e;
-		}
-	}
-
-	private static String canonizeName(String name) {
-		return name.replaceAll("[-.()]", " ").replaceAll("[\\s]+", " ").trim().toLowerCase();
 	}
 
 	@NotNull
