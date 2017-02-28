@@ -44,6 +44,7 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -63,12 +64,21 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	private final AutreDocumentFiscalService autreDocumentFiscalService;
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
+	private final ParametreAppService parametreAppService;
 
-	public EnvoiFormulairesDemandeDegrevementICIProcessor(PlatformTransactionManager transactionManager, AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate, TiersService tiersService) {
+	public EnvoiFormulairesDemandeDegrevementICIProcessor(ParametreAppService parametreAppService, PlatformTransactionManager transactionManager,
+	                                                      AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate,
+	                                                      TiersService tiersService) {
 		this.transactionManager = transactionManager;
 		this.autreDocumentFiscalService = autreDocumentFiscalService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
+		this.parametreAppService = parametreAppService;
+	}
+
+	private RegDate getDateDebutPriseEnCompteMutationRF() {
+		final Integer[] parts = parametreAppService.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI();
+		return RegDate.get(parts[2], parts[1], parts[0]);
 	}
 
 	public EnvoiFormulairesDemandeDegrevementICIResults run(final int nbThreads, @Nullable final Integer nbMaxEnvois, final RegDate dateTraitement, StatusManager statusManager) {
@@ -80,7 +90,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 		status.setMessage("Récupération des couples contribuable/immeuble à inspecter...");
 		final List<EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable> couples = findCouples(dateTraitement);
 
-		final EnvoiFormulairesDemandeDegrevementICIResults rapportFinal = new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement);
+		final RegDate dateSeuilMutationRF = getDateDebutPriseEnCompteMutationRF();
+		final EnvoiFormulairesDemandeDegrevementICIResults rapportFinal = new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement, dateSeuilMutationRF);
 		final ParallelBatchTransactionTemplateWithResults<EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable, EnvoiFormulairesDemandeDegrevementICIResults> template
 				= new ParallelBatchTransactionTemplateWithResults<>(couples,
 				                                                    BATCH_SIZE,
@@ -106,7 +117,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
 			@Override
 			public EnvoiFormulairesDemandeDegrevementICIResults createSubRapport() {
-				return new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement);
+				return new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement, dateSeuilMutationRF);
 			}
 		}, progressMonitor);
 
@@ -177,6 +188,25 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// si pas d'estimation fiscale, ou estimation à zéro, pas de demande à faire...
 			if (estimationCourante == null || estimationCourante.getMontant() == null || estimationCourante.getMontant() == 0L) {
 				rapport.addImmeubleSansEstimationFiscale(entreprise, immeuble);
+				continue;
+			}
+
+			// [SIFISC-23412] si la date de mutation est antérieure à la date seuil de mutation, alors on ne fait rien
+			final Pair<String, RegDate> critereSeuil = Stream.of(Pair.of("Début du droit", droit.getDateDebutMetier()),
+			                                                     Pair.of("Estimation fiscale", Stream.of(estimationCourante.getDateInscription(),
+			                                                                                             estimationCourante.getAnneeReference() != null ? RegDate.get(estimationCourante.getAnneeReference(), 12, 31) : null)
+					                                                     .filter(Objects::nonNull)
+					                                                     .findFirst()
+					                                                     .orElse(null)))
+					.filter(pair -> pair.getValue() != null)
+					.max(Comparator.comparing(Pair::getValue))
+					.orElse(null);
+			if (critereSeuil == null) {
+				rapport.addDateDebutNonDeterminable(entreprise, immeuble);
+				continue;
+			}
+			else if (critereSeuil.getRight().isBefore(rapport.dateSeuilMutationRF)) {
+				rapport.addDateDebutAvantSeuilMutationRF(entreprise, immeuble, critereSeuil.getRight(), critereSeuil.getLeft());
 				continue;
 			}
 

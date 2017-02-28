@@ -28,6 +28,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 	public final int nbThreads;
 	public final Integer nbMaxEnvois;
 	public final RegDate dateTraitement;
+	public final RegDate dateSeuilMutationRF;
 
 	private final List<DemandeDegrevementEnvoyee> envois = new LinkedList<>();
 	private final List<DemandeDegrevementNonEnvoyee> ignores = new LinkedList<>();
@@ -36,10 +37,11 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 	private int nbDroitsIgnores = 0;
 	private boolean wasInterrupted = false;
 
-	public EnvoiFormulairesDemandeDegrevementICIResults(int nbThreads, Integer nbMaxEnvois, RegDate dateTraitement) {
+	public EnvoiFormulairesDemandeDegrevementICIResults(int nbThreads, Integer nbMaxEnvois, RegDate dateTraitement, RegDate dateSeuilMutationRF) {
 		this.nbThreads = nbThreads;
 		this.nbMaxEnvois = nbMaxEnvois;
 		this.dateTraitement = dateTraitement;
+		this.dateSeuilMutationRF = dateSeuilMutationRF;
 	}
 
 	/**
@@ -172,6 +174,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_DEPUIS_DERNIER_CHANGEMENT("Demande de dégrèvement déjà présente depuis le dernier changement"),
 		DEMANDE_DEGREVEMENT_ULTERIEURE_DEJA_PRESENTE("Demande de dégrèvement déjà présente pour une période postérieure à la période visée"),
 		ESTIMATION_FISCALE_ABSENTE_OU_ZERO("Estimation fiscale absente ou égale à zéro"),
+		DATE_MUTATION_AVANT_SEUIL("Date de mutation antérieure au seuil paramétré"),
 		DROIT_USUFRUIT_OU_HABITATION("Droit d'usufruit ou d'habitation");
 
 		public final String description;
@@ -334,6 +337,26 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		                                                  String.format("Demande émise le %s pour la PF %d",
 		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
 		                                                                anneeDerniereEstimationFiscale)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDateDebutNonDeterminable(Entreprise entreprise, ImmeubleRF immeuble) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  immeuble,
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DATE_MUTATION_AVANT_SEUIL,
+		                                                  "Date de mutation non-déterminable"));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDateDebutAvantSeuilMutationRF(Entreprise entreprise, ImmeubleRF immeuble, RegDate dateMutation, String descriptionMutation) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  immeuble,
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DATE_MUTATION_AVANT_SEUIL,
+		                                                  String.format("%s (%s)", descriptionMutation, RegDateHelper.dateToDisplayString(dateMutation))));
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}

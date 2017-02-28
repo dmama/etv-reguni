@@ -332,6 +332,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 		return Integer.parseInt(get(ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI));
 	}
 
+	@Override
+	public Integer[] getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI() {
+		return getValeurPourParametreDeTypeDate(ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI);
+	}
+
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
 		Assert.isEqual(ParametreEnum.Type.jourDansAnnee, p.getType());
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
@@ -583,5 +588,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiEnvoiRappelDemandeDegrevementICI(Integer val) {
 		setValeur(ParametreEnum.delaiEnvoiRappelDemandeDegrevementICI, val.toString());
+	}
+
+	@Override
+	public void setDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI(Integer[] val) {
+		Assert.isEqual(3, val.length);
+		setValeur(ParametreEnum.dateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI, String.valueOf(val[0]) + '.' + val[1] + '.' + val[2]);
 	}
 }

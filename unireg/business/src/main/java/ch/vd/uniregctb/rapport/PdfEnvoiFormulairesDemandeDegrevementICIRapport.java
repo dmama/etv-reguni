@@ -39,6 +39,7 @@ public class PdfEnvoiFormulairesDemandeDegrevementICIRapport extends PdfRapport 
 			addTableSimple(2, table -> {
 				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
 				table.addLigne("Nombre maximal d'envois :", Optional.ofNullable(results.nbMaxEnvois).map(String::valueOf).orElse(StringUtils.EMPTY));
+				table.addLigne("Date seuil des mutations RF :", RegDateHelper.dateToDisplayString(results.dateSeuilMutationRF));
 				table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 			});
 		}
