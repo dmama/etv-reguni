@@ -73,7 +73,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 	}
 
 	@Override
-	public String getIndexPath() throws Exception {
+	public String getIndexPath() {
 		String result;
 		long time = tracing.start();
 		try {

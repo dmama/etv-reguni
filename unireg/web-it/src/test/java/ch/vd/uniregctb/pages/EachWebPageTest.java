@@ -550,7 +550,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'indexation
 	@Test
 	public void testAdminIndexation() throws Exception {
-		assertPage("/admin/indexation.do", "Gestion de l'indexation");
+		assertPage("/admin/indexation/show.do", "Gestion de l'indexation");
 	}
 
 	// Page d'administration des batchs

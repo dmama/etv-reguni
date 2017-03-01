@@ -89,8 +89,6 @@
 				<entry key="/error.do" value-ref="errorController" />
 				<!-- Admin -->
 				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
-				<!-- Testing -->
-				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
 
 				<!-- Tiers - display -->
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />

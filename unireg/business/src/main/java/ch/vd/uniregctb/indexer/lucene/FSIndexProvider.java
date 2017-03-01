@@ -37,7 +37,7 @@ public class FSIndexProvider implements IndexProvider {
 	}
 
 	@Override
-	public String getIndexPath() throws IndexerException {
+	public String getIndexPath() {
 		return indexPath;
 	}
 }

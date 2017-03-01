@@ -517,7 +517,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getIndexPath() throws Exception {
+	public String getIndexPath() {
 		return provider.getIndexPath();
 	}
 }

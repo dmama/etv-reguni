@@ -737,7 +737,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "post:/admin/indexation.do?action=reindexTiers&id=";
+			return "post:/admin/indexation/reindexTiers.do?id=";
 		}
 	}
 

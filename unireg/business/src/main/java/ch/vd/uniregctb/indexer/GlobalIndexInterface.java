@@ -77,6 +77,6 @@ public interface GlobalIndexInterface {
 	/**
 	 * @return the indexPath
 	 */
-	String getIndexPath() throws Exception;
+	String getIndexPath();
 
 }

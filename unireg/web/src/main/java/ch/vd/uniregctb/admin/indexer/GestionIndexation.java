@@ -3,32 +3,14 @@ package ch.vd.uniregctb.admin.indexer;
 
 /**
  * Classe d'affichage pour la gestion de l'indexation
- * @author xcifde
- *
  */
 public class GestionIndexation {
 
-	private int nombreDocumentsIndexes;
-	private String chemin;
 	private String requete;
-	private String id;
-	private String indNo;
+	private Long id;
+	private Long indNo;
 	private boolean logIndividu = true;
 
-
-	/**
-	 * @return the chemin
-	 */
-	public String getChemin() {
-		return chemin;
-	}
-
-	/**
-	 * @param chemin the chemin to set
-	 */
-	public void setChemin(String chemin) {
-		this.chemin = chemin;
-	}
 
 	/**
 	 * @return the requete
@@ -44,19 +26,19 @@ public class GestionIndexation {
 		this.requete = requete;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public String getIndNo() {
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getIndNo() {
 		return indNo;
 	}
 
-	public void setIndNo(String indNo) {
+	public void setIndNo(Long indNo) {
 		this.indNo = indNo;
 	}
 
@@ -66,19 +48,5 @@ public class GestionIndexation {
 
 	public void setLogIndividu(boolean logIndividu) {
 		this.logIndividu = logIndividu;
-	}
-
-	/**
-	 * @return the nombreDocumentsIndexes
-	 */
-	public int getNombreDocumentsIndexes() {
-		return nombreDocumentsIndexes;
-	}
-
-	/**
-	 * @param nombreDocumentsIndexes the nombreDocumentsIndexes to set
-	 */
-	public void setNombreDocumentsIndexes(int nombreDocumentsIndexes) {
-		this.nombreDocumentsIndexes = nombreDocumentsIndexes;
 	}
 }
