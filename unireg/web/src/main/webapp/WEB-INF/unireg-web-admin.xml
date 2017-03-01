@@ -24,18 +24,10 @@
 	</bean>
 
 	<!-- Gestion des batchs  -->
-	<bean id="gestionBatchController" class="ch.vd.uniregctb.admin.GestionBatchController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.admin.BatchList" />
-		<property name="formView" value="admin/batch" />
-		<property name="successView" value="batch.do" />
-		<property name="batchScheduler" ref="batchScheduler" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
 	<bean id="batchController" class="ch.vd.uniregctb.admin.batch.BatchController">
 		<property name="batchScheduler" ref="batchScheduler" />
 		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="messageSource" ref="messageSource"/>
 	</bean>
 
 	<bean id="queuesJmsController" class="ch.vd.uniregctb.admin.evenementExterne.QueuesJmsController">

@@ -10,7 +10,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.admin.BatchList;
 import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -29,11 +33,12 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 @Controller
-@RequestMapping(value = "/admin/batch/")
+@RequestMapping(value = "/admin/")
 public class BatchController {
 
 	private BatchScheduler batchScheduler;
 	private SecurityProviderInterface securityProvider;
+	private MessageSource messageSource;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setBatchScheduler(BatchScheduler batchScheduler) {
@@ -44,7 +49,20 @@ public class BatchController {
 		this.securityProvider = securityProvider;
 	}
 
-	@RequestMapping(value = "/running.do", method = RequestMethod.GET)
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	@RequestMapping(value = "/batch.do", method = RequestMethod.GET)
+	public String list(Model model) {
+
+		final List<JobDefinition> jobs = batchScheduler.getSortedJobs();
+		model.addAttribute("command", new BatchList(jobs, new MessageSourceAccessor(messageSource)));
+
+		return "admin/batch";
+	}
+
+	@RequestMapping(value = "/batch/running.do", method = RequestMethod.GET)
 	@ResponseBody
 	public List<BatchView> running() {
 
@@ -63,7 +81,7 @@ public class BatchController {
 		return list;
 	}
 
-	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/batch/start.do", method = RequestMethod.POST)
 	@ResponseBody
 	public String start(@RequestParam(value = "name", required = true) String jobName, @Valid BatchStartParams startParams) {
 
@@ -136,7 +154,7 @@ public class BatchController {
 	 * @param name le nom du batch à stopper
 	 * @return <b>null</b> si la demande d'arrêt a bien été enregistrée; ou une message d'erreur si un problème est survenu.
 	 */
-	@RequestMapping(value = "/stop.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/batch/stop.do", method = RequestMethod.POST)
 	@ResponseBody
 	public String stop(@RequestParam(value = "name", required = true) String name) {
 
