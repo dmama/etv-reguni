@@ -121,8 +121,6 @@
 				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
 				-->
-				<!-- Documents -->
-				<entry key="/common/docs.do" value-ref="documentController" />
 
 				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !! Veuillez utiliser le 'mainUrlMapper' (sans le openSessionInViewInterceptor) -->
 			</map>

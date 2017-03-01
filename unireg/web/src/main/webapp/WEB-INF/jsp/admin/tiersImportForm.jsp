@@ -82,28 +82,24 @@ function submit(url, methodType, delegateName){
 					<unireg:document doc="${file}" />
 				</display:column>
 				<display:column titleKey="label.export.DBUnit.filename" >
-					<a href="<c:out value='${contextPath}/common/docs.do?action=download&id=${file.id}'/>" />
-						<c:out value="${file.nom}" />
-					</a>
+					<unireg:linkTo name="${file.nom}" action="/common/docs/download.do" params="{id:${file.id}}"/>
 				</display:column>
 				<display:column titleKey="label.export.DBUnit.nbTiers" >
 					<c:out value="${file.nbTiers}" />
 				</display:column>
 				<display:column titleKey="label.export.DBUnit.creation.date" >
-					<unireg:sdate sdate="${file.logCreationDate}"></unireg:sdate>
+					<unireg:sdate sdate="${file.logCreationDate}"/>
 				</display:column>
 				<display:column titleKey="label.export.DBUnit.filesize" >
 					<c:out value="${file.fileSize}" />
 				</display:column>
 				<display:column>
-					<a href="#" onclick="if (App.confirm_trash_db()) {javascript:submit('${contextPath}/admin/dbdump/fs2import.do?file=<c:out value="${file.id}" />');}">
-						<fmt:message key="label.bouton.reimport"/>
-					</a>
+					<unireg:linkTo name="Réimporter" action="/admin/dbdump/fs2import.do" params="{file:${file.id}}" method="POST"
+					               confirm="Attention ! Cette opération va détruire les données existantes de la base.\n\nVoulez-vous vraiment continuer ?"/>
 				</display:column>
 				<display:column>
-					<a href="#" onclick="javascript:submit('<c:out value='${contextPath}/common/docs.do?action=delete&id=${file.id}'/>');">
-						<fmt:message key="label.bouton.delete"/>
-					</a>
+					<unireg:linkTo name="Supprimer" action="/common/docs/delete.do" params="{id:${file.id}}" method="POST"
+					               confirm="Voulez-vous vraiment supprimer ce fichier ?"/>
 				</display:column>
 				<display:setProperty name="paging.banner.no_items_found" value=""/>
 				<display:setProperty name="paging.banner.one_item_found" value=""/>

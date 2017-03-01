@@ -44,7 +44,7 @@ public class JspTagDocument extends BodyTagSupport {
 		HtmlTextWriter writer = new HtmlTextWriter(w);
 
 		// Un lien permettant de télécharger le document
-		String href = request.getContextPath() + "/common/docs.do?action=download&id=" + doc.getId();
+		String href = request.getContextPath() + "/common/docs/download.do?id=" + doc.getId();
 		writer.addAttribute(HtmlTextWriterAttribute.Href, href);
 		writer.renderBeginTag(HtmlTextWriterTag.A);
 		{

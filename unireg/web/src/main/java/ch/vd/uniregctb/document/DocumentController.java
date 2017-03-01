@@ -1,24 +1,30 @@
 package ch.vd.uniregctb.document;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.servlet.ServletService;
 
 /**
  * Ce controlleur permet de gérer les documents produits par Unireg.
  */
-public class DocumentController extends AbstractSimpleFormController {
+@Controller
+@RequestMapping(value = "/common/docs/")
+public class DocumentController {
 
 	private DocumentService docService;
 	private ServletService servletService;
+	private SecurityProviderInterface securityProvider;
 
 	public void setDocService(DocumentService docService) {
 		this.docService = docService;
@@ -28,71 +34,39 @@ public class DocumentController extends AbstractSimpleFormController {
 		this.servletService = servletService;
 	}
 
-	@Override
-	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		final String action = request.getParameter("action");
-		if (action != null) {
-			if ("download".equals(action)) {
-				download(request, response);
-				return null; // pas de redirection nécessaire après le download
-			}
-			else if ("delete".equals(action)) {
-				delete(request, response);
-			}
-		}
-
-		return new ModelAndView(new RedirectView(getSuccessView()));
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
-	private void download(HttpServletRequest request, final HttpServletResponse response) throws Exception {
+	@RequestMapping(value = "/download.do", method = RequestMethod.GET)
+	public String download(@RequestParam("id") long id, HttpServletResponse response) throws Exception {
 
-		final Document doc = getDoc(request);
-		if (doc == null) {
-			return;
+		final Document doc = docService.get(id);
+		if (doc != null) {
+			// On veut que la réponse provoque un téléchargement de fichier
+			docService.readDoc(doc, (doc1, is) -> {
+				servletService.downloadAsFile(doc1.getFileName(), is, (int) doc1.getFileSize(), response);
+			});
+
+			Audit.info("Le document '" + doc.getNom() + "' a été téléchargé par l'utilisateur " + AuthenticationHelper.getCurrentPrincipal() + ".");
 		}
 
-		// On veut que la réponse provoque un téléchargement de fichier
-		docService.readDoc(doc, new DocumentService.ReadDocCallback<Document>() {
-			@Override
-			public void readDoc(Document doc, InputStream is) throws Exception {
-				servletService.downloadAsFile(doc.getFileName(), is, (int) doc.getFileSize(), response);
-			}
-		});
-
-		Audit.info("Le document '" + doc.getNom() + "' a été téléchargé par l'utilisateur " + AuthenticationHelper.getCurrentPrincipal() + ".");
+		return "redirect:/admin/tiersImport/list.do";
 	}
 
-	private void delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	@RequestMapping(value = "/delete.do", method = RequestMethod.POST)
+	public String delete(@RequestParam("id") long id) throws Exception {
 
-		final Document doc = getDoc(request);
-		if (doc == null) {
-			return;
-		}
-
-		Audit.info("Le document '" + doc.getNom() + "' a été effacé du serveur.");
-		docService.delete(doc);
-	}
-
-	/**
-	 * Interprète la requête et retourne le document concerné.
-	 */
-	private Document getDoc(HttpServletRequest request) throws Exception {
-
-		final String idAsString = request.getParameter("id");
-		if (idAsString == null) {
-			return null;
-		}
-
-		final Long id;
-		try {
-			id = Long.valueOf(idAsString);
-		}
-		catch (NumberFormatException ignored) {
-			return null;
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
 		final Document doc = docService.get(id);
-		return doc;
+		if (doc != null) {
+			Audit.info("Le document '" + doc.getNom() + "' a été effacé du serveur.");
+			docService.delete(doc);
+		}
+
+		return "redirect:/admin/tiersImport/list.do";
 	}
 }

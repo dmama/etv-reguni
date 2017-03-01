@@ -91,10 +91,9 @@
 
 	<!-- Gestion des documents -->
 	<bean id="documentController" class="ch.vd.uniregctb.document.DocumentController">
-		<property name="sessionForm" value="true" />
 		<property name="docService" ref="docService" />
 		<property name="servletService" ref="servletService" />
-		<property name="successView" value="../admin/tiersImport/list.do" /> <!-- msi: temp hack -->
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<!-- Gestion du recalcul des parentés -->
