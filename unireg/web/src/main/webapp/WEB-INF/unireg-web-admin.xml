@@ -86,15 +86,6 @@
 	</bean>
 
 	<!-- Gestion de tracing -->
-	<bean id="gestionTracingController" class="ch.vd.uniregctb.admin.GestionTracingController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.admin.GestionTracing" />
-		<property name="formView" value="admin/tracing" />
-		<property name="successView" value="tracing.do" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
-
-	<!-- Gestion de tracing -->
 	<bean id="auditLogController" class="ch.vd.uniregctb.admin.AuditLogController">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />

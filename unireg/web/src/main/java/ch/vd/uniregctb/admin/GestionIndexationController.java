@@ -33,7 +33,6 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tracing.TracingManager;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
@@ -52,7 +51,6 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 
 	private static final String ACTION_PARAMETER_NAME = "action";
 	private static final String ACTION_SEARCH_VALUE = "search";
-	private static final String ACTION_PERFORMANCE_VALUE = "performance";
 	private static final String ACTION_REINDEX_TIERS = "reindexTiers";
 	private static final String ACTION_RELOAD_INDIVIDU = "reloadIndividu";
 	public static final String INDEX_LIST_ATTRIBUTE_NAME = "index";
@@ -97,8 +95,6 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		// va provoquer un flush et l'index pourra ensuite etre copié sans problemes
 		globalIndex.flush();
 		LOGGER.debug("The Global index is flushed");
-
-		TracingManager.outputMeasures(LOGGER);
 
 		return mav;
 	}
@@ -149,9 +145,6 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 			if ((bean != null) && (bean.getRequete() != null) && (!"".equals(bean.getRequete()))) {
 				executeSearch(session, bean) ;
 			}
-		}
-		else if (action.equals(ACTION_PERFORMANCE_VALUE)) {
-
 		}
 		else if (action.equals(ACTION_REINDEX_TIERS)) {
 			if (bean != null) {

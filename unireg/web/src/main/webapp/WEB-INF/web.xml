@@ -33,11 +33,6 @@
 			classpath*:/unireg-business-registrefoncier-import.xml,
 			/WEB-INF/unireg-web-*.xml
 		</param-value>
-		<!-- Pour permettre une analyse des perfs, -->
-		<!-- il faut décommenter ce fichier -->
-		<!--
-			/WEB-INF/unireg-performance.xml
-		-->
 	</context-param>
 	
 	<context-param>

@@ -19,8 +19,6 @@ import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.tracing.TracePoint;
-import ch.vd.uniregctb.tracing.TracingManager;
 
 public class ListeRecapListController extends AbstractListeRecapController {
 
@@ -40,14 +38,11 @@ public class ListeRecapListController extends AbstractListeRecapController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		TracePoint tp = TracingManager.begin();
-
 		HttpSession session = request.getSession();
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		ListeRecapCriteria bean = new ListeRecapCriteria();
 
 		if(!SecurityHelper.isGranted(securityProvider, Role.LR)){
-			TracingManager.end(tp);
 			throw new AccessDeniedException("vous n'avez pas le droit d'accéder aux listes récapitulatives pour l'application Unireg");
 		}
 		if((buttonEffacer != null) && (buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
@@ -60,7 +55,6 @@ public class ListeRecapListController extends AbstractListeRecapController {
 		 	}
 		}
 
-		TracingManager.end(tp);
 		return bean;
 	}
 
@@ -69,7 +63,6 @@ public class ListeRecapListController extends AbstractListeRecapController {
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
 			throws Exception {
 
-		final TracePoint tp = TracingManager.begin();
 		final String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		final ModelAndView mav  =  super.showForm(request, response, errors, model);
 		mav.addObject(RESULT_SIZE_NAME, 0);
@@ -91,7 +84,6 @@ public class ListeRecapListController extends AbstractListeRecapController {
 				removeModuleFromSession(request, LR_CRITERIA_NAME);
 			}
 		}
-		TracingManager.end(tp);
 		return mav;
 	}
 
@@ -114,8 +106,6 @@ public class ListeRecapListController extends AbstractListeRecapController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
 
-		TracePoint tp = TracingManager.begin();
-
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 
 		mav.setView(new RedirectView(getSuccessView()));
@@ -123,10 +113,6 @@ public class ListeRecapListController extends AbstractListeRecapController {
 		ListeRecapCriteria bean = (ListeRecapCriteria) command;
 		HttpSession session = request.getSession();
 		session.setAttribute(LR_CRITERIA_NAME, bean);
-
-		TracingManager.end(tp);
-
-		TracingManager.outputMeasures(LOGGER);
 
 		return mav;
 	}

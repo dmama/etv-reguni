@@ -8,16 +8,6 @@
   	<form:form method="post" id="formGestionIndexation" name="formGestionIndexation">
 
 		<fieldset>
-			<legend><span><fmt:message key="label.gestion.performance" /></span></legend>
-			<table>
-				<tr class="<unireg:nextRowClass/>" >
-					<td width="50%"><fmt:message key="label.gestion.performance.actif" />&nbsp;:</td>
-					<td width="50%"><form:checkbox path="gestionPerfActif" onclick="submitIndex('performance');" /></td>
-				</tr>
-			</table>
-		</fieldset>
-
-		<fieldset>
 			<legend><span><fmt:message key="label.force.reindexation" /></span></legend>
 			<table>
 				<tr class="<unireg:nextRowClass/>" >

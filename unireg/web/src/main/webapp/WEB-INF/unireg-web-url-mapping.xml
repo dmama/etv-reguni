@@ -89,9 +89,6 @@
 				<entry key="/error.do" value-ref="errorController" />
 				<!-- Admin -->
 				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
-				<!--
-				<entry key="/admin/tracing.do" value-ref="gestionTracingController" />
-				-->
 				<!-- Testing -->
 				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
 

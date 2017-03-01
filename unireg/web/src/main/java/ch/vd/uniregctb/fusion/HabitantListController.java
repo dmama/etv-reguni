@@ -14,8 +14,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.fusion.manager.FusionListManager;
 import ch.vd.uniregctb.fusion.view.FusionListView;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tracing.TracePoint;
-import ch.vd.uniregctb.tracing.TracingManager;
 
 public class HabitantListController  extends  AbstractTiersListController {
 
@@ -82,7 +80,6 @@ public class HabitantListController  extends  AbstractTiersListController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
 
-		TracePoint tp = TracingManager.begin();
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 
 		FusionListView bean = (FusionListView) command;
@@ -90,9 +87,6 @@ public class HabitantListController  extends  AbstractTiersListController {
 
 		session.setAttribute(HABITANT_CRITERIA_NAME, bean);
 		mav.setView(new RedirectView("list-habitant.do?numeroNonHab=" + bean.getNumeroNonHabitant() ));
-		TracingManager.end(tp);
-
-		TracingManager.outputMeasures(LOGGER);
 
 		return mav;
 	}

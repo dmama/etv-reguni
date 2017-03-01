@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.admin.indexer;
 
-import ch.vd.uniregctb.tracing.TracingManager;
-
 
 /**
  * Classe d'affichage pour la gestion de l'indexation
@@ -83,19 +81,4 @@ public class GestionIndexation {
 	public void setNombreDocumentsIndexes(int nombreDocumentsIndexes) {
 		this.nombreDocumentsIndexes = nombreDocumentsIndexes;
 	}
-
-	/**
-	 * @return the gestionPerfActif
-	 */
-	public boolean isGestionPerfActif() {
-		return TracingManager.isActive();
-	}
-
-	/**
-	 * @param gestionPerfActif the gestionPerfActif to set
-	 */
-	public void setGestionPerfActif(boolean gestionPerfActif) {
-		TracingManager.setActive(gestionPerfActif);
-	}
-
 }

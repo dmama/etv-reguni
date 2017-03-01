@@ -43,8 +43,6 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.rf.Immeuble;
-import ch.vd.uniregctb.tracing.TracePoint;
-import ch.vd.uniregctb.tracing.TracingManager;
 
 public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
@@ -809,10 +807,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public RapportEntreTiers save(RapportEntreTiers object) {
-		final TracePoint tp = TracingManager.begin();
-		final RapportEntreTiers obj = (RapportEntreTiers) saveObjectWithMerge(object);
-		TracingManager.end(tp);
-		return obj;
+		return (RapportEntreTiers) saveObjectWithMerge(object);
 	}
 
 	/**
