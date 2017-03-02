@@ -493,19 +493,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-codegen-plugin</artifactId>
-				<version>${cxf.version}</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.cxf</groupId>
-						<artifactId>cxf-rt-frontend-jaxws</artifactId>
-						<version>${cxf.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-
-			<plugin>
 				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven2-plugin</artifactId>
 				<version>1.4.8</version>
