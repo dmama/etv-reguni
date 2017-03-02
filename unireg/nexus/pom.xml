@@ -59,6 +59,12 @@
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
 			<version>${project.parent.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>${project.parent.groupId}</groupId>
+					<artifactId>uniregctb-bvrplus</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
