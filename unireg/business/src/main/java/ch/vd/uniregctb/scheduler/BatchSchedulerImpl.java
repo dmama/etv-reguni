@@ -16,10 +16,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -331,18 +333,33 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 			// - à 100% du timeout, on indique une erreur et on sort
 			final long millis = Math.max(timeout.toMillis(), 5);            // minimum 5ms pour que 20% soit non-zéro
 
-			// on attend 20% du temps
-			sleep(millis / 5L);
-			if (job.isRunning()) {
-				LOGGER.warn("Job <" + name + "> takes looooong (> " + millis / 5 + " ms) to stop!");
-			}
+			// états terminaux
+			final Set<JobDefinition.JobStatut> etatsTerminaux = EnumSet.of(JobDefinition.JobStatut.JOB_EXCEPTION,
+			                                                               JobDefinition.JobStatut.JOB_INTERRUPTED,
+			                                                               JobDefinition.JobStatut.JOB_OK);
 
-			sleep(millis * 4 / 5);
-			if (job.isRunning()) {
-				LOGGER.error("Job <" + name + "> takes REALLY too looooong (> " + millis + " ms) to stop. Aborting wait.");
+			try {
+				// on attend 20% du temps ...
+				try {
+					job.waitForStatusIn(etatsTerminaux, Duration.ofMillis(millis / 5));
+				}
+				catch (JobDefinition.TimeoutExpiredException e) {
+					LOGGER.warn("Job <" + name + "> takes looooong (> " + millis / 5 + " ms) to stop!");
+
+					// .. et si le job n'est toujours pas arrêté, on attend les 80% restants
+					try {
+						final JobDefinition.JobStatut statutFinal = job.waitForStatusIn(etatsTerminaux, Duration.ofMillis(millis * 4 / 5));
+						LOGGER.info("Job <" + name + "> is now stopped with status " + statutFinal);
+					}
+					catch (JobDefinition.TimeoutExpiredException e1) {
+						LOGGER.error("Job <" + name + "> takes REALLY too looooong (> " + millis + " ms) to stop. Aborting wait.");
+					}
+				}
 			}
-			else {
-				LOGGER.info("Job <" + name + "> is now stopped with status " + job.getStatut());
+			catch (InterruptedException e) {
+				// c'est fini, on s'en va...
+				Thread.currentThread().interrupt();
+				LOGGER.error("Thread d'attente de la fin du job <" + name + "> interrompu.", e);
 			}
 		}
 	}
