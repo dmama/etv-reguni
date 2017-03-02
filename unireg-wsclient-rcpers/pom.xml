@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-rcpers</artifactId>
 	<packaging>jar</packaging>
-	<version>5.1</version>
+	<version>5.2</version>
 
 	<name>Unireg - Client WS RCPers v5</name>
 	<description>Unireg - Client Java pour le web-service d'échange de données v5 de RCPers</description>
@@ -28,11 +28,6 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
