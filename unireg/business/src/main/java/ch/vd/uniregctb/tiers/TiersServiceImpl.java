@@ -3109,6 +3109,9 @@ public class TiersServiceImpl implements TiersService {
 			evenementFiscalService.publierEvenementFiscalFermetureFor(forCorrige);
 		}
 
+		// [SIFISC-23472] ne pas oublier de recalculer le flag de blocage de remboursement automatique
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(tiers);
+
 		return forCorrige;
 	}
 
@@ -3193,7 +3196,10 @@ public class TiersServiceImpl implements TiersService {
             evenementFiscalService.publierEvenementFiscalFermetureFor(forCorrige);
         }
 
-        return forCorrige;
+	    // [SIFISC-23472] ne pas oublier de recalculer le flag de blocage de remboursement automatique
+	    resetFlagBlocageRemboursementAutomatiqueSelonFors(tiers);
+
+	    return forCorrige;
     }
 
     /**
