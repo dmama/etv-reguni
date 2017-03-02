@@ -1,25 +1,26 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStreamWriter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-public class TiersLaunchCatController extends AbstractController {
+@Controller
+public class TiersLaunchCatController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersLaunchCatController.class);
 
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	@RequestMapping(value = "/tiers/launchcat.do")
+	@ResponseBody
+	public String launchCat(@RequestParam("numero") int numero, HttpServletResponse response) throws Exception {
 
-		String num = request.getParameter("numero");
-		Integer numero = Integer.parseInt(num);
-		LOGGER.info("TiersLaunchCatController : launch cat for "+numero);
+		LOGGER.info("TiersLaunchCatController : launch cat for " + numero);
 
 		ServletOutputStream out = response.getOutputStream();
 		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
@@ -39,7 +40,7 @@ public class TiersLaunchCatController extends AbstractController {
 		// Headers
 		response.setContentType("application/x-chvd");
 		response.setHeader("Content-disposition", "attachment;filename=\"launchcat.chvd\"");
-		response.setHeader( "Pragma", "public" );
+		response.setHeader("Pragma", "public");
 		response.setHeader("cache-control", "no-cache");
 		response.setHeader("Cache-control", "must-revalidate");
 		response.setContentLength(str.length());
@@ -50,6 +51,4 @@ public class TiersLaunchCatController extends AbstractController {
 		}
 		return null;
 	}
-
-
 }
