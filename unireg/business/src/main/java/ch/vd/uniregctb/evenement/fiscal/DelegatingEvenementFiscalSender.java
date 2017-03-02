@@ -57,7 +57,7 @@ public class DelegatingEvenementFiscalSender implements EvenementFiscalSender, M
 	@Override
 	public void sendEvent(EvenementFiscal evenement) throws EvenementFiscalException {
 		if (!enabled) {
-			LOGGER.info("Evénements fiscaux désactivés : l'événement fiscal %d n'est pas envoyé.", evenement.getId());
+			LOGGER.info(String.format("Evénements fiscaux désactivés : l'événement fiscal %d n'est pas envoyé.", evenement.getId()));
 			return;
 		}
 
