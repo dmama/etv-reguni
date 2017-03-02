@@ -9,10 +9,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -107,6 +109,9 @@ public class BatchRunnerClient {
 		path(client, JobAction.START, name);
 
 		final List<Attachment> attachments = new ArrayList<>();
+
+		// pour les tests WIT (et plus généralement de toute façon), il vaut mieux blinder contre une map "nulle"
+		params = Optional.ofNullable(params).orElseGet(Collections::emptyMap);
 
 		// en gros, dans les paramètres, à ce niveau, il y a des String et des byte[]
 		final Map<String, String> simpleParameters = new HashMap<>(params.size());

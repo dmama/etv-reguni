@@ -139,7 +139,7 @@ public class WebServiceEndPoint implements WebService {
 		return doAndTrace(() -> {
 			final JobDefinition job = batchScheduler.getJob(jobName);
 			if (job == null) {
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return buildUnknownBatchNameResponse(jobName);
 			}
 
 			final JobDescription description = buildDescription(job);
@@ -213,12 +213,19 @@ public class WebServiceEndPoint implements WebService {
 		}
 	}
 
+	private static Response buildUnknownBatchNameResponse(String jobName) {
+		return Response.status(Response.Status.NOT_FOUND)
+				.type(APPLICATION_JSON_WITH_UTF8_CHARSET)
+				.entity(new ErrorData(String.format("Job '%s' not found", jobName)))
+				.build();
+	}
+
 	@Override
 	public Response startJob(final String jobName, final MultipartBody body) {
 		return doAndTrace(() -> {
 			final JobDefinition job = batchScheduler.getJob(jobName);
 			if (job == null) {
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return buildUnknownBatchNameResponse(jobName);
 			}
 
 			// le body posté peut contenir les "parts" suivantes :
@@ -306,7 +313,7 @@ public class WebServiceEndPoint implements WebService {
 		return doAndTrace(() -> {
 			final JobDefinition job = batchScheduler.getJob(jobName);
 			if (job == null) {
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return buildUnknownBatchNameResponse(jobName);
 			}
 
 			try {
@@ -325,7 +332,7 @@ public class WebServiceEndPoint implements WebService {
 		return doAndTrace(() -> {
 			final JobDefinition job = batchScheduler.getJob(jobName);
 			if (job == null || job.getStatut() == null) {
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return buildUnknownBatchNameResponse(jobName);
 			}
 			return Response.ok(mapStatus(job.getStatut()).name(), TEXT_PLAIN_WITH_UTF8_CHARSET).build();
 		});
@@ -350,7 +357,7 @@ public class WebServiceEndPoint implements WebService {
 
 			final JobDefinition job = batchScheduler.getJob(jobName);
 			if (job == null) {
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return buildUnknownBatchNameResponse(jobName);
 			}
 
 			final Set<JobDefinition.JobStatut> internalHaving = having.stream()
@@ -377,7 +384,7 @@ public class WebServiceEndPoint implements WebService {
 		return doAndTrace(() -> {
 			final JobDefinition job = batchScheduler.getJob(jobName);
 			if (job == null) {
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return buildUnknownBatchNameResponse(jobName);
 			}
 
 			final Document document = job.getLastRunReport();

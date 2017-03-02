@@ -150,7 +150,7 @@ public class BatchClientTest extends WebitTest {
 			fail("il ne devrait pas être possible de pouvoir démarrer un batch nul");
 		}
 		catch (BatchRunnerClientException e) {
-			assertEquals("Batch Name incorrect", e.getMessage());
+			assertEquals("HTTP error code 404 received from the server", e.getMessage());
 		}
 	}
 
@@ -162,7 +162,9 @@ public class BatchClientTest extends WebitTest {
 			fail("il ne devrait pas être possible de pouvoir démarrer un batch inconnu");
 		}
 		catch (BatchRunnerClientException e) {
-			assertEquals("Batch Name incorrect", e.getMessage());
+			assertEquals("HTTP error code 404 received from the server", e.getMessage());
+			assertNotNull(e.getCause());
+			assertTrue(e.getCause().getMessage(), e.getCause().getMessage().contains("Job 'inconnu' not found"));
 		}
 	}
 
