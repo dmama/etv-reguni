@@ -50,7 +50,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Achat",
+			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente",
 			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923");
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
@@ -72,8 +72,8 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
 			assertEquals(2, droits.size());
 			droits.sort(new DateRangeComparator<>());
-			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), droits.get(0));
-			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, droits.get(1));
+			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente", droits.get(0));
+			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null, droits.get(1));
 			return null;
 		});
 	}
@@ -91,7 +91,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), null, "Achat", "Achat",
+			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), null, "Achat", null,
 			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923");
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
@@ -113,8 +113,8 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
 			assertEquals(2, droits.size());
 			droits.sort(new DateRangeComparator<>());
-			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), droits.get(0));
-			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, droits.get(1));
+			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 13), "Achat", "Vente", droits.get(0));
+			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null, droits.get(1));
 			return null;
 		});
 	}
@@ -180,12 +180,12 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			droits.sort(Comparator.<DroitRF, Long>comparing(d -> d.getAyantDroit().getId()).thenComparing(DateRangeComparator::compareRanges));
 
 			// les droits de jean
-			assertDatesDroit(null, RegDate.get(2017, 1, 6), RegDate.get(1997, 4, 21), RegDate.get(2001, 9, 3), droits.get(0));
-			assertDatesDroit(RegDate.get(2017, 1, 7), null, RegDate.get(2001, 9, 4), null, droits.get(1));
+			assertDatesDroit(null, RegDate.get(2017, 1, 6), RegDate.get(1997, 4, 21), RegDate.get(2001, 9, 4), "Succession", "Succession", droits.get(0));
+			assertDatesDroit(RegDate.get(2017, 1, 7), null, RegDate.get(2001, 9, 4), null, "Succession", null, droits.get(1));
 
 			// les droits de jacques
-			assertDatesDroit(null, RegDate.get(2017, 1, 6), RegDate.get(2012, 3, 6), RegDate.get(2013, 5, 30), droits.get(2));
-			assertDatesDroit(RegDate.get(2017, 1, 7), null, RegDate.get(2013, 5, 31), null, droits.get(3));
+			assertDatesDroit(null, RegDate.get(2017, 1, 6), RegDate.get(2012, 3, 6), RegDate.get(2013, 5, 31), "Succession", "Succession", droits.get(2));
+			assertDatesDroit(RegDate.get(2017, 1, 7), null, RegDate.get(2013, 5, 31), null, "Succession", null, droits.get(3));
 			return null;
 		});
 	}
@@ -250,22 +250,24 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			droits.sort(Comparator.<DroitRF, Long>comparing(d -> d.getAyantDroit().getId()).thenComparing(DateRangeComparator::compareRanges));
 
 			// les droits d'Isabelle
-			assertDatesDroit(null, RegDate.get(2016, 12, 31), RegDate.get(1961, 2, 4), RegDate.get(1980, 12, 28), droits.get(0));
-			assertDatesDroit(RegDate.get(2017, 1, 1), null, RegDate.get(1980, 12, 29), null, droits.get(1));
+			assertDatesDroit(null, RegDate.get(2016, 12, 31), RegDate.get(1961, 2, 4), RegDate.get(1980, 12, 29), "Succession", "Changement de régime", droits.get(0));
+			assertDatesDroit(RegDate.get(2017, 1, 1), null, RegDate.get(1980, 12, 29), null, "Changement de régime", null, droits.get(1));
 
 			// les droits de Simone
-			assertDatesDroit(null, RegDate.get(2016, 12, 31), RegDate.get(1980, 12, 29), RegDate.get(1998, 2, 10), droits.get(2));
-			assertDatesDroit(RegDate.get(2017, 1, 1), null, RegDate.get(1998, 2, 11), null, droits.get(3));
+			assertDatesDroit(null, RegDate.get(2016, 12, 31), RegDate.get(1980, 12, 29), RegDate.get(1998, 2, 11), "Changement de régime", "Succession", droits.get(2));
+			assertDatesDroit(RegDate.get(2017, 1, 1), null, RegDate.get(1998, 2, 11), null, "Succession", null, droits.get(3));
 			return null;
 		});
 
 	}
 
-	private static void assertDatesDroit(RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, DroitRF droit) {
+	private static void assertDatesDroit(RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, String motifDebut, String motifFin, DroitRF droit) {
 		assertNotNull(droit);
 		assertEquals(dateDebut, droit.getDateDebut());
 		assertEquals(dateFin, droit.getDateFin());
 		assertEquals(dateDebutMetier, droit.getDateDebutMetier());
 		assertEquals(dateFinMetier, droit.getDateFinMetier());
+		assertEquals(motifDebut, droit.getMotifDebut());
+		assertEquals(motifFin, droit.getMotifFin());
 	}
 }
