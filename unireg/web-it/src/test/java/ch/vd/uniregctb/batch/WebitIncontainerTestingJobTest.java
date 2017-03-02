@@ -19,16 +19,14 @@ public class WebitIncontainerTestingJobTest extends WebitTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebitIncontainerTestingJobTest.class);
 
-	private static BatchRunnerClient client;
+	private BatchRunnerClient client;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		if (client == null) {
-			LOGGER.info("Connecting to: " + batchUrl + " with user = " + username);
 
-			client = new BatchRunnerClient(batchUrl, username, password);
-		}
+		LOGGER.info("Connecting to: " + batchUrl + " with user = " + username);
+		client = new BatchRunnerClient(batchUrl, username, password);
 	}
 
 	@Test(timeout = 60000)

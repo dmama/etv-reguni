@@ -10,8 +10,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.ubr.BatchRunnerClient;
 import ch.vd.uniregctb.ubr.BatchRunnerClientException;
@@ -31,18 +29,14 @@ public class BatchClientTest extends WebitTest {
 
 	private static final String BATCH_NAME = "IT-BatchClientJob";
 
-	private static BatchRunnerClient client;
-
-	private final String aujourdhui = RegDateHelper.dateToDisplayString(RegDate.get());
+	private BatchRunnerClient client;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		if (client == null) {
-			LOGGER.info("Connecting to: " + batchUrl + " with user = " + username);
 
-			client = new BatchRunnerClient(batchUrl, username, password);
-		}
+		LOGGER.info("Connecting to: " + batchUrl + " with user = " + username);
+		client = new BatchRunnerClient(batchUrl, username, password);
 	}
 
 	@Test
