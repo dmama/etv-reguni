@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import com.itextpdf.text.pdf.PRStream;
 import com.itextpdf.text.pdf.PdfDictionary;
@@ -57,13 +60,14 @@ public class RapportCsvExtractorApp {
 			System.exit(1);
 		}
 
-		if (command.equals("list")) {
+		switch (command) {
+		case "list":
 			listeFichiersInclus(pdffile);
-		}
-		else if (command.equals("extract")) {
+			break;
+		case "extract":
 			extractionFichiersInclus(pdffile, csvfiles, outputdir);
-		}
-		else {
+			break;
+		default:
 			System.err.println("Commande '" + command + "' inconnue. Utiliser l'option '-help' pour plus d'information.");
 			System.exit(1);
 		}
@@ -74,12 +78,9 @@ public class RapportCsvExtractorApp {
 	private static void listeFichiersInclus(String pdffile) {
 		try {
 			final PdfReader reader = ouvrirFichierPdf(pdffile);
-			boucleSurFichiers(PdfDictionary.class, reader, new Traitement<PdfDictionary>() {
-				@Override
-				public void traite(PdfDictionary element) {
-					if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
-						System.out.println(element.getAsString(PdfName.F));
-					}
+			boucleSurFichiers(PdfDictionary.class, reader, element -> {
+				if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
+					System.out.println(element.getAsString(PdfName.F));
 				}
 			});
 		}
@@ -96,12 +97,9 @@ public class RapportCsvExtractorApp {
 
 			// on remplit d'abord la liste des noms
 			final List<PdfString> noms = new ArrayList<>();
-			boucleSurFichiers(PdfDictionary.class, reader, new Traitement<PdfDictionary>() {
-				@Override
-				public void traite(PdfDictionary element) {
-					if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
-						noms.add(element.getAsString(PdfName.F));
-					}
+			boucleSurFichiers(PdfDictionary.class, reader, element -> {
+				if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
+					noms.add(element.getAsString(PdfName.F));
 				}
 			});
 
@@ -116,26 +114,23 @@ public class RapportCsvExtractorApp {
 
 			final Set<String> cvsAExtraire = (cvsfiles == null || cvsfiles.length == 0 ? null : new HashSet<>(Arrays.asList(cvsfiles)));
 			final MutableInt index = new MutableInt(0);
-			boucleSurFichiers(PRStream.class, reader, new Traitement<PRStream>() {
-				@Override
-				public void traite(PRStream element) {
-					if (PdfName.EMBEDDEDFILE.equals(element.get(PdfName.TYPE))) {
-						final String nomFichierExtrait = noms.get(index.intValue()).toString();
-						if (cvsAExtraire == null || cvsAExtraire.contains(nomFichierExtrait)) {
-							try {
-								final byte[] content = PdfReader.getStreamBytes(element);
-								final File file = new File(outputdirFile, nomFichierExtrait);
-								try (FileOutputStream stream = new FileOutputStream(file)) {
-									stream.write(content);
-								}
-							}
-							catch (IOException ex) {
-								System.err.println("Erreur lors de l'écriture du fichier extrait " + nomFichierExtrait + " : " + ex.getMessage());
-								System.exit(1);
+			boucleSurFichiers(PRStream.class, reader, element -> {
+				if (PdfName.EMBEDDEDFILE.equals(element.get(PdfName.TYPE))) {
+					final String nomFichierExtrait = noms.get(index.intValue()).toString();
+					if (cvsAExtraire == null || cvsAExtraire.contains(nomFichierExtrait)) {
+						try {
+							final byte[] content = PdfReader.getStreamBytes(element);
+							final File file = new File(outputdirFile, nomFichierExtrait);
+							try (FileOutputStream stream = new FileOutputStream(file)) {
+								stream.write(content);
 							}
 						}
-						index.increment();
+						catch (IOException ex) {
+							System.err.println("Erreur lors de l'écriture du fichier extrait " + nomFichierExtrait + " : " + ex.getMessage());
+							System.exit(1);
+						}
 					}
+					index.increment();
 				}
 			});
 		}
@@ -147,23 +142,18 @@ public class RapportCsvExtractorApp {
 
 	private static PdfReader ouvrirFichierPdf(String pdffile) throws IOException {
 		final File fileName = new File(pdffile);
-		final PdfReader reader = new PdfReader(new FileInputStream(fileName));
-		return reader;
-	}
-
-	private interface Traitement<T extends PdfObject> {
-		void traite(T element);
+		return new PdfReader(new FileInputStream(fileName));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends PdfObject> void boucleSurFichiers(Class<T> clazz, PdfReader reader, Traitement<T> aFaire) {
+	private static <T extends PdfObject> void boucleSurFichiers(Class<T> clazz, PdfReader reader, Consumer<? super T> aFaire) {
 		final int nbFiles = reader.getXrefSize();
-		for (int i = 0 ; i < nbFiles ; ++ i) {
-			final PdfObject object = PdfReader.getPdfObject(reader.getPdfObject(i));
-			if (object != null && clazz.isAssignableFrom(object.getClass())) {
-				aFaire.traite((T) object);
-			}
-		}
+		IntStream.range(0, nbFiles)
+				.mapToObj(reader::getPdfObject)
+				.filter(Objects::nonNull)
+				.filter(obj -> clazz.isAssignableFrom(obj.getClass()))
+				.map(obj -> (T) obj)
+				.forEach(aFaire);
 	}
 
 	/**

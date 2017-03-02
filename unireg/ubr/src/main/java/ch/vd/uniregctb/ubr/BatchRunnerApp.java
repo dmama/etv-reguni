@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -132,9 +133,7 @@ public class BatchRunnerApp {
 				stopBatch(name, client);
 				break;
 			case "list":
-				for (String s : client.getBatchNames()) {
-					System.out.println(s);
-				}
+				client.getBatchNames().forEach(System.out::println);
 				break;
 			case "show":
 				showBatch(name, client);
@@ -355,7 +354,7 @@ public class BatchRunnerApp {
 	 * <b>Note:</b> si la valeur d'un paramètres commence par <i>file://</i>, le contenu du fichier pointé est transmis (à utiliser dans le
 	 * cas de paramètre de type fichiers, évidemment).
 	 */
-	private static HashMap<String, Object> array2map(final String[] params) {
+	private static Map<String, Object> array2map(final String[] params) {
 		final HashMap<String, Object> map = new HashMap<>();
 		if (params != null) {
 			for (String param : params) {
