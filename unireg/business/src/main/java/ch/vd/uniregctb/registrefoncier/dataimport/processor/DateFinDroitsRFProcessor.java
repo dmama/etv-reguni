@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,9 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class DateFinDroitsRFProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DateFinDroitsRFProcessor.class);
+
+	private static final String MOTIF_ACHAT = "Achat";
+	private static final String MOTIF_VENTE = "Vente";
 
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final PlatformTransactionManager transactionManager;
@@ -223,27 +227,33 @@ public class DateFinDroitsRFProcessor {
 		}
 
 		/**
-		 * Processe l'affaire, c'est-à-dire détermine la date début <i>métier</i> de nouveaux droits (selon les règles fournies par Raphaël Carbo) et ferme les anciens droits à la veille.
+		 * Processe l'affaire, c'est-à-dire détermine la date début <i>métier</i> de nouveaux droits (selon les règles fournies par Raphaël Carbo) et ferme les anciens droits à la même date.
 		 *
 		 * @param results les résultats du processeur à mettre-à-jour
 		 */
 		public void processAffaire(TraitementFinsDeDroitRFResults results) {
 
-			// on détermine la date de début métier des nouveaux droits
-			final RegDate dateDebutMetier = nouveauxDroits.stream()
-					.map(DroitRF::getDateDebutMetier)
-					.filter(Objects::nonNull)
-					.min(RegDate::compareTo)    // on prend la date la plus ancienne
+			// on détermine le nouveau droit qui va être utilisé pour fermer les anciens droits
+			final DroitRF droitReference = nouveauxDroits.stream()
+					.filter(d -> d.getDateDebutMetier() != null)
+					.min(Comparator.comparing(DroitRF::getDateDebutMetier))     // on prend le droit avec la date la plus ancienne
 					.orElse(null);
 
-			if (dateDebutMetier != null) {
-				// on ferme les anciens le jour avant
-				fermeAnciensDroits(dateDebutMetier);
+			if (droitReference != null) {
+				// on ferme les anciens droits à la même date que la date de début du droit de référence (voir SIFISC-23525)
+				fermeAnciensDroits(droitReference.getDateDebutMetier(), determineMotifFin(droitReference.getMotifDebut()));
 				results.addImmeubleTraite(immeubleId);
 			}
 			else {
 				results.addImmeubleIgnore(immeubleId, "Aucune date de début métier n'a été trouvée sur les nouveaux droits.");
 			}
+		}
+
+		/**
+		 * [SIFISC-23525] dito: "le motif de fin de l'ancien droit doit être égal au motif du nouveau droit, sauf pour le motif "achat" qui doit être traduit en "vente"."
+		 */
+		private static String determineMotifFin(String motifDebut) {
+			return MOTIF_ACHAT.equals(motifDebut) ? MOTIF_VENTE : motifDebut;
 		}
 
 		public long getImmeubleId() {
@@ -262,8 +272,11 @@ public class DateFinDroitsRFProcessor {
 			nouveauxDroits.add(d);
 		}
 
-		private void fermeAnciensDroits(RegDate date) {
-			anciensDroits.forEach(d -> d.setDateFinMetier(date.getOneDayBefore()));
+		private void fermeAnciensDroits(RegDate dateFinMetier, String motifFin) {
+			anciensDroits.forEach(d -> {
+				d.setDateFinMetier(dateFinMetier);
+				d.setMotifFin(motifFin);
+			});
 		}
 	}
 }
