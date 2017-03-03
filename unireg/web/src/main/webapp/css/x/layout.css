@@ -302,6 +302,12 @@ td.code {
 	background-color: #f26b6b;
 }
 
+/* SIFISC-14658 */
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+	font-size: 12px;
+	font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+}
+
 .input-with-errors {
 	background-color: #FFB0B0;
 	border: solid 1px #f26b6b;
