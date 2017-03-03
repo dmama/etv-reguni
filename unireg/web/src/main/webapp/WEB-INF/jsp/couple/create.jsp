@@ -5,9 +5,6 @@
 
 	<tiles:put name="head">
 		<style>
-			input {
-				padding: 2px;
-			}
 			#pp1Id_vignette, #pp2Id_vignette, #mcId_vignette {
 				/* pour que la vignette ne prenne pas toute la largeur */
 				display: inline-block;
@@ -131,12 +128,11 @@
 			</div>
 
 			<div id="buttons">
-				<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onclick="return confirmMessage == null || confirm(confirmMessage);"/>
-
 				<c:set var="libelleBoutonRetour">
 					<fmt:message key="label.bouton.retour"/>
 				</c:set>
 				<unireg:buttonTo method="get" action="/tiers/list.do" name="${libelleBoutonRetour}"/>
+				<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onclick="return confirmMessage == null || confirm(confirmMessage);"/>
 			</div>
 
 		</form:form>
