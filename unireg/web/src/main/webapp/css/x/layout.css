@@ -303,6 +303,11 @@ td.code {
 }
 
 /* SIFISC-14658 */
+select {
+	padding: 1px;
+}
+
+/* SIFISC-14658 */
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
 	font-size: 12px;
 	font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
