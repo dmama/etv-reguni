@@ -25,6 +25,7 @@ import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -102,12 +103,15 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 			document.setLettreDegrevementImm(lettre);
 			return document;
 		}
+		catch (EditiqueException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
 		}
 	}
 
-	private CTypeImmeuble buildInfoImmeuble(DemandeDegrevementICI demande) {
+	private CTypeImmeuble buildInfoImmeuble(DemandeDegrevementICI demande) throws EditiqueException {
 		final int periodeFiscale = demande.getPeriodeFiscale();
 		final RegDate dateReference = RegDate.get(periodeFiscale, 1, 1);
 		final ImmeubleRF immeuble = demande.getImmeuble();
@@ -119,6 +123,11 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		type.setNature(getNatureImmeuble(immeuble, dateReference));
 		type.setNoParcelle(registreFoncierService.getNumeroParcelleComplet(immeuble, dateReference));
 		type.setType(getTypeImmeuble(immeuble));
+
+		// [SIFISC-23531] de toute façon, ces données manquantes ne passeraient pas la rampe de la XSD éditique, clarifions le message autant que possible
+		if (type.getCommune() == null || type.getNoParcelle() == null) {
+			throw new EditiqueException(String.format("Immeuble %d sans donnée de commune et/ou de numéro de parcelle à la date de référence %s", immeuble.getId(), RegDateHelper.dateToDisplayString(dateReference)));
+		}
 		return type;
 	}
 
