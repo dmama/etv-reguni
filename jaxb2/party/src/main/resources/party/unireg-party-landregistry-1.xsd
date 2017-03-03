@@ -114,7 +114,32 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Si renseigné, l'id technique de la communauté de propriétaires qui possède véritablement l'immeuble. Si nul, il s'agit d'un droit de propriété normal.</jxb:javadoc>
+									<jxb:javadoc>Si renseigné, l'id technique de la communauté de propriétaires qui possèdent véritablement l'immeuble. Si nul, il s'agit d'un droit de propriété normal.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="easementRightType" abstract="true">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Représente une servitude.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="land:landRightType">
+				<xs:sequence>
+					<xs:element name="communityId" type="xs:long" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Si renseigné, l'id technique de la communauté d'usufruitiers qui ont véritablement le droit d'usufruit. Si nul, il s'agit d'un usufruit normal.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
@@ -133,7 +158,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="land:landRightType">
+			<xs:extension base="land:easementRightType">
 				<xs:sequence>
 					<xs:element name="padding" type="xs:int">
 						<xs:annotation>
@@ -159,7 +184,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="land:landRightType">
+			<xs:extension base="land:easementRightType">
 				<xs:sequence>
 					<xs:element name="padding" type="xs:int">
 						<xs:annotation>

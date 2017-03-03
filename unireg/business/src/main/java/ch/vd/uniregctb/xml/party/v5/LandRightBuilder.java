@@ -7,7 +7,6 @@ import java.util.function.BiFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
@@ -39,11 +38,11 @@ public abstract class LandRightBuilder {
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(DroitHabitationRF.class, (d, p) -> newHousingRight((DroitHabitationRF) d));
 		strategies.put(DroitProprieteCommunauteRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
 		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
 		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
-		strategies.put(UsufruitRF.class, (d, p) -> newUsufructRight((UsufruitRF) d));
+		strategies.put(UsufruitRF.class, (d, p) -> newUsufructRight((UsufruitRF) d, p));
+		strategies.put(DroitHabitationRF.class, (d, p) -> newHousingRight((DroitHabitationRF) d, p));
 	}
 
 	private LandRightBuilder() {
@@ -56,11 +55,6 @@ public abstract class LandRightBuilder {
 			throw new IllegalArgumentException("Le type de droit [" + droitRF.getClass() + "] est inconnu");
 		}
 		return strategy.apply(droitRF, ctbIdProvider);
-	}
-
-	@NotNull
-	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF) {
-		throw new NotImplementedException();
 	}
 
 	@NotNull
@@ -101,8 +95,31 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF) {
-		throw new NotImplementedException();
+	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+		final UsufructRight right = new UsufructRight();
+		right.setDateFrom(DataHelper.coreToXMLv2(usufruitRF.getDateDebutMetier()));
+		right.setDateTo(DataHelper.coreToXMLv2(usufruitRF.getDateFinMetier()));
+		right.setStartReason(usufruitRF.getMotifDebut());
+		right.setEndReason(usufruitRF.getMotifFin());
+		right.setCommunityId(getCommunityId(usufruitRF.getCommunaute()));
+		right.setCaseIdentifier(getCaseIdentifier(usufruitRF.getNumeroAffaire()));
+		right.setRightHolder(RightHolderBuilder.getRightHolder(usufruitRF.getAyantDroit(), ctbIdProvider));
+		right.setImmovablePropertyId(usufruitRF.getImmeuble().getId());
+		return right;
+	}
+
+	@NotNull
+	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+		final HousingRight right = new HousingRight();
+		right.setDateFrom(DataHelper.coreToXMLv2(droitHabitationRF.getDateDebutMetier()));
+		right.setDateTo(DataHelper.coreToXMLv2(droitHabitationRF.getDateFinMetier()));
+		right.setStartReason(droitHabitationRF.getMotifDebut());
+		right.setEndReason(droitHabitationRF.getMotifFin());
+		right.setCommunityId(getCommunityId(droitHabitationRF.getCommunaute()));
+		right.setCaseIdentifier(getCaseIdentifier(droitHabitationRF.getNumeroAffaire()));
+		right.setRightHolder(RightHolderBuilder.getRightHolder(droitHabitationRF.getAyantDroit(), ctbIdProvider));
+		right.setImmovablePropertyId(droitHabitationRF.getImmeuble().getId());
+		return right;
 	}
 
 	private static Long getCommunityId(@Nullable CommunauteRF communaute) {

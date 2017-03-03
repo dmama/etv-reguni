@@ -474,6 +474,44 @@
 			<value>Berard</value>
 			Renée
 		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>265043585</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f1091523810596701381059a8684ad2</value>
+			<null />
+			<value>173043</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>de Noblebois</value>
+			<value>Charles</value>
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>265043586</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f1091523810596701381059a8684ad3</value>
+			<null />
+			<value>173044</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Proutch</value>
+			<value>Roland</value>
+		</row>
 	</table>
 	<table name="RF_DROIT">
 		<column>TYPE</column>
@@ -598,6 +636,56 @@
 			<value>265004083</value>
 			<value>264310664</value>
 			<value>264822986</value>
+		</row>
+		<row>
+			<value>Usufruit</value>
+			<value>265220714</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20161212</value>
+			<value>20171109</value>
+			<value>19851010</value>
+			<value>20171017</value>
+			<value>1f109152381059670138105f8f4c388f</value>
+			<value>Convention</value>
+			<null />
+			<value>044</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<null />
+			<value>265043585</value>
+			<value>264310664</value>
+			<null />
+		</row>
+		<row>
+			<value>DroitHabitation</value>
+			<value>265220715</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20161212</value>
+			<value>20171109</value>
+			<value>19990808</value>
+			<null />
+			<value>1f109152381059670138105f8f4c388g</value>
+			<value>Convention</value>
+			<null />
+			<value>044</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<null />
+			<value>265043586</value>
+			<value>264310664</value>
+			<null />
 		</row>
 	</table>
 	<table name="RAPPROCHEMENT_RF">
