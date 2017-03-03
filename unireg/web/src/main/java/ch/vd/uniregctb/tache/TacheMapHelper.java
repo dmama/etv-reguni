@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tache;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -131,6 +131,7 @@ public class TacheMapHelper extends CommonMapHelper {
 		}
 		else {
 			map.put(MockCollectiviteAdministrative.ACI.getNoColAdm(), MockCollectiviteAdministrative.ACI.getNomCourt());
+			map.put(MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNoColAdm(), MockCollectiviteAdministrative.ACI_SECTION_DE_TAXATION.getNomCourt());
 			map.put(MockOfficeImpot.OID_AIGLE.getNoColAdm(), MockOfficeImpot.OID_AIGLE.getNomCourt());
 			map.put(MockOfficeImpot.OID_ROLLE.getNoColAdm(), MockOfficeImpot.OID_ROLLE.getNomCourt());
 			map.put(MockOfficeImpot.OID_AVENCHE.getNoColAdm(), MockOfficeImpot.OID_AVENCHE.getNomCourt());
@@ -155,9 +156,7 @@ public class TacheMapHelper extends CommonMapHelper {
 			map.put(MockOfficeImpot.OID_ST_CROIX.getNoColAdm(), MockOfficeImpot.OID_ST_CROIX.getNomCourt());
 		}
 
-		final Map<Integer, String> treeMap = new TreeMap<>(new ValueComparator<>(map));
-		treeMap.putAll(map);
-		return Collections.unmodifiableMap(treeMap);
+		return sortMapCollectivitesAdministratives(map);
 	}
 
 	/**
@@ -165,46 +164,41 @@ public class TacheMapHelper extends CommonMapHelper {
 	 */
 	public Map<Integer, String> initMapCollectivitesAvecTaches() {
 		final Set<Integer> cols = tacheService.getCollectivitesAdministrativesAvecTaches();
-		return cols.stream()
+		final Map<Integer, String> unsortedMap = cols.stream()
 				.map(infraService::getCollectivite)
-				.sorted(Comparator.comparing(CollectiviteAdministrative::getNomCourt))
 				.collect(Collectors.toMap(CollectiviteAdministrative::getNoColAdm,
-				                          CollectiviteAdministrative::getNomCourt,
-				                          (s1, s2) -> { throw new IllegalArgumentException("Plusieurs collectivités administratives avec le même numéro ?"); },
-				                          LinkedHashMap::new));
+				                          CollectiviteAdministrative::getNomCourt));
+		return sortMapCollectivitesAdministratives(unsortedMap);
 	}
 
-	/**
-	 * Compare the keys of a map (to be used in a TreeMap, for instance) according to
-	 * the order of the value associated with each key
-	 * @param <T>
-	 */
-	private static class ValueComparator<T extends Comparable<T>> implements Comparator<Integer>, Serializable
-	{
-		private static final long serialVersionUID = -8041248573478594844L;
+	private static Map<Integer, String> sortMapCollectivitesAdministratives(Map<Integer, String> unsortedMap) {
+		// récupération des libellés -> si plusieurs sont identiques, il faut les différencier
+		final Map<String, List<Integer>> libellesUtilises = unsortedMap.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getValue,
+				                          entry -> Collections.singletonList(entry.getKey()),
+				                          (id1, id2) -> Stream.concat(id1.stream(), id2.stream()).collect(Collectors.toList())));
 
-		private final Map<Integer, T> map;
-
-		public ValueComparator(Map<Integer, T> map) {
-			this.map = map;
-		}
-
-		/**
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		@Override
-		public int compare(Integer o1, Integer o2) {
-			final T value1 = map.get(o1);
-			final T value2 = map.get(o2);
-			final int valueComparison = compareNullFirst(value1, value2);
-			if (valueComparison != 0) {
-				return valueComparison;
+		final Map<Integer, String> distinctMap = new HashMap<>(unsortedMap.size());
+		for (Map.Entry<String, List<Integer>> entry : libellesUtilises.entrySet()) {
+			final List<Integer> noCollectivites = entry.getValue();
+			if (noCollectivites.size() > 1) {
+				noCollectivites.forEach(noCol -> {
+					final String libelle = unsortedMap.get(noCol);
+					distinctMap.put(noCol, String.format("%s (%d)", libelle, noCol));
+				});
 			}
-			return compareNullFirst(o1, o2);
+			else {
+				final Integer noCol = noCollectivites.get(0);
+				distinctMap.put(noCol, unsortedMap.get(noCol));
+			}
 		}
 
-		private static <C extends Comparable<C>> int compareNullFirst(C c1, C c2) {
-			return c1 == c2 ? 0 : (c1 == null ? -1 : (c2 == null ? 1 : c1.compareTo(c2)));
-		}
+		final Map<Integer, String> sorted = distinctMap.entrySet().stream()
+				.sorted(Comparator.comparing(Map.Entry::getValue))
+				.collect(Collectors.toMap(Map.Entry::getKey,
+				                          Map.Entry::getValue,
+				                          (s1, s2) -> { throw new IllegalArgumentException("Plusieurs collectivités administratives avec le même numéro ?"); },
+				                          LinkedHashMap::new));
+		return Collections.unmodifiableMap(sorted);
 	}
 }
