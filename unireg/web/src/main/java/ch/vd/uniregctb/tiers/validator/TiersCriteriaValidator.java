@@ -11,7 +11,7 @@ import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 /**
- * Validateur de l'objet du m�me nom.
+ * Validateur de l'objet du même nom.
  *
  * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
  *
@@ -19,6 +19,16 @@ import ch.vd.uniregctb.utils.ValidatorUtils;
 public class TiersCriteriaValidator implements Validator {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(TiersCriteriaValidator.class);
+
+	private final boolean allowsEmpty;
+
+	public TiersCriteriaValidator() {
+		this.allowsEmpty = false;
+	}
+
+	public TiersCriteriaValidator(boolean allowsEmpty) {
+		this.allowsEmpty = allowsEmpty;
+	}
 
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -38,7 +48,7 @@ public class TiersCriteriaValidator implements Validator {
 		// s'il y a deja des erreurs (ce sont des erreurs de binding), pas continuer les vérifications
 		if (!errors.hasErrors()) {
 			final TiersCriteriaView bean = (TiersCriteriaView) target;
-			if (bean.isEmpty()) {
+			if (bean.isEmpty() && !allowsEmpty) {
 				errors.reject("error.criteres.vide");
 			}
 			if (StringUtils.isNotBlank(bean.getNumeroFormatte()) && !ValidatorUtils.isNumber(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroFormatte()))) {

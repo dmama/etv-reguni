@@ -245,6 +245,11 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return template.execute(new TransactionCallback<String>() {
 			@Override
 			public String doInTransaction(TransactionStatus status) {
+
+				if (numero == null) {
+					throw new IllegalArgumentException("Le numéro du tiers à afficher est nul.");
+				}
+
 				final Tiers tiers = tiersDAO.get(numero);
 				if (tiers == null) {
 					return "";

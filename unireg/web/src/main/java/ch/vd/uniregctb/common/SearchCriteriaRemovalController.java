@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.uniregctb.annulation.couple.AnnulationCoupleListController;
 import ch.vd.uniregctb.annulation.separation.AnnulationSeparationListController;
 import ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieListController;
-import ch.vd.uniregctb.deces.DecesListController;
 import ch.vd.uniregctb.fusion.HabitantListController;
 import ch.vd.uniregctb.fusion.NonHabitantListController;
 import ch.vd.uniregctb.rapport.RapportListController;
@@ -49,8 +48,7 @@ public class SearchCriteriaRemovalController {
 	}
 
 	@RequestMapping(value = "/deces/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheDeces(HttpSession session) {
-		session.removeAttribute(DecesListController.DECES_CRITERIA_NAME);
+	public String effacerCriteresRechercheDeces() {
 		return "redirect:/deces/list.do";
 	}
 

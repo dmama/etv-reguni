@@ -52,7 +52,7 @@ public class DecesRecapValidator implements Validator {
 			boolean dateDecesFuture = RegDate.get().isBefore(dateDeces);
 
 			//Validation du deces
-			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(decesRecapView.getPersonne().getNumero());
+			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(decesRecapView.getTiersId());
 			ValidationResults results;
 
 			if (veuvageMarieSeul) {

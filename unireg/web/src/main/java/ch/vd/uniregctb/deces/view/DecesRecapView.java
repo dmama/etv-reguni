@@ -1,34 +1,49 @@
 package ch.vd.uniregctb.deces.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class DecesRecapView {
 
+	private Long tiersId;
 	private RegDate dateDeces;
-
-	private TiersGeneralView personne;
-	
 	private boolean marieSeul;
-	
 	private boolean veuf;
-
 	private String remarque;
-	
+
+	public DecesRecapView() {
+	}
+
+	public DecesRecapView(long tiersId, @NotNull TiersService tiersService) {
+		this.tiersId = tiersId;
+
+		final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersId);
+		if (pp == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
+		this.marieSeul = (couple != null && couple.getConjoint(pp) == null);
+	}
+
+	public Long getTiersId() {
+		return tiersId;
+	}
+
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
+	}
+
 	public RegDate getDateDeces() {
 		return dateDeces;
 	}
 
 	public void setDateDeces(RegDate dateDeces) {
 		this.dateDeces = dateDeces;
-	}
-
-	public TiersGeneralView getPersonne() {
-		return personne;
-	}
-
-	public void setPersonne(TiersGeneralView personne) {
-		this.personne = personne;
 	}
 
 	public boolean isMarieSeul() {

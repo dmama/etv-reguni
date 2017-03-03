@@ -13,7 +13,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRecherchePP">
+	    <form:form method="get" id="formRecherchePP" commandName="criteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
@@ -24,7 +24,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="row" pagesize="25" requestURI="/deces/list.do" class="display" sort="list">
+		<display:table name="list" id="row" pagesize="25" requestURI="/deces/list.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>

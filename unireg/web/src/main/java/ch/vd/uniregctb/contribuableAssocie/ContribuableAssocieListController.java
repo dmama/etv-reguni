@@ -16,7 +16,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.contribuableAssocie.manager.ContribuableAssocieEditManager;
 import ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView;
-import ch.vd.uniregctb.deces.DecesListController;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
@@ -24,7 +23,7 @@ import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 
 public class ContribuableAssocieListController  extends  AbstractTiersListController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(DecesListController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(ContribuableAssocieListController.class);
 
 	private static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numeroDpi";
 

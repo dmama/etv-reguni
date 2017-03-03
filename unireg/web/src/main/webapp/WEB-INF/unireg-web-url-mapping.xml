@@ -62,9 +62,6 @@
 				<!-- Annulation Separation -->
 				<entry key="/annulation/separation/list.do" value-ref="annulationSeparationListController" />
 				<entry key="/annulation/separation/recap.do" value-ref="annulationSeparationRecapController" />
-				<!-- Deces -->
-				<entry key="/deces/list.do" value-ref="decesListController" />
-				<entry key="/deces/recap.do" value-ref="decesRecapController" />
 			</map>
 		</property>
 	</bean>

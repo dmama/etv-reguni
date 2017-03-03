@@ -15,13 +15,12 @@ import ch.vd.uniregctb.annulation.separation.view.AnnulationSeparationRecapView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.deces.DecesRecapController;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 
 public class AnnulationSeparationRecapController extends AbstractSimpleFormController {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger(DecesRecapController.class);
+	protected final Logger LOGGER = LoggerFactory.getLogger(AnnulationSeparationRecapController.class);
 
 	private static final String NUMERO_PARAMETER_NAME = "numero";
 
