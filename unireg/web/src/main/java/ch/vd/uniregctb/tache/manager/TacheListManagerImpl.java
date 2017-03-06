@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -50,6 +55,8 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDocument;
 import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.manager.AutorisationCache;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -57,7 +64,6 @@ import ch.vd.uniregctb.type.TypeTache;
  * Manager de recherche de taches
  *
  * @author xcifde
- *
  */
 public class TacheListManagerImpl implements TacheListManager {
 
@@ -72,6 +78,9 @@ public class TacheListManagerImpl implements TacheListManager {
 	private AdresseService adresseService;
 	private ServiceSecuriteService serviceSecurite;
 	private EditiqueCompositionService editiqueService;
+	private ForkJoinPool forkJoinPool;
+	private PlatformTransactionManager transactionManager;
+	private AutorisationCache autorisationCache;
 
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
@@ -101,6 +110,18 @@ public class TacheListManagerImpl implements TacheListManager {
 		this.editiqueService = editiqueService;
 	}
 
+	public void setForkJoinPool(ForkJoinPool forkJoinPool) {
+		this.forkJoinPool = forkJoinPool;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public void setAutorisationCache(AutorisationCache autorisationCache) {
+		this.autorisationCache = autorisationCache;
+	}
+
 	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative caAssignee = tache.getCollectiviteAdministrativeAssignee();
 		if (caAssignee != null) {
@@ -114,103 +135,128 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Recherche de declarations d'impot suivant certains criteres
-	 *
-	 * @param tacheCriteria
-	 * @param paramPagination
-	 * @return
-	 * @throws ServiceInfrastructureException
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws ServiceInfrastructureException, AdressesResolutionException {
-		final List<TacheListView> tachesView = new ArrayList<>();
 
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on recherche les tâches
 		final TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteria);
 		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
 
-		for (Tache tache : taches) {
-			final Contribuable contribuable = tache.getContribuable();
-			final ForGestion forGestionActif = tiersService.getDernierForGestionConnu(contribuable, null);
-			final Integer numeroOfsAutoriteFiscale = (forGestionActif == null ? null : forGestionActif.getNoOfsCommune());
+		// on les transforme dans leurs vues respectives en utilisant plusieurs threads
+		final ForkJoinTask<List<TacheListView>> task = forkJoinPool.submit(() -> {
+			//noinspection CodeBlock2Expr
+			return taches.stream()
+					.parallel()
+					.map(Tache::getId)
+					.map((tacheId) -> newTacheView(tacheId, currentPrincipal, currentOID))
+					.collect(Collectors.toList());
+		});
 
-			final TacheListView tacheView = new TacheListView();
-			tacheView.setId(tache.getId());
-			tacheView.setNumero(contribuable.getNumero());
-			tacheView.setNumeroForGestion(numeroOfsAutoriteFiscale);
-			tacheView.setDateEnregistrement(tache.getLogCreationDate());
-
-			final String nomCa = getNomCollectiviteAdministrativeAssociee(tache);
-			if (nomCa != null) {
-				tacheView.setOfficeImpot(nomCa);
-			}
-	
-			try {
-				final List<String> nomPrenom = adresseService.getNomCourrier(contribuable, null, false);
-				tacheView.setNomCourrier(nomPrenom);
-			}
-			catch (IndividuNotFoundException e) {
-				// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
-				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Collections.singletonList("<erreur: individu introuvable>"));
-			}
-			catch (OrganisationNotFoundException e) {
-				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Collections.singletonList("<erreur: organisation introuvable>"));
-			}
-			catch (Exception e) {
-				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Collections.singletonList("<erreur: " + e.getMessage() + '>'));
-			}
-
-			tacheView.setTypeTache(tache.getClass().getSimpleName());
-			tacheView.setEtatTache(tache.getEtat());
-
-			if (tache instanceof TacheEnvoiDocument) {
-				final TacheEnvoiDocument ted = (TacheEnvoiDocument) tache;
-				tacheView.setTypeDocument(ted.getTypeDocument());
-				if (tache instanceof TacheEnvoiDeclarationImpot) {
-					final TacheEnvoiDeclarationImpot tedi = (TacheEnvoiDeclarationImpot) tache;
-					final int annee = tedi.getDateFin().year();
-					tacheView.setAnnee(annee);
-					tacheView.setDateDebutImposition(tedi.getDateDebut());
-					tacheView.setDateFinImposition(tedi.getDateFin());
-					tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(tedi));
-					tacheView.setTypeContribuable(tedi.getTypeContribuable());
-					tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
-				}
-				else if (tache instanceof TacheEnvoiQuestionnaireSNC) {
-					final TacheEnvoiQuestionnaireSNC teqsnc = (TacheEnvoiQuestionnaireSNC) tache;
-					final int annee = teqsnc.getDateFin().year();
-					tacheView.setAnnee(annee);
-					tacheView.setDateDebutImposition(teqsnc.getDateDebut());
-					tacheView.setDateFinImposition(teqsnc.getDateFin());
-				}
-			}
-			else if (tache instanceof TacheAnnulationDeclaration) {
-				final TacheAnnulationDeclaration<?> tad = (TacheAnnulationDeclaration<?>) tache;
-				final Declaration declaration = tad.getDeclaration();
-				final int annee = declaration.getPeriode().getAnnee();
-				tacheView.setAnnee(annee);
-				tacheView.setDateDebutImposition(declaration.getDateDebut());
-				tacheView.setDateFinImposition(declaration.getDateFin());
-				tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(declaration));
-				tacheView.setTypeDocument(declaration.getModeleDocument() != null ? declaration.getModeleDocument().getTypeDocument() : null);
-				tacheView.setIdDI(declaration.getId());
-
-				if (tache instanceof TacheAnnulationDeclarationImpot) {
-					final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;
-					final DeclarationImpotOrdinaire di = tadi.getDeclaration();
-					tacheView.setTypeContribuable(di.getTypeContribuable());
-				}
-			}
-
-			tacheView.setAnnule(tache.isAnnule());
-			tacheView.setCommentaire(StringUtils.trimToNull(tache.getCommentaire()));;
-			tachesView.add(tacheView);
-		}
-
+		//noinspection UnnecessaryLocalVariable
+		final List<TacheListView> tachesView = task.join();
 		return tachesView;
+	}
+
+	@NotNull
+	private TacheListView newTacheView(long tacheId, String currentPrincipal, int currentOID) {
+		AuthenticationHelper.pushPrincipal(currentPrincipal, currentOID);
+		try {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+			return template.execute(status -> {
+				final Tache tache = tacheDAO.get(tacheId);
+				final Contribuable contribuable = tache.getContribuable();
+				final ForGestion forGestionActif = tiersService.getDernierForGestionConnu(contribuable, null);
+				final Integer numeroOfsAutoriteFiscale = (forGestionActif == null ? null : forGestionActif.getNoOfsCommune());
+
+				final TacheListView tacheView = new TacheListView();
+				tacheView.setId(tache.getId());
+				tacheView.setNumero(contribuable.getNumero());
+				tacheView.setNumeroForGestion(numeroOfsAutoriteFiscale);
+				tacheView.setDateEnregistrement(tache.getLogCreationDate());
+
+				final String nomCa = getNomCollectiviteAdministrativeAssociee(tache);
+				if (nomCa != null) {
+					tacheView.setOfficeImpot(nomCa);
+				}
+
+				try {
+					final List<String> nomPrenom = adresseService.getNomCourrier(contribuable, null, false);
+					tacheView.setNomCourrier(nomPrenom);
+				}
+				catch (IndividuNotFoundException e) {
+					// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
+					LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
+					tacheView.setNomCourrier(Collections.singletonList("<erreur: individu introuvable>"));
+				}
+				catch (OrganisationNotFoundException e) {
+					LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
+					tacheView.setNomCourrier(Collections.singletonList("<erreur: organisation introuvable>"));
+				}
+				catch (Exception e) {
+					LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
+					tacheView.setNomCourrier(Collections.singletonList("<erreur: " + e.getMessage() + '>'));
+				}
+
+				tacheView.setTypeTache(tache.getClass().getSimpleName());
+				tacheView.setEtatTache(tache.getEtat());
+
+				if (tache instanceof TacheEnvoiDocument) {
+					final TacheEnvoiDocument ted = (TacheEnvoiDocument) tache;
+					tacheView.setTypeDocument(ted.getTypeDocument());
+					if (tache instanceof TacheEnvoiDeclarationImpot) {
+						final TacheEnvoiDeclarationImpot tedi = (TacheEnvoiDeclarationImpot) tache;
+						final int annee = tedi.getDateFin().year();
+						tacheView.setAnnee(annee);
+						tacheView.setDateDebutImposition(tedi.getDateDebut());
+						tacheView.setDateFinImposition(tedi.getDateFin());
+						tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(tedi));
+						tacheView.setTypeContribuable(tedi.getTypeContribuable());
+						tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
+					}
+					else if (tache instanceof TacheEnvoiQuestionnaireSNC) {
+						final TacheEnvoiQuestionnaireSNC teqsnc = (TacheEnvoiQuestionnaireSNC) tache;
+						final int annee = teqsnc.getDateFin().year();
+						tacheView.setAnnee(annee);
+						tacheView.setDateDebutImposition(teqsnc.getDateDebut());
+						tacheView.setDateFinImposition(teqsnc.getDateFin());
+					}
+				}
+				else if (tache instanceof TacheAnnulationDeclaration) {
+					final TacheAnnulationDeclaration<?> tad = (TacheAnnulationDeclaration<?>) tache;
+					final Declaration declaration = tad.getDeclaration();
+					final int annee = declaration.getPeriode().getAnnee();
+					tacheView.setAnnee(annee);
+					tacheView.setDateDebutImposition(declaration.getDateDebut());
+					tacheView.setDateFinImposition(declaration.getDateFin());
+					tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(declaration));
+					tacheView.setTypeDocument(declaration.getModeleDocument() != null ? declaration.getModeleDocument().getTypeDocument() : null);
+					tacheView.setIdDI(declaration.getId());
+
+					if (tache instanceof TacheAnnulationDeclarationImpot) {
+						final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;
+						final DeclarationImpotOrdinaire di = tadi.getDeclaration();
+						tacheView.setTypeContribuable(di.getTypeContribuable());
+					}
+				}
+
+				tacheView.setAnnule(tache.isAnnule());
+				tacheView.setCommentaire(StringUtils.trimToNull(tache.getCommentaire()));
+				tacheView.setAuthDossier(autorisationCache.getAutorisations(contribuable.getNumero(), currentPrincipal, currentOID));
+				return tacheView;
+			});
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	private TacheCriteria buildCoreCriteria(TacheCriteriaViewBase tacheCriteria) throws ServiceInfrastructureException {
@@ -227,7 +273,7 @@ public class TacheListManagerImpl implements TacheListManager {
 			if (!SecurityDebugConfig.isIfoSecDebug()) {
 
 				// [SIFISC-22880] si l'utilisateur est loggué dans la collectivité 22, "Tous" signifie "Tous", non-limité aux
-			    // collectivités dans lesquelles l'utilisateur à des droits
+				// collectivités dans lesquelles l'utilisateur à des droits
 				final Integer loggedInOid = AuthenticationHelper.getCurrentOID();
 				if (loggedInOid == null || loggedInOid != ServiceInfrastructureService.noACI) {
 					List<CollectiviteAdministrativeUtilisateur> collectivites;
@@ -256,11 +302,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Recherche des nouveaux dossiers suivant certains critères
-	 *
-	 * @param dossierCriteria
-	 * @return
-	 * @throws ServiceInfrastructureException
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -276,8 +317,8 @@ public class TacheListManagerImpl implements TacheListManager {
 			final Contribuable contribuable = tache.getContribuable();
 			final ForGestion forGestionActif = tiersService.getDernierForGestionConnu(contribuable, null);
 			final Integer numeroOfsAutoriteFiscale = (forGestionActif == null ? null : forGestionActif.getNoOfsCommune());
-		//	final Integer officeImpotID = contribuable.getOfficeImpotId();
-		//	if (officeImpotID == null || mapCollectivites.containsKey(officeImpotID)) {
+			//	final Integer officeImpotID = contribuable.getOfficeImpotId();
+			//	if (officeImpotID == null || mapCollectivites.containsKey(officeImpotID)) {
 			NouveauDossierListView dossierView = new NouveauDossierListView();
 			dossierView.setId(tache.getId());
 			dossierView.setNumero(contribuable.getNumero());
@@ -296,12 +337,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Recherche des nouveaux dossiers suivant certains critères
-	 *
-	 * @param dossierCriteria
-	 * @param paramPagination
-	 * @return
-	 * @throws ServiceInfrastructureException
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -339,8 +374,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Imprime les nouveaux dossiers
-	 * @throws ServiceInfrastructureException
-	 * @throws EditiqueException
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -354,11 +387,11 @@ public class TacheListManagerImpl implements TacheListManager {
 		if (tabIdsDossiers != null && tabIdsDossiers.length > 0) {
 			final List<Contribuable> contribuables = new ArrayList<>(tabIdsDossiers.length);
 			final List<Tache> taches = new ArrayList<>(tabIdsDossiers.length);
-				for (int i = 0; i < tabIdsDossiers.length; i++) {
-					final Tache tache = tacheDAO.get(tabIdsDossiers[i]);
-					taches.add(tache);
-					contribuables.add(tache.getContribuable());
-				}
+			for (int i = 0; i < tabIdsDossiers.length; i++) {
+				final Tache tache = tacheDAO.get(tabIdsDossiers[i]);
+				taches.add(tache);
+				contribuables.add(tache.getContribuable());
+			}
 
 			try {
 				final EditiqueResultat impression = editiqueService.imprimeNouveauxDossiers(contribuables);
@@ -380,7 +413,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Retourne le nombre de tache correspondant aux criteres
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -391,10 +423,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Retourne le nombre de nouveaux dossiers correspondant aux criteres
-	 *
-	 * @param nouveauDossierCriteriaView
-	 * @return
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -405,8 +433,6 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	/**
 	 * Passe la tâche à l'état TRAITE
-	 *
-	 * @param id
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)

@@ -10,6 +10,9 @@
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="editiqueService" ref="editiqueCompositionService" />
 		<property name="tacheService" ref="tacheService"/>
+		<property name="forkJoinPool" ref="webForkJoinPool"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autorisationCache" ref="autorisationCache"/>
 	</bean>
 
 	<bean id="tacheController" class="ch.vd.uniregctb.tache.TacheController">

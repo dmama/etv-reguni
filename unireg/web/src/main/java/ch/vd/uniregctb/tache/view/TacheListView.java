@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -18,22 +19,15 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 public class TacheListView implements Annulable {
 
 	private Long id;
-
 	private String typeTache;
-
 	private Date dateEnregistrement;
-
 	private Long numero;
-
 	private List<String> nomCourrier;
-
 	private Integer numeroForGestion;
-
 	private String officeImpot;
-
 	private TypeEtatTache etatTache;
-
 	private Long idDI;
+	private Autorisations authDossier;
 
 	// Seulement valable pour le type de tache 'envoi declaration'
 	private RegDate dateDebutImposition;
@@ -194,5 +188,13 @@ public class TacheListView implements Annulable {
 
 	public void setCommentaire(String commentaire) {
 		this.commentaire = commentaire;
+	}
+
+	public Autorisations getAuthDossier() {
+		return authDossier;
+	}
+
+	public void setAuthDossier(Autorisations authDossier) {
+		this.authDossier = authDossier;
 	}
 }

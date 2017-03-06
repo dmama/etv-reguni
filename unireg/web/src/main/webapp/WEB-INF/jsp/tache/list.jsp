@@ -54,27 +54,26 @@
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" sortName="contribuable.numero">
 				<c:choose>
 					<c:when test="${tache.etatTache == 'EN_INSTANCE' && !tache.annule}">
-						<unireg:setAuth var="authDossier" tiersId="${tache.numero}"/>
 						<c:choose>
-							<c:when test="${tache.typeTache == 'TacheControleDossier' && authDossier.donneesFiscales}">
+							<c:when test="${tache.typeTache == 'TacheControleDossier' && tache.authDossier.donneesFiscales}">
 								<a href="../tiers/visu.do?id=${tache.numero}&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheTransmissionDossier' && authDossier.mouvements}">
+							<c:when test="${tache.typeTache == 'TacheTransmissionDossier' && tache.authDossier.mouvements}">
 								<a href="../mouvement/edit.do?numero=${tache.numero}&depuisTache=true&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' && authDossier.declarationImpots}">
+							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' && tache.authDossier.declarationImpots}">
 								<a href="../di/imprimer-pp.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}&delaiRetour=${tache.delaiRetourEnJours}" ><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPM' && authDossier.declarationImpots}">
+							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPM' && tache.authDossier.declarationImpots}">
 								<a href="../di/imprimer-pm.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}" ><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot' && authDossier.declarationImpots}">
+							<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot' && tache.authDossier.declarationImpots}">
 								<a href="../di/editer.do?id=${tache.idDI}&tacheId=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheEnvoiQuestionnaireSNC' && authDossier.questionnairesSNC}">
+							<c:when test="${tache.typeTache == 'TacheEnvoiQuestionnaireSNC' && tache.authDossier.questionnairesSNC}">
 								<a href="../qsnc/add.do?depuisTache=true&tiersId=${tache.numero}&pf=${tache.annee}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheAnnulationQuestionnaireSNC' && authDossier.questionnairesSNC}">
+							<c:when test="${tache.typeTache == 'TacheAnnulationQuestionnaireSNC' && tache.authDossier.questionnairesSNC}">
 								<a href="../qsnc/editer.do?depuisTache=true&id=${tache.idDI}"><unireg:numCTB numero="${tache.numero}"/></a>
 							</c:when>
 							<c:otherwise>
@@ -96,7 +95,7 @@
 			<display:column titleKey="label.office.impot" >
 				${tache.officeImpot}
 			</display:column>
-			
+
 			<!-- Spécifique à l'envoi des DIs -->
 			<display:column titleKey="label.date.periodeImposition" >
 				<c:if test="${tache.dateDebutImposition != null}">
