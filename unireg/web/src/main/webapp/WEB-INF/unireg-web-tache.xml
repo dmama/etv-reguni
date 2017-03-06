@@ -16,7 +16,6 @@
 		<property name="tacheMapHelper" ref="tacheMapHelper" />
 		<property name="tacheListManager" ref="tacheListManager"/>
 		<property name="editiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
-		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="tacheMapHelper" class="ch.vd.uniregctb.tache.TacheMapHelper">

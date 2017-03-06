@@ -11,7 +11,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheTache">
+	    <form:form method="get" id="formRechercheTache">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>

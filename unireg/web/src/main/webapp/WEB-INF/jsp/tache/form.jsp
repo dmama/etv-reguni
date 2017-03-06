@@ -86,7 +86,7 @@
 			<c:set var="labelEffacer">
 				<fmt:message key="label.bouton.effacer"/>
 			</c:set>
-			<div class="navigation-action"><unireg:buttonTo name="${labelEffacer}" action="/tache/list.do" params="{effacer:true}" method="get"/></div>
+			<div class="navigation-action"><unireg:buttonTo name="${labelEffacer}" action="/tache/list.do" method="get"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

@@ -10,6 +10,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.common.WebMockMvcTest;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheListView;
@@ -26,6 +27,7 @@ public class TacheControllerTest extends WebMockMvcTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		serviceCivil.setUp(new DefaultMockServiceCivil());
 		loadDatabase(DB_UNIT_FILE);
 	}
 
@@ -55,7 +57,7 @@ public class TacheControllerTest extends WebMockMvcTest {
 		params.put("officeImpot", Integer.toString(22));
 
 		final MockHttpSession session = new MockHttpSession();
-		final ResultActions resActions = post("/tache/list.do", params, session);
+		final ResultActions resActions = get("/tache/list.do", params, session);
 		final MvcResult result = resActions.andReturn();
 		Assert.assertNotNull(result);
 
