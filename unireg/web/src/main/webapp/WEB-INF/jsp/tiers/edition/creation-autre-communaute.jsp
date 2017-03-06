@@ -27,12 +27,16 @@
 						<legend><span><fmt:message key="label.organisation" /></span></legend>
 						<unireg:nextRowClass reset="1"/>
 						<table>
-							<c:set var="length_ide" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE + 3%>" scope="request" />
+							<c:set var="length_ide_min" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE%>" scope="request" />
+							<c:set var="length_ide_max" value="${length_ide_min + 3}" scope="request" />
 							<tr class="<unireg:nextRowClass/>" >
 								<td width="30%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 								<td>
-									<form:input path="civil.ide" id="ac.ide" cssErrorClass="input-with-errors" size="20" maxlength="${length_ide}" tabindex="1"/>
+									<form:input path="civil.ide" id="ac.ide" cssErrorClass="input-with-errors" size="20" maxlength="${length_ide_max}" tabindex="1"
+									            onchange="NumeroIDE.checkValue(this.value, '${length_ide_min}', null, 'ide_utilise_warning');"
+									            onkeyup="NumeroIDE.checkValue(this.value, '${length_ide_min}', null, 'ide_utilise_warning');"/>
 									<form:errors path="civil.ide" cssClass="error"/>
+									<span id="ide_utilise_warning" style="display:none; margin-left: 1em;" class="warn warning_icon"></span>
 								</td>
 							</tr>
 

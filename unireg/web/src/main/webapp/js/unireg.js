@@ -3216,3 +3216,43 @@ var Mandataires = {
 		              });
 	}
 };
+
+
+//===================================================
+
+var NumeroIDE = {
+
+	// affichage d'un message "ce numéro IDE est aussi utilisé pour le(s) tiers suivant(s) : ...."
+	checkValue : function(ideValue, lengthThreshold, ignoredPartyNo, idToFillAndShowHide) {
+		const toShowHide = $('#' + idToFillAndShowHide);
+		if (ideValue != null && ideValue.length >= lengthThreshold) {
+			var queryString = App.curl('/search/byIDE.do') + '?ide=' + ideValue;
+			if (ignoredPartyNo != null) {
+				queryString += '&excluded=' + ignoredPartyNo;
+			}
+			queryString +=  '&' + new Date().getTime();
+
+			$.get(queryString, function(using) {
+				if (using.length < 1) {
+					toShowHide.hide();
+				}
+				else {
+					var body = '<span>Ce numéro IDE est aussi utilisé pour le(s) tiers suivant(s) : ';
+					for (var i = 0; i < using.length; ++ i) {
+						var id = using[i];
+						body += Tiers.formatNumero(id);
+						if (i + 1 < using.length) {
+							body += ', ';
+						}
+					}
+					body += '</span>';
+					toShowHide.html(body);
+					toShowHide.show();
+				}
+			}, 'json');
+		}
+		else {
+			toShowHide.hide();
+		}
+	}
+};

@@ -3,8 +3,14 @@ package ch.vd.uniregctb.search;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.NumeroIDEHelper;
+import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -23,6 +31,8 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 @Controller
 @RequestMapping(value = "/search")
 public class SearchTiersController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SearchTiersController.class);
 
 	private GlobalTiersSearcher searcher;
 	private ApplicationContext applicationContext;
@@ -186,5 +196,40 @@ public class SearchTiersController {
 			summary += " (affichage des " + list.size() + " premiers)";
 		}
 		return summary;
+	}
+
+	/**
+	 * @param ide une chaine de caractère pouvant représenter un numéro IDE
+	 * @param excludedIds (optionnel) les identifiants des tiers qui ne doivent pas faire partie de la réponse, même si leur IDE est le même
+	 * @return la liste des identifiants des tiers qui ont ce numéro IDE (triée par ordre croissant)
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/byIDE.do", method = RequestMethod.GET)
+	public List<Long> getTiersWithIDE(@RequestParam("ide") String ide, @RequestParam(value = "excluded", required = false) Set<Long> excludedIds) {
+
+		// un peu de nettoyage pour commencer
+		final String cleanedUp = NumeroIDEHelper.normalize(ide);
+		if (cleanedUp == null) {
+			return Collections.emptyList();
+		}
+
+		// puis la recherche proprement dite
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNumeroIDE(cleanedUp);
+
+		try {
+			final List<TiersIndexedData> found = searcher.search(criteria);
+			return found.stream()
+					.map(TiersIndexedData::getNumero)
+					.filter(id -> excludedIds == null || !excludedIds.contains(id))
+					.distinct()
+					.sorted()
+					.collect(Collectors.toList());
+		}
+		catch (IndexerException e) {
+			// on ne peut pas faire grand'chose... un petit log et puis s'en va en faisant comme si aucun tiers n'avait été trouvé
+			LOGGER.error("Impossible de rechercher les tiers dont le numéro IDE est '" + cleanedUp + "'", e);
+			return Collections.emptyList();
+		}
 	}
 }

@@ -145,16 +145,20 @@
 								</td>
 							</tr>
 
-							<c:set var="length_numeroIDE" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE + 3%>" scope="request" />
+							<c:set var="length_ide_min" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE%>" scope="request" />
+							<c:set var="length_ide_max" value="${length_ide_min + 3}" scope="request" />
 							<tr class="<unireg:nextRowClass/> apresFJ">
 								<td>
 									<fmt:message key="label.numero.ide"/>&nbsp;:
 								</td>
 								<td colspan="3">
-									<form:input size="25" id="numeroIde" path="civil.numeroIde" tabindex="14" maxlength="${length_numeroIDE}" />
+									<form:input size="25" id="numeroIde" path="civil.numeroIde" tabindex="14" maxlength="${length_ide_max}"
+									            onchange="NumeroIDE.checkValue(this.value, '${length_ide_min}', null, 'ide_utilise_warning');"
+									            onkeyup="NumeroIDE.checkValue(this.value, '${length_ide_min}', null, 'ide_utilise_warning');"/>
 									<span style="margin-left: 2em;">
 										<form:errors path="civil.numeroIde" cssClass="error" />
 									</span>
+									<span id="ide_utilise_warning" style="display:none; margin-left: 1em;" class="warn warning_icon"></span>
 								</td>
 							</tr>
 
