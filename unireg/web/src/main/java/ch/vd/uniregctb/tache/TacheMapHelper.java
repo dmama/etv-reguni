@@ -181,15 +181,13 @@ public class TacheMapHelper extends CommonMapHelper {
 		final Map<Integer, String> distinctMap = new HashMap<>(unsortedMap.size());
 		for (Map.Entry<String, List<Integer>> entry : libellesUtilises.entrySet()) {
 			final List<Integer> noCollectivites = entry.getValue();
+			final String libelle = entry.getKey();
 			if (noCollectivites.size() > 1) {
-				noCollectivites.forEach(noCol -> {
-					final String libelle = unsortedMap.get(noCol);
-					distinctMap.put(noCol, String.format("%s (%d)", libelle, noCol));
-				});
+				noCollectivites.forEach(noCol -> distinctMap.put(noCol, String.format("%s (%d)", libelle, noCol)));
 			}
 			else {
 				final Integer noCol = noCollectivites.get(0);
-				distinctMap.put(noCol, unsortedMap.get(noCol));
+				distinctMap.put(noCol, libelle);
 			}
 		}
 
