@@ -21,6 +21,10 @@
 		<property name="useCodeAsDefaultMessage" value="true" />
 	</bean>
 
+	<!-- pool de threads à disposition des contrôleurs et des managers web -->
+	<bean id="webForkJoinPool" class="java.util.concurrent.ForkJoinPool">
+		<constructor-arg value="10"/>
+	</bean>
 
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />

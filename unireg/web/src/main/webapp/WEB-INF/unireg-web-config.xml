@@ -36,9 +36,4 @@
 		<property name="elements" value="${extprop.idenfification.pm.caracteres.speciaux}"/>
 	</bean>
 
-	<!-- pool de threads à disposition des contrôleurs et des managers web -->
-	<bean id="webForkJoinPool" class="java.util.concurrent.ForkJoinPool">
-		<constructor-arg value="10"/>
-	</bean>
-
 </beans>
