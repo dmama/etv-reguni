@@ -112,7 +112,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		final StringBuilder b = new StringBuilder();
 
 		b.append("<select name=\"AppSelect\" onchange=\"App.gotoExternalApp(this);\">\n");
-		b.append("\t<option value=\"\">---</option>\n");
+		b.append("\t<option disabled selected>&mdash;&mdash;</option>\n");
 
 		final Set<ApplicationFiscale> apps = getApplicationsFiscalesAutorisees(natureTiers, debiteurInactif);
 		for (ApplicationFiscale app : apps) {

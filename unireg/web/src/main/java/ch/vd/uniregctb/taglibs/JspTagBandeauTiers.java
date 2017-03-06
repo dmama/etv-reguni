@@ -32,6 +32,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesHelper;
 import ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseHelper;
@@ -91,6 +92,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new Reindexer());
 		list.add(new RecalculerParentes());
 		list.add(new RecalculerFlagHabitant());
+		list.add(new ImprimerFourreNeutre());
+		list.add(new Separator());
+
 		list.add(new Marier());
 		list.add(new Deceder());
 		list.add(new Separer());
@@ -98,7 +102,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new AnnulerCouple());
 		list.add(new AnnulerSeparation());
 		list.add(new AnnulerDeces());
-		list.add(new ImprimerFourreNeutre());
+		list.add(new Separator());
 
 		list.add(new TraiterFaillite());
 		list.add(new RevoquerFaillite());
@@ -116,6 +120,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new AnnulerFusionEntreprises());
 		list.add(new AnnulerScissionEntreprise());
 		list.add(new AnnulerTransfertPatrimoine());
+		list.add(new Separator());
 
 		list.add(new AnnulerTiers());
 		list.add(new Exporter());
@@ -415,6 +420,18 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				}
 			}
 
+			// Nettoyage des séparateurs non-entourés
+			final MovingWindow<Action> wndActions = new MovingWindow<>(actionsToDisplay);
+			while (wndActions.hasNext()) {
+				final MovingWindow.Snapshot<Action> snap = wndActions.next();
+				final Action current = snap.getCurrent();
+				if (current.isSeparator()) {
+					if (snap.getPrevious() == null || snap.getPrevious().isSeparator() || snap.getNext() == null) {
+						wndActions.remove();
+					}
+				}
+			}
+
 			if (actionsToDisplay.isEmpty()) {
 				// pas d'action à afficher
 				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
@@ -424,10 +441,15 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("\t<div style=\"float:right;margin-right:10px;text-align:right\">\n");
 				s.append("\t\t<span>").append(message("label.actions")).append(" : </span>\n");
 				s.append("\t\t<select onchange=\"return App.executeAction($(this).val() + ").append(tiers.getNumero()).append(");\">\n");
-				s.append("\t\t\t<option>---</option>\n");
+				s.append("\t\t\t<option disabled selected>&mdash;&mdash;</option>\n");
 
 				for (Action action : actionsToDisplay) {
-					s.append("\t\t\t<option value=\"").append(action.getActionUrl()).append("\">").append(action.getLabel()).append("</option>\n");
+					if (action.isSeparator()) {
+						s.append("\t\t\t<option disabled>&mdash;&mdash;</option>\n");
+					}
+					else {
+						s.append("\t\t\t<option value=\"").append(action.getActionUrl()).append("\">").append(action.getLabel()).append("</option>\n");
+					}
 				}
 
 				s.append("\t\t</select>");
@@ -721,6 +743,41 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		boolean isValide(Tiers tiers);
 		String getLabel();
 		String getActionUrl();
+
+		/**
+		 * @return <code>false</code> pour tous les éléments sauf les séparateurs
+		 */
+		default boolean isSeparator() {
+			return false;
+		}
+	}
+
+	private static class Separator implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return true;
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return true;
+		}
+
+		@Override
+		public String getLabel() {
+			return "---";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return null;
+		}
+
+		@Override
+		public boolean isSeparator() {
+			return true;
+		}
 	}
 
 	private static class Reindexer implements Action {
