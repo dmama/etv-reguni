@@ -700,4 +700,22 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/repelec/quittanceRepElec-3.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.docsortant.retour.v3"/>
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-docsortret-3"/>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/common/typeSimpleDPerm-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.dperm.xml.common.v1"/>
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-dpermcommon-1"/>
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

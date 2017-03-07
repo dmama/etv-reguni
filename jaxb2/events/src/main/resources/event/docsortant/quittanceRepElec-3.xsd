@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by zciedt (ETAT DE VAUD) -->
+<!-- 14.08.2013 version 0.1 (zciedt) -->
+<!-- 21.08.2013 version 0.2 (zciedt): Changement de namespace -->
+<!-- 22.08.2013 version 0.3 (zciedt): Harmonisation des types (lowerCase) -->
+<!-- 25.09.2013 version 2.0 (zciedt): Factorisation des types dans fichier externe -->
+<!-- 30.09.2013 version 2.1 (xsijme): Refactoring sur l'utilisation des types communs  -->
+<!-- 18.02.2016 version 3.0 (zciedt): Mise en place d'une quittance groupée pour tous les documents du dossier -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/repelec/quittance/3" xmlns:common="http://www.vd.ch/fiscalite/dperm/common/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/repelec/quittance/3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0">
+	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/common/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/common/typeSimpleDPerm-1.xsd"/>
+	<xs:element name="quittance">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="date" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>date à laquelle le document a été intégré dans RepElec</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="documentsQuittances">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="documentQuittance" type="documentQuittanceType" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="documentQuittanceType">
+		<xs:sequence>
+			<xs:element name="identifiantRepelecDossier" type="common:identifiantSupervisionType">
+				<xs:annotation>
+					<xs:documentation>Identifiant généré en début de processus par le BPMS pour le suivi du document dans la supervision</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="identifiantRepelec" type="common:identifiantRepelecType"/>
+      <xs:element name="identifiantSupervision" type="common:identifiantSupervisionType"/>
+      <xs:element name="fileExtension" type="fileExtensionType"/>
+      <xs:element name="foldersArchive" type="foldersArchiveType"/>
+		</xs:sequence>
+	</xs:complexType>
+  <xs:simpleType name="fileExtensionType">
+      <xs:restriction base="xs:string">
+          <xs:enumeration value="PDF" />
+          <xs:enumeration value="ZIP" />
+          <xs:enumeration value="XML" />
+      </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="foldersArchiveType">
+    <xs:sequence>
+      <xs:element name="folderType" type="common:nonEmptyTokenType"/>
+      <xs:element name="folderName" type="common:nonEmptyTokenType"/>
+      <xs:element name="docType" type="common:nonEmptyTokenType"/>
+      <xs:element name="docName" type="common:identifiantFoldersType"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
