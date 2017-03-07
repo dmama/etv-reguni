@@ -95,8 +95,6 @@
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
-				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
-				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
 
 				<!-- LR -->
 				<entry key="/lr/list.do" value-ref="lrListController" />

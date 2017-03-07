@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.annulation.couple.AnnulationCoupleListController;
 import ch.vd.uniregctb.annulation.separation.AnnulationSeparationListController;
-import ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieListController;
 import ch.vd.uniregctb.fusion.HabitantListController;
 import ch.vd.uniregctb.fusion.NonHabitantListController;
 import ch.vd.uniregctb.rapport.RapportListController;
@@ -43,7 +42,6 @@ public class SearchCriteriaRemovalController {
 
 	@RequestMapping(value = "/contribuable-associe/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheContribuableAssocie(HttpSession session, @RequestParam("numeroDpi") long dpi) {
-		session.removeAttribute(ContribuableAssocieListController.CONTRIBUABLE_ASSOCIE_CRITERIA_NAME);
 		return String.format("redirect:/contribuable-associe/list.do?numeroDpi=%d", dpi);
 	}
 

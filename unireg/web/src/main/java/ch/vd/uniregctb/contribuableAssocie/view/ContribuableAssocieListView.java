@@ -1,20 +1,18 @@
 package ch.vd.uniregctb.contribuableAssocie.view;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
-public class ContribuableAssocieListView  extends TiersCriteriaView {
+public class ContribuableAssocieListView extends TiersCriteriaView {
 
 	private static final long serialVersionUID = -2659171967019241854L;
 
-	private TiersGeneralView debiteur;
+	private long numeroDpi;
 
-	public TiersGeneralView getDebiteur() {
-		return debiteur;
+	public long getNumeroDpi() {
+		return numeroDpi;
 	}
 
-	public void setDebiteur(TiersGeneralView debiteur) {
-		this.debiteur = debiteur;
+	public void setNumeroDpi(long numeroDpi) {
+		this.numeroDpi = numeroDpi;
 	}
-
 }

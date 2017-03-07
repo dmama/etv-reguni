@@ -1,30 +1,31 @@
 package ch.vd.uniregctb.contribuableAssocie.view;
 
-import ch.vd.uniregctb.general.view.TiersGeneralView;
-
 public class ContribuableAssocieEditView {
 
-	private TiersGeneralView contribuable;
-	private TiersGeneralView debiteur;
-	private boolean isAllowed;
+	private long numeroDpi;
+	private long numeroContribuable;
 
-	public TiersGeneralView getContribuable() {
-		return contribuable;
-	}
-	public void setContribuable(TiersGeneralView contribuable) {
-		this.contribuable = contribuable;
-	}
-	public TiersGeneralView getDebiteur() {
-		return debiteur;
-	}
-	public void setDebiteur(TiersGeneralView debiteur) {
-		this.debiteur = debiteur;
-	}
-	public boolean isAllowed() {
-		return isAllowed;
-	}
-	public void setAllowed(boolean isAllowed) {
-		this.isAllowed = isAllowed;
+	public ContribuableAssocieEditView() {
 	}
 
+	public ContribuableAssocieEditView(long numeroDpi, long numeroContribuable) {
+		this.numeroDpi = numeroDpi;
+		this.numeroContribuable = numeroContribuable;
+	}
+
+	public long getNumeroDpi() {
+		return numeroDpi;
+	}
+
+	public void setNumeroDpi(long numeroDpi) {
+		this.numeroDpi = numeroDpi;
+	}
+
+	public long getNumeroContribuable() {
+		return numeroContribuable;
+	}
+
+	public void setNumeroContribuable(long numeroContribuable) {
+		this.numeroContribuable = numeroContribuable;
+	}
 }

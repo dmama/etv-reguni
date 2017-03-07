@@ -226,7 +226,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	/**
 	 * Le nom de l'attribut utilise pour l'objet stockant les paramètres de l'application
 	 */
-	private static final String PARAMETRES_APP = "parametresApp";
+	public static final String PARAMETRES_APP = "parametresApp";
 
 	/**
 	 * Le nom de l'objet de criteres de recherche

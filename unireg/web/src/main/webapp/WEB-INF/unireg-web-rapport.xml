@@ -121,25 +121,17 @@
 		<property name="rapportEditManager" ref="rapportEditManager" />
 	</bean>
 
-	<bean id="contribuableAssocieListController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/contribuable-associe/list" />
-		<property name="successView" value="edit.do" />
-		<property name="contribuableAssocieEditManager" ref="contribuableAssocieEditManager" />
-		<property name="validator" ref="tiersCriteriaValidator"/>
-	</bean>
-
-	<bean id="contribuableAssocieEditController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieEditController" parent="abstractSimpleFormController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieEditView" />
-		<property name="formView" value="tiers/edition/contribuable-associe/edit" />
-		<property name="contribuableAssocieEditManager" ref="contribuableAssocieEditManager" />
-		<property name="successView" value="edit.do" />
-	</bean>
-
-	<bean id="contribuableAssocieEditManager" class="ch.vd.uniregctb.contribuableAssocie.manager.ContribuableAssocieEditManagerImpl" parent="tiersManager">
+	<bean id="contribuableAssocieListController" class="ch.vd.uniregctb.contribuableAssocie.ContribuableAssocieController">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="paramApplicationManager" ref="paramApplicationManager"/>
+		<property name="criteriaValidator">
+			<bean class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator">
+				<!-- allowsEmpty -->
+				<constructor-arg value="true"/>
+			</bean>
+		</property>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="activiteEconomiqueEditController" class="ch.vd.uniregctb.tiers.ActiviteEconomiqueEditController">

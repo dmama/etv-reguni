@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<c:set var="numeroDebiteur" value="${param.numeroDpi}" />
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
@@ -15,23 +14,28 @@
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-	   	<jsp:include page="../../../general/debiteur.jsp" >
-			<jsp:param name="page" value="rt" />
-			<jsp:param name="path" value="debiteur" />
-		</jsp:include>
-	    
-	    <form:form method="post" id="formRechercheTiers" action="list.do?numeroDpi=${numeroDebiteur}" >
+	    <%--@elvariable id="command" type="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView"--%>
+	    <%--@elvariable id="parametresApp" type="ch.vd.uniregctb.param.view.ParamApplicationView"--%>
+
+	    <!-- Caractéristiques générales -->
+	    <c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
+	    <unireg:bandeauTiers numero="${command.numeroDpi}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+
+	    <!-- Formulaire de recherche -->
+	    <form:form method="get" id="formRechercheTiers" action="list.do" >
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
+				<form:hidden path="numeroDpi"/>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
 					<jsp:param name="prefixeEffacer" value="/contribuable-associe" />
-					<jsp:param name="paramsEffacer" value="numeroDpi:${numeroDebiteur}" />
+					<jsp:param name="paramsEffacer" value="numeroDpi:${command.numeroDpi}" />
 				</jsp:include>
 			</fieldset>
 		</form:form>
 
+	    <!-- Résultats -->
 		<display:table 	name="list" id="tiers" pagesize="${parametresApp.nbMaxParPage}" requestURI="list.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tiers.trouve" /></span></display:setProperty>
@@ -40,7 +44,7 @@
 
 			<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
 				<c:if test="${tiers.annule}"><strike></c:if>
-					<a href="edit.do?numeroDpi=${numeroDebiteur}&numeroContribuable=${tiers.numero}"><unireg:numCTB numero="${tiers.numero}" /></a>
+					<a href="edit.do?numeroDpi=${command.numeroDpi}&numeroContribuable=${tiers.numero}"><unireg:numCTB numero="${tiers.numero}" /></a>
 				<c:if test="${tiers.annule}"></strike></c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.role" >
@@ -89,7 +93,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../rapports-prestation/edit.do?id=${numeroDebiteur}';" />
+					<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../rapports-prestation/edit.do?id=${command.numeroDpi}';" />
 				</td>
 			</tr>
 		</table>

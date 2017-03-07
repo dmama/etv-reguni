@@ -9,30 +9,34 @@
 	</tiles:put>
 	<tiles:put name="fichierAide">
 		<li>
-			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+			<a href="#" onclick="ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 		</li>
 	</tiles:put>
 	<tiles:put name="body">
-		<form:form method="post" id="formRecapContactIS"  name="formRecapContactIS">
-			<jsp:include page="../../../general/debiteur.jsp">
-				<jsp:param name="page" value="debiteur" />
-				<jsp:param name="path" value="debiteur" />
-			</jsp:include>
-			<jsp:include page="../../../general/contribuable.jsp">
-				<jsp:param name="page" value="contribuable" />
-				<jsp:param name="path" value="contribuable" />
-			</jsp:include>
+
+		<%--@elvariable id="recap" type="ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieEditView"--%>
+
+		<form:form method="post" id="formRecapContactIS" name="formRecapContactIS" commandName="recap">
+			<!-- Caractéristiques générales du débiteur -->
+			<c:set var="titre"><fmt:message key="caracteristiques.debiteur.is"/></c:set>
+			<unireg:bandeauTiers numero="${recap.numeroDpi}" titre="${titre}" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false" showComplements="true"/>
+
+			<!-- Caractéristiques générales du contribuable -->
+			<c:set var="titre"><fmt:message key="caracteristiques.contribuable"/></c:set>
+			<unireg:bandeauTiers numero="${recap.numeroContribuable}" titre="${titre}" cssClass="information" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="false"/>
+
 			<!-- Debut Boutons -->
-			<unireg:RetourButton link="list.do?numeroDpi=${command.debiteur.numero}"/>
-			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverContactIS(event || window.event);" />	
+			<unireg:RetourButton link="list.do?numeroDpi=${recap.numeroDpi}"/>
+			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onclick="return Page_sauverContactIS(event || window.event);" />
 			<!-- Fin Boutons -->
 		</form:form>
+
 		<script type="text/javascript" language="Javascript">
 			function Page_sauverContactIS(event) {
 				if(!confirm('Voulez-vous vraiment confirmer ce contact impôt source ?')) {
 					return Event.stop(event);
 			 	}
-			 	return true ;
+			 	return true;
 			}
 		</script>
 	</tiles:put>
