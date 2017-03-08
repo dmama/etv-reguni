@@ -347,6 +347,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, String cleDocument) {
+		return target.getUrlVisualisationDocument(tiersId, pf, cleDocument);
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		return target.getLogiciel(idLogiciel);
 	}

@@ -57,6 +57,7 @@
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="delaisService" ref="delaisService" />
 		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="lrEditDelaiController" class="ch.vd.uniregctb.lr.ListeRecapEditDelaiController" parent="abstractListeRecapController">

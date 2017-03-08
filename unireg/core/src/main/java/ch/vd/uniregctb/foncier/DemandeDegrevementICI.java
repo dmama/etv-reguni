@@ -58,6 +58,7 @@ public class DemandeDegrevementICI extends AutreDocumentFiscalAvecSuivi {
 		this.immeuble = immeuble;
 	}
 
+	@Override
 	@Column(name = "DD_PERIODE_FISCALE")
 	public Integer getPeriodeFiscale() {
 		return periodeFiscale;

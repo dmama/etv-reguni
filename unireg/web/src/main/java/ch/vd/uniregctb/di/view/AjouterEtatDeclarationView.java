@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -34,27 +35,27 @@ public class AjouterEtatDeclarationView {
 	public AjouterEtatDeclarationView() {
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePP di, MessageSource messageSource) {
-		this(di, true, messageSource);
+	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePP di, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		this(di, true, infraService, messageSource);
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePM di, MessageSource messageSource) {
-		this(di, false, messageSource);
+	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePM di, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		this(di, false, infraService, messageSource);
 	}
 
-	private AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, MessageSource messageSource) {
-		initReadOnlyValues(di, typeDocumentEditable, messageSource);
+	private AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		initReadOnlyValues(di, typeDocumentEditable, infraService, messageSource);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, MessageSource messageSource) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
-		this.etats = initEtats(di.getEtats(), messageSource);
+		this.etats = initEtats(di.getEtats(), infraService, messageSource);
 		this.typeDocumentEditable = typeDocumentEditable;
 	}
 
@@ -63,10 +64,10 @@ public class AjouterEtatDeclarationView {
 		return etatDI == null ? null : etatDI.getEtat();
 	}
 
-	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, MessageSource messageSource) {
+	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDeclarationView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDeclarationView(etat, messageSource));
+			list.add(new EtatDeclarationView(etat, infraService, messageSource));
 		}
 		Collections.sort(list);
 		return list;

@@ -176,10 +176,15 @@
 						</display:column>
 						<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
 							<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
-							<c:if test="${docFiscal.avecCopieConformeEnvoi}">
-								&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
-								<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
-							</c:if>
+							<c:choose>
+								<c:when test="${docFiscal.urlVisualisationExterneDocument != null}">
+									&nbsp;<a href="#" class="pdf" title="Visualisation du courrier" onclick="VisuExterneDoc.openWindow('${docFiscal.urlVisualisationExterneDocument}');">&nbsp;</a>
+								</c:when>
+								<c:when test="${docFiscal.avecCopieConformeEnvoi}">
+									&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
+									<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
+								</c:when>
+							</c:choose>
 						</display:column>
 					</display:table>
 				</c:when>

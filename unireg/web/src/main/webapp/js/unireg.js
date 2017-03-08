@@ -2810,11 +2810,17 @@ var Decl = {
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
 				/** @namespace d.confirmationEcrite */
+				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
 				html += '<td>';
-				if (d.confirmationEcrite) {
+
+				if (d.urlVisualisationExterneDocument != null) {
+					html += '<input type="checkbox" checked="checked" disabled="disabled">';
+					html += '<a href="#" class="pdf" title="Visualisation du courrier émis" onclick="VisuExterneDoc.openWindow(\x27' + d.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
+				}
+				else if (d.confirmationEcrite) {
 					html += '<input type="checkbox" checked="checked" disabled="disabled">';
 					html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '&url_memorize=false" class="pdf" id="print-delai-' + d.id +
 						'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
@@ -2844,6 +2850,7 @@ var Decl = {
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
 				/** @namespace d.confirmationEcrite */
+				/** @namespace d.urlVisualisationExterneDocument */
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
@@ -2851,7 +2858,10 @@ var Decl = {
 				html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
 				html += '<td>';
 				if (d.etat != 'DEMANDE') {
-					if (d.confirmationEcrite) {
+					if (d.urlVisualisationExterneDocument != null) {
+						html += '<a href="#" class="pdf" title="Visualisation du courrier émis" onclick="VisuExterneDoc.openWindow(\x27' + d.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
+					}
+					else if (d.confirmationEcrite) {
 						html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '&url_memorize=false" class="pdf" id="print-delai-' + d.id +
 							'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
 						html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
@@ -2886,6 +2896,7 @@ var Decl = {
 				/** @namespace e.annule */
 				/** @namespace e.dateObtention */
 				/** @namespace e.dateEnvoiCourrierMessage */
+				/** @namespace e.urlVisualisationExterneDocument */
 				/** @namespace e.etatMessage */
 				/** @namespace e.sourceMessage */
 				/** @namespace e.etat */
@@ -2896,17 +2907,30 @@ var Decl = {
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
 				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE')) {
-					var url;
-					if (e.etat == 'RAPPELEE') {
-						url = App.curl('/declaration/copie-conforme-rappel.do?idEtat=') + e.id;
+					if (e.urlVisualisationExterneDocument != null) {
+						var title;
+						if (e.etat == 'RAPPELEE') {
+							title = 'Visualisation du rappel émis';
+						}
+						else {
+							title = 'Visualisation de la sommation émise';
+						}
+
+						html += '&nbsp;<a href="#" class="pdf" title="' + title + '" onclick="VisuExterneDoc.openWindow(\x27' + e.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
 					}
 					else {
-						url = App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id;
-					}
+						var url;
+						if (e.etat == 'RAPPELEE') {
+							url = App.curl('/declaration/copie-conforme-rappel.do?idEtat=') + e.id;
+						}
+						else {
+							url = App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id;
+						}
 
-					html += '&nbsp;' + '<a href="' + url + '&url_memorize=false" class="pdf" id="copie-sommation-' + e.id +
-						'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
-					html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
+						html += '&nbsp;' + '<a href="' + url + '&url_memorize=false" class="pdf" id="copie-sommation-' + e.id +
+							'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
+						html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
+					}
 				}
 				html += '</td>';
 				if (!lr) { // SIFISC-6593 - On n'affiche pas la colonne source pour les LR
@@ -3254,5 +3278,19 @@ var NumeroIDE = {
 		else {
 			toShowHide.hide();
 		}
+	}
+};
+
+
+//===================================================
+
+var VisuExterneDoc = {
+
+	/**
+	 * Ouvre une fenêtre externe (= toujours la même) avec l'URL passée en paramètre
+	 * @param url URL de l'application externe (a priori RepElec) avec les données du document
+	 */
+	openWindow: function(url) {
+		window.open(url, 'UniregVisuExterneDoc', 'location=no, menubar=no, toolbar=no, scrollbars=yes, resizable=yes');
 	}
 };

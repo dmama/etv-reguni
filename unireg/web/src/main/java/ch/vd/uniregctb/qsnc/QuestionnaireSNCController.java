@@ -52,6 +52,7 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -87,6 +88,7 @@ public class QuestionnaireSNCController {
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private TacheDAO tacheDAO;
 	private TicketService ticketService;
+	private ServiceInfrastructureService infraService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -130,6 +132,10 @@ public class QuestionnaireSNCController {
 
 	public void setTicketService(TicketService ticketService) {
 		this.ticketService = ticketService;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement) throws AccessDeniedException {
@@ -211,7 +217,7 @@ public class QuestionnaireSNCController {
 	private List<QuestionnaireSNCView> asViews(Iterable<QuestionnaireSNC> core) {
 		final List<QuestionnaireSNCView> views = new LinkedList<>();
 		for (QuestionnaireSNC q : core) {
-			views.add(new QuestionnaireSNCView(q, messageSource));
+			views.add(new QuestionnaireSNCView(q, infraService, messageSource));
 		}
 		return views;
 	}
@@ -224,7 +230,7 @@ public class QuestionnaireSNCController {
 		if (questionnaire == null) {
 			throw new ObjectNotFoundException("Questionnaire SNC inexistant.");
 		}
-		return new QuestionnaireSNCView(questionnaire, messageSource);
+		return new QuestionnaireSNCView(questionnaire, infraService, messageSource);
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -487,6 +493,7 @@ public class QuestionnaireSNCController {
 
 		// construction de la vue et affichage
 		final QuestionnaireSNCView view = new QuestionnaireSNCEditView(questionnaire,
+		                                                               infraService,
 		                                                               messageSource,
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_RAPPEL),
 		                                                               SecurityHelper.isAnyGranted(securityProvider, Role.QSNC_DUPLICATA));
@@ -660,7 +667,7 @@ public class QuestionnaireSNCController {
 				checkEditRightOnEntreprise(entreprise);
 
 				// vérification du côté 'rappelable' du questionnaire, on ne sait jamais
-				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, messageSource, true, false);
+				final QuestionnaireSNCEditView view = new QuestionnaireSNCEditView(questionnaire, infraService, messageSource, true, false);
 				if (!view.isRappelable()) {
 					throw new ActionException("Le questionnaire SNC n'est pas dans un état 'rappelable'.");
 				}

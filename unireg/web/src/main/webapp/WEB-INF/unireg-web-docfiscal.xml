@@ -17,6 +17,7 @@
 	<bean id="autreDocumentFiscalManager" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManagerImpl">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 </beans>

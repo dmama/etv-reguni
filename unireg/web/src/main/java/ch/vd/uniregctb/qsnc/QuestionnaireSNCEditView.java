@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
@@ -13,8 +14,8 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 	private final boolean rappelable;       // si on peut envoyer un rappel
 	private final boolean duplicable;       // si on peut en faire un duplicata
 
-	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, MessageSource messageSource, boolean allowedRappel, boolean allowedDuplicata) {
-		super(questionnaire, messageSource);
+	public QuestionnaireSNCEditView(QuestionnaireSNC questionnaire, ServiceInfrastructureService infraService, MessageSource messageSource, boolean allowedRappel, boolean allowedDuplicata) {
+		super(questionnaire, infraService, messageSource);
 		this.rappelable = allowedRappel && isRappelable(questionnaire);
 		this.duplicable = allowedDuplicata && isDuplicable(questionnaire);
 	}

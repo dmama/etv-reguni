@@ -83,6 +83,7 @@ import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.evenement.declaration.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementLiberationDeclarationImpotSender;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
@@ -131,6 +132,7 @@ public class DeclarationImpotController {
 	private TicketService ticketService;
 	private Set<String> sourcesQuittancementAvecLiberationPossible = Collections.emptySet();
 	private EvenementLiberationDeclarationImpotSender liberationSender;
+	private ServiceInfrastructureService infraService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -206,6 +208,10 @@ public class DeclarationImpotController {
 
 	public void setLiberationSender(EvenementLiberationDeclarationImpotSender liberationSender) {
 		this.liberationSender = liberationSender;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -333,7 +339,7 @@ public class DeclarationImpotController {
 		// vérification des droits en écriture
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
-		model.addAttribute("command", new DeclarationImpotListView(ctb, messageSource));
+		model.addAttribute("command", new DeclarationImpotListView(ctb, infraService, messageSource));
 		return "/di/lister";
 	}
 
@@ -359,7 +365,7 @@ public class DeclarationImpotController {
 		final Long tiersId = decl.getTiers().getId();
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return new DeclarationImpotView(decl, messageSource);
+		return new DeclarationImpotView(decl, infraService, messageSource);
 	}
 
 	/**
@@ -384,7 +390,7 @@ public class DeclarationImpotController {
 		final Long tiersId = decl.getTiers().getId();
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return new DeclarationView(decl, messageSource);
+		return new DeclarationView(decl, infraService, messageSource);
 	}
 
 	/**
@@ -894,10 +900,10 @@ public class DeclarationImpotController {
 
 		final AjouterEtatDeclarationView view;
 		if (di instanceof DeclarationImpotOrdinairePP) {
-			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePP) di, messageSource);
+			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePP) di, infraService, messageSource);
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
-			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePM) di, messageSource);
+			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePM) di, infraService, messageSource);
 		}
 		else {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
@@ -927,7 +933,7 @@ public class DeclarationImpotController {
 		checkAccessRights(di, false, true, false, false, false, false, false, false, false);
 
 		if (result.hasErrors()) {
-			view.initReadOnlyValues(di, view.isTypeDocumentEditable(), messageSource);
+			view.initReadOnlyValues(di, view.isTypeDocumentEditable(), infraService, messageSource);
 			model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
 			return "di/etat/ajouter-quittance";
 		}
@@ -1031,7 +1037,7 @@ public class DeclarationImpotController {
 
 		final EditerDeclarationImpotView view;
 		if (di instanceof DeclarationImpotOrdinairePP) {
-			view = new EditerDeclarationImpotView(di, tacheId, messageSource,
+			view = new EditerDeclarationImpotView(di, tacheId, infraService, messageSource,
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP) && isJusteEmise(di),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP),
@@ -1041,7 +1047,7 @@ public class DeclarationImpotController {
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_LIBERER_PP) && isLiberable(di));
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
-			view = new EditerDeclarationImpotView(di, tacheId, messageSource,
+			view = new EditerDeclarationImpotView(di, tacheId, infraService, messageSource,
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM) && (isJusteEmise(di) || isSommee(di)),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM),

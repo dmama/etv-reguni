@@ -146,6 +146,7 @@
 	<bean id="lrVisuManager" class="ch.vd.uniregctb.tiers.manager.ListeRecapVisuManagerImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="lrDAO" ref="lrDAO" />
 	</bean>
 

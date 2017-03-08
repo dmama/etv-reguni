@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -21,20 +22,20 @@ public class DeclarationImpotListView {
 	private boolean ctbPP;
 	private boolean ctbPM;
 
-	public DeclarationImpotListView(Contribuable ctb, MessageSource messageSource) {
+	public DeclarationImpotListView(Contribuable ctb, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		this.ctbId = ctb.getId();
-		this.dis = initDeclarations(ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true), messageSource);
+		this.dis = initDeclarations(ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true), infraService, messageSource);
 		this.ctbPP = ctb instanceof ContribuableImpositionPersonnesPhysiques;
 		this.ctbPM = ctb instanceof ContribuableImpositionPersonnesMorales;
 	}
 
-	public static List<DeclarationImpotView> initDeclarations(Collection<? extends DeclarationImpotOrdinaire> declarations, MessageSource messageSource) {
+	public static List<DeclarationImpotView> initDeclarations(Collection<? extends DeclarationImpotOrdinaire> declarations, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
 		final List<DeclarationImpotView> views = new ArrayList<>(declarations.size());
 		for (DeclarationImpotOrdinaire declaration : declarations) {
-			views.add(new DeclarationImpotView(declaration, messageSource));
+			views.add(new DeclarationImpotView(declaration, infraService, messageSource));
 		}
 		Collections.sort(views, new Comparator<DeclarationImpotView>() {
 			@Override

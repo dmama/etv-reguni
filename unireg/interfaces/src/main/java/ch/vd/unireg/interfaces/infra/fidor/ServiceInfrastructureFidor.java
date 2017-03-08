@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -565,14 +566,16 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return null;
 		}
 
-		final Pattern pattern = Pattern.compile("\\{([A-Z_]+)\\}");
+		final Pattern pattern = Pattern.compile("\\{([A-Za-z_][A-Za-z_0-9]*)\\}");
 		final Matcher matcher = pattern.matcher(url);
 
 		final StringBuilder b = new StringBuilder();
 		int start = 0;
 		while (matcher.find()) {
 			final String varName = matcher.group(1);
-			final String replacement = replacements.getOrDefault(varName, StringUtils.EMPTY);
+			final String replacement = Optional.of(varName)
+					.map(replacements::get)
+					.orElse(StringUtils.EMPTY);
 			b.append(url.substring(start, matcher.start()));
 			b.append(replacement);
 			start = matcher.end();

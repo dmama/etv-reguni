@@ -7,6 +7,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.view.DeclarationView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -24,8 +25,8 @@ public class DeclarationImpotView extends DeclarationView {
 	private final RegDate dateDebutExercice;
 	private final RegDate dateFinExercice;
 
-	public DeclarationImpotView(DeclarationImpotOrdinaire di, MessageSource messageSource) {
-		super(di, messageSource);
+	public DeclarationImpotView(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		super(di, infraService, messageSource);
 
 		this.codeControle = di.getCodeControle();
 		this.typeDocument = di.getTypeDeclaration();

@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -61,15 +62,17 @@ public class EditerDeclarationImpotView {
 	public EditerDeclarationImpotView() {
 	}
 
-	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
+	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, ServiceInfrastructureService infraService, MessageSource messageSource,
+	                                  boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
 	                                  boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
-		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension, allowedLiberation);
+		initReadOnlyValues(di, infraService, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension, allowedLiberation);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource,
+	                               boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension, boolean allowedLiberation) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateFin().year();
@@ -78,8 +81,8 @@ public class EditerDeclarationImpotView {
 		this.codeControle = di.getCodeControle();
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
-		this.delais = initDelais(di, messageSource);
-		this.etats = initEtats(di.getEtats(), messageSource);
+		this.delais = initDelais(di, infraService, messageSource);
+		this.etats = initEtats(di.getEtats(), infraService, messageSource);
 		this.isAllowedQuittancement = allowedQuittancement;
 		this.isAllowedDelai = allowedDelai;
 		this.isAllowedSommation = allowedSommation;
@@ -140,7 +143,7 @@ public class EditerDeclarationImpotView {
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 
-	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di, MessageSource messageSource) {
+	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final Set<DelaiDeclaration> delais = di.getDelais();
 		if (delais == null || delais.isEmpty()) {
 			return Collections.emptyList();
@@ -148,7 +151,7 @@ public class EditerDeclarationImpotView {
 		final RegDate first = di.getPremierDelai();
 		final List<DelaiDeclarationView> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDeclarationView d = new DelaiDeclarationView(delai, messageSource);
+			final DelaiDeclarationView d = new DelaiDeclarationView(delai, infraService, messageSource);
 			d.setFirst(d.getDelaiAccordeAu() == first);
 			list.add(d);
 		}
@@ -168,10 +171,10 @@ public class EditerDeclarationImpotView {
 		return list;
 	}
 
-	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, MessageSource messageSource) {
+	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDeclarationView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDeclarationView(etat, messageSource));
+			list.add(new EtatDeclarationView(etat, infraService, messageSource));
 		}
 		Collections.sort(list);
 		return list;

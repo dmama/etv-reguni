@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -102,5 +103,12 @@ public abstract class AutreDocumentFiscal extends HibernateEntity implements Lin
 	@Transient
 	public TypeEtatAutreDocumentFiscal getEtat() {
 		return TypeEtatAutreDocumentFiscal.EMIS;
+	}
+
+	@Transient
+	public Integer getPeriodeFiscale() {
+		return Optional.ofNullable(dateEnvoi)
+				.map(RegDate::year)
+				.orElse(null);
 	}
 }

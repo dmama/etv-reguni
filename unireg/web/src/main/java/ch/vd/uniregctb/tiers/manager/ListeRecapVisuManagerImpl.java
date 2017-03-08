@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -30,15 +31,13 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  * @author xcifde
  *
  */
-public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageSourceAware {
+public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager, MessageSourceAware {
 
 	private TiersDAO tiersDAO ;
-
 	private TiersGeneralManager tiersGeneralManager;
-
 	private ListeRecapitulativeDAO lrDAO;
-
 	private MessageSource messageSource;
+	private ServiceInfrastructureService infraService;
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(ListeRecapVisuManagerImpl.class);
 
@@ -64,7 +63,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		lrView.setDateFinPeriode(lr.getDateFin());
 		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, getMessageSource());
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, infraService, getMessageSource());
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}
@@ -95,6 +94,10 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		this.tiersGeneralManager = tiersGeneralManager;
 	}
 
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
 	/**
 	 * @return the messageSource
 	 */
@@ -105,7 +108,5 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
-
 	}
-
 }

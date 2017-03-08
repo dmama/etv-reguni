@@ -32,6 +32,7 @@
 		<property name="ticketService" ref="ticketService"/>
 		<property name="sourcesQuittancementAvecLiberationPossible" ref="sourcesQuittancementAvecLiberationPossible"/>
 		<property name="liberationSender" ref="evenementLiberationDeclarationImpotSender"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >
@@ -49,6 +50,7 @@
 		<property name="validationService" ref="validationService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<!-- Excercices commerciaux -->

@@ -675,7 +675,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 
 	private interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
-		Collection<E> getEntities(T declaration);
+		Collection<? extends HibernateEntity> getEntities(T declaration);
 
 		void addEntity(T declaration, E entity);
 
@@ -689,13 +689,13 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 			// on mémorise les clés des entités existantes
 			final Set<Object> keys;
-			final Collection<E> entities = accessor.getEntities(declaration);
+			final Collection<? extends HibernateEntity> entities = accessor.getEntities(declaration);
 			if (entities == null || entities.isEmpty()) {
 				keys = Collections.emptySet();
 			}
 			else {
 				keys = new HashSet<>(entities.size());
-				for (E d : entities) {
+				for (HibernateEntity d : entities) {
 					final Object key = d.getKey();
 					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
 					keys.add(key);
@@ -707,8 +707,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			declaration = (T) diDAO.save(declaration);
 
 			// rebelotte pour trouver la nouvelle entité
-			E newEntity = null;
-			for (E d : accessor.getEntities(declaration)) {
+			HibernateEntity newEntity = null;
+			for (HibernateEntity d : accessor.getEntities(declaration)) {
 				if (!keys.contains(d.getKey())) {
 					newEntity = d;
 					break;
@@ -716,8 +716,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			Assert.notNull(newEntity);
-			accessor.assertSame(entity, newEntity);
-			entity = newEntity;
+			accessor.assertSame(entity, (E) newEntity);
+			entity = (E) newEntity;
 		}
 		else {
 			accessor.addEntity(declaration, entity);
@@ -750,6 +750,31 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai) {
 		return addAndSave(declaration, delai, DELAI_DECLARATION_ACCESSOR);
+	}
+
+	private static final class EtatDeclarationAccessor<E extends EtatDeclaration> implements EntityAccessor<DeclarationImpotOrdinaire, E> {
+		@Override
+		public Collection<EtatDeclaration> getEntities(DeclarationImpotOrdinaire declaration) {
+			return declaration.getEtats();
+		}
+
+		@Override
+		public void addEntity(DeclarationImpotOrdinaire declaration, E entity) {
+			declaration.addEtat(entity);
+		}
+
+		@Override
+		public void assertSame(E e1, E e2) {
+			Assert.isSame(e1.getClass(), e2.getClass());
+			Assert.isSame(e1.getDateDebut(), e2.getDateDebut());
+			Assert.isSame(e1.getDateObtention(), e2.getDateObtention());
+			Assert.isSame(e1.getEtat(), e2.getEtat());
+		}
+	}
+
+	@Override
+	public <T extends EtatDeclaration> T addAndSave(DeclarationImpotOrdinaire declaration, T etat) {
+		return addAndSave(declaration, etat, new EtatDeclarationAccessor<>());
 	}
 
 	@Override

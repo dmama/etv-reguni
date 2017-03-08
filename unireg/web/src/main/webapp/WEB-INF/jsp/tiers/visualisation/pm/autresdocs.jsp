@@ -19,10 +19,15 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
 				<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
-				<c:if test="${docFiscal.avecCopieConformeEnvoi}">
-					&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
-					<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
-				</c:if>
+				<c:choose>
+					<c:when test="${docFiscal.urlVisualisationExterneDocument != null}">
+						&nbsp;<a href="#" class="pdf" title="Visualisation du courrier" onclick="VisuExterneDoc.openWindow('${docFiscal.urlVisualisationExterneDocument}');">&nbsp;</a>
+					</c:when>
+					<c:when test="${docFiscal.avecCopieConformeEnvoi}">
+						&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
+						<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
+					</c:when>
+				</c:choose>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiRetour">
 				<unireg:regdate regdate="${docFiscal.delaiRetour}"/>
@@ -32,10 +37,15 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.etat.avancement" >
 				<fmt:message key="option.etat.avancement.${docFiscal.etat}" />
-				<c:if test="${docFiscal.avecCopieConformeRappel}">
-					&nbsp;<a href="../autresdocs/copie-conforme-rappel.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-rappel-${docFiscal.id}" title="Rappel envoyé" onclick="Link.tempSwap(this, '#disabled-print-rappel-${docFiscal.id}');">&nbsp;</a>
-					<span class="pdf-grayed" id="disabled-print-rappel-${docFiscal.id}" style="display: none;">&nbsp;</span>
-				</c:if>
+				<c:choose>
+					<c:when test="${docFiscal.urlVisualisationExterneRappel != null}">
+						&nbsp;<a href="#" class="pdf" title="Visualisation du courrier de rappel" onclick="VisuExterneDoc.openWindow('${docFiscal.urlVisualisationExterneRappel}');">&nbsp;</a>
+					</c:when>
+					<c:when test="${docFiscal.avecCopieConformeRappel}">
+						&nbsp;<a href="../autresdocs/copie-conforme-rappel.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-rappel-${docFiscal.id}" title="Rappel envoyé" onclick="Link.tempSwap(this, '#disabled-print-rappel-${docFiscal.id}');">&nbsp;</a>
+						<span class="pdf-grayed" id="disabled-print-rappel-${docFiscal.id}" style="display: none;">&nbsp;</span>
+					</c:when>
+				</c:choose>
 			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
@@ -69,10 +79,15 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
 				<unireg:regdate regdate="${docFiscal.dateEnvoi}"/>
-				<c:if test="${docFiscal.avecCopieConformeEnvoi}">
-					&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
-					<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
-				</c:if>
+				<c:choose>
+					<c:when test="${docFiscal.urlVisualisationExterneDocument != null}">
+						&nbsp;<a href="#" class="pdf" title="Visualisation du courrier" onclick="VisuExterneDoc.openWindow('${docFiscal.urlVisualisationExterneDocument}');">&nbsp;</a>
+					</c:when>
+					<c:when test="${docFiscal.avecCopieConformeEnvoi}">
+						&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${docFiscal.id}&url_memorize=false" class="pdf" id="print-envoi-${docFiscal.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${docFiscal.id}');">&nbsp;</a>
+						<span class="pdf-grayed" id="disabled-print-envoi-${docFiscal.id}" style="display: none;">&nbsp;</span>
+					</c:when>
+				</c:choose>
 			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>

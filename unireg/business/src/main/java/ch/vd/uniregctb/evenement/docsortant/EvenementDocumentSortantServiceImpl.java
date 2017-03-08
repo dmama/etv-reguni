@@ -81,7 +81,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.AUTORISATION_RADIATION_RC,
 		                       autorisation.getEntreprise(),
 		                       local,
-		                       autorisation.getDateEnvoi().year(),        // année de l'envoi du courrier
+		                       autorisation.getPeriodeFiscale(),
 		                       null,
 		                       String.valueOf(autorisation.getId()),
 		                       infoArchivage);
@@ -93,7 +93,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.LETTRE_TYPE_INFO_LIQUIDATION,
 		                       lettre.getEntreprise(),
 		                       local,
-		                       lettre.getDateEnvoi().year(),        // année de l'envoi du courrier
+		                       lettre.getPeriodeFiscale(),
 		                       null,
 		                       String.valueOf(lettre.getId()),
 		                       infoArchivage);
@@ -241,7 +241,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TYPE_LETTRE_BIENVENUE_SORTANTE.get(lettre.getType()),
 		                       lettre.getEntreprise(),
 		                       local,
-		                       lettre.getDateEnvoi().year(),        // date de l'envoi du courrier
+		                       lettre.getPeriodeFiscale(),
 		                       null,
 		                       String.valueOf(lettre.getId()),
 		                       infoArchivage);
@@ -253,7 +253,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       TypeDocumentSortant.RAPPEL_LETTRE_BIENVENUE,
 		                       lettre.getEntreprise(),
 		                       local,
-		                       lettre.getDateEnvoi().year(),        // date de l'envoi du courrier
+		                       lettre.getPeriodeFiscale(),
 		                       null,
 		                       String.valueOf(lettre.getId()),
 		                       infoArchivage);

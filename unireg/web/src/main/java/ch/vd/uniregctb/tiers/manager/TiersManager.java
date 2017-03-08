@@ -679,7 +679,7 @@ public class TiersManager implements MessageSourceAware {
 		if (qsnc != null && !qsnc.isEmpty()) {
 			final List<QuestionnaireSNCView> views = new ArrayList<>(qsnc.size());
 			for (QuestionnaireSNC q : qsnc) {
-				views.add(new QuestionnaireSNCView(q, messageSource));
+				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService, messageSource));
 			}
 			Collections.sort(views, new Comparator<QuestionnaireSNCView>() {
 				@Override
@@ -702,7 +702,7 @@ public class TiersManager implements MessageSourceAware {
 					continue;
 				}
 
-				final AutreDocumentFiscalView view = AutreDocumentFiscalViewFactory.buildView(document, messageSource);
+				final AutreDocumentFiscalView view = AutreDocumentFiscalViewFactory.buildView(document, serviceInfrastructureService, messageSource);
 				if (document instanceof AutreDocumentFiscalAvecSuivi) {
 					avecSuiviViews.add(view);
 				}

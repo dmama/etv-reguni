@@ -12,6 +12,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
@@ -322,6 +323,15 @@ public interface DeclarationImpotService {
 	 * @return
 	 */
 	DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai);
+
+	/**
+	 * Ajoute un état à une déclaration et renvoie l'état enregistré avec son ID renseigné
+	 * @param declaration la déclaration
+	 * @param etat le nouvel état
+	 * @param <T> le type du nouvel état
+	 * @return l'état sauvegardé
+	 */
+	<T extends EtatDeclaration> T addAndSave(DeclarationImpotOrdinaire declaration, T etat);
 
 	/**
 	 * Modifie les données en base pour tenir compte des codes 'segment' fournis pas TAO

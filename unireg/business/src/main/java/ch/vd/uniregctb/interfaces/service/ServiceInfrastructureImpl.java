@@ -772,6 +772,11 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, String cleDocument) {
+		return rawService.getUrlVisualisationDocument(tiersId, pf, AuthenticationHelper.getCurrentOID(), cleDocument);
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) {
 		return rawService.getLogiciel(idLogiciel);
 	}

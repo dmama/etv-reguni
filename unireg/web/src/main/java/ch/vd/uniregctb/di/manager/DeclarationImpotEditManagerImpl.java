@@ -58,6 +58,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -117,6 +118,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private ParametreAppService parametres;
 	private BamMessageSender bamMessageSender;
 	private PeriodeImpositionService periodeImpositionService;
+	private HibernateTemplate hibernateTemplate;
 
 	/**
 	 * Interface pour l'implémentation spécifique à l'impression d'une DI PP ou PM
@@ -666,11 +668,11 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final Integer emolument = summoner.getMontantEmolument(di);
 		final RegDate today = RegDate.get();
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(today, today, emolument);
-		di.addEtat(etat);
+		final EtatDeclarationSommee saved = diService.addAndSave(di, etat);
 
 		try {
 			final EditiqueResultat resultat = summoner.imprimeSommation(di, today, emolument);
-			evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(di, etat.getDateObtention());
+			evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(di, saved.getDateObtention());
 			return resultat;
 		}
 		catch (JMSException e) {
@@ -821,6 +823,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	/**

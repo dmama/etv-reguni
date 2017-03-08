@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -18,14 +21,16 @@ public class AutreDocumentFiscalView implements Annulable {
 	private final String libelleSousType;
 	private final boolean annule;
 	private final boolean avecCopieConformeEnvoi;
+	private final String urlVisualisationExterneDocument;
 
-	public AutreDocumentFiscalView(AutreDocumentFiscal doc, MessageSource messageSource, String typeKey, String subtypeKey) {
+	public AutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource, String typeKey, String subtypeKey) {
 		this(doc,
+		     infraService,
 		     typeKey != null ? messageSource.getMessage(typeKey, null, WebContextUtils.getDefaultLocale()) : StringUtils.EMPTY,
 		     subtypeKey != null ? messageSource.getMessage(subtypeKey, null, WebContextUtils.getDefaultLocale()) : StringUtils.EMPTY);
 	}
 
-	public AutreDocumentFiscalView(AutreDocumentFiscal doc, String libelleType, String libelleSousType) {
+	public AutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, String libelleType, String libelleSousType) {
 		this.id = doc.getId();
 		this.tiersId = doc.getEntreprise().getNumero();
 		this.etat = doc.getEtat();
@@ -33,7 +38,11 @@ public class AutreDocumentFiscalView implements Annulable {
 		this.libelleTypeDocument = libelleType;
 		this.libelleSousType = libelleSousType;
 		this.annule = doc.isAnnule();
-		this.avecCopieConformeEnvoi = StringUtils.isNoneBlank(doc.getCleArchivage());
+		this.avecCopieConformeEnvoi = StringUtils.isNotBlank(doc.getCleArchivage()) || StringUtils.isNotBlank(doc.getCleDocument());
+		this.urlVisualisationExterneDocument = Optional.ofNullable(doc.getCleDocument())
+				.filter(StringUtils::isNotBlank)
+				.map(cle -> infraService.getUrlVisualisationDocument(tiersId, doc.getPeriodeFiscale(), cle))
+				.orElse(null);
 	}
 
 	public long getId() {
@@ -67,5 +76,9 @@ public class AutreDocumentFiscalView implements Annulable {
 
 	public boolean isAvecCopieConformeEnvoi() {
 		return avecCopieConformeEnvoi;
+	}
+
+	public String getUrlVisualisationExterneDocument() {
+		return urlVisualisationExterneDocument;
 	}
 }

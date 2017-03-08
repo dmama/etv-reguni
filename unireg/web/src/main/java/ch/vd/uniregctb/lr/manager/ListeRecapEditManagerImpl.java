@@ -39,6 +39,7 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.lr.view.ListeRecapListView;
@@ -69,25 +70,17 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapEditManagerImpl.class);
 
 	private ListeRecapitulativeDAO lrDAO;
-
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
-
 	private ListeRecapService lrService;
-
 	private TiersDAO tiersDAO;
-
 	private TiersGeneralManager tiersGeneralManager;
-
 	private TiersService tiersService;
-
 	private EvenementFiscalService evenementFiscalService;
-
 	private MessageSource messageSource;
-
 	private EditiqueCompositionService editiqueCompositionService;
-
 	private DelaisService delaisService;
 	private SecurityProviderInterface securityProvider;
+	private ServiceInfrastructureService infraService;
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
@@ -135,6 +128,10 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	/**
@@ -532,7 +529,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private void setDelais(ListeRecapDetailView lrEditView, DeclarationImpotSource lr) {
 		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, getMessageSource());
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, infraService, getMessageSource());
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}

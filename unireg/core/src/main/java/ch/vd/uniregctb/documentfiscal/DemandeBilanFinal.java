@@ -12,15 +12,16 @@ import ch.vd.registre.base.date.RegDate;
 @DiscriminatorValue(value = "DemandeBilanFinal")
 public class DemandeBilanFinal extends AutreDocumentFiscal {
 
-	private int periodeFiscale;
+	private Integer periodeFiscale;
 	private RegDate dateRequisitionRadiation;
 
+	@Override
 	@Column(name = "DBF_PERIODE_FISCALE")
-	public int getPeriodeFiscale() {
+	public Integer getPeriodeFiscale() {
 		return periodeFiscale;
 	}
 
-	public void setPeriodeFiscale(int periodeFiscale) {
+	public void setPeriodeFiscale(Integer periodeFiscale) {
 		this.periodeFiscale = periodeFiscale;
 	}
 

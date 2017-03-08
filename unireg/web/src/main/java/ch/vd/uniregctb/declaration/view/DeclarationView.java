@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class DeclarationView implements Annulable {
@@ -30,7 +31,7 @@ public class DeclarationView implements Annulable {
 	private final RegDate dateRetour;
 	private final String sourceRetour;
 
-	public DeclarationView(Declaration declaration, MessageSource messageSource) {
+	public DeclarationView(Declaration declaration, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		this.id = declaration.getId();
 		this.tiersId = declaration.getTiers().getNumero();
 		this.periodeFiscale = declaration.getPeriode().getAnnee();
@@ -47,26 +48,26 @@ public class DeclarationView implements Annulable {
 			this.sourceRetour = null;
 		}
 
-		this.etats = initEtats(declaration.getEtats(), messageSource);
-		this.delais = initDelais(declaration.getDelais(), declaration.getPremierDelai(), messageSource);
+		this.etats = initEtats(declaration.getEtats(), infraService, messageSource);
+		this.delais = initDelais(declaration.getDelais(), declaration.getPremierDelai(), infraService, messageSource);
 
 		this.delaiAccorde = declaration.getDelaiAccordeAu();
 		this.dateRetour = declaration.getDateRetour();
 	}
 
-	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, MessageSource messageSource) {
+	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<EtatDeclarationView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDeclarationView(etat, messageSource));
+			list.add(new EtatDeclarationView(etat, infraService, messageSource));
 		}
 		Collections.sort(list);
 		return list;
 	}
 
-	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai, MessageSource messageSource) {
+	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<DelaiDeclarationView> list = new ArrayList<>();
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, messageSource);
+			final DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, infraService, messageSource);
 			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
 			list.add(delaiView);
 		}
