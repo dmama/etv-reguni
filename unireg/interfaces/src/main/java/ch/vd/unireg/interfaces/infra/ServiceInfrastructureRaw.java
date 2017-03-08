@@ -246,6 +246,16 @@ public interface ServiceInfrastructureRaw {
 	String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid);
 
 	/**
+	 * Construit et retourne l'URL vers la page de visualisation d'un Document dans RepElec
+	 * @param tiersId identifiant du tiers
+	 * @param pf période fiscale du document
+	 * @param oid office d'impôt de l'utilisateur
+	 * @param cleDocument clé du document dans RelElec
+	 * @return une chaîne de caractères qui contient l'URL demandée
+	 */
+	String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument);
+
+	/**
 	 * Retourne un logiciel déterminé par son id.
 	 *
 	 * @param id l'id d'un logiciel

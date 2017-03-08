@@ -467,6 +467,11 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		return null;
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		return null;
 	}

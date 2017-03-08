@@ -11,15 +11,17 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 @Entity
 @DiscriminatorValue("SOMMEE")
-public class EtatDeclarationSommee extends EtatDeclaration {
+public class EtatDeclarationSommee extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
 
 	private RegDate dateEnvoiCourrier;
 	private Integer emolument;
+	private String cleDocument;
 
 	public EtatDeclarationSommee() {
 		super();
@@ -55,6 +57,17 @@ public class EtatDeclarationSommee extends EtatDeclaration {
 
 	public void setEmolument(Integer emolument) {
 		this.emolument = emolument;
+	}
+
+	@Override
+	@Column(name = "CLE_DOCUMENT", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	public String getCleDocument() {
+		return cleDocument;
+	}
+
+	@Override
+	public void setCleDocument(String cleDocument) {
+		this.cleDocument = cleDocument;
 	}
 
 	@Override

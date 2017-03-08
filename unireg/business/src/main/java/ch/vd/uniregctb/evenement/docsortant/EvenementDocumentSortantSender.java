@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.evenement.docsortant;
 
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 
 /**
@@ -12,7 +16,9 @@ public interface EvenementDocumentSortantSender {
 	 *
 	 * @param businessId businessId du message ESB
 	 * @param docs les documents à envoyer
+	 * @param reponseAttendue <code>true</code> si on doit demander une réponse (avec l'ID d'indexation)
+	 * @param additionalHeaders (optional) map des headers à ajouter à l'événement en sortie
 	 * @throws EvenementDocumentSortantException en cas de souci
 	 */
-	void sendEvenementDocumentSortant(String businessId, Documents docs) throws EvenementDocumentSortantException;
+	void sendEvenementDocumentSortant(String businessId, Documents docs, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders) throws EvenementDocumentSortantException;
 }

@@ -35,6 +35,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 	private RegDate delaiAccordeAu;
 	private EtatDelaiDeclaration etat;
 	private String cleArchivageCourrier;
+	private String cleDocument;
 	private Declaration declaration;
 	private boolean sursis;
 
@@ -101,6 +102,15 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 
 	public void setCleArchivageCourrier(String cleArchivageCourrier) {
 		this.cleArchivageCourrier = cleArchivageCourrier;
+	}
+
+	@Column(name = "CLE_DOCUMENT", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	public String getCleDocument() {
+		return cleDocument;
+	}
+
+	public void setCleDocument(String cleDocument) {
+		this.cleDocument = cleDocument;
 	}
 
 	@Column(name = "SURSIS", nullable = false)

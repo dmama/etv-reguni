@@ -8,6 +8,31 @@
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="enabled" value="${extprop.jms.queue.notification.document.sortant.enabled}"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.notification.document.sortant}"/>
+		<property name="queueRetour" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
+	</bean>
+
+	<bean id="retourDocumentSortantListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="retourDocumentSortantEsbHandler"/>
+	</bean>
+
+	<bean id="retourDocumentSortantEsbHandler" class="ch.vd.uniregctb.evenement.docsortant.RetourDocumentSortantEsbHandler">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+
+	<bean id="retourDocumentSortantEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="retourDocumentSortantListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.notification.document.sortant.reponse.enabled}" />
+		<property name="description" value="Réponses aux annonces des documents sortants (avec identifiant d'indexation DPerm)"/>
 	</bean>
 
 </beans>

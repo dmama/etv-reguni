@@ -33,6 +33,10 @@ public final class MethodCallDescriptor {
 		this(methodName, buildArray(parameterName1, parameterName2, parameterName3), buildArray(parameterValue1, parameterValue2, parameterValue3));
 	}
 
+	public MethodCallDescriptor(String methodName, String parameterName1, Object parameterValue1, String parameterName2, Object parameterValue2, String parameterName3, Object parameterValue3, String parameterName4, Object parameterValue4) {
+		this(methodName, buildArray(parameterName1, parameterName2, parameterName3, parameterName4), buildArray(parameterValue1, parameterValue2, parameterValue3, parameterValue4));
+	}
+
 	public MethodCallDescriptor(String methodName, String[] parameterNames, Object[] parameterValues) {
 		if (parameterNames != null || parameterValues != null) {
 			final int nameSize = parameterNames != null ? parameterNames.length : 0;

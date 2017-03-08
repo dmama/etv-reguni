@@ -313,6 +313,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		loadMeter.start(new MethodCallDescriptor("getUrlVisualisationDocument", "tiersId", tiersId, "pf", pf, "oid", oid, "cleDocument", cleDocument));
+		try {
+			return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long id) {
 		loadMeter.start(new MethodCallDescriptor("getLogiciel", "id", id));
 		try {

@@ -332,6 +332,11 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		throw new NotImplementedException("La méthode 'getUrlVisualisationDocument' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getLogiciel' ne doit pas être appelée sur le service host-interfaces.");
 	}

@@ -1472,6 +1472,12 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return target.getUrlVers(application, tiersId, oid);
 	}
 
+	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		// on ne cache pas cette information parce que l'url est composée d'une partie statique auquelle est appondue le numéro d'id, et que le service concret fait ça de manière très efficace.
+		return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+	}
+
 	private static class KeyGetLogiciel {
 
 		private final Long id;

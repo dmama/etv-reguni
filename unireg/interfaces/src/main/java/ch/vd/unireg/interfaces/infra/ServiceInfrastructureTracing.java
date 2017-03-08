@@ -504,6 +504,22 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getUrlVisualisationDocument", () -> String.format("tiersId=%d, pf=%d, oid=%d, cleDocument='%s'", tiersId, pf, oid, cleDocument));
+		}
+	}
+
+	@Override
 	public Logiciel getLogiciel(final Long idLogiciel) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();

@@ -107,7 +107,9 @@
 				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
 				<value>classpath:eVD-0022-3-2.xsd</value><!-- RCEnt entités -->
 				<value>classpath:eVD-0024-3-2.xsd</value><!-- RCEnt interface asynchrone -->
+				<value>classpath:event/docsortant/typeSimpleDPerm-1.xsd</value>
 				<value>classpath:event/docsortant/documentSortantRepElec-1.xsd</value>
+				<value>classpath:event/docsortant/quittanceRepElec-3.xsd</value>
 			</list>
 		</property>
 	</bean>

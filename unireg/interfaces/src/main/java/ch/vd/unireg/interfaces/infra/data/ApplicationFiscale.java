@@ -11,6 +11,7 @@ public enum ApplicationFiscale {
 	TAO_PM("label.TAOPM"),
 	SIPF("label.SIPF"),
 	DPERM("label.DPERM"),
+	DPERM_DOCUMENT("label.DPERM"),
 	CAPITASTRA("label.CAPITASTRA");
 
 	private String messageKey;

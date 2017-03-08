@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -505,8 +508,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
-	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+	private String getUrlApplication(ApplicationFiscale application) {
 		if (urlsApplication == null) {
 			urlsStats.addMiss();
 			initUrls();
@@ -517,7 +519,12 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		if (urlsApplication == null) {
 			return null;
 		}
-		final String url = urlsApplication.get(application);
+		return urlsApplication.get(application);
+	}
+
+	@Override
+	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+		final String url = getUrlApplication(application);
 		return resolve(url, tiersId, oid);
 	}
 
@@ -527,7 +534,52 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		}
 		Assert.notNull(numero);
 		Assert.notNull(oid);
-		return url.replaceAll("\\{NOCTB\\}", numero.toString()).replaceAll("\\{OID\\}", oid.toString());
+
+		final Map<String, String> replacements = new HashMap<>(2);
+		replacements.put("NOCTB", numero.toString());
+		replacements.put("OID", oid.toString());
+
+		return resolve(url, replacements);
+	}
+
+	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		final String url = getUrlApplication(ApplicationFiscale.DPERM_DOCUMENT);
+		Assert.notNull(tiersId);
+		Assert.notNull(oid);
+		Assert.notNull(cleDocument);
+
+		final Map<String, String> replacements = new HashMap<>(6);
+		replacements.put("NOCTB", tiersId.toString());
+		replacements.put("PFI", pf != null ? pf.toString() : null);
+		replacements.put("TOKEN", null);
+		replacements.put("CONTEXT", "DOC_UNIREG_PILOTE");
+		replacements.put("OID", oid.toString());
+		replacements.put("ID", cleDocument);
+
+		return resolve(url, replacements);
+	}
+
+	private static String resolve(String url, Map<String, String> replacements) {
+		if (url == null) {
+			return null;
+		}
+
+		final Pattern pattern = Pattern.compile("\\{([A-Z_]+)\\}");
+		final Matcher matcher = pattern.matcher(url);
+
+		final StringBuilder b = new StringBuilder();
+		int start = 0;
+		while (matcher.find()) {
+			final String varName = matcher.group(1);
+			final String replacement = replacements.getOrDefault(varName, StringUtils.EMPTY);
+			b.append(url.substring(start, matcher.start()));
+			b.append(replacement);
+			start = matcher.end();
+		}
+
+		b.append(url.substring(start, url.length()));
+		return b.toString();
 	}
 
 	/**
@@ -552,6 +604,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					final String patternTaoPM = getUrl("TAOPM", "synthese");
 					final String patternSipf = getUrl("SIPF", "explorer");
 					final String patternDPerm = getUrl("REPELEC", "contribuable");
+					final String patternDPermDoc = getUrl("REPELEC", "dossierDoc");
 					final String patternCapitastra = getUrl("CAPITASTRA", "immeuble");
 
 					final Map<ApplicationFiscale, String> map = new EnumMap<>(ApplicationFiscale.class);
@@ -562,22 +615,18 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 					map.put(ApplicationFiscale.TAO_PM, patternTaoPM);
 					map.put(ApplicationFiscale.SIPF, patternSipf); // [UNIREG-2409]
 					map.put(ApplicationFiscale.DPERM, patternDPerm);
+					map.put(ApplicationFiscale.DPERM_DOCUMENT, patternDPermDoc);
 					map.put(ApplicationFiscale.CAPITASTRA, patternCapitastra);
-					LOGGER.info("URLs externes (FiDoR) :\n" +
-							" * TAOPP = " + patternTaoPP + '\n' +
-							" * TAOBA = " + patternTaoBA + '\n' +
-							" * TAOIS = " + patternTaoIS + '\n' +
-							" * TAOIS = " + patternTaoISDebiteur + '\n' +
-							" * TAOPM = " + patternTaoPM + '\n' +
-							" * SIPF = " + patternSipf + '\n' +
-							" * DPERM = " + patternDPerm + '\n' +
-							" * CAPITASTRA = " + patternCapitastra);
+
+					LOGGER.info(map.entrySet().stream()
+							.map(entry -> String.format(" * %s = %s", entry.getKey(), entry.getValue()))
+							.collect(Collectors.joining("\n", "URLs externes (FiDoR) :\n", StringUtils.EMPTY)));
 
 					urlsApplication = map;
 				}
 			}
 			catch (Exception e) {
-				LOGGER.error("Impossible de contacter FiDoR : allez lui donner un coup de pied !");
+				LOGGER.error("Impossible de contacter FiDoR : allez lui donner un coup de pied !", e);
 				lastTentative = now;
 			}
 		}

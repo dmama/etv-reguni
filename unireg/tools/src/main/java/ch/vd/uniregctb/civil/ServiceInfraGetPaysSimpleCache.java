@@ -467,6 +467,11 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long id) {
 		return target.getLogiciel(id);
 	}

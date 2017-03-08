@@ -63,6 +63,7 @@
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourQuittanceAnnonceDocumentSortant" value-ref="retourDocumentSortantEndpointManager"/>
 			</map>
 		</property>
 	</bean>
@@ -172,6 +173,7 @@
 				<entry key="RapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsListener"/>
 				<entry key="EvenementsImportRf" value-ref="evtRFImportEventListener"/>
 				<entry key="EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
+				<entry key="RetourQuittancementAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>
 			</map>
 		</property>
 	</bean>

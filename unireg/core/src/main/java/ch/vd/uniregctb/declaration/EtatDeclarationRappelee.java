@@ -9,13 +9,15 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 @Entity
 @DiscriminatorValue("RAPPELEE")
-public class EtatDeclarationRappelee extends EtatDeclaration {
+public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
 
 	private RegDate dateEnvoiCourrier;
+	private String cleDocument;
 
 	public EtatDeclarationRappelee() {
 		super();
@@ -40,6 +42,17 @@ public class EtatDeclarationRappelee extends EtatDeclaration {
 
 	public void setDateEnvoiCourrier(RegDate dateEnvoiCourrier) {
 		this.dateEnvoiCourrier = dateEnvoiCourrier;
+	}
+
+	@Override
+	@Column(name = "CLE_DOCUMENT", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	public String getCleDocument() {
+		return cleDocument;
+	}
+
+	@Override
+	public void setCleDocument(String cleDocument) {
+		this.cleDocument = cleDocument;
 	}
 
 	@Override

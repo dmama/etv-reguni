@@ -4,7 +4,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,6 +19,7 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.ObjectFactory;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.utils.LogLevel;
 
@@ -28,6 +31,7 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
 	private String serviceDestination;
+	private String queueRetour;
 	private boolean enabled;
 
 	private JAXBContext jaxbContext;
@@ -48,6 +52,10 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 		this.serviceDestination = serviceDestination;
 	}
 
+	public void setQueueRetour(String queueRetour) {
+		this.queueRetour = queueRetour;
+	}
+
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
@@ -58,7 +66,7 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 	}
 
 	@Override
-	public void sendEvenementDocumentSortant(String businessId, Documents events) throws EvenementDocumentSortantException {
+	public void sendEvenementDocumentSortant(String businessId, Documents events, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders) throws EvenementDocumentSortantException {
 
 		if (!enabled) {
 			LOGGER.info(String.format("Evénements de notification des documents sortants désactivés : l'événement '%s' n'est pas envoyé.", businessId));
@@ -82,6 +90,16 @@ public class EvenementDocumentSortantSenderImpl implements EvenementDocumentSort
 			m.setServiceDestination(serviceDestination);
 			m.setContext("documentSortant");
 			m.setBody(doc);
+
+			// si on attend une réponse, il faut le dire et indiquer où on l'attend
+			if (reponseAttendue) {
+				m.setServiceReplyTo(queueRetour);
+			}
+
+			// et ajout des informations de headers demandeés
+			if (additionalHeaders != null && !additionalHeaders.isEmpty()) {
+				EsbMessageHelper.setHeaders(m, additionalHeaders, true);
+			}
 
 			if (outputQueue != null) {
 				m.setServiceDestination(outputQueue); // for testing only

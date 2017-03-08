@@ -167,6 +167,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		return fidorService.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		return fidorService.getLogiciel(idLogiciel);
 	}

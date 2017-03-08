@@ -135,6 +135,7 @@ public abstract class LengthConstants {
 	public static final int DELAI_DECL_ETAT = 10;
 
 	public static final int CLE_ARCHIVAGE_FOLDERS = 40;
+	public static final int CLE_DOCUMENT_DPERM = 256;
 
 	public static final int ETB_ENSEIGNE = 250;
 	public static final int ETB_RAISON_SOCIALE = 250;

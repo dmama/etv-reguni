@@ -17,6 +17,7 @@ public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 	private RegDate dateRetour;
 	private RegDate dateRappel;
 	private String cleArchivageRappel;
+	private String cleDocumentRappel;
 
 	@Column(name = "DELAI_RETOUR")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
@@ -55,6 +56,15 @@ public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
 	public void setCleArchivageRappel(String cleArchivageRappel) {
 		this.cleArchivageRappel = cleArchivageRappel;
+	}
+
+	@Column(name = "CLE_DOCUMENT_RAPPEL", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	public String getCleDocumentRappel() {
+		return cleDocumentRappel;
+	}
+
+	public void setCleDocumentRappel(String cleDocumentRappel) {
+		this.cleDocumentRappel = cleDocumentRappel;
 	}
 
 	@Transient

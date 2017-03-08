@@ -54,6 +54,7 @@
 				<entry key="evenementOrganisation" value-ref="evtOrganisationEndpointManager"/>
 				<entry key="rapportAnnonceIDE" value-ref="evenementRapportAnnonceIDEJmsEndpointManager"/>
 				<entry key="evenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFEndpointManager"/>
+				<entry key="retourQuittancementAnnonceDocumentSortant" value-ref="retourDocumentSortantEndpointManager"/>
 			</util:map>
 		</property>
 	</bean>

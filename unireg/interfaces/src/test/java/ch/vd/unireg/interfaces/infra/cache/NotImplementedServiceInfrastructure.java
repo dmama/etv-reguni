@@ -154,6 +154,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long id) {
 		throw new NotImplementedException();
 	}

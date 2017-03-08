@@ -181,6 +181,11 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 	}
 
 	@Override
+	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+		return getClient().getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+	}
+
+	@Override
 	public Logiciel getLogiciel(Long idLogiciel) throws ServiceInfrastructureException {
 		return getClient().getLogiciel(idLogiciel);
 	}

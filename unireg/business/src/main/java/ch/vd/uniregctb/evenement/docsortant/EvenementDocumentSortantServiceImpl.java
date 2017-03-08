@@ -3,8 +3,11 @@ package ch.vd.uniregctb.evenement.docsortant;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import noNamespace.InfoArchivageDocument;
 import org.apache.commons.lang3.StringUtils;
@@ -20,11 +23,18 @@ import ch.vd.unireg.xml.event.docsortant.v1.Document;
 import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.DonneesMetier;
 import ch.vd.unireg.xml.event.docsortant.v1.Population;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationAvecDocumentArchive;
+import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
@@ -36,6 +46,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
@@ -60,6 +71,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       bilanFinal.getPeriodeFiscale(),
 		                       null,
+		                       String.valueOf(bilanFinal.getId()),
 		                       infoArchivage);
 	}
 
@@ -71,6 +83,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       autorisation.getDateEnvoi().year(),        // année de l'envoi du courrier
 		                       null,
+		                       String.valueOf(autorisation.getId()),
 		                       infoArchivage);
 	}
 
@@ -82,6 +95,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       lettre.getDateEnvoi().year(),        // année de l'envoi du courrier
 		                       null,
+		                       String.valueOf(lettre.getId()),
 		                       infoArchivage);
 	}
 
@@ -93,8 +107,36 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       questionnaire.getPeriode().getAnnee(),
 		                       questionnaire.getNumero(),
+		                       null,
 		                       infoArchivage);
 
+	}
+
+	@Nullable
+	private static <T extends EtatDeclaration & EtatDeclarationAvecDocumentArchive> String getIdEtatDeclaration(Declaration declaration, Class<T> clazz) {
+		return declaration.getEtats().stream()
+				.sorted(Comparator.comparing(EtatDeclaration::getId).reversed())
+				.filter(etat -> clazz.isAssignableFrom(etat.getClass()))
+				.map(etat -> (T) etat)
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(etat -> etat.getCleDocument() == null)
+				.mapToLong(EtatDeclaration::getId)
+				.mapToObj(String::valueOf)
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Nullable
+	private static String getIdDelaiDeclaration(Declaration declaration, Predicate<? super DelaiDeclaration> predicate) {
+		return declaration.getDelais().stream()
+				.sorted(Comparator.comparing(DelaiDeclaration::getId).reversed())
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(predicate)
+				.filter(delai -> delai.getCleDocument() == null)
+				.mapToLong(DelaiDeclaration::getId)
+				.mapToObj(String::valueOf)
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -105,6 +147,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       questionnaire.getPeriode().getAnnee(),
 		                       questionnaire.getNumero(),
+		                       getIdEtatDeclaration(questionnaire, EtatDeclarationRappelee.class),
 		                       infoArchivage);
 	}
 
@@ -128,6 +171,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       null,
 		                       infoArchivage);
 	}
 
@@ -139,6 +183,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDeclaration.ACCORDE && !delai.isSursis()),
 		                       infoArchivage);
 
 	}
@@ -151,6 +196,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDeclaration.REFUSE),
 		                       infoArchivage);
 	}
 
@@ -162,6 +208,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDeclaration.ACCORDE && delai.isSursis()),
 		                       infoArchivage);
 	}
 
@@ -173,6 +220,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       getIdEtatDeclaration(di, EtatDeclarationSommee.class),
 		                       infoArchivage);
 	}
 
@@ -195,6 +243,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       lettre.getDateEnvoi().year(),        // date de l'envoi du courrier
 		                       null,
+		                       String.valueOf(lettre.getId()),
 		                       infoArchivage);
 	}
 
@@ -206,6 +255,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       lettre.getDateEnvoi().year(),        // date de l'envoi du courrier
 		                       null,
+		                       String.valueOf(lettre.getId()),
 		                       infoArchivage);
 	}
 
@@ -230,6 +280,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       null,
 		                       infoArchivage);
 	}
 
@@ -241,6 +292,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       infoDocument.getAnnee(),
 		                       infoDocument.getIdDocument(),
+		                       null,
 		                       infoArchivage);
 	}
 
@@ -252,6 +304,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       getIdEtatDeclaration(di, EtatDeclarationSommee.class),
 		                       infoArchivage);
 	}
 
@@ -267,6 +320,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       lr.getPeriode().getAnnee(),
 		                       extractPseudoNumeroSequenceListeImpotSource(lr),
+		                       null,
 		                       infoArchivage);
 	}
 
@@ -278,6 +332,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       lr.getPeriode().getAnnee(),
 		                       extractPseudoNumeroSequenceListeImpotSource(lr),
+		                       getIdEtatDeclaration(lr, EtatDeclarationSommee.class),
 		                       infoArchivage);
 	}
 
@@ -289,6 +344,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
+		                       getIdDelaiDeclaration(di, delai -> true),
 		                       infoArchivage);
 	}
 
@@ -309,6 +365,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       null,
 		                       null,
+		                       null,            // TODO à faire
 		                       infoArchivage);
 	}
 
@@ -321,6 +378,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       dd.getPeriodeFiscale(),
 		                       null,
+		                       String.valueOf(dd.getId()),
 		                       infoArchivage);
 	}
 
@@ -333,6 +391,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       dd.getPeriodeFiscale(),
 		                       null,
+		                       String.valueOf(dd.getId()),
 		                       infoArchivage);
 	}
 
@@ -344,10 +403,11 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
 	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
 	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
 	 * @param infoArchivage informations d'archivage du document
 	 */
-	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, InfoArchivageDocument.InfoArchivage infoArchivage) {
-		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, infoArchivage);
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, InfoArchivageDocument.InfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, idEntityPourReponse, infoArchivage);
 	}
 
 	/**
@@ -359,13 +419,14 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
 	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
 	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
 	 * @param infoArchivage informations d'archivage du document
 	 */
-	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, InfoArchivageDocument.InfoArchivage infoArchivage) {
-		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, new Archives(infoArchivage.getIdDocument(),
-		                                                                                                                infoArchivage.getTypDocument(),
-		                                                                                                                infoArchivage.getNomDossier(),
-		                                                                                                                infoArchivage.getTypDossier()));
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, InfoArchivageDocument.InfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, idEntityPourReponse, new Archives(infoArchivage.getIdDocument(),
+		                                                                                                                                     infoArchivage.getTypDocument(),
+		                                                                                                                                     infoArchivage.getNomDossier(),
+		                                                                                                                                     infoArchivage.getTypDossier()));
 	}
 
 	/**
@@ -376,10 +437,11 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
 	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
 	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
 	 * @param infoArchivage informations d'archivage du document
 	 */
-	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, CTypeInfoArchivage infoArchivage) {
-		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, infoArchivage);
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, CTypeInfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, typeDocument.getNomDocument(), tiers, local, pf, noSequence, idEntityPourReponse, infoArchivage);
 	}
 
 	/**
@@ -391,13 +453,14 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
 	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
 	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
 	 * @param infoArchivage informations d'archivage du document
 	 */
-	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, CTypeInfoArchivage infoArchivage) {
-		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, new Archives(infoArchivage.getIdDocument(),
-		                                                                                                                infoArchivage.getTypDocument(),
-		                                                                                                                infoArchivage.getNomDossier(),
-		                                                                                                                infoArchivage.getTypDossier()));
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, String idEntityPourReponse, CTypeInfoArchivage infoArchivage) {
+		signaleDocumentSortant(prefixeBusinessId, typeDocument, nomDocument, tiers, local, pf, noSequence, idEntityPourReponse, new Archives(infoArchivage.getIdDocument(),
+		                                                                                                                                     infoArchivage.getTypDocument(),
+		                                                                                                                                     infoArchivage.getNomDossier(),
+		                                                                                                                                     infoArchivage.getTypDossier()));
 	}
 
 	/**
@@ -409,9 +472,12 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	 * @param local <code>true</code> s'il s'agit d'une impression locale, <code>false</code> sinon
 	 * @param pf période fiscale associée au document, ou <code>null</code> si document dit "pérenne"
 	 * @param noSequence éventuellement un numéro de séquence du document dans la PF
+	 * @param idEntityPourReponse identifiant de l'entité à passer dans le message sortant qui pourra être utilisé dans la réponse
 	 * @param infoArchivage informations d'archivage du document
 	 */
-	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument, Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence, Archives infoArchivage) {
+	private void signaleDocumentSortant(String prefixeBusinessId, TypeDocumentSortant typeDocument, String nomDocument,
+	                                    Tiers tiers, boolean local, @Nullable Integer pf, @Nullable Integer noSequence,
+	                                    String idEntityPourReponse, Archives infoArchivage) {
 
 		final String pfInfo = pf == null ? StringUtils.EMPTY : String.format(" %d", pf);
 		final String noSequenceInfo = noSequence == null ? StringUtils.EMPTY : String.format(" %d", noSequence);
@@ -433,10 +499,18 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                                            null));
 		document.setArchive(infoArchivage);
 
+		// constiturion d'une map d'entêtes additionnelles
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RetourDocumentSortantEsbHandler.TYPE_DOCUMENT_HEADER_NAME, typeDocument.name());
+		headers.put(RetourDocumentSortantEsbHandler.ID_ENTITE_DOCUMENT_ANNONCE_HEADER_NAME, idEntityPourReponse);
+
 		// envoi !
 		try {
-			sender.sendEvenementDocumentSortant(businessId, new Documents(Collections.singletonList(document),
-			                                                              XmlUtils.date2xmlcal(DateHelper.getCurrentDate())));
+			sender.sendEvenementDocumentSortant(businessId,
+			                                    new Documents(Collections.singletonList(document),
+			                                                  XmlUtils.date2xmlcal(DateHelper.getCurrentDate())),
+			                                    typeDocument.isQuittanceAnnonceDemandee(),
+			                                    headers);
 		}
 		catch (EvenementDocumentSortantException e) {
 			throw new RuntimeException(e);

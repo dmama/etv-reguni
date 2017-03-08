@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -49,7 +50,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		private final Map<String, Documents> collected = new HashMap<>();
 
 		@Override
-		public void sendEvenementDocumentSortant(String businessId, Documents docs) throws EvenementDocumentSortantException {
+		public void sendEvenementDocumentSortant(String businessId, Documents docs, boolean reponseAttendue, @Nullable Map<String, String> additionalHeaders) throws EvenementDocumentSortantException {
 			collected.put(businessId, docs);
 		}
 
