@@ -27,7 +27,7 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public List<EvenementRFImport> getAll() {
-		return db;
+		return new ArrayList<>(db);
 	}
 
 	@Override
@@ -65,7 +65,13 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 
 	@Override
 	public void remove(Long id) {
-		throw new NotImplementedException();
+		for (Iterator<EvenementRFImport> iterator = db.iterator(); iterator.hasNext(); ) {
+			final EvenementRFImport imp = iterator.next();
+			if (imp.getId().equals(id)) {
+				iterator.remove();
+				break;
+			}
+		}
 	}
 
 	@Override

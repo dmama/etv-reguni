@@ -43,6 +43,7 @@ import ch.vd.uniregctb.document.AnnoncesIDERapport;
 import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
 import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.document.CalculParentesRapport;
+import ch.vd.uniregctb.document.CleanupRFProcessorRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
@@ -138,6 +139,7 @@ import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
+import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -1813,6 +1815,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(FinsDeDroitRFRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfFinsDeDroitRFRapport document = new PdfFinsDeDroitRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public CleanupRFProcessorRapport generateRapport(CleanupRFProcessorResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportCleanupDonneesRF";
+		final String description = "Rapport d'exécution du batch de nettoyage des données d'import du RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(CleanupRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfCleanupRFProcessorRapport document = new PdfCleanupRFProcessorRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

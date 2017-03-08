@@ -6,16 +6,19 @@ import java.util.List;
 import org.quartz.SchedulerException;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 
 public class MockRegistreFoncierImportService implements RegistreFoncierImportService {
 
 	private final List<Long> startedImports = new ArrayList<>();
 	private final List<Long> startedMutations = new ArrayList<>();
+	private final List<Long> deletedImportMutations = new ArrayList<>();
 
 	@Override
-	public int deleteExistingMutations(long importId) {
-		throw new NotImplementedException();
+	public int deleteAllMutations(long importId, StatusManager statusManager) {
+		deletedImportMutations.add(importId);
+		return 0;
 	}
 
 	@Override
@@ -45,6 +48,10 @@ public class MockRegistreFoncierImportService implements RegistreFoncierImportSe
 
 	public List<Long> getStartedImports() {
 		return startedImports;
+	}
+
+	public List<Long> getDeletedImportMutations() {
+		return deletedImportMutations;
 	}
 
 	public List<Long> getStartedMutations() {

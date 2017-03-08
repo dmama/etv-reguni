@@ -88,6 +88,12 @@
 						</map>
 					</property>
 				</bean>
+
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="cleanupImportRFJob"/>
+					<!-- cleanup des vieux imports du RF -->
+					<property name="cronExpression" value="${extprop.crontab.cleanup.rf.import}"/>
+				</bean>
 			</list>
 		</property>
 	</bean>

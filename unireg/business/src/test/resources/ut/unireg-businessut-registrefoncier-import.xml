@@ -33,4 +33,9 @@
 
 	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService"/>
 
+	<!-- Cleanup des données RF -->
+	<bean id="cleanupImportRFRetainSize" class="java.lang.Integer">
+		<constructor-arg value="5"/>
+	</bean>
+
 </beans>

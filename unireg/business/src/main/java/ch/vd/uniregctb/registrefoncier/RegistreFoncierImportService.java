@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier;
 
 import org.quartz.SchedulerException;
 
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 
 /**
@@ -10,12 +11,15 @@ import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 public interface RegistreFoncierImportService {
 
 	/**
-	 * Efface toutes les mutations associées avec l'import spécificé.
+	 * Efface toutes les mutations associées avec l'import spécifié.
+	 * <p/>
+	 * <b>Cette méthode ne doit pas être appelée dans un context transactionnel car elle gère elle-même les transactions.</b>
 	 *
-	 * @param importId l'id d'un import
+	 * @param importId      l'id d'un import
+	 * @param statusManager un status manager pour suivre l'avancement de l'effacement
 	 * @return le nombre de mutations supprimées
 	 */
-	int deleteExistingMutations(long importId);
+	int deleteAllMutations(long importId, StatusManager statusManager);
 
 	/**
 	 * Lance le traitement d'un import du registre foncier.

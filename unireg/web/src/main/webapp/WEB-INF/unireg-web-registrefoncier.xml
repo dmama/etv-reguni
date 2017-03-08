@@ -44,4 +44,9 @@
 		<property name="identCtbDAO" ref="identCtbDAO"/>
 	</bean>
 
+	<!-- Cleanup des données RF -->
+	<bean id="cleanupImportRFRetainSize" class="java.lang.Integer">
+		<constructor-arg value="${extprop.rf.cleanup.retain.size}"/>
+	</bean>
+
 </beans>

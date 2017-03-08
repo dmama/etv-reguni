@@ -31,6 +31,7 @@ import ch.vd.uniregctb.document.AnnoncesIDERapport;
 import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
 import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.document.CalculParentesRapport;
+import ch.vd.uniregctb.document.CleanupRFProcessorRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
@@ -124,6 +125,7 @@ import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
+import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -745,4 +747,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	FinsDeDroitRFRapport generateRapport(TraitementFinsDeDroitRFResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de cleanup des données du RF.
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	CleanupRFProcessorRapport generateRapport(CleanupRFProcessorResults results, StatusManager status);
 }

@@ -150,4 +150,12 @@
 		<constructor-arg ref="transactionManager" />
 	</bean>
 
+	<bean id="cleanupRFProcessor" class="ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessor">
+		<constructor-arg ref="evenementRFImportDAO"/>
+		<constructor-arg ref="evenementRFMutationDAO"/>
+		<constructor-arg ref="serviceImportRF"/>
+		<constructor-arg ref="transactionManager"/>
+		<constructor-arg ref="cleanupImportRFRetainSize"/>
+	</bean>
+
 </beans>

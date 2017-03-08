@@ -340,7 +340,7 @@ public class MutationsRFDetector implements InitializingBean {
 
 		statusManager.setMessage("Effacement des mutations préexistantes...");
 
-		serviceImportRF.deleteExistingMutations(importId);
+		serviceImportRF.deleteAllMutations(importId, statusManager);
 	}
 
 	private void updateEvent(final long eventId, @NotNull EtatEvenementRF etat, @Nullable Exception exception) {

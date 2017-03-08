@@ -4,11 +4,11 @@ import java.util.HashMap;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -44,22 +44,23 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 	}
 
 	@Override
-	public int deleteExistingMutations(long importId) {
+	public int deleteAllMutations(long importId, @Nullable StatusManager statusManager) {
 
 		final MutableInt deleted = new MutableInt(0);
 
 		final MutableBoolean loop = new MutableBoolean(true);
 		// on efface les mutations par lot de 1'000 pour éviter de saturer le rollback log de la DB
 		while (loop.booleanValue()) {
+			if (statusManager != null) {
+				statusManager.setMessage("Effacement des mutations de l'import n°" + importId + "... (" + deleted.intValue() + " processées)");
+			}
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
-			template.execute(new TxCallbackWithoutResult() {
-				@Override
-				public void execute(TransactionStatus status) throws Exception {
-					final int count = evenementRFMutationDAO.deleteMutationsFor(importId, 1000);
-					loop.setValue(count > 0);   // on boucle tant qu'il y a des mutations à supprimer
-					deleted.add(count);
-				}
+			template.execute(status -> {
+				final int count = evenementRFMutationDAO.deleteMutationsFor(importId, 1000);
+				loop.setValue(count > 0);   // on boucle tant qu'il y a des mutations à supprimer
+				deleted.add(count);
+				return null;
 			});
 		}
 

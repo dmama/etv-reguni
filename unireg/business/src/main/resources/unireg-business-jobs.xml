@@ -115,6 +115,13 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="cleanupImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.importcleanup.CleanupImportRFJob">
+		<constructor-arg value="112"/>
+		<constructor-arg value="Nettoyer les anciennes données d'import RF"/>
+		<property name="processor" ref="cleanupRFProcessor"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <!-- Job qui détermine les mouvements de dossiers en masse des contribuables-->
      <bean id="determinerMouvementsDossiersEnMasseJob" parent="schedulerJob" class="ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseJob">
         <constructor-arg value="120"/>

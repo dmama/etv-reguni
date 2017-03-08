@@ -2,6 +2,8 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,13 @@ import ch.vd.uniregctb.common.ParamPagination;
 public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	private final List<EvenementRFMutation> db = new ArrayList<>();
 
+	public MockEvenementRFMutationDAO() {
+	}
+
+	public MockEvenementRFMutationDAO(EvenementRFMutation... muts) {
+		Collections.addAll(db, muts);
+	}
+
 	@Override
 	public List<EvenementRFMutation> getAll() {
 		return db;
@@ -26,7 +35,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	@Override
 	public EvenementRFMutation get(Long id) {
 		return db.stream()
-				.filter(m -> Objects.equals(m.getId(),id))
+				.filter(m -> Objects.equals(m.getId(), id))
 				.findFirst()
 				.orElse(null);
 	}
@@ -56,7 +65,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 	@Override
 	public void remove(Long id) {
 		final Iterator<EvenementRFMutation> iterator = db.iterator();
-		while (iterator.hasNext()){
+		while (iterator.hasNext()) {
 			if (iterator.next().getId().equals(id)) {
 				iterator.remove();
 				break;
@@ -145,7 +154,11 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public Map<EtatEvenementRF, Integer> countByState(long importId) {
-		throw new NotImplementedException();
+		final Map<EtatEvenementRF, Integer> map = new HashMap<>();
+		db.stream()
+				.filter(mut -> mut.getParentImport().getId().equals(importId))
+				.forEach(mut -> map.compute(mut.getEtat(), (k, v) -> v == null ? 1 : v + 1));
+		return map;
 	}
 
 	@Override
