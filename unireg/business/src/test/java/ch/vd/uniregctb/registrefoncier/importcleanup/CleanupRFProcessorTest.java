@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MockStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierImportService;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
@@ -24,17 +26,22 @@ import static org.junit.Assert.assertEquals;
 public class CleanupRFProcessorTest {
 
 	/**
-	 * Ce test vérifie que le paramètre du nombre d'imports à retenir est bien respecté.
+	 * Ce test vérifie que le paramètre du nombre d'imports à retenir est bien respecté et que les types des imports sont bien pris en compte.
 	 */
 	@Test
 	public void testDetermineImportsToDeleteRetainSize() throws Exception {
 
-		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE);
-		final MockEvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp1, imp2, imp3, imp4, imp5);
+		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp6 = newImport(6L, EtatEvenementRF.TRAITE, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp7 = newImport(7L, EtatEvenementRF.TRAITE, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp8 = newImport(8L, EtatEvenementRF.TRAITE, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp9 = newImport(9L, EtatEvenementRF.TRAITE, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp10 = newImport(10L, EtatEvenementRF.TRAITE, TypeImportRF.SERVITUDES);
+		final MockEvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp1, imp2, imp3, imp4, imp5, imp6, imp7, imp8, imp9, imp10);
 		final EvenementRFMutationDAO evenmentRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final PlatformTransactionManager transactionManager = new MockTransactionManager();
@@ -43,28 +50,28 @@ public class CleanupRFProcessorTest {
 		// on ne garde aucun des imports récents
 		{
 			final CleanupRFProcessor processor = new CleanupRFProcessor(evenementRFImportDAO, evenmentRFMutationDAO, null, transactionManager, 0);
-			final List<Long> ids = processor.determineImportsToDelete(results);
+			final List<Long> ids = processor.determineImportsToDelete(results, TypeImportRF.PRINCIPAL);
 			assertEquals(Arrays.asList(1L, 2L, 3L, 4L, 5L), ids);
 		}
 
 		// on garde les 2 plus récents
 		{
 			final CleanupRFProcessor processor = new CleanupRFProcessor(evenementRFImportDAO, evenmentRFMutationDAO, null, transactionManager, 2);
-			final List<Long> ids = processor.determineImportsToDelete(results);
+			final List<Long> ids = processor.determineImportsToDelete(results, TypeImportRF.PRINCIPAL);
 			assertEquals(Arrays.asList(1L, 2L, 3L), ids);
 		}
 
 		// on garde les 4 plus récents
 		{
 			final CleanupRFProcessor processor = new CleanupRFProcessor(evenementRFImportDAO, evenmentRFMutationDAO, null, transactionManager, 4);
-			final List<Long> ids = processor.determineImportsToDelete(results);
+			final List<Long> ids = processor.determineImportsToDelete(results, TypeImportRF.PRINCIPAL);
 			assertEquals(Collections.singletonList(1L), ids);
 		}
 
 		// on garde les 6 plus récents
 		{
 			final CleanupRFProcessor processor = new CleanupRFProcessor(evenementRFImportDAO, evenmentRFMutationDAO, null, transactionManager, 6);
-			final List<Long> ids = processor.determineImportsToDelete(results);
+			final List<Long> ids = processor.determineImportsToDelete(results, TypeImportRF.PRINCIPAL);
 			assertEmpty(ids);
 		}
 	}
@@ -75,11 +82,11 @@ public class CleanupRFProcessorTest {
 	@Test
 	public void testDetermineImportsToDeleteByState() throws Exception {
 
-		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.A_TRAITER);
-		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.EN_ERREUR);
-		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.EN_TRAITEMENT);
-		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.FORCE);
-		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE);
+		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.A_TRAITER, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.EN_ERREUR, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.EN_TRAITEMENT, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.FORCE, TypeImportRF.SERVITUDES);
+		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE, TypeImportRF.SERVITUDES);
 		final MockEvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp1, imp2, imp3, imp4, imp5);
 		final EvenementRFMutationDAO evenmentRFMutationDAO = new MockEvenementRFMutationDAO();
 
@@ -87,7 +94,7 @@ public class CleanupRFProcessorTest {
 		final CleanupRFProcessorResults results = new CleanupRFProcessorResults();
 
 		final CleanupRFProcessor processor = new CleanupRFProcessor(evenementRFImportDAO, evenmentRFMutationDAO, null, transactionManager, 0);
-		final List<Long> ids = processor.determineImportsToDelete(results);
+		final List<Long> ids = processor.determineImportsToDelete(results, TypeImportRF.SERVITUDES);
 		assertEquals(Arrays.asList(4L, 5L), ids);
 	}
 
@@ -97,11 +104,11 @@ public class CleanupRFProcessorTest {
 	@Test
 	public void testDetermineImportsToDeleteByMutationState() throws Exception {
 
-		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE);
+		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
 		final MockEvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp1, imp2, imp3, imp4, imp5);
 
 		final EvenementRFMutation mut1 = newMutation(1L, EtatEvenementRF.A_TRAITER, imp1);
@@ -115,7 +122,7 @@ public class CleanupRFProcessorTest {
 		final CleanupRFProcessorResults results = new CleanupRFProcessorResults();
 
 		final CleanupRFProcessor processor = new CleanupRFProcessor(evenementRFImportDAO, evenmentRFMutationDAO, null, transactionManager, 0);
-		final List<Long> ids = processor.determineImportsToDelete(results);
+		final List<Long> ids = processor.determineImportsToDelete(results, TypeImportRF.PRINCIPAL);
 		assertEquals(Arrays.asList(4L, 5L), ids);
 	}
 
@@ -125,11 +132,11 @@ public class CleanupRFProcessorTest {
 	@Test
 	public void testDeleteImports() throws Exception {
 
-		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE);
+		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
 		final MockEvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp1, imp2, imp3, imp4, imp5);
 		final EvenementRFMutationDAO evenmentRFMutationDAO = new MockEvenementRFMutationDAO();
 
@@ -149,11 +156,11 @@ public class CleanupRFProcessorTest {
 	@Test
 	public void testCleanupImport() throws Exception {
 
-		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE);
-		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.FORCE);
-		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.EN_ERREUR);
-		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.A_TRAITER);
+		final EvenementRFImport imp1 = newImport(1L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp2 = newImport(2L, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp3 = newImport(3L, EtatEvenementRF.FORCE, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp4 = newImport(4L, EtatEvenementRF.EN_ERREUR, TypeImportRF.PRINCIPAL);
+		final EvenementRFImport imp5 = newImport(5L, EtatEvenementRF.A_TRAITER, TypeImportRF.PRINCIPAL);
 		final MockEvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO(imp1, imp2, imp3, imp4, imp5);
 
 		final EvenementRFMutation mut1 = newMutation(1L, EtatEvenementRF.TRAITE, imp1);
@@ -176,10 +183,12 @@ public class CleanupRFProcessorTest {
 		assertEquals(Arrays.asList(3L, 4L, 5L), evenementRFImportDAO.getAll().stream().map(EvenementRFImport::getId).collect(toList()));
 	}
 
-	private static EvenementRFImport newImport(long id, EtatEvenementRF etat) {
+	private static EvenementRFImport newImport(long id, EtatEvenementRF etat, TypeImportRF type) {
 		final EvenementRFImport imp = new EvenementRFImport();
 		imp.setId(id);
 		imp.setEtat(etat);
+		imp.setType(type);
+		imp.setDateEvenement(RegDate.get(2000, 1, (int) id));
 		return imp;
 	}
 

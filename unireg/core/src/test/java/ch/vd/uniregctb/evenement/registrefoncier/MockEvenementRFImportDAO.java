@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
@@ -115,6 +116,13 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	@Override
 	public RegDate findValueDateOfOldestProcessedImport(long importId, TypeImportRF type) {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public @NotNull List<EvenementRFImport> find(@NotNull TypeImportRF type) {
+		return db.stream()
+				.filter(i -> i.getType() == type)
+				.collect(Collectors.toList());
 	}
 
 	@Override

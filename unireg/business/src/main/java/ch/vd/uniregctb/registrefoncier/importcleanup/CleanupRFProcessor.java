@@ -12,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -54,31 +56,32 @@ public class CleanupRFProcessor {
 		final CleanupRFProcessorResults results = new CleanupRFProcessorResults();
 
 		statusManager.setMessage("Détermination des imports à nettoyer...");
-		final List<Long> importIds = determineImportsToDelete(results);
+		final List<Long> importPrincipalIds = determineImportsToDelete(results, TypeImportRF.PRINCIPAL);
+		final List<Long> importServitudeIds = determineImportsToDelete(results, TypeImportRF.SERVITUDES);
 
 		statusManager.setMessage("Nettoyage des imports...");
-		deleteImports(importIds, results, statusManager);
+		deleteImports(CollectionsUtils.union(importPrincipalIds, importServitudeIds), results, statusManager);
 
 		results.end();
 		statusManager.setMessage("Terminé.");
 		return results;
 	}
 
-	@NotNull
-	List<Long> determineImportsToDelete(@NotNull CleanupRFProcessorResults results) {
+	List<Long> determineImportsToDelete(@NotNull CleanupRFProcessorResults results, @NotNull TypeImportRF principal) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		return template.execute(status -> {
 
 			// on charge tous les imports (triés par ids croissants : du plus ancien au plus récent)
-			final List<EvenementRFImport> imports = evenementRFImportDAO.getAll();
+			final List<EvenementRFImport> imports = evenementRFImportDAO.find(principal);
 			imports.sort(Comparator.comparing(EvenementRFImport::getId));
 
 			// on ignore les imports les plus récents
 			for (int i = 0; i < retainSize && !imports.isEmpty(); ++i) {
 				final int last = imports.size() - 1;
-				results.addIgnored(imports.get(last).getId(), CleanupRFProcessorResults.IgnoreReason.RETAINED);
+				final EvenementRFImport imp = imports.get(last);
+				results.addIgnored(imp.getId(), imp.getDateEvenement(), imp.getType(), CleanupRFProcessorResults.IgnoreReason.RETAINED);
 				imports.remove(last);
 			}
 
@@ -87,7 +90,7 @@ public class CleanupRFProcessor {
 				final EvenementRFImport imp = imports.get(i);
 				final EtatEvenementRF etat = imp.getEtat();
 				if (etat == EtatEvenementRF.A_TRAITER || etat == EtatEvenementRF.EN_TRAITEMENT || etat == EtatEvenementRF.EN_ERREUR) {
-					results.addIgnored(imp.getId(), CleanupRFProcessorResults.IgnoreReason.NOT_TREATED);
+					results.addIgnored(imp.getId(), imp.getDateEvenement(), imp.getType(), CleanupRFProcessorResults.IgnoreReason.NOT_TREATED);
 					imports.remove(i);
 				}
 			}
@@ -100,7 +103,7 @@ public class CleanupRFProcessor {
 				final Integer enTraitement = countByState.getOrDefault(EtatEvenementRF.EN_TRAITEMENT, 0);
 				final Integer enErreur = countByState.getOrDefault(EtatEvenementRF.EN_ERREUR, 0);
 				if (aTraiter > 0 || enTraitement > 0 || enErreur > 0) {
-					results.addIgnored(imp.getId(), CleanupRFProcessorResults.IgnoreReason.MUTATIONS_NOT_TREATED);
+					results.addIgnored(imp.getId(), imp.getDateEvenement(), imp.getType(), CleanupRFProcessorResults.IgnoreReason.MUTATIONS_NOT_TREATED);
 					imports.remove(i);
 				}
 			}
@@ -128,7 +131,7 @@ public class CleanupRFProcessor {
 				return i;
 			});
 
-			results.addProcessed(importId, imp.getDateEvenement(), mutCount);
+			results.addProcessed(importId, imp.getDateEvenement(), imp.getType(), mutCount);
 		}
 		catch (RuntimeException e) {
 			results.addErrorException(importId, e);

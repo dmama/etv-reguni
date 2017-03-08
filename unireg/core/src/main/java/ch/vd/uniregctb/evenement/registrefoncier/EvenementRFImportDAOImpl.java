@@ -46,6 +46,14 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 	}
 
 	@Override
+	public @NotNull List<EvenementRFImport> find(@NotNull TypeImportRF type) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFImport where type = :type");
+		query.setParameter("type", type);
+		//noinspection unchecked
+		return query.list();
+	}
+
+	@Override
 	public List<EvenementRFImport> find(@Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
 
 		final QueryFragment fragment;

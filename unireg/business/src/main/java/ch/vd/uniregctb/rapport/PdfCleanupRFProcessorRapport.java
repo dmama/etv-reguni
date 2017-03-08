@@ -89,6 +89,7 @@ public class PdfCleanupRFProcessorRapport extends PdfRapport {
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("IMPORT_ID").append(COMMA);
 				b.append("DATE_VALEUR").append(COMMA);
+				b.append("TYPE").append(COMMA);
 				b.append("NOMBRE_MUTATIONS");
 			}
 
@@ -96,7 +97,8 @@ public class PdfCleanupRFProcessorRapport extends PdfRapport {
 			public boolean fillLine(CsvHelper.LineFiller b, CleanupRFProcessorResults.Processed elt) {
 				b.append(elt.getImportId()).append(COMMA);
 				b.append(RegDateHelper.dateToDisplayString(elt.getDateValeur())).append(COMMA);
-				b.append(elt.getImportId());
+				b.append(elt.getType()).append(COMMA);
+				b.append(elt.getMutCount());
 				return true;
 			}
 		});
@@ -107,12 +109,16 @@ public class PdfCleanupRFProcessorRapport extends PdfRapport {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("IMPORT_ID").append(COMMA);
+				b.append("DATE_VALEUR").append(COMMA);
+				b.append("TYPE").append(COMMA);
 				b.append("RAISON");
 			}
 
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, CleanupRFProcessorResults.Ignored elt) {
 				b.append(elt.getImportId()).append(COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.getDateValeur())).append(COMMA);
+				b.append(elt.getType()).append(COMMA);
 				b.append(CsvHelper.asCsvField(elt.getReason().getDescription()));
 				return true;
 			}

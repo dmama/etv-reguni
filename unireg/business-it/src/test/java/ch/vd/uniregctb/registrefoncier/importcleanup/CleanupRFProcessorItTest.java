@@ -48,21 +48,36 @@ public class CleanupRFProcessorItTest extends ImportRFTestClass {
 			Long imp3;
 			Long imp4;
 			Long imp5;
+			Long imp6;
+			Long imp7;
+			Long imp8;
 		}
 		final Ids ids = new Ids();
 
 		// on insère plusieurs imports et mutations à différents états
 		doInNewTransaction(status -> {
-			// un import qui peut être effacé
-			ids.imp1 = newImportEtMutation(RegDate.get(2016, 12, 31), EtatEvenementRF.TRAITE, EtatEvenementRF.TRAITE).getId();
-			// un autre import qui peut être effacé
-			ids.imp2 = newImportEtMutation(RegDate.get(2017, 1, 1), EtatEvenementRF.FORCE, EtatEvenementRF.FORCE).getId();
-			// un import qui ne peut pas être effacé parce qu'il y a des mutations en erreur
-			ids.imp3 = newImportEtMutation(RegDate.get(2017, 1, 7), EtatEvenementRF.TRAITE, EtatEvenementRF.EN_ERREUR).getId();
-			// un import qui ne peut pas être effacé parce qu'il est en erreur
-			ids.imp4 = newImportEtMutation(RegDate.get(2017, 1, 14), EtatEvenementRF.EN_ERREUR, EtatEvenementRF.A_TRAITER).getId();
-			// un import qui ne peut pas être effacé parce qu'il n'est pas traité (et en plus c'est le plus récent)
-			ids.imp5 = newImportEtMutation(RegDate.get(2017, 1, 21), EtatEvenementRF.A_TRAITER, EtatEvenementRF.A_TRAITER).getId();
+			// les imports principaux
+			{
+				// un import qui peut être effacé
+				ids.imp1 = newImportEtMutation(RegDate.get(2016, 12, 31), EtatEvenementRF.TRAITE, EtatEvenementRF.TRAITE, TypeImportRF.PRINCIPAL).getId();
+				// un autre import qui peut être effacé
+				ids.imp2 = newImportEtMutation(RegDate.get(2017, 1, 1), EtatEvenementRF.FORCE, EtatEvenementRF.FORCE, TypeImportRF.PRINCIPAL).getId();
+				// un import qui ne peut pas être effacé parce qu'il y a des mutations en erreur
+				ids.imp3 = newImportEtMutation(RegDate.get(2017, 1, 7), EtatEvenementRF.TRAITE, EtatEvenementRF.EN_ERREUR, TypeImportRF.PRINCIPAL).getId();
+				// un import qui ne peut pas être effacé parce qu'il est en erreur
+				ids.imp4 = newImportEtMutation(RegDate.get(2017, 1, 14), EtatEvenementRF.EN_ERREUR, EtatEvenementRF.A_TRAITER, TypeImportRF.PRINCIPAL).getId();
+				// un import qui ne peut pas être effacé parce qu'il n'est pas traité (et en plus c'est le plus récent)
+				ids.imp5 = newImportEtMutation(RegDate.get(2017, 1, 21), EtatEvenementRF.A_TRAITER, EtatEvenementRF.A_TRAITER, TypeImportRF.PRINCIPAL).getId();
+			}
+			// les imports de servitudes
+			{
+				// un import qui peut être effacé
+				ids.imp6 = newImportEtMutation(RegDate.get(2016, 12, 31), EtatEvenementRF.TRAITE, EtatEvenementRF.FORCE, TypeImportRF.SERVITUDES).getId();
+				// un import qui ne peut pas être effacé parce qu'il y a des mutations en erreur
+				ids.imp7 = newImportEtMutation(RegDate.get(2017, 1, 7), EtatEvenementRF.TRAITE, EtatEvenementRF.EN_ERREUR, TypeImportRF.SERVITUDES).getId();
+				// un import qui ne peut pas être effacé parce qu'il n'est pas traité (et en plus c'est le plus récent)
+				ids.imp8 = newImportEtMutation(RegDate.get(2017, 1, 21), EtatEvenementRF.A_TRAITER, EtatEvenementRF.A_TRAITER, TypeImportRF.SERVITUDES).getId();
+			}
 			return null;
 		});
 
@@ -73,33 +88,37 @@ public class CleanupRFProcessorItTest extends ImportRFTestClass {
 
 		// on vérifie les résultats
 		final List<CleanupRFProcessorResults.Ignored> ignored = results.getIgnored();
-		assertEquals(3, ignored.size());
-		assertIgnored(ids.imp5, CleanupRFProcessorResults.IgnoreReason.RETAINED, ignored.get(0));
-		assertIgnored(ids.imp4, CleanupRFProcessorResults.IgnoreReason.NOT_TREATED, ignored.get(1));
-		assertIgnored(ids.imp3, CleanupRFProcessorResults.IgnoreReason.MUTATIONS_NOT_TREATED, ignored.get(2));
+		assertEquals(5, ignored.size());
+		assertIgnored(ids.imp5, RegDate.get(2017, 1, 21), TypeImportRF.PRINCIPAL, CleanupRFProcessorResults.IgnoreReason.RETAINED, ignored.get(0));
+		assertIgnored(ids.imp4, RegDate.get(2017, 1, 14), TypeImportRF.PRINCIPAL, CleanupRFProcessorResults.IgnoreReason.NOT_TREATED, ignored.get(1));
+		assertIgnored(ids.imp3, RegDate.get(2017, 1, 7), TypeImportRF.PRINCIPAL, CleanupRFProcessorResults.IgnoreReason.MUTATIONS_NOT_TREATED, ignored.get(2));
+		assertIgnored(ids.imp8, RegDate.get(2017, 1, 21), TypeImportRF.SERVITUDES, CleanupRFProcessorResults.IgnoreReason.RETAINED, ignored.get(3));
+		assertIgnored(ids.imp7, RegDate.get(2017, 1, 7), TypeImportRF.SERVITUDES, CleanupRFProcessorResults.IgnoreReason.MUTATIONS_NOT_TREATED, ignored.get(4));
 
 		final List<CleanupRFProcessorResults.Processed> processed = results.getProcessed();
-		assertEquals(2, processed.size());
-		assertProcessed(ids.imp1, RegDate.get(2016, 12, 31), processed.get(0));
-		assertProcessed(ids.imp2, RegDate.get(2017, 1, 1), processed.get(1));
+		assertEquals(3, processed.size());
+		assertProcessed(ids.imp1, RegDate.get(2016, 12, 31), TypeImportRF.PRINCIPAL, processed.get(0));
+		assertProcessed(ids.imp2, RegDate.get(2017, 1, 1), TypeImportRF.PRINCIPAL, processed.get(1));
+		assertProcessed(ids.imp6, RegDate.get(2016, 12, 31), TypeImportRF.SERVITUDES, processed.get(2));
 
 		// on vérifie les données dans la base
 		doInNewTransaction(status -> {
 			final List<EvenementRFImport> list = evenementRFImportDAO.getAll();
-			assertEquals(3, list.size());
+			assertEquals(5, list.size());
 			list.sort(Comparator.comparing(EvenementRFImport::getId));
 			assertEquals(ids.imp3, list.get(0).getId());
 			assertEquals(ids.imp4, list.get(1).getId());
 			assertEquals(ids.imp5, list.get(2).getId());
+			assertEquals(ids.imp7, list.get(3).getId());
+			assertEquals(ids.imp8, list.get(4).getId());
 			return null;
 		});
-
 	}
 
 	@NotNull
-	private EvenementRFImport newImportEtMutation(RegDate dateEvenement, EtatEvenementRF etatImport, EtatEvenementRF etatMutation) {
+	private EvenementRFImport newImportEtMutation(RegDate dateEvenement, EtatEvenementRF etatImport, EtatEvenementRF etatMutation, TypeImportRF type) {
 		EvenementRFImport imp = new EvenementRFImport();
-		imp.setType(TypeImportRF.PRINCIPAL);
+		imp.setType(type);
 		imp.setDateEvenement(dateEvenement);
 		imp.setEtat(etatImport);
 		imp.setFileUrl("http://turlututu");
@@ -116,15 +135,18 @@ public class CleanupRFProcessorItTest extends ImportRFTestClass {
 		return imp;
 	}
 
-	private static void assertProcessed(long importId, RegDate dateValeur, CleanupRFProcessorResults.Processed processed) {
+	private static void assertProcessed(long importId, RegDate dateValeur, TypeImportRF type, CleanupRFProcessorResults.Processed processed) {
 		assertNotNull(processed);
 		assertEquals(importId, processed.getImportId());
 		assertEquals(dateValeur, processed.getDateValeur());
+		assertEquals(type, processed.getType());
 	}
 
-	private static void assertIgnored(long importId, CleanupRFProcessorResults.IgnoreReason reason, CleanupRFProcessorResults.Ignored ignored) {
+	private static void assertIgnored(long importId, RegDate dateValeur, TypeImportRF type, CleanupRFProcessorResults.IgnoreReason reason, CleanupRFProcessorResults.Ignored ignored) {
 		assertNotNull(ignored);
 		assertEquals(importId, ignored.getImportId());
+		assertEquals(dateValeur, ignored.getDateValeur());
+		assertEquals(type, ignored.getType());
 		assertEquals(reason, ignored.getReason());
 	}
 }

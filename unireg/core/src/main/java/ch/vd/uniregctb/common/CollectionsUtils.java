@@ -22,6 +22,14 @@ public abstract class CollectionsUtils {
 		List<O> process(List<T> list);
 	}
 
+	@NotNull
+	public static <T> List<T> union(@NotNull Collection<T> left, @NotNull Collection<T> right) {
+		final List<T> union = new ArrayList<>(left.size() + right.size());
+		union.addAll(left);
+		union.addAll(right);
+		return union;
+	}
+
 	/**
 	 * Cette méthode découpe une collection d'éléments en plusieurs sous-listes de taille déterminée, et appelle un callback sur chacune des sous-listes.
 	 *

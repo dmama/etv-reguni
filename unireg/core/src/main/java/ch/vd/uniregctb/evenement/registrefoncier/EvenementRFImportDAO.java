@@ -35,6 +35,15 @@ public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long
 	RegDate findValueDateOfOldestProcessedImport(long importId, TypeImportRF type);
 
 	/**
+	 * Recherche les imports qui correspondent aux critères spécifiés.
+	 *
+	 * @param type     le type d'import considéré
+	 * @return les événements d'import correspondants
+	 */
+	@NotNull
+	List<EvenementRFImport> find(@NotNull TypeImportRF type);
+
+	/**
 	 * Recherche des événements d'import qui correspondent aux critères spécifiés.
 	 *
 	 * @param etats      le ou les états des événements (optionnel)

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 
 public class CleanupRFProcessorResults extends JobResults<Long, CleanupRFProcessorResults> {
 
@@ -61,15 +62,27 @@ public class CleanupRFProcessorResults extends JobResults<Long, CleanupRFProcess
 
 	public static final class Ignored {
 		private final long importId;
+		private final RegDate dateValeur;
+		private final TypeImportRF type;
 		private final IgnoreReason reason;
 
-		public Ignored(long importId, IgnoreReason reason) {
+		public Ignored(long importId, RegDate dateValeur, TypeImportRF type, IgnoreReason reason) {
 			this.importId = importId;
+			this.dateValeur = dateValeur;
+			this.type = type;
 			this.reason = reason;
 		}
 
 		public long getImportId() {
 			return importId;
+		}
+
+		public RegDate getDateValeur() {
+			return dateValeur;
+		}
+
+		public TypeImportRF getType() {
+			return type;
 		}
 
 		public IgnoreReason getReason() {
@@ -80,11 +93,13 @@ public class CleanupRFProcessorResults extends JobResults<Long, CleanupRFProcess
 	public static final class Processed {
 		private final long importId;
 		private final RegDate dateValeur;
+		private final TypeImportRF type;
 		private final int mutCount;
 
-		public Processed(long importId, RegDate dateValeur, int mutCount) {
+		public Processed(long importId, RegDate dateValeur, TypeImportRF type, int mutCount) {
 			this.importId = importId;
 			this.dateValeur = dateValeur;
+			this.type = type;
 			this.mutCount = mutCount;
 		}
 
@@ -94,6 +109,10 @@ public class CleanupRFProcessorResults extends JobResults<Long, CleanupRFProcess
 
 		public RegDate getDateValeur() {
 			return dateValeur;
+		}
+
+		public TypeImportRF getType() {
+			return type;
 		}
 
 		public int getMutCount() {
@@ -138,12 +157,12 @@ public class CleanupRFProcessorResults extends JobResults<Long, CleanupRFProcess
 		errors.add(new Error(importId, String.format("Exception levée : %s\n%s", e.getMessage(), ExceptionUtils.extractCallStack(e))));
 	}
 
-	public void addProcessed(long importId, RegDate dateValeur, int mutCount) {
-		processed.add(new Processed(importId, dateValeur, mutCount));
+	public void addProcessed(long importId, @NotNull RegDate dateValeur, @NotNull TypeImportRF type, int mutCount) {
+		processed.add(new Processed(importId, dateValeur, type, mutCount));
 	}
 
-	public void addIgnored(long importId, @NotNull IgnoreReason reason) {
-		ignored.add(new Ignored(importId, reason));
+	public void addIgnored(long importId, @NotNull RegDate dateValeur, @NotNull TypeImportRF type, @NotNull IgnoreReason reason) {
+		ignored.add(new Ignored(importId, dateValeur, type, reason));
 	}
 
 	@Override
