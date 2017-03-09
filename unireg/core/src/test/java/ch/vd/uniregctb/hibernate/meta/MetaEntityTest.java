@@ -9,6 +9,7 @@ import ch.vd.uniregctb.rf.Immeuble;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MetaEntityTest extends WithoutSpringTest {
 
@@ -24,25 +25,25 @@ public class MetaEntityTest extends WithoutSpringTest {
 		final Property partProprieteNumerator = entity.getProperty("partPropriete.numerateur");
 		assertNotNull(partProprieteNumerator);
 		assertEquals("partPropriete.numerateur", partProprieteNumerator.getName());
-		assertEquals(PropertyType.integerPropType, partProprieteNumerator.getType());
+		assertTrue(partProprieteNumerator.getType() instanceof IntegerPropertyType);
 		assertEquals("PART_PROPRIETE_NUMERATEUR", partProprieteNumerator.getColumnName());
 
 		final Property partProprieteDenominateur = entity.getProperty("partPropriete.denominateur");
 		assertNotNull(partProprieteDenominateur);
 		assertEquals("partPropriete.denominateur", partProprieteDenominateur.getName());
-		assertEquals(PropertyType.integerPropType, partProprieteDenominateur.getType());
+		assertTrue(partProprieteDenominateur.getType() instanceof IntegerPropertyType);
 		assertEquals("PART_PROPRIETE_DENOMINATEUR", partProprieteDenominateur.getColumnName());
 
 		final Property proprietaireId = entity.getProperty("proprietaire.id");
 		assertNotNull(proprietaireId);
 		assertEquals("proprietaire.id", proprietaireId.getName());
-		assertEquals(PropertyType.stringPropType, proprietaireId.getType());
+		assertTrue(proprietaireId.getType() instanceof StringPropertyType);
 		assertEquals("ID_PROPRIETAIRE_RF", proprietaireId.getColumnName());
 
 		final Property proprietaireNumeroIndividu = entity.getProperty("proprietaire.numeroIndividu");
 		assertNotNull(proprietaireNumeroIndividu);
 		assertEquals("proprietaire.numeroIndividu", proprietaireNumeroIndividu.getName());
-		assertEquals(PropertyType.longPropType, proprietaireNumeroIndividu.getType());
+		assertTrue(proprietaireNumeroIndividu.getType() instanceof LongPropertyType);
 		assertEquals("NUMERO_INDIVIDU_RF", proprietaireNumeroIndividu.getColumnName());
 	}
 }

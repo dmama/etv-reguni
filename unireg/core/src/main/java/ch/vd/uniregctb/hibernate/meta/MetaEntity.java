@@ -22,10 +22,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +55,9 @@ import ch.vd.uniregctb.hibernate.URLUserType;
  */
 public class MetaEntity {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(MetaEntity.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetaEntity.class);
+
+	public static final Map<Class<?>, PropertyType> propsByType = new HashMap<>();
 
 	private final String table;
 	private final String discriminant;
@@ -163,7 +168,7 @@ public class MetaEntity {
 		}
 
 		if (discriminatorValue != null) {
-			properties.add(new Property(null, PropertyType.stringPropType, discriminatorColumn, discriminatorValue, false, false, false));
+			properties.add(new Property(null, new StringPropertyType(), discriminatorColumn, discriminatorValue, false, false, false));
 		}
 
 		final MetaEntity entity = new MetaEntity(table, discriminatorValue, clazz);
@@ -184,28 +189,25 @@ public class MetaEntity {
 		}
 
 		// on trie les attributs par ordre alphabétique, excepté les clés primaires et les descriminants qui restent toujours en premier
-		Collections.sort(properties, new Comparator<Property>() {
-			@Override
-			public int compare(Property o1, Property o2) {
-				if (o1.isPrimaryKey() && !o2.isPrimaryKey()) {
+		properties.sort((o1, o2) -> {
+			if (o1.isPrimaryKey() && !o2.isPrimaryKey()) {
+				return -1;
+			}
+			else if (o2.isPrimaryKey() && !o1.isPrimaryKey()) {
+				return 1;
+			}
+			else {
+				if (o1.isDiscriminator() && !o2.isDiscriminator()) {
 					return -1;
 				}
-				else if (o2.isPrimaryKey() && !o1.isPrimaryKey()) {
+				else if (o2.isDiscriminator() && !o1.isDiscriminator()) {
 					return 1;
 				}
+				else if (o1.isDiscriminator() && o2.isDiscriminator()) {
+					return 0;
+				}
 				else {
-					if (o1.isDiscriminator() && !o2.isDiscriminator()) {
-						return -1;
-					}
-					else if (o2.isDiscriminator() && !o1.isDiscriminator()) {
-						return 1;
-					}
-					else if (o1.isDiscriminator() && o2.isDiscriminator()) {
-						return 0;
-					}
-					else {
-						return o1.getName().compareTo(o2.getName());
-					}
+					return o1.getName().compareTo(o2.getName());
 				}
 			}
 		});
@@ -355,7 +357,7 @@ public class MetaEntity {
 				propertyType = new DayMonthPropertyType((DayMonthUserType) userType);
 			}
 			else if (userType instanceof EnumUserType) {
-				propertyType = new EnumUserTypePropertyType(returnType, (EnumUserType) userType);
+				propertyType = new EnumUserTypePropertyType((EnumUserType) userType);
 			}
 			else if (userType instanceof TypeAdresseCivilLegacyUserType) {
 				propertyType = new TypeAdresseCivilLegacyPropertyType((TypeAdresseCivilLegacyUserType) userType);
@@ -375,8 +377,10 @@ public class MetaEntity {
 			propertyType = new JoinPropertyType(returnType);
 		}
 		else {
-			propertyType = PropertyType.byJavaType.get(returnType);
-			Assert.notNull(propertyType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
+			propertyType = propsByType.get(returnType);
+			if (propertyType == null) {
+				throw new IllegalArgumentException("Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
+			}
 		}
 
 		return Collections.singletonList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
@@ -528,5 +532,19 @@ public class MetaEntity {
 			}
 		}
 		return null;
+	}
+
+	static {
+		// les types de base connus par la MetaEntiy
+		propsByType.put(Long.class, new LongPropertyType());
+		propsByType.put(Long.TYPE, new LongPropertyType());
+		propsByType.put(Integer.class, new IntegerPropertyType());
+		propsByType.put(Integer.TYPE, new IntegerPropertyType());
+		propsByType.put(String.class, new StringPropertyType());
+		propsByType.put(Date.class, new DatePropertyType());
+		propsByType.put(Boolean.class, new BooleanPropertyType());
+		propsByType.put(Boolean.TYPE, new BooleanPropertyType());
+		propsByType.put(Timestamp.class, new TimestampPropertyType());
+		propsByType.put(BigDecimal.class, new BigDecimalPropertyType());
 	}
 }
