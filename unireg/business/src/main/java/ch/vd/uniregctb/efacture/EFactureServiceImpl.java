@@ -36,17 +36,27 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	private EditiqueCompositionService editiqueCompositionService;
 	private EFactureMessageSender eFactureMessageSender;
 	private EFactureClient eFactureClient;
+	private DocumentEFactureDAO documentEFactureDAO;
 
 	@Override
 	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande, BigInteger noAdherent, RegDate dateDemandePrecedente, BigInteger noAdherentPrecedent) throws EditiqueException {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		final Date dateTraitement = DateHelper.getCurrentDate();
+		final String cleArchivage;
 		try {
-			return editiqueCompositionService.imprimeDocumentEfacture(tiers, typeDocument, dateTraitement, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
+			cleArchivage = editiqueCompositionService.imprimeDocumentEfacture(tiers, typeDocument, dateTraitement, dateDemande, noAdherent, dateDemandePrecedente, noAdherentPrecedent);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);
 		}
+
+		// sauvegarde d'une entrée en base pour pouvoir le récupérer plus tard et y associer une clé de visualisation exerne
+		final DocumentEFacture document = new DocumentEFacture();
+		document.setCleArchivage(cleArchivage);
+		document.setTiers(tiers);
+		documentEFactureDAO.save(document);
+
+		return cleArchivage;
 	}
 
 	@Override
@@ -138,6 +148,10 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
 	public void seteFactureClient(EFactureClient eFactureClient) {
 		this.eFactureClient = eFactureClient;
+	}
+
+	public void setDocumentEFactureDAO(DocumentEFactureDAO documentEFactureDAO) {
+		this.documentEFactureDAO = documentEFactureDAO;
 	}
 
 	@Override

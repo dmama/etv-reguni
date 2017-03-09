@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,6 +29,8 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
+import ch.vd.uniregctb.efacture.DocumentEFacture;
+import ch.vd.uniregctb.efacture.DocumentEFactureDAO;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -38,15 +41,20 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 	private static final Logger LOGGER = LoggerFactory.getLogger(RetourDocumentSortantHandlerImpl.class);
 
 	private HibernateTemplate hibernateTemplate;
+	private DocumentEFactureDAO documentEFactureDAO;
 	private Map<TypeDocumentSortant, TraitementRetour> traitements;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
+	public void setDocumentEFactureDAO(DocumentEFactureDAO documentEFactureDAO) {
+		this.documentEFactureDAO = documentEFactureDAO;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.traitements = buildTraitementsById(this.hibernateTemplate);
+		this.traitements = buildTraitementsById(this.hibernateTemplate, this.documentEFactureDAO);
 	}
 
 	@Override
@@ -86,7 +94,7 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 
 			// un peu de log et c'est fini
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Assignation de l'identifiant RepElec '" + key.get() + "' au document " + idString + " de type " + typeDocument);
+				LOGGER.debug("Assignation de l'identifiant RepElec '" + key.get() + "' au document '" + idString + "' de type " + typeDocument);
 			}
 		}
 	}
@@ -128,6 +136,13 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		public HibernateEntityFetcherById(HibernateTemplate hibernateTemplate, Class<T> clazz) {
 			super(Long::valueOf,
 			      id -> hibernateTemplate.get(clazz, id));
+		}
+	}
+
+	private static class DocumentEFactureFetcher extends EntityFetcherById<Pair<Long, String>, DocumentEFacture> {
+		public DocumentEFactureFetcher(DocumentEFactureDAO dao) {
+			super(DocumentEFactureHelper::decodeIdentifiant,
+			      id -> dao.findByTiersEtCleArchivage(id.getLeft(), id.getRight()));
 		}
 	}
 
@@ -177,7 +192,7 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 				.forEach(type -> map.put(type, traitementRetour));
 	}
 
-	private static Map<TypeDocumentSortant, TraitementRetour> buildTraitementsById(HibernateTemplate hibernateTemplate) {
+	private static Map<TypeDocumentSortant, TraitementRetour> buildTraitementsById(HibernateTemplate hibernateTemplate, DocumentEFactureDAO documentEFactureDAO) {
 
 		final Map<TypeDocumentSortant, TraitementRetour> map = new EnumMap<>(TypeDocumentSortant.class);
 
@@ -237,7 +252,11 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		                   new TraitementRetourImpl<>(new HibernateEntityFetcherById<>(hibernateTemplate, LettreBienvenue.class),
 		                                              new AutreDocumentFiscalRappelKeyAssignator()));
 
-		// documents e-facture // TODO comment faire ça ?
+		// documents e-facture
+		addToTraitementMap(map,
+		                   EnumSet.of(TypeDocumentSortant.E_FACTURE_CONTACT, TypeDocumentSortant.E_FACTURE_SIGNATURE),
+		                   new TraitementRetourImpl<>(new DocumentEFactureFetcher(documentEFactureDAO),
+		                                              new DocumentEFactureKeyAssignator()));
 
 		// demande de dégrèvement
 		addToTraitementMap(map,
@@ -278,6 +297,13 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 	private static final class DelaiDeclarationKeyAssignator implements KeyAssignator<DelaiDeclaration> {
 		@Override
 		public void assignKey(DelaiDeclaration entity, String key) {
+			entity.setCleDocument(key);
+		}
+	}
+
+	private static final class DocumentEFactureKeyAssignator implements KeyAssignator<DocumentEFacture> {
+		@Override
+		public void assignKey(DocumentEFacture entity, String key) {
 			entity.setCleDocument(key);
 		}
 	}

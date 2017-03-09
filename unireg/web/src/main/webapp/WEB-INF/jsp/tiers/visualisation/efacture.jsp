@@ -148,7 +148,10 @@
                 html += '<td>' + DateUtils.toNormalString(new Date(etat.dateObtention)) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.descriptionEtat) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.motifObtention) + '</td>';
-                if (etat.documentArchiveKey) {
+                if (etat.urlVisualisationExterneDocument != null) {
+                	html += '<td><a href="#" title="Visualisation du courrier émis" class="pdf" onclick="VisuExterneDoc.openWindow(\x27' + etat.urlVisualisationExterneDocument + '\x27);">&nbsp;</a></td>';
+                }
+                else if (etat.documentArchiveKey != null) {
                     html += '<td>';
                     var idIcon = 'print-doc-' + idDemande + '-' + e;
                     var url = '<c:url value="/copie-conforme.do"/>?noCtb=' + noCtb + '&typeDoc=' + StringUtils.escapeHTML(etat.documentArchiveKey.typeDocument) + '&key=' + StringUtils.escapeHTML(etat.documentArchiveKey.key) + '&url_memorize=false';

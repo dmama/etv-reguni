@@ -39,13 +39,17 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.efacture.DocumentEFacture;
+import ch.vd.uniregctb.efacture.DocumentEFactureDAO;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
@@ -53,13 +57,17 @@ import ch.vd.uniregctb.type.TypeLettreBienvenue;
 public class RetourDocumentSortantHandlerTest extends BusinessTest {
 
 	private RetourDocumentSortantHandler handler;
+	private DocumentEFactureDAO documentEFactureDAO;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
+		documentEFactureDAO = getBean(DocumentEFactureDAO.class, "documentEFactureDAO");
+
 		final RetourDocumentSortantHandlerImpl impl = new RetourDocumentSortantHandlerImpl();
 		impl.setHibernateTemplate(hibernateTemplate);
+		impl.setDocumentEFactureDAO(documentEFactureDAO);
 		impl.afterPropertiesSet();
 		handler = impl;
 	}
@@ -449,6 +457,55 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 				final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
 				Assert.assertNotNull(delai);
 				Assert.assertEquals("IdentificationDélai", delai.getCleDocument());
+			}
+		});
+	}
+
+	@Test
+	public void testReceptionPourDocumentEFacture() throws Exception {
+
+		final String cleArchivage = "847o35z7343gcfbfdhsjdhg38";
+
+		// mise en place fiscale
+		final long idContribuable = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Alfred", "Da Musso", null, Sexe.MASCULIN);
+			addDocumentEFacture(pp, cleArchivage, null);
+			return pp.getNumero();
+		});
+
+		// vérification que la clé de visualisation externe du document est vide et récupération de l'identifiant
+		final long idDocumentEFacture = doInNewTransactionAndSession(status -> {
+			final List<DocumentEFacture> allDocs = documentEFactureDAO.getAll();
+			Assert.assertNotNull(allDocs);
+			Assert.assertEquals(1, allDocs.size());
+			final DocumentEFacture doc = allDocs.get(0);
+			Assert.assertNotNull(doc);
+			Assert.assertFalse(doc.isAnnule());
+			Assert.assertEquals((Long) idContribuable, doc.getTiers().getNumero());
+			Assert.assertEquals(cleArchivage, doc.getCleArchivage());
+			Assert.assertNull(doc.getCleDocument());
+			return doc.getId();
+		});
+
+		// génération de la quittance
+		final Quittance quittance = buildQuittance("IdentificationDocEFact", idContribuable, TypeDocumentEditique.ACCORD_DELAI_PM, cleArchivage);
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				handler.onQuittance(quittance, buildCustomAttributeMap(TypeDocumentSortant.E_FACTURE_SIGNATURE, DocumentEFactureHelper.encodeIdentifiant(idContribuable, cleArchivage)));
+			}
+		});
+
+		// vérification du résultat en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final DocumentEFacture doc = hibernateTemplate.get(DocumentEFacture.class, idDocumentEFacture);
+				Assert.assertNotNull(doc);
+				Assert.assertFalse(doc.isAnnule());
+				Assert.assertEquals((Long) idContribuable, doc.getTiers().getNumero());
+				Assert.assertEquals(cleArchivage, doc.getCleArchivage());
+				Assert.assertEquals("IdentificationDocEFact", doc.getCleDocument());
 			}
 		});
 	}

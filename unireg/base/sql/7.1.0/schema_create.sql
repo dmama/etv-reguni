@@ -44,13 +44,13 @@ create table BORDEREAU_MVT_DOSSIER (id number(19,0) not null, ANNULATION_DATE ti
 
 create table DECLARATION (DOCUMENT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0) not null, CODE_CONTROLE nvarchar2(6), CODE_SEGMENT number(10,0), DATE_IMPR_CHEMISE_TO timestamp, DELAI_RETOUR_IMPRIME number(10,0), LIBRE number(1,0), NUMERO number(10,0), NO_OFS_FOR_GESTION number(10,0), QUALIFICATION nvarchar2(16), RETOUR_COLL_ADMIN_ID number(19,0), TYPE_CTB nvarchar2(17), MODE_COM nvarchar2(12), PERIODICITE nvarchar2(11), SANS_RAPPEL number(1,0), MODELE_DOC_ID number(19,0), PERIODE_ID number(19,0) not null, DATE_DEBUT_EXERCICE NUMBER(10, 0), DATE_FIN_EXERCICE NUMBER(10, 0), TIERS_ID number(19,0) not null, primary key (id));
 
-create table DELAI_DECLARATION (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEMANDE number(10,0), DATE_TRAITEMENT number(10,0), DELAI_ACCORDE_AU number(10,0), ETAT nvarchar2(10) not null, SURSIS number(1,0) not null, CLE_ARCHIVAGE_COURRIER nvarchar2(40), DECLARATION_ID number(19,0) not null, primary key (id));
+create table DELAI_DECLARATION (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEMANDE number(10,0), DATE_TRAITEMENT number(10,0), DELAI_ACCORDE_AU number(10,0), ETAT nvarchar2(10) not null, SURSIS number(1,0) not null, CLE_ARCHIVAGE_COURRIER nvarchar2(40), CLE_DOCUMENT nvarchar2(256), DECLARATION_ID number(19,0) not null, primary key (id));
 
 create table DOC_INDEX (DOC_TYPE nvarchar2(50) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DESCRIPTION nvarchar2(255), FILE_EXT nvarchar2(255) not null, FILE_NAME nvarchar2(255) not null, FILE_SIZE number(19,0) not null, NOM nvarchar2(100) not null, SUB_PATH nvarchar2(255) not null, NB_TIERS number(10,0), primary key (id));
 
 create table DROIT_ACCES (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0), NIVEAU nvarchar2(255) not null, NUMERO_IND_OPER number(19,0) not null, TYPE nvarchar2(255) not null, TIERS_ID number(19,0) not null, primary key (id));
 
-create table ETAT_DECLARATION (TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_OBTENTION number(10,0), DATE_ENVOI_COURRIER number(10,0), EMOLUMENT NUMBER(8,0), SOURCE nvarchar2(255), DECLARATION_ID number(19,0) not null, primary key (id));
+create table ETAT_DECLARATION (TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_OBTENTION number(10,0), DATE_ENVOI_COURRIER number(10,0), EMOLUMENT NUMBER(8,0), SOURCE nvarchar2(255), CLE_DOCUMENT nvarchar2(256), DECLARATION_ID number(19,0) not null, primary key (id));
 
 create table EVENEMENT_CIVIL (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), COMMENTAIRE_TRAITEMENT nvarchar2(255), DATE_EVENEMENT number(10,0), DATE_TRAITEMENT timestamp, ETAT nvarchar2(10), NO_INDIVIDU_CONJOINT number(19,0), NO_INDIVIDU_PRINCIPAL number(19,0), NUMERO_OFS_ANNONCE number(10,0), TYPE nvarchar2(45), primary key (id));
 
@@ -123,10 +123,12 @@ CREATE TABLE AUTRE_DOCUMENT_FISCAL(
 	LOG_MUSER NVARCHAR2(65),
 	DATE_ENVOI NUMBER(10,0) NOT NULL,
 	CLE_ARCHIVAGE NVARCHAR2(40),
+	CLE_DOCUMENT NVARCHAR2(256),
 	DELAI_RETOUR NUMBER(10,0),
 	DATE_RETOUR NUMBER(10,0),
 	DATE_RAPPEL NUMBER(10,0),
 	CLE_ARCHIVAGE_RAPPEL NVARCHAR2(40),
+	CLE_DOCUMENT_RAPPEL NVARCHAR2(256),
 	LB_TYPE NVARCHAR2(20),
 	AR_DATE_DEMANDE NUMBER(10,0),
 	DBF_PERIODE_FISCALE NUMBER(10,0),
@@ -903,6 +905,26 @@ ALTER TABLE ALLEGEMENT_FONCIER ADD CONSTRAINT FK_AFONC_CTB_ID FOREIGN KEY (CTB_I
 ALTER TABLE ALLEGEMENT_FONCIER ADD CONSTRAINT FK_AFONC_RF_IMMEUBLE_ID FOREIGN KEY (IMMEUBLE_ID) REFERENCES RF_IMMEUBLE (ID);
 CREATE INDEX IDX_AFONC_CTB_ID ON ALLEGEMENT_FONCIER (CTB_ID);
 CREATE INDEX IDX_AFONC_RF_IMMEUBLE_ID ON ALLEGEMENT_FONCIER (IMMEUBLE_ID);
+
+--
+-- Récupération des identifiants de visualisation externe (= RepElec) des documents e-facture
+--
+
+CREATE TABLE DOCUMENT_EFACTURE (
+	ID NUMBER(19,0) NOT NULL,
+	ANNULATION_DATE TIMESTAMP,
+	ANNULATION_USER NVARCHAR2(65),
+	LOG_CDATE TIMESTAMP,
+	LOG_CUSER NVARCHAR2(65),
+	LOG_MDATE TIMESTAMP,
+	LOG_MUSER NVARCHAR2(65),
+	TIERS_ID NUMBER(19,0) NOT NULL,
+	CLE_ARCHIVAGE NVARCHAR2(40) NOT NULL,
+	CLE_DOCUMENT NVARCHAR2(256) NULL,
+	PRIMARY KEY (ID),
+	CONSTRAINT FK_DOC_EFACTURE_TIERS_ID FOREIGN KEY (TIERS_ID) REFERENCES TIERS (NUMERO)
+);
+CREATE UNIQUE INDEX IDX_DOC_EFACTURE_CLE ON DOCUMENT_EFACTURE(TIERS_ID ASC, CLE_ARCHIVAGE ASC);
 
 
 CREATE SEQUENCE S_MIGR_PM;

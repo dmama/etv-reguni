@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -27,12 +28,15 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
 import ch.vd.uniregctb.efacture.DemandeAvecHistoView;
 import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
+import ch.vd.uniregctb.efacture.DocumentEFacture;
+import ch.vd.uniregctb.efacture.DocumentEFactureDAO;
 import ch.vd.uniregctb.efacture.EFactureHelper;
 import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.efacture.EtatDemandeView;
 import ch.vd.uniregctb.efacture.EtatDestinataireView;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -41,6 +45,8 @@ public class EfactureManagerImpl implements EfactureManager {
 	private EFactureService eFactureService;
 	private EFactureResponseService eFactureResponseService;
 	private MessageSource messageSource;
+	private ServiceInfrastructureService infraService;
+	private DocumentEFactureDAO documentEFactureDAO;
 
 	private long timeOutForReponse;
 
@@ -85,6 +91,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	@Nullable
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	public DestinataireAvecHistoView getDestinataireAvecSonHistorique(long ctbId) {
 		final DestinataireAvecHisto destinataire = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		return destinataire != null ? buildDestinataireAvecHistoView(destinataire) : null;
@@ -164,7 +171,7 @@ public class EfactureManagerImpl implements EfactureManager {
 			final List<EtatDemande> historiqueEtats = demande.getHistoriqueEtats();
 			final List<EtatDemandeView> etatsDemande = new ArrayList<>(historiqueEtats.size());
 			for (EtatDemande etat : CollectionsUtils.revertedOrder(historiqueEtats)) {
-				final EtatDemandeView etatView = getEtatDemande(etat);
+				final EtatDemandeView etatView = getEtatDemande(etat, destinataire.getCtbId());
 				etatsDemande.add(etatView);
 			}
 
@@ -191,17 +198,28 @@ public class EfactureManagerImpl implements EfactureManager {
 	private EtatDestinataireView getEtatDestinataire(EtatDestinataire etat) {
 		return new EtatDestinataireView(etat.getDateObtention(),
 		                                etat.getDescriptionRaison(),
-		                                null, // pas de document relatif au destinataire, prévu dans un futur proche
 		                                messageSource.getMessage("label.efacture.etat.destinataire." + etat.getType(), null, WebContextUtils.getDefaultLocale()),
 		                                etat.getEmail());
 	}
 
-	private EtatDemandeView getEtatDemande(EtatDemande etat) {
+	private EtatDemandeView getEtatDemande(EtatDemande etat, Long ctbId) {
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etat.getType());
 		final String descriptionEtat = messageSource.getMessage("label.efacture.etat.demande." + etat.getType(), null, WebContextUtils.getDefaultLocale());
 		final String key = etat.getChampLibre();
+
+		final String urlVisualisationExerneDocument = Optional.ofNullable(key)
+				.map(cleArchivage -> getCleDocument(ctbId, cleArchivage))
+				.map(cleDocument -> infraService.getUrlVisualisationDocument(ctbId, null, cleDocument))
+				.orElse(null);
+
 		final ArchiveKey archiveKey = (key == null || typeDocumentEditique == null) ? null : new ArchiveKey(typeDocumentEditique, key);
-		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(), archiveKey, descriptionEtat, etat.getType());
+		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(), archiveKey, urlVisualisationExerneDocument, descriptionEtat, etat.getType());
+	}
+
+	@Nullable
+	private String getCleDocument(Long ctbId, String cleArchivage) {
+		final DocumentEFacture doc = documentEFactureDAO.findByTiersEtCleArchivage(ctbId, cleArchivage);
+		return doc != null ? doc.getCleDocument() : null;
 	}
 
 	private static TypeDocumentEditique determineTypeDocumentEditique(TypeEtatDemande typeEtat) {
@@ -239,5 +257,13 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
+	public void setDocumentEFactureDAO(DocumentEFactureDAO documentEFactureDAO) {
+		this.documentEFactureDAO = documentEFactureDAO;
 	}
 }

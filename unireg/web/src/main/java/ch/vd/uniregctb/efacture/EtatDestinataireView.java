@@ -7,8 +7,8 @@ public class EtatDestinataireView extends AbstractEtatView {
 	private final String descriptionEtat;
 	private final String email;
 
-	public EtatDestinataireView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat, String email) {
-		super(dateObtention, motifObtention, documentArchiveKey);
+	public EtatDestinataireView(Date dateObtention, String motifObtention, String descriptionEtat, String email) {
+		super(dateObtention, motifObtention, null, null);
 		this.descriptionEtat = descriptionEtat;
 		this.email = email;
 	}

@@ -9,8 +9,8 @@ public class EtatDemandeView extends AbstractEtatView {
 	private final String descriptionEtat;
 	private final TypeEtatDemande type;
 
-	public EtatDemandeView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat, TypeEtatDemande type) {
-		super(dateObtention, motifObtention, documentArchiveKey);
+	public EtatDemandeView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String urlVisualisationExterneDocument, String descriptionEtat, TypeEtatDemande type) {
+		super(dateObtention, motifObtention, documentArchiveKey, urlVisualisationExterneDocument);
 		this.descriptionEtat = descriptionEtat;
 		this.type = type;
 	}

@@ -123,6 +123,8 @@ drop table RF_COMMUNE cascade constraints;
 drop table ETIQUETTE_TIERS cascade constraints;
 drop table ETIQUETTE cascade constraints;
 
+drop table DOCUMENT_EFACTURE cascade constraints;
+
 drop table TIERS cascade constraints;
 
 

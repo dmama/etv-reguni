@@ -365,7 +365,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       null,
 		                       null,
-		                       null,            // TODO à faire
+		                       DocumentEFactureHelper.encodeIdentifiant(tiers, infoArchivage.getIdDocument()),
 		                       infoArchivage);
 	}
 

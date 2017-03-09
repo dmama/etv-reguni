@@ -68,6 +68,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
+import ch.vd.uniregctb.efacture.DocumentEFacture;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
@@ -1680,5 +1681,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setIdentifiantDroit(identifiantDroitRF);
 		return merge(droit);
+	}
+
+	@NotNull
+	protected DocumentEFacture addDocumentEFacture(Tiers tiers, String cleArchivage, @Nullable String cleDocument) {
+		final DocumentEFacture doc = new DocumentEFacture();
+		doc.setTiers(tiers);
+		doc.setCleArchivage(cleArchivage);
+		doc.setCleDocument(cleDocument);
+		return merge(doc);
 	}
 }

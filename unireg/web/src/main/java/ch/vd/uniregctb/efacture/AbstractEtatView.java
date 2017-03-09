@@ -6,14 +6,23 @@ public abstract class AbstractEtatView {
 
 	private final Date dateObtention;
 	private final String motifObtention;
-	private final ArchiveKey documentArchiveKey;    // Pas de document relatif au destinataire, seulement pour la demande,
-													// prévu dans un futur proche c'est pour cela
-												    // que ce champ est ici et non dans la sous classe EtatDemandeView
 
-	protected AbstractEtatView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey) {
+	/**
+	 * XSIFNR : Pas de document relatif au destinataire, seulement pour la demande, prévu dans un futur proche, c'est pour cela
+	 * que ce champ est ici et non dans la sous classe EtatDemandeView
+	 */
+	private final ArchiveKey documentArchiveKey;
+
+	/**
+	 * URL de visualisation (optionelle) du document dans une application externe (RepElec ?)
+	 */
+	private final String urlVisualisationExterneDocument;
+
+	protected AbstractEtatView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String urlVisualisationExterneDocument) {
 		this.dateObtention = dateObtention;
 		this.motifObtention = motifObtention;
 		this.documentArchiveKey = documentArchiveKey;
+		this.urlVisualisationExterneDocument = urlVisualisationExterneDocument;
 	}
 
 	public Date getDateObtention() {
@@ -26,5 +35,9 @@ public abstract class AbstractEtatView {
 
 	public ArchiveKey getDocumentArchiveKey() {
 		return documentArchiveKey;
+	}
+
+	public String getUrlVisualisationExterneDocument() {
+		return urlVisualisationExterneDocument;
 	}
 }

@@ -15,6 +15,8 @@
 		<property name="eFactureResponseService" ref="eFactureResponseService" />
 		<property name="timeOutForReponse" value="${extprop.evtEfacture.reponse.wait}" />
 		<property name="messageSource" ref="messageSource" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="documentEFactureDAO" ref="documentEFactureDAO"/>
 	</bean>
 
 	<bean id="eFactureClientRaw" class="ch.vd.unireg.wsclient.efacture.EFactureClientImpl">

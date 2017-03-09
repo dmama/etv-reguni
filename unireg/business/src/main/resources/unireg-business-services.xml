@@ -375,6 +375,7 @@
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
 		<property name="eFactureClient" ref="eFactureClient" />
+		<property name="documentEFactureDAO" ref="documentEFactureDAO"/>
 	</bean>
 
 	<bean id="taxLiabilityControlService" class="ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlServiceImpl">

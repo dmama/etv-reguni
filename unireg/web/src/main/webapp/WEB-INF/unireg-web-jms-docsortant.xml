@@ -22,6 +22,7 @@
 
 	<bean id="retourDocumentSortantHandler" class="ch.vd.uniregctb.evenement.docsortant.RetourDocumentSortantHandlerImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="documentEFactureDAO" ref="documentEFactureDAO"/>
 	</bean>
 
 	<bean id="retourDocumentSortantEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
