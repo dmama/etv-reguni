@@ -8,9 +8,4 @@ public class URLPropertyType extends UserTypePropertyType {
 	public URLPropertyType(URLUserType userType) {
 		super(URL.class, userType);
 	}
-
-	@Override
-	public String getConvertMethod(String value) {
-		return "new URL(\"" + value + "\")";
-	}
 }

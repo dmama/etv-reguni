@@ -6,8 +6,4 @@ public class JoinPropertyType extends PropertyType {
 	public JoinPropertyType(Class<?> objectClass) {
 		super(objectClass, Types.BIGINT);
 	}
-
-	public String getConvertMethod(String value) {
-		return "get" + getJavaType().getSimpleName() + '(' + value + ')';
-	}
 }
