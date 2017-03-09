@@ -501,8 +501,8 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 
 		// constiturion d'une map d'entêtes additionnelles
 		final Map<String, String> headers = new HashMap<>();
-		headers.put(RetourDocumentSortantEsbHandler.TYPE_DOCUMENT_HEADER_NAME, typeDocument.name());
-		headers.put(RetourDocumentSortantEsbHandler.ID_ENTITE_DOCUMENT_ANNONCE_HEADER_NAME, idEntityPourReponse);
+		headers.put(RetourDocumentSortantHandler.TYPE_DOCUMENT_HEADER_NAME, typeDocument.name());
+		headers.put(RetourDocumentSortantHandler.ID_ENTITE_DOCUMENT_ANNONCE_HEADER_NAME, idEntityPourReponse);
 
 		// envoi !
 		try {

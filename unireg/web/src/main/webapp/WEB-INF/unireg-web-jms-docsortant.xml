@@ -17,6 +17,11 @@
 
 	<bean id="retourDocumentSortantEsbHandler" class="ch.vd.uniregctb.evenement.docsortant.RetourDocumentSortantEsbHandler">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="handler" ref="retourDocumentSortantHandler"/>
+	</bean>
+
+	<bean id="retourDocumentSortantHandler" class="ch.vd.uniregctb.evenement.docsortant.RetourDocumentSortantHandlerImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<bean id="retourDocumentSortantEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

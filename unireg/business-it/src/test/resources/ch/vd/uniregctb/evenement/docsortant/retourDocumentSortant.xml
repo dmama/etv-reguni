@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quittance xmlns="http://www.vd.ch/fiscalite/dperm/bpms/repelec/quittance/3">
+	<date>2017-03-08T10:52:14.993+01:00</date>
+	<documentsQuittances>
+		<documentQuittance>
+			<identifiantRepelecDossier>businessIdDossier201703081052149968963933859</identifiantRepelecDossier>
+			<identifiantRepelec>businessId201703081052150161366658264</identifiantRepelec>
+			<identifiantSupervision>UNIREG-LTIL 20220 2017 1488966720250</identifiantSupervision>
+			<fileExtension>PDF</fileExtension>
+			<foldersArchive>
+				<folderType>003</folderType>
+				<folderName>202.20</folderName>
+				<docType>413</docType>
+				<docName>Info liquidation    0308105159845</docName>
+			</foldersArchive>
+		</documentQuittance>
+	</documentsQuittances>
+</quittance>

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
@@ -23,6 +24,7 @@ public abstract class EsbMessageHelper {
 	 * @param message dont on veut extraire les headers customs
 	 * @return une map des headers customs contenus dans le message fourni
 	 */
+	@NotNull
 	public static Map<String, String> extractCustomHeaders(EsbMessage message) {
 		final Set<String> names = message.getCustomHeadersNames();
 		final Map<String, String> map = new HashMap<>(names.size());

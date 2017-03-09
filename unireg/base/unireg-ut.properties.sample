@@ -78,6 +78,7 @@ testprop.jms.queue.evtRapportAnnonceIDE=unireg.test.evenementRapportAnnonceIDE-$
 testprop.jms.queue.rapportTravail.service=unireg.test.rapportTravailService-${testprop.jdbc.username}
 testprop.jms.queue.reqdes=unireg.test.reqdes-${testprop.jdbc.username}
 testprop.jms.queue.notification.document.sortant=unireg.test.indexerDocumentSortantDPerm-${testprop.jdbc.username}
+testprop.jms.queue.notification.document.sortant.reponse=unireg.test.reponseIndexationDocumentSortant-${testprop.jdbc.username}
 testprop.jms.queue.evtRfImport=unireg.test.rf.import-${testprop.jdbc.username}
 testprop.jms.queue.evtRapprochementTiersRF=unireg.test.rf.rapprochement-${testprop.jdbc.username}
 
