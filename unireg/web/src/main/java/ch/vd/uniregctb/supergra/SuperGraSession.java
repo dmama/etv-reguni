@@ -28,6 +28,11 @@ public class SuperGraSession {
 	 */
 	private Long lastKnownTiersId;
 
+	/**
+	 * La clé de la dernière entité top affichée.
+	 */
+	private EntityKey lastKnownTopEntity;
+
 	public List<Delta> getDeltas() {
 		return Collections.unmodifiableList(deltas);
 	}
@@ -74,7 +79,14 @@ public class SuperGraSession {
 		return lastKnownTiersId;
 	}
 
-	public void setLastKnownTiersId(Long lastKnownTiersId) {
-		this.lastKnownTiersId = lastKnownTiersId;
+	public EntityKey getLastKnownTopEntity() {
+		return lastKnownTopEntity;
+	}
+
+	public void setLastKnownTopEntity(EntityKey lastKnownTopEntity) {
+		this.lastKnownTopEntity = lastKnownTopEntity;
+		if (lastKnownTopEntity != null && lastKnownTopEntity.getType() == EntityType.Tiers) {
+			lastKnownTiersId = lastKnownTopEntity.getId();
+		}
 	}
 }

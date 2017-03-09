@@ -91,6 +91,10 @@ public class SuperGraContext {
 		return entity;
 	}
 
+	public boolean isNewlyCreated(EntityKey key) {
+		return newlyCreated.containsKey(key);
+	}
+
 	public boolean isScheduledForSave(RapportEntreTiers rapport) {
 		return scheduledForSave.contains(rapport);
 	}

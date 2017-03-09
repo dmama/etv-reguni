@@ -506,7 +506,8 @@ public class SuperGraController {
 			if (needRedirect) {
 				// si l'objet affiché couramment est un nouvel objet, il faut rediriger l'utilisateur sur le dernier tiers connu parce qu'Hibernate va
 				// réassigner un id à l'objet courant et on ne sait pas lequel
-				return "redirect:/supergra/entity/show.do?id=" + session.getLastKnownTiersId() + "&class=" + EntityType.Tiers;
+				final EntityKey key = session.getLastKnownTopEntity();
+				return "redirect:/supergra/entity/show.do?id=" + key.getId() + "&class=" + key.getType();
 			}
 		}
 

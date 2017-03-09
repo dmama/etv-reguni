@@ -410,9 +410,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				if (entity != null) {
 					fillView(entity, view, context);
 
-					if (entity instanceof Tiers) {
-						// on affiche un tiers, on en profite pour mémoriser son numéro de manière à pouvoir revenir sur lui plus tard
-						session.setLastKnownTiersId((Long) entity.getKey());
+					if (TOP_ENTITY_TYPES.contains(key.getType()) && !context.isNewlyCreated(key)) {
+						// si on affiche une top entité, on en profite pour mémoriser sa clé de manière à pouvoir revenir sur elle après le commit
+						session.setLastKnownTopEntity(key);
 					}
 				}
 				return null;
