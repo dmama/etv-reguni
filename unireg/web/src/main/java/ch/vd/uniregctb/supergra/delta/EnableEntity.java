@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.supergra.delta;
 
+import java.util.Collections;
+import java.util.List;
+
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.SuperGraContext;
@@ -18,6 +21,11 @@ public class EnableEntity extends Delta {
 	@Override
 	public EntityKey getKey() {
 		return key;
+	}
+
+	@Override
+	public List<EntityKey> getAllKeys() {
+		return Collections.singletonList(key);
 	}
 
 	@Override

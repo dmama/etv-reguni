@@ -402,7 +402,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				// Reconstruit l'état en cours de modification des entités
 				final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
 				applyDeltas(session.getDeltas(), context);
-				refreshTiersState(session, context);
+				refreshEntityStates(session, context);
 
 				view.setKey(key);
 
@@ -431,21 +431,24 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * @param session une session SuperGra.
 	 * @param context le context DAO spécifique au mode SuperGra.
 	 */
-	private void refreshTiersState(SuperGraSession session, SuperGraContext context) {
+	private void refreshEntityStates(SuperGraSession session, SuperGraContext context) {
 
 		// Récupère tous les entités principales impactés par les deltas
 		final Map<EntityKey, HibernateEntity> mainEntities = new HashMap<>();
 		final List<Delta> deltas = session.getDeltas();
 		for (Delta d : deltas) {
-			final HibernateEntity entity = context.getEntity(d.getKey());
-			if (isAnyInstanceOf(entity, TOP_ENTITY_TYPES)) {
-				if (!mainEntities.containsKey(d.getKey())) {
-					mainEntities.put(d.getKey(), entity);
+			final List<EntityKey> keys = d.getAllKeys();
+			for (EntityKey key : keys) {
+				final HibernateEntity entity = context.getEntity(key);
+				if (isAnyInstanceOf(entity, TOP_ENTITY_TYPES)) {
+					if (!mainEntities.containsKey(key)) {
+						mainEntities.put(key, entity);
+					}
 				}
-			}
-			else if (entity instanceof LinkedEntity) {
-				for (EntityType entityType : TOP_ENTITY_TYPES) {
-					addLinkedEntities(mainEntities, (LinkedEntity) entity, entityType.getHibernateClass(), entityType, isAnnulation(d));
+				else if (entity instanceof LinkedEntity) {
+					for (EntityType entityType : TOP_ENTITY_TYPES) {
+						addLinkedEntities(mainEntities, (LinkedEntity) entity, entityType.getHibernateClass(), entityType, isAnnulation(d));
+					}
 				}
 			}
 		}
@@ -602,7 +605,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				// Reconstruit l'état en cours de modification des entités
 				final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
 				applyDeltas(session.getDeltas(), context);
-				refreshTiersState(session, context);
+				refreshEntityStates(session, context);
 
 				view.setKey(key);
 				view.setName(collName);

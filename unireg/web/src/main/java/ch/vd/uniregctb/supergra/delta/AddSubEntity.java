@@ -3,6 +3,7 @@ package ch.vd.uniregctb.supergra.delta;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,11 +48,17 @@ public class AddSubEntity extends Delta {
 	 */
 	private final Long id;
 
+	/**
+	 * La clé de la sous-entité à ajouter
+	 */
+	private final EntityKey subKey;
+
 	public AddSubEntity(EntityKey key, String collName, Class subClass, Long id) {
 		this.key = key;
 		this.collName = collName;
 		this.subClass = subClass;
 		this.id = id;
+		this.subKey = new EntityKey(EntityType.fromHibernateClass(subClass), id);
 	}
 
 	/**
@@ -60,6 +67,11 @@ public class AddSubEntity extends Delta {
 	@Override
 	public EntityKey getKey() {
 		return key;
+	}
+
+	@Override
+	public List<EntityKey> getAllKeys() {
+		return Arrays.asList(key, subKey);
 	}
 
 	/**
@@ -87,7 +99,7 @@ public class AddSubEntity extends Delta {
 	 * @return la clé de la sous-entité créée par ce delta.
 	 */
 	public EntityKey getSubKey() {
-		return new EntityKey(EntityType.fromHibernateClass(subClass), id);
+		return subKey;
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -126,7 +138,6 @@ public class AddSubEntity extends Delta {
 			Assert.notNull(idProp);
 
 			// Crée la nouvelle entité
-			final EntityKey subKey = new EntityKey(EntityType.fromHibernateClass(subClass), id);
 			final HibernateEntity subEntity = context.newEntity(subKey, subClass);
 			Assert.notNull(subEntity);
 

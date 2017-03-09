@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.supergra.delta;
 
+import java.util.List;
+
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -12,6 +14,11 @@ public abstract class Delta {
 	 * @return la clé de l'entité sur laquelle s'applique le changement.
 	 */
 	public abstract EntityKey getKey();
+
+	/**
+	 * @return toutes les clés des entités concernées par ce delta.
+	 */
+	public abstract List<EntityKey> getAllKeys();
 
 	/**
 	 * Applique le changement sur l'entité spécifiée.

@@ -3,6 +3,8 @@ package ch.vd.uniregctb.supergra.delta;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,11 @@ public class AttributeUpdate extends Delta {
 	@Override
 	public EntityKey getKey() {
 		return key;
+	}
+
+	@Override
+	public List<EntityKey> getAllKeys() {
+		return Collections.singletonList(key);
 	}
 
 	public void setKey(EntityKey key) {
