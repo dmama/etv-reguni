@@ -21,5 +21,6 @@
 	<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="evenementRapportAnnonceIDEJmsEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 	<bean id="evtIdentificationRapprochementRFEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
+	<bean id="retourDocumentSortantEndpointManager" class="ch.vd.uniregctb.jms.MockJmxAwareEsbMessageEndpointManager"/>
 
 </beans>
