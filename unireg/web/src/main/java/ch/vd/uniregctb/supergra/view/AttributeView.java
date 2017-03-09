@@ -26,54 +26,42 @@ public class AttributeView {
 	 */
 	private EntityType entityType;
 	private Object category;
-	private boolean parentForeignKey;
+	private boolean entityForeignKey;
 	private final boolean collection;
 	private final boolean readonly;
 
-	public AttributeView(String name, Class<?> type, Object value, boolean isParentForeignKey, boolean isCollection, boolean isReadonly) {
+	public AttributeView(String name, Class<?> type, Object value, boolean entityForeignKey, boolean isCollection, boolean isReadonly) {
 		this.name = name;
 		this.displayName = name;
 		this.value = resolveValue(value);
-		this.type = resolveType(type, value, isParentForeignKey);
-		this.entityType = resolveEntityType(type, value, isParentForeignKey);
+		this.type = resolveType(type, entityForeignKey);
+		this.entityType = resolveEntityType(type);
 		this.category = this.entityType;
-		this.parentForeignKey = isParentForeignKey;
+		this.entityForeignKey = entityForeignKey;
 		this.collection = isCollection;
 		this.readonly = isReadonly;
 	}
 
-	public AttributeView(String name, String displayName, Class<?> type, Object value, boolean isParentForeignKey, boolean isCollection, boolean isReadonly) {
+	public AttributeView(String name, String displayName, Class<?> type, Object value, boolean entityForeignKey, boolean isCollection, boolean isReadonly) {
 		this.name = name;
 		this.displayName = displayName;
 		this.value = resolveValue(value);
-		this.type = resolveType(type, value, isParentForeignKey);
-		this.entityType = resolveEntityType(type, value, isParentForeignKey);
+		this.type = resolveType(type, entityForeignKey);
+		this.entityType = resolveEntityType(type);
 		this.category = this.entityType;
 		this.collection = isCollection;
 		this.readonly = isReadonly;
-	}
-
-	public AttributeView(String name, String displayName, Class<?> type, Object value, Object category, boolean readonly) {
-		this.name = name;
-		this.displayName = displayName;
-		this.value = value;
-		this.entityType = null;
-		this.type = type;
-		this.category = category;
-		this.parentForeignKey = false;
-		this.collection = false;
-		this.readonly = readonly;
 	}
 
 	public AttributeView(String id, String name, String displayName, Class<?> type, Object value, Object category, boolean readonly) {
 		this.id = id;
 		this.name = name;
 		this.displayName = displayName;
-		this.value = value;
-		this.entityType = null;
+		this.value = resolveValue(value);
+		this.entityType = resolveEntityType(type);
 		this.type = type;
 		this.category = category;
-		this.parentForeignKey = false;
+		this.entityForeignKey = false;
 		this.collection = false;
 		this.readonly = readonly;
 	}
@@ -85,7 +73,7 @@ public class AttributeView {
 		this.type = right.type;
 		this.entityType = right.entityType;
 		this.category = right.category;
-		this.parentForeignKey = right.parentForeignKey;
+		this.entityForeignKey = right.entityForeignKey;
 		this.collection = right.collection;
 		this.readonly = right.readonly;
 	}
@@ -94,13 +82,12 @@ public class AttributeView {
 	 * Cette méthode traduit le type réel de la valeur stockée en base en un type logique utilisé pour la présentation des données.
 	 *
 	 * @param type             le type réel de l'attribut
-	 * @param value            la valeur réelle de l'attribut
-	 * @param parentForeignKey vrai si l'attribut est la foreign key de l'entité parente
+	 * @param entityForeignKey vrai si l'attribut est la foreign key de l'entité parente
 	 * @return la classe logique de la valeur présentée à l'utilisateur
 	 */
-	private Class<?> resolveType(Class<?> type, Object value, boolean parentForeignKey) {
+	private Class<?> resolveType(Class<?> type, boolean entityForeignKey) {
 		final Class<?> t;
-		if (parentForeignKey || HibernateEntity.class.isAssignableFrom(type)) {
+		if (entityForeignKey || HibernateEntity.class.isAssignableFrom(type)) {
 			t = EntityKey.class; // dans la cas d'un lien vers une autre entité, on utilise une EntityKey.
 		}
 		else {
@@ -110,21 +97,15 @@ public class AttributeView {
 	}
 
 	/**
-	 * Cette méthode détermine le type d'entité hibernate correspondant au type et à la valeur de l'attribut spécifié.
+	 * Cette méthode détermine le type d'entité hibernate correspondant au type réel spécifié.
 	 *
-	 * @param type             le type réel de l'attribut
-	 * @param value            la valeur réelle de l'attribut
-	 * @param parentForeignKey vrai si l'attribut est la foreign key de l'entité parente
+	 * @param javaType le type réel de l'attribut
 	 * @return le type d'entité hibernate de la valeur présentée à l'utilisateur
 	 */
-	private EntityType resolveEntityType(Class<?> type, Object value, boolean parentForeignKey) {
+	private EntityType resolveEntityType(Class<?> javaType) {
 		final EntityType t;
-		if (parentForeignKey) {
-			final HibernateEntity entity = (HibernateEntity) value;
-			t = (entity == null ? null : EntityType.fromHibernateClass(entity.getClass()));
-		}
-		else if (HibernateEntity.class.isAssignableFrom(type)) {
-			t = EntityType.fromHibernateClass(type);
+		if (HibernateEntity.class.isAssignableFrom(javaType)) {
+			t = EntityType.fromHibernateClass(javaType);
 		}
 		else {
 			t = null;
@@ -198,8 +179,8 @@ public class AttributeView {
 		this.value = value;
 	}
 
-	public boolean isParentForeignKey() {
-		return parentForeignKey;
+	public boolean isEntityForeignKey() {
+		return entityForeignKey;
 	}
 
 	public boolean isCollection() {

@@ -23,7 +23,7 @@ public class SuperGraContext {
 	private final boolean forCommit;
 	private final ValidationInterceptor validationInterceptor;
 	private final Map<EntityKey, HibernateEntity> newlyCreated = new HashMap<>();
-	private final Set<RapportEntreTiers> scheduledForSave = new HashSet<>();
+	private final Set<HibernateEntity> scheduledForSave = new HashSet<>();
 
 	/**
 	 * Crée un context SuperGra associé à une session Hibernate.
@@ -100,7 +100,7 @@ public class SuperGraContext {
 	 *
 	 * @param entity une entité
 	 */
-	public void scheduleForSave(RapportEntreTiers entity) {
+	public void scheduleForSave(HibernateEntity entity) {
 		scheduledForSave.add(entity);
 	}
 
@@ -108,20 +108,26 @@ public class SuperGraContext {
 	 * Applique toutes les actions en attente qui le nécessite.
 	 */
 	public void finish() {
-		for (RapportEntreTiers rapport : scheduledForSave) {
-			// [UNIREG-3160] On désactive temporairement la validation parce qu'il est nécessaire de passer par un état momentanément invalide lors de
-			// la création d'un rapport. Dans tous les cas, les tiers liés par le rapport seront validés eux-mêmes lors du commit de la transaction
-			validationInterceptor.setEnabled(false);
-			try {
-				rapport = (RapportEntreTiers) session.merge(rapport);
+		for (HibernateEntity entity : scheduledForSave) {
+			if (entity instanceof RapportEntreTiers) {
+				RapportEntreTiers rapport = (RapportEntreTiers) entity;
+				// [UNIREG-3160] On désactive temporairement la validation parce qu'il est nécessaire de passer par un état momentanément invalide lors de
+				// la création d'un rapport. Dans tous les cas, les tiers liés par le rapport seront validés eux-mêmes lors du commit de la transaction
+				validationInterceptor.setEnabled(false);
+				try {
+					rapport = (RapportEntreTiers) session.merge(rapport);
+				}
+				finally {
+					validationInterceptor.setEnabled(true);
+				}
+				final Tiers sujet = (Tiers) getEntity(new EntityKey(EntityType.Tiers, rapport.getSujetId()));
+				sujet.addRapportSujet(rapport);
+				final Tiers objet = (Tiers) getEntity(new EntityKey(EntityType.Tiers, rapport.getObjetId()));
+				objet.addRapportObjet(rapport);
 			}
-			finally {
-				validationInterceptor.setEnabled(true);
+			else {
+				session.merge(entity);
 			}
-			final Tiers sujet = (Tiers) getEntity(new EntityKey(EntityType.Tiers, rapport.getSujetId()));
-			sujet.addRapportSujet(rapport);
-			final Tiers objet = (Tiers) getEntity(new EntityKey(EntityType.Tiers, rapport.getObjetId()));
-			objet.addRapportObjet(rapport);
 		}
 	}
 }

@@ -187,7 +187,7 @@ public class DbUnit2Java extends BusinessTest {
 					continue;
 				}
 
-				if (prop.isParentForeignKey()) {
+				if (prop.isEntityForeignKey()) {
 					parentProp = prop;
 					parent = (HibernateEntity) value;
 				}

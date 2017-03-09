@@ -10,17 +10,17 @@ public class Property implements Comparable<Property> {
 	private final String columnName;
 	private final String discriminatorValue;
 	private final boolean primaryKey;
-	private final boolean parentForeignKey;
+	private final boolean entityForeignKey;
 	private final boolean collection;
 	private int index;
 
-	public Property(String name, PropertyType type, String columnName, String discriminatorValue, boolean primaryKey, boolean parentForeignKey, boolean collection) {
+	public Property(String name, PropertyType type, String columnName, String discriminatorValue, boolean primaryKey, boolean entityForeignKey, boolean collection) {
 		this.name = name;
 		this.type = type;
 		this.columnName = columnName;
 		this.discriminatorValue = discriminatorValue;
 		this.primaryKey = primaryKey;
-		this.parentForeignKey = parentForeignKey;
+		this.entityForeignKey = entityForeignKey;
 		this.collection = collection;
 		this.index = 0;
 	}
@@ -65,10 +65,10 @@ public class Property implements Comparable<Property> {
 	}
 
 	/**
-	 * @return <i>vrai</i> si la propriété est la clé étrangère de l'entité Hibernate parente (= celle qui possède l'entité Hibernate courante)
+	 * @return <i>vrai</i> si la propriété est un lien vers une autre entité liée par une relation 1-n avec l'entité courante (1=autre entité, n=entité courante).
 	 */
-	public boolean isParentForeignKey() {
-		return parentForeignKey;
+	public boolean isEntityForeignKey() {
+		return entityForeignKey;
 	}
 
 	/**

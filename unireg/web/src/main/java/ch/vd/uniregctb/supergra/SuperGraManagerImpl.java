@@ -35,14 +35,32 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.data.FiscalDataEventListener;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
@@ -51,6 +69,20 @@ import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.json.InfraCategory;
+import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
+import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.reqdes.ErreurTraitement;
+import ch.vd.uniregctb.reqdes.PartiePrenante;
+import ch.vd.uniregctb.reqdes.RolePartiePrenante;
+import ch.vd.uniregctb.reqdes.UniteTraitement;
+import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
 import ch.vd.uniregctb.supergra.view.AttributeView;
@@ -59,18 +91,30 @@ import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.taglibs.formInput.MultilineString;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AdministrationEntreprise;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
+import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -78,9 +122,11 @@ import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
+import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -113,7 +159,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.
 	 */
 	private static final Set<String> readonlyProps = new HashSet<>();
-
 	static {
 		// général
 		readonlyProps.add("annulationDate");
@@ -132,7 +177,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * Les propriétés qui représentent des données techniques, non-métier et pas indispensables à afficher en mode condensé.
 	 */
 	private static final Set<String> detailsProps = new HashSet<>();
-
 	static {
 		detailsProps.add("annulationDate");
 		detailsProps.add("annulationUser");
@@ -140,6 +184,52 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		detailsProps.add("logCreationUser");
 		detailsProps.add("logModifDate");
 		detailsProps.add("logModifUser");
+	}
+
+	/**
+	 * Les relations enfant->parent connues.
+	 */
+	private static Map<Class<? extends HibernateEntity>, Class<? extends HibernateEntity>> childToParentRelationships = new HashMap<>();
+	static {
+		// à compléter...
+		childToParentRelationships.put(AdresseTiers.class, Tiers.class);
+		childToParentRelationships.put(Declaration.class, Tiers.class);
+		childToParentRelationships.put(ForFiscal.class, Tiers.class);
+		childToParentRelationships.put(Remarque.class, Tiers.class);
+		childToParentRelationships.put(EtiquetteTiers.class, Tiers.class);
+		childToParentRelationships.put(MouvementDossier.class, Contribuable.class);
+		childToParentRelationships.put(Immeuble.class, Contribuable.class);
+		childToParentRelationships.put(IdentificationEntreprise.class, Contribuable.class);
+		childToParentRelationships.put(AdresseMandataire.class, Contribuable.class);
+		childToParentRelationships.put(DecisionAci.class, Contribuable.class);
+		childToParentRelationships.put(DroitAcces.class, Contribuable.class);
+		childToParentRelationships.put(AllegementFoncier.class, Contribuable.class);
+		childToParentRelationships.put(Periodicite.class, DebiteurPrestationImposable.class);
+		childToParentRelationships.put(RegimeFiscal.class, Entreprise.class);
+		childToParentRelationships.put(DonneeCivileEntreprise.class, Entreprise.class);
+		childToParentRelationships.put(AllegementFiscal.class, Entreprise.class);
+		childToParentRelationships.put(Bouclement.class, Entreprise.class);
+		childToParentRelationships.put(EtatEntreprise.class, Entreprise.class);
+		childToParentRelationships.put(FlagEntreprise.class, Entreprise.class);
+		childToParentRelationships.put(AutreDocumentFiscal.class, Entreprise.class);
+		childToParentRelationships.put(SituationFamille.class, ContribuableImpositionPersonnesPhysiques.class);
+		childToParentRelationships.put(IdentificationPersonne.class, PersonnePhysique.class);
+		childToParentRelationships.put(DomicileEtablissement.class, Etablissement.class);
+		childToParentRelationships.put(EtatDeclaration.class, Declaration.class);
+		childToParentRelationships.put(DelaiDeclaration.class, Declaration.class);
+		childToParentRelationships.put(ModeleFeuilleDocument.class, ModeleDocument.class);
+		childToParentRelationships.put(ParametrePeriodeFiscale.class, PeriodeFiscale.class);
+		childToParentRelationships.put(EvenementCivilEchErreur.class, EvenementCivilEch.class);
+		childToParentRelationships.put(EvenementCivilRegPPErreur.class, EvenementCivilRegPP.class);
+		childToParentRelationships.put(EvenementOrganisationErreur.class, EvenementOrganisation.class);
+		childToParentRelationships.put(MouvementDossier.class, BordereauMouvementDossier.class);
+		childToParentRelationships.put(DescriptionBatimentRF.class, BatimentRF.class);
+		childToParentRelationships.put(ImplantationRF.class, BatimentRF.class);
+		childToParentRelationships.put(SituationRF.class, ImmeubleRF.class);
+		childToParentRelationships.put(SurfaceTotaleRF.class, ImmeubleRF.class);
+		childToParentRelationships.put(EstimationRF.class, ImmeubleRF.class);
+		childToParentRelationships.put(RolePartiePrenante.class, PartiePrenante.class);
+		childToParentRelationships.put(ErreurTraitement.class, UniteTraitement.class);
 	}
 
 	/**
@@ -333,7 +423,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Les types principaux d'entités sur lesquelles on va déclencher une validation
 	 */
-	private static List<EntityType> TOP_ENTITY_TYPES = Arrays.asList(EntityType.Tiers, EntityType.AyantDroitRF, EntityType.DroitRF, EntityType.ImmeubleRF, EntityType.BatimentRF);
+	private static List<EntityType> TOP_ENTITY_TYPES = Arrays.asList(EntityType.Tiers, EntityType.AyantDroitRF, EntityType.DroitRF, EntityType.ImmeubleRF, EntityType.BatimentRF, EntityType.RapprochementRF);
 
 	/**
 	 * Met-à-jour l'état des entités modifiées dans une session SuperGra.
@@ -384,9 +474,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	private boolean isAnyInstanceOf(HibernateEntity entity, List<EntityType> topEntityTypes) {
-		for (EntityType entityType : topEntityTypes) {
-			if (entityType.getHibernateClass().isAssignableFrom(entity.getClass())) {
-				return true;
+		if (entity != null) {
+			for (EntityType entityType : topEntityTypes) {
+				if (entityType.getHibernateClass().isAssignableFrom(entity.getClass())) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -447,8 +539,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					}
 					else {
 						// cas général, on affiche l'éditeur pour l'attribut
-						final boolean readonly = p.isPrimaryKey() || p.isParentForeignKey() || readonlyProps.contains(propName);
-						attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly);
+						final boolean readonly = p.isPrimaryKey() || isPropertyToParent(entity.getClass(), p) || readonlyProps.contains(propName);
+						attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isEntityForeignKey(), false, readonly);
 					}
 				}
 
@@ -464,6 +556,25 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			throw new RuntimeException(e);
 		}
 		return attributes;
+	}
+
+	/**
+	 * @param entityClass la classe d'une entité
+	 * @param property    une propriété de la classe spécifiée
+	 * @return <b>vrai</b> si la propriété de l'entité pointe vers son entité parente (= qui la possède au sens conceptuel); <b>faux</b> autrement.
+	 */
+	public static boolean isPropertyToParent(Class<? extends HibernateEntity> entityClass, Property property) {
+
+		Class<?> clazz = entityClass;
+		while (clazz != HibernateEntity.class) {
+			final Class<? extends HibernateEntity> parentClass = childToParentRelationships.get(clazz);
+			if (parentClass != null) {
+				final Class<?> propClass = property.getType().getJavaType();
+				return parentClass.isAssignableFrom(propClass);
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return false;
 	}
 
 	/**
@@ -575,7 +686,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			for (Class<? extends HibernateEntity> clazz : classes) {
 				final MetaEntity meta = MetaEntity.determine(clazz);
 				for (Property p : meta.getProperties()) {
-					if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection() && !p.isPrimaryKey()) {
+					if (!p.isDiscriminator() && !p.isEntityForeignKey() && !p.isCollection() && !p.isPrimaryKey()) {
 						attributeNames.add(p.getName());
 					}
 					if (p.isDiscriminator()) {

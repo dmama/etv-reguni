@@ -2,7 +2,9 @@ package ch.vd.uniregctb.supergra.delta;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
@@ -12,11 +14,16 @@ import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.EntityType;
 import ch.vd.uniregctb.supergra.SuperGraContext;
+import ch.vd.uniregctb.supergra.SuperGraManagerImpl;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
- * Ajoute une sous-entité dans une collection d'une entité parente dans le mode SuperGra.
+ * Ajoute une nouvelle entité dans le mode SuperGra. Cette nouvelle entité peut être soit :
+ * <ul>
+ * <li>une sous-entité dans une collection d'une entité parente (= l'entité appartient au parent).</li>
+ * <li>une entité standalone qui apparaît dans la collection de l'entité parente (= l'entité existe pour elle-même et n'appartient pas au parent).</li>
+ * </ul>
  */
 public class AddSubEntity extends Delta {
 
@@ -102,12 +109,18 @@ public class AddSubEntity extends Delta {
 			final MetaEntity meta = MetaEntity.determine(subClass);
 			String idProp = null;
 			Property parentProp = null;
+			final List<Property> foreignKeyProps = new ArrayList<>();
 			for (Property p : meta.getProperties()) {
 				if (p.isPrimaryKey()) {
 					idProp = p.getName();
 				}
-				else if (p.isParentForeignKey()) {
-					parentProp = p;
+				else if (p.isEntityForeignKey()) {
+					if (SuperGraManagerImpl.isPropertyToParent(subClass, p)) {
+						parentProp = p;
+					}
+					else {
+						foreignKeyProps.add(p);
+					}
 				}
 			}
 			Assert.notNull(idProp);
@@ -122,9 +135,9 @@ public class AddSubEntity extends Delta {
 			final Method idSetter = idDescr.getWriteMethod();
 			idSetter.invoke(subEntity, id);
 
-			// Renseigne le parent
 			boolean isRapport = false;
-			if (parentProp != null) { // les rapports-entre-tiers ne possèdent pas de parent
+			if (parentProp != null) {
+				// on renseigne le parent
 				final PropertyDescriptor parentDescr = new PropertyDescriptor(parentProp.getName(), subClass);
 				final Method parentSetter = parentDescr.getWriteMethod();
 				parentSetter.invoke(subEntity, entity);
@@ -140,14 +153,25 @@ public class AddSubEntity extends Delta {
 					r.setObjetId(((Tiers) entity).getId());
 				}
 			}
+			else {
+				// on renseigne le lien vers le non-parent
+				for (Property keyProp : foreignKeyProps) {
+					if (keyProp.getType().getJavaType().isAssignableFrom(entity.getClass())) {
+						final PropertyDescriptor parentDescr = new PropertyDescriptor(keyProp.getName(), subClass);
+						final Method parentSetter = parentDescr.getWriteMethod();
+						parentSetter.invoke(subEntity, entity);
+					}
+				}
+			}
 
 			// Ajoute l'entité à son parent
-			if (isRapport && context.isForCommit()) {
+			if ((isRapport || parentProp == null) && context.isForCommit()) {
 				// [UNIREG-3160] lorsqu'on ajoute un rapport-entre-tiers dans le but de sauver les changements dans le base, on évite de l'ajouter à la collection du parent.
 				// Autrement hibernate se retrouve avec une entité transiente dans une collection (rapportsObjet ou rapportsSujet) qui n'est pas responsable des éléments (selon
 				// les annotations utilisées, les rapports-entre-tiers pointent vers leurs objet/sujet mais ils ne leur appartiennent pas) et il lève une TransientObjectException.
 				// A la place, on le met-de-côté pour être sauvé lorsque les liens vers les objet/sujet seront correctement établis.
-				context.scheduleForSave((RapportEntreTiers) subEntity);
+				// [SIFISC-23602] Etendu la logique à toutes les entités standalone (= qui ne sont pas possédées par un parent).
+				context.scheduleForSave(subEntity);
 			}
 			else {
 				set.add(subEntity);
@@ -160,6 +184,8 @@ public class AddSubEntity extends Delta {
 
 	@Override
 	public String getHtml() {
-		return "Ajout du " + subClass.getSimpleName() + " n°" + id + " dans la collection " + attribute2html(collName) + " du " + key;
+		return "Ajout " + EntityType.fromHibernateClass(subClass).getDisplayPrepositionName() + " n°" + id
+				+ " dans la collection " + attribute2html(collName) + " " + key.getType().getDisplayPrepositionName()
+				+ " n°" + key.getId();
 	}
 }

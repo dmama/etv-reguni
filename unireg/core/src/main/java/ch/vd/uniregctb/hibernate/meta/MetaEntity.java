@@ -242,10 +242,11 @@ public class MetaEntity {
 		boolean estColonne = false;
 		boolean estCollection = false;
 		String columnName = null;
-		Class<?> returnType = null;
+		Class<?> javaType = null;
+		Class<?> storedType = null;
 		UserType userType = null;
 		boolean primaryKey = false;
-		boolean parentForeignKey = false;
+		boolean entityForeignKey = false;
 		boolean otherForeignKey = false;
 		String sequenceName = null;
 		String generatorClassname = null;
@@ -255,25 +256,29 @@ public class MetaEntity {
 			if (a instanceof javax.persistence.Column) {
 				final javax.persistence.Column c = (javax.persistence.Column) a;
 				columnName = c.name();
-				returnType = readMethod.getReturnType();
+				javaType = readMethod.getReturnType();
+				storedType = javaType;
 				estColonne = true;
 			}
 			else if (a instanceof Id) {
 				columnName = "ID";
-				returnType = Long.class;
+				javaType = Long.class;
+				storedType = javaType;
 				primaryKey = true;
 				estColonne = true;
 			}
 			else if (a instanceof JoinColumn) {
 				final JoinColumn j = (JoinColumn) a;
 				columnName = j.name();
-				if (isParentOf(readMethod.getReturnType(), columnName, clazz, descriptor.getName())) {
-					parentForeignKey = true;
-					returnType = Long.class;
+				if (isOneToManyRelationShip(readMethod.getReturnType(), columnName, clazz, descriptor.getName())) {
+					entityForeignKey = true;
+					javaType = readMethod.getReturnType();
+					storedType = Long.class;
 				}
 				else {
 					otherForeignKey = true;
-					returnType = readMethod.getReturnType();
+					javaType = readMethod.getReturnType();
+					storedType = javaType;
 				}
 				estColonne = true;
 			}
@@ -371,19 +376,23 @@ public class MetaEntity {
 			else {
 				throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + ']');
 			}
-
+		}
+		else if (entityForeignKey) {
+			// lien ManyToOne
+			propertyType = new JoinPropertyType(javaType, storedType);
 		}
 		else if (otherForeignKey) {
-			propertyType = new JoinPropertyType(returnType);
+			// autres types de lien
+			propertyType = new JoinPropertyType(storedType);
 		}
 		else {
-			propertyType = propsByType.get(returnType);
+			propertyType = propsByType.get(javaType);
 			if (propertyType == null) {
-				throw new IllegalArgumentException("Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
+				throw new IllegalArgumentException("Type java non-enregistré [" + javaType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
 			}
 		}
 
-		return Collections.singletonList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
+		return Collections.singletonList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, entityForeignKey, estCollection));
 	}
 
 	/**
@@ -458,17 +467,16 @@ public class MetaEntity {
 	}
 
 	/**
-	 * Détermine si la classe <i>main</i> est le parent de la classe <i>other</i>.
+	 * Détermine si la classe <i>main</i> est liée avec la classe <i>other</i> par un lien 1-n.
 	 *
-	 * @param main        la classe parent supposée
+	 * @param main        la classe du côté "1" de la cardinalité
 	 * @param joinColumn  le nom jdbc de la colonne de jointure
-	 * @param other       la classe enfant supposée
+	 * @param other       la classe du côté "n" de la cardinalité
 	 * @param otherGetter le nom de la propriété pour aller de la classe <i>other</i> à la classe <i>main</i>
-	 * @return <b>vrai</b> si la classe <i>main</i> est bien le parent de la classe <i>other</i>; <b>false</b> autrement.
-	 * @throws java.beans.IntrospectionException
-	 *          en cas de problème d'introspection
+	 * @return <b>vrai</b> si la classe <i>main</i> est bien liée à la classe <i>other</i> par un lien 1-n; <b>false</b> autrement.
+	 * @throws java.beans.IntrospectionException en cas de problème d'introspection
 	 */
-	private static boolean isParentOf(Class<?> main, String joinColumn, Class other, String otherGetter) throws IntrospectionException {
+	private static boolean isOneToManyRelationShip(Class<?> main, String joinColumn, Class other, String otherGetter) throws IntrospectionException {
 
 		final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(main);
 		for (PropertyDescriptor descriptor : descriptors.values()) {
@@ -498,10 +506,10 @@ public class MetaEntity {
 				}
 			}
 
-			// la méthode courant détermine une relation parent->enfant si :
+			// la méthode courant détermine une relation 1-n si :
 			//  - il possède une annotation OneToMany
 			//  - il possède une annotation JoinColumn avec la même colonne de jointure
-			//  - son type de retour est une collection générique dont le type est celui voulu
+			//  - son type de retour est une collection générique dont le type corresponds bien avec celui attendu
 			if (hasOneToMany && (joinColumn.equals(joinColumnName) || otherGetter.equals(mappedByName)) && Collection.class.isAssignableFrom(readMethod.getReturnType())) {
 				final Class genericType = getGenericParamReturnType(readMethod);
 				if (genericType != null && genericType.isAssignableFrom(other)) {

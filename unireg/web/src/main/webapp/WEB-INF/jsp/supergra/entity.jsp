@@ -28,6 +28,26 @@
 
 	<tiles:put name="body" type="String">
 
+		<script>
+			// ces méthodes sont références dans SuperGraEntityEditor
+			function updateEntityLink(a, id) {
+				var linkTemplate = a.attr('href-template');
+				if (StringUtils.isBlank(id)) {
+					a.removeAttr('href');
+				}
+				else {
+					a.attr('href', linkTemplate.replace('ENTITY_ID', id));
+				}
+			}
+
+			function openTiersPicker(button, input) {
+				return Dialog.open_tiers_picker(button, function(id) {
+					input.val(id);
+					updateEntityLink($(input).siblings('a'), id);
+				});
+			}
+		</script>
+
 		<table border="0"><tr valign="top">
 		<td>
 

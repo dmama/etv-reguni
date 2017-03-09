@@ -52,32 +52,47 @@ class SuperGraEntityEditor implements Editor {
 			}
 		}
 		else {
-			if (type == EntityType.Tiers) {
+			if (type == EntityType.Tiers || type == EntityType.AyantDroitRF) {
 
+				// lien vers l'entité
+				tagWriter.startTag("a");
+				tagWriter.writeAttribute("href-template", params.getContextPath() + "/supergra/entity/show.do?id=ENTITY_ID&class=" + type);
+				if (entityId != null) {
+					tagWriter.writeAttribute("href", params.getContextPath() + "/supergra/entity/show.do?id=" + entityId + "&class=" + type);
+				}
+				tagWriter.appendValue(type.getDisplayName() + " n°");
+				tagWriter.endTag();
+
+				// espace
+				tagWriter.startTag("span");
+				tagWriter.appendValue(" ");
+				tagWriter.endTag();
+
+				// champ d'édition
 				tagWriter.startTag("input");
-
 				final String id = params.getId();
 				if (StringUtils.isNotBlank(id)) {
 					tagWriter.writeAttribute("id", id);
 				}
-
 				final String path = params.getPath();
 				if (StringUtils.isNotBlank(path)) {
 					tagWriter.writeAttribute("name", path);
 				}
 				tagWriter.writeAttribute("type", "text");
-
 				if (entityId != null) {
 					tagWriter.writeAttribute("value", entityId.toString());
 				}
-
+				tagWriter.writeAttribute("onchange", "updateEntityLink($(this).siblings('a'), $(this).val());");
 				tagWriter.endTag();
 
-				tagWriter.startTag("button");
-				tagWriter.writeAttribute("id", "button_" + id);
-				tagWriter.writeAttribute("onclick", "return Dialog.open_tiers_picker(this, function(id) {$('#" + id + "').val(id);});");
-				tagWriter.appendValue("...");
-				tagWriter.endTag();
+				// bouton d'édition
+				if (type == EntityType.Tiers) {
+					tagWriter.startTag("button");
+					tagWriter.writeAttribute("id", "button_" + id);
+					tagWriter.writeAttribute("onclick", "return openTiersPicker(this, $(this).siblings('input'));");
+					tagWriter.appendValue("...");
+					tagWriter.endTag();
+				}
 			}
 			else {
 				// TODO (msi) gérer complétement le mode read-write sur les autres entités hibernate
