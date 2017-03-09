@@ -175,6 +175,9 @@ public class TaxDeclarationBuilder {
 			return new WithholdingTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, clonedDeadlines, ((WithholdingTaxDeclaration) d).getPeriodicity(),
 					((WithholdingTaxDeclaration) d).getCommunicationMode(), null);
 		}
+		else if (d instanceof PartnershipForm) {
+			return new PartnershipForm(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, clonedDeadlines, 0, null);
+		}
 		else {
 			throw new IllegalArgumentException("Type de déclaration d'impôt inconnu = [" + d.getClass() + ']');
 		}
