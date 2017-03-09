@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration.snc;
 
 import javax.jms.JMSException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,10 +15,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.AddAndSaveHelper;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -240,9 +245,31 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		}
 	}
 
+	private static final class EtatQuestionnaireAccessor<E extends EtatDeclaration> implements AddAndSaveHelper.EntityAccessor<QuestionnaireSNC, E> {
+		@Override
+		public Collection<? extends HibernateEntity> getEntities(QuestionnaireSNC container) {
+			return container.getEtats();
+		}
+
+		@Override
+		public void addEntity(QuestionnaireSNC container, E entity) {
+			container.addEtat(entity);
+		}
+
+		@Override
+		public void assertEquals(E e1, E e2) {
+			Assert.isSame(e1.getClass(), e2.getClass());
+			Assert.isSame(e1.getDateDebut(), e2.getDateDebut());
+			Assert.isSame(e1.getDateObtention(), e2.getDateObtention());
+			Assert.isSame(e1.getEtat(), e2.getEtat());
+		}
+	}
+
 	@Override
 	public EditiqueResultat envoiRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws DeclarationException {
-		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateTraitement));
+		final EtatDeclarationRappelee etat = new EtatDeclarationRappelee(dateTraitement, dateTraitement);
+		AddAndSaveHelper.addAndSave(questionnaire, etat, questionnaireSNCDAO::save, new EtatQuestionnaireAccessor<>());
+
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeRappelQuestionnaireSNCOnline(questionnaire, dateTraitement);
 			evenementFiscalService.publierEvenementFiscalRappelQuestionnaireSNC(questionnaire, dateTraitement);
@@ -255,7 +282,9 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public void envoiRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException {
-		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateExpedition));
+		final EtatDeclarationRappelee etat = new EtatDeclarationRappelee(dateTraitement, dateExpedition);
+		AddAndSaveHelper.addAndSave(questionnaire, etat, questionnaireSNCDAO::save, new EtatQuestionnaireAccessor<>());
+
 		try {
 			editiqueCompositionService.imprimeRappelQuestionnaireSNCForBatch(questionnaire, dateTraitement, dateExpedition);
 			evenementFiscalService.publierEvenementFiscalRappelQuestionnaireSNC(questionnaire, dateTraitement);

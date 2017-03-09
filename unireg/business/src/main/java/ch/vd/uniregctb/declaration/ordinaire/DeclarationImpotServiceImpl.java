@@ -18,7 +18,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -673,61 +673,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
-
-	private interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
-		Collection<? extends HibernateEntity> getEntities(T declaration);
-
-		void addEntity(T declaration, E entity);
-
-		void assertSame(E entity1, E entity2);
-	}
-
-	@SuppressWarnings({"unchecked"})
-	private <T extends DeclarationImpotOrdinaire, E extends HibernateEntity> E addAndSave(T declaration, E entity, EntityAccessor<T, E> accessor) {
-		if (entity.getKey() == null) {
-			// pas encore persistée
-
-			// on mémorise les clés des entités existantes
-			final Set<Object> keys;
-			final Collection<? extends HibernateEntity> entities = accessor.getEntities(declaration);
-			if (entities == null || entities.isEmpty()) {
-				keys = Collections.emptySet();
-			}
-			else {
-				keys = new HashSet<>(entities.size());
-				for (HibernateEntity d : entities) {
-					final Object key = d.getKey();
-					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
-					keys.add(key);
-				}
-			}
-
-			// on ajoute la nouvelle entité et on sauve le tout
-			accessor.addEntity(declaration, entity);
-			declaration = (T) diDAO.save(declaration);
-
-			// rebelotte pour trouver la nouvelle entité
-			HibernateEntity newEntity = null;
-			for (HibernateEntity d : accessor.getEntities(declaration)) {
-				if (!keys.contains(d.getKey())) {
-					newEntity = d;
-					break;
-				}
-			}
-
-			Assert.notNull(newEntity);
-			accessor.assertSame(entity, (E) newEntity);
-			entity = (E) newEntity;
-		}
-		else {
-			accessor.addEntity(declaration, entity);
-		}
-
-		Assert.notNull(entity.getKey());
-		return entity;
-	}
-
-	private static final EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration> DELAI_DECLARATION_ACCESSOR = new EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration>() {
+	private static final AddAndSaveHelper.EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration> DELAI_DECLARATION_ACCESSOR = new AddAndSaveHelper.EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration>() {
 		@Override
 		public Collection<DelaiDeclaration> getEntities(DeclarationImpotOrdinaire declarationImpotOrdinaire) {
 			return declarationImpotOrdinaire.getDelais();
@@ -739,20 +685,19 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 
 		@Override
-		public void assertSame(DelaiDeclaration d1, DelaiDeclaration d2) {
+		public void assertEquals(DelaiDeclaration d1, DelaiDeclaration d2) {
 			Assert.isSame(d1.getDelaiAccordeAu(), d2.getDelaiAccordeAu());
 			Assert.isSame(d1.getDateDemande(), d2.getDateDemande());
 			Assert.isSame(d1.getDateTraitement(), d2.getDateTraitement());
 		}
 	};
 
-
 	@Override
 	public DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai) {
-		return addAndSave(declaration, delai, DELAI_DECLARATION_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(declaration, delai, hibernateTemplate::merge, DELAI_DECLARATION_ACCESSOR);
 	}
 
-	private static final class EtatDeclarationAccessor<E extends EtatDeclaration> implements EntityAccessor<DeclarationImpotOrdinaire, E> {
+	private static final class EtatDeclarationAccessor<E extends EtatDeclaration> implements AddAndSaveHelper.EntityAccessor<DeclarationImpotOrdinaire, E> {
 		@Override
 		public Collection<EtatDeclaration> getEntities(DeclarationImpotOrdinaire declaration) {
 			return declaration.getEtats();
@@ -764,7 +709,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 
 		@Override
-		public void assertSame(E e1, E e2) {
+		public void assertEquals(E e1, E e2) {
 			Assert.isSame(e1.getClass(), e2.getClass());
 			Assert.isSame(e1.getDateDebut(), e2.getDateDebut());
 			Assert.isSame(e1.getDateObtention(), e2.getDateObtention());
@@ -774,7 +719,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public <T extends EtatDeclaration> T addAndSave(DeclarationImpotOrdinaire declaration, T etat) {
-		return addAndSave(declaration, etat, new EtatDeclarationAccessor<>());
+		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDeclarationAccessor<>());
 	}
 
 	@Override

@@ -34,6 +34,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -1288,24 +1289,35 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	/**
+	 * Juste une façade devant la méthode {@link BaseDAOImpl#save(Object)} pour le typage en T
+	 * @param tiers tiers à sauvegarder
+	 * @param <T> type du tiers
+	 * @return le tiers après sauvegarde
+	 */
+	private <T extends Tiers> T saveTiers(T tiers) {
+		//noinspection unchecked
+		return (T) save(tiers);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
-		return addAndSave(tiers, forFiscal, new ForFiscalAccessor<>());
+		return AddAndSaveHelper.addAndSave(tiers, forFiscal, this::saveTiers, new ForFiscalAccessor<>());
 	}
 
 	@Override
 	public Immeuble addAndSave(Contribuable ctb, Immeuble immeuble) {
-		return addAndSave(ctb, immeuble, IMMEUBLE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(ctb, immeuble, this::saveTiers, IMMEUBLE_ACCESSOR);
 	}
 
 	@Override
 	public DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci) {
-		return addAndSave(tiers,decisionAci,DECISION_ACI_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(tiers, decisionAci, this::saveTiers, DECISION_ACI_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new EntityAccessor<Tiers, Declaration>() {
+	private static final AddAndSaveHelper.EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Tiers, Declaration>() {
 		@Override
 		public Collection<Declaration> getEntities(Tiers tiers) {
 			return tiers.getDeclarations();
@@ -1317,7 +1329,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(Declaration d1, Declaration d2) {
+		public void assertEquals(Declaration d1, Declaration d2) {
 			Assert.isSame(d1.getDateDebut(), d2.getDateDebut());
 			Assert.isSame(d1.getDateFin(), d2.getDateFin());
 		}
@@ -1325,10 +1337,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
-		return addAndSave(tiers, declaration, DECLARATION_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(tiers, declaration, this::saveTiers, DECLARATION_ACCESSOR);
 	}
 
-	private static final EntityAccessor<DebiteurPrestationImposable, Periodicite> PERIODICITE_ACCESSOR = new EntityAccessor<DebiteurPrestationImposable, Periodicite>() {
+	private static final AddAndSaveHelper.EntityAccessor<DebiteurPrestationImposable, Periodicite> PERIODICITE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<DebiteurPrestationImposable, Periodicite>() {
 		@Override
 		public Collection<Periodicite> getEntities(DebiteurPrestationImposable dpi) {
 			return dpi.getPeriodicites();
@@ -1340,7 +1352,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(Periodicite p1, Periodicite p2) {
+		public void assertEquals(Periodicite p1, Periodicite p2) {
 			Assert.isSame(p1.getDateDebut(), p2.getDateDebut());
 			Assert.isSame(p1.getDateFin(), p2.getDateFin());
 		}
@@ -1348,10 +1360,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
-		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(debiteur, periodicite, this::saveTiers, PERIODICITE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille>() {
+	private static final AddAndSaveHelper.EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille>() {
 		@Override
 		public Collection<SituationFamille> getEntities(ContribuableImpositionPersonnesPhysiques ctb) {
 			return ctb.getSituationsFamille();
@@ -1363,7 +1375,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(SituationFamille entity1, SituationFamille entity2) {
+		public void assertEquals(SituationFamille entity1, SituationFamille entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}
@@ -1374,10 +1386,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	 */
 	@Override
 	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
-		return addAndSave(contribuable, situation, SITUATION_FAMILLE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(contribuable, situation, this::saveTiers, SITUATION_FAMILLE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Tiers, AdresseTiers> ADRESSE_TIERS_ACCESSOR = new EntityAccessor<Tiers, AdresseTiers>() {
+	private static final AddAndSaveHelper.EntityAccessor<Tiers, AdresseTiers> ADRESSE_TIERS_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Tiers, AdresseTiers>() {
 		@Override
 		public Collection<AdresseTiers> getEntities(Tiers tiers) {
 			return tiers.getAdressesTiers();
@@ -1389,7 +1401,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(AdresseTiers entity1, AdresseTiers entity2) {
+		public void assertEquals(AdresseTiers entity1, AdresseTiers entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}
@@ -1400,10 +1412,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	 */
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
-		return addAndSave(tiers, adresse, ADRESSE_TIERS_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(tiers, adresse, this::saveTiers, ADRESSE_TIERS_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Contribuable, AdresseMandataire> ADRESSE_MANDATAIRE_ACCESSOR = new EntityAccessor<Contribuable, AdresseMandataire>() {
+	private static final AddAndSaveHelper.EntityAccessor<Contribuable, AdresseMandataire> ADRESSE_MANDATAIRE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Contribuable, AdresseMandataire>() {
 		@Override
 		public Collection<? extends HibernateEntity> getEntities(Contribuable ctb) {
 			return ctb.getAdressesMandataires();
@@ -1415,7 +1427,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(AdresseMandataire entity1, AdresseMandataire entity2) {
+		public void assertEquals(AdresseMandataire entity1, AdresseMandataire entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}
@@ -1423,10 +1435,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse) {
-		return addAndSave(contribuable, adresse, ADRESSE_MANDATAIRE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(contribuable, adresse, this::saveTiers, ADRESSE_MANDATAIRE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<PersonnePhysique, IdentificationPersonne> IDENTIFICATION_PERSONNE_ACCESSOR = new EntityAccessor<PersonnePhysique, IdentificationPersonne>() {
+	private static final AddAndSaveHelper.EntityAccessor<PersonnePhysique, IdentificationPersonne> IDENTIFICATION_PERSONNE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<PersonnePhysique, IdentificationPersonne>() {
 		@Override
 		public Collection<IdentificationPersonne> getEntities(PersonnePhysique pp) {
 			return pp.getIdentificationsPersonnes();
@@ -1438,7 +1450,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(IdentificationPersonne entity1, IdentificationPersonne entity2) {
+		public void assertEquals(IdentificationPersonne entity1, IdentificationPersonne entity2) {
 			Assert.isSame(entity1.getCategorieIdentifiant(), entity2.getCategorieIdentifiant());
 			Assert.isSame(entity1.getIdentifiant(), entity2.getIdentifiant());
 		}
@@ -1446,10 +1458,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
-		return addAndSave(pp, ident, IDENTIFICATION_PERSONNE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(pp, ident, this::saveTiers, IDENTIFICATION_PERSONNE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Contribuable, IdentificationEntreprise> IDENTIFICATION_ENTREPRISE_ACCESSOR = new EntityAccessor<Contribuable, IdentificationEntreprise>() {
+	private static final AddAndSaveHelper.EntityAccessor<Contribuable, IdentificationEntreprise> IDENTIFICATION_ENTREPRISE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Contribuable, IdentificationEntreprise>() {
 		@Override
 		public Collection<IdentificationEntreprise> getEntities(Contribuable ctb) {
 			return ctb.getIdentificationsEntreprise();
@@ -1461,17 +1473,17 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(IdentificationEntreprise entity1, IdentificationEntreprise entity2) {
+		public void assertEquals(IdentificationEntreprise entity1, IdentificationEntreprise entity2) {
 			Assert.isSame(entity1.getNumeroIde(), entity2.getNumeroIde());
 		}
 	};
 
 	@Override
 	public IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident) {
-		return addAndSave(ctb, ident, IDENTIFICATION_ENTREPRISE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(ctb, ident, this::saveTiers, IDENTIFICATION_ENTREPRISE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Etablissement, DomicileEtablissement> DOMICILE_ETABLISSEMENT_ACCESSOR = new EntityAccessor<Etablissement, DomicileEtablissement>() {
+	private static final AddAndSaveHelper.EntityAccessor<Etablissement, DomicileEtablissement> DOMICILE_ETABLISSEMENT_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Etablissement, DomicileEtablissement>() {
 		@Override
 		public Collection<DomicileEtablissement> getEntities(Etablissement tiers) {
 			return tiers.getDomiciles();
@@ -1483,7 +1495,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(DomicileEtablissement entity1, DomicileEtablissement entity2) {
+		public void assertEquals(DomicileEtablissement entity1, DomicileEtablissement entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
@@ -1493,10 +1505,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
-		return addAndSave(etb, domicile, DOMICILE_ETABLISSEMENT_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(etb, domicile, this::saveTiers, DOMICILE_ETABLISSEMENT_ACCESSOR);
 	}
 
-	private static final class AllegementFiscalAccessor<T extends AllegementFiscal> implements EntityAccessor<Entreprise, T> {
+	private static final class AllegementFiscalAccessor<T extends AllegementFiscal> implements AddAndSaveHelper.EntityAccessor<Entreprise, T> {
 		@Override
 		public Collection<T> getEntities(Entreprise tiers) {
 			//noinspection unchecked
@@ -1509,7 +1521,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(T entity1, T entity2) {
+		public void assertEquals(T entity1, T entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 			Assert.isSame(entity1.getTypeCollectivite(), entity2.getTypeCollectivite());
@@ -1519,10 +1531,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public <T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
-		return addAndSave(entreprise, allegement, new AllegementFiscalAccessor<>());
+		return AddAndSaveHelper.addAndSave(entreprise, allegement, this::saveTiers, new AllegementFiscalAccessor<>());
 	}
 
-	private static final EntityAccessor<Entreprise, DonneeCivileEntreprise> DONNEE_CIVILE_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, DonneeCivileEntreprise>() {
+	private static final AddAndSaveHelper.EntityAccessor<Entreprise, DonneeCivileEntreprise> DONNEE_CIVILE_FISCAL_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Entreprise, DonneeCivileEntreprise>() {
 		@Override
 		public Collection<DonneeCivileEntreprise> getEntities(Entreprise tiers) {
 			return tiers.getDonneesCiviles();
@@ -1534,7 +1546,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(DonneeCivileEntreprise entity1, DonneeCivileEntreprise entity2) {
+		public void assertEquals(DonneeCivileEntreprise entity1, DonneeCivileEntreprise entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 			if (RaisonSocialeFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
@@ -1558,10 +1570,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile) {
-		return addAndSave(entreprise, donneeCivile, DONNEE_CIVILE_FISCAL_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(entreprise, donneeCivile, this::saveTiers, DONNEE_CIVILE_FISCAL_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Entreprise, Bouclement> BOUCLEMENT_ACCESSOR = new EntityAccessor<Entreprise, Bouclement>() {
+	private static final AddAndSaveHelper.EntityAccessor<Entreprise, Bouclement> BOUCLEMENT_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Entreprise, Bouclement>() {
 		@Override
 		public Collection<Bouclement> getEntities(Entreprise tiers) {
 			return tiers.getBouclements();
@@ -1573,7 +1585,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(Bouclement entity1, Bouclement entity2) {
+		public void assertEquals(Bouclement entity1, Bouclement entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getAncrage(), entity2.getAncrage());
 			Assert.isSame(entity1.getPeriodeMois(), entity2.getPeriodeMois());
@@ -1582,10 +1594,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
-		return addAndSave(entreprise, bouclement, BOUCLEMENT_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(entreprise, bouclement, this::saveTiers, BOUCLEMENT_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Entreprise, RegimeFiscal> REGIME_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, RegimeFiscal>() {
+	private static final AddAndSaveHelper.EntityAccessor<Entreprise, RegimeFiscal> REGIME_FISCAL_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Entreprise, RegimeFiscal>() {
 		@Override
 		public Collection<RegimeFiscal> getEntities(Entreprise tiers) {
 			return tiers.getRegimesFiscaux();
@@ -1597,7 +1609,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(RegimeFiscal entity1, RegimeFiscal entity2) {
+		public void assertEquals(RegimeFiscal entity1, RegimeFiscal entity2) {
 			Assert.isSame(entity1.getPortee(), entity2.getPortee());
 			Assert.isSame(entity1.getCode(), entity2.getCode());
 		}
@@ -1605,10 +1617,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
-		return addAndSave(entreprise, regime, REGIME_FISCAL_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(entreprise, regime, this::saveTiers, REGIME_FISCAL_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Entreprise, EtatEntreprise> ETAT_ENTREPRISE_ACCESSOR = new EntityAccessor<Entreprise, EtatEntreprise>() {
+	private static final AddAndSaveHelper.EntityAccessor<Entreprise, EtatEntreprise> ETAT_ENTREPRISE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Entreprise, EtatEntreprise>() {
 		@Override
 		public Collection<EtatEntreprise> getEntities(Entreprise tiers) {
 			return tiers.getEtats();
@@ -1620,7 +1632,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(EtatEntreprise entity1, EtatEntreprise entity2) {
+		public void assertEquals(EtatEntreprise entity1, EtatEntreprise entity2) {
 			Assert.isSame(entity1.getDateObtention(), entity2.getDateObtention());
 			Assert.isSame(entity1.getType(), entity2.getType());
 		}
@@ -1628,10 +1640,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
-		return addAndSave(entreprise, etat, ETAT_ENTREPRISE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(entreprise, etat, this::saveTiers, ETAT_ENTREPRISE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Entreprise, FlagEntreprise> FLAG_ENTREPRISE_ACCESSOR = new EntityAccessor<Entreprise, FlagEntreprise>() {
+	private static final AddAndSaveHelper.EntityAccessor<Entreprise, FlagEntreprise> FLAG_ENTREPRISE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Entreprise, FlagEntreprise>() {
 		@Override
 		public Collection<FlagEntreprise> getEntities(Entreprise tiers) {
 			return tiers.getFlags();
@@ -1643,7 +1655,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(FlagEntreprise entity1, FlagEntreprise entity2) {
+		public void assertEquals(FlagEntreprise entity1, FlagEntreprise entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 			Assert.isSame(entity1.getType(), entity2.getType());
@@ -1652,10 +1664,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
-		return addAndSave(entreprise, flag, FLAG_ENTREPRISE_ACCESSOR);
+		return AddAndSaveHelper.addAndSave(entreprise, flag, this::saveTiers, FLAG_ENTREPRISE_ACCESSOR);
 	}
 
-	private static final class AutreDocumentFiscalAccessor<T extends AutreDocumentFiscal> implements EntityAccessor<Entreprise, T> {
+	private static final class AutreDocumentFiscalAccessor<T extends AutreDocumentFiscal> implements AddAndSaveHelper.EntityAccessor<Entreprise, T> {
 		@Override
 		public Collection<AutreDocumentFiscal> getEntities(Entreprise tiers) {
 			return tiers.getAutresDocumentsFiscaux();
@@ -1667,7 +1679,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(T entity1, T entity2) {
+		public void assertEquals(T entity1, T entity2) {
 			Assert.isSame(entity1.getDateEnvoi(), entity2.getDateEnvoi());
 			Assert.isSame(entity1.getEtat(), entity2.getEtat());
 			Assert.isSame(entity1.getClass(), entity2.getClass());
@@ -1676,10 +1688,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
-		return addAndSave(entreprise, document, new AutreDocumentFiscalAccessor<>());
+		return AddAndSaveHelper.addAndSave(entreprise, document, this::saveTiers, new AutreDocumentFiscalAccessor<>());
 	}
 
-	private static final class AllegementFoncierAccessor<T extends AllegementFoncier> implements EntityAccessor<Contribuable, T> {
+	private static final class AllegementFoncierAccessor<T extends AllegementFoncier> implements AddAndSaveHelper.EntityAccessor<Contribuable, T> {
 		@Override
 		public Collection<? extends HibernateEntity> getEntities(Contribuable tiers) {
 			return tiers.getAllegementsFonciers();
@@ -1691,7 +1703,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(T entity1, T entity2) {
+		public void assertEquals(T entity1, T entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 			Assert.isSame(entity1.getImmeuble(), entity2.getImmeuble());
@@ -1701,52 +1713,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
-		return addAndSave(contribuable, allegementFoncier, new AllegementFoncierAccessor<>());
-	}
-
-	@SuppressWarnings({"unchecked"})
-	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
-		if (entity.getKey() == null) {
-			// pas encore persistée
-
-			// on mémorise les clés des entités existantes
-			final Set<Object> keys;
-			final Collection<? extends HibernateEntity> entities = accessor.getEntities(tiers);
-			if (entities == null || entities.isEmpty()) {
-				keys = Collections.emptySet();
-			}
-			else {
-				keys = new HashSet<>(entities.size());
-				for (HibernateEntity d : entities) {
-					final Object key = d.getKey();
-					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
-					keys.add(key);
-				}
-			}
-
-			// on ajoute la nouvelle entité et on sauve le tout
-			accessor.addEntity(tiers, entity);
-			tiers = (T) save(tiers);
-
-			// rebelotte pour trouver la nouvelle entité
-			E newEntity = null;
-			for (HibernateEntity d : accessor.getEntities(tiers)) {
-				if (!keys.contains(d.getKey())) {
-					newEntity = (E) d;
-					break;
-				}
-			}
-
-			Assert.notNull(newEntity);
-			accessor.assertSame(entity, newEntity);
-			entity = newEntity;
-		}
-		else {
-			accessor.addEntity(tiers, entity);
-		}
-
-		Assert.notNull(entity.getKey());
-		return entity;
+		return AddAndSaveHelper.addAndSave(contribuable, allegementFoncier, this::saveTiers, new AllegementFoncierAccessor<>());
 	}
 
 	@Override
@@ -1837,15 +1804,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	}
 
-	private interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
-		Collection<? extends HibernateEntity> getEntities(T tiers);
-
-		void addEntity(T tiers, E entity);
-
-		void assertSame(E entity1, E entity2);
-	}
-
-	private static class ForFiscalAccessor<T extends ForFiscal> implements EntityAccessor<Tiers, T> {
+	private static class ForFiscalAccessor<T extends ForFiscal> implements AddAndSaveHelper.EntityAccessor<Tiers, T> {
 		@Override
 		public Collection<ForFiscal> getEntities(Tiers tiers) {
 			return tiers.getForsFiscaux();
@@ -1857,13 +1816,13 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(T entity1, T entity2) {
+		public void assertEquals(T entity1, T entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}
 	}
 
-	private static class ImmeubleAccessor implements EntityAccessor<Contribuable, Immeuble> {
+	private static class ImmeubleAccessor implements AddAndSaveHelper.EntityAccessor<Contribuable, Immeuble> {
 		@Override
 		public Collection<Immeuble> getEntities(Contribuable ctb) {
 			return ctb.getImmeubles();
@@ -1875,13 +1834,13 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(Immeuble entity1, Immeuble entity2) {
+		public void assertEquals(Immeuble entity1, Immeuble entity2) {
 			Assert.isEqual(entity1.getNumero(), entity2.getNumero());
 		}
 	}
 
 
-	private static class DecisionAciAccessor implements EntityAccessor<Contribuable, DecisionAci> {
+	private static class DecisionAciAccessor implements AddAndSaveHelper.EntityAccessor<Contribuable, DecisionAci> {
 		@Override
 		public Collection<DecisionAci> getEntities(Contribuable ctb) {
 			return ctb.getDecisionsAci();
@@ -1893,7 +1852,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		@Override
-		public void assertSame(DecisionAci entity1, DecisionAci entity2) {
+		public void assertEquals(DecisionAci entity1, DecisionAci entity2) {
 			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
 			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
 			Assert.isSame(entity1.getContribuable().getNumero(), entity2.getContribuable().getNumero());
