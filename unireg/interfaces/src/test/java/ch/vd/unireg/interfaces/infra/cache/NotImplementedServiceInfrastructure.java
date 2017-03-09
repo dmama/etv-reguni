@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -149,12 +150,7 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 		throw new NotImplementedException();
 	}
 

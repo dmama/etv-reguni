@@ -1,7 +1,9 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
@@ -23,6 +25,8 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
@@ -487,35 +491,29 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 	}
 
-	@Override
-	public String getUrlVers(final ApplicationFiscale application, final Long tiersId, final Integer oid) {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getUrlVers(application, tiersId, oid);
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getUrlVers", () -> String.format("application=%s, tiersId=%d, oid=%d", application.name(), tiersId, oid));
-		}
+	private static String buildMapString(Map<String, String> map) {
+		return CollectionsUtils.toString(map,
+		                                 StringRenderer.DEFAULT,
+		                                 str -> str != null ? String.format("'%s'", str) : StringUtils.EMPTY,
+		                                 ", ",
+		                                 "[",
+		                                 "]",
+		                                 "null");
 	}
 
 	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+			return target.getUrl(application, parametres);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getUrlVisualisationDocument", () -> String.format("tiersId=%d, pf=%d, oid=%d, cleDocument='%s'", tiersId, pf, oid, cleDocument));
+			tracing.end(time, t, "getUrl", () -> String.format("application=%s, parametres=%s", application.name(), buildMapString(parametres)));
 		}
 	}
 

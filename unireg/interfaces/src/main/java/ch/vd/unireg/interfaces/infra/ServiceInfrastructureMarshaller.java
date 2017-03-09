@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -162,13 +163,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		return fidorService.getUrlVers(application, tiersId, oid);
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
-		return fidorService.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
+		return fidorService.getUrl(application, parametres);
 	}
 
 	@Override

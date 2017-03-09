@@ -145,7 +145,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.orElse(StringUtils.EMPTY);
 
 		// on résout l'URL
-		final String urlPattern = infraService.getUrlVers(ApplicationFiscale.CAPITASTRA, 0L);
+		final String urlPattern = infraService.getUrlBrutte(ApplicationFiscale.CAPITASTRA);
 		if (urlPattern == null) {
 			throw new ObjectNotFoundException("L'url de connexion à CAPITASTRA n'est pas définie dans Fidor.");
 		}

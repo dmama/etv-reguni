@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0007.v1.ExtendedCanton;
@@ -524,41 +523,14 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 		final String url = getUrlApplication(application);
-		return resolve(url, tiersId, oid);
-	}
-
-	private static String resolve(String url, Long numero, Integer oid) {
-		if (url == null) {
-			return null;
+		if (parametres == null) {
+			return url;
 		}
-		Assert.notNull(numero);
-		Assert.notNull(oid);
-
-		final Map<String, String> replacements = new HashMap<>(2);
-		replacements.put("NOCTB", numero.toString());
-		replacements.put("OID", oid.toString());
-
-		return resolve(url, replacements);
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
-		final String url = getUrlApplication(ApplicationFiscale.DPERM_DOCUMENT);
-		Assert.notNull(tiersId);
-		Assert.notNull(oid);
-		Assert.notNull(cleDocument);
-
-		final Map<String, String> replacements = new HashMap<>(6);
-		replacements.put("NOCTB", tiersId.toString());
-		replacements.put("PFI", pf != null ? pf.toString() : null);
-		replacements.put("TOKEN", null);
-		replacements.put("CONTEXT", "DOC_UNIREG_PILOTE");
-		replacements.put("OID", oid.toString());
-		replacements.put("ID", cleDocument);
-
-		return resolve(url, replacements);
+		else {
+			return resolve(url, parametres);
+		}
 	}
 
 	private static String resolve(String url, Map<String, String> replacements) {

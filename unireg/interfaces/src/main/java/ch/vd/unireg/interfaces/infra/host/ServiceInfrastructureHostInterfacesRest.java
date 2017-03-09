@@ -327,13 +327,8 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
-		throw new NotImplementedException("La méthode 'getUrlVisualisationDocument' ne doit pas être appelée sur le service host-interfaces.");
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
+		throw new NotImplementedException("La méthode 'getUrl' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override

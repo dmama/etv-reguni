@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.cache;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -1467,15 +1468,9 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 		// on ne cache pas cette information parce que l'url est composée d'une partie statique auquelle est appondue le numéro d'id, et que le service concret fait ça de manière très efficace.
-		return target.getUrlVers(application, tiersId, oid);
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
-		// on ne cache pas cette information parce que l'url est composée d'une partie statique auquelle est appondue le numéro d'id, et que le service concret fait ça de manière très efficace.
-		return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+		return target.getUrl(application, parametres);
 	}
 
 	private static class KeyGetLogiciel {

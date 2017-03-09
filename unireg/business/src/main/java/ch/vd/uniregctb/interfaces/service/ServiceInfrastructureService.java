@@ -216,7 +216,7 @@ public interface ServiceInfrastructureService {
 	 * @param tiersId     le numéro de tiers
 	 * @return une chaîne de caractère qui contient l'url demandée
 	 */
-	String getUrlVers(ApplicationFiscale application, Long tiersId);
+	String getUrlInteroperabilite(ApplicationFiscale application, Long tiersId);
 
 	/**
 	 * Construit et retourne l'URL d'accès à la page de visualisation du document dans RepElec
@@ -226,6 +226,13 @@ public interface ServiceInfrastructureService {
 	 * @return une chaîne de caractères qui contient l'URL demandée
 	 */
 	String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, String cleDocument);
+
+	/**
+	 * Retourne l'URL brutte (= sans résolution de paramètre) de l'application fiscale
+	 * @param application application concernée
+	 * @return l'URL brutte correspondante
+	 */
+	String getUrlBrutte(ApplicationFiscale application);
 
 	/**
 	 * Retourne un logiciel déterminé par son id.

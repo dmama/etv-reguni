@@ -342,13 +342,18 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
-		return target.getUrlVers(application, tiersId);
+	public String getUrlInteroperabilite(ApplicationFiscale application, Long tiersId) {
+		return target.getUrlInteroperabilite(application, tiersId);
 	}
 
 	@Override
 	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, String cleDocument) {
 		return target.getUrlVisualisationDocument(tiersId, pf, cleDocument);
+	}
+
+	@Override
+	public String getUrlBrutte(ApplicationFiscale application) {
+		return target.getUrlBrutte(application);
 	}
 
 	@Override

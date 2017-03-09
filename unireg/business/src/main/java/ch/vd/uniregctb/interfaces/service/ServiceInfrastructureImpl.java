@@ -767,13 +767,28 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
-		return rawService.getUrlVers(application, tiersId, AuthenticationHelper.getCurrentOID());
+	public String getUrlInteroperabilite(ApplicationFiscale application, Long tiersId) {
+		final Map<String, String> parameters = new HashMap<>(2);
+		parameters.put("NOCTB", String.valueOf(tiersId));
+		parameters.put("OID", String.valueOf(AuthenticationHelper.getCurrentOID()));
+		return rawService.getUrl(application, parameters);
 	}
 
 	@Override
 	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, String cleDocument) {
-		return rawService.getUrlVisualisationDocument(tiersId, pf, AuthenticationHelper.getCurrentOID(), cleDocument);
+		final Map<String, String> parameters = new HashMap<>(6);
+		parameters.put("NOCTB", String.valueOf(tiersId));
+		parameters.put("PFI", pf != null ? pf.toString() : null);
+		parameters.put("TOKEN", null);
+		parameters.put("CONTEXT", "DOC_UNIREG_PILOTE");
+		parameters.put("OID", String.valueOf(AuthenticationHelper.getCurrentOID()));
+		parameters.put("ID", cleDocument);
+		return rawService.getUrl(ApplicationFiscale.DPERM_DOCUMENT, parameters);
+	}
+
+	@Override
+	public String getUrlBrutte(ApplicationFiscale application) {
+		return rawService.getUrl(application, null);
 	}
 
 	@Override

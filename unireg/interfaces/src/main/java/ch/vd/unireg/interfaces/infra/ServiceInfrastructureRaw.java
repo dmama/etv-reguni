@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -236,24 +237,12 @@ public interface ServiceInfrastructureRaw {
 	List<Localite> getLocalitesByNPA(int npa, RegDate dateReference) throws ServiceInfrastructureException;
 
 	/**
-	 * Construit et retourne l'url vers la page de visualisation d'un tiers dans un application fiscale connectée à Unireg.
-	 *
-	 * @param application l'application considérée
-	 * @param tiersId     le numéro de tiers
-	 * @param oid         l'office d'impôt
-	 * @return une chaîne de caractère qui contient l'url demandée
+	 * Fonctionalité de base de résolution d'une URL en provenance de FIDOR
+	 * @param application application fiscale visée
+	 * @param parametres paramètres de substitution (si <code>null</code>, aucune substitution n'est opérée, mais sinon, tous les paramètres sont substitués (au pire avec une chaîne vide))
+	 * @return l'URL éventuellement résolue au niveau de ses paramètres
 	 */
-	String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid);
-
-	/**
-	 * Construit et retourne l'URL vers la page de visualisation d'un Document dans RepElec
-	 * @param tiersId identifiant du tiers
-	 * @param pf période fiscale du document
-	 * @param oid office d'impôt de l'utilisateur
-	 * @param cleDocument clé du document dans RelElec
-	 * @return une chaîne de caractères qui contient l'URL demandée
-	 */
-	String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument);
+	String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres);
 
 	/**
 	 * Retourne un logiciel déterminé par son id.

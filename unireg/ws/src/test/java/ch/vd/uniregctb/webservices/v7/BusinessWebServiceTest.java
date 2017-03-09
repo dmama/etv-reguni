@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -232,7 +233,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
-			public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+			public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
+				Assert.assertNull(parametres);
 				return "https://secure.vd.ch/territoire/intercapi/faces?bfs={noCommune}&kr=0&n1={noParcelle}&n2={index1}&n3={index2}&n4={index3}&type=grundstueck_grundbuch_auszug";
 			}
 		});

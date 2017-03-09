@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.RandomAccess;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -285,5 +286,33 @@ public abstract class CollectionsUtils {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param map                   map à transformer en chaîne de caractères
+	 * @param keyRenderer           le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les clé de la map
+	 * @param valueRenderer         le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les valeurs de la map
+	 * @param separator             le séparateur à placer entre la représentation de chacun des éléments de la collection
+	 * @param prefix                préfixe général de la chaîne de caractères
+	 * @param suffix                suffixe général de la chaîne de caractères
+	 * @param nullMapValue          valeur à renvoyer si la map est <code>null</code>
+	 * @param <K>                   type des clés de la map
+	 * @param <V>                   type des valeurs de la map
+	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (les nulls de la collection sont ignorés)
+	 */
+	public static <K, V> String toString(Map<K, V> map,
+	                                     StringRenderer<? super K> keyRenderer,
+	                                     StringRenderer<? super V> valueRenderer,
+	                                     String separator,
+	                                     String prefix,
+	                                     String suffix,
+	                                     String nullMapValue) {
+		if (map == null) {
+			return nullMapValue;
+		}
+
+		return map.entrySet().stream()
+				.map(entry -> String.format("%s -> %s", keyRenderer.toString(entry.getKey()), valueRenderer.toString(entry.getValue())))
+				.collect(Collectors.joining(separator, prefix, suffix));
 	}
 }

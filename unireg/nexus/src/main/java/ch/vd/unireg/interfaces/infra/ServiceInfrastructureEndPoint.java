@@ -1,7 +1,9 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +23,8 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.MethodCallDescriptor;
 import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
@@ -301,22 +305,21 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 		}
 	}
 
-	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		loadMeter.start(new MethodCallDescriptor("getUrlVers", "application", application, "tiersId", tiersId, "oid", oid));
-		try {
-			return target.getUrlVers(application, tiersId, oid);
-		}
-		finally {
-			loadMeter.end();
-		}
+	private static String buildMapString(Map<String, String> map) {
+		return CollectionsUtils.toString(map,
+		                                 StringRenderer.DEFAULT,
+		                                 str -> str != null ? String.format("'%s'", str) : StringUtils.EMPTY,
+		                                 ", ",
+		                                 "[",
+		                                 "]",
+		                                 "null");
 	}
 
 	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
-		loadMeter.start(new MethodCallDescriptor("getUrlVisualisationDocument", "tiersId", tiersId, "pf", pf, "oid", oid, "cleDocument", cleDocument));
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
+		loadMeter.start(new MethodCallDescriptor("getUrl", "application", application, "parametres", buildMapString(parametres)));
 		try {
-			return target.getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+			return target.getUrl(application, parametres);
 		}
 		finally {
 			loadMeter.end();

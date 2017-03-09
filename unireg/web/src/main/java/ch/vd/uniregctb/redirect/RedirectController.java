@@ -26,7 +26,7 @@ public class RedirectController {
 	public String redirect(@PathVariable(value = "appname") ApplicationFiscale application,
 	                       @RequestParam(value = "id", required = true) Long id) throws UnsupportedEncodingException {
 
-		final String url = infraService.getUrlVers(application, id);
+		final String url = infraService.getUrlInteroperabilite(application, id);
 		if (url == null) {
 			throw new ServiceInfrastructureException("L'url vers l'application " + application.name() + " n'est pas définie !");
 		}

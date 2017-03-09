@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.host;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -176,13 +177,8 @@ public class ServiceInfrastructureHostInterfacesMarshaller implements ServiceInf
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		return getClient().getUrlVers(application, tiersId, oid);
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
-		return getClient().getUrlVisualisationDocument(tiersId, pf, oid, cleDocument);
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
+		return getClient().getUrl(application, parametres);
 	}
 
 	@Override

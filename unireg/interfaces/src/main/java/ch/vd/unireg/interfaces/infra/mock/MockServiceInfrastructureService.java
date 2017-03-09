@@ -462,12 +462,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
-		return null;
-	}
-
-	@Override
-	public String getUrlVisualisationDocument(Long tiersId, @Nullable Integer pf, Integer oid, String cleDocument) {
+	public String getUrl(ApplicationFiscale application, @Nullable Map<String, String> parametres) {
 		return null;
 	}
 
