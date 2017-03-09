@@ -209,6 +209,29 @@
 		<url-pattern>*.css</url-pattern>
 	</filter-mapping>
 
+	<!-- Filtre qui empêche tout caching des ressources concernées -->
+	<filter>
+		<filter-name>NoCacheFilter</filter-name>
+		<filter-class>ch.vd.registre.web.filter.CachingFilter</filter-class>
+		<init-param>
+			<param-name>Cache-Control</param-name>
+			<param-value>no-cache, no-store, must-revalidate</param-value>
+		</init-param>
+		<init-param>
+			<param-name>Pragma</param-name>
+			<param-value>no-cache</param-value>
+		</init-param>
+		<init-param>
+			<param-name>Expires</param-name>
+			<param-value>0</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<!-- On ne veut aucun caching dans les écrans SuperGra, autrement la "referenceEntity" n'est pas mise-à-jour quand l'utilisateur utilise le bouton back. -->
+		<filter-name>NoCacheFilter</filter-name>
+		<url-pattern>/supergra/*</url-pattern>
+	</filter-mapping>
+
 	<!-- Filtre de logging des requêtes http -->
 	<filter>
 		<filter-name>servletRequestLoggingFilter</filter-name>
