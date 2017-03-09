@@ -127,7 +127,7 @@ public class AddSubEntity extends Delta {
 					idProp = p.getName();
 				}
 				else if (p.isEntityForeignKey()) {
-					if (SuperGraManagerImpl.isPropertyToParent(subClass, p)) {
+					if (SuperGraManagerImpl.isPropertyToParent(subClass, p) && isSettableWith(p, entity)) {
 						parentProp = p;
 					}
 					else {
@@ -167,7 +167,7 @@ public class AddSubEntity extends Delta {
 			else {
 				// on renseigne le lien vers le non-parent
 				for (Property keyProp : foreignKeyProps) {
-					if (keyProp.getType().getJavaType().isAssignableFrom(entity.getClass())) {
+					if (isSettableWith(keyProp, entity)) {
 						final PropertyDescriptor parentDescr = new PropertyDescriptor(keyProp.getName(), subClass);
 						final Method parentSetter = parentDescr.getWriteMethod();
 						parentSetter.invoke(subEntity, entity);
@@ -191,6 +191,13 @@ public class AddSubEntity extends Delta {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * @return <b>vrai</b> is la propriété peut être renseignée avec l'entité spécifiée; <b>false</b> si ce n'est pas le cas.
+	 */
+	private static boolean isSettableWith(Property keyProp, HibernateEntity entity) {
+		return keyProp.getType().getJavaType().isAssignableFrom(entity.getClass());
 	}
 
 	@Override

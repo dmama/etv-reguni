@@ -52,7 +52,7 @@ class SuperGraEntityEditor implements Editor {
 			}
 		}
 		else {
-			if (type == EntityType.Tiers || type == EntityType.AyantDroitRF) {
+			if (type == EntityType.Tiers || type == EntityType.AyantDroitRF || type == EntityType.ImmeubleRF || type == EntityType.BatimentRF) {
 
 				// lien vers l'entité
 				tagWriter.startTag("a");
