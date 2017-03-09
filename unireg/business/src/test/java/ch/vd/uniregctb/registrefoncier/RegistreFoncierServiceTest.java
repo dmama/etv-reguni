@@ -3,7 +3,7 @@ package ch.vd.uniregctb.registrefoncier;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.istack.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
