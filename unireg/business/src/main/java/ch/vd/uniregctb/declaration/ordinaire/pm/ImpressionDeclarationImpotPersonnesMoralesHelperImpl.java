@@ -50,7 +50,7 @@ import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -271,8 +271,8 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		final DateRanged<Etablissement> etablissementPrincipal = getLastBeforeOrAt(etablissementsPrincipaux, dateFinPeriode);
 
 		// récupération du dernier domicile intéressant de l'établissement principal
-		final DomicileEtablissement domicile = etablissementPrincipal != null
-				? getLastBeforeOrAt(etablissementPrincipal.getPayload().getSortedDomiciles(false), RegDateHelper.minimum(dateFinPeriode, etablissementPrincipal.getDateFin(), NullDateBehavior.LATEST))
+		final DomicileHisto domicile = etablissementPrincipal != null
+				? getLastBeforeOrAt(tiersService.getDomiciles(etablissementPrincipal.getPayload(), false), RegDateHelper.minimum(dateFinPeriode, etablissementPrincipal.getDateFin(), NullDateBehavior.LATEST))
 				: null;
 
 		if (domicile == null || (domicile.getTypeAutoriteFiscale() == forPrincipal.getTypeAutoriteFiscale() && domicile.getNumeroOfsAutoriteFiscale().equals(forPrincipal.getNumeroOfsAutoriteFiscale()))) {
