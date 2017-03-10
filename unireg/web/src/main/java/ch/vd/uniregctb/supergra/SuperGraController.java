@@ -23,11 +23,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -57,6 +59,7 @@ import ch.vd.uniregctb.utils.IdentifiantAffaireRFEditor;
 import ch.vd.uniregctb.utils.IndividuNumberEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.TiersNumberEditor;
+import ch.vd.uniregctb.xml.ExceptionHelper;
 
 @Controller
 public class SuperGraController {
@@ -551,6 +554,14 @@ public class SuperGraController {
 
 		final String referer = getReferrer(request);
 		return "redirect:" + referer;
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ModelAndView handleCustomException(Exception ex) {
+		ModelAndView model = new ModelAndView("supergra/exception");
+		model.addObject("message", ExceptionHelper.getEnhancedMessage(ex));
+		model.addObject("exception", ex);
+		return model;
 	}
 
 	protected SuperGraSession getSession(HttpServletRequest request) {

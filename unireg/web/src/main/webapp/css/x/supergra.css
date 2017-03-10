@@ -102,3 +102,16 @@
 	color: #404040;
 	background-color : #E8E8E8;
 }
+
+/**
+ * Ecran d'exception
+ */
+#exception_table .error_message {
+	border: 1px solid gray;
+	padding: 1em;
+	margin-left: 4em;
+	margin-right: 4em;
+	color: red;
+	font-size: 12px;
+	font-weight: bold;
+}
