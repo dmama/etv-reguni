@@ -12,10 +12,11 @@ import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.categorieentreprise.v1.CategorieEntreprise;
 import ch.vd.fidor.xml.impotspecial.v1.ImpotSpecial;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
-import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
+import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 
 @SuppressWarnings({"UnusedDeclaration"})
@@ -193,6 +194,17 @@ public interface FidorClient {
 	 * @return la liste de tous les régimes fiscaux connus de FiDoR
 	 */
 	List<RegimeFiscal> getRegimesFiscaux();
+
+	/**
+	 * @param code le code d'une catégorie d'entreprise
+	 * @return la catégorie d'entreprise correspondant (ou <code>null</code> si aucune ne correspond à ce code)
+	 */
+	CategorieEntreprise getCategorieEntrepriseParCode(String code);
+
+	/**
+	 * @return la liste de toutes les catégories d'entreprise connues de FiDoR
+	 */
+	List<CategorieEntreprise> getCategoriesEntreprise();
 
 	/**
 	 * @return la liste des types d'impôts spéciaux connus de FiDoR
