@@ -718,4 +718,13 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/dematerialisation/documentDematDegrevement-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.degrevement.v1"/>
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-degrev-1"/>
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

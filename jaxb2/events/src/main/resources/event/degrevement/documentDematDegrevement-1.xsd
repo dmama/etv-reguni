@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by ETAT DE VAUD (Direction des systèmes d`information) -->
+<!-- 09.12.2016 version 1.0 (zciedt) -->
+<!-- 10.01.2017 version 1.1 (zciedt) : Ajout de la commune de situation et du numéro de parcelle pour l'AR -->
+<!-- 12.01.2017 version 1.2 (zciedt) : Ajout de l'attribut valide pour les champs OCRisés -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2">
+	<xs:element name="message">
+		<xs:annotation>
+			<xs:documentation>Un document à traiter par le module de réception du BPM</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="supervision" type="supervisionType">
+					<xs:annotation>
+						<xs:documentation>Impacts supplémentaires sur: DPERM</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="caracteristiques" type="caracteristiquesType">
+					<xs:annotation>
+						<xs:documentation>Données techniques</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="donneesMetier" type="donneesMetierType">
+					<xs:annotation>
+						<xs:documentation>Informations métier</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- TYPES COMPLEXES -->
+	<xs:complexType name="supervisionType">
+		<xs:sequence>
+			<xs:element name="horodatageReception" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Réception du document au centre de scannage (quittance) ou dans l'application d'acquisition (e-deg)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="scannage" type="typInformationScannage" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Ne pas remplir si mode éléctronique</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="validations" type="typInformationsValidations" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Ne pas remplir si mode Automatique</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="horodatagePublication" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Génération du XML</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idBusinessId" type="typTxtMax40" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Même structure que le business ID créé par l'ESB lors de la réception de la DI.
+Ex: EDEG-[PF]-[numCtb]-[numSeqDoc]-[numSoumission]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idReference" type="typTokMax512" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Uniquement eDeg: Identifiant de non répudiation chiffré</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idSoumission" type="typTxtMax40" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Uniquement eDeg</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="caracteristiquesType">
+		<xs:sequence>
+			<xs:element name="typeDocument" type="typeDocumentType">
+				<xs:annotation>
+					<xs:documentation>DEM_DEGREV</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sousTypeDocument" type="sousTypeDocumentType">
+				<xs:annotation>
+					<xs:documentation>DEM_DEGREV</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="support" type="codeSupportType">
+				<xs:annotation>
+					<xs:documentation>PAPIER, ELECTRONIQUE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="emetteur" type="nonEmptyTokenType">
+				<xs:annotation>
+					<xs:documentation>Chaine de caractères (ex: Contribuable,...)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="donneesMetierType">
+		<xs:sequence>
+			<xs:element name="periodeFiscale" type="periodeFiscaleType"/>
+			<xs:element name="numeroContribuable" type="numeroContribuableType"/>
+			<xs:element name="numeroSequenceDemande">
+				<xs:simpleType>
+					<xs:restriction base="xs:positiveInteger">
+						<xs:minInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:sequence minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Uniquement eDeg</xs:documentation>
+				</xs:annotation>
+				<xs:element name="libelleCommune" type="nonEmptyTokenType"/>
+				<xs:element name="numeroParcelle" type="nonEmptyTokenType"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="revenuLocatifEncaisse" type="typEntMax12Attr" minOccurs="0"/>
+				<xs:element name="volumeLocatif" type="typEntMax12Attr" minOccurs="0"/>
+				<xs:element name="surfaceLocatif" type="typEntMax12Attr" minOccurs="0"/>
+				<xs:element name="pourcentageLocatif" type="typPctPosDecMax3_2Attr" minOccurs="0"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="revenuLocatifEstime" type="typEntMax12Attr" minOccurs="0"/>
+				<xs:element name="volumePropreUsage" type="typEntMax12Attr" minOccurs="0"/>
+				<xs:element name="surfacePropreUsage" type="typEntMax12Attr" minOccurs="0"/>
+				<xs:element name="pourcentagePropreUsage" type="typPctPosDecMax3_2Attr" minOccurs="0"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="controleOfficeLogement" type="xs:boolean"/>
+				<xs:element name="dateOctroi" type="typDateAttr" minOccurs="0"/>
+				<xs:element name="dateEcheanceOctroi" type="typDateAttr" minOccurs="0"/>
+			</xs:sequence>
+			<xs:element name="commentaire" type="typTxtMax4000" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Uniquement eDeg</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typInformationScannage">
+		<xs:sequence minOccurs="1" maxOccurs="1">
+			<xs:element name="horodatageDematerialisation" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Début du traitement: scan pour document papier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="idOperateurDematerialisation" type="typTxtMax40" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>zai de la personne ayant effectué le scan</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typInformationsValidations">
+		<xs:sequence minOccurs="1">
+			<xs:element name="validation" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="horodatageValidation" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>date et heure d'intervention de l'opérateur</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="idOperateurSaisie" type="typTxtMax40">
+							<xs:annotation>
+								<xs:documentation>zai de la personne ayant effectué la saisie</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- TYPES SIMPLES -->
+	<xs:simpleType name="typTokMax512">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="512"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typTxtMax40">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typTxtMax4000">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4000"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typEntMax12">
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typPctPosDecMax3_2">
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+			<xs:totalDigits value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="nonEmptyTokenType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="codeSupportType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PAPIER"/>
+			<xs:enumeration value="ELECTRONIQUE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="periodeFiscaleType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger">
+			<xs:minInclusive value="1000"/>
+			<xs:maxInclusive value="2999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sousTypeDocumentType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DEM_DEGREV"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typeDocumentType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DEM_DEGREV"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="numeroContribuableType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="99999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Types Dématérisalisation CEDI -->
+	<xs:complexType name="typDateAttr">
+		<xs:simpleContent>
+			<xs:extension base="xs:date">
+				<xs:attribute name="valide" type="xs:boolean" use="required"/>
+				<xs:attribute name="videoCode" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="typPctPosDecMax3_2Attr">
+		<xs:simpleContent>
+			<xs:extension base="typPctPosDecMax3_2">
+				<xs:attribute name="valide" type="xs:boolean" use="required"/>
+				<xs:attribute name="videoCode" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="typEntMax12Attr">
+		<xs:simpleContent>
+			<xs:extension base="typEntMax12">
+				<xs:attribute name="valide" type="xs:boolean" use="required"/>
+				<xs:attribute name="videoCode" type="xs:boolean" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>
