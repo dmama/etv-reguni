@@ -503,11 +503,11 @@ public class SuperGraController {
 				Flash.message("Les " + size + " modifications ont été sauvegardées dans la base de données.");
 			}
 
-			if (needRedirect) {
+			final EntityKey lastKey = session.getLastKnownTopEntity();
+			if (needRedirect && lastKey != null) {
 				// si l'objet affiché couramment est un nouvel objet, il faut rediriger l'utilisateur sur le dernier tiers connu parce qu'Hibernate va
 				// réassigner un id à l'objet courant et on ne sait pas lequel
-				final EntityKey key = session.getLastKnownTopEntity();
-				return "redirect:/supergra/entity/show.do?id=" + key.getId() + "&class=" + key.getType();
+				return "redirect:/supergra/entity/show.do?id=" + lastKey.getId() + "&class=" + lastKey.getType();
 			}
 		}
 
