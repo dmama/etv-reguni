@@ -19,6 +19,12 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/regimesfiscaux/5" schemaLocation="ws/fidor-regimesfiscaux-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/regimefiscal/5" schemaLocation="ws/fidor-regimefiscal-5.xsd" />
 
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/regimesfiscauxetendus/5" schemaLocation="ws/fidor-regimesfiscauxetendus-5.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/regimefiscaletendu/5" schemaLocation="ws/fidor-regimefiscaletendu-5.xsd" />
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/categoriesentreprise/5" schemaLocation="ws/fidor-categoriesentreprise-5.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/categorieentreprise/5" schemaLocation="ws/fidor-categorieentreprise-5.xsd" />
+
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/impotsspeciaux/5" schemaLocation="ws/fidor-impotsspeciaux-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/impotspecial/5" schemaLocation="ws/fidor-impotspecial-5.xsd" />
 

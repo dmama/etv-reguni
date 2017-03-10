@@ -14,6 +14,12 @@
 	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimesfiscaux/5/fidor-regimesfiscaux-5.xsd" uri="ws/fidor-regimesfiscaux-5.xsd" />
 	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimefiscal/5/fidor-regimefiscal-5.xsd" uri="ws/fidor-regimefiscal-5.xsd" />
 
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimesfiscauxetendus/5/fidor-regimesfiscauxetendus-5.xsd" uri="ws/fidor-regimesfiscauxetendus-5.xsd" />
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimefiscaletendu/5/fidor-regimefiscaletendu-5.xsd" uri="ws/fidor-regimefiscaletendu-5.xsd" />
+
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/categoriesentreprise/5/fidor-categoriesentreprise-5.xsd" uri="ws/fidor-categoriesentreprise-5.xsd" />
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/categorieentreprise/5/fidor-categorieentreprise-5.xsd" uri="ws/fidor-categorieentreprise-5.xsd" />
+
 	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/impotsspeciaux/5/fidor-impotsspeciaux-5.xsd" uri="ws/fidor-impotsspeciaux-5.xsd" />
 	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/impotspecial/5/fidor-impotspecial-5.xsd" uri="ws/fidor-impotspecial-5.xsd" />
 

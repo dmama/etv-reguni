@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:categorie-entreprise="http://www.vd.ch/fiscalite/fidor/categorieentreprise/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" targetNamespace="http://www.vd.ch/fiscalite/fidor/ws/categorieentreprise/5" elementFormDefault="qualified" version="5.0" jxb:version="2.0">
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/categorieentreprise/1" schemaLocation="../data/fidor-categorieentreprise-1.xsd"/>
+	<xs:element name="categorieEntreprise" type="categorie-entreprise:categorieEntrepriseType"/>
+</xs:schema>

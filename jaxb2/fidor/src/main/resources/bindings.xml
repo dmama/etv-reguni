@@ -98,6 +98,60 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="data/fidor-regimefiscal-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.regimefiscal.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-regimefiscal-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="ws/fidor-regimefiscaletendu-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.regimefiscaletendu" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-regimefiscaletendu-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="ws/fidor-regimesfiscauxetendus-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.regimesfiscauxetendus" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-regimesfiscauxetendus-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="data/fidor-categorieentreprise-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.categorieentreprise.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-categorieentreprise-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="ws/fidor-categorieentreprise-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.categorieentreprise" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-categorieentreprise-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="ws/fidor-categoriesentreprise-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.categoriesentreprise" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-categoriesentreprise-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="data/fidor-impotspecial-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.fidor.xml.impotspecial.v1" />
