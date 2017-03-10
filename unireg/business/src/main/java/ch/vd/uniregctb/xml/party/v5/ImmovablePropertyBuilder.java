@@ -171,8 +171,7 @@ public abstract class ImmovablePropertyBuilder {
 		estimate.setDateFrom(DataHelper.coreToXMLv2(e.getDateDebutMetier()));   // SIFISC-22995 : on expose les dates métier
 		estimate.setDateTo(DataHelper.coreToXMLv2(e.getDateFinMetier()));
 		estimate.setAmount(e.getMontant());
-		final Integer anneeReference = e.getAnneeReference();
-		estimate.setReference(anneeReference == null ? null : String.valueOf(anneeReference));  // SIFISC-23478 : on expose l'année de référence comme référence fiscale
+		estimate.setReference(e.getReference());  // SIFISC-23612 : on expose bien la référence fiscale originale (et non pas celle nettoyée)
 		estimate.setRegistrationDate(DataHelper.coreToXMLv2(e.getDateInscription()));
 		estimate.setInReview(e.isEnRevision());
 		return estimate;

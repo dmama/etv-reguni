@@ -124,8 +124,8 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = condo.getTaxEstimates();
 		assertEquals(2, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, null, taxEstimates.get(0));
-		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "2004", taxEstimates.get(1));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "bonne", taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "04RG", taxEstimates.get(1));
 
 		final List<BuildingSetting> settings = condo.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -325,7 +325,7 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = mine.getTaxEstimates();
 		assertEquals(1, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, null, taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), null, false, 2_500_000L, "tatatiiiin !", taxEstimates.get(0));
 
 		final List<BuildingSetting> settings = mine.getBuildingSettings();
 		assertEquals(1, settings.size());
@@ -396,7 +396,7 @@ public class ImmovablePropertyBuilderTest {
 
 		final List<TaxEstimate> taxEstimates = realEstate.getTaxEstimates();
 		assertEquals(2, taxEstimates.size());
-		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "2003", taxEstimates.get(0));
+		assertTaxEstimate(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 31), true, 0L, "RG03", taxEstimates.get(0));
 		assertTaxEstimate(RegDate.get(2004, 1, 1), null, false, 1_200_000L, "2004", taxEstimates.get(1));
 
 		final List<BuildingSetting> settings = realEstate.getBuildingSettings();
