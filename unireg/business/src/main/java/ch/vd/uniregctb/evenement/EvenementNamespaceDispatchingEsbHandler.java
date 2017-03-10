@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.declaration;
+package ch.vd.uniregctb.evenement;
 
 import java.util.Map;
 
@@ -14,9 +14,9 @@ import ch.vd.uniregctb.jms.EsbMessageHelper;
 /**
  * Dispatcher à la sortie de la queue JMS, selon le namespace du message entrant
  */
-public class EvenementDeclarationDispatchingEsbHandler implements EsbMessageHandler {
+public class EvenementNamespaceDispatchingEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationDispatchingEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementNamespaceDispatchingEsbHandler.class);
 
 	private Map<String, EsbMessageHandler> handlers;
 

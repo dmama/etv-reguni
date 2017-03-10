@@ -5,7 +5,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="evenementDeclarationDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.declaration.EvenementDeclarationDispatchingEsbHandler">
+	<bean id="evenementDeclarationDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.EvenementNamespaceDispatchingEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="http://www.vd.ch/fiscalite/unireg/event/di/input/1" value-ref="evenementDeclarationEsbHandlerV1"/>

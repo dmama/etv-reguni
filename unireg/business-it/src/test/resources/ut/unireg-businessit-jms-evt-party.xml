@@ -15,7 +15,7 @@
 
 	<!-- Différenciation entre les hiérarchies de requêtes -->
 
-	<bean id="partyRequestDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.party.PartyRequestDispatchingEsbHandler">
+	<bean id="partyRequestDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.EvenementNamespaceDispatchingEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="http://www.vd.ch/fiscalite/unireg/event/party/request/1" value-ref="partyRequestEsbHandlerV1"/>
