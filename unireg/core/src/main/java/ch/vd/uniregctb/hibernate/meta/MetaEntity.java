@@ -46,6 +46,7 @@ import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.hibernate.DayMonthUserType;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 import ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType;
+import ch.vd.uniregctb.hibernate.IdentifiantDroitRFUserType;
 import ch.vd.uniregctb.hibernate.RegDateUserType;
 import ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType;
 import ch.vd.uniregctb.hibernate.URLUserType;
@@ -372,6 +373,9 @@ public class MetaEntity {
 			}
 			else if (userType instanceof IdentifiantAffaireRFUserType) {
 				propertyType = new IdentifiantAffaireRFPropertyType((IdentifiantAffaireRFUserType) userType);
+			}
+			else if (userType instanceof IdentifiantDroitRFUserType) {
+				propertyType = new IdentifiantDroitRFPropertyType((IdentifiantDroitRFUserType) userType);
 			}
 			else {
 				throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + ']');
