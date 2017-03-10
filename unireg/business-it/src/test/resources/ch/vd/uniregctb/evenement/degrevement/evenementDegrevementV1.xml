@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message xmlns="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1">
+	<supervision>
+		<horodatageReception>2017-03-08T10:52:14.993+01:00</horodatageReception>
+		<horodatagePublication>2017-03-08T10:52:18.842+01:00</horodatagePublication>
+		<idBusinessId>Tralala</idBusinessId>
+	</supervision>
+	<caracteristiques>
+		<typeDocument>DEM_DEGREV</typeDocument>
+		<sousTypeDocument>DEM_DEGREV</sousTypeDocument>
+		<support>ELECTRONIQUE</support>
+		<emetteur>Super-application-magnifique</emetteur>
+	</caracteristiques>
+	<donneesMetier>
+		<periodeFiscale>2016</periodeFiscale>
+		<numeroContribuable>12454</numeroContribuable>
+		<numeroSequenceDemande>7415</numeroSequenceDemande>
+		<revenuLocatifEncaisse valide="true">123456</revenuLocatifEncaisse>
+		<volumeLocatif valide="true">1231</volumeLocatif>
+		<surfaceLocatif valide="true">140</surfaceLocatif>
+		<pourcentageLocatif valide="true">60.00</pourcentageLocatif>
+		<revenuLocatifEstime valide="true">54848</revenuLocatifEstime>
+		<volumePropreUsage valide="true">4541</volumePropreUsage>
+		<surfacePropreUsage valide="true">85</surfacePropreUsage>
+		<pourcentagePropreUsage valide="true">40.00</pourcentagePropreUsage>
+		<controleOfficeLogement>false</controleOfficeLogement>
+	</donneesMetier>
+</message>

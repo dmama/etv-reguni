@@ -24,6 +24,10 @@ public class DonneesLoiLogement {
 		this.pourcentageCaractereSocial = pourcentageCaractereSocial;
 	}
 
+	public DonneesLoiLogement(DonneesLoiLogement src) {
+		this(src.dateOctroi, src.dateEcheance, src.pourcentageCaractereSocial);
+	}
+
 	@Column(name = "DATE_OCTROI")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateOctroi() {

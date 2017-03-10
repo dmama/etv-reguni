@@ -7,16 +7,31 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Optional;
+
+import ch.vd.uniregctb.common.Duplicable;
 
 @Entity
 @DiscriminatorValue(value = "DegrevementICI")
-public class DegrevementICI extends AllegementFoncier {
+public class DegrevementICI extends AllegementFoncier implements Duplicable<DegrevementICI> {
 
 	private DonneesUtilisation location;
 	private DonneesUtilisation propreUsage;
 	private DonneesLoiLogement loiLogement;
 
 	public DegrevementICI() {
+	}
+
+	private DegrevementICI(DegrevementICI src) {
+		super(src);
+		this.location = Optional.ofNullable(src.location).map(DonneesUtilisation::new).orElse(null);
+		this.propreUsage = Optional.ofNullable(src.propreUsage).map(DonneesUtilisation::new).orElse(null);
+		this.loiLogement = Optional.ofNullable(src.loiLogement).map(DonneesLoiLogement::new).orElse(null);
+	}
+
+	@Override
+	public DegrevementICI duplicate() {
+		return new DegrevementICI(this);
 	}
 
 	@Transient

@@ -52,6 +52,15 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 		ICI
 	}
 
+	public AllegementFoncier() {
+	}
+
+	protected AllegementFoncier(AllegementFoncier src) {
+		super(src);
+		this.immeuble = src.getImmeuble();
+		this.contribuable = src.getContribuable();
+	}
+
 	@Transient
 	public abstract TypeImpot getTypeImpot();
 

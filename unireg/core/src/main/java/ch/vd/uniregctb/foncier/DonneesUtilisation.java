@@ -43,6 +43,10 @@ public class DonneesUtilisation {
 		this.pourcentageArrete = pourcentageArrete;
 	}
 
+	public DonneesUtilisation(DonneesUtilisation src) {
+		this(src.revenu, src.volume, src.surface, src.pourcentage, src.pourcentageArrete);
+	}
+
 	@Column(name = "REVENU")
 	public Integer getRevenu() {
 		return revenu;

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="evenementDegrevementListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementDegrevementDispatchingEsbHandler" />
+	</bean>
+
+	<bean id="evenementDegrevementDispatchingEsbHandler" class="ch.vd.uniregctb.evenement.EvenementNamespaceDispatchingEsbHandler">
+		<property name="handlers">
+			<util:map>
+				<entry key="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" value-ref="evenementDegrevementEsbHandlerV1"/>
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="evenementDegrevementEsbHandlerV1" class="ch.vd.uniregctb.evenement.degrevement.EvenementDegrevementEsbHandlerV1">
+		<property name="handler" ref="evenementDegrevementHandlerV1" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="evenementDegrevementHandlerV1" class="ch.vd.uniregctb.evenement.degrevement.EvenementDegrevementHandlerV1Impl">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+
+	<bean id="evenementDegrevementEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtDegrevement}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evenementDegrevementListener" />
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtDegrevement.enabled}" />
+		<property name="description" value="Réception des évènements de réception des données de dégrèvement ICI"/>
+	</bean>
+
+</beans>
