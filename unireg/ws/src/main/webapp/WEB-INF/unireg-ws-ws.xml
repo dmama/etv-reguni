@@ -341,6 +341,7 @@
 						<value>classpath:ws/unireg-ws-deadline-7.xsd</value>
 						<value>classpath:ws/unireg-ws-ack-7.xsd</value>
 						<value>classpath:ws/unireg-ws-fiscalevents-7.xsd</value>
+						<value>classpath:ws/unireg-ws-landregistry-7.xsd</value>
 					</util:list>
 				</property>
 			</bean>
