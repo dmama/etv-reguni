@@ -42,7 +42,7 @@ public class AnnonceIDEView {
 		this.numero = annonce.getNumero();
 		this.type = annonce.getType();
 		this.dateAnnonce = annonce.getDateAnnonce();
-		this.utilisateur = new UtilisateurView(annonce.getUtilisateur());
+		this.utilisateur = annonce.getUtilisateur() == null ? null : new UtilisateurView(annonce.getUtilisateur());
 		this.serviceIDE = new ServiceIDEView(annonce.getInfoServiceIDEObligEtendues());
 		this.statut = new StatutView(annonce.getStatut());
 		this.typeDeSite = annonce.getTypeDeSite();

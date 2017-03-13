@@ -20,7 +20,9 @@ public class AnnonceIDE extends AnnonceIDEData implements AnnonceIDEEnvoyee, Ser
 
 	public AnnonceIDE(Long numero, TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut, InfoServiceIDEObligEtendues infos) {
 		super(type, dateAnnonce, utilisateur, typeDeSite, statut, infos);
-		sanityCheck(numero, utilisateur);
+		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
+		//sanityCheck(numero, utilisateur);
+		Objects.requireNonNull(numero, "Impossible de créer une annonce à l'IDE sans lui donner un numéro.");
 		this.numero = numero;
 	}
 
@@ -30,9 +32,9 @@ public class AnnonceIDE extends AnnonceIDEData implements AnnonceIDEEnvoyee, Ser
 		this.numero = numero;
 	}
 
-	protected void sanityCheck(Long numero, Utilisateur utilisateur) {
-		Objects.requireNonNull(numero, "Un numero doit être fourni pour créer une annonce. Alternativement, créez un modèle d'annonce, qui ne nécessite pas de numéro.");
-		Objects.requireNonNull(utilisateur.getUserId(), "Un utilisateur avec son userId doit être présent pour créer une annonce. Alternativement, créez un modèle d'annonce, qui ne nécessite pas de userId.");
+	private void sanityCheck(Long numero, Utilisateur utilisateur) {
+		Objects.requireNonNull(numero, "Impossible de créer une annonce à l'IDE sans lui donner un numéro.");
+		Objects.requireNonNull(utilisateur.getUserId(), "Impossible de créer une annonce à l'IDE sans lui donner un userId valide.");
 	}
 
 	@Override
@@ -41,7 +43,8 @@ public class AnnonceIDE extends AnnonceIDEData implements AnnonceIDEEnvoyee, Ser
 	}
 
 	public String getUniqueKey() {
-		return numero + getUtilisateur().getUserId();
+		// Pas d'utilisateur est une modalité valable pour ce qui est de la clé.
+		return numero + (getUtilisateur() == null ? "" : getUtilisateur().getUserId());
 	}
 
 	@Override

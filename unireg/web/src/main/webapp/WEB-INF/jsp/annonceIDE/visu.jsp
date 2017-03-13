@@ -12,7 +12,7 @@
 					<td width="25%">Numéro d'annonce&nbsp;:</td>
 					<td width="25%">${annonce.numero}</td>
 					<td width="25%">Utilisateur&nbsp;:</td>
-					<td width="25%">${annonce.utilisateur.userId}</td>
+					<td width="25%">${annonce.utilisateur == null ? null : annonce.utilisateur.userId}</td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>">
 					<td width="25%">Date d'annonce&nbsp;:</td>

@@ -166,7 +166,7 @@
 					${annonce.utilisateur.userId}
 				</display:column>
 				<display:column style="action">
-					<a href="#" class="detail" title="Détails de l'annonce" onclick="Annonce.open_details(<c:out value="${annonce.numero}"/>, '<c:out value="${annonce.utilisateur.userId}"/>'); return false;">&nbsp;</a>
+					<a href="#" class="detail" title="Détails de l'annonce" onclick="Annonce.open_details(<c:out value="${annonce.numero}"/>, '<c:out value="${annonce.utilisateur == null ? null : annonce.utilisateur.userId}"/>'); return false;">&nbsp;</a>
 				</display:column>
 			</display:table>
 
