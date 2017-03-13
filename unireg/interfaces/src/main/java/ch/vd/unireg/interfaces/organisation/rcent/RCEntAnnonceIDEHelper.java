@@ -271,7 +271,8 @@ public class RCEntAnnonceIDEHelper {
 	                                          FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
 		Assert.notNull(numero, "Une annonce à l'IDE ne peut pas avoir un numéro vide.");
 
-		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
+		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
+		final AnnonceIDEData.UtilisateurImpl utilisateur = userId == null ? null : new AnnonceIDEData.UtilisateurImpl(userId, telephone);
 
 		final AnnonceIDE annonceIDE = new AnnonceIDE(numero,
 		                                             typeAnnonce,
@@ -291,7 +292,9 @@ public class RCEntAnnonceIDEHelper {
 	                                                    RaisonDeRadiationRegistreIDE raisonDeRadiationRegistreIDE, String commentaire, NumeroIDE noIde, NumeroIDE noIdeRemplacant,
 	                                                    NumeroIDE noIdeEtablissementPrincipal, Long numeroSite, Long numeroOrganisation, Long numeroSiteRemplacant, String nom, String nomAdditionnel,
 	                                                    FormeLegale formeLegale, String secteurActivite, AdresseAnnonceIDE adresse, AnnonceIDEData.StatutImpl statut, AnnonceIDEData.InfoServiceIDEObligEtenduesImpl application) {
-		final AnnonceIDEData.UtilisateurImpl utilisateur = new AnnonceIDEData.UtilisateurImpl(userId, telephone);
+
+		// SIFISC-23702 Dans les annonces renvoyées par le WS noticeRequestList de RCEnt, le userId peut être nul lorsque l'annonce n'est pas encore traitée à proprement parler par RCEnt.
+		final AnnonceIDEData.UtilisateurImpl utilisateur = userId == null ? null : new AnnonceIDEData.UtilisateurImpl(userId, telephone);
 
 		final ProtoAnnonceIDE protoAnnonceIDE = new ProtoAnnonceIDE(typeAnnonce,
 		                                                            dateAnnonce,

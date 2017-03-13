@@ -2557,7 +2557,11 @@ var Annonce = {
 		var dialog = Dialog.create_dialog_div('visu-annonce-dialog');
 
 		// charge le contenu de la boîte de dialogue
-		dialog.load(App.curl('/annonceIDE/visu.do?id='+ id + '&userId=' + userId + '&' + new Date().getTime()));
+		var userIdParam = "";
+		if (userId) {
+			userIdParam = '&userId=' + userId;
+		}
+		dialog.load(App.curl('/annonceIDE/visu.do?id='+ id + userIdParam + '&' + new Date().getTime()));
 
 		dialog.dialog({
 			title: "Détails de l'annonce n°" + id,
