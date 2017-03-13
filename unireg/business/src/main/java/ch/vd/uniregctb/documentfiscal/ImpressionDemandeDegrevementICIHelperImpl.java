@@ -90,7 +90,8 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 			final Entreprise entreprise = demande.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(demande), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, demande.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), IMPOT_COMPLEMENTAIRE_IMMEUBLES);
+			final String titre = String.format("%s %d", IMPOT_COMPLEMENTAIRE_IMMEUBLES, demande.getPeriodeFiscale());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, demande.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT(), titre);
 			final CTypeDegrevementImm lettre = new CTypeDegrevementImm(XmlUtils.regdate2xmlcal(RegDate.get(demande.getPeriodeFiscale())),
 			                                                           getSiegeEntreprise(entreprise, dateTraitement),
 			                                                           buildCodeBarres(demande),
