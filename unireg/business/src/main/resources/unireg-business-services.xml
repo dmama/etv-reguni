@@ -300,7 +300,9 @@
 
 	<bean id="impressionRappelQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.snc.ImpressionRappelQuestionnaireSNCHelperImpl"/>
 
-    <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl"/>
+    <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl">
+	    <property name="infraService" ref="serviceInfrastructureService"/>
+    </bean>
 
 	<bean id="impressionLettreDecisionDelaiPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperImpl"/>
 

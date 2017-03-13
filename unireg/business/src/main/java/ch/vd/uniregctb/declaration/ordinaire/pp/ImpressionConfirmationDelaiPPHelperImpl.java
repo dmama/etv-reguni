@@ -40,6 +40,12 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 
 	private static final String VERSION_XSD = "1.0";
 
+	private ServiceInfrastructureService infraService;
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {
 		return TypeDocumentEditique.CONFIRMATION_DELAI;
@@ -117,6 +123,11 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 			if (!StringUtils.isBlank(params.getNoTelephone())) {
 				expediteur.setAdrMes(params.getNoTelephone());
 			}
+
+			// [SIFISC-23700] les coordonnées téléphoniques doivent toujours venir du CAT
+			final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative cat = infraService.getCAT();
+			expediteur.setNumTelephone(cat.getNoTelephone());
+			expediteur.setNumFax(cat.getNoFax());
 
 			infoEnteteDocument.setExpediteur(expediteur);
 			final Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
