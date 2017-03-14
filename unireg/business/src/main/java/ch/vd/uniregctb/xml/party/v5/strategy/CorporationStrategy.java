@@ -20,8 +20,13 @@ import ch.vd.unireg.xml.party.corporation.v5.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v5.MonetaryAmount;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
+import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
@@ -42,6 +47,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v5.BusinessYearBuilder;
 import ch.vd.uniregctb.xml.party.v5.CorporationFlagBuilder;
 import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
+import ch.vd.uniregctb.xml.party.v5.LandTaxLighteningBuilder;
 import ch.vd.uniregctb.xml.party.v5.RightHolderBuilder;
 import ch.vd.uniregctb.xml.party.v5.TaxLighteningBuilder;
 
@@ -125,6 +131,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
 			initLandRights(to, entreprise, context);
+		}
+
+		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
+			initLandTaxLightenings(to, entreprise, context);
 		}
 	}
 
@@ -290,6 +300,11 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
 			copyColl(to.getLandRights(), from.getLandRights());
 		}
+
+		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
+			copyColl(to.getIfoncExemptions(), from.getIfoncExemptions());
+			copyColl(to.getIciAbatements(), from.getIciAbatements());
+		}
 	}
 
 	private void initLandRights(Corporation to, Entreprise entreprise, Context context) {
@@ -303,5 +318,24 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		droits.stream()
 				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF, contribuableIdProvider))
 				.forEach(landRights::add);
+	}
+
+	private void initLandTaxLightenings(Corporation to, Entreprise entreprise, Context context) {
+
+		// les exonérations
+		final List<IfoncExemption> exemptions = to.getIfoncExemptions();
+		entreprise.getAllegementsFonciers().stream()
+				.filter(Annulable::isNotAnnule)
+				.filter(a -> a instanceof ExonerationIFONC)
+				.map(a -> LandTaxLighteningBuilder.buildIfoncExemption((ExonerationIFONC) a))
+				.forEach(exemptions::add);
+
+		// les dégrèvements
+		final List<IciAbatement> abatements = to.getIciAbatements();
+		entreprise.getAllegementsFonciers().stream()
+				.filter(Annulable::isNotAnnule)
+				.filter(a -> a instanceof DegrevementICI)
+				.map(a -> LandTaxLighteningBuilder.buildIciAbatement((DegrevementICI) a))
+				.forEach(abatements::add);
 	}
 }

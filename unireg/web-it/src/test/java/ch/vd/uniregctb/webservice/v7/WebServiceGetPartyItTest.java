@@ -49,7 +49,7 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 		}
 	}
 
-	private static Pair<String, Map<String, ?>> buildUriAndParams(int partyNo, @Nullable Set<PartyPart> parts) {
+	public static Pair<String, Map<String, ?>> buildUriAndParams(int partyNo, @Nullable Set<PartyPart> parts) {
 		final Map<String, Object> map = new HashMap<>();
 		map.put("partyNo", partyNo);
 

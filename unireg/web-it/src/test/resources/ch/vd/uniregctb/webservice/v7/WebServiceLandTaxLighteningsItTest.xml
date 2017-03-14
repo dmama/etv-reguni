@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>TIERS_TYPE</column>
+		<column>NUMERO</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ADRESSE_BIC_SWIFT</column>
+		<column>ADRESSE_EMAIL</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>INDEX_DIRTY</column>
+		<column>NUMERO_COMPTE_BANCAIRE</column>
+		<column>NUMERO_TELECOPIE</column>
+		<column>NUMERO_TEL_PORTABLE</column>
+		<column>NUMERO_TEL_PRIVE</column>
+		<column>NUMERO_TEL_PROF</column>
+		<column>OID</column>
+		<column>PERSONNE_CONTACT</column>
+		<column>REINDEX_ON</column>
+		<column>TITULAIRE_COMPTE_BANCAIRE</column>
+		<column>DATE_LIMITE_EXCLUSION</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>AC_NOM</column>
+		<column>DISTRICT_FISCAL_ID</column>
+		<column>REGION_FISCALE_ID</column>
+		<column>NUMERO_CA</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>LOGICIEL_ID</column>
+		<column>MODE_COM</column>
+		<column>DPI_NOM1</column>
+		<column>DPI_NOM2</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>SANS_LISTE_RECAP</column>
+		<column>SANS_RAPPEL</column>
+		<column>NUMERO_ETABLISSEMENT</column>
+		<column>ANCIEN_NUMERO_SOURCIER</column>
+		<column>NH_CAT_ETRANGER</column>
+		<column>NH_DATE_DEBUT_VALID_AUTORIS</column>
+		<column>DATE_DECES</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>PP_HABITANT</column>
+		<column>MAJORITE_TRAITEE</column>
+		<column>NH_NOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>NH_PRENOM</column>
+		<column>NH_SEXE</column>
+		<column>IDE_DIRTY</column>
+		<column>IDE_DESACTIVE</column>
+		<row>
+			<value>Entreprise</value>
+			<value>312</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<value>0</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="RF_IMMEUBLE">
+		<column>TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_RADIATION</column>
+		<column>EGRID</column>
+		<column>ID_RF</column>
+		<column>URL_INTERCAPI</column>
+		<column>CFA</column>
+		<column>QUOTE_PART_DENOM</column>
+		<column>QUOTE_PART_NUM</column>
+		<row>
+			<value>BienFond</value>
+			<value>264310664</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.920000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:01:11.928000</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<value>CH785283458046</value>
+			<value>_1f109152381059670138105e5e5148b2</value>
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="RF_AYANT_DROIT">
+		<column>TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ID_RF</column>
+		<column>NO_CTB</column>
+		<column>NO_RF</column>
+		<column>RAISON_SOCIALE</column>
+		<column>TYPE_COMMUNAUTE</column>
+		<column>NUMERO_RC</column>
+		<column>DATE_NAISSANCE</column>
+		<column>NOM_PP</column>
+		<column>PRENOM_PP</column>
+		<row>
+			<value>PersonneMorale</value>
+			<value>264832266</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:12:14.967000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:12:14.967000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f1091523810596701381059a8684ad4</value>
+			<null />
+			<value>173043</value>
+			<value>Ma petite entreprise</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="RF_DROIT">
+		<column>TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>DATE_DEBUT_METIER</column>
+		<column>DATE_FIN_METIER</column>
+		<column>MASTER_ID_RF</column>
+		<column>MOTIF_DEBUT_CODE</column>
+		<column>MOTIF_FIN_CODE</column>
+		<column>NO_AFFAIRE</column>
+		<column>IDENTIFIANT_DROIT</column>
+		<column>PART_PROP_DENOM</column>
+		<column>PART_PROP_NUM</column>
+		<column>REGIME_PROPRIETE</column>
+		<column>AYANT_DROIT_ID</column>
+		<column>IMMEUBLE_ID</column>
+		<column>COMMUNAUTE_ID</column>
+		<row>
+			<value>DroitProprietePM</value>
+			<value>265220603</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.471000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.471000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<value>19810306</value>
+			<null />
+			<value>1f109152381059670138105f8f4c3890</value>
+			<value>Achat</value>
+			<null />
+			<value>012</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<value>COPROPRIETE</value>
+			<value>264832266</value>
+			<value>264310664</value>
+			<null />
+		</row>
+	</table>
+	<table name="RAPPROCHEMENT_RF">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TYPE_RAPPROCHEMENT</column>
+		<column>CTB_ID</column>
+		<column>RF_TIERS_ID</column>
+		<row>
+			<value>266756691</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>RapprocherTiersRFJob</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>RapprocherTiersRFJob</value>
+			<null />
+			<null />
+			<value>AUTO</value>
+			<value>312</value>
+			<value>264832266</value>
+		</row>
+	</table>
+	<table name="ALLEGEMENT_FONCIER">
+		<column>ID</column>
+		<column>TYPE_ALLEGEMENT</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>CTB_ID</column>
+		<column>IMMEUBLE_ID</column>
+		<column>DEG_LOC_REVENU</column>
+		<column>DEG_LOC_VOLUME</column>
+		<column>DEG_LOC_SURFACE</column>
+		<column>DEG_LOC_POURCENT</column>
+		<column>DEG_LOC_POURCENT_ARRETE</column>
+		<column>DEG_PRUS_REVENU</column>
+		<column>DEG_PRUS_VOLUME</column>
+		<column>DEG_PRUS_SURFACE</column>
+		<column>DEG_PRUS_POURCENT</column>
+		<column>DEG_PRUS_POURCENT_ARRETE</column>
+		<column>DEG_LL_OCTROI</column>
+		<column>DEG_LL_ECHEANCE</column>
+		<column>DEG_LL_CARAC_SOCIAL_POURCENT</column>
+		<column>IFONC_POURCENT_EXO</column>
+		<row>
+			<value>264832103</value>
+			<value>ExonerationIFONC</value>
+			<null/>
+			<null/>
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>test</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>test</value>
+			<value>20100101</value>
+			<value>20181231</value>
+			<value>312</value>
+			<value>264310664</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<value>45.23</value>
+		</row>
+		<row>
+			<value>264832104</value>
+			<value>DegrevementICI</value>
+			<null/>
+			<null/>
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>test</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>test</value>
+			<value>20130322</value>
+			<null/>
+			<value>312</value>
+			<value>264310664</value>
+			<value>12000</value>
+			<value>6500</value>
+			<value>230</value>
+			<value>80</value>
+			<value>60</value>
+			<value>11000</value>
+			<value>5000</value>
+			<value>250</value>
+			<value>20</value>
+			<value>40</value>
+			<value>20150301</value>
+			<value>20200225</value>
+			<value>8.25</value>
+			<null/>
+		</row>
+	</table>
+</dataset>

@@ -213,7 +213,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(municipalityFsoId, location.getMunicipalityFsoId());
 	}
 
-	private static void assertDate(@Nullable RegDate expected, @Nullable Date actual) {
+	public static void assertDate(@Nullable RegDate expected, @Nullable Date actual) {
 		if (expected == null) {
 			assertNull(actual);
 		}

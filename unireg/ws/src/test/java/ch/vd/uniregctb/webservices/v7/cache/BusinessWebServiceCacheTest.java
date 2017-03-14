@@ -1762,12 +1762,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkLabels = PartyPart.LABELS == p;
 		boolean checkLandRights = PartyPart.LAND_RIGHTS == p;
 		boolean checkResidencyPeriods = PartyPart.RESIDENCY_PERIODS == p;
+		boolean checkLandTaxLightenings = PartyPart.LAND_TAX_LIGHTENINGS == p;
 
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
-				              || checkLandRights || checkResidencyPeriods, "La partie [" + p + "] est inconnue");
+				              || checkLandRights || checkResidencyPeriods || checkLandTaxLightenings, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -1808,6 +1809,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats");
 			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears");
 			assertNullOrNotNull(checkLandRights, pm.getLandRights(), "landRights");
+			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions");
+			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements");
 		}
 
 		if (tiers instanceof NaturalPerson) {
