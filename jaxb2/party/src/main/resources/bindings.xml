@@ -868,4 +868,16 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-landtaxlightening-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.landtaxlightening.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='landTaxLighteningType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings>
+			<namespace:prefix name="ltl-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

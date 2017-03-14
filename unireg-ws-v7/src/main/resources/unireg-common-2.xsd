@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/common/2" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:simpleType name="yearType">
 		<xs:annotation>
@@ -172,6 +172,16 @@
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[a-zA-Z0-9]+/[0-9]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="percentTwoDigits">
+		<xs:annotation>
+			<xs:documentation>Une valeur en pourcent avec deux chiffres après la virgule.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.00" />
+			<xs:pattern value="\d+\.\d{2}" />
 		</xs:restriction>
 	</xs:simpleType>
 

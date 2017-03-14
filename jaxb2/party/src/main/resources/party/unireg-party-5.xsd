@@ -990,6 +990,11 @@
 					<xs:documentation>Les périodes pendant lesquelles la personne physique est considérée comme résidente vaudoise (= habitante).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="LAND_TAX_LIGHTENINGS">
+				<xs:annotation>
+					<xs:documentation>Les allégements fonciers du tiers sur des propriétés foncières (exonération IFONC ou dégrèvements ICI).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

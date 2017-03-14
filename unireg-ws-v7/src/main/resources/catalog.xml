@@ -22,6 +22,7 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-withholding-1.xsd" uri="party/unireg-party-withholding-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-establishment-2.xsd" uri="party/unireg-party-establishment-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-landregistry-1.xsd" uri="party/unireg-party-landregistry-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-landtaxlightening-1.xsd" uri="party/unireg-party-landtaxlightening-1.xsd"/>
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/events/evt-fiscal-3.xsd" uri="events/evt-fiscal-3.xsd"/>
 

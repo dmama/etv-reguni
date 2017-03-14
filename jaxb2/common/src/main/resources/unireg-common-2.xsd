@@ -175,4 +175,14 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="percentTwoDigits">
+		<xs:annotation>
+			<xs:documentation>Une valeur en pourcent avec deux chiffres après la virgule.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.00" />
+			<xs:pattern value="\d+\.\d{2}" />
+		</xs:restriction>
+	</xs:simpleType>
+
 </xs:schema>

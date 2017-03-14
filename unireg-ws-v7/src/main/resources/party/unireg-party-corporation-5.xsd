@@ -3,12 +3,13 @@
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/corporation/5" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:corporation="http://www.vd.ch/fiscalite/unireg/party/corporation/5"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/5"
-		   xmlns:land="http://www.vd.ch/fiscalite/unireg/party/landregistry/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+		   xmlns:land="http://www.vd.ch/fiscalite/unireg/party/landregistry/1" xmlns:ldl="http://www.vd.ch/fiscalite/unireg/party/landtaxlightening/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/5" schemaLocation="unireg-party-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/5" schemaLocation="unireg-party-taxpayer-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/landregistry/1" schemaLocation="unireg-party-landregistry-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/landtaxlightening/1" schemaLocation="unireg-party-landtaxlightening-1.xsd" />
 
 	<xs:complexType name="corporationType">
 		<xs:annotation>
@@ -132,6 +133,33 @@
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="padding2" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ifoncExemptions" minOccurs="0" maxOccurs="unbounded" type="ldl:ifoncExemptionType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des exonérations IFONC, uniquement rempli si la part LAND_TAX_LIGHTENINGS est demandée.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="iciAbatements" minOccurs="0" maxOccurs="unbounded" type="ldl:iciAbatementType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des dégrèvements ICI, uniquement rempli si la part LAND_TAX_LIGHTENINGS est demandée.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding3" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
