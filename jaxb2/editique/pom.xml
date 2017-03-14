@@ -92,8 +92,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<excludes>
 						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb2-common, car ils ont déjà été compilés dans ceux-ci -->
 						<exclude>ch/vd/unireg/xml/common/**</exclude>
