@@ -10,7 +10,6 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -381,7 +380,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 			iter.remove();
 			fail();
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 			// ok
 		}
 	}
