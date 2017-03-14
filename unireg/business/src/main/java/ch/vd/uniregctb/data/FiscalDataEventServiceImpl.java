@@ -23,8 +23,8 @@ public class FiscalDataEventServiceImpl implements FiscalDataEventService, Fisca
 	}
 
 	@Override
-	public void onDroitAccessChange(long ppId) {
-		DataEventServiceHelper.dispatch(listeners, listener -> listener.onDroitAccessChange(ppId));
+	public void onDroitAccessChange(long id) {
+		DataEventServiceHelper.dispatch(listeners, listener -> listener.onDroitAccessChange(id));
 	}
 
 	@Override

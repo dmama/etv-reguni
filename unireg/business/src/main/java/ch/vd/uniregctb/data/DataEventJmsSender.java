@@ -431,6 +431,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean, 
 	}
 
 	@Override
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onImmeubleChange(long id) {
 		final OnNotificationAction action = data -> data.addImmeubleChange(id);
 		if (onNewNotification(action)) {
@@ -453,6 +454,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean, 
 	}
 
 	@Override
+	@Transactional(rollbackFor = Throwable.class, propagation = Propagation.MANDATORY)
 	public void onBatimentChange(long id) {
 		final OnNotificationAction action = data -> data.addBatimentChange(id);
 		if (onNewNotification(action)) {

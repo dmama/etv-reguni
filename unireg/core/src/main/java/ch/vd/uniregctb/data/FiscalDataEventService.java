@@ -23,11 +23,11 @@ public interface FiscalDataEventService {
 	void onTiersChange(long id);
 
 	/**
-	 * Notifie à tous les listeners qu'un droit d'accès à été changé sur une personne physique.
+	 * Notifie à tous les listeners qu'un droit d'accès à été changé sur un tiers.
 	 *
-	 * @param ppId l'id de la personne physique concernée
+	 * @param id l'id du tiers concerné
 	 */
-	void onDroitAccessChange(long ppId);
+	void onDroitAccessChange(long id);
 
 	/**
 	 * Cette méthode est appelée lorsqu'un immeuble RF va être ajouté/modifié dans la base de données.
