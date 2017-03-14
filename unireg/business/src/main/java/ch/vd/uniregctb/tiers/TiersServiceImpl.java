@@ -5245,7 +5245,7 @@ public class TiersServiceImpl implements TiersService {
 			final HibernateEntity e;
 			if (o instanceof EntityKey) {
 				final EntityKey key = (EntityKey) o;
-				e = (HibernateEntity) hibernateTemplate.get(key.getClazz(), (Serializable) key.getId());
+				e = hibernateTemplate.get(key.getClazz(), (Serializable) key.getId());
 
 				if (visited.contains(e)) { // on reteste sur l'entité uniquement
 					continue; // on a déjà visité cette entité

@@ -1,40 +1,35 @@
 package ch.vd.uniregctb.common;
 
+import java.util.Objects;
+
 /**
  * Représente la clé permettant d'identifier de manière unique une entité hibernate.
  */
 public class EntityKey {
 	
-	private Class<?> clazz;
-	private Object id;
+	private final Class<? extends HibernateEntity> clazz;
+	private final Object id;
 
-	public EntityKey() {
-	}
-
-	public EntityKey(Class<?> clazz, Object id) {
+	public EntityKey(Class<? extends HibernateEntity> clazz, Object id) {
+		Objects.requireNonNull(clazz);
+		Objects.requireNonNull(id);
 		this.clazz = clazz;
 		this.id = id;
 	}
 
 	public EntityKey(HibernateEntity entity) {
+		Objects.requireNonNull(entity);
+		Objects.requireNonNull(entity.getKey());
 		clazz = entity.getClass();
 		id = entity.getKey();
 	}
 
-	public Class<?> getClazz() {
+	public Class<? extends HibernateEntity> getClazz() {
 		return clazz;
-	}
-
-	public void setClazz(Class<?> clazz) {
-		this.clazz = clazz;
 	}
 
 	public Object getId() {
 		return id;
-	}
-
-	public void setId(Object id) {
-		this.id = id;
 	}
 
 	@Override
@@ -43,9 +38,7 @@ public class EntityKey {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		final EntityKey entityKey = (EntityKey) o;
-
 		return clazz.equals(entityKey.clazz) && id.equals(entityKey.id);
-
 	}
 
 	@Override
