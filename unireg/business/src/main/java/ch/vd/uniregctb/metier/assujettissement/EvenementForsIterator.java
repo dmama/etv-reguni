@@ -2,7 +2,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +11,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -267,10 +265,5 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		EvenementFors n = next;
 		fetchNext();
 		return n;
-	}
-
-	@Override
-	public void remove() {
-		throw new NotImplementedException();
 	}
 }

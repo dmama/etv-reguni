@@ -3,8 +3,6 @@ package ch.vd.uniregctb.common;
 import java.util.Collection;
 import java.util.Iterator;
 
-import ch.vd.registre.base.utils.NotImplementedException;
-
 /**
  * Un itérateur très gentil qui permet:
  * <ul>
@@ -73,10 +71,5 @@ public class GentilIterator<T> implements Iterator<T> {
 	 */
 	public boolean isLast() {
 		return i >= 0 && !hasNext();
-	}
-
-	@Override
-	public void remove() {
-		throw new NotImplementedException();
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.NotImplementedException;
 
 /**
  * Iterateur qui découpe en batches de taille déterminée un ensemble des données.
@@ -94,10 +93,5 @@ public class StandardBatchIterator<E> implements Iterator<List<E>>, BatchIterato
 		else {
 			return list;
 		}
-	}
-
-	@Override
-	public void remove() {
-		throw new NotImplementedException();
 	}
 }

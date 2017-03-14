@@ -112,18 +112,8 @@ public abstract class CollectionsUtils {
 			public T next() {
 				return iter.previous();
 			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		};
-		return new Iterable<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return revertedIterator;
-			}
-		};
+		return () -> revertedIterator;
 	}
 
 	/**
@@ -145,18 +135,8 @@ public abstract class CollectionsUtils {
 			public T next() {
 				return iterFirst.hasNext() ? iterFirst.next() : iterSecond.next();
 			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		};
-		return new Iterable<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return merged;
-			}
-		};
+		return () -> merged;
 	}
 
 	/**
