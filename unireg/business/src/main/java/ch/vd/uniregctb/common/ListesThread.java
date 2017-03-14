@@ -2,7 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -53,15 +53,10 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
     private final HibernateTemplate hibernateTemplate;
 
-    protected static final Set<Parts> PARTS_FISCALES;
-
-	static {
-        // ensemble des parties à récupérer des tiers : les tiers eux-mêmes et les rapports entre tiers
-	    final Set<Parts> parts = new HashSet<>(1);
-        parts.add(Parts.RAPPORTS_ENTRE_TIERS);
-
-	    PARTS_FISCALES = Collections.unmodifiableSet(parts);
-    }
+	/**
+	 * Ensemble des parties à récupérer des tiers : les tiers eux-mêmes et les rapports entre tiers
+	 */
+    protected static final Set<Parts> PARTS_FISCALES = Collections.unmodifiableSet(EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));;
 
     public ListesThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur,
                         ServiceCivilCacheWarmer serviceCivilCacheWarmer,
@@ -165,7 +160,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
     }
 
 	protected void prefetchDonneesCiviles(List<Long> idsTiers, RegDate date) {
-		final Set<AttributeIndividu> attributes = new HashSet<>();
+		final Set<AttributeIndividu> attributes = EnumSet.noneOf(AttributeIndividu.class);
 		fillAttributesIndividu(attributes);
 		final AttributeIndividu[] attributesArray;
 		if (!attributes.isEmpty()) {

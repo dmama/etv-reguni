@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -43,7 +43,7 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
 		    partsFiscales = PARTS_FISCALES;
 	    }
 	    else {
-		    final Set<TiersDAO.Parts> parts = new HashSet<>(PARTS_FISCALES.size() + 1);
+		    final Set<TiersDAO.Parts> parts = EnumSet.noneOf(TiersDAO.Parts.class);
 		    parts.addAll(PARTS_FISCALES);
 		    parts.add(TiersDAO.Parts.ADRESSES);
 		    partsFiscales = Collections.unmodifiableSet(parts);
