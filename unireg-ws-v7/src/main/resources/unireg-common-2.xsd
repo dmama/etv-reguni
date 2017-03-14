@@ -175,7 +175,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="percentTwoDigits">
+	<xs:simpleType name="percentTwoDigitsType">
 		<xs:annotation>
 			<xs:documentation>Une valeur en pourcent avec deux chiffres après la virgule.</xs:documentation>
 		</xs:annotation>
