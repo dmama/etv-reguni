@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.xml.party.v5;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.landtaxlightening.v1.HousingActData;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
@@ -36,8 +37,11 @@ public class LandTaxLighteningBuilder {
 		return abatement;
 	}
 
-	@NotNull
-	private static UseData buildUseData(@NotNull DonneesUtilisation utilisation) {
+	@Nullable
+	private static UseData buildUseData(@Nullable DonneesUtilisation utilisation) {
+		if (utilisation == null) {
+			return null;
+		}
 		final UseData data = new UseData();
 		data.setArea(utilisation.getSurface());
 		data.setVolume(utilisation.getVolume());
@@ -47,8 +51,11 @@ public class LandTaxLighteningBuilder {
 		return data;
 	}
 
-	@NotNull
-	private static HousingActData buildHousingAct(@NotNull DonneesLoiLogement loi) {
+	@Nullable
+	private static HousingActData buildHousingAct(@Nullable DonneesLoiLogement loi) {
+		if (loi == null) {
+			return null;
+		}
 		HousingActData data = new HousingActData();
 		data.setGrantDate(DataHelper.coreToXMLv2(loi.getDateOctroi()));
 		data.setExpiryDate(DataHelper.coreToXMLv2(loi.getDateEcheance()));

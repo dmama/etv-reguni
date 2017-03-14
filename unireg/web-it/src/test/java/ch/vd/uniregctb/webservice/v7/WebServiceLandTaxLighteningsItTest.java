@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ import static ch.vd.uniregctb.webservice.v7.WebServiceGetPartyItTest.buildUriAnd
 import static ch.vd.uniregctb.webservice.v7.WebServiceLandRegistryItTest.assertDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest {
@@ -65,15 +67,21 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 
 		final List<IciAbatement> abatements = corp.getIciAbatements();
 		assertNotNull(abatements);
-		assertEquals(1, abatements.size());
+		assertEquals(2, abatements.size());
 		assertAbatement(noImm, abatements.get(0), RegDate.get(2013, 3, 22), null,
 		                12000, 6500, 230, BigDecimal.valueOf(80), BigDecimal.valueOf(60),
 		                11000, 5000, 250, BigDecimal.valueOf(20), BigDecimal.valueOf(40),
 		                RegDate.get(2015, 3, 1), RegDate.get(2020, 2, 25), BigDecimal.valueOf(825, 2));
+		assertAbatement(noImm, abatements.get(1), RegDate.get(2015, 6, 1), RegDate.get(2015, 6, 30),
+		                null, null, null, null, null,
+		                null, null, null, null, null,
+		                null, null, null);
 	}
 
-	private static void assertAbatement(int noImm, IciAbatement abatement, RegDate dateFrom, RegDate dateTo, int rentalIncome, int rentalVolume, int rentalArea, BigDecimal rentalDeclaredPercent, BigDecimal rentalApprovedPercent, int ownUseIncome,
-	                                    int ownUseVolume, int ownUseArea, BigDecimal ownUseDeclaredPercent, BigDecimal ownUseApprovedPercent, RegDate grantDate, RegDate expireDate, BigDecimal socialNaturePercent) {
+	private static void assertAbatement(int noImm, IciAbatement abatement, RegDate dateFrom, RegDate dateTo,
+	                                    @Nullable Integer rentalIncome, @Nullable Integer rentalVolume, @Nullable Integer rentalArea, BigDecimal rentalDeclaredPercent, BigDecimal rentalApprovedPercent,
+	                                    @Nullable Integer ownUseIncome, @Nullable Integer ownUseVolume, @Nullable Integer ownUseArea, BigDecimal ownUseDeclaredPercent, BigDecimal ownUseApprovedPercent,
+	                                    RegDate grantDate, RegDate expireDate, BigDecimal socialNaturePercent) {
 		assertDate(dateFrom, abatement.getDateFrom());
 		assertDate(dateTo, abatement.getDateTo());
 		assertEquals(noImm, abatement.getImmovablePropertyId());
@@ -82,18 +90,30 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 		assertHousingAct(grantDate, expireDate, socialNaturePercent, abatement.getHousingAct());
 	}
 
-	private static void assertHousingAct(RegDate grantDate, RegDate expireDate, BigDecimal socialNaturePercent, HousingActData housingAct) {
-		assertDate(grantDate, housingAct.getGrantDate());
-		assertDate(expireDate, housingAct.getExpiryDate());
-		assertEquals(socialNaturePercent, housingAct.getSocialNaturePercent());
+	private static void assertHousingAct(@Nullable RegDate grantDate, @Nullable RegDate expireDate, @Nullable BigDecimal socialNaturePercent, @Nullable HousingActData housingAct) {
+		if (grantDate == null && expireDate == null && socialNaturePercent == null) {
+			assertNull(housingAct);
+		}
+		else {
+			assertNotNull(housingAct);
+			assertDate(grantDate, housingAct.getGrantDate());
+			assertDate(expireDate, housingAct.getExpiryDate());
+			assertEquals(socialNaturePercent, housingAct.getSocialNaturePercent());
+		}
 	}
 
-	private static void assertUseData(Integer income, Integer volume, Integer area, BigDecimal declaredPercent, BigDecimal approvedPercent, UseData useData) {
-		assertEquals(income, useData.getIncome());
-		assertEquals(volume, useData.getVolume());
-		assertEquals(area, useData.getArea());
-		assertEquals(declaredPercent, useData.getDeclaredPercent());
-		assertEquals(approvedPercent, useData.getApprovedPercent());
+	private static void assertUseData(@Nullable Integer income, @Nullable Integer volume, @Nullable Integer area, @Nullable BigDecimal declaredPercent, @Nullable BigDecimal approvedPercent, @Nullable UseData useData) {
+		if (income == null && volume == null && area == null && declaredPercent == null && approvedPercent == null) {
+			assertNull(useData);
+		}
+		else {
+			assertNotNull(useData);
+			assertEquals(income, useData.getIncome());
+			assertEquals(volume, useData.getVolume());
+			assertEquals(area, useData.getArea());
+			assertEquals(declaredPercent, useData.getDeclaredPercent());
+			assertEquals(approvedPercent, useData.getApprovedPercent());
+		}
 	}
 
 	private static void assertExemption(RegDate dateFrom, RegDate dateTo, BigDecimal percent, long immovablePropId, IfoncExemption exemption) {

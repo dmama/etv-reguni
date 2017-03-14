@@ -9,6 +9,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v5.Capital;
@@ -327,6 +328,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		entreprise.getAllegementsFonciers().stream()
 				.filter(Annulable::isNotAnnule)
 				.filter(a -> a instanceof ExonerationIFONC)
+				.sorted(new DateRangeComparator<>())
 				.map(a -> LandTaxLighteningBuilder.buildIfoncExemption((ExonerationIFONC) a))
 				.forEach(exemptions::add);
 
@@ -335,6 +337,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		entreprise.getAllegementsFonciers().stream()
 				.filter(Annulable::isNotAnnule)
 				.filter(a -> a instanceof DegrevementICI)
+				.sorted(new DateRangeComparator<>())
 				.map(a -> LandTaxLighteningBuilder.buildIciAbatement((DegrevementICI) a))
 				.forEach(abatements::add);
 	}

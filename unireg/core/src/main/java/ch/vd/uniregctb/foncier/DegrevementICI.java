@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.common.Duplicable;
 
 @Entity
@@ -40,6 +42,7 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 		return TypeImpot.ICI;
 	}
 
+	@Nullable
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "revenu", column = @Column(name = "DEG_LOC_REVENU")),
@@ -52,10 +55,11 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 		return location;
 	}
 
-	public void setLocation(DonneesUtilisation location) {
+	public void setLocation(@Nullable DonneesUtilisation location) {
 		this.location = location;
 	}
 
+	@Nullable
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "revenu", column = @Column(name = "DEG_PRUS_REVENU")),
@@ -68,10 +72,11 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 		return propreUsage;
 	}
 
-	public void setPropreUsage(DonneesUtilisation propreUsage) {
+	public void setPropreUsage(@Nullable DonneesUtilisation propreUsage) {
 		this.propreUsage = propreUsage;
 	}
 
+	@Nullable
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "dateOctroi", column = @Column(name = "DEG_LL_OCTROI")),
@@ -82,7 +87,7 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 		return loiLogement;
 	}
 
-	public void setLoiLogement(DonneesLoiLogement loiLogement) {
+	public void setLoiLogement(@Nullable DonneesLoiLogement loiLogement) {
 		this.loiLogement = loiLogement;
 	}
 }

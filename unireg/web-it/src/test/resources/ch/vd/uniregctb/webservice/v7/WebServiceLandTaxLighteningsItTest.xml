@@ -345,5 +345,33 @@
 			<value>8.25</value>
 			<null/>
 		</row>
+		<row>
+			<value>264832105</value>
+			<value>DegrevementICI</value>
+			<null/>
+			<null/>
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>test</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>test</value>
+			<value>20150601</value>
+			<value>20150630</value>
+			<value>312</value>
+			<value>264310664</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
 	</table>
 </dataset>
