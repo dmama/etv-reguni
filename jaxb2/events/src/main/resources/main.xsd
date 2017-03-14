@@ -92,6 +92,8 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/repelec/document-sortant/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/repelec/documentSortantRepElec-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/bpms/repelec/quittance/3" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/repelec/quittanceRepElec-3.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/taopp/elementsIntegrationMetier/5" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/taopp/elementsIntegrationMetier-5.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImmDetails-1.xsd"/>
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/dematerialisation/documentDematDegrevement-1.xsd"/>
 

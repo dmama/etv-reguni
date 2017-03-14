@@ -691,6 +691,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/common/typeSimpleDPerm-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.dperm.xml.common.v1"/>
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-dpermcommon-1"/>
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/repelec/documentSortantRepElec-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.docsortant.v1"/>
@@ -709,21 +718,30 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/common/typeSimpleDPerm-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.dperm.xml.common.v1"/>
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-dpermcommon-1"/>
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/dematerialisation/documentDematDegrevement-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.degrevement.v1"/>
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-degrev-1"/>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/taopp/elementsIntegrationMetier-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.dperm.xml.integration.v5"/>
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-dpermint-5"/>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImmDetails-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.degrevement.quittance.v1"/>
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-quitintimm-1"/>
 		</jxb:bindings>
 	</jxb:bindings>
 

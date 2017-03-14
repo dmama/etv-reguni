@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by ETAT DE VAUD (Direction des systèmes d`information) -->
+<!-- 31.03.2016 version 1.0 (zciedt): Création PJ, DI, TO-DI -->
+<!-- 31.03.2016 version 1.1 (xcigdt): Balise siegeSpecial facultative pour correspondre au cas métier -->
+<!-- 30.09.2016 version 1.2 (zciedt): Ajout balise taxation pour gérer le cas des PJ spontanées -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" xmlns:common="http://www.vd.ch/fiscalite/dperm/common/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/common/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/common/typeSimpleDPerm-1.xsd"/>
+	<xs:element name="quittanceIntegrationMetierImmDetails">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="horodatage" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>date à laquelle le document a été intégré dans Unireg</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="periodeFiscale" type="common:periodeFiscaleType"/>
+					<xs:element name="numeroContribuable" type="common:numeroContribuableType"/>
+					<xs:element name="typeImpot" type="common:typeImpositionType">
+						<xs:annotation>
+							<xs:documentation>ICI</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation>Informations  liées à l'immeuble</xs:documentation>
+					</xs:annotation>
+					<xs:element name="commune" type="communeType"/>
+					<xs:element name="numeroParcelle" type="common:nonEmptyTokenType"/>
+					<xs:element name="typeImmeuble" type="common:typImmeubleType"/>
+					<xs:element name="natureImmeuble" type="common:nonEmptyTokenType"/>
+					<xs:element name="estimationFiscale" type="common:montantType"/>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation>Informations liées à l'utilisateur</xs:documentation>
+					</xs:annotation>
+					<xs:element name="traitementMetier" type="xs:boolean">
+						<xs:annotation>
+							<xs:documentation>true, false</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="visaDossierReserve" type="common:nonEmptyTokenType" minOccurs="0"/>
+					<xs:element name="visaPreferentiel" type="common:nonEmptyTokenType" minOccurs="0"/>
+					<xs:element name="identifiantTache" type="common:identifiantTacheType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Obtenu à partir de la réponse à l'appel de service de la liste des tâches. Utile en cas de transfert de tâche</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- TYPES COMPLEXES -->
+	<xs:complexType name="communeType">
+		<xs:sequence>
+			<xs:element name="numeroOfsCommune" type="common:typNumeroOfs"/>
+			<xs:element name="libelleCommune" type="common:nonEmptyTokenType"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
