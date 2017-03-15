@@ -69,7 +69,7 @@ public class RetourDocumentSortantEsbHandlerITTest extends EvenementTest {
 		listener.setEsbTemplate(esbTemplate);
 
 		buildEsbMessageValidator(new Resource[]{
-				new ClassPathResource("/event/docsortant/typeSimpleDPerm-1.xsd"),
+				new ClassPathResource("/event/dperm/typeSimpleDPerm-1.xsd"),
 				new ClassPathResource("/event/docsortant/quittanceRepElec-3.xsd")
 		});
 

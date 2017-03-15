@@ -1,16 +1,9 @@
 package ch.vd.uniregctb.documentfiscal;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,7 +22,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
@@ -38,17 +30,13 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 
@@ -116,13 +104,13 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		final int periodeFiscale = demande.getPeriodeFiscale();
 		final RegDate dateReference = RegDate.get(periodeFiscale, 1, 1);
 		final ImmeubleRF immeuble = demande.getImmeuble();
-		final String nomCommune = Optional.ofNullable(registreFoncierService.getCommune(immeuble, dateReference)).map(Commune::getNomOfficiel).orElse(null);
+		final String nomCommune = Optional.ofNullable(DemandeDegrevementICIHelper.getCommune(demande, registreFoncierService)).map(Commune::getNomOfficiel).orElse(null);
 
 		final CTypeImmeuble type = new CTypeImmeuble();
 		type.setCommune(nomCommune);
-		type.setMontantFiscalRF(Optional.ofNullable(registreFoncierService.getEstimationFiscale(immeuble, dateReference)).map(Object::toString).orElse(null));
-		type.setNature(getNatureImmeuble(immeuble, dateReference));
-		type.setNoParcelle(registreFoncierService.getNumeroParcelleComplet(immeuble, dateReference));
+		type.setMontantFiscalRF(Optional.ofNullable(DemandeDegrevementICIHelper.getEstimationFiscale(demande, registreFoncierService)).map(Object::toString).orElse(null));
+		type.setNature(DemandeDegrevementICIHelper.getNatureImmeuble(demande, NATURE_SIZE_LIMIT));
+		type.setNoParcelle(DemandeDegrevementICIHelper.getNumeroParcelleComplet(demande, registreFoncierService));
 		type.setType(getTypeImmeuble(immeuble));
 
 		// [SIFISC-23531] de toute façon, ces données manquantes ne passeraient pas la rampe de la XSD éditique, clarifions le message autant que possible
@@ -137,71 +125,6 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 				.map(Object::getClass)
 				.map(TYPES_IMMEUBLE::get)
 				.orElse(null);
-	}
-
-	static String getNatureImmeuble(ImmeubleRF immeuble, RegDate dateReference) {
-
-		// comment trouver la description d'une implantation ?
-		final Function<ImplantationRF, DescriptionBatimentRF> descriptionFromImplantation =
-				implantation -> Stream.of(implantation.getBatiment())
-						.filter(AnnulableHelper::nonAnnule)                 // implantation -> bâtiment non-annulé
-						.map(BatimentRF::getDescriptions)
-						.flatMap(Set::stream)
-						.filter(AnnulableHelper::nonAnnule)
-						.filter(desc -> desc.isValidAt(dateReference))      // bâtiment -> descriptions valides non-annulées
-						.findFirst()
-						.orElse(null);
-
-		// composantes qui viennent des bâtiments
-		final Stream<String> streamNaturesBatiments = immeuble.getImplantations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(impl -> impl.isValidAt(dateReference))      // immeuble -> implantations valides non-annulées
-				.map(implantation -> {
-					final DescriptionBatimentRF description = descriptionFromImplantation.apply(implantation);
-					if (description != null) {
-						final Integer surface = Optional.ofNullable(implantation.getSurface()).orElse(description.getSurface());
-						return Pair.of(description, surface);
-					}
-					return null;
-				})
-				.filter(Objects::nonNull)
-				.sorted(Comparator.comparing(Pair::getRight, Comparator.nullsLast(Comparator.reverseOrder())))      // tris par surface décroissante
-				.map(Pair::getLeft)
-				.map(DescriptionBatimentRF::getType);
-
-		// composantes qui viennent des surfaces au sol
-		final Stream<String> streamNaturesSurfaces = immeuble.getSurfacesAuSol().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ss -> ss.isValidAt(dateReference))        // immeuble -> surfaces au sol valides non-annulés
-				.sorted(Comparator.comparingInt(SurfaceAuSolRF::getSurface).reversed())     // tri par surface décroissante
-				.map(SurfaceAuSolRF::getType);
-
-		// d'abord les bâtiments, puis les surfaces au sol
-		final List<String> composantes = Stream.concat(streamNaturesBatiments, streamNaturesSurfaces)
-				.map(StringUtils::trimToNull)
-				.filter(Objects::nonNull)
-				.distinct()                     // il ne sert à rien de présenter plusieurs fois la même nature
-				.collect(Collectors.toList());
-
-		if (composantes.isEmpty()) {
-			return null;
-		}
-
-		// [SIFISC-23178] on prend des composantes entières (sauf si la première est déjà trop grande)
-		while (true) {
-			final String nature = composantes.stream().collect(Collectors.joining(" / "));
-			if (nature.length() <= NATURE_SIZE_LIMIT) {
-				return nature;
-			}
-
-			if (composantes.size() == 1) {
-				// un seul élément trop grand... abréviation
-				return StringUtils.abbreviate(nature, NATURE_SIZE_LIMIT);
-			}
-
-			// on enlève un élément et on ré-essaie
-			composantes.remove(composantes.size() - 1);
-		}
 	}
 
 	private String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {

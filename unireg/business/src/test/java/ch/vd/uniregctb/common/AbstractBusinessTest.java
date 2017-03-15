@@ -79,6 +79,7 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.EstimationRFHelper;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
@@ -521,6 +522,19 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		estimation.setAnneeReference(EstimationRFHelper.determineAnneeReference(reference));
 		estimation.setDateDebutMetier(EstimationRFHelper.determineDateDebutMetier(reference, dateInscription));
 		immeuble.addEstimation(estimation);
+	}
+
+	protected SurfaceAuSolRF addSurfaceAuSol(RegDate dateDebut, RegDate dateFin, int aire, String type, ImmeubleRF immeuble) {
+		final SurfaceAuSolRF surface = new SurfaceAuSolRF();
+		surface.setDateDebut(dateDebut);
+		surface.setDateFin(dateFin);
+		surface.setSurface(aire);
+		surface.setType(type);
+		surface.setImmeuble(immeuble);
+
+		final SurfaceAuSolRF saved = hibernateTemplate.merge(surface);
+		immeuble.addSurfaceAuSol(saved);
+		return saved;
 	}
 
 	protected interface ExecuteCallback<T> {

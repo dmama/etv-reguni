@@ -2,21 +2,30 @@ package ch.vd.uniregctb.evenement.degrevement;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.dperm.xml.common.v1.TypImmeuble;
+import ch.vd.dperm.xml.common.v1.TypeImposition;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
+import ch.vd.unireg.xml.degrevement.quittance.v1.Commune;
+import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
 import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
 import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
 import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.documentfiscal.DemandeDegrevementICIHelper;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesLoiLogement;
@@ -24,7 +33,13 @@ import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.MineRF;
+import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -32,13 +47,27 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Handler métier des retours des données de dégrèvement
  */
-public class EvenementDegrevementHandlerV1Impl implements EvenementDegrevementHandlerV1 {
+public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHandler {
 
 	private static final BigInteger BI_MAXINT = BigInteger.valueOf(Integer.MAX_VALUE);
 	private static final BigDecimal BD_HUNDRED = BigDecimal.valueOf(100L);
 
+	private static final int MAX_NATURE_LENGTH = 256;
+	private static final Map<Class<? extends ImmeubleRF>, TypImmeuble> TYPES_IMMEUBLE = buildTypesImmeuble();
+
+	private static Map<Class<? extends ImmeubleRF>, TypImmeuble> buildTypesImmeuble() {
+		final Map<Class<? extends ImmeubleRF>, TypImmeuble> map = new HashMap<>();
+		map.put(ProprieteParEtageRF.class, TypImmeuble.PPE);
+		map.put(DroitDistinctEtPermanentRF.class, TypImmeuble.DDP);
+		map.put(MineRF.class, TypImmeuble.MINE);
+		map.put(BienFondRF.class, TypImmeuble.B_F);
+		map.put(PartCoproprieteRF.class, TypImmeuble.COP);
+		return map;
+	}
+
 	private TiersService tiersService;
 	private HibernateTemplate hibernateTemplate;
+	private RegistreFoncierService registreFoncierService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -48,13 +77,16 @@ public class EvenementDegrevementHandlerV1Impl implements EvenementDegrevementHa
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
+	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
+		this.registreFoncierService = registreFoncierService;
+	}
+
 	@Override
-	public void onRetourDegrevement(Message retour, Map<String, String> headers) throws EsbBusinessException {
+	public QuittanceIntegrationMetierImmDetails onRetourDegrevement(Message retour, Map<String, String> headers) throws EsbBusinessException {
 		// que faut-il faire ?
 		// 1. identifier la demande de dégrèvement correspondante
 		// 2. quittancer le formulaire (= quittancement implicite)
 		// 3. récupérer les données de dégrèvement et générer une nouvelle entrée en base
-		// 4. TODO envoyer quelque chose au DPerm (tâche) ???
 
 		final DemandeDegrevementICI formulaire = findFormulaireDegrevement(retour);
 		quittancerFormulaire(formulaire, XmlUtils.xmlcal2regdate(retour.getSupervision().getHorodatageReception()));
@@ -79,6 +111,9 @@ public class EvenementDegrevementHandlerV1Impl implements EvenementDegrevementHa
 		degrevement.setLocation(extractDonneesLocation(donneesMetier));
 		degrevement.setPropreUsage(extractDonneesPropreUsage(donneesMetier));
 		degrevement.setLoiLogement(extractDonneesLoiLogement(donneesMetier));
+
+		// on construit la réponse avant de faire une quelconque modification
+		final QuittanceIntegrationMetierImmDetails quittance = buildQuittance(formulaire);
 
 		// maintenant, on peut commencer à modifier les entités persistantes
 
@@ -111,6 +146,8 @@ public class EvenementDegrevementHandlerV1Impl implements EvenementDegrevementHa
 				});
 
 		entreprise.addAllegementFoncier(hibernateTemplate.merge(degrevement));
+
+		return quittance;
 	}
 
 	@Nullable
@@ -253,5 +290,52 @@ public class EvenementDegrevementHandlerV1Impl implements EvenementDegrevementHa
 		}
 
 		return new IdFormulaire(data.getNumeroContribuable(), noSeqBrut.intValue(), data.getPeriodeFiscale());
+	}
+
+	private QuittanceIntegrationMetierImmDetails buildQuittance(DemandeDegrevementICI formulaire) throws EsbBusinessException {
+		final QuittanceIntegrationMetierImmDetails quittance = new QuittanceIntegrationMetierImmDetails();
+		quittance.setCommune(extractCommune(formulaire));
+		quittance.setEstimationFiscale(extractEstimationFiscale(formulaire));
+		quittance.setHorodatage(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()));
+		quittance.setNatureImmeuble(extractNatureImmeuble(formulaire));
+		quittance.setNumeroContribuable(formulaire.getEntreprise().getNumero().intValue());
+		quittance.setNumeroParcelle(DemandeDegrevementICIHelper.getNumeroParcelleComplet(formulaire, registreFoncierService));
+		quittance.setPeriodeFiscale(BigInteger.valueOf(formulaire.getPeriodeFiscale()));
+		quittance.setTraitementMetier(true);
+		quittance.setTypeImmeuble(getTypeImmeuble(formulaire.getImmeuble()));
+		quittance.setTypeImpot(TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE);
+		return quittance;
+	}
+
+	@Nullable
+	static TypImmeuble getTypeImmeuble(ImmeubleRF immeuble) {
+		return Optional.of(immeuble)
+				.map(Object::getClass)
+				.map(TYPES_IMMEUBLE::get)
+				.orElse(null);
+	}
+
+	private String extractNatureImmeuble(DemandeDegrevementICI formulaire) throws EsbBusinessException {
+		final String nature = DemandeDegrevementICIHelper.getNatureImmeuble(formulaire, MAX_NATURE_LENGTH);
+		if (StringUtils.isNotBlank(nature)) {
+			return nature;
+		}
+		throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, "Nature de l'immeuble non-déterminée...", null);
+	}
+
+	private Commune extractCommune(DemandeDegrevementICI formulaire) throws EsbBusinessException {
+		final EntiteOFS commune = DemandeDegrevementICIHelper.getCommune(formulaire, registreFoncierService);
+		if (commune != null) {
+			return new Commune(BigInteger.valueOf(commune.getNoOFS()), commune.getNomOfficiel());
+		}
+		throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, "Commune de l'immeuble introuvable...", null);
+	}
+
+	private BigDecimal extractEstimationFiscale(DemandeDegrevementICI formulaire) throws EsbBusinessException {
+		final Long estimation = DemandeDegrevementICIHelper.getEstimationFiscale(formulaire, registreFoncierService);
+		if (estimation != null) {
+			return BigDecimal.valueOf(estimation);
+		}
+		throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, "Estimation fiscale introuvable...", null);
 	}
 }

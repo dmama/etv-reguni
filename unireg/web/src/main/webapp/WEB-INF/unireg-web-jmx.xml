@@ -64,7 +64,7 @@
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsImportRf" value-ref="evtRFImportEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourQuittanceAnnonceDocumentSortant" value-ref="retourDocumentSortantEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsRetourDemandeDegrevement" value-ref="evenementDegrevementEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIntegrationMetier" value-ref="evenementIntegrationMetierEndpointManager"/>
 			</map>
 		</property>
 	</bean>
@@ -175,7 +175,7 @@
 				<entry key="EvenementsImportRf" value-ref="evtRFImportEventListener"/>
 				<entry key="EvenementsRapprochementRf" value-ref="evtIdentificationRapprochementRFListener"/>
 				<entry key="RetourQuittancementAnnonceDocumentSortant" value-ref="retourDocumentSortantListener"/>
-				<entry key="EvenementsRetourDemandeDegrevement" value-ref="evenementDegrevementListener"/>
+				<entry key="EvenementsIntegrationMetier" value-ref="evenementIntegrationMetierListener"/>
 			</map>
 		</property>
 	</bean>

@@ -21,7 +21,9 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -173,6 +175,11 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 
 	public void setDateFinMetier(@Nullable RegDate dateFinMetier) {
 		this.dateFinMetier = dateFinMetier;
+	}
+
+	@Transient
+	public DateRange getRangeMetier() {
+		return new DateRangeHelper.Range(dateDebutMetier, dateFinMetier);
 	}
 
 	@Column(name = "EN_REVISION", nullable = false)

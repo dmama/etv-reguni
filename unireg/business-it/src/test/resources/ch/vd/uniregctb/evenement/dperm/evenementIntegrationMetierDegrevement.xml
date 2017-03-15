@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<elementsIntegrationMetier xmlns="http://www.vd.ch/fiscalite/dperm/taopp/elementsIntegrationMetier/5">
+	<typeDocument>DEM_DEGREV</typeDocument>
+	<sousTypeDocument>DEM_DEGREV</sousTypeDocument>
+	<periodeFiscale>2016</periodeFiscale>
+	<numeroContribuable>12454</numeroContribuable>
+	<horodatageReceptionDocument>2017-03-14T11:33:47.690+01:00</horodatageReceptionDocument>
+	<xmlUnitaire>
+		&lt;message xmlns=&quot;http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1&quot;&gt;
+		&lt;supervision&gt;
+		&lt;horodatageReception&gt;2017-03-08T10:52:14.993+01:00&lt;/horodatageReception&gt;
+		&lt;horodatagePublication&gt;2017-03-08T10:52:18.842+01:00&lt;/horodatagePublication&gt;
+		&lt;idBusinessId&gt;Tralala&lt;/idBusinessId&gt;
+		&lt;/supervision&gt;
+		&lt;caracteristiques&gt;
+		&lt;typeDocument&gt;DEM_DEGREV&lt;/typeDocument&gt;
+		&lt;sousTypeDocument&gt;DEM_DEGREV&lt;/sousTypeDocument&gt;
+		&lt;support&gt;ELECTRONIQUE&lt;/support&gt;
+		&lt;emetteur&gt;Super-application-magnifique&lt;/emetteur&gt;
+		&lt;/caracteristiques&gt;
+		&lt;donneesMetier&gt;
+		&lt;periodeFiscale&gt;2016&lt;/periodeFiscale&gt;
+		&lt;numeroContribuable&gt;12454&lt;/numeroContribuable&gt;
+		&lt;numeroSequenceDemande&gt;7415&lt;/numeroSequenceDemande&gt;
+		&lt;revenuLocatifEncaisse valide=&quot;true&quot;&gt;123456&lt;/revenuLocatifEncaisse&gt;
+		&lt;volumeLocatif valide=&quot;true&quot;&gt;1231&lt;/volumeLocatif&gt;
+		&lt;surfaceLocatif valide=&quot;true&quot;&gt;140&lt;/surfaceLocatif&gt;
+		&lt;pourcentageLocatif valide=&quot;true&quot;&gt;60.00&lt;/pourcentageLocatif&gt;
+		&lt;revenuLocatifEstime valide=&quot;true&quot;&gt;54848&lt;/revenuLocatifEstime&gt;
+		&lt;volumePropreUsage valide=&quot;true&quot;&gt;4541&lt;/volumePropreUsage&gt;
+		&lt;surfacePropreUsage valide=&quot;true&quot;&gt;85&lt;/surfacePropreUsage&gt;
+		&lt;pourcentagePropreUsage valide=&quot;true&quot;&gt;40.00&lt;/pourcentagePropreUsage&gt;
+		&lt;controleOfficeLogement&gt;false&lt;/controleOfficeLogement&gt;
+		&lt;/donneesMetier&gt;
+		&lt;/message&gt;
+	</xmlUnitaire>
+</elementsIntegrationMetier>

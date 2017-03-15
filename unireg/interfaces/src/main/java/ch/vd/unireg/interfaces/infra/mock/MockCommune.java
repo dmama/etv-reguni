@@ -198,7 +198,6 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		Echallens.addBatiment(MockBatiment.Echallens.BatimentRouteDeMoudon, null, null);
 	}
 
-	private String nom;
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
 	private final String sigleCanton;
@@ -219,14 +218,6 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		this.district = district;
 
 		DefaultMockServiceInfrastructureService.addCommune(this);
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
 	}
 
 	@Override

@@ -181,6 +181,13 @@ public abstract class ImmeubleRF extends HibernateEntity {
 		this.surfacesAuSol = surfacesAuSol;
 	}
 
+	public void addSurfaceAuSol(@NotNull SurfaceAuSolRF surface) {
+		if (this.surfacesAuSol == null) {
+			this.surfacesAuSol = new HashSet<>();
+		}
+		this.surfacesAuSol.add(surface);
+	}
+
 	// configuration hibernate : l'immeuble possède les estimations fiscales
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)

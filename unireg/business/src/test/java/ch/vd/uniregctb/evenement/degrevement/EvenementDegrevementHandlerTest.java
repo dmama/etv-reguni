@@ -12,9 +12,12 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.dperm.xml.common.v1.TypImmeuble;
+import ch.vd.dperm.xml.common.v1.TypeImposition;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.Caracteristiques;
 import ch.vd.unireg.xml.event.degrevement.v1.CodeSupport;
 import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
@@ -35,26 +38,32 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.MineRF;
+import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 
-public class EvenementDegrevementHandlerV1Test extends BusinessTest {
+public class EvenementDegrevementHandlerTest extends BusinessTest {
 
-	private EvenementDegrevementHandlerV1 handler;
+	private EvenementDegrevementHandler handler;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
-		final EvenementDegrevementHandlerV1Impl impl = new EvenementDegrevementHandlerV1Impl();
+		final EvenementDegrevementHandlerImpl impl = new EvenementDegrevementHandlerImpl();
 		impl.setTiersService(tiersService);
 		impl.setHibernateTemplate(hibernateTemplate);
+		impl.setRegistreFoncierService(getBean(RegistreFoncierService.class, "serviceRF"));
 		handler = impl;
 	}
 
@@ -138,13 +147,15 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
-		    final CommuneRF communeRF = addCommuneRF(22, "Bain bain", 8742);
+		    final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, "Achat", null, "57485ztfgdé",
 		                             new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
+		    addEstimationFiscale(null, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
 		    return entreprise.getNumero().intValue();
 		});
@@ -217,13 +228,15 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
-		    final CommuneRF communeRF = addCommuneRF(22, "Bain bain", 8742);
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, "Achat", null, "57485ztfgdé",
 		                             new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
+			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
 			Assert.assertNotNull(formulaire);
@@ -246,12 +259,25 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		                                                       dateOctroi, true,
 		                                                       dateEcheanceOctroi, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onRetourDegrevement(retour, null);
+			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
+				return handler.onRetourDegrevement(retour, null);
 			}
 		});
+
+		// vérification des données retournées
+		Assert.assertNotNull(quittance);
+		Assert.assertEquals(BigDecimal.valueOf(1234L), quittance.getEstimationFiscale());
+		Assert.assertEquals("Chemin", quittance.getNatureImmeuble());
+		Assert.assertNotNull(quittance.getCommune());
+		Assert.assertEquals(MockCommune.Aigle.getNomOfficiel(), quittance.getCommune().getLibelleCommune());
+		Assert.assertEquals(BigInteger.valueOf(MockCommune.Aigle.getNoOFS()), quittance.getCommune().getNumeroOfsCommune());
+		Assert.assertEquals((int) ids.idPM, quittance.getNumeroContribuable());
+		Assert.assertEquals("1423", quittance.getNumeroParcelle());
+		Assert.assertEquals(TypImmeuble.B_F, quittance.getTypeImmeuble());
+		Assert.assertEquals(TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE, quittance.getTypeImpot());
+		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -336,13 +362,15 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
-		    final CommuneRF communeRF = addCommuneRF(22, "Bain bain", 8742);
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, "Achat", null, "57485ztfgdé",
 		                             new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
+			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
 			Assert.assertNotNull(formulaire);
@@ -365,12 +393,25 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		                                                       dateOctroi, false,
 		                                                       dateEcheanceOctroi, false);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onRetourDegrevement(retour, null);
+			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
+				return handler.onRetourDegrevement(retour, null);
 			}
 		});
+
+		// vérification des données retournées
+		Assert.assertNotNull(quittance);
+		Assert.assertEquals(BigDecimal.valueOf(1234L), quittance.getEstimationFiscale());
+		Assert.assertEquals("Chemin", quittance.getNatureImmeuble());
+		Assert.assertNotNull(quittance.getCommune());
+		Assert.assertEquals(MockCommune.Aigle.getNomOfficiel(), quittance.getCommune().getLibelleCommune());
+		Assert.assertEquals(BigInteger.valueOf(MockCommune.Aigle.getNoOFS()), quittance.getCommune().getNumeroOfsCommune());
+		Assert.assertEquals((int) ids.idPM, quittance.getNumeroContribuable());
+		Assert.assertEquals("1423", quittance.getNumeroParcelle());
+		Assert.assertEquals(TypImmeuble.B_F, quittance.getTypeImmeuble());
+		Assert.assertEquals(TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE, quittance.getTypeImpot());
+		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -442,15 +483,17 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
-		    final CommuneRF communeRF = addCommuneRF(22, "Bain bain", 8742);
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, "Achat", null, "57485ztfgdé",
 		                             new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
+			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-		    // quelques dégrèvements pré-existants
+			// quelques dégrèvements pré-existants
 			// le premier ne devrait pas être modifié
 			addDegrevementICI(entreprise, immeuble, date(pf - 3, 1, 1), date(pf - 3, 12, 31), new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
 			// le second devra être revu pour sa date de fin (qui est après le début de la PF du formulaire)
@@ -479,12 +522,25 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		                                                       dateOctroi, true,
 		                                                       dateEcheanceOctroi, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onRetourDegrevement(retour, null);
+			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
+				return handler.onRetourDegrevement(retour, null);
 			}
 		});
+
+		// vérification des données retournées
+		Assert.assertNotNull(quittance);
+		Assert.assertEquals(BigDecimal.valueOf(1234L), quittance.getEstimationFiscale());
+		Assert.assertEquals("Chemin", quittance.getNatureImmeuble());
+		Assert.assertNotNull(quittance.getCommune());
+		Assert.assertEquals(MockCommune.Aigle.getNomOfficiel(), quittance.getCommune().getLibelleCommune());
+		Assert.assertEquals(BigInteger.valueOf(MockCommune.Aigle.getNoOFS()), quittance.getCommune().getNumeroOfsCommune());
+		Assert.assertEquals((int) ids.idPM, quittance.getNumeroContribuable());
+		Assert.assertEquals("1423", quittance.getNumeroParcelle());
+		Assert.assertEquals(TypImmeuble.B_F, quittance.getTypeImmeuble());
+		Assert.assertEquals(TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE, quittance.getTypeImpot());
+		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -640,15 +696,17 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
-		    final CommuneRF communeRF = addCommuneRF(22, "Bain bain", 8742);
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, "Achat", null, "57485ztfgdé",
 		                             new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
+			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-		    // une valeur pré-existante
+			// une valeur pré-existante
 			addDegrevementICI(entreprise, immeuble, date(pf - 3, 1, 1), null, new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
@@ -670,12 +728,25 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 		                                                       null, true,
 		                                                       null, true);
 		final Message retour = buildRetour(dateReception, donneesMetier);
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
 			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				handler.onRetourDegrevement(retour, null);
+			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
+				return handler.onRetourDegrevement(retour, null);
 			}
 		});
+
+		// vérification des données retournées
+		Assert.assertNotNull(quittance);
+		Assert.assertEquals(BigDecimal.valueOf(1234L), quittance.getEstimationFiscale());
+		Assert.assertEquals("Chemin", quittance.getNatureImmeuble());
+		Assert.assertNotNull(quittance.getCommune());
+		Assert.assertEquals(MockCommune.Aigle.getNomOfficiel(), quittance.getCommune().getLibelleCommune());
+		Assert.assertEquals(BigInteger.valueOf(MockCommune.Aigle.getNoOFS()), quittance.getCommune().getNumeroOfsCommune());
+		Assert.assertEquals((int) ids.idPM, quittance.getNumeroContribuable());
+		Assert.assertEquals("1423", quittance.getNumeroParcelle());
+		Assert.assertEquals(TypImmeuble.B_F, quittance.getTypeImmeuble());
+		Assert.assertEquals(TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE, quittance.getTypeImpot());
+		Assert.assertTrue(quittance.isTraitementMetier());
 
 		// vérification en base
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -738,4 +809,14 @@ public class EvenementDegrevementHandlerV1Test extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testGetTypeImmeuble() throws Exception {
+		Assert.assertEquals(TypImmeuble.PPE, EvenementDegrevementHandlerImpl.getTypeImmeuble(new ProprieteParEtageRF()));
+		Assert.assertEquals(TypImmeuble.DDP, EvenementDegrevementHandlerImpl.getTypeImmeuble(new DroitDistinctEtPermanentRF()));
+		Assert.assertEquals(TypImmeuble.MINE, EvenementDegrevementHandlerImpl.getTypeImmeuble(new MineRF()));
+		Assert.assertEquals(TypImmeuble.B_F, EvenementDegrevementHandlerImpl.getTypeImmeuble(new BienFondRF()));
+		Assert.assertEquals(TypImmeuble.COP, EvenementDegrevementHandlerImpl.getTypeImmeuble(new PartCoproprieteRF()));
+	}
+
 }

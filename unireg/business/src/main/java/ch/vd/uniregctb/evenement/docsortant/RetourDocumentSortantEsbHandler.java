@@ -103,7 +103,7 @@ public class RetourDocumentSortantEsbHandler implements EsbMessageHandler, Initi
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("/event/docsortant/typeSimpleDPerm-1.xsd", "/event/docsortant/quittanceRepElec-3.xsd");
+			final Source[] source = getClasspathSources("/event/dperm/typeSimpleDPerm-1.xsd", "/event/docsortant/quittanceRepElec-3.xsd");
 			schemaCache = sf.newSchema(source);
 		}
 	}

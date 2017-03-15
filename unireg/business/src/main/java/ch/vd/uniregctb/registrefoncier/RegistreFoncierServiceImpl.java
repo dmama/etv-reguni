@@ -181,7 +181,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public Long getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference) {
 		return immeuble.getEstimations().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(est -> est.isValidAt(dateReference))
+				.filter(est -> est.getRangeMetier().isValidAt(dateReference))
 				.findFirst()
 				.map(EstimationRF::getMontant)
 				.orElse(null);

@@ -1,28 +1,38 @@
-package ch.vd.uniregctb.evenement.degrevement;
+package ch.vd.uniregctb.evenement.dperm;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.dperm.xml.common.v1.TypImmeuble;
+import ch.vd.dperm.xml.common.v1.TypeImposition;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.xml.XmlUtils;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.unireg.xml.degrevement.quittance.v1.Commune;
+import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.Caracteristiques;
 import ch.vd.unireg.xml.event.degrevement.v1.CodeSupport;
 import ch.vd.unireg.xml.event.degrevement.v1.DonneesMetier;
@@ -32,26 +42,42 @@ import ch.vd.unireg.xml.event.degrevement.v1.Supervision;
 import ch.vd.unireg.xml.event.degrevement.v1.TypeDocument;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.evenement.degrevement.EvenementIntegrationMetierDegrevementHandler;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class EvenementDegrevementEsbHandlerV1ITTest extends EvenementTest {
+public class EvenementIntegrationMetierEsbHandlerV5ITTest extends EvenementTest {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementIntegrationMetierEsbHandlerV5ITTest.class);
 
 	private String INPUT_QUEUE;
-	private EvenementDegrevementEsbHandlerV1 handler;
+	private EvenementIntegrationMetierDegrevementHandler degrevHandler;
+	private List<EsbMessage> sentMessages;
 
 	@Before
 	public void setUp() throws Exception {
 
-		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtDegrevement");
+		INPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtIntegrationMetierDPerm");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
+
+		sentMessages = new LinkedList<>();
+		final EsbJmsTemplate sendingTemplate = new EsbJmsTemplate() {
+			@Override
+			public void send(EsbMessage esbMessage) throws Exception {
+				synchronized (sentMessages) {
+					sentMessages.add(esbMessage);
+					sentMessages.notifyAll();
+				}
+			}
+		};
 
 		esbTemplate = new EsbJmsTemplate();
 		esbTemplate.setConnectionFactory(jmsConnectionFactory);
@@ -70,18 +96,27 @@ public class EvenementDegrevementEsbHandlerV1ITTest extends EvenementTest {
 			}
 		};
 
-		handler = new EvenementDegrevementEsbHandlerV1();
+		degrevHandler = new EvenementIntegrationMetierDegrevementHandler();
+		degrevHandler.setHibernateTemplate(hibernateTemplate);
+		degrevHandler.afterPropertiesSet();
+
+		buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("/event/dperm/typeSimpleDPerm-1.xsd"),
+				new ClassPathResource("/event/dperm/elementsIntegrationMetier-5.xsd"),
+				new ClassPathResource("/event/degrevement/quittanceIntegrationMetierImmDetails-1.xsd")
+		});
+
+		final EvenementIntegrationMetierEsbHandlerV5 handler = new EvenementIntegrationMetierEsbHandlerV5();
 		handler.setHibernateTemplate(hibernateTemplate);
+		handler.setEsbTemplate(sendingTemplate);
+		handler.setEsbValidator(esbValidator);
+		handler.setHandlers(Collections.singletonMap(ch.vd.dperm.xml.common.v1.TypeDocument.DEM_DEGREV, degrevHandler));
 		handler.afterPropertiesSet();
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setHandler(handler);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setEsbTemplate(esbTemplate);
-
-		buildEsbMessageValidator(new Resource[]{
-				new ClassPathResource("/event/degrevement/documentDematDegrevement-1.xsd")
-		});
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
@@ -90,15 +125,28 @@ public class EvenementDegrevementEsbHandlerV1ITTest extends EvenementTest {
 	public void testReception() throws Exception {
 
 		final List<Pair<Message, Map<String, String>>> collected = new LinkedList<>();
-		handler.setHandler((quittance, headers) -> {
+		degrevHandler.setHandler((quittance, headers) -> {
 			synchronized (collected) {
 				collected.add(Pair.of(quittance, headers));
 				collected.notifyAll();
+				return new QuittanceIntegrationMetierImmDetails(XmlUtils.date2cal(DateHelper.getCurrentDate()),
+				                                                BigInteger.valueOf(quittance.getDonneesMetier().getPeriodeFiscale()),
+				                                                quittance.getDonneesMetier().getNumeroContribuable(),
+				                                                TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE,
+				                                                new Commune(BigInteger.valueOf(42), "Tralalaouti"),
+				                                                "142-9",
+				                                                TypImmeuble.B_F,
+				                                                "Jardin",
+				                                                BigDecimal.valueOf(1200),
+				                                                true,
+				                                                null,
+				                                                null,
+				                                                null);
 			}
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/degrevement/evenementDegrevementV1.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/dperm/evenementIntegrationMetierDegrevement.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// quelques attributs "custom"
@@ -107,7 +155,8 @@ public class EvenementDegrevementEsbHandlerV1ITTest extends EvenementTest {
 		attributes.put("Finalité", "Aucune, vraiment");
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte, attributes);
+		final String businessID = UUID.randomUUID().toString();
+		sendTextMessage(INPUT_QUEUE, texte, businessID, attributes);
 
 		// On attend le message
 		synchronized (collected) {
@@ -159,6 +208,18 @@ public class EvenementDegrevementEsbHandlerV1ITTest extends EvenementTest {
 		assertTrue(donneesMetier.getSurfacePropreUsage().isValide());
 		assertEquals(0, BigDecimal.valueOf(4000, 2).compareTo(donneesMetier.getPourcentagePropreUsage().getValue()));
 		assertTrue(donneesMetier.getPourcentagePropreUsage().isValide());
-	}
 
+		// attente du message de réponse
+		synchronized (sentMessages) {
+			while (sentMessages.isEmpty()) {
+				sentMessages.wait(1000);
+			}
+		}
+
+		assertEquals(1, sentMessages.size());
+		final EsbMessage reponse = sentMessages.get(0);
+		assertEquals(businessID, reponse.getBusinessCorrelationId());
+		assertEquals(businessID + "-answer", reponse.getBusinessId());
+		assertEquals("http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1", EsbMessageHelper.extractNamespaceURI(reponse, LOGGER));
+	}
 }
