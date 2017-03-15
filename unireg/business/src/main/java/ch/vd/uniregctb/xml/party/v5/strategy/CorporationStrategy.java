@@ -26,6 +26,7 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
@@ -135,7 +136,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 
 		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
-			initLandTaxLightenings(to, entreprise, context);
+			initLandTaxLightenings(to, entreprise);
 		}
 	}
 
@@ -321,14 +322,14 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				.forEach(landRights::add);
 	}
 
-	private void initLandTaxLightenings(Corporation to, Entreprise entreprise, Context context) {
+	void initLandTaxLightenings(Corporation to, Entreprise entreprise) {
 
 		// les exonérations
 		final List<IfoncExemption> exemptions = to.getIfoncExemptions();
 		entreprise.getAllegementsFonciers().stream()
 				.filter(Annulable::isNotAnnule)
 				.filter(a -> a instanceof ExonerationIFONC)
-				.sorted(new DateRangeComparator<>())
+				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
 				.map(a -> LandTaxLighteningBuilder.buildIfoncExemption((ExonerationIFONC) a))
 				.forEach(exemptions::add);
 
@@ -337,7 +338,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		entreprise.getAllegementsFonciers().stream()
 				.filter(Annulable::isNotAnnule)
 				.filter(a -> a instanceof DegrevementICI)
-				.sorted(new DateRangeComparator<>())
+				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
 				.map(a -> LandTaxLighteningBuilder.buildIciAbatement((DegrevementICI) a))
 				.forEach(abatements::add);
 	}
