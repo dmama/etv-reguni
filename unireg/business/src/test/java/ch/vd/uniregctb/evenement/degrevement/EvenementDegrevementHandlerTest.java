@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
@@ -128,6 +129,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		return date != null ? new TypDateAttr(XmlUtils.regdate2xmlcal(date), valide, null) : null;
 	}
 
+	/**
+	 * Cas d'une identification de formulaire de demande de dégrèvement qui ne trouve rien
+	 */
 	@Test
 	public void testFormulaireDemandeInexistant() throws Exception {
 
@@ -195,6 +199,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * Cas simple avec identification correcte du formulaire de demande de dégrèvement
+	 */
 	@Test
 	public void testFormulaireDemandeExistant() throws Exception {
 
@@ -329,6 +336,121 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * Cas d'un formulaire bien identifié mais avec des données qui sortent de leur domaine de validité
+	 */
+	@Test
+	public void testFormulaireDemandeExistantEtDonneesHorsPlage() throws Exception {
+
+		final RegDate dateDebut = date(2007, 4, 1);
+		final RegDate dateChargement = date(2017, 1, 7);
+		final RegDate dateAchat = date(2016, 8, 3);
+		final RegDate dateEnvoiFormulaire = date(2017, 1, 9);
+		final int pf = 2016;
+		final RegDate dateReception = RegDate.get().addDays(-2);
+
+		final class Ids {
+			final long idPM;
+			final long idImmeuble;
+			final int noSequence;
+			public Ids(long idPM, long idImmeuble, int noSequence) {
+				this.idPM = idPM;
+				this.idImmeuble = idImmeuble;
+				this.noSequence = noSequence;
+			}
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
+		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, "Achat", null, "57485ztfgdé",
+		                             new IdentifiantAffaireRF(1234, "452"),
+		                             new Fraction(1, 1),
+		                             GenrePropriete.INDIVIDUELLE,
+		                             tiersRF, immeuble, null);
+			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
+
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			Assert.assertNotNull(formulaire);
+			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
+		});
+
+		// réception des données
+		final RegDate dateOctroi = date(2016, 4, 2);
+		final RegDate dateEcheanceOctroi = date(2017, 12, 1);
+		final DonneesMetier donneesMetier = buildDonneesMetier(pf, ids.idPM, ids.noSequence,
+		                                                       1L, true,
+		                                                       2L, true,
+		                                                       3L, true,
+		                                                       BigDecimal.TEN, true,
+		                                                       4L, true,
+		                                                       5L, true,
+		                                                       6L, true,
+		                                                       BigDecimal.valueOf(-20), true,       // pourcentage négatif -> devrait être refusé !
+		                                                       true,
+		                                                       dateOctroi, true,
+		                                                       dateEcheanceOctroi, true);
+		final Message retour = buildRetour(dateReception, donneesMetier);
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				try {
+					handler.onRetourDegrevement(retour, null);
+					Assert.fail("Aurait dû échouer en raison du pourcentage négatif...");
+				}
+				catch (EsbBusinessException e) {
+					Assert.assertEquals(EsbBusinessCode.XML_INVALIDE, e.getCode());
+					Assert.assertEquals("L'attribut 'pourcentage propre usage' est hors de son domaine de validité [0.00 - 100.00]", e.getMessage());
+
+					// on ne relance pas l'exception pour committer la transaction quand-même
+					// (c'est ce qui se passe dans le cas d'une EsbBusinessException)
+				}
+
+			}
+		});
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+				Assert.assertNotNull(entreprise);
+
+				// vérification de l'absence de dégrèvement entré
+				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+						.filter(af -> af instanceof DegrevementICI)
+						.map(af -> (DegrevementICI) af)
+						.collect(Collectors.toList());
+				Assert.assertEquals(0, degrevements.size());
+
+				// vérification de la quittance du formulaire de demande (= ne doit pas avoir eu lieu...)
+				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+				Assert.assertEquals(1, formulaires.size());
+
+				final DemandeDegrevementICI formulaire = formulaires.get(0);
+				Assert.assertNotNull(formulaire);
+				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+				Assert.assertFalse(formulaire.isAnnule());
+				Assert.assertNull(formulaire.getDateRetour());
+			}
+		});
+	}
+
+	/**
+	 * Cas des données toutes indiquées comme "invalides" au vidéo-codage
+	 */
 	@Test
 	public void testDonneesNonValides() throws Exception {
 
@@ -450,6 +572,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * Etude de l'impact sur les données de dégrèvement déjà existantes
+	 */
 	@Test
 	public void testRemplacementDonneesExistantes() throws Exception {
 
@@ -663,6 +788,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * Cas sans aucun changement de valeur... pour l'instant, on crée tout de même une nouvelle instance
+	 */
 	@Test
 	public void testAucunChangement() throws Exception {
 
@@ -818,5 +946,4 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypImmeuble.B_F, EvenementDegrevementHandlerImpl.getTypeImmeuble(new BienFondRF()));
 		Assert.assertEquals(TypImmeuble.COP, EvenementDegrevementHandlerImpl.getTypeImmeuble(new PartCoproprieteRF()));
 	}
-
 }

@@ -83,13 +83,13 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 
 	@Override
 	public QuittanceIntegrationMetierImmDetails onRetourDegrevement(Message retour, Map<String, String> headers) throws EsbBusinessException {
+
 		// que faut-il faire ?
 		// 1. identifier la demande de dégrèvement correspondante
 		// 2. quittancer le formulaire (= quittancement implicite)
 		// 3. récupérer les données de dégrèvement et générer une nouvelle entrée en base
 
 		final DemandeDegrevementICI formulaire = findFormulaireDegrevement(retour);
-		quittancerFormulaire(formulaire, XmlUtils.xmlcal2regdate(retour.getSupervision().getHorodatageReception()));
 
 		final Entreprise entreprise = formulaire.getEntreprise();
 		final ImmeubleRF immeuble = formulaire.getImmeuble();
@@ -112,10 +112,15 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		degrevement.setPropreUsage(extractDonneesPropreUsage(donneesMetier));
 		degrevement.setLoiLogement(extractDonneesLoiLogement(donneesMetier));
 
-		// on construit la réponse avant de faire une quelconque modification
+		// on construit la réponse avant de faire une quelconque modification (cet appel peut également lancer une exception de départ dans TAO-Admin, i.e. avec commit de la transaction)
 		final QuittanceIntegrationMetierImmDetails quittance = buildQuittance(formulaire);
 
+		//
 		// maintenant, on peut commencer à modifier les entités persistantes
+		//
+
+		// quitance implicite du formulaire
+		quittancerFormulaire(formulaire, XmlUtils.xmlcal2regdate(retour.getSupervision().getHorodatageReception()));
 
 		// TODO hypothèse : tous les dégrèvements ultérieurs du début de la période fiscale de la demande sont tronqués ou annulés
 		final RegDate dateFinMax = destinationRange.getDateDebut().getOneDayBefore();
