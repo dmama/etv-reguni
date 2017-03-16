@@ -320,12 +320,9 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 				.orElse(null);
 	}
 
+	@Nullable
 	private String extractNatureImmeuble(DemandeDegrevementICI formulaire) throws EsbBusinessException {
-		final String nature = DemandeDegrevementICIHelper.getNatureImmeuble(formulaire, MAX_NATURE_LENGTH);
-		if (StringUtils.isNotBlank(nature)) {
-			return nature;
-		}
-		throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, "Nature de l'immeuble non-déterminée...", null);
+		return StringUtils.trimToNull(DemandeDegrevementICIHelper.getNatureImmeuble(formulaire, MAX_NATURE_LENGTH));
 	}
 
 	private Commune extractCommune(DemandeDegrevementICI formulaire) throws EsbBusinessException {
@@ -336,11 +333,11 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, "Commune de l'immeuble introuvable...", null);
 	}
 
+	@Nullable
 	private BigDecimal extractEstimationFiscale(DemandeDegrevementICI formulaire) throws EsbBusinessException {
-		final Long estimation = DemandeDegrevementICIHelper.getEstimationFiscale(formulaire, registreFoncierService);
-		if (estimation != null) {
-			return BigDecimal.valueOf(estimation);
-		}
-		throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, "Estimation fiscale introuvable...", null);
+		return Optional.of(formulaire)
+				.map(f -> DemandeDegrevementICIHelper.getEstimationFiscale(f, registreFoncierService))
+				.map(BigDecimal::valueOf)
+				.orElse(null);
 	}
 }
