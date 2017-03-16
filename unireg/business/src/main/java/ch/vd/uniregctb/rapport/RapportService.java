@@ -64,6 +64,7 @@ import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.InitialisationIFoncRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -105,6 +106,7 @@ import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
@@ -756,4 +758,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	CleanupRFProcessorRapport generateRapport(CleanupRFProcessorResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch d'extraction de la population nécessaire à l'initialisation de la taxation IFonc
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	InitialisationIFoncRapport generateRapport(InitialisationIFoncResults results, StatusManager status);
 }

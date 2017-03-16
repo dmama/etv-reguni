@@ -1608,7 +1608,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
-		return merge(droit);
+
+		final DroitProprietePersonnePhysiqueRF saved = merge(droit);
+		if (communaute != null) {
+			communaute.addMembre(saved);
+		}
+		return saved;
 	}
 
 	@NotNull
@@ -1628,7 +1633,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
-		return merge(droit);
+
+		final DroitProprietePersonneMoraleRF saved = merge(droit);
+		if (communaute != null) {
+			communaute.addMembre(saved);
+		}
+		return saved;
 	}
 
 	@NotNull

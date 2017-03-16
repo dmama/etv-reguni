@@ -77,6 +77,7 @@ import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.InitialisationIFoncRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -118,6 +119,7 @@ import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
@@ -1834,6 +1836,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(CleanupRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfCleanupRFProcessorRapport document = new PdfCleanupRFProcessorRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public InitialisationIFoncRapport generateRapport(InitialisationIFoncResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportInitialisationIFonc";
+		final String description = "Rapport d'exécution du batch d'extraction des données nécessaires à l'initialisation de la taxation IFONC.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(InitialisationIFoncRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfInitialisationIFoncRapport document = new PdfInitialisationIFoncRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

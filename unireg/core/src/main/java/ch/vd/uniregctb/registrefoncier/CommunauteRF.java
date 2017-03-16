@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import java.util.HashSet;
 import java.util.Set;
 
 import ch.vd.uniregctb.common.LengthConstants;
@@ -45,6 +47,14 @@ public class CommunauteRF extends AyantDroitRF {
 	@OneToMany(mappedBy = "communaute")
 	public Set<DroitProprietePersonneRF> getMembres() {
 		return membres;
+	}
+
+	@Transient
+	public void addMembre(DroitProprietePersonneRF droit) {
+		if (membres == null) {
+			membres = new HashSet<>();
+		}
+		membres.add(droit);
 	}
 
 	public void setMembres(Set<DroitProprietePersonneRF> membres) {

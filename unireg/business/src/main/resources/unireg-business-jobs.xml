@@ -604,6 +604,15 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
+	<bean id="initialisationIFoncJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.InitialisationIFoncJob">
+		<constructor-arg value="623"/>
+		<constructor-arg value="Extraire la liste nécessaire à l'initialisation de la taxation IFONC"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">
         <constructor-arg value="700"/>
         <constructor-arg value="Exporter toutes les données de la base dans un fichier sur le serveur"/>
