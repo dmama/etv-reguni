@@ -5,9 +5,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.landtaxlightening.v1.HousingActData;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.UseData;
 import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
@@ -35,6 +37,19 @@ public class LandTaxLighteningBuilder {
 		abatement.setHousingAct(buildHousingAct(degrev.getLoiLogement()));
 		abatement.setImmovablePropertyId(degrev.getImmeuble().getId());
 		return abatement;
+	}
+
+	@NotNull
+	public static IciAbatementRequest buildIciAbatementRequest(@NotNull DemandeDegrevementICI demande) {
+		final IciAbatementRequest request = new IciAbatementRequest();
+		request.setSendDate(DataHelper.coreToXMLv2(demande.getDateEnvoi()));
+		request.setDeadline(DataHelper.coreToXMLv2(demande.getDelaiRetour()));
+		request.setReminderDate(DataHelper.coreToXMLv2(demande.getDateRappel()));
+		request.setReturnDate(DataHelper.coreToXMLv2(demande.getDateRetour()));
+		request.setSequenceNumber(demande.getNumeroSequence());
+		request.setTaxPeriod(demande.getPeriodeFiscale());
+		request.setImmovablePropertyId(demande.getImmeuble().getId());
+		return request;
 	}
 
 	@Nullable

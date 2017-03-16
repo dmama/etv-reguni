@@ -8,10 +8,13 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.xml.DataHelper;
 
@@ -54,6 +57,9 @@ public class CorporationStrategyTest {
 		entreprise.addAllegementFoncier(newDegrevement(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 13), immeuble0));
 		entreprise.addAllegementFoncier(newDegrevement(RegDate.get(1990, 1, 1), null, immeuble2));
 
+		entreprise.addAutreDocumentFiscal(newDemandeDegrevement(RegDate.get(2006, 3, 11), RegDate.get(2006, 6, 30), RegDate.get(2006, 2, 1), 2005, 1, immeuble0));
+		entreprise.addAutreDocumentFiscal(newDemandeDegrevement(RegDate.get(2005, 3, 15), RegDate.get(2005, 6, 30), RegDate.get(2005, 5, 22), 2004, 1, immeuble0));
+
 		final Corporation corporation = new Corporation();
 		strategy.initLandTaxLightenings(corporation, entreprise);
 
@@ -78,6 +84,25 @@ public class CorporationStrategyTest {
 		assertAbatement(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 13), 0L, abatements.get(1));
 		assertAbatement(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 13), 1L, abatements.get(2));
 		assertAbatement(RegDate.get(2003, 1, 1), RegDate.get(2003, 12, 13), 2L, abatements.get(3));
+
+		// l'ordre doit être :
+		// - chronologique croissant
+		// - id d'immeuble croissant
+		final List<IciAbatementRequest> requests = corporation.getIciAbatementRequests();
+		assertNotNull(requests);
+		assertEquals(2, requests.size());
+		assertAbatamentRequest(RegDate.get(2005, 3, 15), RegDate.get(2005, 6, 30), RegDate.get(2005, 5, 22), 2004, 1, 0, requests.get(0));
+		assertAbatamentRequest(RegDate.get(2006, 3, 11), RegDate.get(2006, 6, 30), RegDate.get(2006, 2, 1), 2005, 1, 0, requests.get(1));
+	}
+
+	private static void assertAbatamentRequest(RegDate sendDate, RegDate deadline, RegDate returnDate, int taxPeriod, int sequenceNumber, int immovablePropId, IciAbatementRequest request) {
+		assertNotNull(request);
+		assertEquals(sendDate, DataHelper.xmlToCore(request.getSendDate()));
+		assertEquals(deadline, DataHelper.xmlToCore(request.getDeadline()));
+		assertEquals(returnDate, DataHelper.xmlToCore(request.getReturnDate()));
+		assertEquals(taxPeriod, request.getTaxPeriod());
+		assertEquals(sequenceNumber, request.getSequenceNumber());
+		assertEquals(immovablePropId, request.getImmovablePropertyId());
 	}
 
 	private static void assertExemption(RegDate dateFrom, RegDate dateTo, long immovablePropId, IfoncExemption exemption) {
@@ -92,6 +117,17 @@ public class CorporationStrategyTest {
 		assertEquals(dateFrom, DataHelper.xmlToCore(abatement.getDateFrom()));
 		assertEquals(dateTo, DataHelper.xmlToCore(abatement.getDateTo()));
 		assertEquals(immovablePropId, abatement.getImmovablePropertyId());
+	}
+
+	private static DemandeDegrevementICI newDemandeDegrevement(RegDate dateEnvoi, RegDate delaiRetour, RegDate dateRetour, int periodeFiscale, int numeroSequence, ImmeubleRF immeuble) {
+		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
+		demande.setDateEnvoi(dateEnvoi);
+		demande.setDelaiRetour(delaiRetour);
+		demande.setDateRetour(dateRetour);
+		demande.setPeriodeFiscale(periodeFiscale);
+		demande.setNumeroSequence(numeroSequence);
+		demande.setImmeuble(immeuble);
+		return demande;
 	}
 
 	private static DegrevementICI newDegrevement(RegDate dateDebut, RegDate dateFin, BienFondRF immeuble) {

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.xml.party.v5.strategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v5.Capital;
@@ -22,12 +24,15 @@ import ch.vd.unireg.xml.party.corporation.v5.MonetaryAmount;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
@@ -306,6 +311,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
 			copyColl(to.getIfoncExemptions(), from.getIfoncExemptions());
 			copyColl(to.getIciAbatements(), from.getIciAbatements());
+			copyColl(to.getIciAbatementRequests(), from.getIciAbatementRequests());
 		}
 	}
 
@@ -341,5 +347,15 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
 				.map(a -> LandTaxLighteningBuilder.buildIciAbatement((DegrevementICI) a))
 				.forEach(abatements::add);
+
+		// les demandes de dégrèvements
+		final List<IciAbatementRequest> requests = to.getIciAbatementRequests();
+		entreprise.getAutresDocumentsFiscaux().stream()
+				.filter(d -> d instanceof DemandeDegrevementICI)
+				.filter(Annulable::isNotAnnule)
+				.map (a -> (DemandeDegrevementICI)a)
+				.sorted(Comparator.<DemandeDegrevementICI, RegDate>comparing(AutreDocumentFiscal::getDateEnvoi).thenComparing(a -> a.getImmeuble().getId()))
+				.map(LandTaxLighteningBuilder::buildIciAbatementRequest)
+				.forEach(requests::add);
 	}
 }

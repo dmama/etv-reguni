@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.HousingActData;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
+import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.UseData;
 import ch.vd.unireg.xml.party.v5.Party;
@@ -76,6 +77,11 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 		                null, null, null, null, null,
 		                null, null, null, null, null,
 		                null, null, null);
+
+		final List<IciAbatementRequest> requests = corp.getIciAbatementRequests();
+		assertNotNull(requests);
+		assertEquals(1, requests.size());
+		assertAbatementRequest(RegDate.get(2016, 2, 3), RegDate.get(2016, 6, 30), RegDate.get(2016, 7, 1), RegDate.get(2016, 11, 2), 2015, 1, 264310664, requests.get(0));
 	}
 
 	private static void assertAbatement(int noImm, IciAbatement abatement, RegDate dateFrom, RegDate dateTo,
@@ -88,6 +94,17 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 		assertUseData(rentalIncome, rentalVolume, rentalArea, rentalDeclaredPercent, rentalApprovedPercent, abatement.getRentalUse());
 		assertUseData(ownUseIncome, ownUseVolume, ownUseArea, ownUseDeclaredPercent, ownUseApprovedPercent, abatement.getOwnUse());
 		assertHousingAct(grantDate, expireDate, socialNaturePercent, abatement.getHousingAct());
+	}
+
+	private static void assertAbatementRequest(RegDate sendDate, RegDate deadline, RegDate reminderDate, RegDate returnDate, int taxPeriod, int sequenceNumber, int immovablePropId, IciAbatementRequest request) {
+		assertNotNull(request);
+		assertDate(sendDate, request.getSendDate());
+		assertDate(deadline, request.getDeadline());
+		assertDate(reminderDate, request.getReminderDate());
+		assertDate(returnDate, request.getReturnDate());
+		assertEquals(taxPeriod, request.getTaxPeriod());
+		assertEquals(sequenceNumber, request.getSequenceNumber());
+		assertEquals(immovablePropId, request.getImmovablePropertyId());
 	}
 
 	private static void assertHousingAct(@Nullable RegDate grantDate, @Nullable RegDate expireDate, @Nullable BigDecimal socialNaturePercent, @Nullable HousingActData housingAct) {
