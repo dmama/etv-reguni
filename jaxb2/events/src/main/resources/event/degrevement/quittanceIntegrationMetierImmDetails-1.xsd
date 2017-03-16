@@ -3,7 +3,8 @@
 <!-- 31.03.2016 version 1.0 (zciedt): Création PJ, DI, TO-DI -->
 <!-- 31.03.2016 version 1.1 (xcigdt): Balise siegeSpecial facultative pour correspondre au cas métier -->
 <!-- 30.09.2016 version 1.2 (zciedt): Ajout balise taxation pour gérer le cas des PJ spontanées -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" xmlns:common="http://www.vd.ch/fiscalite/dperm/common/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+<!-- 13.03.2017 version 1.3 (zciedt): SIFISC-22890 natureImmeuble et estimationFiscale deviennent optionnels-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" xmlns:common="http://www.vd.ch/fiscalite/dperm/common/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/unireg/quittanceIntegrationMetierImm/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3">
 	<xs:import namespace="http://www.vd.ch/fiscalite/dperm/common/1" schemaLocation="http://resources.etat-de-vaud.ch/fiscalite/dperm/common/typeSimpleDPerm-1.xsd"/>
 	<xs:element name="quittanceIntegrationMetierImmDetails">
 		<xs:complexType>
@@ -29,8 +30,8 @@
 					<xs:element name="commune" type="communeType"/>
 					<xs:element name="numeroParcelle" type="common:nonEmptyTokenType"/>
 					<xs:element name="typeImmeuble" type="common:typImmeubleType"/>
-					<xs:element name="natureImmeuble" type="common:nonEmptyTokenType"/>
-					<xs:element name="estimationFiscale" type="common:montantType"/>
+					<xs:element name="natureImmeuble" type="common:nonEmptyTokenType" minOccurs="0"/>
+					<xs:element name="estimationFiscale" type="common:montantType" minOccurs="0"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>

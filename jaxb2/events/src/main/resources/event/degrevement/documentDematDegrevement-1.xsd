@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2016 rel. 2 sp1 (x64) (http://www.altova.com) by ETAT DE VAUD (Direction des systèmes d`information) -->
 <!-- 09.12.2016 version 1.0 (zciedt) -->
 <!-- 10.01.2017 version 1.1 (zciedt) : Ajout de la commune de situation et du numéro de parcelle pour l'AR -->
 <!-- 12.01.2017 version 1.2 (zciedt) : Ajout de l'attribut valide pour les champs OCRisés -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2">
+<!-- 16.03.2017 version 1.3 (zciedt) : Augmentation de la taille du champ businessId à 128-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" targetNamespace="http://www.vd.ch/fiscalite/dperm/bpms/dematerialisation/degrevement/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3">
 	<xs:element name="message">
 		<xs:annotation>
 			<xs:documentation>Un document à traiter par le module de réception du BPM</xs:documentation>
@@ -51,7 +51,7 @@
 					<xs:documentation>Génération du XML</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="idBusinessId" type="typTxtMax40" minOccurs="1" maxOccurs="1">
+			<xs:element name="idBusinessId" type="typTxtMax128" minOccurs="1" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>Même structure que le business ID créé par l'ESB lors de la réception de la DI.
 Ex: EDEG-[PF]-[numCtb]-[numSeqDoc]-[numSoumission]</xs:documentation>
@@ -179,6 +179,12 @@ Ex: EDEG-[PF]-[numCtb]-[numSeqDoc]-[numSoumission]</xs:documentation>
 	<xs:simpleType name="typTxtMax40">
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="40"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typTxtMax128">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
 			<xs:minLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
