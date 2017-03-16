@@ -68,7 +68,12 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			if (logPeriode > 0) {
 				compteur = (compteur + 1) % logPeriode;
 				if (compteur == 0 && LOGGER.isInfoEnabled()) {
-					logStats();
+					try {
+						logStats();
+					}
+					catch (Exception e) {
+						LOGGER.warn("Le log des statistiques a renvoyé une exception", e);
+					}
 				}
 			}
 
