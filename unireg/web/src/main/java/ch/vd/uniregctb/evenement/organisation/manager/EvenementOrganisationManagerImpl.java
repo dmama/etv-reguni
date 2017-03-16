@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -367,16 +368,23 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			}
 		}
 		catch (HibernateException e) {
+			noCtb = -1L;
 			LOGGER.warn("Impossible de trouver le contribuable associé à l'organisation " + noOrganisation, e);
 		}
 		return noCtb;
 	}
 
-	protected void retrieveTiersAssocie(Long noEvenement, Long numeroOrganisation, EvenementOrganisationDetailView evtView) throws AdresseException {
+	private void retrieveTiersAssocie(Long noEvenement, Long numeroOrganisation, EvenementOrganisationDetailView evtView) throws AdresseException {
 		try {
 			final Entreprise entreprise = tiersService.getEntrepriseByNumeroOrganisation(numeroOrganisation);
 			if (entreprise != null) {
-				final TiersAssocieView tiersAssocie = createTiersAssocieView(entreprise);
+				TiersAssocieView tiersAssocie;
+				try {
+					tiersAssocie = createTiersAssocieView(entreprise);
+				}
+				catch (ServiceOrganisationException e) {
+					tiersAssocie = createTiersAssocieViewSansCivil(entreprise);
+				}
 				evtView.setTiersAssocie(tiersAssocie);
 			}
 		}
@@ -386,7 +394,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		}
 	}
 
-	protected String retrieveLocaliteOuPays(Tiers tiers) throws AdresseException {
+	private String retrieveLocaliteOuPays(Tiers tiers) throws AdresseException {
 
 		String localiteOuPays = "";
 
@@ -411,6 +419,27 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		tiersAssocie.setNomCourrier(nomCourrier);
 
 		tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(tiers));
+		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
+		if (forFiscalPrincipal != null) {
+			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
+			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
+			if (commune != null) {
+				tiersAssocie.setForPrincipal(commune.getNomOfficiel());
+			}
+			tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
+			tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
+		}
+
+		return tiersAssocie;
+	}
+
+	protected TiersAssocieView createTiersAssocieViewSansCivil(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
+		final TiersAssocieView tiersAssocie = new TiersAssocieView();
+		tiersAssocie.setNumero(tiers.getNumero());
+		final String message = "<erreur: organisation introuvable>";
+
+		tiersAssocie.setNomCourrier(Collections.singletonList(message));
+		tiersAssocie.setLocaliteOuPays("&lt;erreur: organisation introuvable&gt;");
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();

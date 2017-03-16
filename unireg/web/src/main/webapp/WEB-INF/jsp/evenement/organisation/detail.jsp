@@ -128,7 +128,7 @@
         <tr class="<unireg:nextRowClass/>">
             <td width="50%"><fmt:message key="label.raison.sociale"/> :</td>
 	        <c:if test="${command.organisation == null}">
-		        <td width="50%" class="error"><c:out value="${command.organisationError}"/></td>
+		        <td width="50%" class="error"><c:out value="<erreur> ${command.organisationError}"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
 		        <td width="50%">${command.organisation.nom}</td>
@@ -173,7 +173,7 @@
         <tr class="<unireg:nextRowClass/>">
             <td><fmt:message key="label.forme.juridique"/>&nbsp;:</td>
 	        <c:if test="${command.organisation == null}">
-		        <td class="error"><c:out value="${command.organisationError}"/></td>
+		        <td class="error"><c:out value="<erreur>"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
 		        <td><c:out value="${command.organisation.formeJuridique}"/></td>
@@ -182,7 +182,7 @@
         <tr class="<unireg:nextRowClass/>">
             <td><fmt:message key="label.categorie"/>&nbsp;:</td>
 	        <c:if test="${command.organisation == null}">
-		        <td class="error"><c:out value="${command.organisationError}"/></td>
+		        <td class="error"><c:out value="<erreur>"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
 		        <td>
@@ -195,7 +195,7 @@
 	    <tr class="<unireg:nextRowClass/>">
 		    <td><fmt:message key="label.siege"/>&nbsp;:</td>
 		    <c:if test="${command.organisation == null}">
-			    <td class="error"><c:out value="${command.organisationError}"/></td>
+			    <td class="error"><c:out value="<erreur>"/></td>
 		    </c:if>
             <c:if test="${command.organisation != null}">
                 <c:choose>
@@ -214,7 +214,7 @@
         <tr class="<unireg:nextRowClass/>">
             <td><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 	        <c:if test="${command.organisation == null}">
-		        <td class="error"><c:out value="${command.organisationError}"/></td>
+		        <td class="error"><c:out value="<erreur>"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
 		        <td><unireg:numIDE numeroIDE="${command.organisation.numeroIDE}"/></td>
