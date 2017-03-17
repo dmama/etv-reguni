@@ -180,7 +180,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				final BienFondRF immeuble = addBienFondRF("85343fldfg", null, commune, 42);
 
 				final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
-				addDroitPersonneMoraleRF(null, dateDebut, null, "Achat", null, "578567fdbdfbsd", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
+				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
 				addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
 				return entreprise.getNumero();

@@ -25,6 +25,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
@@ -112,7 +113,43 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		return extractor != null ? extractor.apply(droit) : null;
 	}
 
-	public static class InfoDroit {
+	public static class InfoImmeuble {
+		public final Long idImmeuble;
+		public final String egrid;
+		public final RegDate dateRadiationImmeuble;
+		public final Integer noParcelle;
+		public final Integer index1;
+		public final Integer index2;
+		public final Integer index3;
+		public final String nomCommune;
+		public final Integer noOfsCommune;
+
+		public InfoImmeuble(ImmeubleRF immeuble, @Nullable SituationRF situation) {
+			idImmeuble = immeuble.getId();
+			egrid = immeuble.getEgrid();
+			dateRadiationImmeuble = immeuble.getDateRadiation();
+			if (situation != null) {
+				noParcelle = situation.getNoParcelle();
+				index1 = situation.getIndex1();
+				index2 = situation.getIndex2();
+				index3 = situation.getIndex3();
+
+				final CommuneRF commune = situation.getCommune();
+				nomCommune = commune.getNomRf();
+				noOfsCommune = commune.getNoOfs();
+			}
+			else {
+				noParcelle = null;
+				index1 = null;
+				index2 = null;
+				index3 = null;
+				nomCommune = null;
+				noOfsCommune = null;
+			}
+		}
+	}
+
+	public static class InfoExtraction {
 
 		public final Long idContribuable;
 		public final Long idCommunaute;
@@ -125,15 +162,9 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final String motifFin;
 		public final RegDate dateFin;
 		public final Fraction part;
-		public final String egrid;
-		public final Integer noParcelle;
-		public final Integer index1;
-		public final Integer index2;
-		public final Integer index3;
-		public final String nomCommune;
-		public final Integer noOfsCommune;
+		public final InfoImmeuble infoImmeuble;
 
-		public InfoDroit(@Nullable Contribuable contribuable, DroitRF droit, @Nullable SituationRF situation) {
+		public InfoExtraction(@Nullable Contribuable contribuable, DroitRF droit, @Nullable SituationRF situation) {
 			// information du contribuable
 			if (contribuable != null) {
 				idContribuable = contribuable.getNumero();
@@ -166,43 +197,51 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			}
 
 			// les données de l'immeuble et de sa situation
-			egrid = droit.getImmeuble().getEgrid();
-			if (situation != null) {
-				noParcelle = situation.getNoParcelle();
-				index1 = situation.getIndex1();
-				index2 = situation.getIndex2();
-				index3 = situation.getIndex3();
+			infoImmeuble = new InfoImmeuble(droit.getImmeuble(), situation);
+		}
 
-				final CommuneRF commune = situation.getCommune();
-				nomCommune = commune.getNomRf();
-				noOfsCommune = commune.getNoOfs();
-			}
-			else {
-				noParcelle = null;
-				index1 = null;
-				index2 = null;
-				index3 = null;
-				nomCommune = null;
-				noOfsCommune = null;
-			}
+		public InfoExtraction(ImmeubleRF immeuble, @Nullable SituationRF situation) {
+			idContribuable = null;
+			idCommunaute = null;
+			identificationRF = null;
+			classAyantDroit = null;
+			classDroit = null;
+			regime = null;
+			dateDebut = null;
+			motifDebut = null;
+			dateFin = null;
+			motifFin = null;
+			part = null;
+			infoImmeuble = new InfoImmeuble(immeuble, situation);
 		}
 	}
 
-	public static class ErreurDroit {
+	public static class ErreurImmeuble {
 		public final long idImmeuble;
 		public final String message;
 		public final String stackTrace;
 
-		public ErreurDroit(long idImmeuble, Exception e) {
+		public ErreurImmeuble(long idImmeuble, Exception e) {
 			this.idImmeuble = idImmeuble;
 			this.message = e.getMessage();
 			this.stackTrace = ExceptionUtils.extractCallStack(e);
 		}
 	}
 
+	public static class ImmeubleIgnore {
+		public final InfoImmeuble infoImmeuble;
+		public final String raison;
+
+		public ImmeubleIgnore(ImmeubleRF immeuble, @Nullable SituationRF situation, String raison) {
+			this.infoImmeuble = new InfoImmeuble(immeuble, situation);
+			this.raison = raison;
+		}
+	}
+
 	private long nbImmeublesInspectes = 0;
-	private final List<InfoDroit> droits = new LinkedList<>();
-	private final List<ErreurDroit> erreurs = new LinkedList<>();
+	private final List<InfoExtraction> lignesExtraites = new LinkedList<>();
+	private final List<ImmeubleIgnore> immeublesIgnores = new LinkedList<>();
+	private final List<ErreurImmeuble> erreurs = new LinkedList<>();
 
 	public InitialisationIFoncResults(RegDate dateReference, int nbThreads) {
 		this.dateReference = dateReference;
@@ -211,11 +250,19 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 	@Override
 	public void addErrorException(Long idImmeuble, Exception e) {
-		this.erreurs.add(new ErreurDroit(idImmeuble, e));
+		this.erreurs.add(new ErreurImmeuble(idImmeuble, e));
 	}
 
 	public void addDroit(@Nullable Contribuable contribuable, DroitRF droit, @Nullable SituationRF situation) {
-		this.droits.add(new InfoDroit(contribuable, droit, situation));
+		this.lignesExtraites.add(new InfoExtraction(contribuable, droit, situation));
+	}
+
+	public void addImmeubleSansDroit(ImmeubleRF immeuble, @Nullable SituationRF situation) {
+		this.lignesExtraites.add(new InfoExtraction(immeuble, situation));
+	}
+
+	public void addImmeubleSansDroitADateReference(ImmeubleRF immeuble, @Nullable SituationRF situation) {
+		this.immeublesIgnores.add(new ImmeubleIgnore(immeuble, situation, "Aucun droit valide à la date de référence."));
 	}
 
 	public void onNewImmeuble() {
@@ -224,15 +271,17 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 	@Override
 	public void addAll(InitialisationIFoncResults right) {
-		droits.addAll(right.droits);
+		lignesExtraites.addAll(right.lignesExtraites);
 		erreurs.addAll(right.erreurs);
+		immeublesIgnores.addAll(right.immeublesIgnores);
 		nbImmeublesInspectes += right.nbImmeublesInspectes;
 	}
 
 	@Override
 	public void end() {
-		droits.sort(Comparator.comparing(info -> info.idContribuable, Comparator.nullsLast(Comparator.naturalOrder())));
+		lignesExtraites.sort(Comparator.comparing(info -> info.idContribuable, Comparator.nullsLast(Comparator.naturalOrder())));
 		erreurs.sort(Comparator.comparing(err -> err.idImmeuble));
+		immeublesIgnores.sort(Comparator.comparing(info -> info.infoImmeuble.idImmeuble));
 		super.end();
 	}
 
@@ -240,11 +289,15 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		return nbImmeublesInspectes;
 	}
 
-	public List<InfoDroit> getDroits() {
-		return droits;
+	public List<InfoExtraction> getLignesExtraites() {
+		return lignesExtraites;
 	}
 
-	public List<ErreurDroit> getErreurs() {
+	public List<ImmeubleIgnore> getImmeublesIgnores() {
+		return immeublesIgnores;
+	}
+
+	public List<ErreurImmeuble> getErreurs() {
 		return erreurs;
 	}
 }

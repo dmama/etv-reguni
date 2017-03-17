@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.foncier;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -57,14 +58,14 @@ public class InitialisationIFoncProcessor {
 		final StatusManager statusManager = s != null ? s : new LoggingStatusManager(LOGGER);
 		final InitialisationIFoncResults rapportFinal = new InitialisationIFoncResults(dateReference, nbThreads);
 
-		// on commence en allant chercher les droits valides à la date de référence
-		statusManager.setMessage("Récupération des droits valides à la date de référence...");
-		final Map<Long, List<Long>> idsDroitsParImmeuble = getImmeublesAvecDroitsValides(dateReference);
-		statusManager.setMessage("Récupéré " + idsDroitsParImmeuble.size() + " immeubles avec des droits à la date de référence.");
+		// on commence en allant chercher les immeubles et leurs droits
+		statusManager.setMessage("Récupération des immeubles...");
+		final Map<Long, List<InfoDroit>> infosDroitsParImmeuble = getImmeublesConcernes();
+		statusManager.setMessage("Récupéré " + infosDroitsParImmeuble.size() + " immeubles.");
 
 		// maintenant, il faut extraire les données de ces droits / immeubles
 		// on a ici la garantie que tous les droits d'un immeuble seront traités dans le même lot, ça peut nous servir pour la suite
-		final Collection<Long> idsImmeubles = idsDroitsParImmeuble.keySet();
+		final Collection<Long> idsImmeubles = infosDroitsParImmeuble.keySet();
 		final ParallelBatchTransactionTemplateWithResults<Long, InitialisationIFoncResults> template = new ParallelBatchTransactionTemplateWithResults<>(idsImmeubles.iterator(), idsImmeubles.size(), BATCH_SIZE,
 		                                                                                                                                                 nbThreads, Behavior.REPRISE_AUTOMATIQUE,
 		                                                                                                                                                 transactionManager, statusManager,
@@ -75,18 +76,34 @@ public class InitialisationIFoncProcessor {
 			public boolean doInTransaction(List<Long> batch, InitialisationIFoncResults rapport) throws Exception {
 				statusManager.setMessage("Extraction des données en cours...", progressMonitor.getProgressInPercent());
 				for (Long idImmeuble : batch) {
+					// suivi des opérations
 					rapport.onNewImmeuble();
 
-					final List<Long> idsDroits = idsDroitsParImmeuble.get(idImmeuble);
-					final List<DroitRF> droits = idsDroits.stream()
-							.map(id -> hibernateTemplate.get(DroitRF.class, id))
-							.collect(Collectors.toCollection(() -> new ArrayList<>(idsDroits.size())));
-
-					for (DroitRF droit : droits) {
-						if (statusManager.interrupted()) {
-							break;
+					final List<InfoDroit> infosDroits = infosDroitsParImmeuble.get(idImmeuble);
+					if (infosDroits.isEmpty()) {
+						// immeuble sans aucun droit connu
+						final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+						final SituationRF situation = getSituationValide(immeuble, dateReference);
+						rapport.addImmeubleSansDroit(immeuble, situation);
+					}
+					else {
+						// ok, il y a des droits, y a-t-il des droits valides à la date de référence ?
+						final List<InfoDroit> atReference = infosDroits.stream()
+								.filter(info -> info.isValidAt(dateReference))
+								.collect(Collectors.toList());
+						if (atReference.isEmpty()) {
+							// non, aucun droit à la date de référence
+							final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+							final SituationRF situation = getSituationValide(immeuble, dateReference);
+							rapport.addImmeubleSansDroitADateReference(immeuble, situation);
 						}
-						traiterDroit(droit, rapport);
+						else {
+							// certains droits au moins sont valides à la date de référence, il faut les lister
+							atReference.stream()
+									.filter(droit -> !statusManager.interrupted())
+									.map(info -> hibernateTemplate.get(DroitRF.class, info.getIdDroit()))
+									.forEach(droit -> traiterDroit(droit, rapport));
+						}
 					}
 
 					if (statusManager.interrupted()) {
@@ -137,25 +154,52 @@ public class InitialisationIFoncProcessor {
 				.orElse(null);
 	}
 
+	private static class InfoDroit implements DateRange {
+
+		private final long idDroit;
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+
+		public InfoDroit(long idDroit, RegDate dateDebut, RegDate dateFin) {
+			this.idDroit = idDroit;
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
+		}
+
+		public long getIdDroit() {
+			return idDroit;
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+	}
+
 	/**
-	 * @param date une date de référence
 	 * @return une map indexée par l'identifiant de l'immeuble, auquel est associé la liste des droits sur l'immeuble
 	 */
-	private Map<Long, List<Long>> getImmeublesAvecDroitsValides(RegDate date) {
+	private Map<Long, List<InfoDroit>> getImmeublesConcernes() {
 		final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
 		transactionTemplate.setReadOnly(true);
 		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return transactionTemplate.execute(status -> hibernateTemplate.execute(session -> {
-			final String hql = "SELECT DT.id, DT.immeuble.id FROM DroitRF DT WHERE DT.annulationDate IS NULL AND (DT.dateDebutMetier IS NULL OR DT.dateDebutMetier <= :ref) AND (DT.dateFinMetier IS NULL OR DT.dateFinMetier >= :ref)";
+
+			final String hql = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.droits DT WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL";
 			final Query query = session.createQuery(hql);
-			query.setParameter("ref", date);
 
 			//noinspection unchecked
 			final Iterator<Object[]> iterator = query.iterate();
 			final Iterable<Object[]> iterable = () -> iterator;
 			return StreamSupport.stream(iterable.spliterator(), false)
-					.collect(Collectors.toMap(array -> (Long) array[1],
-					                          array -> Collections.singletonList((Long) array[0]),
+					.map(array -> Pair.of((Long) array[0], array[1] == null ? null : new InfoDroit((Long) array[1], (RegDate) array[2], (RegDate) array[3])))
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          pair -> pair.getRight() == null ? Collections.<InfoDroit>emptyList() : Collections.singletonList(pair.getRight()),
 					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 		}));
 	}
